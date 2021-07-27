@@ -1,0 +1,5 @@
+/subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)
+
+/subsystem=transactions:write-attribute(name=default-timeout,value=600)
+
+/subsystem=undertow/server=default-server/http-listener=default:write-attribute(name="max-post-size", value="0")

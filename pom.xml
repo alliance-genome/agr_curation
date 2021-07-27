@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+
+	<groupId>org.alliancegenome</groupId>
+	<artifactId>agr_curation</artifactId>
+	<packaging>pom</packaging>
+	<version>${revision}</version>
+	<name>AGR Curation</name>
+
+
+	<modules>
+		<module>curation_api</module>
+	</modules>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.release>11</maven.compiler.release>
+		<revision>0.0.1</revision>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.10</version>
+		</dependency>
+
+		<!-- importing the jakartaee8-with-tools BOM adds specs and other useful 
+			artifacts as managed dependencies -->
+		<dependency>
+			<groupId>org.wildfly.bom</groupId>
+			<artifactId>wildfly-jakartaee8</artifactId>
+			<version>24.0.0.SP1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+
+		<!-- importing the microprofile BOM adds MicroProfile specs -->
+		<dependency>
+			<groupId>org.wildfly.bom</groupId>
+			<artifactId>wildfly-microprofile</artifactId>
+			<version>24.0.0.SP1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<pluginManagement><!-- lock down plugins versions to avoid using Maven 
+				defaults (may be moved to parent pom) -->
+			<plugins>
+				<plugin>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.0</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+</project>

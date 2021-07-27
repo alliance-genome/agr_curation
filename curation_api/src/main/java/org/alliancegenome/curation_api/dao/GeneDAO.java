@@ -1,0 +1,24 @@
+package org.alliancegenome.curation_api.dao;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import org.alliancegenome.curation_api.base.BaseSQLDAO;
+import org.alliancegenome.curation_api.model.entities.Gene;
+
+@ApplicationScoped
+public class GeneDAO extends BaseSQLDAO<Gene> {
+
+	protected GeneDAO() {
+		super(Gene.class);
+	}
+	
+	public Gene getByIdOrCurie(String id) {
+		try {
+			Long ident = Long.parseLong(id);
+			return find(ident);
+		} catch (NumberFormatException ex) {
+			return findByField("curie", id);
+		}
+	}
+
+}

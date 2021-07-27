@@ -1,0 +1,5 @@
+#docker run -d --net curation -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch agrdocker/agr_elasticsearch_env
+docker rm -f elasticsearch elasticsearch2
+
+docker run --rm -d --net curation -p 9200:9200 -p 9300:9300 -e network.bind_host=0.0.0.0 -e transport.bind_host:0.0.0.0 -e xpack.security.enabled=false -e ELASTICSEARCH_NODE_NAME=elasticsearch  -e ELASTICSEARCH_CLUSTER_HOSTS=elasticsearch,elasticsearch2 --name elasticsearch elasticsearch:5.6.16
+docker run --rm -d --net curation -p 9201:9200 -p 9301:9300 -e network.bind_host=0.0.0.0 -e transport.bind_host:0.0.0.0 -e xpack.security.enabled=false -e ELASTICSEARCH_NODE_NAME=elasticsearch2 -e ELASTICSEARCH_CLUSTER_HOSTS=elasticsearch,elasticsearch2 --name elasticsearch2 elasticsearch:5.6.16

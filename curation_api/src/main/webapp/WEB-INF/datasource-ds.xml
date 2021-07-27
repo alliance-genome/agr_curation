@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources>
+
+	<datasource jndi-name="java:jboss/datasources/PostgreSQLDS" pool-name="PostgreSQLDS">
+		<driver>ROOT.war_org.postgresql.Driver_42_2</driver>
+		<connection-url>jdbc:postgresql://localhost:5432/curation</connection-url>
+		<security>
+			<user-name>postgres</user-name>
+			<password>postgres</password>
+		</security>
+	</datasource>
+
+
+</datasources>
