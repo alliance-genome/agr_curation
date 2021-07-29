@@ -12,12 +12,16 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets", "termDefinitionUrls"})
+@ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets", "definitionUrls"})
 public class OntologyTerm extends BaseCurieEntity {
 
+	@Field
 	private String name;
+	@Field
 	private String type;
+	@Field
 	private Boolean obsolete;
+	@Field
 	private String namespace;
 	
 //	@ManyToOne
