@@ -16,28 +16,16 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"genomicLocations", "synonyms", "crossReferences", "secondaryIdentifiers"})
-public class Allele extends BiologicalEntity {
+@ToString(exclude = {"genomicLocations"})
+public class Allele extends GenomicEntity {
 
-	@Field
-	private String name;
 	@Field
 	private String symbol;
 	@Field
 	private String feature_type;
 
-
-	@ElementCollection
-	private List<String> secondaryIdentifiers;
-
-	@ManyToMany
-	private List<Synonym> synonyms;
-
 	@ManyToMany
 	private List<GeneGenomicLocation> genomicLocations;
-
-	@ManyToMany
-	private List<CrossReference> crossReferences;
 	
 }
 

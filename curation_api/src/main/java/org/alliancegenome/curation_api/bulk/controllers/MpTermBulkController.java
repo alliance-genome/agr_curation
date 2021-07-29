@@ -5,33 +5,33 @@ import javax.inject.Inject;
 import javax.ws.rs.core.UriInfo;
 
 import org.alliancegenome.curation_api.model.dto.xml.*;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.rest.interfaces.DoTermBulkInterface;
-import org.alliancegenome.curation_api.services.DoTermService;
+import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
+import org.alliancegenome.curation_api.rest.interfaces.MpTermBulkInterface;
+import org.alliancegenome.curation_api.services.MpTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DoTermBulkController implements DoTermBulkInterface {
+public class MpTermBulkController implements MpTermBulkInterface {
 	
-	@Inject DoTermService doTermService;
+	@Inject MpTermService mpTermService;
 	
-	public Boolean updateDoTerms(UriInfo uriInfo, RDF rdf) {
-
+	public Boolean updateMpTerms(UriInfo uriInfo, RDF rdf) {
+		System.out.println("RDF Recieved:");
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("DO Owl File Update", rdf.getClasses().length);
+		ph.startProcess("MP Owl File Update", rdf.getClasses().length);
 		int sum = 0;
 		for(RDFClass c: rdf.getClasses()) {
 			
 			if(c.getId() != null) {
-				DOTerm term = new DOTerm();
+				MPTerm term = new MPTerm();
 				term.setCurie(c.getId());
 				term.setName(c.getLabel());
 				term.setDefinition(c.getIAO_0000115());
-				doTermService.upsert(term);
+				mpTermService.upsert(term);
 				sum++;
 			}
 
@@ -39,10 +39,10 @@ public class DoTermBulkController implements DoTermBulkInterface {
 				
 				for(String term: c.getHasAlternativeId()) {
 
-					DOTerm doTerm = new DOTerm();
-					doTerm.setCurie(term);
-					//doTerm.setName(c.getLabel());
-					doTermService.upsert(doTerm);
+					MPTerm mpTerm = new MPTerm();
+					mpTerm.setCurie(term);
+					//mpTerm.setName(c.getLabel());
+					mpTermService.upsert(mpTerm);
 					sum++;
 				}
 			}

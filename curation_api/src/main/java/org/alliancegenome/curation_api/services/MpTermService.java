@@ -5,34 +5,34 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.dao.MpTermDAO;
+import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 
-public class DoTermService extends BaseService<DOTerm, DoTermDAO> {
+public class MpTermService extends BaseService<MPTerm, MpTermDAO> {
 
-	@Inject DoTermDAO doTermDAO;
+	@Inject MpTermDAO mpTermDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(doTermDAO);
+		setSQLDao(mpTermDAO);
 	}
 
 	@Transactional
-	public DOTerm upsert(DOTerm dto) {
+	public MPTerm upsert(MPTerm dto) {
 
-		DOTerm term = get(dto.getCurie());
+		MPTerm term = get(dto.getCurie());
 
 		if(term == null) {
-			term = new DOTerm();
+			term = new MPTerm();
 			term.setCurie(dto.getCurie());
 			term.setName(dto.getName());
 			term.setDefinition(dto.getDefinition());
-			doTermDAO.persist(term);
+			mpTermDAO.persist(term);
 		} else {
 			term.setName(dto.getName());
 			term.setDefinition(dto.getDefinition());
-			doTermDAO.merge(term);
+			mpTermDAO.merge(term);
 		}
 
 		return term;
