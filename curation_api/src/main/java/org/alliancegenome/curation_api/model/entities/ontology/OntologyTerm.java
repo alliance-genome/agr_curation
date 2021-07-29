@@ -1,50 +1,48 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
-import java.util.List;
-
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.model.entities.BaseEntity;
+import org.alliancegenome.curation_api.base.BaseCurieEntity;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.*;
 
 import lombok.*;
 
 @Audited
-@Indexed(index = "search_index")
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"secondaryIdentifiers", "subsets", "termDefinitionUrls"})
-public class OntologyTerm extends BaseEntity {
+@ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets", "termDefinitionUrls"})
+public class OntologyTerm extends BaseCurieEntity {
 
-	private String curie;
 	private String name;
-
-	@Field
-	@Column(columnDefinition="TEXT")
-	private String termDefinition;
-
 	private String type;
 	private Boolean obsolete;
 	private String namespace;
 	
+//	@ManyToOne
+//	private OntologyTerm parent;
+//	
+//	@OneToMany
+//	private List<OntologyTerm> children;
 	
-	@ElementCollection
-	private List<String> termDefinitionUrls;
+	@Field
+	@Column(columnDefinition="TEXT")
+	private String definition;
 	
-	@ElementCollection
-	private List<String> subsets;
-
-	@ElementCollection
-	private List<String> secondaryIdentifiers;
-
-	//@OneToMany(mappedBy = "genomicEntity")
-	//@JsonIgnore
-	//private List<Synonym> synonyms;
-	
-	//@OneToMany(mappedBy = "genomicEntity")
-	//@JsonIgnore
-	//private List<CrossReference> crossReferences;
+//	@ElementCollection
+//	private List<String> definitionUrls;
+//
+//	@ElementCollection
+//	private List<String> subsets;
+//
+//	@ElementCollection
+//	private List<String> secondaryIdentifiers;
+//
+//	@ManyToMany
+//	private List<Synonym> synonyms;
+//	
+//	@ManyToMany
+//	private List<CrossReference> crossReferences;
 
 }

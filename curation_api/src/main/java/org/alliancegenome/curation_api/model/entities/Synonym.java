@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -12,10 +13,9 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"genomicEntity"})
-public class Synonym extends BaseEntity {
+@ToString
+public class Synonym extends BaseGeneratedEntity {
 
-	@ManyToOne
-	@JsonIgnore
-	private GenomicEntity genomicEntity;
+	private String name;
+
 }

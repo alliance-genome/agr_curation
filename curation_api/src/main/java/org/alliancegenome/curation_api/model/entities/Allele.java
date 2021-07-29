@@ -17,47 +17,26 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"genomicLocations", "synonyms", "crossReferences", "secondaryIdentifiers"})
-public class Allele extends BaseEntity {
+public class Allele extends BiologicalEntity {
 
 	@Field
 	private String name;
 	@Field
 	private String symbol;
 	@Field
-	private String taxon;
-
-	@Field
 	private String feature_type;
-
-	@Field
-	private String curie;
-
-
-	//@Field
-	//@Column(columnDefinition="TEXT")
 
 
 	@ElementCollection
 	private List<String> secondaryIdentifiers;
-	
-	@Field
-	@Column(columnDefinition="TEXT")
-	private String automatedGeneDescription;
 
-	@OneToMany(mappedBy = "genomicEntity")
-	@JsonIgnore
+	@ManyToMany
 	private List<Synonym> synonyms;
-	
 
-	
-	@OneToMany(mappedBy = "gene")
-	@JsonIgnore
+	@ManyToMany
 	private List<GeneGenomicLocation> genomicLocations;
-	
-	
-	
-	@OneToMany(mappedBy = "genomicEntity")
-	@JsonIgnore
+
+	@ManyToMany
 	private List<CrossReference> crossReferences;
 	
 }

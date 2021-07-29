@@ -6,8 +6,6 @@ import javax.inject.Singleton;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
-import org.alliancegenome.curation_api.model.entities.BaseEntity;
-import org.hibernate.search.*;
 import org.hibernate.search.jpa.FullTextEntityManager;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -30,7 +28,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		return entity;
 	}
 
-	public E find(Long id) {
+	public E find(String id) {
 		log.debug("SqlDAO: find: " + id + " " + myClass);
 		if(id != null) {
 			E entity = entityManager.find(myClass, id);
@@ -58,7 +56,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		return entity;
 	}
 	
-	public E remove(Long id) {
+	public E remove(String id) {
 		log.debug("SqliteDAO: remove: " + id);
 		E entity = find(id);
 		entityManager.remove(entity);

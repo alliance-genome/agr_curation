@@ -11,7 +11,7 @@
 			<property name="hibernate.search.default.indexmanager" value="elasticsearch" />
  			<property name="hibernate.search.default.elasticsearch.host" value="http://localhost:9200" />
  			<property name="hibernate.search.default.elasticsearch.required_index_status" value="yellow" />
-
+ 
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.use_sql_comments" value="false" />

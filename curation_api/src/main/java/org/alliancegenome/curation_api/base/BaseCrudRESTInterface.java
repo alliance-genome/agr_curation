@@ -20,7 +20,7 @@ public interface BaseCrudRESTInterface<E> {
 	@GET //@Secured
 	@Path("/{id}")
 	@JsonView(View.FieldsOnly.class)
-	public E get(@PathParam("id") Long id);
+	public E get(@PathParam("id") String id);
 
 	@PUT //@Secured
 	@Path("/")
@@ -28,7 +28,7 @@ public interface BaseCrudRESTInterface<E> {
 
 	@DELETE //@Secured
 	@Path("/{id}")
-	public E delete(@PathParam("id") Long id);
+	public E delete(@PathParam("id") String id);
 
 	@GET //@Secured
 	@Path("/all")

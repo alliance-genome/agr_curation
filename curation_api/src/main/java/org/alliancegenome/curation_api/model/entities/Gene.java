@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.*;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
@@ -17,48 +17,32 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"genomicLocations", "synonyms", "crossReferences", "secondaryIdentifiers"})
-public class Gene extends BaseEntity {
+@ToString(exclude = {"genomicLocations"})
+public class Gene extends GenomicEntity {
 
 	@Field
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
+
 	@Field
+	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
-	private String name;
-	@Field
-	@JsonView({View.FieldsOnly.class})
-	private String type;
+	private String geneSynopsis;
+
 	@Field
 	@JsonView({View.FieldsOnly.class})
 	private String geneSynopsisURL;
-	@Field
-	@JsonView({View.FieldsOnly.class})
-	private String curie;
-	@Field
-	@JsonView({View.FieldsOnly.class})
-	private String taxon;
 
 	@Field
-	@Column(columnDefinition="TEXT")
-	private String geneSynopsis;
-
-	@ElementCollection
-	@JsonView({View.FieldsAndLists.class})
-	private List<String> secondaryIdentifiers;
+	@JsonView({View.FieldsOnly.class})
+	private String type;
 	
 	@Field
 	@Column(columnDefinition="TEXT")
+	@JsonView({View.FieldsOnly.class})
 	private String automatedGeneDescription;
 
-	@OneToMany(mappedBy = "genomicEntity")
-	@JsonView({View.FieldsAndLists.class})
-	private List<Synonym> synonyms;
-	
-	@OneToMany(mappedBy = "genomicEntity")
-	private List<CrossReference> crossReferences;
-	
-	@OneToMany(mappedBy = "gene")
+	@ManyToMany
 	private List<GeneGenomicLocation> genomicLocations;
 	
 }

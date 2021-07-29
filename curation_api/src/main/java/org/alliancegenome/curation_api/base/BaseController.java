@@ -4,8 +4,6 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 
-import org.alliancegenome.curation_api.model.entities.BaseEntity;
-
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -25,7 +23,7 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.create(entity);
 	}
 	
-	public E get(Long id) {
+	public E get(String id) {
 		return service.get(id);
 	}
 
@@ -33,7 +31,7 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.update(entity);
 	}
 
-	public E delete(Long id) {
+	public E delete(String id) {
 		return service.delete(id);
 	}
 

@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.model.dto.xml;
 
 import javax.xml.bind.annotation.*;
 
-import com.fasterxml.jackson.dataformat.xml.annotation.*;
-
 import lombok.*;
 
 @Data

@@ -1,13 +1,12 @@
-package org.alliancegenome.curation_api.model.entities;
+package org.alliancegenome.curation_api.base;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -15,9 +14,9 @@ import lombok.Data;
 
 @Data
 @MappedSuperclass
-public class BaseEntity implements Serializable {
+public class BaseGeneratedEntity extends BaseEntity {
 	
-	@Id
+	@Id @DocumentId
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@JsonView({View.FieldsOnly.class})
 	private Long id;

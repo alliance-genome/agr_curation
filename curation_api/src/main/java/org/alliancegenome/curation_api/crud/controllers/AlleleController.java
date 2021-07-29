@@ -20,7 +20,5 @@ public class AlleleController extends BaseController<AlleleService, Allele, Alle
 	protected void init() {
 		setService(alleleService);
 	}
-	
-
 
 }

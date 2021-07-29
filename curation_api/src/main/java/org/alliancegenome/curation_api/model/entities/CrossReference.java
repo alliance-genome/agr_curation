@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.base.BaseCurieEntity;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -14,15 +15,13 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"genomicEntity"})
-public class CrossReference extends InformationContentEntity {
+@ToString
+public class CrossReference extends BaseCurieEntity {
 
 	@ElementCollection
 	private List<String> pageAreas; 
+	
 	private String displayName;
 	private String prefix;
 	
-	@ManyToOne
-	@JsonIgnore
-	private GenomicEntity genomicEntity;
 }

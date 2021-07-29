@@ -13,12 +13,7 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 	}
 	
 	public Gene getByIdOrCurie(String id) {
-		try {
-			Long ident = Long.parseLong(id);
-			return find(ident);
-		} catch (NumberFormatException ex) {
-			return findByField("curie", id);
-		}
+		return find(id);
 	}
 
 }

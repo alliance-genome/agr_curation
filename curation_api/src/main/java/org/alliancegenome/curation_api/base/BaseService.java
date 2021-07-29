@@ -4,8 +4,6 @@ import java.util.*;
 
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.model.entities.*;
-
 public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>> {
 	
 	private BaseSQLDAO<E> dao;
@@ -21,7 +19,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
 		return dao.persist(entity);
 	}
 
-	public E get(Long id) {
+	public E get(String id) {
 		return dao.find(id);
 	}
 
@@ -31,7 +29,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
 	}
 
 	@Transactional
-	public E delete(Long id) {
+	public E delete(String id) {
 		return dao.remove(id);
 	}
 

@@ -1,10 +1,9 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
 
+import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.hibernate.envers.Audited;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.*;
 
@@ -12,18 +11,14 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"gene"})
-public class GeneGenomicLocation extends BaseEntity {
+@ToString
+public class GeneGenomicLocation extends BaseGeneratedEntity {
 	
-	private Subject subject;
-	private Predicate predicate;
+	//private Subject subject;
+	//private Predicate predicate;
 	//private AGRObject object;
 	private String assembly;
 	private Integer startPos;
 	private Integer endPos;
-	
-	@ManyToOne
-	@JsonIgnore
-	private Gene gene;
 	
 }
