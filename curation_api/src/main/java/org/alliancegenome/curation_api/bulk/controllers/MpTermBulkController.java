@@ -4,9 +4,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriInfo;
 
+import org.alliancegenome.curation_api.interfaces.bulk.MpTermBulkRESTInterface;
 import org.alliancegenome.curation_api.model.dto.xml.*;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
-import org.alliancegenome.curation_api.rest.interfaces.MpTermBulkInterface;
 import org.alliancegenome.curation_api.services.MpTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
@@ -14,7 +14,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MpTermBulkController implements MpTermBulkInterface {
+public class MpTermBulkController implements MpTermBulkRESTInterface {
 	
 	@Inject MpTermService mpTermService;
 	

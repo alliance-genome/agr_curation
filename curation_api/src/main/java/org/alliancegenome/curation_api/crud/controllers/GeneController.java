@@ -8,8 +8,8 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.interfaces.rest.GeneRESTInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.rest.interfaces.GeneRESTInterface;
 import org.alliancegenome.curation_api.services.GeneService;
 
 import lombok.extern.jbosslog.JBossLog;

@@ -6,8 +6,8 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.interfaces.rest.AlleleRESTInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.rest.interfaces.AlleleRESTInterface;
 import org.alliancegenome.curation_api.services.AlleleService;
 
 @RequestScoped

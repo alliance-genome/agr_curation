@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.rest.interfaces;
+package org.alliancegenome.curation_api.interfaces.rest;
 
 
 import javax.ws.rs.*;

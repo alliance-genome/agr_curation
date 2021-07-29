@@ -6,8 +6,8 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.DoTermDAO;
+import org.alliancegenome.curation_api.interfaces.rest.DoTermRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.rest.interfaces.DoTermRESTInterface;
 import org.alliancegenome.curation_api.services.DoTermService;
 
 @RequestScoped

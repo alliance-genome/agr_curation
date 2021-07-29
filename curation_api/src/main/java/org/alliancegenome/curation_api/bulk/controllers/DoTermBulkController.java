@@ -4,9 +4,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.UriInfo;
 
+import org.alliancegenome.curation_api.interfaces.bulk.DoTermBulkRESTInterface;
 import org.alliancegenome.curation_api.model.dto.xml.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.rest.interfaces.DoTermBulkInterface;
 import org.alliancegenome.curation_api.services.DoTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
@@ -14,7 +14,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DoTermBulkController implements DoTermBulkInterface {
+public class DoTermBulkController implements DoTermBulkRESTInterface {
 	
 	@Inject DoTermService doTermService;
 	

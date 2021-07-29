@@ -5,9 +5,9 @@ import java.util.*;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.interfaces.bulk.GeneBulkRESTInterface;
 import org.alliancegenome.curation_api.model.dto.json.*;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.rest.interfaces.GeneBulkRESTInterface;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
