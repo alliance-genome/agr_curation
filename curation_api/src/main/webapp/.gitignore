@@ -1,0 +1,7 @@
+*.json
+*.js
+assets
+favicon.ico
+static
+upload.php
+index.html
