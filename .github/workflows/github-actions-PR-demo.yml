@@ -14,5 +14,8 @@ jobs:
       - name: Run Maven test
         run: |
           mvn --no-transfer-progress test
+      - name: deliberate failure (testing github actions response)
+        run: |
+          false
       - name: Report ${{ job.status }} status
         run: echo "This job's status is ${{ job.status }}."
