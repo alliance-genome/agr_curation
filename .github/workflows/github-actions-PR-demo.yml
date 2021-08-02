@@ -13,6 +13,6 @@ jobs:
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
       - name: Run Maven test
         run: |
-          mvn test
+          mvn --no-transfer-progress test
       - name: Report ${{ job.status }} status
         run: echo "This job's status is ${{ job.status }}."
