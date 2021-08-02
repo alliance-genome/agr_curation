@@ -1,12 +1,12 @@
 name: GitHub Actions Demo
 on: pull_request
 jobs:
-  Explore-GitHub-Actions:
+  validate-build:
     runs-on: ubuntu-20.04
     steps:
-      - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-      - run: echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-      - run: echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
+      - run: echo "Job triggered by a ${{ github.event_name }} event."
+      - run: echo "Running on a ${{ runner.os }} Github server."
+      - run: echo "Branch-ref-name is ${{ github.ref }}, repository is ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
@@ -14,4 +14,5 @@ jobs:
       - name: Run Maven test
         run: |
           mvn test
-      - run: echo "🍏 This job's status is ${{ job.status }}."
+      - name: Report ${{ job.status }} status
+        run: echo "This job's status is ${{ job.status }}."
