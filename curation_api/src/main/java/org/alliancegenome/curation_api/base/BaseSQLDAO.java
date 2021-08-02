@@ -63,18 +63,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		return entity;
 	}
 
-	public E findByField(String field, String value) {
-		log.debug("SqlDAO: findByField: " + field + " " + value);
-		HashMap<String, Object> params = new HashMap<>();
-		params.put(field, value);
-		List<E> list = search(params);
-		log.debug("Result List: " + list);
-		if(list.size() > 0) {
-			return list.get(0);
-		} else {
-			return null;
-		}
-	}
+
 	
 	public void reindex() {
 		try {
@@ -88,11 +77,30 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		}
 	}
 	
-	public List<E> search(Map<String, Object> params) {
-		return search(params, null);
+	
+	public int searchByField(String field, String value) {
+		Search.session(entityManager);
 	}
 	
-	public List<E> search(Map<String, Object> params, String orderByField) {
+	
+	public E findByField(String field, String value) {
+		log.debug("SqlDAO: findByField: " + field + " " + value);
+		HashMap<String, Object> params = new HashMap<>();
+		params.put(field, value);
+		List<E> list = findByParams(params);
+		log.debug("Result List: " + list);
+		if(list.size() > 0) {
+			return list.get(0);
+		} else {
+			return null;
+		}
+	}
+	
+	public List<E> findByParams(Map<String, Object> params) {
+		return findByParams(params, null);
+	}
+	
+	public List<E> findByParams(Map<String, Object> params, String orderByField) {
 		if(orderByField != null) {
 			log.debug("Search By Params: " + params + " Order by: " + orderByField);
 		}

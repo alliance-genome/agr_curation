@@ -3,7 +3,7 @@ import {FMSService} from '../service/FMSService';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 
-export class Dashboard2 extends Component {
+export class FMSTable extends Component {
 
     constructor() {
         super();

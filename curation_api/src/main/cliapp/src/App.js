@@ -5,7 +5,8 @@ import {AppFooter} from './AppFooter';
 import {AppMenu} from './AppMenu';
 import {AppProfile} from './AppProfile';
 import {Route} from 'react-router-dom';
-import {Dashboard2} from './components/Dashboard2';
+import {FMSTable} from './components/FMSTable';
+import {GeneTable} from './components/GeneTable';
 import {FormsDemo} from './components/FormsDemo';
 import {SampleDemo} from './components/SampleDemo';
 import {DataDemo} from './components/DataDemo';
@@ -97,7 +98,9 @@ class App extends Component {
 
     createMenu() {
         this.menu = [
-            {label: 'Dashboard', icon: 'pi pi-fw pi-home', command: () => {window.location = '#/'}},
+            {label: 'FMS Info', icon: 'pi pi-fw pi-home', command: () => {window.location = '#/'}},
+            {label: 'Genes', icon: 'pi pi-fw pi-home', command: () => {window.location = '#/genes'}},
+            {label: 'Diseases', icon: 'pi pi-fw pi-home', command: () => {window.location = '#/diseases'}},
             {
                 label: 'Menu Modes', icon: 'pi pi-fw pi-cog',
                 items: [
@@ -236,7 +239,9 @@ class App extends Component {
                 </div>
 
                 <div className="layout-main">
-                    <Route path="/" exact component={Dashboard2} />
+                    <Route path="/" exact component={FMSTable} />
+                    <Route path="/genes" exact component={GeneTable} />
+                    <Route path="/diseases" exact component={FMSTable} />
                     <Route path="/forms" component={FormsDemo} />
                     <Route path="/sample" component={SampleDemo} />
                     <Route path="/data" component={DataDemo} />
