@@ -1,0 +1,46 @@
+{
+    "name": "sigma-react",
+    "version": "6.0.0-SNAPSHOT",
+    "homepage": ".",
+    "private": false,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/primefaces/sigma-react.git"
+    },
+    "license": "MIT",
+    "dependencies": {
+        "@fullcalendar/core": "4.0.2",
+        "@fullcalendar/daygrid": "4.0.1",
+        "@fullcalendar/interaction": "4.0.2",
+        "@fullcalendar/timegrid": "4.0.1",
+        "axios": "^0.19.0",
+        "prismjs": "1.9.0",
+        "chart.js": "2.7.3",
+        "classnames": "^2.2.6",
+        "node-sass": "^4.12.0",
+        "primeflex": "2.0.0",
+        "primeicons": "4.1.0",
+        "primereact": "6.1.0",
+        "react": "^17.0.1",
+        "react-app-polyfill": "^2.0.0",
+        "react-dom": "^17.0.1",
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "4.0.0",
+        "react-transition-group": "^4.4.1"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject"
+    },
+    "eslintConfig": {
+        "extends": "react-app"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
+}
