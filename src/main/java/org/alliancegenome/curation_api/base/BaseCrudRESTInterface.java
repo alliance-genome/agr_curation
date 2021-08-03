@@ -6,6 +6,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -38,7 +39,7 @@ public interface BaseCrudRESTInterface<E> {
 	@POST //@Secured
 	@Path("/find")
 	@JsonView(View.FieldsOnly.class)
-	public List<E> find(@PathParam("params") Map<String, Object> params);
+	public List<E> find(@RequestBody HashMap<String, Object> params);
 	
 //	@POST //@Secured
 //	@Path("/search")

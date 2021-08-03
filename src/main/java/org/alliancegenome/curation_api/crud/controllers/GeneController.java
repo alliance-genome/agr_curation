@@ -12,9 +12,6 @@ import org.alliancegenome.curation_api.interfaces.rest.GeneRESTInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.services.GeneService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class GeneController extends BaseController<GeneService, Gene, GeneDAO> implements GeneRESTInterface {
 

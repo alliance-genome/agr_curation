@@ -13,7 +13,6 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 	private BaseService<E, D> service;
 
 	protected void setService(S service) {
-		log.debug("Does this get called? " + service);
 		this.service = service;
 	}
 	
@@ -39,7 +38,7 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.getAll();
 	}
 
-	public List<E> find(Map<String, Object> params) {
+	public List<E> find(HashMap<String, Object> params) {
 		return service.findByParams(params);
 	}
 

@@ -4,6 +4,9 @@ import java.util.*;
 
 import javax.transaction.Transactional;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>> {
 	
 	private BaseSQLDAO<E> dao;

@@ -19,6 +19,6 @@ public interface GeneRESTInterface extends BaseCrudRESTInterface<Gene> {
 
 	@GET //@Secured
 	@Path("/by/{curie}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.FieldsOnly.class)
 	public Gene getByCurie(@PathParam("curie") String curie);
 }

@@ -14,16 +14,20 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
 
 	public RestDefaultObjectMapper() {
 		
-		mapper = JsonMapper.builder() // or different mapper for other format
-				   //.addModule(new ParameterNamesModule())
-				   //.addModule(new Jdk8Module())
-				   .addModule(new JavaTimeModule())
-				   // and possibly other configuration, modules, then:
-				   .build();
+		mapper = new ObjectMapper();
+		
+		mapper.registerModule(new JavaTimeModule());
+		
+		   //.addModule(new ParameterNamesModule())
+		   //.addModule(new Jdk8Module())
+		   // and possibly other configuration, modules, then:
+		   //.build();
 
-		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, true);
+		//mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
 		mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
 
 		//if (!ConfigHelper.isProduction())
 		//	mapper.enable(SerializationFeature.INDENT_OUTPUT);

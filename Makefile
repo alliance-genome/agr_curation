@@ -5,7 +5,7 @@ FLAGS = -DskipTests=true
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
-all:
+all: cliapp
 	mvn ${OPTS}
 
 %:
@@ -13,6 +13,16 @@ all:
 
 run:
 	java -jar target/agr_curation_api-bootable.jar
+
+
+ui: cliapp
+
+ui-run:
+	npm start 
+
+cliapp:
+	make -B -C src/main/cliapp
+	make -B -C src/main/cliapp build
 
 run-dev:
 	java -jar target/agr_curation_api-bootable.jar  -DES_INDEX=site_index_dev
