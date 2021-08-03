@@ -1,11 +1,12 @@
 package org.alliancegenome.curation_api.base;
 
-import java.util.List;
+import java.util.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.search.engine.search.query.SearchResult;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -34,6 +35,16 @@ public interface BaseCrudRESTInterface<E> {
 	@Path("/all")
 	@JsonView(View.FieldsOnly.class)
 	public List<E> getAll();
+	
+	@POST //@Secured
+	@Path("/find")
+	@JsonView(View.FieldsOnly.class)
+	public List<E> find(@PathParam("params") Map<String, Object> params);
+	
+	@POST //@Secured
+	@Path("/search")
+	@JsonView(View.FieldsOnly.class)
+	public SearchResult<E> search(@PathParam("params") Map<String, Object> params);
 	
 	@GET
 	@Path("/reindex")

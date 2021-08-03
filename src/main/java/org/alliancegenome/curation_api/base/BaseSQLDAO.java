@@ -6,7 +6,14 @@ import javax.inject.Singleton;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
-import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.engine.search.predicate.dsl.MatchPredicateFieldStep;
+import org.hibernate.search.engine.search.query.SearchResult;
+import org.hibernate.search.engine.search.query.dsl.SearchQuerySelectStep;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.common.EntityReference;
+import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
+import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -16,9 +23,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
 	@PersistenceContext(name = "primary")
 	private EntityManager entityManager;
+	
+	private SearchSession searchSession = null;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
+		searchSession = Search.session(entityManager);
 		log.debug("Entitymanager: " + entityManager);
 	}
 	
@@ -68,8 +78,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 	public void reindex() {
 		try {
 			log.debug("Starting Index for: " + myClass);
-			FullTextEntityManager ftem = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
-			ftem.createIndexer(myClass).startAndWait();
+			//org.hibernate.search.jpa.FullTextEntityManager ftem = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
+			//ftem.createIndexer(myClass).startAndWait();
+
+			MassIndexer indexer = searchSession.massIndexer(myClass).threadsToLoadObjects(10);
+			indexer.startAndWait();
+			
 			log.debug("Indexing finished: ");
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -78,19 +92,27 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 	}
 	
 	
-	public int searchByField(String field, String value) {
-		Search.session(entityManager);
+	public SearchResult<E> searchByField(String field, String value) {
+		return searchSession.search(myClass).where(f -> f.match().field(field).matching(value)).fetch(1000);
 	}
 	
+	public SearchResult<E> searchByParams(Map<String, Object> params) {
+		return searchByParams(params, null);
+	}
 	
-	public E findByField(String field, String value) {
+	public SearchResult<E> searchByParams(Map<String, Object> params, String orderByField) {
+		
+		return null;
+	}
+	
+	public List<E> findByField(String field, String value) {
 		log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
 		params.put(field, value);
 		List<E> list = findByParams(params);
 		log.debug("Result List: " + list);
 		if(list.size() > 0) {
-			return list.get(0);
+			return list;
 		} else {
 			return null;
 		}

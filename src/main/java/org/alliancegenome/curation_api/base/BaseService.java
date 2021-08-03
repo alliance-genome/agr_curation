@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.transaction.Transactional;
 
+import org.hibernate.search.engine.search.query.SearchResult;
+
 public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>> {
 	
 	private BaseSQLDAO<E> dao;
@@ -37,8 +39,12 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
 		return dao.findAll();
 	}
 	
-	public List<E> search(Map<String, Object> params) {
-		return dao.search(params);
+	public List<E> findByParams(Map<String, Object> params) {
+		return dao.findByParams(params);
+	}
+	
+	public SearchResult<E> searchByParams(Map<String, Object> params) {
+		return dao.searchByParams(params);
 	}
 
 	public void reindex() {

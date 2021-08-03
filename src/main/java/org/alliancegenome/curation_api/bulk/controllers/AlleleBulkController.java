@@ -13,27 +13,11 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
 
-
-//@JMSDestinationDefinitions(
-//	    value = {
-//	        @JMSDestinationDefinition(
-//	            name = "java:jboss/exported/jms/queue/bgiprocessing",
-//	            interfaceName = "javax.jms.Queue",
-//	            destinationName = "bgiprocessing"
-//	        )
-//	    }
-//	)
-
-
-
 @JBossLog
 @RequestScoped
-public class GeneBulkController implements GeneBulkRESTInterface {
+public class AlleleBulkController implements GeneBulkRESTInterface {
 
 	@Inject GeneService geneSerice;
-	
-//	@Resource(lookup = "java:jboss/exported/jms/queue/bgiprocessing")
-//    private Queue queue;
 	
 	@Override
 	public String updateBGI(GeneMetaDataDTO geneData) {
@@ -43,7 +27,7 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 		ph.startProcess("BGI Gene Update", geneData.getData().size());
 		for(GeneDTO gene: geneData.getData()) {
 			params.put("curie", gene.getBasicGeneticEntity().getPrimaryId());
-			List<Gene> genes = geneSerice.search(params);
+			List<Gene> genes = geneSerice.findByParams(params);
 			if(genes == null || genes.size() == 0) {
 				Gene g = new Gene();
 				g.setGeneSynopsis(gene.getGeneSynopsis());
