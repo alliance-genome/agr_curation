@@ -44,48 +44,44 @@
 			<artifactId>javaee-api</artifactId>
 			<version>7.0</version>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
+
 
 		<dependency>
 			<groupId>org.jboss.logging</groupId>
 			<artifactId>jboss-logging</artifactId>
 		</dependency>
 
-      <dependency>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-         <version>4.11</version>
-         <scope>test</scope>
-      </dependency>
-      <dependency>
-         <groupId>org.projectlombok</groupId>
-         <artifactId>lombok</artifactId>
-         <version>1.18.10</version>
-      </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.11</version>
+			<scope>test</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.10</version>
+		</dependency>
 
-      <!-- importing the jakartaee8-with-tools BOM adds specs and other useful 
-         artifacts as managed dependencies -->
-      <dependency>
-         <groupId>org.wildfly.bom</groupId>
-         <artifactId>wildfly-jakartaee8</artifactId>
-         <version>24.0.0.SP1</version>
-         <type>pom</type>
-         <scope>import</scope>
-      </dependency>
+		<!-- importing the jakartaee8-with-tools BOM adds specs and other useful 
+			artifacts as managed dependencies -->
+		<dependency>
+			<groupId>org.wildfly.bom</groupId>
+			<artifactId>wildfly-jakartaee8</artifactId>
+			<version>24.0.0.SP1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
 
-      <!-- importing the microprofile BOM adds MicroProfile specs -->
-      <dependency>
-         <groupId>org.wildfly.bom</groupId>
-         <artifactId>wildfly-microprofile</artifactId>
-         <version>24.0.0.SP1</version>
-         <type>pom</type>
-         <scope>import</scope>
-      </dependency>
+		<!-- importing the microprofile BOM adds MicroProfile specs -->
+		<dependency>
+			<groupId>org.wildfly.bom</groupId>
+			<artifactId>wildfly-microprofile</artifactId>
+			<version>24.0.0.SP1</version>
+			<type>pom</type>
+			<scope>import</scope>
+		</dependency>
 
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
@@ -143,17 +139,14 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>5.5.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-envers</artifactId>
-			<version>5.5.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search-orm</artifactId>
-			<version>5.11.9.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.hibernate.search</groupId>
