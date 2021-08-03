@@ -3,10 +3,6 @@ package org.alliancegenome.curation_api.base;
 import java.util.*;
 
 import javax.enterprise.context.RequestScoped;
-import javax.ws.rs.PathParam;
-
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.hibernate.search.engine.search.query.SearchResult;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -47,9 +43,9 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.findByParams(params);
 	}
 
-	public SearchResult<E> search(Map<String, Object> params) {
-		return service.searchByParams(params);
-	}
+//	public SearchResult<E> search(Map<String, Object> params) {
+//		return service.searchByParams(params);
+//	}
 	
 	public void reindex() {
 		service.reindex();
