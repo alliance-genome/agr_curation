@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.model.dto.Pagination;
+
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -36,8 +38,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
 		return dao.remove(id);
 	}
 
-	public List<E> getAll() {
-		return dao.findAll();
+	public List<E> getAll(Pagination pagination) {
+		return dao.findAll(pagination);
 	}
 	
 	public List<E> findByParams(Map<String, Object> params) {

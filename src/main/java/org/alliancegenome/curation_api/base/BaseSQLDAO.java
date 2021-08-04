@@ -6,6 +6,8 @@ import javax.inject.Singleton;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
+import org.alliancegenome.curation_api.model.dto.Pagination;
+
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -41,13 +43,18 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		}
 	}
 
-	public List<E> findAll() {
+	public List<E> findAll(Pagination pagination) {
 		log.debug("SqlDAO: findAll: " + myClass);
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> cq = cb.createQuery(myClass);
 		Root<E> rootEntry = cq.from(myClass);
 		CriteriaQuery<E> all = cq.select(rootEntry);
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
+		if(pagination != null) {
+			int start = (pagination.getPage() - 1) * pagination.getLimit();
+			allQuery.setFirstResult(start);
+			allQuery.setMaxResults(pagination.getLimit());
+		}
 		return allQuery.getResultList();
 	}
 

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.model.dto.Pagination;
 import org.alliancegenome.curation_api.model.entities.Allele;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -25,8 +26,8 @@ public class AlleleService extends BaseService<Allele, AlleleDAO> {
 		setSQLDao(alleleDAO);
 	}
 	
-	public List<Allele> getAllAlleles() {
-		return getAll();
+	public List<Allele> getAllAlleles(Pagination pagination) {
+		return getAll(pagination);
 	}
 
 

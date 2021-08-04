@@ -5,6 +5,7 @@ import java.util.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.model.dto.Pagination;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -34,7 +35,7 @@ public interface BaseCrudRESTInterface<E> {
 	@GET //@Secured
 	@Path("/all")
 	@JsonView(View.FieldsOnly.class)
-	public List<E> getAll();
+	public List<E> getAll(Pagination pagination);
 	
 	@POST //@Secured
 	@Path("/find")
