@@ -7,7 +7,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.model.dto.Pagination;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -26,7 +26,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
 		setSQLDao(geneDAO);
 	}
 	
-	public List<Gene> getAllGenes(Pagination pagination) {
+	public SearchResults<Gene> getAllGenes(Pagination pagination) {
 		return getAll(pagination);
 	}
 

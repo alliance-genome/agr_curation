@@ -38,7 +38,7 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
 		return dao.remove(id);
 	}
 
-	public List<E> getAll(Pagination pagination) {
+	public SearchResults<E> getAll(Pagination pagination) {
 		return dao.findAll(pagination);
 	}
 	

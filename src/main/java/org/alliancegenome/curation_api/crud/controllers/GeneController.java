@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -9,7 +7,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.interfaces.rest.GeneRESTInterface;
-import org.alliancegenome.curation_api.model.dto.Pagination;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.services.GeneService;
 
@@ -22,10 +19,6 @@ public class GeneController extends BaseController<GeneService, Gene, GeneDAO> i
 	@PostConstruct
 	protected void init() {
 		setService(geneService);
-	}
-
-	public List<Gene> getAllGenes(Pagination pagination) {
-		return getAll(pagination);
 	}
 
 	@Override

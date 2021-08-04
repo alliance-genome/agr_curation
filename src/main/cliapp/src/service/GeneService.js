@@ -2,8 +2,9 @@ import axios from 'axios';
 
 export class GeneService {
 
-    getProductsSmall() {
-        return axios.get('assets/demo/data/products-small.json').then(res => res.data.data);
+    getGenes(limit, page) {
+        //console.log("Limit: " + limit + " Page: " + page);
+        return axios.get('http://localhost:8080/api/gene/all?limit=' + limit + '&page=' + page).then(res => res.data);
     }
 
     getProducts() {

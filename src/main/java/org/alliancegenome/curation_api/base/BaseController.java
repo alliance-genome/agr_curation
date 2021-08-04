@@ -36,7 +36,10 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.delete(id);
 	}
 
-	public List<E> getAll(Pagination pagination) {
+	public SearchResults<E> getAll(Integer page, Integer limit) {
+		Pagination pagination = new Pagination();
+		pagination.setLimit(limit);
+		pagination.setPage(page);
 		return service.getAll(pagination);
 	}
 
