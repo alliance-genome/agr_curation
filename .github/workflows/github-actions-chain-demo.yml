@@ -1,8 +1,8 @@
 name: GitHub Actions Workflow chain Demo
 on:
   workflow_run:
-    workflows: "GitHub Actions PR validation Demo"
-    types: completed
+    workflows: ["GitHub Actions PR validation Demo"]
+    types: [completed]
 jobs:
   build-container:
     runs-on: ubuntu-20.04
