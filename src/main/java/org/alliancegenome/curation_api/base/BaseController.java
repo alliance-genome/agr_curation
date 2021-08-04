@@ -4,6 +4,8 @@ import java.util.*;
 
 import javax.enterprise.context.RequestScoped;
 
+import org.alliancegenome.curation_api.model.dto.Pagination;
+
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -34,8 +36,8 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.delete(id);
 	}
 
-	public List<E> getAll() {
-		return service.getAll();
+	public List<E> getAll(Pagination pagination) {
+		return service.getAll(pagination);
 	}
 
 	public List<E> find(HashMap<String, Object> params) {
