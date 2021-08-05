@@ -10,6 +10,7 @@ import { AppProfile } from './AppProfile';
 import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
+import { GenesComponent } from './components/GenesComponent';
 import { ButtonDemo } from './components/ButtonDemo';
 import { ChartDemo } from './components/ChartDemo';
 import { Documentation } from './components/Documentation';
@@ -120,6 +121,7 @@ const App = () => {
 
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
+        { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [
@@ -263,6 +265,7 @@ const App = () => {
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
+                <Route path="/genes" component={GenesComponent} />
                 <Route path="/formlayout" component={FormLayoutDemo} />
                 <Route path="/input" component={InputDemo} />
                 <Route path="/floatlabel" component={FloatLabelDemo} />

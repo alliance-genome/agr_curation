@@ -1,14 +1,12 @@
 package org.alliancegenome.curation_api.base;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import javax.persistence.*;
-import javax.persistence.Index;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.*;
+import org.hibernate.search.annotations.Field;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -16,7 +14,7 @@ import lombok.Data;
 
 @Data
 @MappedSuperclass
-public class BaseCurieEntity extends BaseEntity implements Serializable {
+public class BaseCurieEntity extends BaseEntity {
 
 	@Id
 	@JsonView({View.FieldsOnly.class})

@@ -34,7 +34,10 @@ public interface BaseCrudRESTInterface<E> {
 	@GET //@Secured
 	@Path("/all")
 	@JsonView(View.FieldsOnly.class)
-	public List<E> getAll();
+	public SearchResults<E> getAll(
+		@QueryParam("page") Integer page,
+		@QueryParam("limit") Integer limit
+	);
 	
 	@POST //@Secured
 	@Path("/find")

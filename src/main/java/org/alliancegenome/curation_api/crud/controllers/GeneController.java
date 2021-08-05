@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -21,10 +19,6 @@ public class GeneController extends BaseController<GeneService, Gene, GeneDAO> i
 	@PostConstruct
 	protected void init() {
 		setService(geneService);
-	}
-
-	public List<Gene> getAllGenes() {
-		return getAll();
 	}
 
 	@Override

@@ -6,6 +6,8 @@ import javax.inject.Singleton;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
+import org.alliancegenome.curation_api.model.dto.Pagination;
+
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -41,14 +43,28 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		}
 	}
 
-	public List<E> findAll() {
+	public SearchResults<E> findAll(Pagination pagination) {
 		log.debug("SqlDAO: findAll: " + myClass);
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<E> cq = cb.createQuery(myClass);
-		Root<E> rootEntry = cq.from(myClass);
-		CriteriaQuery<E> all = cq.select(rootEntry);
+		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
+		Root<E> rootEntry = findQuery.from(myClass);
+		CriteriaQuery<E> all = findQuery.select(rootEntry);
+		
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		countQuery.select(cb.count(countQuery.from(myClass)));
+		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+		
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
-		return allQuery.getResultList();
+		if(pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
+			int first = pagination.getPage() * pagination.getLimit();
+			if(first < 0) first = 0;
+			allQuery.setFirstResult(first);
+			allQuery.setMaxResults(pagination.getLimit());
+		}
+		SearchResults<E> results = new SearchResults<E>();
+		results.setResults(allQuery.getResultList());
+		results.setTotalResults(totalResults);
+		return results;
 	}
 
 	public E merge(E entity) {

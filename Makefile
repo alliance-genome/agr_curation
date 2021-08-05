@@ -12,8 +12,7 @@ all: cliapp
 	mvn $(OPTS) -pl $@ -am
 
 run:
-	java -jar target/agr_curation_api-bootable.jar
-
+	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
 ui: cliapp
 
