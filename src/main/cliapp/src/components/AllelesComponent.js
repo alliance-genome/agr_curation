@@ -2,29 +2,33 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { GeneService } from '../service/GeneService';
+import { AlleleService } from '../service/AlleleService';
 
-export const GenesComponent = () => {
+export const AllelesComponent = () => {
 
-    const [genes, setGenes] = useState(null);
+    const [alleles, setAlleles] = useState(null);
     const [page, setPage] = useState(0);
     const [first, setFirst] = useState(0);
     const [rows, setRows] = useState(50);
     const [totalRecords, setTotalRecords] = useState(0);
 
     useEffect(() => {
-        const geneService = new GeneService();
-        geneService.getGenes(rows, page).then(searchReults => {
-            setGenes(searchReults.results);
+
+        const alleleService = new AlleleService();
+        console.log("AllelesComponent: useEffect");
+        alleleService.getAlleles(rows, page).then(searchReults => {
+            setAlleles(searchReults.results);
             setTotalRecords(searchReults.totalResults);
         });
 
     }, []);
 
     const onLazyLoad = (event) => {
-        const geneService = new GeneService();
-        geneService.getGenes(event.rows, event.page).then(searchReults => {
-            setGenes(searchReults.results);
+
+        const alleleService = new AlleleService();
+        console.log("AllelesComponent: onLazyLoad");
+        alleleService.getAlleles(event.rows, event.page).then(searchReults => {
+            setAlleles(searchReults.results);
             setTotalRecords(searchReults.totalResults);
         });
        
@@ -39,14 +43,14 @@ export const GenesComponent = () => {
     return (
             <div>
                 <div className="card">
-                    <DataTable value={genes} className="p-datatable-sm"
+                    <DataTable value={alleles} className="p-datatable-sm"
                         paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
                         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
                         paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}
                     >
                         <Column field="curie" header="Curie"></Column>
-                        <Column field="name" header="Name"></Column>
+                        <Column field="description" header="Description"></Column>
                         <Column field="symbol" header="Symbol"></Column>
                         <Column field="taxon" header="Taxon"></Column>
                     </DataTable>

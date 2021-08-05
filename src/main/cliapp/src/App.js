@@ -10,8 +10,12 @@ import { AppProfile } from './AppProfile';
 import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
+
 import { GenesComponent } from './components/GenesComponent';
 import { DiseasesComponent } from './components/DiseasesComponent';
+import { AllelesComponent } from './components/AllelesComponent';
+
+
 import { ButtonDemo } from './components/ButtonDemo';
 import { ChartDemo } from './components/ChartDemo';
 import { Documentation } from './components/Documentation';
@@ -123,6 +127,7 @@ const App = () => {
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
         { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
+        { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
         { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
@@ -268,6 +273,7 @@ const App = () => {
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
                 <Route path="/genes" component={GenesComponent} />
+                <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/diseases" component={DiseasesComponent} />
                 <Route path="/formlayout" component={FormLayoutDemo} />
                 <Route path="/input" component={InputDemo} />

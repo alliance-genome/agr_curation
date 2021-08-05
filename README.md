@@ -138,7 +138,7 @@ Given that the UI has at this point been bundled into the API you can find the w
 Assuming the API is running on localhost, check the Swagger interface for the correct endpoint to post data to. Here is an example of loading the Gene BGI file from the Alliance.
 
 ```bash
-> curl -vX POST http://localhost:8080/api/gene/bulk/bgi -d @1.0.1.4_BGI_ZFIN_4.json --header "Content-Type: application/json"
+> curl -vX POST http://localhost:8080/api/gene/bulk/bgifile -d @1.0.1.4_BGI_ZFIN_4.json --header "Content-Type: application/json"
 ```
 
 Here is an example of loading Do ontology:

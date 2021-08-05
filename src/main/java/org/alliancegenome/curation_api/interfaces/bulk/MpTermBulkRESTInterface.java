@@ -8,7 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/mpterm/bulk")
-@Tag(name = "MP Ontology")
+@Tag(name = "Ontology - MP")
 @Produces(MediaType.APPLICATION_JSON)
 public interface MpTermBulkRESTInterface {
 	

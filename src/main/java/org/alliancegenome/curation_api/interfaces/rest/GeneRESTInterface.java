@@ -17,8 +17,4 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneRESTInterface extends BaseCrudRESTInterface<Gene> {
 
-	@GET //@Secured
-	@Path("/by/{curie}")
-	@JsonView(View.FieldsOnly.class)
-	public Gene getByCurie(@PathParam("curie") String curie);
 }
