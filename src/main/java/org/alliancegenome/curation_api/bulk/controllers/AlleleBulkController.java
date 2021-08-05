@@ -5,50 +5,43 @@ import java.util.*;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.interfaces.bulk.GeneBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.AlleleBulkRESTInterface;
 import org.alliancegenome.curation_api.model.dto.json.*;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleBulkController implements GeneBulkRESTInterface {
+public class AlleleBulkController implements AlleleBulkRESTInterface {
 
-	@Inject GeneService geneSerice;
+	@Inject AlleleService alleleSerice;
 	
 	@Override
-	public String updateBGI(GeneMetaDataDTO geneData) {
+	public String updateAlleles(AlleleMetaDataDTO alleleData) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("BGI Gene Update", geneData.getData().size());
-		for(GeneDTO gene: geneData.getData()) {
-			params.put("curie", gene.getBasicGeneticEntity().getPrimaryId());
-			List<Gene> genes = geneSerice.findByParams(params);
-			if(genes == null || genes.size() == 0) {
-				Gene g = new Gene();
-				g.setGeneSynopsis(gene.getGeneSynopsis());
-				g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
-				g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-				g.setSymbol(gene.getSymbol());
-				g.setName(gene.getName());
-				g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-				g.setType(gene.getSoTermId());
-				geneSerice.create(g);
+		ph.startProcess("BGI Gene Update", alleleData.getData().size());
+		for(AlleleDTO allele: alleleData.getData()) {
+			params.put("curie", allele.getPrimaryId());
+			List<Allele> alleles = alleleSerice.findByParams(params);
+			if(alleles == null || alleles.size() == 0) {
+				Allele a = new Allele();
+				a.setCurie(allele.getPrimaryId());
+				a.setSymbol(allele.getSymbol());
+				a.setDescription(allele.getDescription());
+				a.setTaxon(allele.getTaxonId());
+				alleleSerice.create(a);
 			} else {
-				Gene g = genes.get(0);
-				if(g.getCurie().equals(gene.getBasicGeneticEntity().getPrimaryId())) {
-					g.setGeneSynopsis(gene.getGeneSynopsis());
-					g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
-					g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-					g.setSymbol(gene.getSymbol());
-					g.setName(gene.getName());
-					g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-					g.setType(gene.getSoTermId());
-					geneSerice.update(g);
+				Allele a = alleles.get(0);
+				if(a.getCurie().equals(allele.getPrimaryId())) {
+					a.setSymbol(allele.getSymbol());
+					a.setName(allele.getDescription());
+					a.setTaxon(allele.getTaxonId());
+					alleleSerice.update(a);
 				}
 			}
 			
@@ -58,5 +51,6 @@ public class AlleleBulkController implements GeneBulkRESTInterface {
 		return "OK";
 
 	}
+
 
 }

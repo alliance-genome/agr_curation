@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/mpterm")
-@Tag(name = "MP Terms")
+@Tag(name = "Ontology - MP")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface MpTermRESTInterface extends BaseCrudRESTInterface<MPTerm> {
