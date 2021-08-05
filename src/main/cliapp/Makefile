@@ -1,7 +1,7 @@
 all:
 	npm install
 
-start:
+run:
 	npm start
 
 build:

@@ -5,35 +5,34 @@ FLAGS = -DskipTests=true
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
-all: cliapp
+all: ui api
+
+api:
 	mvn ${OPTS}
 
-%:
-	mvn $(OPTS) -pl $@ -am
+ui:
+	make -B -C src/main/cliapp
+	make -B -C src/main/cliapp build
+
+uirun:
+	make -B -C src/main/cliapp run
 
 run:
 	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
-ui: cliapp
+apirun:
+	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
-ui-run:
-	npm start 
 
-cliapp:
-	make -B -C src/main/cliapp
-	make -B -C src/main/cliapp build
-
-run-dev:
-	java -jar target/agr_curation_api-bootable.jar  -DES_INDEX=site_index_dev
 
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
-
-docker-run-command:
-	java -jar target/agr_curation_api-bootable.jar
 
 test:
 	mvn test
 
 verify:
 	mvn verify
+
+%:
+	mvn $(OPTS) -pl $@ -am
