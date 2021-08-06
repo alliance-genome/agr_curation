@@ -1,6 +1,6 @@
 /subsystem=logging/root-logger=ROOT:write-attribute(name=level,value=INFO)
 /subsystem=logging/console-handler=CONSOLE:write-attribute(name=level,value=ALL)
-/subsystem=logging/logger=org.alliancegenome:add(level=DEBUG)
+/subsystem=logging/logger=org.alliancegenome:add(level=INFO)
 
 /subsystem=transactions:write-attribute(name=default-timeout,value=600)
 

@@ -20,19 +20,14 @@ export const DiseasesComponent = () => {
             setTotalRecords(searchReults.totalResults);
         });
 
-    }, []);
+    }, [rows, page]);
 
     const onLazyLoad = (event) => {
-        const diseaseService = new DiseaseService();
-        diseaseService.getDiseases(event.rows, event.page).then(searchReults => {
-            setDiseases(searchReults.results);
-            setTotalRecords(searchReults.totalResults);
-        });
-       
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
     }
+
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" />;
     const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text" />;
