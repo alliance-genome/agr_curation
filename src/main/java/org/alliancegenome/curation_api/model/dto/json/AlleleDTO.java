@@ -15,6 +15,7 @@ public class AlleleDTO extends BaseDTO {
 	private String taxonId;
 	private List<String> synonyms;
 	private String description;
+	private String alleleDescription;
 	private List<String> secondaryIds;
 	private List<AlleleObjectRelationsDTO> alleleObjectRelations;
 	private List<CrossReferenceDTO> crossReferences;

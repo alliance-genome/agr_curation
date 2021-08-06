@@ -21,17 +21,9 @@ export const AllelesComponent = () => {
             setTotalRecords(searchReults.totalResults);
         });
 
-    }, []);
+    }, [rows, page]);
 
     const onLazyLoad = (event) => {
-
-        const alleleService = new AlleleService();
-        console.log("AllelesComponent: onLazyLoad");
-        alleleService.getAlleles(event.rows, event.page).then(searchReults => {
-            setAlleles(searchReults.results);
-            setTotalRecords(searchReults.totalResults);
-        });
-       
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
@@ -47,8 +39,7 @@ export const AllelesComponent = () => {
                         paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
                         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
-                        paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}
-                    >
+                        paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
                         <Column field="curie" header="Curie"></Column>
                         <Column field="description" header="Description"></Column>
                         <Column field="symbol" header="Symbol"></Column>

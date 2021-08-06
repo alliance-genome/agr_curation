@@ -24,24 +24,23 @@ public class AlleleBulkController implements AlleleBulkRESTInterface {
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("BGI Gene Update", alleleData.getData().size());
+		ph.startProcess("Allele Update", alleleData.getData().size());
 		for(AlleleDTO allele: alleleData.getData()) {
 			params.put("curie", allele.getPrimaryId());
-			List<Allele> alleles = alleleSerice.findByParams(params);
-			if(alleles == null || alleles.size() == 0) {
-				Allele a = new Allele();
-				a.setCurie(allele.getPrimaryId());
-				a.setSymbol(allele.getSymbol());
-				a.setDescription(allele.getDescription());
-				a.setTaxon(allele.getTaxonId());
-				alleleSerice.create(a);
+			Allele dbAllele = alleleSerice.get(allele.getPrimaryId());
+			if(dbAllele == null) {
+				dbAllele = new Allele();
+				dbAllele.setCurie(allele.getPrimaryId());
+				dbAllele.setSymbol(allele.getSymbol());
+				dbAllele.setDescription(allele.getDescription());
+				dbAllele.setTaxon(allele.getTaxonId());
+				alleleSerice.create(dbAllele);
 			} else {
-				Allele a = alleles.get(0);
-				if(a.getCurie().equals(allele.getPrimaryId())) {
-					a.setSymbol(allele.getSymbol());
-					a.setName(allele.getDescription());
-					a.setTaxon(allele.getTaxonId());
-					alleleSerice.update(a);
+				if(dbAllele.getCurie().equals(allele.getPrimaryId())) {
+					dbAllele.setSymbol(allele.getSymbol());
+					dbAllele.setDescription(allele.getDescription());
+					dbAllele.setTaxon(allele.getTaxonId());
+					alleleSerice.update(dbAllele);
 				}
 			}
 			
