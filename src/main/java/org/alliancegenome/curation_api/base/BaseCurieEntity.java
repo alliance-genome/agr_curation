@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.Field;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -20,12 +20,12 @@ public class BaseCurieEntity extends BaseEntity {
 	@JsonView({View.FieldsOnly.class})
 	private String curie;
 
-	@Field
+	@GenericField
 	@CreationTimestamp
 	@JsonView({View.FieldsOnly.class})
 	private LocalDateTime created;
 
-	@Field
+	@GenericField
 	@UpdateTimestamp
 	@JsonView({View.FieldsOnly.class})
 	private LocalDateTime lastUpdated;

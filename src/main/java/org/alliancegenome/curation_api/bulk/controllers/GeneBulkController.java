@@ -13,30 +13,22 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
 
-
-//@JMSDestinationDefinitions(
-//	    value = {
-//	        @JMSDestinationDefinition(
-//	            name = "java:jboss/exported/jms/queue/bgiprocessing",
-//	            interfaceName = "javax.jms.Queue",
-//	            destinationName = "bgiprocessing"
-//	        )
-//	    }
-//	)
-
-
-
 @JBossLog
 @RequestScoped
 public class GeneBulkController implements GeneBulkRESTInterface {
 
+	//@Inject
+	//@JMSConnectionFactory("jms/connectionFactory")
+	//JMSContext context;
+
+	//@Resource(lookup = "jms/bgiProcessingQueue")
+	//private Queue queue;
+	
 	@Inject GeneService geneSerice;
-	
-//	@Resource(lookup = "java:jboss/exported/jms/queue/bgiprocessing")
-//    private Queue queue;
-	
+
 	@Override
 	public String updateBGI(GeneMetaDataDTO geneData) {
+		//JMSProducer producer = context.createProducer();
 
 		Map<String, Object> params = new HashMap<String, Object>();
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
@@ -53,7 +45,8 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 				g.setName(gene.getName());
 				g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
 				g.setType(gene.getSoTermId());
-				geneSerice.create(g);
+				//producer.send(queue, g);
+				//geneSerice.create(g);
 			} else {
 				Gene g = genes.get(0);
 				if(g.getCurie().equals(gene.getBasicGeneticEntity().getPrimaryId())) {
@@ -64,10 +57,11 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 					g.setName(gene.getName());
 					g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
 					g.setType(gene.getSoTermId());
-					geneSerice.update(g);
+					//producer.send(queue, g);
+					//geneSerice.update(g);
 				}
 			}
-			
+
 			ph.progressProcess();
 		}
 		ph.finishProcess();

@@ -2,27 +2,30 @@ package org.alliancegenome.curation_api.base;
 
 import java.util.*;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.dto.Pagination;
+import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
+import org.hibernate.search.mapper.orm.session.SearchSession;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-@Singleton
 public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
-	@PersistenceContext(name = "primary")
-	private EntityManager entityManager;
+	@Inject
+	EntityManager entityManager;
 	
-	//private SearchSession searchSession = null;
+	@Inject
+	SearchSession searchSession;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
-		//searchSession = Search.session(entityManager);
-		log.debug("Entitymanager: " + entityManager);
+		log.debug("EntityManager: " + entityManager);
+		log.debug("SearchSession: " + searchSession);
 	}
 	
 	public E persist(E entity) {
@@ -85,11 +88,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 	public void reindex() {
 		try {
 			log.debug("Starting Index for: " + myClass);
-			org.hibernate.search.jpa.FullTextEntityManager ftem = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
-			ftem.createIndexer(myClass).startAndWait();
+			//org.hibernate.search.jpa.FullTextEntityManager ftem = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
+			//ftem.createIndexer(myClass).startAndWait();
 
-			//MassIndexer indexer = searchSession.massIndexer(myClass).threadsToLoadObjects(10);
-			//indexer.startAndWait();
+			MassIndexer indexer = searchSession.massIndexer(myClass).threadsToLoadObjects(10);
+			indexer.startAndWait();
 			
 			log.debug("Indexing finished: ");
 		} catch (InterruptedException e) {

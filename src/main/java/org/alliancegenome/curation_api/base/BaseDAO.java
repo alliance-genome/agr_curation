@@ -1,9 +1,6 @@
 package org.alliancegenome.curation_api.base;
 
-import javax.enterprise.context.ApplicationScoped;
-
-@ApplicationScoped
-public class BaseDAO<E extends BaseEntity> {
+public abstract class BaseDAO<E extends BaseEntity> {
 
 	protected Class<E> myClass;
 

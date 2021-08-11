@@ -6,7 +6,7 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
-import org.hibernate.search.annotations.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -16,17 +16,17 @@ import lombok.Data;
 @MappedSuperclass
 public class BaseGeneratedEntity extends BaseEntity {
 	
-	@Id @DocumentId
+	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@JsonView({View.FieldsOnly.class})
 	private Long id;
 	
-	@Field
+	@FullTextField
 	@CreationTimestamp
 	@JsonView({View.FieldsOnly.class})
 	private LocalDateTime created;
 	
-	@Field
+	@FullTextField
 	@UpdateTimestamp
 	@JsonView({View.FieldsOnly.class})
 	private LocalDateTime lastUpdated;
