@@ -1,19 +1,22 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import javax.persistence.MappedSuperclass;
+import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseCurieEntity;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.annotations.Field;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
+@Audited
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString
-@MappedSuperclass
 public class BiologicalEntity extends BaseCurieEntity {
 
 	@Field
