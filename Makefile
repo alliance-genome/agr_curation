@@ -23,7 +23,7 @@ run:
 	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
 apirun:
-	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
+	java -DDB_CONNECTION_URL=jdbc:postgresql://localhost:5432/curation -DDB_USER=postgres -DDB_PASS=postgres -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
 docker:
 	docker build -t 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1 .
