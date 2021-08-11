@@ -14,7 +14,7 @@ import { Dashboard } from './components/Dashboard';
 import { GenesComponent } from './components/GenesComponent';
 import { DiseasesComponent } from './components/DiseasesComponent';
 import { AllelesComponent } from './components/AllelesComponent';
-
+import { DiseaseAnnotations } from './components/DiseaseAnnotations';
 
 import { ButtonDemo } from './components/ButtonDemo';
 import { ChartDemo } from './components/ChartDemo';
@@ -132,6 +132,7 @@ const App = () => {
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
+                { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
             ]
         }
 /*
@@ -279,6 +280,7 @@ const App = () => {
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
+                <Route path="/diseaseAnnotations" component={DiseaseAnnotations} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/diseases" component={DiseasesComponent} />
