@@ -148,12 +148,14 @@
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search-orm</artifactId>
 		</dependency>
+		
+		<!-- 
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-search-elasticsearch</artifactId>
 			<version>5.11.9.Final</version>
 		</dependency>
-
+		 -->
 
 		<dependency>
 			<groupId>org.postgresql</groupId>
