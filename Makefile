@@ -5,6 +5,8 @@ FLAGS = -DskipTests=true
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
+.PHONY: docker all
+
 all: ui api
 
 api:
@@ -23,7 +25,8 @@ run:
 apirun:
 	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
-
+docker:
+	docker build -t 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1 .
 
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
@@ -33,6 +36,3 @@ test:
 
 verify:
 	mvn verify
-
-%:
-	mvn $(OPTS) -pl $@ -am

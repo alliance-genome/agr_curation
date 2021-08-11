@@ -9,7 +9,7 @@
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
 	<packaging>war</packaging>
-	<version>${revision}</version>
+	<version>0.0.1</version>
 
 	<properties>
 

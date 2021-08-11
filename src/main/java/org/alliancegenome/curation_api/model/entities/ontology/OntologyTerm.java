@@ -12,8 +12,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.*;
 
 @Audited
-@Entity
 @Data
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets", "definitionUrls"})
 public class OntologyTerm extends BaseCurieEntity {
