@@ -27,6 +27,8 @@ apirun:
 
 docker:
 	docker build -t 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1 .
+docker-push:
+	docker push 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1
 
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
