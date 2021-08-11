@@ -20,7 +20,7 @@ uirun:
 	make -B -C src/main/cliapp run
 
 run:
-	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
+	java -DDB_CONNECTION_URL=jdbc:postgresql://localhost:5432/curation -DDB_USER=postgres -DDB_PASS=postgres -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
 
 apirun:
 	java -DDB_CONNECTION_URL=jdbc:postgresql://localhost:5432/curation -DDB_USER=postgres -DDB_PASS=postgres -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
