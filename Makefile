@@ -10,7 +10,7 @@ OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 all: ui api
 
 api:
-	mvn $(OPTS)
+	mvn ${OPTS}
 
 ui:
 	make -B -C src/main/cliapp
