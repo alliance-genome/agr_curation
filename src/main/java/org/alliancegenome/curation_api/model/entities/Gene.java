@@ -5,39 +5,41 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
 @Audited
-@Indexed(index = "search_index")
+@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"genomicLocations"})
+@Schema(name="Gene", description="POJO that represents the Gene")
 public class Gene extends GenomicEntity {
 
-	@Field
+	@FullTextField
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 
-	@Field
+	@FullTextField
 	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
 	private String geneSynopsis;
 
-	@Field
+	@FullTextField
 	@JsonView({View.FieldsOnly.class})
 	private String geneSynopsisURL;
 
-	@Field
+	@FullTextField
 	@JsonView({View.FieldsOnly.class})
 	private String type;
 	
-	@Field
+	@FullTextField
 	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
 	private String automatedGeneDescription;

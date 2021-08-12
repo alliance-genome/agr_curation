@@ -5,8 +5,6 @@ import javax.xml.bind.annotation.*;
 import lombok.*;
 
 @Data
-@ToString
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @XmlRootElement(name = "Class", namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
 @XmlAccessorType (XmlAccessType.FIELD)
 public class RDFClass {

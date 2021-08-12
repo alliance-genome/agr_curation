@@ -16,8 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.security.*;
 				version = "1.0 Alpha"
 				),
 		security = {
-				@SecurityRequirement(name = "api_token"),
-				@SecurityRequirement(name = "no_auth"),
+				@SecurityRequirement(name = "api_token")
 		},
 		components = @Components(
 				securitySchemes = {
@@ -26,11 +25,6 @@ import org.eclipse.microprofile.openapi.annotations.security.*;
 								type = SecuritySchemeType.HTTP,
 								description="Curator API Token",
 								scheme="bearer"
-								),
-						@SecurityScheme(
-								securitySchemeName="no_auth",
-								type=SecuritySchemeType.DEFAULT,
-								scheme="None"
 								)
 				}
 				)

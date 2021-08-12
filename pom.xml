@@ -8,18 +8,79 @@
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
-	<packaging>war</packaging>
 	<version>0.0.1</version>
 
 	<properties>
 
+		<compiler-plugin.version>3.8.1</compiler-plugin.version>
+		<maven.compiler.parameters>true</maven.compiler.parameters>
 		<maven.compiler.source>11</maven.compiler.source>
 		<maven.compiler.target>11</maven.compiler.target>
-		<failOnMissingWebXml>false</failOnMissingWebXml>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+		<quarkus.platform.version>2.1.1.Final</quarkus.platform.version>
+		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
 
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${quarkus.platform.group-id}</groupId>
+				<artifactId>${quarkus.platform.artifact-id}</artifactId>
+				<version>${quarkus.platform.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+
 	<dependencies>
+
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-orm</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-search-orm-elasticsearch</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-jackson</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-envers</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-jdbc-postgresql</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-arc</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-junit5</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>io.rest-assured</groupId>
+			<artifactId>rest-assured</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- <dependency> -->
+		<!-- <groupId>io.quarkus</groupId> -->
+		<!-- <artifactId>quarkus-artemis-jms</artifactId> -->
+		<!-- </dependency> -->
+
 		<dependency>
 			<groupId>commons-io</groupId>
 			<artifactId>commons-io</artifactId>
@@ -39,48 +100,11 @@
 			<artifactId>commons-collections</artifactId>
 			<version>3.2.2</version>
 		</dependency>
-		<dependency>
-			<groupId>javax</groupId>
-			<artifactId>javaee-api</artifactId>
-			<version>7.0</version>
-		</dependency>
 
-
-		<dependency>
-			<groupId>org.jboss.logging</groupId>
-			<artifactId>jboss-logging</artifactId>
-		</dependency>
-
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<version>1.18.10</version>
-		</dependency>
-
-		<!-- importing the jakartaee8-with-tools BOM adds specs and other useful 
-			artifacts as managed dependencies -->
-		<dependency>
-			<groupId>org.wildfly.bom</groupId>
-			<artifactId>wildfly-jakartaee8</artifactId>
-			<version>24.0.0.SP1</version>
-			<type>pom</type>
-			<scope>import</scope>
-		</dependency>
-
-		<!-- importing the microprofile BOM adds MicroProfile specs -->
-		<dependency>
-			<groupId>org.wildfly.bom</groupId>
-			<artifactId>wildfly-microprofile</artifactId>
-			<version>24.0.0.SP1</version>
-			<type>pom</type>
-			<scope>import</scope>
 		</dependency>
 
 		<dependency>
@@ -102,170 +126,96 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.dataformat</groupId>
 			<artifactId>jackson-dataformat-xml</artifactId>
-			<version>2.12.3</version>
-		</dependency>
-
-		<!-- Import the MicroProfile Config API, we use provided scope as the API 
-			is included in the server -->
-		<dependency>
-			<groupId>org.eclipse.microprofile.config</groupId>
-			<artifactId>microprofile-config-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.microprofile.openapi</groupId>
-			<artifactId>microprofile-openapi-api</artifactId>
-		</dependency>
-		<!-- Import the CDI API, we use provided scope as the API is included in 
-			the server -->
-		<dependency>
-			<groupId>jakarta.enterprise</groupId>
-			<artifactId>jakarta.enterprise.cdi-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<!-- Import the Jakarta REST API, we use provided scope as the API is included 
-			in the server -->
-		<dependency>
-			<groupId>org.jboss.spec.javax.ws.rs</groupId>
-			<artifactId>jboss-jaxrs-api_2.1_spec</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.jboss.spec.javax.jms</groupId>
-			<artifactId>jboss-jms-api_2.0_spec</artifactId>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-smallrye-openapi</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-envers</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-micrometer-registry-prometheus</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-search-orm</artifactId>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-smallrye-health</artifactId>
 		</dependency>
-		
-		<!-- 
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-search-elasticsearch</artifactId>
-			<version>5.11.9.Final</version>
-		</dependency>
-		 -->
-
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>42.2.23</version>
-		</dependency>
-
-		<!-- https://mvnrepository.com/artifact/org.jsonschema2pojo/jsonschema2pojo-core -->
-		<dependency>
-			<groupId>org.jsonschema2pojo</groupId>
-			<artifactId>jsonschema2pojo-core</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-
-
 	</dependencies>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.wildfly.bom</groupId>
-				<artifactId>wildfly-microprofile</artifactId>
-				<version>24.0.1.Final</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.wildfly.bom</groupId>
-				<artifactId>wildfly-jakartaee8-with-tools</artifactId>
-				<version>24.0.1.Final</version>
-				<type>pom</type>
-				<scope>import</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
 
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.wildfly.plugins</groupId>
-					<artifactId>wildfly-jar-maven-plugin</artifactId>
-					<version>5.0.1.Final</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>3.2.3</version>
-					<configuration>
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-
-
-
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<release>11</release>
-				</configuration>
-			</plugin>
-
-
-			<plugin>
-				<groupId>org.wildfly.plugins</groupId>
-				<artifactId>wildfly-jar-maven-plugin</artifactId>
-				<configuration>
-					<cli-sessions>
-						<cli-session>
-							<script-files>
-								<script>scripts/config.cli</script>
-							</script-files>
-						</cli-session>
-					</cli-sessions>
-					<feature-packs>
-						<feature-pack>
-							<location>wildfly@maven(org.jboss.universe:community-universe)#24.0.1.Final</location>
-						</feature-pack>
-					</feature-packs>
-					<layers>
-						<layer>jaxrs</layer>
-						<layer>jaxrs-server</layer>
-						<layer>management</layer>
-						<layer>core-server</layer>
-						<layer>logging</layer>
-						<layer>observability</layer>
-						<layer>microprofile-openapi</layer>
-					</layers>
-					<excluded-layers>
-						<layer>deployment-scanner</layer>
-					</excluded-layers>
-					<plugin-options>
-						<jboss-fork-embedded>true</jboss-fork-embedded>
-					</plugin-options>
-				</configuration>
+				<groupId>${quarkus.platform.group-id}</groupId>
+				<artifactId>quarkus-maven-plugin</artifactId>
+				<version>${quarkus.platform.version}</version>
+				<extensions>true</extensions>
 				<executions>
 					<execution>
 						<goals>
-							<goal>package</goal>
+							<goal>build</goal>
+							<goal>generate-code</goal>
+							<goal>generate-code-tests</goal>
 						</goals>
 					</execution>
 				</executions>
 			</plugin>
-
-
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${compiler-plugin.version}</version>
+				<configuration>
+					<parameters>${maven.compiler.parameters}</parameters>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>${surefire-plugin.version}</version>
+				<configuration>
+					<systemPropertyVariables>
+						<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+						<maven.home>${maven.home}</maven.home>
+					</systemPropertyVariables>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>native</id>
+			<activation>
+				<property>
+					<name>native</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-failsafe-plugin</artifactId>
+						<version>${surefire-plugin.version}</version>
+						<executions>
+							<execution>
+								<goals>
+									<goal>integration-test</goal>
+									<goal>verify</goal>
+								</goals>
+								<configuration>
+									<systemPropertyVariables>
+										<native.image.path>${project.build.directory}/${project.build.finalName}-runner</native.image.path>
+										<java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
+										<maven.home>${maven.home}</maven.home>
+									</systemPropertyVariables>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+			<properties>
+				<quarkus.package.type>native</quarkus.package.type>
+			</properties>
+		</profile>
+	</profiles>
+
 </project>
