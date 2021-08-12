@@ -11,6 +11,8 @@ These instructions will get you a copy of the project and the API up and running
 - [Installing](#installing)
 	* [Postgres](#postgres)
 	* [ElasticSearch](#elasticsearch)
+	* [Cerebro](#cerebro)
+	* [ActiveMQ](#activemq)
 - [Building](#building)
 	* [Building API](#building_api)
 	* [Building UI](#building_ui)
@@ -48,14 +50,34 @@ docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli secretsmanager get-secre
 
 ### Elastic Search
 
-[Run Elastic Search Script](docker/run_es) which basically runs the following docker command:
+[Run Elastic Search Script](docker/run_es) which runs the following docker command:
 
 ```bash
-docker run --rm -d --net curation -p 9200:9200 -p 9300:9300 -e network.bind_host=0.0.0.0 -e transport.bind_host:0.0.0.0 -e xpack.security.enabled=false -e ELASTICSEARCH_NODE_NAME=elasticsearch  -e ELASTICSEARCH_CLUSTER_HOSTS=elasticsearch,elasticsearch2 --name elasticsearch elasticsearch:5.6.16
-docker run --rm -d --net curation -p 9201:9200 -p 9301:9300 -e network.bind_host=0.0.0.0 -e transport.bind_host:0.0.0.0 -e xpack.security.enabled=false -e ELASTICSEARCH_NODE_NAME=elasticsearch2 -e ELASTICSEARCH_CLUSTER_HOSTS=elasticsearch,elasticsearch2 --name elasticsearch2 elasticsearch:5.6.16
+docker run -d --net curation -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.9.0
 ```
 
-Currently the Elastic Search is disabled due to using an old version of `hibernate-elasticsearch` which requires the older version of ES. This will be updated in the future.
+The interface for connecting to this server 
+
+### Cerebro
+
+[Run Cerebro Script](docker/run_cerebro) which runs the following docker command:
+
+```bash
+docker run -d --net curation -p 9001:9000 --name agr.cerebro.server yannart/cerebro
+```
+
+Connect to this via going to `localhost:9000` and this is used to connect to the ES server. Which will be running at `http://elasticsearch:9200` inside docker or `http://localhost:9200` on the local machine.
+
+### Active MQ (Message Queue)
+
+[Run Active MQ Script](docker/run_activemq) which runs the following docker command:
+
+```bash
+docker run -d --net curation -p 5672:5672 -p 8161:8161 -p 61616:61616 -e ARTEMIS_USERNAME=quarkus -e ARTEMIS_PASSWORD=quarkus --name activemq vromero/activemq-artemis:2.9.0-alpine
+
+```
+
+The Active MQ is used to queue incomnig update requests the locally running interface can be found at: `http://localhost:8161/console`
 
 ## Building
 
@@ -145,6 +167,12 @@ Here is an example of loading Do ontology:
 
 ```bash
 > curl -vX POST http://localhost:8080/api/doterm/bulk/owl -d @doid.owl --header "Content-Type: application/xml"
+```
+
+Example of loading Allele's
+
+```bash
+> curl -vX POST http://localhost:8080/api/allele/bulk/allelefile -d @1.0.1.4_ALLELE_MGI_0.json --header "Content-Type: application/json"
 ```
 
 ## Maintainers

@@ -7,6 +7,7 @@ import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.dto.Pagination;
+import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.mapper.orm.Search;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
@@ -100,6 +101,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 			e.printStackTrace();
 		}
 	}
+	
+//	public SearchResults<E> searchAll(Pagination pagination) {
+//		
+//		SearchResult<E> result = searchSession.search(myClass);
+//	}
 	
 	
 //	public SearchResult<E> searchByField(String field, String value) {

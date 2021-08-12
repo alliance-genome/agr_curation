@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.base;
 
-public class BaseDTO {
+import java.io.Serializable;
+
+public abstract class BaseDTO implements Serializable {
 
 }
