@@ -76,10 +76,10 @@
 			<artifactId>rest-assured</artifactId>
 			<scope>test</scope>
 		</dependency>
-<!-- 		<dependency> -->
-<!-- 			<groupId>io.quarkus</groupId> -->
-<!-- 			<artifactId>quarkus-artemis-jms</artifactId> -->
-<!-- 		</dependency> -->
+		<!-- <dependency> -->
+		<!-- <groupId>io.quarkus</groupId> -->
+		<!-- <artifactId>quarkus-artemis-jms</artifactId> -->
+		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -132,10 +132,15 @@
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-smallrye-openapi</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-micrometer-registry-prometheus</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-smallrye-health</artifactId>
+		</dependency>
 	</dependencies>
-
-
 
 	<build>
 		<finalName>${project.artifactId}</finalName>

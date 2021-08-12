@@ -46,7 +46,7 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 				g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
 				g.setType(gene.getSoTermId());
 				//producer.send(queue, g);
-				//geneSerice.create(g);
+				geneSerice.create(g);
 			} else {
 				Gene g = genes.get(0);
 				if(g.getCurie().equals(gene.getBasicGeneticEntity().getPrimaryId())) {
@@ -58,7 +58,7 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 					g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
 					g.setType(gene.getSoTermId());
 					//producer.send(queue, g);
-					//geneSerice.update(g);
+					geneSerice.update(g);
 				}
 			}
 
