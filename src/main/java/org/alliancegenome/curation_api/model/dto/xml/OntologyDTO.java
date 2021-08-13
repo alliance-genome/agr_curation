@@ -4,8 +4,7 @@ import javax.xml.bind.annotation.*;
 
 import lombok.*;
 
-@ToString
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
+@Data
 @XmlRootElement(name = "Ontology", namespace = "http://www.w3.org/2002/07/owl#")
 @XmlAccessorType (XmlAccessType.FIELD)
 public class OntologyDTO {

@@ -15,8 +15,7 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class AlleleService extends BaseService<Allele, AlleleDAO> {
 	
-	@Inject
-	private AlleleDAO alleleDAO;
+	@Inject AlleleDAO alleleDAO;
 
 	@Override
 	@PostConstruct

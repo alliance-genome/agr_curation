@@ -6,29 +6,29 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.annotations.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.*;
 
 import lombok.*;
 
 @Audited
-@Indexed(index = "search_index")
+@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"genomicLocations"})
 public class Allele extends GenomicEntity {
 
-	@Field
+	@FullTextField
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 	
-	@Field
+	@FullTextField
 	@JsonView({View.FieldsOnly.class})
 	private String feature_type;
 	
-	@Field
+	@FullTextField
 	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
 	private String description;

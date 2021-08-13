@@ -1,10 +1,14 @@
-ARG REG=100225593120.dkr.ecr.us-east-1.amazonaws.com
-ARG DOCKER_PULL_TAG=latest
+FROM openjdk:11
 
-FROM ${REG}/agr_base_linux_env:${DOCKER_PULL_TAG}
+WORKDIR /agr_curation
 
-WORKDIR /workdir/agr_java_software
+ADD target/agr_curation_api-runner .
 
-ADD . .
+EXPOSE 8080
 
-RUN mvn -T 4 -B clean package
+ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS localhost:9200
+ENV QUARKUS_DATASOURCE_JDBC_URL jdbc:postgresql://localhost:5432/curation
+ENV QUARKUS_DATASOURCE_USERNAME postgres
+ENV QUARKUS_DATASOURCE_PASSWORD postgres
+
+CMD ["./agr_curation_api-runner"]

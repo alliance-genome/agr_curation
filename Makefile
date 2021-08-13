@@ -1,9 +1,11 @@
 PROCS = -T 8
 PACKAGE = clean package
 #FLAGS = -DskipTests=true -ntp -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
-FLAGS = -DskipTests=true
+FLAGS = -Dnative -Dquarkus.native.container-build=true
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
+
+.PHONY: docker all
 
 all: ui api
 
@@ -18,12 +20,17 @@ uirun:
 	make -B -C src/main/cliapp run
 
 run:
-	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
+	mvn compile quarkus:dev
 
 apirun:
-	java -jar target/agr_curation_api-bootable.jar -b=0.0.0.0
+	mvn compile quarkus:dev
 
-
+docker:
+	docker build -t 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1 .
+docker-push:
+	docker push 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1
+docker-run:
+	docker run -it -p 8080:8080 -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://192.168.1.251:5432/curation -e QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS=192.168.1.251:9200 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.1
 
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
@@ -33,6 +40,3 @@ test:
 
 verify:
 	mvn verify
-
-%:
-	mvn $(OPTS) -pl $@ -am

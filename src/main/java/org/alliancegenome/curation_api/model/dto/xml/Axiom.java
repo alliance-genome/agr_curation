@@ -5,8 +5,6 @@ import javax.xml.bind.annotation.*;
 import lombok.*;
 
 @Data
-@ToString
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 @XmlRootElement(name = "Axiom", namespace = "http://www.w3.org/2002/07/owl#")
 @XmlAccessorType (XmlAccessType.FIELD)
 public class Axiom {
