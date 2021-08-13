@@ -17,19 +17,19 @@ import lombok.Data;
 @MappedSuperclass
 public class BaseCurieEntity extends BaseEntity {
 
-	@Id @DocumentId
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String curie;
+    @Id @DocumentId
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String curie;
 
-	@GenericField
-	@CreationTimestamp
-	@JsonView({View.FieldsOnly.class})
-	private LocalDateTime created;
+    @GenericField
+    @CreationTimestamp
+    @JsonView({View.FieldsOnly.class})
+    private LocalDateTime created;
 
-	@GenericField
-	@UpdateTimestamp
-	@JsonView({View.FieldsOnly.class})
-	private LocalDateTime lastUpdated;
+    @GenericField
+    @UpdateTimestamp
+    @JsonView({View.FieldsOnly.class})
+    private LocalDateTime lastUpdated;
 
 }

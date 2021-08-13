@@ -5,7 +5,7 @@ import lombok.*;
 @Data
 public class Pagination {
 
-	private Integer page = 1;
-	private Integer limit = 20;
+    private Integer page = 1;
+    private Integer limit = 20;
 
 }

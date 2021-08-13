@@ -10,47 +10,47 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>> {
-	
-	private BaseSQLDAO<E> dao;
+    
+    private BaseSQLDAO<E> dao;
 
-	protected void setSQLDao(D dao) {
-		this.dao = dao;
-	}
-	
-	protected abstract void init();
-	
-	@Transactional
-	public E create(E entity) {
-		return dao.persist(entity);
-	}
+    protected void setSQLDao(D dao) {
+        this.dao = dao;
+    }
+    
+    protected abstract void init();
+    
+    @Transactional
+    public E create(E entity) {
+        return dao.persist(entity);
+    }
 
-	public E get(String id) {
-		return dao.find(id);
-	}
+    public E get(String id) {
+        return dao.find(id);
+    }
 
-	@Transactional
-	public E update(E entity) {
-		return dao.merge(entity);
-	}
+    @Transactional
+    public E update(E entity) {
+        return dao.merge(entity);
+    }
 
-	@Transactional
-	public E delete(String id) {
-		return dao.remove(id);
-	}
+    @Transactional
+    public E delete(String id) {
+        return dao.remove(id);
+    }
 
-	public SearchResults<E> getAll(Pagination pagination) {
-		return dao.findAll(pagination);
-	}
-	
-	public List<E> findByParams(Map<String, Object> params) {
-		return dao.findByParams(params);
-	}
-	
-	public SearchResults<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-		return dao.searchByParams(pagination, params);
-	}
+    public SearchResults<E> getAll(Pagination pagination) {
+        return dao.findAll(pagination);
+    }
+    
+    public List<E> findByParams(Map<String, Object> params) {
+        return dao.findByParams(params);
+    }
+    
+    public SearchResults<E> searchByParams(Pagination pagination, Map<String, Object> params) {
+        return dao.searchByParams(pagination, params);
+    }
 
-	public void reindex() {
-		dao.reindex();
-	}
+    public void reindex() {
+        dao.reindex();
+    }
 }

@@ -21,20 +21,20 @@ import lombok.*;
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"})
 public class GenomicEntity extends BiologicalEntity {
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String name;
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String name;
 
-	@ManyToMany
-	@JsonView({View.FieldsAndLists.class})
-	private List<Synonym> synonyms;
-	
-	@ManyToMany
-	@JsonView({View.FieldsAndLists.class})
-	private List<CrossReference> crossReferences;
-	
-	@ElementCollection
-	@JsonView({View.FieldsAndLists.class})
-	private List<String> secondaryIdentifiers;
+    @ManyToMany
+    @JsonView({View.FieldsAndLists.class})
+    private List<Synonym> synonyms;
+    
+    @ManyToMany
+    @JsonView({View.FieldsAndLists.class})
+    private List<CrossReference> crossReferences;
+    
+    @ElementCollection
+    @JsonView({View.FieldsAndLists.class})
+    private List<String> secondaryIdentifiers;
 
 }

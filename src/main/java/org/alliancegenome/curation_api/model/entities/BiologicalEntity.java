@@ -20,9 +20,9 @@ import lombok.*;
 @ToString
 public class BiologicalEntity extends BaseCurieEntity {
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String taxon;
-	
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String taxon;
+    
 }
 

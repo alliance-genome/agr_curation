@@ -21,21 +21,21 @@ import lombok.*;
 @ToString(exclude = {"genomicLocations"})
 public class Allele extends GenomicEntity {
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String symbol;
-	
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String feature_type;
-	
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String description;
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String symbol;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String feature_type;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @Column(columnDefinition="TEXT")
+    @JsonView({View.FieldsOnly.class})
+    private String description;
 
-	@ManyToMany
-	private List<GeneGenomicLocation> genomicLocations;
-	
+    @ManyToMany
+    private List<GeneGenomicLocation> genomicLocations;
+    
 }
 

@@ -14,23 +14,23 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneBulkController implements GeneBulkRESTInterface {
 
-	@Inject
-	ConnectionFactory connectionFactory;
+    @Inject
+    ConnectionFactory connectionFactory;
 
-	@Override
-	public String updateBGI(GeneMetaDataDTO geneData) {
+    @Override
+    public String updateBGI(GeneMetaDataDTO geneData) {
 
-		try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-			ph.startProcess("Gene Update", geneData.getData().size());
-			for(GeneDTO gene: geneData.getData()) {
-				context.createProducer().send(context.createQueue("geneQueue"), context.createObjectMessage(gene));
-				ph.progressProcess();
-			}
-			ph.finishProcess();
-		}
+        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+            ph.startProcess("Gene Update", geneData.getData().size());
+            for(GeneDTO gene: geneData.getData()) {
+                context.createProducer().send(context.createQueue("geneQueue"), context.createObjectMessage(gene));
+                ph.progressProcess();
+            }
+            ph.finishProcess();
+        }
 
-		return "OK";
-	}
+        return "OK";
+    }
 
 }

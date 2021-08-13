@@ -20,46 +20,46 @@ import lombok.*;
 @ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets", "definitionUrls"})
 public class OntologyTerm extends BaseCurieEntity {
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView(View.FieldsOnly.class)
-	private String name;
-	
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView(View.FieldsOnly.class)
-	private String type;
-	
-	@GenericField
-	@JsonView(View.FieldsOnly.class)
-	private Boolean obsolete;
-	
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView(View.FieldsOnly.class)
-	private String namespace;
-	
-//	@ManyToOne
-//	private OntologyTerm parent;
-//	
-//	@OneToMany
-//	private List<OntologyTerm> children;
-	
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@Column(columnDefinition="TEXT")
-	@JsonView(View.FieldsOnly.class)
-	private String definition;
-	
-//	@ElementCollection
-//	private List<String> definitionUrls;
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView(View.FieldsOnly.class)
+    private String name;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView(View.FieldsOnly.class)
+    private String type;
+    
+    @GenericField
+    @JsonView(View.FieldsOnly.class)
+    private Boolean obsolete;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView(View.FieldsOnly.class)
+    private String namespace;
+    
+//  @ManyToOne
+//  private OntologyTerm parent;
+//  
+//  @OneToMany
+//  private List<OntologyTerm> children;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @Column(columnDefinition="TEXT")
+    @JsonView(View.FieldsOnly.class)
+    private String definition;
+    
+//  @ElementCollection
+//  private List<String> definitionUrls;
 //
-//	@ElementCollection
-//	private List<String> subsets;
+//  @ElementCollection
+//  private List<String> subsets;
 //
-//	@ElementCollection
-//	private List<String> secondaryIdentifiers;
+//  @ElementCollection
+//  private List<String> secondaryIdentifiers;
 //
-//	@ManyToMany
-//	private List<Synonym> synonyms;
-//	
-//	@ManyToMany
-//	private List<CrossReference> crossReferences;
+//  @ManyToMany
+//  private List<Synonym> synonyms;
+//  
+//  @ManyToMany
+//  private List<CrossReference> crossReferences;
 
 }

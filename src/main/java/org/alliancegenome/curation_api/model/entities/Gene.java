@@ -23,30 +23,30 @@ import lombok.*;
 @Schema(name="Gene", description="POJO that represents the Gene")
 public class Gene extends GenomicEntity {
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String symbol;
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String symbol;
 
-	@FullTextField
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String geneSynopsis;
+    @FullTextField
+    @Column(columnDefinition="TEXT")
+    @JsonView({View.FieldsOnly.class})
+    private String geneSynopsis;
 
-	@KeywordField
-	@JsonView({View.FieldsOnly.class})
-	private String geneSynopsisURL;
+    @KeywordField
+    @JsonView({View.FieldsOnly.class})
+    private String geneSynopsisURL;
 
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String type;
-	
-	@FullTextField
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String automatedGeneDescription;
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String type;
+    
+    @FullTextField
+    @Column(columnDefinition="TEXT")
+    @JsonView({View.FieldsOnly.class})
+    private String automatedGeneDescription;
 
-	@ManyToMany
-	private List<GeneGenomicLocation> genomicLocations;
-	
+    @ManyToMany
+    private List<GeneGenomicLocation> genomicLocations;
+    
 }
 

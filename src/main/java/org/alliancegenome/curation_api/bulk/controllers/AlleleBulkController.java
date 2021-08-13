@@ -13,24 +13,24 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 @RequestScoped
 public class AlleleBulkController implements AlleleBulkRESTInterface {
-	
-	@Inject
-	ConnectionFactory connectionFactory;
+    
+    @Inject
+    ConnectionFactory connectionFactory;
 
-	@Override
-	public String updateAlleles(AlleleMetaDataDTO alleleData) {
+    @Override
+    public String updateAlleles(AlleleMetaDataDTO alleleData) {
 
-		try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-			ph.startProcess("Allele Update", alleleData.getData().size());
-			for(AlleleDTO allele: alleleData.getData()) {
-				context.createProducer().send(context.createQueue("alleleQueue"), context.createObjectMessage(allele));
-				ph.progressProcess();
-			}
-			ph.finishProcess();
-		}
+        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+            ph.startProcess("Allele Update", alleleData.getData().size());
+            for(AlleleDTO allele: alleleData.getData()) {
+                context.createProducer().send(context.createQueue("alleleQueue"), context.createObjectMessage(allele));
+                ph.progressProcess();
+            }
+            ph.finishProcess();
+        }
 
-		return "OK";
-	}
+        return "OK";
+    }
 
 }
