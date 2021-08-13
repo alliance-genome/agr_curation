@@ -126,9 +126,14 @@ const App = () => {
 
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-        { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
-        { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
-        { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
+        {
+            label: 'Search Forms', icon: 'pi pi-fw pi-sitemap',
+            items: [
+                { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
+                { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
+                { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
+            ]
+        },
         {
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [
