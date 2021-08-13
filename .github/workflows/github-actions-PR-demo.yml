@@ -1,46 +1,28 @@
-name: GitHub Actions PR validation Demo
+name: PR validation
 on: pull_request
 jobs:
-  validate-build:
+  validate-build-api:
     runs-on: ubuntu-20.04
     steps:
-      - run: echo "Job triggered by a ${{ github.event_name }} event."
-      - run: echo "Running on a ${{ runner.os }} Github server."
-      - run: echo "Branch-ref-name is ${{ github.ref }}, repository is ${{ github.repository }}."
+      - name: Report workflow details
+        run: |
+          echo "Branch-ref-name ${{ github.ref }}, repository ${{ github.repository }}."
       - name: Check out repository code
         uses: actions/checkout@v2
-      - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - name: Set up JDK 11
+        uses: actions/setup-java@v2
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+      - name: Report runtime details
+        run: |
+          echo "Github runner OS: ${{ runner.os }}, container ${{ job.container }}"
       - name: Report Maven version
         run: |
           mvn --version
       - name: Run Maven test
         run: |
           mvn --no-transfer-progress test
-      - name: Report ${{ job.status }} status
-        run: echo "This job's status is ${{ job.status }}."
-  build-container:
-    needs: [validate-build]
-    runs-on: ubuntu-20.04
-    steps:
-    # This step will configure environment variables to be used by all steps
-    # involving AWS interaction further down
-    - name: AWS credentials configuration
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-    - name: Amazon ECR login
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-    - name: Check out repository code
-      uses: actions/checkout@v2
-    - name: Build, tag, and push image to Amazon ECR
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: agr_curation_prototype
-        IMAGE_TAG: ${{ github.sha }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      - name: Run Maven verify
+        run: |
+          mvn --batch-mode --update-snapshots verify
