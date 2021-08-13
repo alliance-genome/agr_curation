@@ -133,8 +133,9 @@ const App = () => {
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
             ]
-        },
-        {
+        }
+/*
+        ,{
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
             items: [
                 { label: 'Form Layout', icon: 'pi pi-fw pi-id-card', to: '/formlayout' },
@@ -223,6 +224,7 @@ const App = () => {
         },
         { label: 'Documentation', icon: 'pi pi-fw pi-question', command: () => { window.location = "#/documentation" } },
         { label: 'View Source', icon: 'pi pi-fw pi-search', command: () => { window.location = "https://github.com/primefaces/sigma-react" } }
+    */
     ];
 
     const addClass = (element, className) => {
