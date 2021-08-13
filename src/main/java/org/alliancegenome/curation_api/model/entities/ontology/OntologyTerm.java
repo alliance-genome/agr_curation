@@ -5,6 +5,7 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.base.BaseCurieEntity;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,10 +20,11 @@ import lombok.*;
 @ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets", "definitionUrls"})
 public class OntologyTerm extends BaseCurieEntity {
 
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView(View.FieldsOnly.class)
 	private String name;
-	@FullTextField
+	
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView(View.FieldsOnly.class)
 	private String type;
 	
@@ -30,7 +32,7 @@ public class OntologyTerm extends BaseCurieEntity {
 	@JsonView(View.FieldsOnly.class)
 	private Boolean obsolete;
 	
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView(View.FieldsOnly.class)
 	private String namespace;
 	
@@ -40,7 +42,7 @@ public class OntologyTerm extends BaseCurieEntity {
 //	@OneToMany
 //	private List<OntologyTerm> children;
 	
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@Column(columnDefinition="TEXT")
 	@JsonView(View.FieldsOnly.class)
 	private String definition;

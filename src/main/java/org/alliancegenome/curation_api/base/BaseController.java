@@ -47,9 +47,13 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
 		return service.findByParams(params);
 	}
 
-//	public SearchResult<E> search(Map<String, Object> params) {
-//		return service.searchByParams(params);
-//	}
+	public SearchResults<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
+		if(params == null) params = new HashMap<String, Object>();
+		Pagination pagination = new Pagination();
+		pagination.setLimit(limit);
+		pagination.setPage(page);
+		return service.searchByParams(pagination, params);
+	}
 	
 	public void reindex() {
 		service.reindex();

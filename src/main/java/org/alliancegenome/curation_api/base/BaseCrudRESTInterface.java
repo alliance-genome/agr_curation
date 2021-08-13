@@ -35,8 +35,8 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 	@Path("/all")
 	@JsonView(View.FieldsOnly.class)
 	public SearchResults<E> getAll(
-		@QueryParam("page") Integer page,
-		@QueryParam("limit") Integer limit
+		@DefaultValue("0") @QueryParam("page") Integer page,
+		@DefaultValue("10") @QueryParam("limit") Integer limit
 	);
 	
 	@POST //@Secured
@@ -44,10 +44,13 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 	@JsonView(View.FieldsOnly.class)
 	public List<E> find(@RequestBody HashMap<String, Object> params);
 	
-//	@POST //@Secured
-//	@Path("/search")
-//	@JsonView(View.FieldsOnly.class)
-//	public SearchResult<E> search(@PathParam("params") Map<String, Object> params);
+	@POST //@Secured
+	@Path("/search")
+	@JsonView(View.FieldsOnly.class)
+	public SearchResults<E> search(
+			@DefaultValue("0") @QueryParam("page") Integer page,
+			@DefaultValue("10") @QueryParam("limit") Integer limit,
+			@RequestBody HashMap<String, Object> params);
 	
 	@GET
 	@Path("/reindex")

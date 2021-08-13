@@ -7,8 +7,8 @@ import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.dto.Pagination;
-import org.hibernate.search.engine.search.query.SearchResult;
-import org.hibernate.search.mapper.orm.Search;
+import org.hibernate.search.engine.search.query.*;
+import org.hibernate.search.engine.search.sort.dsl.*;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 
@@ -19,7 +19,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
 	@Inject
 	EntityManager entityManager;
-	
+
 	@Inject
 	SearchSession searchSession;
 
@@ -28,7 +28,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		log.debug("EntityManager: " + entityManager);
 		log.debug("SearchSession: " + searchSession);
 	}
-	
+
 	public E persist(E entity) {
 		log.debug("SqlDAO: persist: " + entity);
 		entityManager.persist(entity);
@@ -53,11 +53,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
 		Root<E> rootEntry = findQuery.from(myClass);
 		CriteriaQuery<E> all = findQuery.select(rootEntry);
-		
+
 		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
 		countQuery.select(cb.count(countQuery.from(myClass)));
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
-		
+
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
 		if(pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
 			int first = pagination.getPage() * pagination.getLimit();
@@ -76,7 +76,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		entityManager.merge(entity);
 		return entity;
 	}
-	
+
 	public E remove(String id) {
 		log.debug("SqliteDAO: remove: " + id);
 		E entity = find(id);
@@ -84,43 +84,73 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 		return entity;
 	}
 
-
-	
 	public void reindex() {
-		try {
-			log.debug("Starting Index for: " + myClass);
-			//org.hibernate.search.jpa.FullTextEntityManager ftem = org.hibernate.search.jpa.Search.getFullTextEntityManager(entityManager);
-			//ftem.createIndexer(myClass).startAndWait();
-
-			MassIndexer indexer = searchSession.massIndexer(myClass).threadsToLoadObjects(10);
-			indexer.startAndWait();
-			
-			log.debug("Indexing finished: ");
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		log.debug("Starting Index for: " + myClass);
+		MassIndexer indexer = searchSession.massIndexer(myClass).threadsToLoadObjects(4);
+		//indexer.dropAndCreateSchemaOnStart(true);
+		indexer.transactionTimeout(600);
+		indexer.start();
 	}
-	
-//	public SearchResults<E> searchAll(Pagination pagination) {
-//		
-//		SearchResult<E> result = searchSession.search(myClass);
-//	}
-	
-	
-//	public SearchResult<E> searchByField(String field, String value) {
-//		return searchSession.search(myClass).where(f -> f.match().field(field).matching(value)).fetch(1000);
-//	}
-//	
-//	public SearchResult<E> searchByParams(Map<String, Object> params) {
-//		return searchByParams(params, null);
-//	}
-//	
-//	public SearchResult<E> searchByParams(Map<String, Object> params, String orderByField) {
-//		
-//		return null;
-//	}
-	
+
+	public SearchResults<E> searchAll(Pagination pagination) {
+		return searchByParams(pagination, null);
+	}
+
+	public SearchResults<E> searchByField(Pagination pagination, String field, String value) {
+		HashMap<String, Object> params = new HashMap<String, Object>();
+		params.put(field, value);
+		return searchByParams(pagination, params);
+	}
+
+
+	public SearchResults<E> searchByParams(Pagination pagination, Map<String, Object> params) {
+
+		log.debug("Search: " + pagination + " Params: " + params);
+		//SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
+
+		//sourceBuilder.sort(new FieldSortBuilder("id").order(SortOrder.ASC)); 
+
+		//Sort s = new 
+
+		SearchQuery<E> query = searchSession.search(myClass)
+				.where( p -> p.bool( b -> {
+					if(params.containsKey("searchFilters")) {
+						HashMap<String, Object> searchFilters = (HashMap<String, Object>)params.get("searchFilters");
+						for(String key: searchFilters.keySet()) {
+							b.filter(
+									p.wildcard().field(key).matching("*" + (String)searchFilters.get(key) + "*")
+									);
+						}
+					}
+				}))
+				.sort(f -> {
+					CompositeSortComponentsStep<?> com = f.composite();
+					if(params.containsKey("sortOrders")) {
+						HashMap<String, Object> sortOrders = (HashMap<String, Object>)params.get("sortOrders");
+						for(String key: sortOrders.keySet()) {
+							if((int)sortOrders.get(key) == 1) {
+								com.add(f.field(key).asc());
+							}
+							if((int)sortOrders.get(key) == -1) {
+								com.add(f.field(key).desc());
+							}
+						}
+					}
+					return com;
+				})
+				.toQuery();
+
+		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
+		log.debug(query);
+
+		SearchResults<E> results = new SearchResults<E>();
+		results.setResults(result.hits());
+		results.setTotalResults(result.total().hitCount());
+
+		return results;
+
+	}
+
 	public List<E> findByField(String field, String value) {
 		log.debug("SqlDAO: findByField: " + field + " " + value);
 		HashMap<String, Object> params = new HashMap<>();
@@ -133,11 +163,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 			return null;
 		}
 	}
-	
+
 	public List<E> findByParams(Map<String, Object> params) {
 		return findByParams(params, null);
 	}
-	
+
 	public List<E> findByParams(Map<String, Object> params, String orderByField) {
 		if(orderByField != null) {
 			log.debug("Search By Params: " + params + " Order by: " + orderByField);

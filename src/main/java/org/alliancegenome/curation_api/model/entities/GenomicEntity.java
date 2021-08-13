@@ -6,7 +6,8 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -20,7 +21,7 @@ import lombok.*;
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"})
 public class GenomicEntity extends BiologicalEntity {
 
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
 	private String name;
 

@@ -46,9 +46,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
 		return dao.findByParams(params);
 	}
 	
-//	public SearchResult<E> searchByParams(Map<String, Object> params) {
-//		return dao.searchByParams(params);
-//	}
+	public SearchResults<E> searchByParams(Pagination pagination, Map<String, Object> params) {
+		return dao.searchByParams(pagination, params);
+	}
 
 	public void reindex() {
 		dao.reindex();

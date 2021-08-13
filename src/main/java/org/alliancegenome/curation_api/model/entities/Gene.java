@@ -7,6 +7,7 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -22,7 +23,7 @@ import lombok.*;
 @Schema(name="Gene", description="POJO that represents the Gene")
 public class Gene extends GenomicEntity {
 
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 
@@ -31,11 +32,11 @@ public class Gene extends GenomicEntity {
 	@JsonView({View.FieldsOnly.class})
 	private String geneSynopsis;
 
-	@FullTextField
+	@KeywordField
 	@JsonView({View.FieldsOnly.class})
 	private String geneSynopsisURL;
 
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
 	private String type;
 	

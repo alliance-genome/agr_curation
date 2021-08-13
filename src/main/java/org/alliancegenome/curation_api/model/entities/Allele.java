@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.*;
@@ -20,15 +21,15 @@ import lombok.*;
 @ToString(exclude = {"genomicLocations"})
 public class Allele extends GenomicEntity {
 
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 	
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
 	private String feature_type;
 	
-	@FullTextField
+	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
 	private String description;

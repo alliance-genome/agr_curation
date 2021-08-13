@@ -4,16 +4,18 @@ import javax.ws.rs.ext.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @Provider
 public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
 
 	private final ObjectMapper mapper;
 
 	public RestDefaultObjectMapper() {
-		
+		//log.info("Setting up Default Object Mapper");
 		mapper = new ObjectMapper();
 		
 		mapper.registerModule(new JavaTimeModule());
