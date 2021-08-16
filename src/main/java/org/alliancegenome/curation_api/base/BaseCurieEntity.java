@@ -11,9 +11,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Data @EqualsAndHashCode(callSuper = false)
 @MappedSuperclass
 public class BaseCurieEntity extends BaseEntity {
 

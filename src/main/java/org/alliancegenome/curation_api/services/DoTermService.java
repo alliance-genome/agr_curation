@@ -10,8 +10,7 @@ import javax.jms.*;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.model.dto.json.GeneDTO;
+import org.alliancegenome.curation_api.dao.DoTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 
 import io.quarkus.runtime.*;

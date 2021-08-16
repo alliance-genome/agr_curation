@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.bulk;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.model.dto.json.*;
+import org.alliancegenome.curation_api.model.dto.json.AlleleMetaDataDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/allele/bulk")

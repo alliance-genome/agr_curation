@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.dto;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class Pagination {

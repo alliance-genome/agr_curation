@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.dto.xml;
 
 import javax.xml.bind.annotation.*;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 @XmlRootElement(name = "Axiom", namespace = "http://www.w3.org/2002/07/owl#")

@@ -6,10 +6,8 @@ import javax.jms.*;
 import javax.ws.rs.core.UriInfo;
 
 import org.alliancegenome.curation_api.interfaces.bulk.DoTermBulkRESTInterface;
-import org.alliancegenome.curation_api.model.dto.json.*;
 import org.alliancegenome.curation_api.model.dto.xml.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.services.DoTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;

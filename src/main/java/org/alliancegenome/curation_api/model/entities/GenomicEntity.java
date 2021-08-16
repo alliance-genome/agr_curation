@@ -7,7 +7,7 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -16,8 +16,7 @@ import lombok.*;
 @Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"})
 public class GenomicEntity extends BiologicalEntity {
 

@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.dto.xml;
 
 import javax.xml.bind.annotation.*;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 @XmlRootElement(name = "AnnotationProperty", namespace = "http://www.w3.org/1999/02/22-rdf-syntax-ns#")
