@@ -8,11 +8,11 @@ jobs:
         run: |
           echo "Repository ${{ github.repository }}."
           echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v2
       - name: Report files updated in PR
         run: |
           git diff --name-only ${{ github.base_ref }} ${{ github.head_ref }}
-      - name: Check out repository code
-        uses: actions/checkout@v2
       - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
