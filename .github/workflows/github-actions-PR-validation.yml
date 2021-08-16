@@ -1,7 +1,7 @@
 name: PR validation
 on: pull_request
 jobs:
-  validate-build-api:
+  verify-test-api:
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -31,3 +31,15 @@ jobs:
       - name: Run Maven verify
         run: |
           mvn --batch-mode --update-snapshots verify
+  test-build-docker-image:
+      needs: [verify-test-api]
+      runs-on: ubuntu-20.04
+      steps:
+        - name: Compile runnable
+          run: |
+            make all
+        - name: Build docker image
+          env:
+            ECR_REPOSITORY: agr_curation
+            IMAGE_TAG: ${{ github.sha }}
+          run: docker build -t $ECR_REPOSITORY:$IMAGE_TAG .
