@@ -30,7 +30,7 @@ jobs:
           mvn --no-transfer-progress test
       - name: Run Maven verify
         run: |
-          mvn --batch-mode --update-snapshots verify
+          mvn --no-transfer-progress --batch-mode --update-snapshots verify
   test-build-docker-image:
       needs: [verify-test-api]
       runs-on: ubuntu-20.04
