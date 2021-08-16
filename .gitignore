@@ -1,5 +1,6 @@
 # Java build artifacts
 .classpath
+.factorypath
 target
 # IDE project/module settings
 .vscode
