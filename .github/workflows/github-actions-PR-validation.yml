@@ -35,6 +35,8 @@ jobs:
       needs: [verify-test-api]
       runs-on: ubuntu-20.04
       steps:
+        - name: Check out repository code
+          uses: actions/checkout@v2
         - name: Compile runnable
           run: |
             make all
