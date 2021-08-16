@@ -20,7 +20,7 @@ uirun:
 	make -B -C src/main/cliapp run
 
 run:
-	mvn compile quarkus:dev
+	java -jar target/agr_curation_api-runner.jar
 
 apirun:
 	mvn compile quarkus:dev
