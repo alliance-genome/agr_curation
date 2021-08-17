@@ -1,10 +1,16 @@
+# Java build artifacts
 .classpath
+.factorypath
+target
+# IDE project/module settings
+.vscode
 .project
 .settings
 .idea
 *.iml
-target
+
 src/main/webapp/index.html
 src/main/webapp/assets
 src/main/webapp/static
 search_index
+

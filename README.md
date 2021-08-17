@@ -57,7 +57,11 @@ Once docker is setup and installed you will need to issue the following docker c
 docker run -d -p 5432:5432 --net curation --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust postgres:13
 ```
 
-If you are needing to connect to the production version of the database run the following command to get the credentials, this only works if you have been setup with an AWS account credentials.
+If you are needing to connect to the production version of the database, use your personal postgres credentials that have been provided to you,
+or contact a system admin to recover them when you lost them.
+
+When you need admin access into the production database, the following command can be used to get the credentials
+(but will only work once you have been setup with an AWS user and configured your local aws environment).
 
 ```bash
 docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli secretsmanager get-secret-value --secret-id curation-db-admin --region us-east-1 --query SecretString --output text
