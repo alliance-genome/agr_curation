@@ -37,9 +37,6 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     public void upsert(String geneId, String doTermId, String publicationId) {
         
         DiseaseAnnotation da = new DiseaseAnnotation();
-        
-        HashMap<String, Object> params = new HashMap<String, Object>();
-
 
         Gene gene = geneDAO.find(geneId);
         
@@ -70,7 +67,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         da.setReferenceList(List.of(reference));
         create(da);
 
-
+    }
 
 
 }
