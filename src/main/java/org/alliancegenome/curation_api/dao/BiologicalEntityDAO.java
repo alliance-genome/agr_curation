@@ -11,9 +11,5 @@ public class BiologicalEntityDAO extends BaseSQLDAO<BiologicalEntity> {
     protected BiologicalEntityDAO() {
         super(BiologicalEntity.class);
     }
-    
-    public BiologicalEntity getByIdOrCurie(String id) {
-        return find(id);
-    }
 
 }
