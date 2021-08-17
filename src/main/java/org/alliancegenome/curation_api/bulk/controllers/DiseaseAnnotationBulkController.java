@@ -26,15 +26,6 @@ public class DiseaseAnnotationBulkController implements DiseaseAnnotationBulkRES
     @Inject
     DiseaseAnnotationService diseaseService;
 
-    @Inject
-    DoTermService doTermService;
-
-    @Inject
-    ReferenceService referenceService;
-
-    @Inject
-    GeneService geneService;
-
     @Override
     public String updateDiseaseAnnotation(DiseaseAnnotationMetaDataDTO annotationData) {
 
@@ -42,21 +33,8 @@ public class DiseaseAnnotationBulkController implements DiseaseAnnotationBulkRES
         ph.startProcess("Disease Annotation Update", annotationData.getData().size());
         Map<String, Object> params = new HashMap<>();
         annotationData.getData().forEach(annotation -> {
-            DiseaseAnnotation g = new DiseaseAnnotation();
-            Gene gene = geneService.getByIdOrCurie(annotation.getObjectId());
-            DOTerm disease = doTermService.get(annotation.getDoId());
-
-            if (gene != null) {
-                g.setSubject(gene);
-                g.setObject(disease);
-                Reference publication = new Reference();
-                publication.setCurie(annotation.getEvidence().getPublication().getPublicationId());
-                if (referenceService.get(publication.getCurie()) == null) {
-                    referenceService.create(publication);
-                }
-                g.setReferenceList(List.of(publication));
-                diseaseService.create(g);
-            }
+            
+            diseaseService.upsert(annotation.getObjectId(), annotation.getDoId(), annotation.getEvidence().getPublication().getPublicationId());
         });
         ph.finishProcess();
         return "OK";
