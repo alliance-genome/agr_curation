@@ -10,9 +10,9 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Data @EqualsAndHashCode(callSuper = false)
 @MappedSuperclass
 public class BaseGeneratedEntity extends BaseEntity {
     

@@ -13,9 +13,8 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.model.dto.Pagination;
-import org.alliancegenome.curation_api.model.dto.json.*;
+import org.alliancegenome.curation_api.model.dto.json.AlleleDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import io.quarkus.runtime.*;
 import lombok.extern.jbosslog.JBossLog;

@@ -9,15 +9,14 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
 @Audited
 @Indexed
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"genomicLocations"})
 public class Allele extends GenomicEntity {
 

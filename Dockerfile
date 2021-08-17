@@ -2,7 +2,7 @@ FROM openjdk:11
 
 WORKDIR /agr_curation
 
-ADD target/agr_curation_api-runner .
+ADD target/agr_curation_api-runner.jar .
 
 EXPOSE 8080
 
@@ -14,4 +14,4 @@ ENV QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS localhost:9200
 
 ENV QUARKUS_ARTEMIS_URL tcp://localhost:61616
 
-CMD ["./agr_curation_api-runner"]
+CMD ["java", "-jar", "agr_curation_api-runner.jar"]
