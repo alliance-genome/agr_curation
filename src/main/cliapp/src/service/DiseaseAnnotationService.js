@@ -3,6 +3,9 @@ import axios from 'axios';
 export class DiseaseAnnotationService {
     getDiseaseAnnotations(limit, page) {
         return axios.get('assets/demo/data/diseaseAnnotations.json')
-            .then(res => res.data.data);
+            .then(res => res.data);
     }
 }
+
+ 
+    // "/api/disease-annotations/all?limit=2"

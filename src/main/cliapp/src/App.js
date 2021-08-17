@@ -135,6 +135,12 @@ const App = () => {
                 { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
             ]
         }
+        // {
+        //     label: 'Pages', icon: 'pi pi-fw pi-clone',
+        //     items: [
+        //         { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' }
+        //     ]
+        // }
 /*
         ,{
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',

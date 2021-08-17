@@ -1,434 +1,50 @@
 {
-    "data": [
-        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
+   "totalResults": 867,
+   "results": [
+      {
+         "id": 37407,
+         "created": "2021-08-17T10:42:35.726172",
+         "lastUpdated": "2021-08-17T10:42:35.726219",
+         "subject": {
+            "curie": "ZFIN:ZDB-GENE-060503-338",
+            "created": "2021-08-17T10:18:23.552702",
+            "lastUpdated": "2021-08-17T10:18:23.552704",
+            "taxon": "NCBITaxon:7955",
+            "name": "transmembrane 6 superfamily member 2",
+            "symbol": "tm6sf2",
+            "type": "SO:0001217"
          },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
+         "object": {
+            "curie": "DOID:9452"
          },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
+         "referenceList": [
+            {
+               "curie": "PMID:28027591",
+               "created": "2021-08-17T10:42:25.503083",
+               "lastUpdated": "2021-08-17T10:42:25.503127"
+            }
+         ]
+      },
+      {
+         "id": 37410,
+         "created": "2021-08-17T10:42:39.236784",
+         "lastUpdated": "2021-08-17T10:42:39.236786",
+         "subject": {
+            "curie": "ZFIN:ZDB-GENE-060503-219",
+            "created": "2021-08-17T10:20:27.799008",
+            "lastUpdated": "2021-08-17T10:20:27.79901",
+            "taxon": "NCBITaxon:7955",
+            "name": "intercellular adhesion molecule 3",
+            "symbol": "icam3",
+            "type": "SO:0001217"
          },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },        {
-            "curie": "ID:1234",
-            "gene": "WB:WBGene00000001",
-            "object": "DO:12345",
-            "reference": "PMID:12345678"
-         },
-         {
-             "totalResults": 71
-         }
-    ]
+         "referenceList": [
+            {
+               "curie": "PMID:29777134",
+               "created": "2021-08-17T10:42:39.228021",
+               "lastUpdated": "2021-08-17T10:42:39.228023"
+            }
+         ]
+      }
+   ]
 }
