@@ -14,7 +14,7 @@ import { Dashboard } from './components/Dashboard';
 import { GenesComponent } from './components/GenesComponent';
 import { DiseasesComponent } from './components/DiseasesComponent';
 import { AllelesComponent } from './components/AllelesComponent';
-
+import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
 
 import { ButtonDemo } from './components/ButtonDemo';
 import { ChartDemo } from './components/ChartDemo';
@@ -132,8 +132,15 @@ const App = () => {
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
+                { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
             ]
         }
+        // {
+        //     label: 'Pages', icon: 'pi pi-fw pi-clone',
+        //     items: [
+        //         { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' }
+        //     ]
+        // }
 /*
         ,{
             label: 'UI Kit', icon: 'pi pi-fw pi-sitemap',
@@ -279,6 +286,7 @@ const App = () => {
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
+                <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/diseases" component={DiseasesComponent} />
