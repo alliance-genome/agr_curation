@@ -1,10 +1,9 @@
 package org.alliancegenome.curation_api.dao;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Gene;
-
-import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class DiseaseAnnotationDAO extends BaseSQLDAO<DiseaseAnnotation> {

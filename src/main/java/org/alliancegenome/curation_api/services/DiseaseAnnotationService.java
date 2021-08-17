@@ -22,37 +22,24 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     @Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
     @Inject ReferenceDAO referenceDAO;
     @Inject DoTermDAO doTermDAO;
-    @Inject GeneDAO geneDAO;
+    @Inject BiologicalEntityDAO biologicalEntityDAO;
     
     @Override
     @PostConstruct
     protected void init() {
         setSQLDao(diseaseAnnotationDAO);
     }
-    
-    public SearchResults<DiseaseAnnotation> getAllDiseaseAnnotation(Pagination pagination) {
-        return getAll(pagination);
-    }
 
-    public void upsert(String geneId, String doTermId, String publicationId) {
-        
-        DiseaseAnnotation da = new DiseaseAnnotation();
+    @Transactional
+    public void upsert(String annotationId, String doTermId, String publicationId) {
 
-        Gene gene = geneDAO.find(geneId);
+        BiologicalEntity entity = biologicalEntityDAO.find(annotationId);
         
-        if(gene == null) {
-            gene = new Gene();
-            gene.setCurie(geneId);
-            geneDAO.persist(gene);
-        }
-        
+        if(entity == null) return;
+
         DOTerm disease = doTermDAO.find(doTermId);
         
-        if(disease == null) {
-            disease = new DOTerm();
-            disease.setCurie(doTermId);
-            doTermDAO.persist(disease);
-        }
+        if(disease == null) return;
         
         Reference reference = referenceDAO.find(publicationId);
         
@@ -61,8 +48,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             reference.setCurie(publicationId);
             referenceDAO.persist(reference);
         }
+        
+        DiseaseAnnotation da = new DiseaseAnnotation();
 
-        da.setSubject(gene);
+        da.setSubject(entity);
         da.setObject(disease);
         da.setReferenceList(List.of(reference));
         create(da);
