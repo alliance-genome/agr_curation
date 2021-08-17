@@ -9,8 +9,8 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class ReferenceDAO extends BaseSQLDAO<Reference> {
 
-	protected ReferenceDAO() {
-		super(Reference.class);
-	}
+    protected ReferenceDAO() {
+        super(Reference.class);
+    }
 
 }

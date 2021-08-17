@@ -11,15 +11,15 @@ import java.util.List;
 @Data
 public class DiseaseAnnotationDTO extends BaseDTO {
 
-	private String objectId;
-	private String objectName;
-	private Date dateAssigned;
-	private List<DataProviderDTO> dataProvider;
-	private EvidenceDTO evidence;
-	private ObjectRelationDTO objectRelation;
-	private List<ConditionRelationDTO> conditionRelations;
-	private List<String> primaryGeneticEntityIDs;
-	@JsonProperty("DOid")
-	private String doId;
+    private String objectId;
+    private String objectName;
+    private Date dateAssigned;
+    private List<DataProviderDTO> dataProvider;
+    private EvidenceDTO evidence;
+    private ObjectRelationDTO objectRelation;
+    private List<ConditionRelationDTO> conditionRelations;
+    private List<String> primaryGeneticEntityIDs;
+    @JsonProperty("DOid")
+    private String doId;
 
 }

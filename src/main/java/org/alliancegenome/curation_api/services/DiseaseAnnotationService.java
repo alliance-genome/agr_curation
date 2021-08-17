@@ -18,22 +18,22 @@ import javax.transaction.Transactional;
 @RequestScoped
 public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
-	@Inject DiseaseAnnotationDAO geneDAO;
-	
-	@Override
-	@PostConstruct
-	protected void init() {
-		setSQLDao(geneDAO);
-	}
-	
-	public SearchResults<DiseaseAnnotation> getAllDiseaseAnnotation(Pagination pagination) {
-		return getAll(pagination);
-	}
+    @Inject DiseaseAnnotationDAO geneDAO;
+    
+    @Override
+    @PostConstruct
+    protected void init() {
+        setSQLDao(geneDAO);
+    }
+    
+    public SearchResults<DiseaseAnnotation> getAllDiseaseAnnotation(Pagination pagination) {
+        return getAll(pagination);
+    }
 
-	@Transactional
-	public DiseaseAnnotation createAnnotation(DiseaseAnnotation annotation) {
-		return geneDAO.persist(annotation);
-	}
+    @Transactional
+    public DiseaseAnnotation createAnnotation(DiseaseAnnotation annotation) {
+        return geneDAO.persist(annotation);
+    }
 
 
 }

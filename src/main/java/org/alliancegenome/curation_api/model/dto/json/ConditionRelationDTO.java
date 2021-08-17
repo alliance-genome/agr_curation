@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class ConditionRelationDTO extends BaseDTO {
 
-	private String conditionRelationType ;
-	private List<ConditionDTO> conditions;
+    private String conditionRelationType ;
+    private List<ConditionDTO> conditions;
 }

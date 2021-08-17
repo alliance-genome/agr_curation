@@ -9,8 +9,8 @@ import javax.enterprise.context.ApplicationScoped;
 @ApplicationScoped
 public class DiseaseAnnotationDAO extends BaseSQLDAO<DiseaseAnnotation> {
 
-	protected DiseaseAnnotationDAO() {
-		super(DiseaseAnnotation.class);
-	}
-	
+    protected DiseaseAnnotationDAO() {
+        super(DiseaseAnnotation.class);
+    }
+    
 }

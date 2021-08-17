@@ -8,9 +8,9 @@ import java.util.List;
 @Data
 public class ConditionDTO extends BaseDTO {
 
-	private String conditionStatement ;
-	private String conditionClassId ;
-	private String chemicalOntologyId ;
-	private String anatomicalOntologyId ;
-	private String ncbitaxonId ;
+    private String conditionStatement ;
+    private String conditionClassId ;
+    private String chemicalOntologyId ;
+    private String anatomicalOntologyId ;
+    private String ncbitaxonId ;
 }

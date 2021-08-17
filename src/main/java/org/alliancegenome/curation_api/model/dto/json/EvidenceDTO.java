@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class EvidenceDTO extends BaseDTO {
 
-	private PublicationDTO publication;
-	private List<String> evidenceCodes;
+    private PublicationDTO publication;
+    private List<String> evidenceCodes;
 }

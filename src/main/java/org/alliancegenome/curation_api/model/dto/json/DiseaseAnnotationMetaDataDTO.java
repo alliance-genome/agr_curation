@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class DiseaseAnnotationMetaDataDTO extends BaseDTO {
 
-	private MetaDataDTO metaData;
-	private List<DiseaseAnnotationDTO> data;
+    private MetaDataDTO metaData;
+    private List<DiseaseAnnotationDTO> data;
 }

@@ -17,12 +17,12 @@ import javax.inject.Inject;
 @RequestScoped
 public class DiseaseAnnotationController extends BaseController<DiseaseAnnotationService, DiseaseAnnotation, DiseaseAnnotationDAO> implements DiseaseAnnotationRESTInterface {
 
-	@Inject DiseaseAnnotationService annotationService;
-	
-	@Override
-	@PostConstruct
-	protected void init() {
-		setService(annotationService);
-	}
+    @Inject DiseaseAnnotationService annotationService;
+    
+    @Override
+    @PostConstruct
+    protected void init() {
+        setService(annotationService);
+    }
 
 }

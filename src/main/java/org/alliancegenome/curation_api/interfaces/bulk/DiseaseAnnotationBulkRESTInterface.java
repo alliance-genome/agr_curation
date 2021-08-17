@@ -15,9 +15,9 @@ import javax.ws.rs.core.MediaType;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DiseaseAnnotationBulkRESTInterface {
-	
-	@POST
-	@Path("/annotationFile")
-	public String updateDiseaseAnnotation(DiseaseAnnotationMetaDataDTO geneData);
+    
+    @POST
+    @Path("/annotationFile")
+    public String updateDiseaseAnnotation(DiseaseAnnotationMetaDataDTO geneData);
 
 }

@@ -18,13 +18,13 @@ import javax.transaction.Transactional;
 @RequestScoped
 public class ReferenceService extends BaseService<Reference, ReferenceDAO> {
 
-	@Inject
-	ReferenceDAO referenceDAO;
-	
-	@Override
-	@PostConstruct
-	protected void init() {
-		setSQLDao(referenceDAO);
-	}
-	
+    @Inject
+    ReferenceDAO referenceDAO;
+    
+    @Override
+    @PostConstruct
+    protected void init() {
+        setSQLDao(referenceDAO);
+    }
+    
 }

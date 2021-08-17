@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class PublicationDTO extends BaseDTO {
 
-	private String publicationId;
-	private CrossReferenceDTO crossReference;
+    private String publicationId;
+    private CrossReferenceDTO crossReference;
 }
