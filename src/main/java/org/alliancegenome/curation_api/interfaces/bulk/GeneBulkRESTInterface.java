@@ -11,9 +11,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneBulkRESTInterface {
-	
-	@POST
-	@Path("/bgifile")
-	public String updateBGI(GeneMetaDataDTO geneData);
+    
+    @POST
+    @Path("/bgifile")
+    public String updateBGI(GeneMetaDataDTO geneData);
 
 }

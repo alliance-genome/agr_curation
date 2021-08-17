@@ -11,10 +11,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "Ontology - MP")
 @Produces(MediaType.APPLICATION_JSON)
 public interface MpTermBulkRESTInterface {
-	
-	@POST
-	@Path("/owl")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Boolean updateMpTerms(@Context UriInfo uriInfo, @RequestBody RDF rdf);
-	
+    
+    @POST
+    @Path("/owl")
+    @Consumes(MediaType.APPLICATION_XML)
+    public Boolean updateMpTerms(@Context UriInfo uriInfo, @RequestBody RDF rdf);
+    
 }

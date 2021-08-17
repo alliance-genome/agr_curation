@@ -6,10 +6,10 @@ import lombok.Data;
 
 @Data
 public class GeneDTO extends BaseDTO {
-	private BasicGeneticEntityDTO basicGeneticEntity;
-	private String name;
-	private String symbol;
-	private String geneSynopsis;
-	private String geneSynopsisUrl;
-	private String soTermId;
+    private BasicGeneticEntityDTO basicGeneticEntity;
+    private String name;
+    private String symbol;
+    private String geneSynopsis;
+    private String geneSynopsisUrl;
+    private String soTermId;
 }

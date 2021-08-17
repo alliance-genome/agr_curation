@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class GenomeLocationsDTO extends BaseDTO {
 
-	private String assembly;
-	private Number startPosition;
-	private Number endPosition;
-	private String chromosome;
-	private String strand;
+    private String assembly;
+    private Number startPosition;
+    private Number endPosition;
+    private String chromosome;
+    private String strand;
 
 }

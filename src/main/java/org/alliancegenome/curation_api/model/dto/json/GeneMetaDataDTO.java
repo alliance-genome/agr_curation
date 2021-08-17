@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 public class GeneMetaDataDTO extends BaseDTO {
 
-	private MetaDataDTO metaData;
-	private List<GeneDTO> data;
+    private MetaDataDTO metaData;
+    private List<GeneDTO> data;
 }
