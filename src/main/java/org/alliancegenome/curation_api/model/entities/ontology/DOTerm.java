@@ -10,9 +10,7 @@ import lombok.*;
 @Audited
 @Indexed
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = false)
-@ToString
+@Data @EqualsAndHashCode(callSuper = false) @ToString(callSuper = true)
 public class DOTerm extends OntologyTerm {
 
 }
