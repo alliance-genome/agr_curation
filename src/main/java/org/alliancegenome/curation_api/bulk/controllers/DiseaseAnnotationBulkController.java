@@ -33,8 +33,8 @@ public class DiseaseAnnotationBulkController implements DiseaseAnnotationBulkRES
         ph.startProcess("Disease Annotation Update", annotationData.getData().size());
         Map<String, Object> params = new HashMap<>();
         annotationData.getData().forEach(annotation -> {
-            
             diseaseService.upsert(annotation.getObjectId(), annotation.getDoId(), annotation.getEvidence().getPublication().getPublicationId());
+            ph.progressProcess();
         });
         ph.finishProcess();
         return "OK";

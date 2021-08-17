@@ -8,12 +8,12 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 @ApplicationScoped
 public class GeneDAO extends BaseSQLDAO<Gene> {
 
-	protected GeneDAO() {
-		super(Gene.class);
-	}
-	
-	public Gene getByIdOrCurie(String id) {
-		return find(id);
-	}
+    protected GeneDAO() {
+        super(Gene.class);
+    }
+    
+    public Gene getByIdOrCurie(String id) {
+        return find(id);
+    }
 
 }
