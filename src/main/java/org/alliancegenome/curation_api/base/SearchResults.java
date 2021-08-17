@@ -11,8 +11,8 @@ import lombok.Data;
 @Data
 public class SearchResults<E> {
 
-	@JsonView(View.FieldsOnly.class)
-	private Long totalResults;
-	@JsonView(View.FieldsOnly.class)
-	private List<E> results;
+    @JsonView(View.FieldsOnly.class)
+    private Long totalResults;
+    @JsonView(View.FieldsOnly.class)
+    private List<E> results;
 }
