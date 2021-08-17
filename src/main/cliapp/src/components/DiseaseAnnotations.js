@@ -7,47 +7,66 @@ import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 export const DiseaseAnnotations = () => {
 
     const [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
-    const [multiSortMeta, setMultiSortMeta] = useState([]);
+
     const [page, setPage] = useState(0);
-    const [first, setFirst] = useState(0);
+    const [multiSortMeta, setMultiSortMeta] = useState([]);
+    const [filters, setFilters] = useState({});
     const [rows, setRows] = useState(50);
     const [totalRecords, setTotalRecords] = useState(0);
-    const [filters, setFilters] = useState();
+    const [first, setFirst] = useState(0);
     const [expandedRows, setExpandedRows] = useState(null);
 
 
     useEffect(() => {
 
         const diseaseAnnotationService = new DiseaseAnnotationService();
-        diseaseAnnotationService.getDiseaseAnnotations(rows, page).then(searchResults => {
+        diseaseAnnotationService.getDiseaseAnnotations(rows, page, multiSortMeta, filters).then(searchResults => {
+            
             setDiseaseAnnotations(searchResults.results);
             setTotalRecords(searchResults.totalResults);
-
+            
 
         });
 
-    }, [rows, page]);
+    }, [rows, page, multiSortMeta, filters]);
 
     const onLazyLoad = (event) => {
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
+
     }
 
-    const onSort = (event) => {
-        setMultiSortMeta(event.multiSortMeta)
-    }
 
     const onFilter = (event) => {
         //console.log("On Filter: ");
         //console.log(event.filters);
         setFilters(event.filters);
       }
-
+    
+      const onSort = (event) => {
+        //console.log("On Sort: ");
+        //console.log(event);
+        var found = false;
+        var newSort = [...multiSortMeta];
+    
+        newSort.forEach((o) => {
+          if(o.field === event.multiSortMeta[0].field) {
+            o.order = event.multiSortMeta[0].order;
+            found = true;
+          }
+        });
+    
+        if(!found) {
+          setMultiSortMeta(newSort.concat(event.multiSortMeta));
+        } else {
+          setMultiSortMeta(newSort);
+        }
+      }
 
 
     const publicationTemplate = (rowData) => {
-        console.log(rowData);
+
         if(rowData)
             {return <div dangerouslySetInnerHTML={{__html: rowData.referenceList[0].curie}} />
         }
@@ -63,16 +82,17 @@ export const DiseaseAnnotations = () => {
             <div>
                 <div className="card">
                     <DataTable value={diseaseAnnotations} className="p-datatable-md" 
-            
+                        sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
+                        first={first} onFilter={onFilter} filters={filters}
                         dataKey="id" expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)}
                         paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy 
                         paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                         currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
                         paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
-                        <Column field="id" header="Curie" sortable ></Column>
-                        <Column field="subject.curie" header="Gene" sortable ></Column>
-                        <Column field="object.curie" header="Disease" sortable ></Column>
-                        <Column field="referenceList" header="Reference" body={publicationTemplate} sortable ></Column>
+                        <Column field="id" header="Id" ></Column>
+                        <Column field="subject.curie" header="Gene" ></Column>
+                        <Column field="object.curie" header="Disease" ></Column>
+                        <Column field="referenceList" header="Reference" body={publicationTemplate} ></Column>
 
                     </DataTable>
                 </div>
