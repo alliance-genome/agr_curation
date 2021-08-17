@@ -16,6 +16,6 @@ import lombok.*;
 @ToString
 public class Synonym extends BaseGeneratedEntity {
 
-	private String name;
+    private String name;
 
 }

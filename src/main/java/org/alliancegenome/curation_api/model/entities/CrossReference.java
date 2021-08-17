@@ -20,10 +20,10 @@ import lombok.*;
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
 public class CrossReference extends BaseCurieEntity {
 
-	@ElementCollection
-	private List<String> pageAreas; 
-	
-	private String displayName;
-	private String prefix;
-	
+    @ElementCollection
+    private List<String> pageAreas; 
+    
+    private String displayName;
+    private String prefix;
+    
 }

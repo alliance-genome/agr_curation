@@ -11,9 +11,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleBulkRESTInterface {
-	
-	@POST
-	@Path("/allelefile")
-	public String updateAlleles(AlleleMetaDataDTO alleleData);
+    
+    @POST
+    @Path("/allelefile")
+    public String updateAlleles(AlleleMetaDataDTO alleleData);
 
 }

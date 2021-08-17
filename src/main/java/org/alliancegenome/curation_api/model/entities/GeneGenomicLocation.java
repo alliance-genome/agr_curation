@@ -13,12 +13,12 @@ import lombok.*;
 @EqualsAndHashCode(callSuper = false)
 @ToString
 public class GeneGenomicLocation extends BaseGeneratedEntity {
-	
-	//private Subject subject;
-	//private Predicate predicate;
-	//private AGRObject object;
-	private String assembly;
-	private Integer startPos;
-	private Integer endPos;
-	
+    
+    //private Subject subject;
+    //private Predicate predicate;
+    //private AGRObject object;
+    private String assembly;
+    private Integer startPos;
+    private Integer endPos;
+    
 }

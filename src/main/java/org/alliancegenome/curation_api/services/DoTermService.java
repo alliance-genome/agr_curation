@@ -30,7 +30,7 @@ public class DoTermService extends BaseService<DOTerm, DoTermDAO> implements Run
     @Transactional
     public DOTerm upsert(DOTerm dto) {
 
-        DOTerm term = get(dto.getCurie());
+        DOTerm term = doTermDAO.find(dto.getCurie());
 
         if(term == null) {
             term = new DOTerm();

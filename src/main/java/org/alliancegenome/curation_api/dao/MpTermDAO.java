@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.*;
 @ApplicationScoped
 public class MpTermDAO extends BaseSQLDAO<MPTerm> {
 
-	protected MpTermDAO() {
-		super(MPTerm.class);
-	}
+    protected MpTermDAO() {
+        super(MPTerm.class);
+    }
 
 }

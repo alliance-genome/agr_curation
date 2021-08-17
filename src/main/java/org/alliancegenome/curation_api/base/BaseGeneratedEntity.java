@@ -15,20 +15,20 @@ import lombok.Data;
 @Data
 @MappedSuperclass
 public class BaseGeneratedEntity extends BaseEntity {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@JsonView({View.FieldsOnly.class})
-	private Long id;
-	
-	@FullTextField
-	@CreationTimestamp
-	@JsonView({View.FieldsOnly.class})
-	private LocalDateTime created;
-	
-	@FullTextField
-	@UpdateTimestamp
-	@JsonView({View.FieldsOnly.class})
-	private LocalDateTime lastUpdated;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @JsonView({View.FieldsOnly.class})
+    private Long id;
+    
+    @FullTextField
+    @CreationTimestamp
+    @JsonView({View.FieldsOnly.class})
+    private LocalDateTime created;
+    
+    @FullTextField
+    @UpdateTimestamp
+    @JsonView({View.FieldsOnly.class})
+    private LocalDateTime lastUpdated;
 
 }
