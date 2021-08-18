@@ -15,6 +15,7 @@ import { GenesComponent } from './components/GenesComponent';
 import { DiseasesComponent } from './components/DiseasesComponent';
 import { AllelesComponent } from './components/AllelesComponent';
 import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
+import { FMSComponent } from './components/FMSComponent';
 
 import { ButtonDemo } from './components/ButtonDemo';
 import { ChartDemo } from './components/ChartDemo';
@@ -133,6 +134,7 @@ const App = () => {
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
                 { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
+                { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
             ]
         }
         // {
@@ -290,6 +292,7 @@ const App = () => {
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/diseases" component={DiseasesComponent} />
+                <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/formlayout" component={FormLayoutDemo} />
                 <Route path="/input" component={InputDemo} />
                 <Route path="/floatlabel" component={FloatLabelDemo} />

@@ -12,9 +12,9 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.model.dto.Pagination;
-import org.alliancegenome.curation_api.model.dto.json.GeneDTO;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 
 import io.quarkus.runtime.*;
 import lombok.extern.jbosslog.JBossLog;
@@ -84,11 +84,12 @@ public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable 
     @Inject
     ConnectionFactory connectionFactory;
     
-    private int threadCount = 5;
+    private int threadCount = 3;
 
     private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
 
     void onStart(@Observes StartupEvent ev) {
+        log.info("GeneService Queue Starting:");
         for(int i = 0; i < threadCount; i++) {
             scheduler.submit(new Thread(this));
         }
@@ -105,6 +106,8 @@ public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable 
             while (true) {
                 processUpdate(consumer.receiveBody(GeneDTO.class));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }

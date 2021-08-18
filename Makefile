@@ -2,7 +2,7 @@ PROCS = -T 8
 PACKAGE = clean package
 #FLAGS = -DskipTests=true -ntp -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
 FLAGS = -Dquarkus.package.type=uber-jar
-RELEASE = 0.0.2
+RELEASE = 0.0.3
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
@@ -27,11 +27,11 @@ apirun:
 	mvn compile quarkus:dev
 
 docker:
-	docker build -t 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.2 .
+	docker build -t 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:${RELEASE} .
 docker-push:
-	docker push 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.2
+	docker push 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:${RELEASE}
 docker-run:
-	docker run --rm -it -p 8080:8080 -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://192.168.1.251:5432/curation -e QUARKUS_ARTEMIS_URL=tcp://192.168.1.251:61616 -e QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS=192.168.1.251:9200 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.2
+	docker run --rm -it -p 8080:8080 -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://192.168.1.251:5432/curation -e QUARKUS_ARTEMIS_URL=tcp://192.168.1.251:61616 -e QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS=192.168.1.251:9200 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:${RELEASE}
 
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar

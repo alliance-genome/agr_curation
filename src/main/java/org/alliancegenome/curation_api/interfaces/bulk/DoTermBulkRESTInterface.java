@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.bulk;
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
 
-import org.alliancegenome.curation_api.model.dto.xml.RDF;
+import org.alliancegenome.curation_api.model.ingest.xml.dto.RDF;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -11,10 +11,10 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "Ontology - DO")
 @Produces(MediaType.APPLICATION_JSON)
 public interface DoTermBulkRESTInterface {
-	
-	@POST
-	@Path("/owl")
-	@Consumes(MediaType.APPLICATION_XML)
-	public Boolean updateDoTerms(@Context UriInfo uriInfo, @RequestBody RDF rdf);
-	
+    
+    @POST
+    @Path("/owl")
+    @Consumes(MediaType.APPLICATION_XML)
+    public Boolean updateDoTerms(@Context UriInfo uriInfo, @RequestBody RDF rdf);
+    
 }

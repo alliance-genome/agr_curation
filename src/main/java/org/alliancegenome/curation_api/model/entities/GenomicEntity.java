@@ -21,6 +21,7 @@ import lombok.*;
 public class GenomicEntity extends BiologicalEntity {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @Column(columnDefinition="TEXT")
     @JsonView({View.FieldsOnly.class})
     private String name;
 

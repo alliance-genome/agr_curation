@@ -12,9 +12,9 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.model.dto.Pagination;
-import org.alliancegenome.curation_api.model.dto.json.AlleleDTO;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 
 import io.quarkus.runtime.*;
 import lombok.extern.jbosslog.JBossLog;
@@ -64,11 +64,12 @@ public class AlleleService extends BaseService<Allele, AlleleDAO> implements Run
     @Inject
     ConnectionFactory connectionFactory;
     
-    private int threadCount = 5;
+    private int threadCount = 3;
 
     private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
 
     void onStart(@Observes StartupEvent ev) {
+        log.info("AlleleService Queue Starting:");
         for(int i = 0; i < threadCount; i++) {
             scheduler.submit(new Thread(this));
         }
@@ -85,6 +86,8 @@ public class AlleleService extends BaseService<Allele, AlleleDAO> implements Run
             while (true) {
                 processUpdate(consumer.receiveBody(AlleleDTO.class));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }
