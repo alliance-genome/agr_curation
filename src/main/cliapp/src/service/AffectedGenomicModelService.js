@@ -1,7 +1,8 @@
 import axios from 'axios';
 
-export class AlleleService {
-    getAlleles(limit, page, sorts, filters) {
+export class AffectedGenomicModelService {
+    getAgms(limit, page, sorts, filters) {
+
         var sortOptions = {};
 
         var sortArray = {};
@@ -25,6 +26,6 @@ export class AlleleService {
             sortOptions["sortOrders"] = sortArray;
         }
 
-        return axios.post('/api/allele/search?limit=' + limit + '&page=' + page, sortOptions).then(res => res.data);
+        return axios.post('/api/agm/search?limit=' + limit + '&page=' + page, sortOptions).then(res => res.data);
     }
 }

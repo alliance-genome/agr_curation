@@ -10,7 +10,7 @@ export const FMSComponent = () => {
   const [dataFiles, setDataFiles] = useState(null);
   const [multiSortMeta, setMultiSortMeta] = useState([]);
   const [filters, setFilters] = useState({});
-  //const [page, setPage] = useState(0);
+  const [snapShotDate, setSnapShotDate] = useState(0);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(20);
   const [releases, setReleases] = useState([]);
@@ -28,6 +28,7 @@ export const FMSComponent = () => {
 
     fmsService.getSnapshot(selectedRelease).then(results => {
       setDataFiles(results.dataFiles);
+      setSnapShotDate(results.snapShotDate);
     });
 
   }, [selectedRelease]);
@@ -63,7 +64,7 @@ export const FMSComponent = () => {
   };
 
   const uploadTemplate = (rowData) => {
-    return <div>{new Date(rowData.uploadDate).toLocaleString()}</div>
+    return <div>{new Date(rowData.uploadDate).toGMTString()}</div>
   };
 
   const customPage = (event) => {
@@ -84,7 +85,8 @@ export const FMSComponent = () => {
       <div>
         <div className="card">
           <h2>FMS Data</h2>
-          Release Version: <Dropdown value={selectedRelease} optionValue="releaseVersion" options={releases} optionLabel="releaseVersion" placeholder="Release Versions" onChange={onReleaseChange} />
+          Release Version: <Dropdown value={selectedRelease} optionValue="releaseVersion" options={releases} optionLabel="releaseVersion" placeholder="Choose Release Version" onChange={onReleaseChange} />
+          <br />Snapshot Date: { new Date(snapShotDate).toGMTString() }
           <DataTable value={dataFiles} className="p-datatable-sm"
             paginator onPage={customPage} first={first}
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
