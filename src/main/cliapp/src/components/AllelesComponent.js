@@ -3,6 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { AlleleService } from '../service/AlleleService';
+import { useQuery } from 'react-query';
 
 export const AllelesComponent = () => {
 
@@ -14,14 +15,16 @@ export const AllelesComponent = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  useEffect(() => {
-    const alleleService = new AlleleService();
-    alleleService.getAlleles(rows, page, multiSortMeta, filters).then(searchReults => {
-      setAlleles(searchReults.results);
-      setTotalRecords(searchReults.totalResults);
-    });
+  const alleleService = new AlleleService();
 
-  }, [rows, page, multiSortMeta, filters]);
+  const { isError } = useQuery(['alleles', rows, page, multiSortMeta, filters],
+    () => alleleService.getAlleles(rows, page, multiSortMeta, filters), {
+    onSuccess: (data) => {
+      setAlleles(data.results);
+      setTotalRecords(data.totalResults);
+    },
+    keepPreviousData: true
+  })
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -38,8 +41,8 @@ export const AllelesComponent = () => {
   const onSort = (event) => {
     //console.log("On Sort: ");
     //console.log(event);
-    var found = false;
-    var newSort = [...multiSortMeta];
+    let found = false;
+    const newSort = [...multiSortMeta];
 
     newSort.forEach((o) => {
       if(o.field === event.multiSortMeta[0].field) {

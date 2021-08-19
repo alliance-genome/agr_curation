@@ -17,7 +17,7 @@ export const GenesComponent = () => {
   
   const geneService = new GeneService();
 
-  const {isFetching} = useQuery(['genes', rows, page, multiSortMeta, filters],
+  const { isError } = useQuery(['genes', rows, page, multiSortMeta, filters],
     () => geneService.getGenes(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setGenes(data.results);
