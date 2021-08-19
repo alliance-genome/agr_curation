@@ -35,7 +35,7 @@ Maven version 3.8.1 should be installed in order to compile all the code and lib
 ```bash
 > brew install maven # Mac
 > apt-get install maven # Linux ubuntu
-> # Windows: This part of the documentation still needs writing
+> # Windows: Use WSL to run Ubuntu and run entire setup there
 ```
 
 ### Docker setup
@@ -88,7 +88,7 @@ The output will look something like the following:
 docker run -d --net curation -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.9.0
 ```
 
-If you point a browser over to `http://loaclhost:9200` you should see something like the following:
+If you point a browser over to `http://localhost:9200` you should see something like the following:
 
 ```bash
 	{
@@ -119,7 +119,7 @@ If you point a browser over to `http://loaclhost:9200` you should see something 
 docker run -d --net curation -p 9000:9000 --name agr.cerebro.server yannart/cerebro
 ```
 
-Connect to this via going to `http://localhost:9000` and this is used to connect to the ES server. Which will be running at `http://elasticsearch:9200` inside docker or `http://localhost:9200` on the local machine.
+Connect to this by browsing to `http://localhost:9000`, this is used to connect to the ES server, Which will be running at `http://elasticsearch:9200` inside docker or `http://localhost:9200` on the local machine.
 
 ### Active MQ (Message Queue)
 
@@ -130,7 +130,7 @@ docker run -d --net curation -p 5672:5672 -p 8161:8161 -p 61616:61616 -e ARTEMIS
 
 ```
 
-The Active MQ is used to queue incomnig update requests the locally running interface can be found at: `http://localhost:8161/console`
+The Active MQ is used to queue incoming update requests, the locally running interface can be found at: `http://localhost:8161/console`
 
 ### Up and Running Servers
 
@@ -184,7 +184,7 @@ npm install
 ...
 ```
 
-This will start by building the UI and then will package the UI into the API and build the API. Into a single linux binary file under the target directory. 
+This will start by building the UI and then will package the UI into the API and build the API, into a single linux binary file under the target directory. 
 
 ### Building for Docker Release
 
@@ -215,7 +215,8 @@ __  ____  __  _____   ___  __ ____  ______
 ...
 ```
 
-This will run just the API and you can find it running at: [http://localhost:8080](http://localhost:8080) however if the API was built without the UI there will be nothing to see at that url. However there is a swagger interface running at: [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui)
+This will run just the API and you can find it running at: [http://localhost:8080](http://localhost:8080), however if the API was built without the UI there will be nothing to see at that url. There is a swagger interface running at: [http://localhost:8080/swagger-ui](http://localhost:8080/swagger-ui).  
+**Windows note**: If you're running the curation software through WSL (on Windows), Java might serve this interface through IPv6, in which case `localhost:8080` will be accessible within WSL, but not from your windows browser. Instead, you can then access the API and the swagger interface in your browser at it's IPv6 counterpart: [http://[::1]:8080](http://[::1]:8080).
 
 Following the prompts at the bottom of the screen after the server is up and running. 
 
