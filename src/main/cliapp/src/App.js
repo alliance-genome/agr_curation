@@ -132,7 +132,7 @@ const App = () => {
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' },
-                { label: 'DiseaseAnnotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
+                { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
             ]
         }
         // {
