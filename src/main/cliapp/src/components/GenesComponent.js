@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -17,7 +17,7 @@ export const GenesComponent = () => {
   
   const geneService = new GeneService();
 
-  const { isError, error, isLoading } = useQuery(['genes', rows, page, multiSortMeta, filters],
+  const { isError, error } = useQuery(['genes', rows, page, multiSortMeta, filters],
     () => geneService.getGenes(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setGenes(data.results);
