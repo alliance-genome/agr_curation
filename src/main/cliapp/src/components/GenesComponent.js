@@ -3,6 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { GeneService } from '../service/GeneService';
+import { useQuery } from 'react-query';
 
 export const GenesComponent = () => {
 
@@ -14,13 +15,18 @@ export const GenesComponent = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
   
-  useEffect(() => {
-    const geneService = new GeneService();
-    geneService.getGenes(rows, page, multiSortMeta, filters).then(searchReults => {
-      setGenes(searchReults.results);
-      setTotalRecords(searchReults.totalResults);
-    });
-  }, [rows, page, multiSortMeta, filters]);
+  const geneService = new GeneService();
+
+  const {isFetching} = useQuery(['genes', rows, page, multiSortMeta, filters],
+    () => geneService.getGenes(rows, page, multiSortMeta, filters), {
+    onSuccess: (data) => {
+      setGenes(data.results);
+      setTotalRecords(data.totalResults);
+    },
+    keepPreviousData: true
+  })
+
+
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -37,8 +43,8 @@ export const GenesComponent = () => {
   const onSort = (event) => {
     //console.log("On Sort: ");
     //console.log(event);
-    var found = false;
-    var newSort = [...multiSortMeta];
+    let found = false;
+    const newSort = [...multiSortMeta];
 
     newSort.forEach((o) => {
       if(o.field === event.multiSortMeta[0].field) {
