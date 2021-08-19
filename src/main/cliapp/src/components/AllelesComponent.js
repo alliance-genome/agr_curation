@@ -17,7 +17,7 @@ export const AllelesComponent = () => {
 
   const alleleService = new AlleleService();
 
-  const { isError } = useQuery(['alleles', rows, page, multiSortMeta, filters],
+  const { isError, error } = useQuery(['alleles', rows, page, multiSortMeta, filters],
     () => alleleService.getAlleles(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setAlleles(data.results);
@@ -25,6 +25,15 @@ export const AllelesComponent = () => {
     },
     keepPreviousData: true
   })
+
+  if(isError){
+    return(
+      <div>
+        <h5>There was an error</h5>
+        <p>{error.message}</p>
+      </div>
+    )
+  }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);

@@ -21,7 +21,7 @@ export const DiseaseAnnotationsComponent = () => {
   const diseaseAnnotationService = new DiseaseAnnotationService();
 
 
-  useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
+  const { isError, error }  = useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
     () => diseaseAnnotationService.getDiseaseAnnotations(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setDiseaseAnnotations(data.results);
@@ -31,6 +31,16 @@ export const DiseaseAnnotationsComponent = () => {
 
   })
 
+
+  if(isError){
+    return(
+      <div>
+        <h5>There was an error</h5>
+        <p>{error.message}</p>
+      </div>
+    )
+  }
+  
 
   const onLazyLoad = (event) => {
     setRows(event.rows);

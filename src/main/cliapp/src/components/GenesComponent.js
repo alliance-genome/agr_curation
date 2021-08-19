@@ -17,7 +17,7 @@ export const GenesComponent = () => {
   
   const geneService = new GeneService();
 
-  const { isError } = useQuery(['genes', rows, page, multiSortMeta, filters],
+  const { isError, error, isLoading } = useQuery(['genes', rows, page, multiSortMeta, filters],
     () => geneService.getGenes(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setGenes(data.results);
@@ -27,6 +27,14 @@ export const GenesComponent = () => {
   })
 
 
+  if(isError){
+    return(
+      <div>
+        <h5>There was an error</h5>
+        <p>{error.message}</p>
+      </div>
+    )
+  }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
