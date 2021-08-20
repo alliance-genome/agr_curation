@@ -6,7 +6,7 @@ import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 
-import org.alliancegenome.curation_api.model.dto.Pagination;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.hibernate.search.engine.search.query.*;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;

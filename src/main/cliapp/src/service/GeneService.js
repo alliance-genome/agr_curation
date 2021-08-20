@@ -5,15 +5,18 @@ export class GeneService {
     var sortOptions = {};
 
     var sortArray = {};
-    sorts.forEach((o) => {
-      sortArray[o.field] = o.order;
-    });
+    if(sorts) {
+      sorts.forEach((o) => {
+        sortArray[o.field] = o.order;
+      });
+    }
 
     var filterArray = {};
-
-    Object.keys(filters).forEach((key) => {
-      filterArray[key] = filters[key]["value"];
-    });
+    if(filters) {
+      Object.keys(filters).forEach((key) => {
+        filterArray[key] = filters[key]["value"];
+      });
+    }
 
     if(Object.keys(filterArray).length > 0) {
       sortOptions["searchFilters"] = filterArray;

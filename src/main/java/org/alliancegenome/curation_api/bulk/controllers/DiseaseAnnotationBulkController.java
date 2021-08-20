@@ -2,11 +2,11 @@ package org.alliancegenome.curation_api.bulk.controllers;
 
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.interfaces.bulk.DiseaseAnnotationBulkRESTInterface;
-import org.alliancegenome.curation_api.model.dto.json.DiseaseAnnotationMetaDataDTO;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.services.DoTermService;
 import org.alliancegenome.curation_api.services.GeneService;
