@@ -15,6 +15,13 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { ProductService } from '../service/ProductService';
 import { EventService } from '../service/EventService';
 
+
+import { GeneService } from '../service/GeneService';
+import { AlleleService } from '../service/AlleleService';
+import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
+import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
+
+
 const dropdownCities = [
     { name: 'New York', code: 'NY' },
     { name: 'Rome', code: 'RM' },
@@ -61,11 +68,36 @@ export const Dashboard = () => {
     const [events, setEvents] = useState(null);
     const [products, setProducts] = useState(null);
 
+    const [geneCount, setGeneCount] = useState(0);
+    const [alleleCount, setAlleleCount] = useState(0);
+    const [diseaseAnnotationCount, setDiseaseAnnotationCount] = useState(0);
+    const [agmCount, setAgmCount] = useState(0);
+
     useEffect(() => {
         const productService = new ProductService();
         const eventService = new EventService();
         productService.getProductsSmall().then(data => setProducts(data));
         eventService.getEvents().then(data => setEvents(data));
+
+        const geneService = new GeneService();
+        geneService.getGenes(0, 0).then(searchReults => {
+          setGeneCount(searchReults.totalResults);
+        });
+
+        const alleleService = new AlleleService();
+        alleleService.getAlleles(0, 0).then(searchReults => {
+          setAlleleCount(searchReults.totalResults);
+        });
+        const diseaseAnnotationService = new DiseaseAnnotationService();
+        diseaseAnnotationService.getDiseaseAnnotations(0, 0).then(searchResults => {  
+          setDiseaseAnnotationCount(searchResults.totalResults);
+        });
+
+        const agmService = new AffectedGenomicModelService();
+        agmService.getAgms(0, 0).then(searchResults => {
+          setAgmCount(searchResults.totalResults);
+        });
+
     }, []);
 
     const formatCurrency = (value) => {
@@ -84,25 +116,32 @@ export const Dashboard = () => {
 
     return (
         <div className="p-grid p-fluid dashboard">
-            <div className="p-col-12 p-lg-4">
+            <div className="p-col-12 p-lg-3">
                 <div className="card summary">
-                    <span className="title">Users</span>
-                    <span className="detail">Number of visitors</span>
-                    <span className="count visitors">12</span>
+                    <span className="title">Genes</span>
+                    <span className="detail">Total number of genes</span>
+                    <span className="count visitors">{ geneCount }</span>
                 </div>
             </div>
-            <div className="p-col-12 p-lg-4">
+            <div className="p-col-12 p-lg-3">
                 <div className="card summary">
-                    <span className="title">Sales</span>
-                    <span className="detail">Number of purchases</span>
-                    <span className="count purchases">534</span>
+                    <span className="title">Alleles</span>
+                    <span className="detail">Total number of alleles</span>
+                    <span className="count purchases">{ alleleCount }</span>
                 </div>
             </div>
-            <div className="p-col-12 p-lg-4">
+            <div className="p-col-12 p-lg-3">
                 <div className="card summary">
-                    <span className="title">Revenue</span>
-                    <span className="detail">Income for today</span>
-                    <span className="count revenue">$3,200</span>
+                    <span className="title">Disease Annotations</span>
+                    <span className="detail">Total number of disease annotations</span>
+                    <span className="count revenue">{ diseaseAnnotationCount }</span>
+                </div>
+            </div>
+            <div className="p-col-12 p-lg-3">
+                <div className="card summary">
+                    <span className="title">Affected Genomic Models</span>
+                    <span className="detail">Total number of Affected Genomic Models</span>
+                    <span className="count agm">{ agmCount }</span>
                 </div>
             </div>
 

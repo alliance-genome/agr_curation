@@ -1,27 +1,38 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.*;
 
 @Audited
 @Indexed
 @Entity
-@Data
-@EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"affected_Genomic_Model"})
+@Data @EqualsAndHashCode(callSuper = false)
+@ToString(exclude = {"Affected_Genomic_Model"})
 public class AffectedGenomicModel extends GenomicEntity {
 
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
+    private Subtype subtype;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @JsonView({View.FieldsOnly.class})
+    private String parental_population;
+
+    //private List<AffectedGenomicModelComponent> components;
+    //private List<SequenceTargetingReagent> sequence_targeting_reagents;
+    
+    public enum Subtype {
+        strain, genotype;
+    }
 }
 

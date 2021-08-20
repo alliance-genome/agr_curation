@@ -5,9 +5,9 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.base.SearchResults;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.model.dto.Pagination;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.input.Pagination;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;

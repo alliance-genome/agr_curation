@@ -56,11 +56,12 @@ public class DoTermService extends BaseService<DOTerm, DoTermDAO> implements Run
     @Inject
     ConnectionFactory connectionFactory;
     
-    private int threadCount = 5;
+    private int threadCount = 3;
 
     private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
 
     void onStart(@Observes StartupEvent ev) {
+        log.info("DoTermService Queue Starting:");
         for(int i = 0; i < threadCount; i++) {
             scheduler.submit(new Thread(this));
         }
@@ -77,6 +78,8 @@ public class DoTermService extends BaseService<DOTerm, DoTermDAO> implements Run
             while (true) {
                 upsert(consumer.receiveBody(DOTerm.class));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
     }

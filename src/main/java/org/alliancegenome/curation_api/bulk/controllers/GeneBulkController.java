@@ -5,7 +5,7 @@ import javax.inject.Inject;
 import javax.jms.*;
 
 import org.alliancegenome.curation_api.interfaces.bulk.GeneBulkRESTInterface;
-import org.alliancegenome.curation_api.model.dto.json.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;

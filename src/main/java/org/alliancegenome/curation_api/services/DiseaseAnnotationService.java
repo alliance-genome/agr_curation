@@ -4,9 +4,9 @@ import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.base.SearchResults;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.model.dto.Pagination;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.input.Pagination;
 
 import java.util.*;
 

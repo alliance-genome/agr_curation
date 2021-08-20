@@ -4,7 +4,7 @@ import java.util.*;
 
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.model.dto.Pagination;
+import org.alliancegenome.curation_api.model.input.Pagination;
 
 import lombok.extern.jbosslog.JBossLog;
 
