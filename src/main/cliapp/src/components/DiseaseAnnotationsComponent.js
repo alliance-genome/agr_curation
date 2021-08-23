@@ -4,6 +4,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { useQuery } from 'react-query';
+import {Message} from "primereact/message";
 
 
 export const DiseaseAnnotationsComponent = () => {
@@ -32,15 +33,18 @@ export const DiseaseAnnotationsComponent = () => {
   })
 
 
-  if(isError){
-    return(
-      <div>
-        <h5>There was an error</h5>
-        <p>{error.message}</p>
-      </div>
-    )
-  }
-  
+    if(isError){
+        return(
+            <div >
+                <Message
+                    className="p-col-12"
+                    style={{height: "30vh"}}
+                    severity="error"
+                    text={<h4>{error.message}</h4>}/>
+            </div>
+        )
+    }
+
 
   const onLazyLoad = (event) => {
     setRows(event.rows);

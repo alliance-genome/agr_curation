@@ -4,6 +4,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { AlleleService } from '../service/AlleleService';
 import { useQuery } from 'react-query';
+import {Message} from "primereact/message";
 
 export const AllelesComponent = () => {
 
@@ -26,14 +27,17 @@ export const AllelesComponent = () => {
     keepPreviousData: true
   })
 
-  if(isError){
-    return(
-      <div>
-        <h5>There was an error</h5>
-        <p>{error.message}</p>
-      </div>
-    )
-  }
+    if(isError){
+        return(
+            <div >
+                <Message
+                    className="p-col-12"
+                    style={{height: "30vh"}}
+                    severity="error"
+                    text={<h4>{error.message}</h4>}/>
+            </div>
+        )
+    }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -78,7 +82,7 @@ export const AllelesComponent = () => {
       <div>
         <div className="card">
           <DataTable value={alleles} className="p-datatable-sm"
-            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first} 
+            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             onFilter={onFilter} filters={filters}
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

@@ -4,6 +4,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { GeneService } from '../service/GeneService';
 import { useQuery } from 'react-query';
+import {Message} from "primereact/message";
 
 export const GenesComponent = () => {
 
@@ -14,7 +15,7 @@ export const GenesComponent = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
-  
+
   const geneService = new GeneService();
 
   const { isError, error } = useQuery(['genes', rows, page, multiSortMeta, filters],
@@ -27,14 +28,17 @@ export const GenesComponent = () => {
   })
 
 
-  if(isError){
-    return(
-      <div>
-        <h5>There was an error</h5>
-        <p>{error.message}</p>
-      </div>
-    )
-  }
+    if(isError){
+        return(
+            <div >
+                <Message
+                    className="p-col-12"
+                    style={{height: "30vh"}}
+                    severity="error"
+                    text={<h4>{error.message}</h4>}/>
+            </div>
+        )
+    }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -78,11 +82,11 @@ export const GenesComponent = () => {
           <DataTable value={genes} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             first={first} onFilter={onFilter} filters={filters}
-            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy 
+            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
             paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
-            
+
             <Column field="curie" header="Curie" sortable filter></Column>
             <Column field="name" header="Name" sortable filter></Column>
             <Column field="symbol" header="Symbol" sortable filter></Column>
