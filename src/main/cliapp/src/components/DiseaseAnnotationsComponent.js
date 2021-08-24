@@ -23,7 +23,7 @@ export const DiseaseAnnotationsComponent = () => {
   const errorMessage = useRef(null);
 
 
-  const { isError, error }  = useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
+  useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
     () => diseaseAnnotationService.getDiseaseAnnotations(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setDiseaseAnnotations(data.results);
