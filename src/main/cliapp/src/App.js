@@ -57,6 +57,7 @@ import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
+import 'react-transition-group'
 import 'prismjs/themes/prism-coy.css';
 import '@fullcalendar/core/main.css';
 import '@fullcalendar/daygrid/main.css';

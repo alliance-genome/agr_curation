@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { GeneService } from '../service/GeneService';
 import { useQuery } from 'react-query';
-import {Message} from "primereact/message";
+import { Messages } from 'primereact/messages';
 
 export const GenesComponent = () => {
 
@@ -17,28 +17,23 @@ export const GenesComponent = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   const geneService = new GeneService();
+  const errorMessage = useRef(null);
 
-  const { isError, error } = useQuery(['genes', rows, page, multiSortMeta, filters],
+    useQuery(['genes', rows, page, multiSortMeta, filters],
     () => geneService.getGenes(rows, page, multiSortMeta, filters), {
-    onSuccess: (data) => {
-      setGenes(data.results);
-      setTotalRecords(data.totalResults);
-    },
-    keepPreviousData: true
-  })
+        onSuccess: (data) => {
+          setGenes(data.results);
+          setTotalRecords(data.totalResults);
+        },
+        onError: (error) => {
+            errorMessage.current.show([
+                { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+            ])
+        },
+         keepPreviousData:true
+    });
 
 
-    if(isError){
-        return(
-            <div >
-                <Message
-                    className="p-col-12"
-                    style={{height: "30vh"}}
-                    severity="error"
-                    text={<h4>{error.message}</h4>}/>
-            </div>
-        )
-    }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -79,6 +74,7 @@ export const GenesComponent = () => {
       <div>
         <div className="card">
           <h3>Genes Table</h3>
+            <Messages ref={errorMessage}/>
           <DataTable value={genes} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             first={first} onFilter={onFilter} filters={filters}
@@ -92,6 +88,7 @@ export const GenesComponent = () => {
             <Column field="symbol" header="Symbol" sortable filter></Column>
             <Column field="taxon" header="Taxon" sortable filter filterPlaceholder="Search by Taxon"></Column>
           </DataTable>
+
         </div>
       </div>
   )

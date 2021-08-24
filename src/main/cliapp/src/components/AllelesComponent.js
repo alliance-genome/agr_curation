@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { AlleleService } from '../service/AlleleService';
 import { useQuery } from 'react-query';
-import {Message} from "primereact/message";
+import { Messages } from 'primereact/messages';
 
 export const AllelesComponent = () => {
 
@@ -17,27 +17,22 @@ export const AllelesComponent = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   const alleleService = new AlleleService();
+  const errorMessage = useRef(null);
 
-  const { isError, error } = useQuery(['alleles', rows, page, multiSortMeta, filters],
+useQuery(['alleles', rows, page, multiSortMeta, filters],
     () => alleleService.getAlleles(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setAlleles(data.results);
       setTotalRecords(data.totalResults);
     },
+      onError: (error) => {
+          errorMessage.current.show([
+              { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+          ])
+      },
     keepPreviousData: true
   })
 
-    if(isError){
-        return(
-            <div >
-                <Message
-                    className="p-col-12"
-                    style={{height: "30vh"}}
-                    severity="error"
-                    text={<h4>{error.message}</h4>}/>
-            </div>
-        )
-    }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -81,6 +76,8 @@ export const AllelesComponent = () => {
   return (
       <div>
         <div className="card">
+            <h3>Alleles Table</h3>
+            <Messages ref={errorMessage}/>
           <DataTable value={alleles} className="p-datatable-sm"
             paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}

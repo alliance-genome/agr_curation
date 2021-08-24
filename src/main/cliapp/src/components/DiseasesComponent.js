@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { DiseaseService } from '../service/DiseaseService';
 import { useQuery } from 'react-query';
-import {Message} from "primereact/message";
+import {Messages} from "primereact/messages";
 
 export const DiseasesComponent = () => {
 
@@ -17,28 +17,23 @@ export const DiseasesComponent = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   const diseaseService = new DiseaseService();
+  const errorMessage = useRef(null)
 
-  const { isError, error } = useQuery(['diseases', rows, page, multiSortMeta, filters],
+  useQuery(['diseases', rows, page, multiSortMeta, filters],
     () => diseaseService.getDiseases(rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setDiseases(data.results);
       setTotalRecords(data.totalResults);
     },
+      onError: (error) => {
+          errorMessage.current.show([
+              { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+          ])
+      },
     keepPreviousData: true
   })
 
 
-    if(isError){
-        return(
-            <div >
-                <Message
-                    className="p-col-12"
-                    style={{height: "30vh"}}
-                    severity="error"
-                    text={<h4>{error.message}</h4>}/>
-            </div>
-        )
-    }
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -78,6 +73,8 @@ export const DiseasesComponent = () => {
   return (
       <div>
         <div className="card">
+            <h3>Diseases Table</h3>
+            <Messages ref={errorMessage}/>
           <DataTable value={diseases} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             onFilter={onFilter} filters={filters}
