@@ -1,4 +1,6 @@
 import 'react-app-polyfill/ie11';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { ReactQueryDevtools} from 'react-query/devtools'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
@@ -6,10 +8,15 @@ import App from './App';
 import { HashRouter } from 'react-router-dom'
 import ScrollToTop from './ScrollToTop';
 
+const queryClient = new QueryClient();
+
 ReactDOM.render(
     <HashRouter>
         <ScrollToTop>
-            <App></App>
+        <QueryClientProvider client={queryClient}>
+                <App />
+                <ReactQueryDevtools/>
+            </QueryClientProvider>
         </ScrollToTop>
     </HashRouter>,
     document.getElementById('root')
