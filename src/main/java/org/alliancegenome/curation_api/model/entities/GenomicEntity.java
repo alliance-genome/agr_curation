@@ -7,6 +7,9 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -28,9 +31,10 @@ public class GenomicEntity extends BiologicalEntity {
     @ManyToMany
     @JsonView({View.FieldsAndLists.class})
     private List<Synonym> synonyms;
-    
+
+
     @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsOnly.class})
     private List<CrossReference> crossReferences;
     
     @ElementCollection
