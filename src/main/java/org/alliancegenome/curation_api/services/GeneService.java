@@ -11,8 +11,11 @@ import javax.jms.*;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 
@@ -24,6 +27,9 @@ import lombok.extern.jbosslog.JBossLog;
 public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable {
 
     @Inject GeneDAO geneDAO;
+    @Inject CrossReferenceDAO crossReferenceDAO;
+    @Inject CrossReferenceService crossReferenceService;
+
 
     @Override
     @PostConstruct
@@ -48,34 +54,36 @@ public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable 
     @Transactional
     public void processUpdate(GeneDTO gene) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
+        Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
+        boolean newGene = false;
 
-        params.put("curie", gene.getBasicGeneticEntity().getPrimaryId());
-        List<Gene> genes = findByParams(params);
-        if(genes == null || genes.size() == 0) {
-            Gene g = new Gene();
-            g.setGeneSynopsis(gene.getGeneSynopsis());
-            g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
+        if(g == null ) {
+            g = new Gene();
             g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-            g.setSymbol(gene.getSymbol());
-            g.setName(gene.getName());
-            g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-            g.setType(gene.getSoTermId());
-            //producer.send(queue, g);
+            newGene = true;
+        }
+
+        g.setGeneSynopsis(gene.getGeneSynopsis());
+        g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
+
+        g.setSymbol(gene.getSymbol());
+        g.setName(gene.getName());
+        g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
+        g.setType(gene.getSoTermId());
+
+        List<CrossReferenceDTO> incomingCrossReferences = gene.getBasicGeneticEntity().getCrossReferences();
+        List<CrossReference> persitentCrossReferences = new ArrayList<>();
+        for(CrossReferenceDTO crossReferenceDTO : incomingCrossReferences){
+            CrossReference crossReference = crossReferenceService.processUpdate(crossReferenceDTO);
+            persitentCrossReferences.add(crossReference);
+        }
+
+        g.setCrossReferences(persitentCrossReferences);
+
+        if(newGene) {
             create(g);
-        } else {
-            Gene g = genes.get(0);
-            if(g.getCurie().equals(gene.getBasicGeneticEntity().getPrimaryId())) {
-                g.setGeneSynopsis(gene.getGeneSynopsis());
-                g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
-                g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-                g.setSymbol(gene.getSymbol());
-                g.setName(gene.getName());
-                g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-                g.setType(gene.getSoTermId());
-                //producer.send(queue, g);
-                update(g);
-            }
+        }else {
+            update(g);
         }
 
     }
