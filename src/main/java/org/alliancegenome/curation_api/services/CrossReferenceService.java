@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @JBossLog
-public class CrossReferenceService extends BaseService<CrossReference, CrossReferenceDAO> implements Runnable{
+public class CrossReferenceService extends BaseService<CrossReference, CrossReferenceDAO>{
 
     @Inject CrossReferenceDAO crossReferenceDAO;
 
@@ -62,37 +62,4 @@ public class CrossReferenceService extends BaseService<CrossReference, CrossRefe
         return crossReference;
 
     }
-
-
-    @Inject
-    ConnectionFactory connectionFactory;
-
-    private int threadCount = 3;
-
-    private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
-
-    void onStart(@Observes StartupEvent ev) {
-        log.info("CrossReferenceService Queue Starting:");
-        for(int i = 0; i < threadCount; i++) {
-            scheduler.submit(new Thread(this));
-        }
-    }
-
-    void onStop(@Observes ShutdownEvent ev) {
-        scheduler.shutdown();
-    }
-
-    @Override
-    public void run() {
-        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-            JMSConsumer consumer = context.createConsumer(context.createQueue("crossReferenceQueue"));
-            while (true) {
-                processUpdate(consumer.receiveBody(CrossReferenceDTO.class));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
 }
