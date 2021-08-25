@@ -26,6 +26,7 @@ import javax.jms.Session;
 import javax.transaction.Transactional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.enterprise.context.RequestScoped;
 
 
 @JBossLog
