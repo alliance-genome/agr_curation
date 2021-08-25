@@ -27,7 +27,9 @@ import javax.transaction.Transactional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+
 @JBossLog
+@RequestScoped
 public class CrossReferenceService extends BaseService<CrossReference, CrossReferenceDAO>{
 
     @Inject CrossReferenceDAO crossReferenceDAO;
