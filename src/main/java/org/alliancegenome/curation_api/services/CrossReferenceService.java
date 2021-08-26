@@ -1,32 +1,17 @@
 package org.alliancegenome.curation_api.services;
 
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.base.SearchResults;
-
+import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-
 import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 
-import javax.annotation.PostConstruct;
-
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSConsumer;
-import javax.jms.JMSContext;
-import javax.jms.Session;
-import javax.transaction.Transactional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import javax.enterprise.context.RequestScoped;
+import lombok.extern.jbosslog.JBossLog;
 
 
 @JBossLog

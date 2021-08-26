@@ -18,7 +18,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DoTermService extends BaseService<DOTerm, DoTermDAO> implements Runnable {
+public class DoTermService extends BaseService<DOTerm, DoTermDAO> {
 
     @Inject DoTermDAO doTermDAO;
 
@@ -29,7 +29,7 @@ public class DoTermService extends BaseService<DOTerm, DoTermDAO> implements Run
     }
 
     @Transactional
-    public DOTerm upsert(DOTerm dto) {
+    public DOTerm processUpdate(DOTerm dto) {
 
         DOTerm term = doTermDAO.find(dto.getCurie());
 
@@ -52,37 +52,5 @@ public class DoTermService extends BaseService<DOTerm, DoTermDAO> implements Run
         return term;
 
     }
-
-    @Inject
-    ConnectionFactory connectionFactory;
-    
-    private int threadCount = 3;
-
-    private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
-
-    void onStart(@Observes StartupEvent ev) {
-        log.info("DoTermService Queue Starting:");
-        for(int i = 0; i < threadCount; i++) {
-            scheduler.submit(new Thread(this));
-        }
-    }
-
-    void onStop(@Observes ShutdownEvent ev) {
-        scheduler.shutdown();
-    }
-
-    @Override
-    public void run() {
-        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-            JMSConsumer consumer = context.createConsumer(context.createQueue("doTermQueue"));
-            while (true) {
-                upsert(consumer.receiveBody(DOTerm.class));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-    
     
 }
