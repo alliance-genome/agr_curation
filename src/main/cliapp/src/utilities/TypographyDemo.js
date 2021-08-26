@@ -25,7 +25,7 @@ export const TypographyDemo = () => {
                     <h5>Paragraph</h5>
                     <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Libero voluptatum atque
                     exercitationem praesentium provident odit aperiam, vitae fugit
-					dolores nostrum laborum accusamus quia iste facere possimus minus itaque error unde.</p>
+          dolores nostrum laborum accusamus quia iste facere possimus minus itaque error unde.</p>
                 </div>
 
                 <div className="card">

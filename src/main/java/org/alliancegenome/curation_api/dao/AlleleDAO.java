@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 @ApplicationScoped
 public class AlleleDAO extends BaseSQLDAO<Allele> {
 
-	protected AlleleDAO() {
-		super(Allele.class);
-	}
+    protected AlleleDAO() {
+        super(Allele.class);
+    }
 }
