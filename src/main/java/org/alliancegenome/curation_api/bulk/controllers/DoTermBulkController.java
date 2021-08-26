@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.bulk.controllers;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.*;
 import javax.ws.rs.core.UriInfo;
 
 import org.alliancegenome.curation_api.interfaces.bulk.DoTermBulkRESTInterface;

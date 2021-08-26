@@ -76,10 +76,6 @@
 			<artifactId>rest-assured</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!-- <dependency> -->
-		<!-- <groupId>io.quarkus</groupId> -->
-		<!-- <artifactId>quarkus-artemis-jms</artifactId> -->
-		<!-- </dependency> -->
 
 		<dependency>
 			<groupId>commons-io</groupId>
@@ -128,10 +124,10 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
 
-		<dependency>
+		<!-- <dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-artemis-jms</artifactId>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jaxb</artifactId>

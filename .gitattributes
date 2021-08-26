@@ -1,2 +1,2 @@
-*.java filter=tabspace
-*.js filter=tabspace2
+*.java text eol=lf filter=tabspace
+*.js text eol=lf filter=tabspace2

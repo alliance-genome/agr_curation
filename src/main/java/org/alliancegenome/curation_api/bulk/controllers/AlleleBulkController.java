@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.bulk.controllers;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.*;
 
 import org.alliancegenome.curation_api.interfaces.bulk.AlleleBulkRESTInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;

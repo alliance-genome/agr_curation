@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.DoTermService;
 @RequestScoped
 public class DoTermController extends BaseController<DoTermService, DOTerm, DoTermDAO> implements DoTermRESTInterface {
 
-	@Inject DoTermService doTermService;
+    @Inject DoTermService doTermService;
 
-	@Override
-	@PostConstruct
-	protected void init() {
-		setService(doTermService);
-	}
+    @Override
+    @PostConstruct
+    protected void init() {
+        setService(doTermService);
+    }
 
 }

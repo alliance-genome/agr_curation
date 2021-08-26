@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.AlleleService;
 @RequestScoped
 public class AlleleController extends BaseController<AlleleService, Allele, AlleleDAO> implements AlleleRESTInterface {
 
-	@Inject AlleleService alleleService;
+    @Inject AlleleService alleleService;
 
-	@Override
-	@PostConstruct
-	protected void init() {
-		setService(alleleService);
-	}
+    @Override
+    @PostConstruct
+    protected void init() {
+        setService(alleleService);
+    }
 
 }
