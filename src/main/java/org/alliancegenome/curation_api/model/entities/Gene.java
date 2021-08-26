@@ -46,6 +46,6 @@ public class Gene extends GenomicEntity {
 
     @ManyToMany
     private List<GeneGenomicLocation> genomicLocations;
-    
+
 }
 

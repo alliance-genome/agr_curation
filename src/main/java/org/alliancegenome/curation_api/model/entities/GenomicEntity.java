@@ -25,9 +25,10 @@ public class GenomicEntity extends BiologicalEntity {
     @JsonView({View.FieldsOnly.class})
     private String name;
 
-    @ManyToMany
+    @OneToMany
+    @JoinColumn(name = "gene_curie")
     @JsonView({View.FieldsAndLists.class})
-    private List<Synonym> synonyms;
+    private List<GeneSynonym> synonyms;
     
     @ManyToMany
     @JsonView({View.FieldsAndLists.class})
