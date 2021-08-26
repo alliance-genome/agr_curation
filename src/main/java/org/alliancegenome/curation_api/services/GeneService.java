@@ -73,6 +73,10 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
 
         g.setCrossReferences(persitentCrossReferences);
 
+        Set<String> secondaryIds = new LinkedHashSet<>(g.getSecondaryIdentifiers());
+        secondaryIds.addAll(gene.getBasicGeneticEntity().getSecondaryIds());
+        g.setSecondaryIdentifiers(new ArrayList<>(secondaryIds));
+
         if(newGene) {
             create(g);
         }else {
