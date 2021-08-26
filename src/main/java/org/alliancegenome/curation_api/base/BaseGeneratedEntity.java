@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
+import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -15,8 +16,8 @@ import lombok.*;
 @Data @EqualsAndHashCode(callSuper = false)
 @MappedSuperclass
 public class BaseGeneratedEntity extends BaseEntity {
-    
-    @Id
+
+    @Id @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
     private Long id;

@@ -29,11 +29,11 @@ export const DiseaseAnnotationsComponent = () => {
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
     },
-      onError: (error) => {
-          errorMessage.current.show([
-              { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
-          ])
-      },
+    onError: (error) => {
+      errorMessage.current.show([
+        { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+      ])
+    },
     keepPreviousData: true
 
   })
@@ -72,7 +72,7 @@ export const DiseaseAnnotationsComponent = () => {
 
   const publicationTemplate = (rowData) => {
     if (rowData) {
-      return <div>{rowData.referenceList[0].curie}</div>
+      return <div>{rowData.referenceList.map(a => a.curie)}</div>
     }
   };
 
@@ -82,8 +82,8 @@ export const DiseaseAnnotationsComponent = () => {
   return (
     <div>
       <div className="card">
-          <h3>Disease Annotations Table</h3>
-          <Messages ref={errorMessage}/>
+        <h3>Disease Annotations Table</h3>
+        <Messages ref={errorMessage}/>
         <DataTable value={diseaseAnnotations} className="p-datatable-md"
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
           first={first} onFilter={onFilter} filters={filters}
@@ -92,10 +92,10 @@ export const DiseaseAnnotationsComponent = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
           paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
-          <Column field="id" header="Id" sortable filter ></Column>
+          <Column field="id" header="Id" sortable ></Column>
           <Column field="subject.curie" header="Subject" sortable filter ></Column>
           <Column field="object.curie" header="Disease" sortable filter ></Column>
-          <Column field="referenceList" header="Reference" body={publicationTemplate} sortable filter ></Column>
+          <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter ></Column>
         </DataTable>
       </div>
     </div>
