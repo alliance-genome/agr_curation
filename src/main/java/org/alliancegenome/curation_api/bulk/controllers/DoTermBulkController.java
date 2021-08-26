@@ -8,6 +8,7 @@ import javax.ws.rs.core.UriInfo;
 import org.alliancegenome.curation_api.interfaces.bulk.DoTermBulkRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.ingest.xml.dto.*;
+import org.alliancegenome.curation_api.services.DoTermService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -16,13 +17,11 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class DoTermBulkController implements DoTermBulkRESTInterface {
     
-    @Inject
-    ConnectionFactory connectionFactory;
+    @Inject DoTermService doTermService;
 
     @Override
     public Boolean updateDoTerms(UriInfo uriInfo, RDF rdf) {
 
-        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
             ph.startProcess("DoTerm Update", rdf.getClasses().length);
             
@@ -39,7 +38,7 @@ public class DoTermBulkController implements DoTermBulkRESTInterface {
                     term.setCurie(c.getId());
                     term.setName(c.getLabel());
                     term.setDefinition(c.getIAO_0000115());
-                    context.createProducer().send(context.createQueue("doTermQueue"), context.createObjectMessage(term));
+                    doTermService.processUpdate(term);
                 }
 
                 if(c.getHasAlternativeId() != null && c.getHasAlternativeId().length > 0) {
@@ -49,7 +48,7 @@ public class DoTermBulkController implements DoTermBulkRESTInterface {
                         DOTerm doTerm = new DOTerm();
                         doTerm.setCurie(term);
                         //doTerm.setName(c.getLabel());
-                        context.createProducer().send(context.createQueue("doTermQueue"), context.createObjectMessage(doTerm));
+                        doTermService.processUpdate(doTerm);
 
                     }
                 }
@@ -57,7 +56,7 @@ public class DoTermBulkController implements DoTermBulkRESTInterface {
             }
 
             ph.finishProcess();
-        }
+
 
         return true;
     }

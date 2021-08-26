@@ -1,30 +1,23 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.*;
-import java.util.concurrent.*;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.*;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.*;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.model.input.Pagination;
 
-import io.quarkus.runtime.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-@ApplicationScoped
-public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable {
+@RequestScoped
+public class GeneService extends BaseService<Gene, GeneDAO> {
 
     @Inject GeneDAO geneDAO;
     @Inject CrossReferenceDAO crossReferenceDAO;
@@ -87,38 +80,5 @@ public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable 
         }
 
     }
-
-
-    @Inject
-    ConnectionFactory connectionFactory;
-    
-    private int threadCount = 3;
-
-    private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
-
-    void onStart(@Observes StartupEvent ev) {
-        log.info("GeneService Queue Starting:");
-        for(int i = 0; i < threadCount; i++) {
-            scheduler.submit(new Thread(this));
-        }
-    }
-
-    void onStop(@Observes ShutdownEvent ev) {
-        scheduler.shutdown();
-    }
-
-    @Override
-    public void run() {
-        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-            JMSConsumer consumer = context.createConsumer(context.createQueue("geneQueue"));
-            while (true) {
-                processUpdate(consumer.receiveBody(GeneDTO.class));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
 
 }
