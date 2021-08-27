@@ -34,10 +34,17 @@ services:
       - curation
     environment:
       - discovery.type=single-node
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://curation.elasticsearch:9200"]
+        interval: 10s
+        timeout: 10s
+        retries: 6
 
   curation.app:
     container_name: curation.app
-    image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.4
+    image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.5
+    ports:
+      - "8080:8080"
     networks:
       - curation
     environment:
@@ -51,6 +58,8 @@ services:
     env_file:
       - .env
     depends_on:
+      # - elasticsearch:
+      #     condition: service_healthy
       - "elasticsearch"
       - "activemq"
 
