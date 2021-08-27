@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.bulk;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelMetaDataDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/agm/bulk")

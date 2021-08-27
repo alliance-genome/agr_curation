@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { DiseaseService } from '../service/DiseaseService';
+import { useQuery } from 'react-query';
+import {Messages} from "primereact/messages";
 
 export const DiseasesComponent = () => {
 
@@ -14,15 +16,24 @@ export const DiseasesComponent = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  useEffect(() => {
+  const diseaseService = new DiseaseService();
+  const errorMessage = useRef(null)
 
-    const diseaseService = new DiseaseService();
-    diseaseService.getDiseases(rows, page, multiSortMeta, filters).then(searchReults => {
-      setDiseases(searchReults.results);
-      setTotalRecords(searchReults.totalResults);
-    });
+  useQuery(['diseases', rows, page, multiSortMeta, filters],
+    () => diseaseService.getDiseases(rows, page, multiSortMeta, filters), {
+    onSuccess: (data) => {
+      setDiseases(data.results);
+      setTotalRecords(data.totalResults);
+    },
+      onError: (error) => {
+          errorMessage.current.show([
+              { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+          ])
+      },
+    keepPreviousData: true
+  })
 
-  }, [rows, page, multiSortMeta, filters]);
+
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -39,8 +50,8 @@ export const DiseasesComponent = () => {
   const onSort = (event) => {
     //console.log("On Sort: ");
     //console.log(event);
-    var found = false;
-    var newSort = [...multiSortMeta];
+    let found = false;
+    const newSort = [...multiSortMeta];
 
     newSort.forEach((o) => {
       if(o.field === event.multiSortMeta[0].field) {
@@ -62,6 +73,8 @@ export const DiseasesComponent = () => {
   return (
       <div>
         <div className="card">
+            <h3>Diseases Table</h3>
+            <Messages ref={errorMessage}/>
           <DataTable value={diseases} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             onFilter={onFilter} filters={filters}

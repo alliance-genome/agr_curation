@@ -22,7 +22,8 @@ export const FMSComponent = () => {
     fmsService.getReleases().then(results => {
       console.log(results);
       setReleases(results.reverse());
-      //selectedRelease = results[0].releaseVersion;
+      //selectedRelease = results[0].releaseVersio;
+      //setSelectedRelease(results[0].releaseVersion);
       //setDataFiles(results.dataFiles);
     });
 

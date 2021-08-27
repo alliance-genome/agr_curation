@@ -1,42 +1,41 @@
 package org.alliancegenome.curation_api.services;
 
-import io.quarkus.runtime.ShutdownEvent;
-import io.quarkus.runtime.StartupEvent;
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.base.SearchResults;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.apache.commons.collections4.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.event.Observes;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.ConnectionFactory;
-import javax.jms.JMSConsumer;
-import javax.jms.JMSContext;
-import javax.jms.Session;
 import javax.transaction.Transactional;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @JBossLog
-@ApplicationScoped
-public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable {
+@RequestScoped
+public class GeneService extends BaseService<Gene, GeneDAO> {
 
     @Inject
     GeneDAO geneDAO;
-
+    @Inject
+    CrossReferenceDAO crossReferenceDAO;
+    @Inject
+    CrossReferenceService crossReferenceService;
     @Inject
     SynonymService synonymService;
+
 
     @Override
     @PostConstruct
@@ -61,36 +60,43 @@ public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable 
     @Transactional
     public void processUpdate(GeneDTO gene) {
 
-        Map<String, Object> params = new HashMap<>();
+        Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
+        boolean newGene = false;
 
-        params.put("curie", gene.getBasicGeneticEntity().getPrimaryId());
-        List<Gene> genes = findByParams(params);
-        if (genes == null || genes.size() == 0) {
-            Gene g = new Gene();
-            g.setGeneSynopsis(gene.getGeneSynopsis());
-            g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
+        if (g == null) {
+            g = new Gene();
             g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-            g.setSymbol(gene.getSymbol());
-            g.setName(gene.getName());
-            g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-            g.setType(gene.getSoTermId());
-            create(g);
             handleNewSynonyms(gene, g);
-            //producer.send(queue, g);
+            newGene = true;
         } else {
-            Gene g = genes.get(0);
-            if (g.getCurie().equals(gene.getBasicGeneticEntity().getPrimaryId())) {
-                g.setGeneSynopsis(gene.getGeneSynopsis());
-                g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
-                g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-                g.setSymbol(gene.getSymbol());
-                g.setName(gene.getName());
-                g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-                g.setType(gene.getSoTermId());
-                //producer.send(queue, g);
-                handleUpdateSynonyms(gene, g);
-                update(g);
-            }
+            handleUpdateSynonyms(gene, g);
+        }
+
+        g.setGeneSynopsis(gene.getGeneSynopsis());
+        g.setGeneSynopsisURL(gene.getGeneSynopsisUrl());
+
+        g.setSymbol(gene.getSymbol());
+        g.setName(gene.getName());
+        g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
+        g.setType(gene.getSoTermId());
+
+        List<CrossReferenceDTO> incomingCrossReferences = gene.getBasicGeneticEntity().getCrossReferences();
+        List<CrossReference> persitentCrossReferences = new ArrayList<>();
+        for (CrossReferenceDTO crossReferenceDTO : incomingCrossReferences) {
+            CrossReference crossReference = crossReferenceService.processUpdate(crossReferenceDTO);
+            persitentCrossReferences.add(crossReference);
+        }
+
+        g.setCrossReferences(persitentCrossReferences);
+
+        Set<String> secondaryIds = new LinkedHashSet<>(g.getSecondaryIdentifiers());
+        secondaryIds.addAll(gene.getBasicGeneticEntity().getSecondaryIds());
+        g.setSecondaryIdentifiers(new ArrayList<>(secondaryIds));
+
+        if (newGene) {
+            create(g);
+        } else {
+            update(g);
         }
 
     }
@@ -133,38 +139,6 @@ public class GeneService extends BaseService<Gene, GeneDAO> implements Runnable 
                 existingSynonyms.addAll(newCollect);
             }
         }
-    }
-
-
-    @Inject
-    ConnectionFactory connectionFactory;
-
-    private int threadCount = 3;
-
-    private final ExecutorService scheduler = Executors.newFixedThreadPool(threadCount);
-
-    void onStart(@Observes StartupEvent ev) {
-        log.info("GeneService Queue Starting:");
-        for (int i = 0; i < threadCount; i++) {
-            scheduler.submit(new Thread(this));
-        }
-    }
-
-    void onStop(@Observes ShutdownEvent ev) {
-        scheduler.shutdown();
-    }
-
-    @Override
-    public void run() {
-        try (JMSContext context = connectionFactory.createContext(Session.AUTO_ACKNOWLEDGE)) {
-            JMSConsumer consumer = context.createConsumer(context.createQueue("geneQueue"));
-            while (true) {
-                processUpdate(consumer.receiveBody(GeneDTO.class));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
 

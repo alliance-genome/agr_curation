@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.GeneService;
 @RequestScoped
 public class GeneController extends BaseController<GeneService, Gene, GeneDAO> implements GeneRESTInterface {
 
-	@Inject GeneService geneService;
-	
-	@Override
-	@PostConstruct
-	protected void init() {
-		setService(geneService);
-	}
+    @Inject GeneService geneService;
+    
+    @Override
+    @PostConstruct
+    protected void init() {
+        setService(geneService);
+    }
 
 }

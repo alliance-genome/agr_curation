@@ -1,15 +1,12 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import javax.persistence.Entity;
+
 import org.alliancegenome.curation_api.base.BaseCurieEntity;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import java.util.List;
+import lombok.*;
 
 @Audited
 @Entity

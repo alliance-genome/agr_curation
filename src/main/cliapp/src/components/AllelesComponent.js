@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { AlleleService } from '../service/AlleleService';
+import { useQuery } from 'react-query';
+import { Messages } from 'primereact/messages';
 
 export const AllelesComponent = () => {
 
@@ -14,14 +16,23 @@ export const AllelesComponent = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  useEffect(() => {
-    const alleleService = new AlleleService();
-    alleleService.getAlleles(rows, page, multiSortMeta, filters).then(searchReults => {
-      setAlleles(searchReults.results);
-      setTotalRecords(searchReults.totalResults);
-    });
+  const alleleService = new AlleleService();
+  const errorMessage = useRef(null);
 
-  }, [rows, page, multiSortMeta, filters]);
+useQuery(['alleles', rows, page, multiSortMeta, filters],
+    () => alleleService.getAlleles(rows, page, multiSortMeta, filters), {
+    onSuccess: (data) => {
+      setAlleles(data.results);
+      setTotalRecords(data.totalResults);
+    },
+      onError: (error) => {
+          errorMessage.current.show([
+              { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+          ])
+      },
+    keepPreviousData: true
+  })
+
 
   const onLazyLoad = (event) => {
     setRows(event.rows);
@@ -38,8 +49,8 @@ export const AllelesComponent = () => {
   const onSort = (event) => {
     //console.log("On Sort: ");
     //console.log(event);
-    var found = false;
-    var newSort = [...multiSortMeta];
+    let found = false;
+    const newSort = [...multiSortMeta];
 
     newSort.forEach((o) => {
       if(o.field === event.multiSortMeta[0].field) {
@@ -65,8 +76,10 @@ export const AllelesComponent = () => {
   return (
       <div>
         <div className="card">
+            <h3>Alleles Table</h3>
+            <Messages ref={errorMessage}/>
           <DataTable value={alleles} className="p-datatable-sm"
-            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first} 
+            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             onFilter={onFilter} filters={filters}
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

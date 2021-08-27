@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.MpTermService;
 @RequestScoped
 public class MpTermController extends BaseController<MpTermService, MPTerm, MpTermDAO> implements MpTermRESTInterface {
 
-	@Inject MpTermService mpTermService;
+    @Inject MpTermService mpTermService;
 
-	@Override
-	@PostConstruct
-	protected void init() {
-		setService(mpTermService);
-	}
+    @Override
+    @PostConstruct
+    protected void init() {
+        setService(mpTermService);
+    }
 
 }

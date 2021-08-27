@@ -28,9 +28,10 @@ public class GenomicEntity extends BiologicalEntity {
     @ManyToMany
     @JsonView({View.FieldsAndLists.class})
     private List<Synonym> synonyms;
-    
+
+
     @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsOnly.class})
     private List<CrossReference> crossReferences;
     
     @ElementCollection

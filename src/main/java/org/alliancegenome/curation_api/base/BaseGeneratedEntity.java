@@ -15,8 +15,8 @@ import lombok.*;
 @Data @EqualsAndHashCode(callSuper = false)
 @MappedSuperclass
 public class BaseGeneratedEntity extends BaseEntity {
-    
-    @Id
+
+    @Id @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
     protected Long id;

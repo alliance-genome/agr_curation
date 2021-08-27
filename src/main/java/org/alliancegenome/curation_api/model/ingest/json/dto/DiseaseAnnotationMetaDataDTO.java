@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.model.ingest.json.dto;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseDTO;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 
 import lombok.Data;
 
