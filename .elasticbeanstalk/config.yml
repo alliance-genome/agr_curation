@@ -1,6 +1,6 @@
 branch-defaults:
   AWS_EB_testing:
-    environment: curation-test
+    environment: null
 global:
   application_name: curation-app
   branch: null
