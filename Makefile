@@ -5,6 +5,8 @@ FLAGS = -Dquarkus.package.type=uber-jar
 RELEASE = 0.0.4
 REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
 
+ENV_NAME=curation-test
+
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
 .PHONY: docker all
@@ -42,3 +44,22 @@ test:
 
 verify:
 	mvn verify
+
+#EB commands
+.PHONY: eb-init eb-create eb-deploy eb-terminate
+
+eb-init:
+	eb init --region us-east-1 -p Docker curation-app
+
+eb-create:
+	@eb create ${ENV_NAME} \
+	        --region=us-east-1 \
+	        --cname="${ENV_NAME}" \
+			--envvars QUARKUS_DATASOURCE_USERNAME=${QUARKUS_DATASOURCE_USERNAME},QUARKUS_DATASOURCE_PASSWORD=${QUARKUS_DATASOURCE_PASSWORD} \
+			--elb-type application
+
+eb-deploy:
+	@eb deploy ${ENV_NAME}
+
+eb-terminate:
+	@eb terminate ${ENV_NAME}
