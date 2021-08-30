@@ -2,3 +2,8 @@
 # https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-deploy.html
 #
 .git
+src
+target
+pom.xml
+docker
+.settings

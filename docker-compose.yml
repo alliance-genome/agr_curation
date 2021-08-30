@@ -1,22 +1,30 @@
 version: "3.2"
 
 services:
-  activemq:
-    container_name: curation.activemq
-    image: vromero/activemq-artemis:2.9.0-alpine
-    ports:
-      - "8161:8161"
-      - "61616:61616"
-      - "5672:5672"
-    networks:
-      - curation
-    environment:
-      - ARTEMIS_USERNAME=quarkus
-      - ARTEMIS_PASSWORD=quarkus
+#  activemq:
+#    container_name: agr.curation.activemq
+#    image: vromero/activemq-artemis:2.9.0-alpine
+#    logging:
+#      driver: gelf
+#      options:
+#        gelf-address: "udp://logs.alliancegenome.org:12201"
+#    ports:
+#      - "8161:8161"
+#      - "61616:61616"
+#      - "5672:5672"
+#    networks:
+#      - curation
+#    environment:
+#      - ARTEMIS_USERNAME=quarkus
+#      - ARTEMIS_PASSWORD=quarkus
 
   cerebro:
-    container_name: curation.cerebro
+    container_name: agr.curation.cerebro.server
     image: yannart/cerebro
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://logs.alliancegenome.org:12201"
     ports:
       - "9000:9000"
     networks:
@@ -25,8 +33,12 @@ services:
       - "elasticsearch"
 
   elasticsearch:
-    container_name: curation.elasticsearch
+    container_name: agr.curation.elasticsearch.server
     image: docker.elastic.co/elasticsearch/elasticsearch:7.9.0
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://logs.alliancegenome.org:12201"
     ports:
       - "9200:9200"
       - "9300:9300"
@@ -35,33 +47,37 @@ services:
     environment:
       - discovery.type=single-node
     healthcheck:
-        test: ["CMD", "curl", "-f", "http://curation.elasticsearch:9200"]
+        test: ["CMD", "curl", "-f", "http://agr.curation.elasticsearch.server:9200"]
         interval: 10s
         timeout: 10s
         retries: 6
 
   curation.app:
-    container_name: curation.app
+    container_name: agr.curation.api.server
     image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:0.0.5
+    logging:
+      driver: gelf
+      options:
+        gelf-address: "udp://logs.alliancegenome.org:12201"
     ports:
       - "8080:8080"
     networks:
       - curation
     environment:
-      - QUARKUS_ARTEMIS_URL=tcp://curation.activemq:61616
-      - QUARKUS_ARTEMIS_PASSWORD=quarkus
-      - QUARKUS_ARTEMIS_USERNAME=quarkus
+      #- QUARKUS_ARTEMIS_URL=tcp://curation.activemq:61616
+      #- QUARKUS_ARTEMIS_PASSWORD=quarkus
+      #- QUARKUS_ARTEMIS_USERNAME=quarkus
       - QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://curation-db.cmnnhlso7wdi.us-east-1.rds.amazonaws.com:5432/curation
       # - QUARKUS_DATASOURCE_PASSWORD=${QUARKUS_DATASOURCE_PASSWORD}
       # - QUARKUS_DATASOURCE_USERNAME=${QUARKUS_DATASOURCE_USERNAME}
-      - QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS=curation.elasticsearch:9200
+      - QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS=agr.curation.elasticsearch.server:9200
     env_file:
       - .env
     depends_on:
       # - elasticsearch:
       #     condition: service_healthy
       - "elasticsearch"
-      - "activemq"
+      #- "activemq"
 
 networks:
   # The presence of these objects is sufficient to define them
