@@ -21,4 +21,9 @@ public class GeneController extends BaseController<GeneService, Gene, GeneDAO> i
         setService(geneService);
     }
 
+    @Override
+    public Gene get(String id) {
+        return geneService.get(id);
+    }
+
 }
