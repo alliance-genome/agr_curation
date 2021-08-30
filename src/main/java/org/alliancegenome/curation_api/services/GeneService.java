@@ -105,10 +105,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
     private void handleNewSynonyms(GeneDTO gene, Gene g) {
         if (CollectionUtils.isNotEmpty(gene.getBasicGeneticEntity().getSynonyms())) {
             List<Synonym> synonyms = DtoConverter.getSynonyms(gene);
-            synonyms.forEach(synonym -> {
-                synonym.setGenomicEntityList(List.of(g));
-                synonymService.create(synonym);
-            });
+            synonyms.forEach(synonym -> synonymService.create(synonym));
             g.setSynonyms(synonyms);
         }
     }

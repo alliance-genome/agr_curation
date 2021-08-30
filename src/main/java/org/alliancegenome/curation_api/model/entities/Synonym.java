@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.model.entities;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -14,6 +15,7 @@ import java.util.List;
 @Audited
 @Entity
 @Data
+@NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
 public class Synonym extends BaseGeneratedEntity {
 
@@ -28,6 +30,4 @@ public class Synonym extends BaseGeneratedEntity {
     @ManyToMany
     private List<GenomicEntity> genomicEntityList;
 
-    public Synonym() {
-    }
 }
