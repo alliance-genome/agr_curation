@@ -1,27 +1,25 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.base.SearchResults;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.*;
+import javax.enterprise.event.Observes;
+import javax.inject.Inject;
+import javax.jms.*;
+import javax.transaction.Transactional;
+
+import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.apache.commons.collections4.CollectionUtils;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import io.quarkus.runtime.*;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
@@ -35,7 +33,6 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
     CrossReferenceService crossReferenceService;
     @Inject
     SynonymService synonymService;
-
 
     @Override
     @PostConstruct
@@ -59,15 +56,16 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
 
     @Transactional
     public void processUpdate(GeneDTO gene) {
-
+        //log.info("processUpdate Gene: ");
+        
         Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
         boolean newGene = false;
 
         if (g == null) {
             g = new Gene();
             g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-            handleNewSynonyms(gene, g);
             newGene = true;
+            handleNewSynonyms(gene, g);
         } else {
             handleUpdateSynonyms(gene, g);
         }
@@ -80,6 +78,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
         g.setType(gene.getSoTermId());
 
+
         List<CrossReferenceDTO> incomingCrossReferences = gene.getBasicGeneticEntity().getCrossReferences();
         List<CrossReference> persitentCrossReferences = new ArrayList<>();
         for (CrossReferenceDTO crossReferenceDTO : incomingCrossReferences) {
@@ -88,12 +87,8 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         }
 
         g.setCrossReferences(persitentCrossReferences);
+        g.setSecondaryIdentifiers(gene.getBasicGeneticEntity().getSecondaryIds());
 
-        if(CollectionUtils.isNotEmpty(g.getSecondaryIdentifiers())) {
-            Set<String> secondaryIds = new LinkedHashSet<>(g.getSecondaryIdentifiers());
-            secondaryIds.addAll(gene.getBasicGeneticEntity().getSecondaryIds());
-            g.setSecondaryIdentifiers(new ArrayList<>(secondaryIds));
-        }
         if (newGene) {
             create(g);
         } else {

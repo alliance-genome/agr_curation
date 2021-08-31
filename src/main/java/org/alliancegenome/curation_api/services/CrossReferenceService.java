@@ -41,10 +41,8 @@ public class CrossReferenceService extends BaseService<CrossReference, CrossRefe
             crossReference.setPageAreas(crossReferenceDTO.getPages());
             create(crossReference);
         } else {
-            if(crossReference.getCurie().equals(crossReferenceDTO.getId())) {
-                crossReference.setPageAreas(crossReferenceDTO.getPages());
-                update(crossReference);
-            }
+            crossReference.setPageAreas(crossReferenceDTO.getPages());
+            update(crossReference);
         }
 
         return crossReference;
