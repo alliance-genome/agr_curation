@@ -8,7 +8,7 @@
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
-	<version>0.0.1</version>
+	<version>0.0.7</version>
 
 	<properties>
 

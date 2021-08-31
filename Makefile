@@ -2,7 +2,7 @@ PROCS = -T 8
 PACKAGE = clean package
 #FLAGS = -DskipTests=true -ntp -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
 FLAGS = -Dquarkus.package.type=uber-jar
-RELEASE = 0.0.4
+RELEASE = 0.0.7
 REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
