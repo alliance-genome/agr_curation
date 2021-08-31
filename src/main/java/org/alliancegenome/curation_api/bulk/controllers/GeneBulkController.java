@@ -17,11 +17,8 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneBulkController implements GeneBulkRESTInterface {
 
-    @Inject ConnectionFactory connectionFactory;
-
     @Inject GeneDTOConsumer geneDTOConsumer;
     
-
     @Override
     public String updateBGI(GeneMetaDataDTO geneData) {
 
