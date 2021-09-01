@@ -5,8 +5,10 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.base.SearchResults;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.apache.commons.collections4.CollectionUtils;
@@ -77,7 +79,6 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         g.setType(gene.getSoTermId());
 
 
-/*
         List<CrossReferenceDTO> incomingCrossReferences = gene.getBasicGeneticEntity().getCrossReferences();
         List<CrossReference> persitentCrossReferences = new ArrayList<>();
         for (CrossReferenceDTO crossReferenceDTO : incomingCrossReferences) {
@@ -86,7 +87,6 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         }
 
         g.setCrossReferences(persitentCrossReferences);
-*/
         g.setSecondaryIdentifiers(gene.getBasicGeneticEntity().getSecondaryIds());
 
         if (newGene) {
