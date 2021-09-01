@@ -1,25 +1,25 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.*;
-import javax.enterprise.event.Observes;
-import javax.inject.Inject;
-import javax.jms.*;
-import javax.transaction.Transactional;
-
-import org.alliancegenome.curation_api.base.*;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import lombok.extern.jbosslog.JBossLog;
+import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.SearchResults;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.apache.commons.collections4.CollectionUtils;
 
-import io.quarkus.runtime.*;
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -57,7 +57,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
     @Transactional
     public void processUpdate(GeneDTO gene) {
         //log.info("processUpdate Gene: ");
-        
+
         Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
         boolean newGene = false;
 
@@ -118,11 +118,11 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
                         .filter(synonym -> !existingSynonymStrings.contains(synonym.getName()))
                         .map(Synonym::getId)
                         .collect(Collectors.toList());
-                removeSynIDs.forEach(id -> synonymService.delete(Long.toString(id)));
+                removeSynIDs.forEach(id -> synonymService.delete(id));
                 existingSynonyms.removeIf(synonym -> newSynonyms.stream().noneMatch(synonym1 -> synonym1.getName().equals(synonym.getName())));
             }
             // add new synonyms that are not found in the existing synonym list
-            if (CollectionUtils.isNotEmpty(existingSynonyms)) {
+            if (existingSynonyms != null) {
                 List<String> existingSynonymStrings = existingSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
                 final List<Synonym> newCollect = newSynonyms.stream().filter(synonym -> !existingSynonymStrings.contains(synonym.getName())).collect(Collectors.toList());
                 newCollect.forEach(synonym -> {
@@ -131,6 +131,10 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
                 });
                 existingSynonyms.addAll(newCollect);
             }
+        } else {
+            // remove all existing synonyms if there are no incoming synonyms
+            gene.getSynonyms().forEach(synonym -> synonymService.delete(synonym.getId()));
+            gene.setSynonyms(new ArrayList<>());
         }
     }
 
