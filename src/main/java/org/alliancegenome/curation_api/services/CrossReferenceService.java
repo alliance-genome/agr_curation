@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -7,9 +11,10 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -38,14 +43,44 @@ public class CrossReferenceService extends BaseService<CrossReference, CrossRefe
         if(crossReference == null) {
             crossReference = new CrossReference();
             crossReference.setCurie(crossReferenceDTO.getId());
-            crossReference.setPageAreas(crossReferenceDTO.getPages());
-            create(crossReference);
-        } else {
-            crossReference.setPageAreas(crossReferenceDTO.getPages());
-            update(crossReference);
+            crossReferenceDAO.persist(crossReference);
         }
+
+        handlePageAreas(crossReferenceDTO, crossReference);
 
         return crossReference;
 
     }
+
+    private void handlePageAreas(CrossReferenceDTO crDTO, CrossReference cr) {
+
+        Set<String> currentPages;
+        if(cr.getPageAreas() == null) {
+            currentPages = new HashSet<>();
+            cr.setPageAreas(new ArrayList<>());
+        } else {
+            currentPages = cr.getPageAreas().stream().collect(Collectors.toSet());
+        }
+
+        Set<String> newPages;
+        if(crDTO.getPages() == null) {
+            newPages = new HashSet<>();
+        } else {
+            newPages = crDTO.getPages().stream().collect(Collectors.toSet());
+        }
+
+        newPages.forEach(id -> {
+            if(!currentPages.contains(id)) {
+                cr.getPageAreas().add(id);
+            }
+        });
+
+        currentPages.forEach(id -> {
+            if(!newPages.contains(id)) {
+                cr.getPageAreas().remove(id);
+            }
+        });
+
+    }
+
 }

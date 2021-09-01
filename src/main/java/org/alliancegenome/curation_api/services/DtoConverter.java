@@ -13,8 +13,10 @@ public class DtoConverter {
         if (gene.getBasicGeneticEntity().getSynonyms() == null)
             return null;
         return gene.getBasicGeneticEntity().getSynonyms().stream()
-                .map(s -> new Synonym(s)).collect(toList());
+                .map(s -> {
+                    Synonym syn = new Synonym();
+                    syn.setName(s);
+                    return syn;
+                }).collect(toList());
     }
-
-
 }
