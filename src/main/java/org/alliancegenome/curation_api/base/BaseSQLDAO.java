@@ -84,20 +84,20 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public E merge(E entity) {
-        log.debug("SqliteDAO: merge: " + entity);
+        log.debug("SqlDAO: merge: " + entity);
         entityManager.merge(entity);
         return entity;
     }
 
     public E remove(String id) {
-        log.debug("SqliteDAO: remove: " + id);
+        log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
         entityManager.remove(entity);
         return entity;
     }
 
     public E remove(Long id) {
-        log.debug("SqliteDAO: remove: " + id);
+        log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
         entityManager.remove(entity);
         return entity;

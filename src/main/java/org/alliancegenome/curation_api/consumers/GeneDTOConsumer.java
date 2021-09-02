@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.consumers;
 
+import java.util.Date;
 import java.util.concurrent.*;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,6 +11,7 @@ import javax.jms.*;
 
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.services.GeneService;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import io.quarkus.runtime.*;
 import lombok.extern.jbosslog.JBossLog;
@@ -22,7 +24,7 @@ public class GeneDTOConsumer implements Runnable {
 
     @Inject ConnectionFactory connectionFactory1;
     @Inject ConnectionFactory connectionFactory2;
-    
+
     private JMSProducer producer;
     private JMSContext context;
 
@@ -48,15 +50,32 @@ public class GeneDTOConsumer implements Runnable {
     @Override @ActivateRequestContext
     public void run() {
         JMSContext ctx = null;
+        CircularFifoQueue<Long> queue = new CircularFifoQueue<>(100);
+        GeneDTO gene = null;
         try {
             ctx = connectionFactory2.createContext(Session.AUTO_ACKNOWLEDGE);
             JMSConsumer consumer = ctx.createConsumer(ctx.createQueue("geneQueue"));
+            Date start;
+            Date end;
+            int c = 0;
             while (true) {
-                geneService.processUpdate(consumer.receiveBody(GeneDTO.class));
+                gene = consumer.receiveBody(GeneDTO.class);
+                start = new Date();
+                geneService.processUpdate(gene);
+                end = new Date();
+                queue.add(end.getTime() - start.getTime());
+                if((c % 200) == 0 && c > 0) {
+                    long sum = queue.stream().reduce(0L, Long::sum);
+                    long rps = (200 * 1000) / sum;
+                    log.info("GeneDTOConsumer " + rps + " r/s");
+                }
+                c++;
             }
         } catch (Exception e) {
             if(ctx != null) ctx.close();
+            log.info("Gene: " + gene);
             log.info("Thread process failed: Error: " + e);
+            e.printStackTrace();
             throw new RuntimeException(e);
         }
     }

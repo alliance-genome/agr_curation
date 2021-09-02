@@ -1,10 +1,7 @@
 package org.alliancegenome.curation_api.bulk.controllers;
 
-import java.util.*;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import javax.jms.*;
 
 import org.alliancegenome.curation_api.consumers.GeneDTOConsumer;
 import org.alliancegenome.curation_api.interfaces.bulk.GeneBulkRESTInterface;
@@ -19,6 +16,8 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 
     @Inject GeneDTOConsumer geneDTOConsumer;
     
+    //@Inject GeneService geneService;
+    
     @Override
     public String updateBGI(GeneMetaDataDTO geneData) {
 
@@ -27,6 +26,7 @@ public class GeneBulkController implements GeneBulkRESTInterface {
 
         for(GeneDTO gene: geneData.getData()) {
             geneDTOConsumer.send(gene);
+            //geneService.processUpdate(gene);
             ph.progressProcess();
         }
 
