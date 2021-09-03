@@ -1,29 +1,16 @@
 package org.alliancegenome.curation_api.config;
 
 import java.io.File;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.IRI;
-import org.semanticweb.owlapi.model.OWLClass;
-import org.semanticweb.owlapi.model.OWLDatatypeDefinitionAxiom;
-import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
-import org.semanticweb.owlapi.model.OWLDocumentFormat;
-import org.semanticweb.owlapi.model.OWLEntity;
-import org.semanticweb.owlapi.model.OWLLiteral;
-import org.semanticweb.owlapi.model.OWLObjectVisitor;
-import org.semanticweb.owlapi.model.OWLOntology;
-import org.semanticweb.owlapi.model.OWLOntologyFormat;
-import org.semanticweb.owlapi.model.OWLOntologyManager;
-import org.semanticweb.owlapi.rdf.rdfxml.renderer.OWLOntologyXMLNamespaceManager;
-import org.semanticweb.owlapi.reasoner.OWLReasoner;
-import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
+import org.semanticweb.owlapi.model.*;
+import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
-public class OWLTravels implements OWLObjectVisitor {
+public class OWLTravels<T extends OntologyTerm> implements OWLObjectVisitor {
 
     private OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
     //private OWLDataFactory df = OWLManager.getOWLDataFactory();
@@ -31,20 +18,31 @@ public class OWLTravels implements OWLObjectVisitor {
     private OWLReasoner reasoner;
     private OWLOntology ontology;
     
+    private String defaultNamespace;
+    private Class<T> clazz;
+    
     public static void main(String[] args) throws Exception {
-        new OWLTravels();
+        new OWLTravels<DOTerm>(DOTerm.class);
     }
 
-    public OWLTravels() throws Exception {
+    public OWLTravels(Class<T> clazz) throws Exception {
+        this.clazz = clazz;
 
-
-        //IRI pizza_iri = IRI.create("https://protege.stanford.edu/ontologies/pizza/pizza.owl");
-        IRI do_iri = IRI.create(new File("/Users/balrog/git/agr_curation/doid.owl"));
-
+        //IRI do_iri = IRI.create("https://protege.stanford.edu/ontologies/pizza/pizza.owl");
+        //IRI do_iri = IRI.create(new File("/Users/balrog/git/agr_curation/doid.owl"));
+        IRI do_iri = IRI.create(new File("/Users/olinblodgett/Desktop/FMS/doid.owl"));
+        
         ontology = manager.loadOntologyFromOntologyDocument(do_iri);
 
-        reasoner = reasonerFactory.createReasoner(ontology);
-
+        ontology.annotations().forEach(a -> {
+            String key = a.getProperty().getIRI().getShortForm();
+            System.out.println(key);
+            System.out.println(a.getValue());
+            if(key.equals("default-namespace")) {
+                defaultNamespace = getString(a.getValue());
+            }
+        });
+        
         OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
         System.out.println("Ontology Loaded...");
@@ -52,82 +50,107 @@ public class OWLTravels implements OWLObjectVisitor {
         System.out.println("Ontology : " + ontology.getOntologyID());
         System.out.println("Format      : " + manager.getOntologyFormat(ontology));
 
-        OWLDocumentFormat format = manager.getOntologyFormat(ontology);
-        
-        OWLOntologyXMLNamespaceManager nsManager = new OWLOntologyXMLNamespaceManager(ontology, format);
-        System.out.println(nsManager.getDefaultNamespace());
-        
-        for (String prefix : nsManager.getPrefixes()) {
-            System.out.println(prefix);
-        }
-        for (String ns : nsManager.getNamespaces()) {
-            System.out.println(ns);
-        }
-        
+//      OWLDocumentFormat format = manager.getOntologyFormat(ontology);
+//      
+//      OWLOntologyXMLNamespaceManager nsManager = new OWLOntologyXMLNamespaceManager(ontology, format);
+//      System.out.println(nsManager.getDefaultNamespace());
+//      
+//      for (String prefix : nsManager.getPrefixes()) {
+//          System.out.println(prefix);
+//      }
+//      for (String ns : nsManager.getNamespaces()) {
+//          System.out.println(ns);
+//      }
+
+        reasoner = reasonerFactory.createReasoner(ontology);
         
         traverse(root, 0);
 
     }
 
-    public void traverse(OWLClass parent, int depth) {
+    public void traverse(OWLClass parent, int depth) throws Exception {
 
         if (reasoner.isSatisfiable(parent)) {
 
             //System.out.println("--------------------------------------------------------------------------");
-            System.out.println(getLabel(parent, depth));
-            //System.out.println("--------------------------------------------------------------------------");
 
-            //.map(e-> {
-            //  System.out.println(e.toStringID());
-            //});
+            T t = getOntologyTerm(parent);
             
-
-            for (OWLClass child : reasoner.getSubClasses(parent, true).getFlattened()) {
-                if (!child.equals(parent)) {
-                    traverse(child, depth + 1);
-                }
+            //System.out.println("--------------------------------------------------------------------------");
+            //System.out.println(defaultNamespace);
+            
+            if((t.getNamespace() != null && t.getNamespace().equals(defaultNamespace)) || depth == 0) {
+                System.out.println(t);
+                reasoner.getSubClasses(parent, true).entities().forEach(child -> {
+                    if (!child.equals(parent)) {
+                        try {
+                            traverse(child, depth + 1);
+                        } catch (Exception e) {
+                            // TODO Auto-generated catch block
+                            e.printStackTrace();
+                        }
+                    }
+                });
             }
         }
 
     }
-
-    public String getLabel(OWLClass node, int depth) {
-
-        //EntitySearcher.getAnnotationObjects(node, ontology).forEach(e -> { System.out.println(e); });
-        
-        node.accept(this);
-        
-        List<String> ret = EntitySearcher.getAnnotationObjects(node, ontology).map(e -> {
-
-            for(int i = 0; i < depth; i++) {
-                System.out.print("   ");
-            }
-            //System.out.println("Val: " + e.getValue());
-            System.out.println("Prop: " + e.getProperty().getIRI());
-            //System.out.println("Sig: " + e);
-            if(e.getProperty().isLabel()) {
-                return ((OWLLiteral)e.getValue()).getLiteral();
-            } else {
-                return null;
-            }
-        })
-        .filter(Objects::nonNull)
-        .collect(Collectors.toList());
-
-        if(ret.size() == 0) return node.toString();
-        else return ret.get(0);
+    
+    public String getString(OWLAnnotationValue owlAnnotationValue) {
+        return ((OWLLiteral)owlAnnotationValue).getLiteral();
     }
-
-    @Override
-    public void visit(OWLDeclarationAxiom axiom) {
-        //System.out.println(axiom);
-        OWLObjectVisitor.super.visit(axiom);
+    
+    public Boolean getBoolean(OWLAnnotationValue owlAnnotationValue) {
+        return ((OWLLiteral)owlAnnotationValue).getLiteral().equals("true");
     }
+    
+    @SuppressWarnings("unchecked")
+    public T getOntologyTerm(OWLClass node) throws Exception {
 
-    @Override
-    public void visit(OWLDatatypeDefinitionAxiom axiom) {
-        //System.out.println(axiom);
-        OWLObjectVisitor.super.visit(axiom);
+        T term = clazz.newInstance();
+        
+        EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {
+
+            String key = annotation.getProperty().getIRI().getShortForm();
+            
+            if(key.equals("id")) {
+                term.setCurie(getString(annotation.getValue()));
+            }
+            
+            if(annotation.getProperty().isLabel() && key.equals("label")) {
+                term.setName(getString(annotation.getValue()));
+            }
+            
+            if(key.equals("IAO_0000115")) {
+
+                ontology.annotationAssertionAxioms(node.getIRI()).forEach(annot -> {
+                    
+                    if(annot.isAnnotated()) {
+                        annot.annotations().forEach(an -> {
+                            String inkey = an.getProperty().getIRI().getShortForm();
+                            //System.out.println(inkey);
+                            if(inkey.equals("hasDbXref")) {
+                                //System.out.println("Adding: " + an.getValue().toString());
+                                if(term.getDefinitionUrls() == null) term.setDefinitionUrls(new ArrayList<>());
+                                term.getDefinitionUrls().add(getString(an.getValue()));
+                            }
+                        });
+                    }
+                });
+                term.setDefinition(getString(annotation.getValue()));
+            }
+            
+            if(key.equals("deprecated")) {
+                term.setObsolete(getBoolean(annotation.getValue()));
+            }
+            if(key.equals("hasOBONamespace")) {
+                term.setNamespace(getString(annotation.getValue()));
+            }
+
+        });
+
+        return term;
+
     }
 
 
