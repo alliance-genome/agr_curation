@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseCurieEntity;
-import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
@@ -39,17 +39,19 @@ public class OntologyTerm extends BaseCurieEntity {
     @JsonView(View.FieldsOnly.class)
     private String namespace;
 
-//  @ManyToMany
-//  private List<OntologyTerm> parents;
-//
-//  @ManyToMany(mappedBy="parents")
-//  private List<OntologyTerm> children;
+    @ManyToMany
+    @JoinTable(indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
+    private List<OntologyTerm> parents;
+
+    @ManyToMany(mappedBy="parents")
+    private List<OntologyTerm> children;
     
-//  @ManyToMany
-//  private List<OntologyTerm> ancesters;
-//
-//  @ManyToMany(mappedBy="ancesters")
-//  private List<OntologyTerm> descendants;
+    @ManyToMany
+    @JoinTable(indexes = { @Index( columnList = "ancesters_curie"), @Index( columnList = "descendants_curie")})
+    private List<OntologyTerm> ancesters;
+
+    @ManyToMany(mappedBy="ancesters")
+    private List<OntologyTerm> descendants;
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @Column(columnDefinition="TEXT")
@@ -68,7 +70,9 @@ public class OntologyTerm extends BaseCurieEntity {
     @ElementCollection
     private List<String> synonyms;
 
-    //  @ManyToMany
-    //  private List<CrossReference> crossReferences;
+    @ManyToMany
+    @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
+    @JsonView({View.FieldsOnly.class})
+    private List<CrossReference> crossReferences;
 
 }
