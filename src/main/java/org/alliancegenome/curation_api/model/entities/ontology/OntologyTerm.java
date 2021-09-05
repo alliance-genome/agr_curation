@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -20,7 +20,7 @@ import lombok.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"parent", "children", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
+@ToString(exclude = {"parents", "children", "ancesters", "descendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
 public class OntologyTerm extends BaseCurieEntity {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
@@ -51,7 +51,7 @@ public class OntologyTerm extends BaseCurieEntity {
     private List<OntologyTerm> ancesters;
 
     @ManyToMany(mappedBy="ancesters")
-    private List<OntologyTerm> descendants;
+    private Set<OntologyTerm> descendants;
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @Column(columnDefinition="TEXT")
@@ -59,20 +59,42 @@ public class OntologyTerm extends BaseCurieEntity {
     private String definition;
 
     @ElementCollection
+    @JsonView(View.FieldsOnly.class)
     private List<String> definitionUrls;
 
     @ElementCollection
+    @JsonView(View.FieldsOnly.class)
     private List<String> subsets;
 
     @ElementCollection
+    @JsonView(View.FieldsOnly.class)
     private List<String> secondaryIdentifiers;
 
     @ElementCollection
+    @JsonView(View.FieldsOnly.class)
     private List<String> synonyms;
 
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     @JsonView({View.FieldsOnly.class})
     private List<CrossReference> crossReferences;
+
+    @Transient
+    public void addChild(OntologyTerm term) {
+        if(children == null) children = new ArrayList<OntologyTerm>();
+        children.add(term);
+    }
+    
+    @Transient
+    public void addParent(OntologyTerm term) {
+        if(parents == null) parents = new ArrayList<OntologyTerm>();
+        parents.add(term);
+    }
+    
+    @Transient
+    public void addDescendant(OntologyTerm term) {
+        if(descendants == null) descendants = new HashSet<OntologyTerm>();
+        descendants.add(term);
+    }
 
 }

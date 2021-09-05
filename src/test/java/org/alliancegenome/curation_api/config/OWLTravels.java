@@ -1,7 +1,8 @@
 package org.alliancegenome.curation_api.config;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -64,38 +65,49 @@ public class OWLTravels<T extends OntologyTerm> implements OWLObjectVisitor {
 
         reasoner = reasonerFactory.createReasoner(ontology);
         
-        traverse(root, 0);
+        T rootTerm = traverse(root, 0);
 
+        System.out.println(rootTerm.getDescendants().size());
     }
 
-    public void traverse(OWLClass parent, int depth) throws Exception {
+    public T traverse(OWLClass parent, int depth) throws Exception {
 
+        T termParent = null;
+        
         if (reasoner.isSatisfiable(parent)) {
 
-            //System.out.println("--------------------------------------------------------------------------");
+            termParent = getOntologyTerm(parent);
+            
+            if((termParent.getNamespace() != null && termParent.getNamespace().equals(defaultNamespace)) || depth == 0) {
+                //System.out.println(t);
+                
+                for(OWLClass child: reasoner.getSubClasses(parent, true).entities().collect(Collectors.toList())) {
 
-            T t = getOntologyTerm(parent);
-            
-            //System.out.println("--------------------------------------------------------------------------");
-            //System.out.println(defaultNamespace);
-            
-            if((t.getNamespace() != null && t.getNamespace().equals(defaultNamespace)) || depth == 0) {
-                System.out.println(t);
-                reasoner.getSubClasses(parent, true).entities().forEach(child -> {
                     if (!child.equals(parent)) {
                         try {
-                            traverse(child, depth + 1);
+                            T t = traverse(child, depth + 1);
+                            if(t != null) {
+                                termParent.addChild(t);
+                                t.addParent(termParent);
+                                termParent.addDescendant(t);
+                                for(OntologyTerm d: termParent.getDescendants()) {
+                                    termParent.addDescendant(d);
+                                }
+                                System.out.println("Adding: " + termParent.getDescendants().size());
+                            }
                         } catch (Exception e) {
                             // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
-                });
+                }
             }
         }
+        
+        return termParent;
 
     }
-    
+
     public String getString(OWLAnnotationValue owlAnnotationValue) {
         return ((OWLLiteral)owlAnnotationValue).getLiteral();
     }
@@ -107,7 +119,7 @@ public class OWLTravels<T extends OntologyTerm> implements OWLObjectVisitor {
     @SuppressWarnings("unchecked")
     public T getOntologyTerm(OWLClass node) throws Exception {
 
-        T term = clazz.newInstance();
+        T term = clazz.getDeclaredConstructor().newInstance();
         
         EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {
 
