@@ -17,9 +17,9 @@ import lombok.*;
 
 @Audited
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@EqualsAndHashCode(callSuper = false)
 @ToString(exclude = {"parents", "children", "ancesters", "descendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
 public class OntologyTerm extends BaseCurieEntity {
 
@@ -41,14 +41,14 @@ public class OntologyTerm extends BaseCurieEntity {
 
     @ManyToMany
     @JoinTable(indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
-    private List<OntologyTerm> parents;
+    private Set<OntologyTerm> parents;
 
     @ManyToMany(mappedBy="parents")
-    private List<OntologyTerm> children;
+    private Set<OntologyTerm> children;
     
     @ManyToMany
     @JoinTable(indexes = { @Index( columnList = "ancesters_curie"), @Index( columnList = "descendants_curie")})
-    private List<OntologyTerm> ancesters;
+    private Set<OntologyTerm> ancesters;
 
     @ManyToMany(mappedBy="ancesters")
     private Set<OntologyTerm> descendants;
@@ -81,13 +81,13 @@ public class OntologyTerm extends BaseCurieEntity {
 
     @Transient
     public void addChild(OntologyTerm term) {
-        if(children == null) children = new ArrayList<OntologyTerm>();
+        if(children == null) children = new HashSet<OntologyTerm>();
         children.add(term);
     }
     
     @Transient
     public void addParent(OntologyTerm term) {
-        if(parents == null) parents = new ArrayList<OntologyTerm>();
+        if(parents == null) parents = new HashSet<OntologyTerm>();
         parents.add(term);
     }
     
@@ -96,5 +96,10 @@ public class OntologyTerm extends BaseCurieEntity {
         if(descendants == null) descendants = new HashSet<OntologyTerm>();
         descendants.add(term);
     }
-
+    
+    @Transient
+    public void addAncester(OntologyTerm term) {
+        if(ancesters == null) ancesters = new HashSet<OntologyTerm>();
+        ancesters.add(term);
+    }
 }
