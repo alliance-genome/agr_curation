@@ -20,7 +20,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-		<quarkus.platform.version>2.1.2.Final</quarkus.platform.version>
+		<quarkus.platform.version>2.2.1.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
 
@@ -125,9 +125,11 @@
 		</dependency>
 
 		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-artemis-jms</artifactId>
+			<groupId>org.amqphub.quarkus</groupId>
+			<artifactId>quarkus-qpid-jms</artifactId>
+			<version>0.27.0</version>
 		</dependency>
+
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jaxb</artifactId>

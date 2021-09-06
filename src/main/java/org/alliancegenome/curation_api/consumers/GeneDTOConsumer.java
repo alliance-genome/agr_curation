@@ -33,7 +33,7 @@ public class GeneDTOConsumer implements Runnable {
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(threadCount);
 
     void onStart(@Observes StartupEvent ev) {
-        log.info("GeneDTOConsumer Starting:" + threadCount);
+        log.info("GeneDTOConsumer Starting:" + threadCount + " Factory: " + connectionFactory1);
         context = connectionFactory1.createContext(Session.AUTO_ACKNOWLEDGE);
         producer = context.createProducer();
         for(int i = 0; i < threadCount; i++) {
