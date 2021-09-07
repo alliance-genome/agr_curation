@@ -10,11 +10,13 @@ jobs:
   build-and-push-docker-image:
     runs-on: ubuntu-20.04
     steps:
-    # This step will configure environment variables to be used by all steps
-    # involving AWS interaction further down
+    - name: Check out repository code
+      uses: actions/checkout@v2
     - name: Build application
       run: |
         make all
+    # This step will configure environment variables to be used by all steps
+    # involving AWS interaction further down
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v1
       with:
