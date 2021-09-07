@@ -8,12 +8,11 @@ jobs:
     steps:
     - name: Print Variables
       env:
-        RELEASE_TAG: ${GITHUB_REF#refs/tags/}
         RELEASE_SHA: ${{ github.sha }}
       run: |
         echo "Repository ${{ github.repository }}"
         echo "SHA ${RELEASE_SHA}"
-        echo "Tag ${RELEASE_TAG}"
+        echo "Tag ${GITHUB_REF#refs/tags/}"
 #    - name: AWS credentials configuration
 #      uses: aws-actions/configure-aws-credentials@v1
 #      with:
