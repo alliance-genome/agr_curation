@@ -7,11 +7,13 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Print Variables
+      env:
+        RELEASE_TAG: ${GITHUB_REF#refs/tags/}
+        RELEASE_SHA: ${{ github.sha }}
       run: |
         echo "Repository ${{ github.repository }}"
-        echo "SHA ${{ github.sha }}"
-        echo "Ref ${{ github.ref }}"
-        echo "Ref2 ${GITHUB_REF#refs/heads/}"
+        echo "SHA ${RELEASE_SHA}"
+        echo "Tag ${RELEASE_TAG}"
 #    - name: AWS credentials configuration
 #      uses: aws-actions/configure-aws-credentials@v1
 #      with:
