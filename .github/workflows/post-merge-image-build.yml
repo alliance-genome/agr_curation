@@ -12,6 +12,9 @@ jobs:
     steps:
     # This step will configure environment variables to be used by all steps
     # involving AWS interaction further down
+    - name: Build application
+      run: |
+        make all
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v1
       with:
