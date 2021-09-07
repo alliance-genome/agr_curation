@@ -1,3 +1,4 @@
+name: Build and Push Release to Production
 on:
   release:
     types: [published]
