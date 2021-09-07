@@ -41,9 +41,12 @@ jobs:
       steps:
         - name: Check out repository code
           uses: actions/checkout@v2
-        - name: Compile runnable
+        - name: Build and package UI
           run: |
-            make all
+            make ui
+        - name: Build and package API
+          run: |
+            make api
         - name: Build docker image
           env:
             ECR_REPOSITORY: agr_curation
