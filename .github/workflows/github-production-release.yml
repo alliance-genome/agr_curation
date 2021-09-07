@@ -6,11 +6,11 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Print Variables
-        run: |
-          echo "Repository ${{ github.repository }}"
-          echo "SHA ${{ github.sha }}"
-          echo "Ref ${{ github.ref }}"
-          echo "Ref2 ${GITHUB_REF#refs/heads/}"
+      run: |
+        echo "Repository ${{ github.repository }}"
+        echo "SHA ${{ github.sha }}"
+        echo "Ref ${{ github.ref }}"
+        echo "Ref2 ${GITHUB_REF#refs/heads/}"
 #    - name: AWS credentials configuration
 #      uses: aws-actions/configure-aws-credentials@v1
 #      with:
