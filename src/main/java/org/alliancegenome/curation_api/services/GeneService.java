@@ -12,15 +12,15 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.HashedMap;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @JBossLog
@@ -35,7 +35,6 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
     CrossReferenceService crossReferenceService;
     @Inject
     SynonymService synonymService;
-
 
     @Override
     @PostConstruct
@@ -59,6 +58,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
 
     @Transactional
     public void processUpdate(GeneDTO gene) {
+        //log.info("processUpdate Gene: ");
 
         Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
         boolean newGene = false;
@@ -66,8 +66,8 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         if (g == null) {
             g = new Gene();
             g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-            handleNewSynonyms(gene, g);
             newGene = true;
+            handleNewSynonyms(gene, g);
         } else {
             handleUpdateSynonyms(gene, g);
         }
@@ -80,28 +80,84 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
         g.setType(gene.getSoTermId());
 
-        List<CrossReferenceDTO> incomingCrossReferences = gene.getBasicGeneticEntity().getCrossReferences();
-        List<CrossReference> persitentCrossReferences = new ArrayList<>();
-        for (CrossReferenceDTO crossReferenceDTO : incomingCrossReferences) {
-            CrossReference crossReference = crossReferenceService.processUpdate(crossReferenceDTO);
-            persitentCrossReferences.add(crossReference);
-        }
+        handleCrossReferences(gene, g);
+        handleSecondaryIds(gene, g);
 
-        g.setCrossReferences(persitentCrossReferences);
-
-        if(CollectionUtils.isNotEmpty(g.getSecondaryIdentifiers())) {
-            Set<String> secondaryIds = new LinkedHashSet<>(g.getSecondaryIdentifiers());
-            secondaryIds.addAll(gene.getBasicGeneticEntity().getSecondaryIds());
-            g.setSecondaryIdentifiers(new ArrayList<>(secondaryIds));
-        }
         if (newGene) {
-            create(g);
-        } else {
-            update(g);
+            geneDAO.persist(g);
         }
 
     }
+    
+    private void handleSecondaryIds(GeneDTO geneDTO, Gene gene) {
+        Set<String> currentIds;
+        if(gene.getSecondaryIdentifiers() == null) {
+            currentIds = new HashSet<>();
+            gene.setSecondaryIdentifiers(new ArrayList<>());
+        } else {
+            currentIds = gene.getSecondaryIdentifiers().stream().collect(Collectors.toSet());
+        }
+        
+        Set<String> newIds;
+        if(geneDTO.getBasicGeneticEntity().getSecondaryIds() == null) {
+            newIds = new HashSet<>();
+        } else {
+            newIds = geneDTO.getBasicGeneticEntity().getSecondaryIds().stream().collect(Collectors.toSet());
+        }
+        
+        newIds.forEach(id -> {
+            if(!currentIds.contains(id)) {
+                gene.getSecondaryIdentifiers().add(id);
+            }
+        });
+        
+        currentIds.forEach(id -> {
+            if(!newIds.contains(id)) {
+                gene.getSecondaryIdentifiers().remove(id);
+            }
+        });
 
+    }
+    
+    private void handleCrossReferences(GeneDTO geneDTO, Gene gene) {
+        Map<String, CrossReference> currentIds;
+        if(gene.getCrossReferences() == null) {
+            currentIds = new HashedMap<>();
+            gene.setCrossReferences(new ArrayList<>());
+        } else {
+            currentIds = gene.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
+        }
+        Map<String, CrossReferenceDTO> newIds;
+        if(geneDTO.getBasicGeneticEntity().getCrossReferences() == null) {
+            newIds = new HashedMap<>();
+        } else {
+            newIds = geneDTO.getBasicGeneticEntity().getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceDTO::getId, Function.identity(),
+                    (cr1, cr2) -> {
+                        HashSet<String> pageAreas = new HashSet<>();
+                        if(cr1.getPages() != null) pageAreas.addAll(cr1.getPages());
+                        if(cr2.getPages() != null) pageAreas.addAll(cr2.getPages());
+                        CrossReferenceDTO newCr = new CrossReferenceDTO();
+                        newCr.setId(cr2.getId());
+                        newCr.setPages(new ArrayList<>(pageAreas));
+                        return newCr;
+                    }
+            ));
+        }
+        
+        newIds.forEach((k, v) -> {
+            if(!currentIds.containsKey(k)) {
+                gene.getCrossReferences().add(crossReferenceService.processUpdate(v));
+            }
+        });
+        
+        currentIds.forEach((k, v) -> {
+            if(!newIds.containsKey(k)) {
+                gene.getCrossReferences().remove(v);
+            }
+        });
+
+    }
+    
     private void handleNewSynonyms(GeneDTO gene, Gene g) {
         if (CollectionUtils.isNotEmpty(gene.getBasicGeneticEntity().getSynonyms())) {
             List<Synonym> synonyms = DtoConverter.getSynonyms(gene);
@@ -123,19 +179,23 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
                         .filter(synonym -> !existingSynonymStrings.contains(synonym.getName()))
                         .map(Synonym::getId)
                         .collect(Collectors.toList());
-                removeSynIDs.forEach(id -> synonymService.delete(Long.toString(id)));
+                removeSynIDs.forEach(id -> synonymService.delete(id));
                 existingSynonyms.removeIf(synonym -> newSynonyms.stream().noneMatch(synonym1 -> synonym1.getName().equals(synonym.getName())));
             }
             // add new synonyms that are not found in the existing synonym list
-            if (CollectionUtils.isNotEmpty(existingSynonyms)) {
+            if (existingSynonyms != null) {
                 List<String> existingSynonymStrings = existingSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
                 final List<Synonym> newCollect = newSynonyms.stream().filter(synonym -> !existingSynonymStrings.contains(synonym.getName())).collect(Collectors.toList());
                 newCollect.forEach(synonym -> {
-                    synonym.setGenomicEntityList(List.of(gene));
+                    synonym.setGenomicEntities(List.of(gene));
                     synonymService.create(synonym);
                 });
                 existingSynonyms.addAll(newCollect);
             }
+        } else {
+            // remove all existing synonyms if there are no incoming synonyms
+            gene.getSynonyms().forEach(synonym -> synonymService.delete(synonym.getId()));
+            gene.setSynonyms(new ArrayList<>());
         }
     }
 

@@ -8,7 +8,7 @@
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
-	<version>0.0.1</version>
+	<version>0.0.7</version>
 
 	<properties>
 
@@ -20,7 +20,7 @@
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
-		<quarkus.platform.version>2.1.2.Final</quarkus.platform.version>
+		<quarkus.platform.version>2.2.1.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
 
@@ -124,10 +124,12 @@
 			<artifactId>jackson-dataformat-xml</artifactId>
 		</dependency>
 
-		<!-- <dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-artemis-jms</artifactId>
-		</dependency> -->
+		<dependency>
+			<groupId>org.amqphub.quarkus</groupId>
+			<artifactId>quarkus-qpid-jms</artifactId>
+			<version>0.27.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>io.quarkus</groupId>
 			<artifactId>quarkus-resteasy-jaxb</artifactId>

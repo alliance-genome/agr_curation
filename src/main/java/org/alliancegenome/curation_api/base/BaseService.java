@@ -38,6 +38,11 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
         return dao.remove(id);
     }
 
+    @Transactional
+    public E delete(Long id) {
+        return dao.remove(id);
+    }
+
     public SearchResults<E> getAll(Pagination pagination) {
         return dao.findAll(pagination);
     }

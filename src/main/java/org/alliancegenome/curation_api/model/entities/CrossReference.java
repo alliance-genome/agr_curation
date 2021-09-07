@@ -18,17 +18,20 @@ import lombok.*;
 @Audited
 @Entity
 @Data @EqualsAndHashCode(callSuper = false)
+@ToString(exclude = {"pageAreas"})
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
 public class CrossReference extends BaseCurieEntity {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @ElementCollection
+    @JoinTable(indexes = @Index( columnList = "crossreference_curie"))
     @JsonView({View.FieldsOnly.class})
     private List<String> pageAreas;
-
+    
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
     private String displayName;
+    
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
     private String prefix;

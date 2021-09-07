@@ -47,6 +47,18 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         }
     }
 
+    public E find(Long id) {
+        log.debug("SqlDAO: find: " + id + " " + myClass);
+        if(id != null) {
+            E entity = entityManager.find(myClass, id);
+            log.debug("Entity Found: " + entity);
+            return entity;
+        } else {
+            log.debug("Input Param is null: " + id);
+            return null;
+        }
+    }
+
     public SearchResults<E> findAll(Pagination pagination) {
         log.debug("SqlDAO: findAll: " + myClass);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
@@ -72,13 +84,20 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public E merge(E entity) {
-        log.debug("SqliteDAO: merge: " + entity);
+        log.debug("SqlDAO: merge: " + entity);
         entityManager.merge(entity);
         return entity;
     }
 
     public E remove(String id) {
-        log.debug("SqliteDAO: remove: " + id);
+        log.debug("SqlDAO: remove: " + id);
+        E entity = find(id);
+        entityManager.remove(entity);
+        return entity;
+    }
+
+    public E remove(Long id) {
+        log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
         entityManager.remove(entity);
         return entity;
