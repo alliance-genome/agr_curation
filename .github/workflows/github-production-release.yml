@@ -6,30 +6,22 @@ jobs:
   release-tag-to-production:
     runs-on: ubuntu-20.04
     steps:
-    - name: Print Variables
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Amazon ECR login
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build, tag, and push image to Amazon ECR
       env:
-        RELEASE_SHA: ${{ github.sha }}
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: agr_curation
+        IMAGE_TAG: ${{ github.sha }}
+        GITHUB_BRANCH: ${{ github.ref }}
       run: |
-        echo "Repository ${{ github.repository }}"
-        echo "SHA ${RELEASE_SHA}"
-        echo "Tag ${GITHUB_REF#refs/tags/}"
-#    - name: AWS credentials configuration
-#      uses: aws-actions/configure-aws-credentials@v1
-#      with:
-#        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#        aws-region: us-east-1
-#    - name: Amazon ECR login
-#      id: login-ecr
-#      uses: aws-actions/amazon-ecr-login@v1
-#    - name: Build, tag, and push image to Amazon ECR
-#      env:
-#        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-#        ECR_REPOSITORY: agr_curation
-#        IMAGE_TAG: ${{ github.sha }}
-#        GITHUB_BRANCH: ${{ github.ref }}
-#      run: |
-#        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-#        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
-#        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-#        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
+        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/}
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/}
