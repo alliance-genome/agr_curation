@@ -19,7 +19,7 @@ public class BaseGeneratedEntity extends BaseEntity {
     @Id @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
-    private Long id;
+    protected Long id;
     
     @GenericField
     @CreationTimestamp

@@ -5,6 +5,10 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseDTO;
 
 import lombok.Data;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+
+import static java.util.stream.Collectors.toList;
 
 @Data
 public class BasicGeneticEntityDTO extends BaseDTO {
@@ -14,5 +18,5 @@ public class BasicGeneticEntityDTO extends BaseDTO {
     private List<String> secondaryIds;
     private List<CrossReferenceDTO> crossReferences;
     private List<GenomeLocationsDTO> genomeLocations;
-    
+
 }
