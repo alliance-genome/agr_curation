@@ -29,7 +29,8 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/}
     - name: Set version before Deploy
       run: |
-        sed -i 's/0.0.0/${GITHUB_REF#refs/tags/}/g' .ebextensions/version.config
+        cat .ebextensions/version.config
+        rpl 0.0.0 ${GITHUB_REF#refs/tags/} .ebextensions/version.config
         cat .ebextensions/version.config
     - name:
       uses: hmanzur/actions-aws-eb@v1.0.0
