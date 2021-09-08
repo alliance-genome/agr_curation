@@ -30,7 +30,7 @@ jobs:
     - name: Set version before Deploy
       run: |
         cat .ebextensions/version.config
-        sed -i '' "s/0.0.0/${GITHUB_REF#refs/tags/}/" .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${GITHUB_REF#refs/tags/}/g" .ebextensions/version.config
         cat .ebextensions/version.config
     - name:
       uses: hmanzur/actions-aws-eb@v1.0.0
