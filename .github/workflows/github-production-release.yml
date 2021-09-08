@@ -32,11 +32,10 @@ jobs:
         cat .ebextensions/version.config
         sed -i.bak "s/0.0.0/${GITHUB_REF#refs/tags/}/g" .ebextensions/version.config
         cat .ebextensions/version.config
-    - name:
-      uses: hmanzur/actions-aws-eb@v1.0.0
-      with:
-        command: 'use curation-production'
-    - name:
-      uses: hmanzur/actions-aws-eb@v1.0.0
-      with:
-        command: 'deploy curation-production'
+    - name: Installing Elastic Beanstalk Cli
+      run: |
+        python -m pip install --upgrade pip
+        pip install awsebcli --upgrade
+        eb --version
+        eb use curation-production
+        eb deploy curation-production --version ${GITHUB_REF#refs/tags/}
