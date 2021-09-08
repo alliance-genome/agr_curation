@@ -4,7 +4,7 @@
 .git
 src
 target
-pom.xml
+pom.xml*
 docker
 .settings
 .classpath
@@ -12,6 +12,7 @@ docker
 .github
 .gitignore
 Makefile
+Dockerfile
 .project
 README.md
 checkstyle.xml
