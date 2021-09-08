@@ -35,4 +35,8 @@ jobs:
     - name:
       uses: hmanzur/actions-aws-eb@v1.0.0
       with:
+        command: 'use curation-production'
+    - name:
+      uses: hmanzur/actions-aws-eb@v1.0.0
+      with:
         command: 'deploy curation-production'
