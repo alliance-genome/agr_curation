@@ -7,3 +7,11 @@ target
 pom.xml
 docker
 .settings
+.classpath
+.gitattributes
+.github
+.gitignore
+Makefile
+.project
+README.md
+checkstyle.xml
