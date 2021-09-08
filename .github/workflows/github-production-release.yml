@@ -48,4 +48,5 @@ jobs:
         application_name: curation-app
         environment_name: curation-production
         version_label: ${{ steps.vars.outputs.branch }}
+        deployment_package: ${{ steps.vars.outputs.branch }}.zip
         region: us-east-1
