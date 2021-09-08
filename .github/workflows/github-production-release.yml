@@ -34,10 +34,12 @@ jobs:
         cat .ebextensions/version.config
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
+      env:
+        AGR_CURATION_RELEASE: ${GITHUB_REF#refs/tags/}
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-production
-        version_label: ${GITHUB_REF#refs/tags/}
+        version_label: ${{ AGR_CURATION_RELEASE }}
         region: us-east-1
