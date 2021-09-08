@@ -23,6 +23,11 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
     @JsonView(View.FieldsOnly.class)
     public E get(@PathParam("id") String id);
 
+    @GET
+    @Path("/view/{id}")
+    @JsonView(View.FieldsOnly.class)
+    public E get(@PathParam("id") Long id);
+
     @PUT //@Secured
     @Path("/")
     public E update(E entity);

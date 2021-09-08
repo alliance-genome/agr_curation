@@ -1,28 +1,35 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.List;
+import lombok.extern.jbosslog.JBossLog;
+import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-
-import lombok.extern.jbosslog.JBossLog;
+import java.util.List;
 
 @JBossLog
 @RequestScoped
 public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
-    @Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
-    @Inject ReferenceDAO referenceDAO;
-    @Inject DoTermDAO doTermDAO;
-    @Inject BiologicalEntityDAO biologicalEntityDAO;
-    
+    @Inject
+    DiseaseAnnotationDAO diseaseAnnotationDAO;
+    @Inject
+    ReferenceDAO referenceDAO;
+    @Inject
+    DoTermDAO doTermDAO;
+    @Inject
+    BiologicalEntityDAO biologicalEntityDAO;
+
     @Override
     @PostConstruct
     protected void init() {
@@ -30,24 +37,31 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
 
     @Transactional
-    public void upsert(String annotationId, String doTermId, String publicationId) {
+    public void upsert(String entityId, String doTermId, String publicationId) {
 
-        BiologicalEntity entity = biologicalEntityDAO.find(annotationId);
-        
-        if(entity == null) return;
+        BiologicalEntity entity = biologicalEntityDAO.find(entityId);
+
+        // do not create DA if no entity / subject is found.
+        if (entity == null) return;
 
         DOTerm disease = doTermDAO.find(doTermId);
-        
-        if(disease == null) return;
-        
+        // TODo: Change logic when ontology loader is in place
+        // do not create new DOTerm records here
+        // but raise an error if disease cannot be found
+        if (disease == null) {
+            disease = new DOTerm();
+            disease.setCurie(doTermId);
+            doTermDAO.persist(disease);
+        }
         Reference reference = referenceDAO.find(publicationId);
-        
-        if(reference == null) {
+        if (reference == null) {
             reference = new Reference();
             reference.setCurie(publicationId);
+            // ToDo: need this until references are loaded separately
+            // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
         }
-        
+
         DiseaseAnnotation da = new DiseaseAnnotation();
 
         da.setSubject(entity);

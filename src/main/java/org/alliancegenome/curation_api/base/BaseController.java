@@ -28,6 +28,10 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
         return service.get(id);
     }
 
+    public E get(Long id) {
+        return service.get(id);
+    }
+
     public E update(E entity) {
         return service.update(entity);
     }
