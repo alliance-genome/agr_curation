@@ -29,13 +29,15 @@ public class GeneDTOConsumer implements Runnable {
     private JMSContext context;
 
     private int threadCount = 4;
+    
+    private String queueName = "geneQueue";
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(threadCount);
 
     void onStart(@Observes StartupEvent ev) {
         log.info("GeneDTOConsumer Starting:" + threadCount + " Factory: " + connectionFactory1);
         context = connectionFactory1.createContext(Session.AUTO_ACKNOWLEDGE);
-        producer = context.createProducer();
+        producer = context.createProducer().setDeliveryMode(DeliveryMode.NON_PERSISTENT); // In memory only will loose all messages if the broker restarts
         for(int i = 0; i < threadCount; i++) {
             scheduler.scheduleWithFixedDelay(new Thread(this), 0L, 5L, TimeUnit.SECONDS);
         }
@@ -54,7 +56,7 @@ public class GeneDTOConsumer implements Runnable {
         GeneDTO gene = null;
         try {
             ctx = connectionFactory2.createContext(Session.AUTO_ACKNOWLEDGE);
-            JMSConsumer consumer = ctx.createConsumer(ctx.createQueue("geneQueue"));
+            JMSConsumer consumer = ctx.createConsumer(ctx.createQueue(queueName));
             Date start;
             Date end;
             int c = 0;
@@ -81,7 +83,7 @@ public class GeneDTOConsumer implements Runnable {
     }
 
     public void send(GeneDTO gene) {
-        producer.send(context.createQueue("geneQueue"), context.createObjectMessage(gene));
+        producer.send(context.createQueue(queueName), context.createObjectMessage(gene));
     }
 
 }
