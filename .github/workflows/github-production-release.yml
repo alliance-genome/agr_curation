@@ -6,6 +6,11 @@ jobs:
   release-tag-to-production:
     runs-on: ubuntu-20.04
     steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Build application
+      run: |
+        make all
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -19,10 +24,9 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
-        #IMAGE_TAG: ${{ github.sha }}
-        IMAGE_TAG: main
-        GITHUB_BRANCH: ${{ github.ref }}
       run: |
-        docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/}
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/}
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/} .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
+    - name: Deploy to Production
+      run: |
+        eb deploy curation-production --envvars AGR_CURATION_RELEASE=${GITHUB_REF#refs/heads/}
