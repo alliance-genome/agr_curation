@@ -32,6 +32,12 @@ jobs:
         cat .ebextensions/version.config
         sed -i.bak "s/0.0.0/${GITHUB_REF#refs/tags/}/g" .ebextensions/version.config
         cat .ebextensions/version.config
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/tags/})"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
       with:
@@ -39,5 +45,5 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-production
-        version_label: "${GITHUB_REF#refs/tags/}"
+        version_label: ${{ steps.vars.outputs.branch }}
         region: us-east-1
