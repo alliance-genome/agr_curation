@@ -42,6 +42,9 @@ debug:
 test:
 	mvn test
 
+integration-test:
+	mvn failsafe:integration-test
+
 verify:
 	mvn verify
 
