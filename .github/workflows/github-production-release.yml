@@ -39,7 +39,7 @@ jobs:
         echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/tags/})"
         echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
     - name: Generate deployment package
-      run: zip -r ${{ steps.vars.outputs.branch }}.zip docker-compose.yml
+      run: zip -r ${{ steps.vars.outputs.branch }}.zip docker-compose.yml .ebextensions/
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
       with:
