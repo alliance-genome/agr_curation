@@ -92,7 +92,7 @@ export const DiseaseAnnotationsComponent = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
           paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
-          <Column field="id" header="Id" sortable ></Column>
+          <Column field="id" header="Id" ></Column>
           <Column field="subject.curie" header="Subject" sortable filter ></Column>
           <Column field="object.curie" header="Disease" sortable filter ></Column>
           <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter ></Column>
