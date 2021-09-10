@@ -8,6 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/ecoterm/bulk")
 @Tag(name = "Ontology - ECO")
+@Tag(name = "Ontology - Bulk Import")
 @Produces(MediaType.APPLICATION_JSON)
 public interface EcoTermBulkRESTInterface extends BaseOntologyTermBulkRESTInterface {
 

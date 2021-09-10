@@ -4,21 +4,21 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.*;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.interfaces.rest.DoTermRESTInterface;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.services.ontology.DoTermService;
+import org.alliancegenome.curation_api.base.BaseOntologyTermController;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.interfaces.rest.EcoTermRESTInterface;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
+import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 
 @RequestScoped
-public class EcoTermController extends BaseOntologyTermController<DoTermService, DOTerm, DoTermDAO> implements DoTermRESTInterface {
+public class EcoTermController extends BaseOntologyTermController<EcoTermService, ECOTerm, EcoTermDAO> implements EcoTermRESTInterface {
 
-    @Inject DoTermService doTermService;
+    @Inject EcoTermService ecoTermService;
 
     @Override
     @PostConstruct
     protected void init() {
-        setService(doTermService);
+        setService(ecoTermService);
     }
 
 }
