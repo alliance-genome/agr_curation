@@ -6,10 +6,10 @@ import org.alliancegenome.curation_api.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 
 @ApplicationScoped
-public class EcoTermDAO extends BaseSQLDAO<EcoTerm> {
-    
-    protected EcoTermDAO() {
-        super(EcoTerm.class);
+public class XcoTermDAO extends BaseSQLDAO<XcoTerm> {
+
+    protected XcoTermDAO() {
+        super(XcoTerm.class);
     }
-    
+
 }

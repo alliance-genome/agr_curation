@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.interfaces.rest.DoTermRESTInterface;
+import org.alliancegenome.curation_api.interfaces.rest.ontology.DoTermRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 

@@ -1,16 +1,16 @@
-package org.alliancegenome.curation_api.interfaces.rest;
+package org.alliancegenome.curation_api.interfaces.rest.ontology;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
-import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path("/ecoterm")
-@Tag(name = "Ontology - ECO")
+@Path("/doterm")
+@Tag(name = "Ontology - DO")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface EcoTermRESTInterface extends BaseCrudRESTInterface<ECOTerm> {
+public interface DoTermRESTInterface extends BaseCrudRESTInterface<DOTerm> {
 
 }

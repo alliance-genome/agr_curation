@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.ontology.MpTermDAO;
-import org.alliancegenome.curation_api.interfaces.rest.MpTermRESTInterface;
+import org.alliancegenome.curation_api.interfaces.rest.ontology.MpTermRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
 

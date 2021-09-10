@@ -13,6 +13,6 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class ECOTerm extends OntologyTerm {
+public class EcoTerm extends OntologyTerm {
 
 }

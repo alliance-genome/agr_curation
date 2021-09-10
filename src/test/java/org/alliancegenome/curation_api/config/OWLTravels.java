@@ -22,9 +22,9 @@ public class OWLTravels {
         //IRI do_iri = IRI.create();
 
         
-        GenericOntologyLoader<ECOTerm> loader = new GenericOntologyLoader<ECOTerm>(ECOTerm.class);
+        GenericOntologyLoader<EcoTerm> loader = new GenericOntologyLoader<EcoTerm>(EcoTerm.class);
         
-        Map<String, ECOTerm> list = loader.load(new File("/Users/olinblodgett/Desktop/FMS/eco.owl"));
+        Map<String, EcoTerm> list = loader.load(new File("/Users/olinblodgett/Desktop/FMS/eco.owl"));
         
     }
 
