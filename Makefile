@@ -39,6 +39,9 @@ docker-run:
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
 
+release:
+	mvn release:prepare; mvn release:clean; git pull
+
 test:
 	mvn test
 

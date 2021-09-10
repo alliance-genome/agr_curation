@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.interfaces.rest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.model.output.APIVersionInfo;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
