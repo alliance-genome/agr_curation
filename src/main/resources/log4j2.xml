@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+	<Properties>
+		<!-- Log levels can be changed via Env `export DEFAULT_LOG_LEVEL=DEBUG` -->
+		<Property name="DEFAULT_LOG_LEVEL">INFO</Property>
+		<Property name="ES_LOG_LEVEL">WARN</Property>
+		<Property name="NETTY_LOG_LEVEL">WARN</Property>
+		<Property name="BOLT_LOG_LEVEL">WARN</Property>
+	</Properties>
+	<Appenders>
+		<Console name="Console">
+			<PatternLayout pattern="%-5level %logger{1} - %msg%n" />
+		</Console>
+	</Appenders>
+	<Loggers>
+		<Root level="${env:DEFAULT_LOG_LEVEL}">
+			<AppenderRef ref="Console" />
+		</Root>
+		<logger name="org.alliancegenome" level="${env:DEFAULT_LOG_LEVEL}" />
+		<logger name="org.elasticsearch" level="${env:ES_LOG_LEVEL}" />
+		<logger name="io.netty" level="${env:NETTY_LOG_LEVEL}" />
+		<logger name="org.neo4j.ogm" level="${env:BOLT_LOG_LEVEL}" />
+	</Loggers>
+</Configuration>

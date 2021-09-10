@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.dao;
+package org.alliancegenome.curation_api.dao.ontology;
 
 import javax.enterprise.context.ApplicationScoped;
 

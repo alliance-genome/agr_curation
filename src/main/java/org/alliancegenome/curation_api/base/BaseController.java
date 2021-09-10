@@ -10,7 +10,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseSQLDAO<E>> {
+public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> {
 
     private BaseService<E, D> service;
 

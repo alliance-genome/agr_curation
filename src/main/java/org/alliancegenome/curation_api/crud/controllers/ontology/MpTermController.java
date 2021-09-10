@@ -1,17 +1,17 @@
-package org.alliancegenome.curation_api.crud.controllers;
+package org.alliancegenome.curation_api.crud.controllers.ontology;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseController;
-import org.alliancegenome.curation_api.dao.MpTermDAO;
+import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.dao.ontology.MpTermDAO;
 import org.alliancegenome.curation_api.interfaces.rest.MpTermRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
-import org.alliancegenome.curation_api.services.MpTermService;
+import org.alliancegenome.curation_api.services.ontology.MpTermService;
 
 @RequestScoped
-public class MpTermController extends BaseController<MpTermService, MPTerm, MpTermDAO> implements MpTermRESTInterface {
+public class MpTermController extends BaseOntologyTermController<MpTermService, MPTerm, MpTermDAO> implements MpTermRESTInterface {
 
     @Inject MpTermService mpTermService;
 
