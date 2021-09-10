@@ -13,9 +13,9 @@ class APIVersionInfoControllerITCase {
     @Test
     void testGet() {
         given()
-                .when().get("/api/version")
-                .then()
-                .statusCode(200)
-                .body("name", is("agr_curation_api"));
+            .when().get("/api/version")
+            .then()
+            .statusCode(200)
+            .body("name", is("agr_curation_api"));
     }
 }
