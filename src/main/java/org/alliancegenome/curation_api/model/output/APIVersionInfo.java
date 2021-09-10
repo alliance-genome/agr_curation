@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.rest;
+package org.alliancegenome.curation_api.model.output;
 
 import org.alliancegenome.curation_api.view.View;
 
