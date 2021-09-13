@@ -16,7 +16,7 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
         CurieGenerator curie = new CurieGenerator();
         curie.add(annotationDTO.getObjectId());
         curie.add(annotationDTO.getDoId());
-        curie.add(annotationDTO.getEvidence().getCurie());
+        curie.add(getEvidenceCurie(annotationDTO.getEvidence()));
         return curie.getCurie();
     }
 }
