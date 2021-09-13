@@ -10,12 +10,20 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -36,14 +44,36 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         setSQLDao(diseaseAnnotationDAO);
     }
 
+    private DiseaseAnnotation upsertZFIN(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
+
+        String annotationID = getUniqueID(annotationDTO);
+        DiseaseAnnotation annotation = diseaseAnnotationDAO.find(annotationID);
+        if (annotation == null) {
+            DiseaseAnnotation da = new DiseaseAnnotation();
+            da.setCurie(annotationID);
+            da.setSubject(entity);
+            da.setObject(disease);
+            da.setReferenceList(List.of(reference));
+            return create(da);
+        } else {
+            // logic for updates
+            // currently no fields persisted in PG that need to be updated, only fields that make the unique key, i.e.
+            // it would be a new annotation.
+        }
+        return annotation;
+    }
+
+
     @Transactional
-    public void upsert(String entityId, String doTermId, String publicationId) {
+    public DiseaseAnnotation upsert(DiseaseModelAnnotationDTO annotationDTO) {
+        String entityId = annotationDTO.getObjectId();
 
         BiologicalEntity entity = biologicalEntityDAO.find(entityId);
 
         // do not create DA if no entity / subject is found.
-        if (entity == null) return;
+        if (entity == null) return null;
 
+        String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
         // TODo: Change logic when ontology loader is in place
         // do not create new DOTerm records here
@@ -53,6 +83,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             disease.setCurie(doTermId);
             doTermDAO.persist(disease);
         }
+
+        String publicationId = annotationDTO.getEvidence().getPublication().getPublicationId();
         Reference reference = referenceDAO.find(publicationId);
         if (reference == null) {
             reference = new Reference();
@@ -61,15 +93,64 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
         }
+        if (entity.getTaxon().equals("NCBITaxon:7955"))
+            return upsertZFIN(annotationDTO, entity, disease, reference);
 
-        DiseaseAnnotation da = new DiseaseAnnotation();
-
-        da.setSubject(entity);
-        da.setObject(disease);
-        da.setReferenceList(List.of(reference));
-        create(da);
-
+        return null;
     }
 
+    private String getUniqueID(DiseaseModelAnnotationDTO annotationDTO) {
 
+        BiologicalEntity entity = biologicalEntityDAO.find(annotationDTO.getObjectId());
+
+        // do not create DA if no entity / subject is found.
+        if (entity == null)
+            return null;
+
+        return DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(entity.getTaxon()).getCurieID(annotationDTO);
+    }
+
+    /**
+     * fishID + DOID + PubID + Experimental Condition IDs +
+     *
+     * @param annotationDTO
+     * @return
+     */
+    private String getZFINCurie(DiseaseModelAnnotationDTO annotationDTO) {
+        CurieGenerator curie = new CurieGenerator();
+        curie.add(annotationDTO.getObjectId());
+        curie.add(annotationDTO.getDoId());
+        curie.add(annotationDTO.getEvidence().getCurie());
+        if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
+            curie.add(annotationDTO.getConditionRelations().stream()
+                    .map(conditionDTO -> {
+                        CurieGenerator gen = new CurieGenerator();
+                        gen.add(conditionDTO.getConditionRelationType());
+                        gen.add(conditionDTO.getConditions().stream()
+                                .map(ExperimentalConditionDTO::getCurie).collect(Collectors.joining("|"))
+                        );
+                        return gen.getCurie();
+                    }).collect(Collectors.joining("|"))
+            );
+        }
+        return curie.getCurie();
+    }
+
+    public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
+        List<String> annotationsIDsBefore = diseaseAnnotationDAO.findAllAnnotationIDs(taxonID);
+        List<String> annotationsIDsAfter = new ArrayList<>();
+        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+        ph.startProcess("Disease Annotation Update", annotationData.getData().size());
+        annotationData.getData().forEach(annotationDTO -> {
+            DiseaseAnnotation annotation = upsert(annotationDTO);
+            if (annotation != null)
+                annotationsIDsAfter.add(annotation.getCurie());
+            ph.progressProcess();
+        });
+        ph.finishProcess();
+
+        List<String> distinctAfter = annotationsIDsAfter.stream().distinct().collect(Collectors.toList());
+        List<String> idsToRemove = ListUtils.subtract(annotationsIDsBefore, distinctAfter);
+        idsToRemove.forEach(this::delete);
+    }
 }

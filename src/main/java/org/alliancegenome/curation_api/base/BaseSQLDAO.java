@@ -18,7 +18,7 @@ import lombok.extern.jbosslog.JBossLog;
 public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
     @Inject
-    EntityManager entityManager;
+    protected EntityManager entityManager;
 
     @Inject
     SearchSession searchSession;
@@ -195,7 +195,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         CriteriaQuery<E> query = builder.createQuery(myClass);
         Root<E> root = query.from(myClass);
         //System.out.println("Root: " + root);
-        List<Predicate> restrictions = new ArrayList<Predicate>();
+        List<Predicate> restrictions = new ArrayList<>();
         //System.out.println(params);
         for(String key: params.keySet()) {
             Path<Object> column = null;
