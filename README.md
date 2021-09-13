@@ -272,6 +272,21 @@ Example of loading Allele's
 > curl -vX POST http://localhost:8080/api/allele/bulk/allelefile -d @1.0.1.4_ALLELE_MGI_0.json --header "Content-Type: application/json"
 ```
 
+## EB Deployment (beta)
+This section is WIP.
+
+CLI deployment to Elastic Beanstalk requires the EB CLI to be installed on your local machine.
+Follow the [instructions provided by AWS](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb-cli3-install.html) to do so.
+The EB CLI uses the same config files and environment variables as the standard AWS CLI to locate the appropriate authentication.
+
+A EB cli configuration file is stored in the `.elasticbeanstalk` repo subdirectory. If you would encounter (local) problems running eb commands, remove this directory and reinitialise it by executing `make eb-init`.
+
+All EB environment configurations are stored in the [`.ebextensions`](.ebextensions/) repo subdirectory.
+
+Before attempting a deployment, define the `QUARKUS_DATASOURCE_USERNAME` and `QUARKUS_DATASOURCE_PASSWORD` appropriately in your environment to allow access to the RDS database.
+
+Then you can run `make eb-create` to create a new environment and `make eb-terminate` to terminate it.
+
 ## Maintainers
 
 Current maintainers:

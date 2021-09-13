@@ -1,0 +1,18 @@
+# The precense of this file tells the AWS EB CLI to not use  git for deployment as per
+# https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-deploy.html
+#
+.git
+src
+target
+pom.xml*
+docker
+.settings
+.classpath
+.gitattributes
+.github
+.gitignore
+Makefile
+Dockerfile
+.project
+README.md
+checkstyle.xml

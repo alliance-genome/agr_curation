@@ -1,0 +1,17 @@
+version: "3.2"
+
+services:
+
+  curation.app:
+    container_name: agr.curation.api.server
+    image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:${AGR_CURATION_RELEASE}
+    ports:
+      - "8080:8080"
+    networks:
+      - curation
+    env_file:
+      - .env
+
+networks:
+  # The presence of these objects is sufficient to define them
+  curation:

@@ -1,0 +1,52 @@
+name: Build and Push Release to Production
+on:
+  release:
+    types: [published]
+jobs:
+  release-tag-to-production:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Build application
+      run: |
+        make all
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Amazon ECR login
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: agr_curation
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/} .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/tags/}
+    - name: Set version before Deploy
+      run: |
+        cat .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${GITHUB_REF#refs/tags/}/g" .ebextensions/version.config
+        cat .ebextensions/version.config
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=branch;]$(echo ${GITHUB_REF#refs/tags/})"
+        echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
+    - name: Generate deployment package
+      run: zip -r ${{ steps.vars.outputs.branch }}.zip docker-compose.yml .ebextensions/
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: curation-app
+        environment_name: curation-production
+        version_label: ${{ steps.vars.outputs.branch }}
+        deployment_package: ${{ steps.vars.outputs.branch }}.zip
+        region: us-east-1
