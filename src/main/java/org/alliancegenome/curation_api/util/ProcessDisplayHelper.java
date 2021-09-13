@@ -42,7 +42,7 @@ public class ProcessDisplayHelper {
         startTime = new Date().getTime();
         sizeCounter = new AtomicLong(0);
         if (totalSize > 0)
-            logInfoMessage(this.message + "Starting Process [total =    " + getBigNumber(totalSize) + "] " + new Date());
+            logInfoMessage(this.message + "Starting Process [total = " + getBigNumber(totalSize) + "] " + new Date());
         else
             logInfoMessage(this.message + "Starting Process... (" + new Date() + ")");
 

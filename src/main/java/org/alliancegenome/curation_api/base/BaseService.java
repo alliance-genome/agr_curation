@@ -28,6 +28,10 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>>
         return dao.find(id);
     }
 
+    public E get(Long id) {
+        return dao.find(id);
+    }
+
     @Transactional
     public E update(E entity) {
         return dao.merge(entity);

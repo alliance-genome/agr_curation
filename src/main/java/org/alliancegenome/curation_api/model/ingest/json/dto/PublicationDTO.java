@@ -9,4 +9,5 @@ public class PublicationDTO extends BaseDTO {
 
     private String publicationId;
     private CrossReferenceDTO crossReference;
+
 }

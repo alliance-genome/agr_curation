@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.base.BaseCurieEntity;
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.view.View;
@@ -22,7 +23,7 @@ import lombok.*;
 @ToString(exclude = {"subject","object","referenceList"})
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "association", description = "Annotation class representing a disease annotation")
-public class Association extends BaseGeneratedEntity {
+public class Association extends BaseCurieEntity {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

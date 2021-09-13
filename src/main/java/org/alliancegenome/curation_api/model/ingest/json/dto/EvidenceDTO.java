@@ -11,4 +11,5 @@ public class EvidenceDTO extends BaseDTO {
 
     private PublicationDTO publication;
     private List<String> evidenceCodes;
+
 }
