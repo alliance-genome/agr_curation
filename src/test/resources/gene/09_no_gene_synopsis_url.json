@@ -1,0 +1,58 @@
+{
+   "data" : [
+      {
+         "basicGeneticEntity" : {
+            "crossReferences" : [
+               {
+                  "id" : "TEST:xref9a"
+               },
+               {
+                  "id" : "TEST:xref9b",
+                  "pages" : [
+                     "gene",
+                     "gene/references",
+                     "gene/expression",
+                     "gene/expression_images",
+                     "gene/phenotype"
+                  ]
+               },
+            ],
+            "genomeLocations" : [
+               {
+                  "assembly" : "TEST_assembly",
+                  "chromosome" : "9",
+                  "endPosition" : 100,
+                  "startPosition" : 1,
+                  "strand" : "+"
+               }
+            ],
+            "primaryId" : "TEST:TestGene00009",
+            "secondaryIds" : [
+               "TEST:TG00009"
+            ],
+            "synonyms" : [
+               "Test9",
+               "ExampleGene9"
+            ],
+            "taxonId" : "NCBITaxon:10090"
+         },
+         "geneSynopsis" : "Test gene with all fields populated except geneSynopsisUrl",
+         "name" : "Test gene 9",
+         "soTermId" : "SO:0001217",
+         "symbol" : "Tg9"
+      }
+   ],
+   "metaData" : {
+      "dataProvider" : {
+         "crossReference" : {
+            "id" : "TEST",
+            "pages" : [
+               "homepage"
+            ]
+         },
+         "type" : "curated"
+      },
+      "dateProduced" : "2021-09-13T12:39:18+01:00",
+      "release" : "TEST"
+   }
+}

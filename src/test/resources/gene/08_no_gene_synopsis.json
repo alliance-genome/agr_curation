@@ -1,0 +1,58 @@
+{
+   "data" : [
+      {
+         "basicGeneticEntity" : {
+            "crossReferences" : [
+               {
+                  "id" : "TEST:xref8a"
+               },
+               {
+                  "id" : "TEST:xref8b",
+                  "pages" : [
+                     "gene",
+                     "gene/references",
+                     "gene/expression",
+                     "gene/expression_images",
+                     "gene/phenotype"
+                  ]
+               },
+            ],
+            "genomeLocations" : [
+               {
+                  "assembly" : "TEST_assembly",
+                  "chromosome" : "8",
+                  "endPosition" : 100,
+                  "startPosition" : 1,
+                  "strand" : "+"
+               }
+            ],
+            "primaryId" : "TEST:TestGene00008",
+            "secondaryIds" : [
+               "TEST:TG00008"
+            ],
+            "synonyms" : [
+               "Test8",
+               "ExampleGene8"
+            ],
+            "taxonId" : "NCBITaxon:10090"
+         },
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_8", 
+         "name" : "Test gene 8",
+         "soTermId" : "SO:0001217",
+         "symbol" : "Tg8"
+      }
+   ],
+   "metaData" : {
+      "dataProvider" : {
+         "crossReference" : {
+            "id" : "TEST",
+            "pages" : [
+               "homepage"
+            ]
+         },
+         "type" : "curated"
+      },
+      "dateProduced" : "2021-09-13T12:39:18+01:00",
+      "release" : "TEST"
+   }
+}

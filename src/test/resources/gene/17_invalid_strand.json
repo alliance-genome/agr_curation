@@ -1,0 +1,59 @@
+{
+   "data" : [
+      {
+         "basicGeneticEntity" : {
+            "crossReferences" : [
+               {
+                  "id" : "TEST:xref17a"
+               },
+               {
+                  "id" : "TEST:xref17b",
+                  "pages" : [
+                     "gene",
+                     "gene/references",
+                     "gene/expression",
+                     "gene/expression_images",
+                     "gene/phenotype"
+                  ]
+               },
+            ],
+            "genomeLocations" : [
+               {
+                  "assembly" : "TEST_assembly",
+                  "chromosome" : "17",
+                  "endPosition" : 100,
+                  "startPosition" : 1,
+                  "strand" : "x"
+               }
+            ],
+            "primaryId" : "TEST:TestGene00017",
+            "secondaryIds" : [
+               "TEST:TG00017"
+            ],
+            "synonyms" : [
+               "Test17",
+               "ExampleGene17"
+            ],
+            "taxonId" : "NCBITaxon:10090"
+         },
+         "geneSynopsis" : "Test gene invalid strand",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_17", 
+         "name" : "Test gene 17",
+         "soTermId" : "SO:0001217",
+         "symbol" : "Tg17"
+      }
+   ],
+   "metaData" : {
+      "dataProvider" : {
+         "crossReference" : {
+            "id" : "TEST",
+            "pages" : [
+               "homepage"
+            ]
+         },
+         "type" : "curated"
+      },
+      "dateProduced" : "2021-09-13T12:39:18+01:00",
+      "release" : "TEST"
+   }
+}

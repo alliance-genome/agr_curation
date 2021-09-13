@@ -1,0 +1,101 @@
+{
+   "data" : [
+      {
+         "basicGeneticEntity" : {
+            "crossReferences" : [
+               {
+                  "id" : "TEST:xref18_1a"
+               },
+               {
+                  "id" : "TEST:xref18_1b",
+                  "pages" : [
+                     "gene",
+                     "gene/references",
+                     "gene/expression",
+                     "gene/expression_images",
+                     "gene/phenotype"
+                  ]
+               },
+            ],
+            "genomeLocations" : [
+               {
+                  "assembly" : "TEST_assembly",
+                  "chromosome" : "18",
+                  "endPosition" : 100,
+                  "startPosition" : 1,
+                  "strand" : "+"
+               }
+            ],
+            "primaryId" : "TEST:TestGene00018",
+            "secondaryIds" : [
+               "TEST:TG00018_1"
+            ],
+            "synonyms" : [
+               "Test18_1",
+               "ExampleGene18_1"
+            ],
+            "taxonId" : "NCBITaxon:10090"
+         },
+         "geneSynopsis" : "Duplicate primaryId - entry 1 of 2",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_18_1", 
+         "name" : "Test gene 18_1",
+         "soTermId" : "SO:0001217",
+         "symbol" : "Tg18_1"
+      },
+       {
+         "basicGeneticEntity" : {
+            "crossReferences" : [
+               {
+                  "id" : "TEST:xref18_2a"
+               },
+               {
+                  "id" : "TEST:xref18_2b",
+                  "pages" : [
+                     "gene",
+                     "gene/references",
+                     "gene/expression",
+                     "gene/expression_images",
+                     "gene/phenotype"
+                  ]
+               },
+            ],
+            "genomeLocations" : [
+               {
+                  "assembly" : "TEST_assembly",
+                  "chromosome" : "18",
+                  "endPosition" : 100,
+                  "startPosition" : 1,
+                  "strand" : "+"
+               }
+            ],
+            "primaryId" : "TEST:TestGene00018",
+            "secondaryIds" : [
+               "TEST:TG00018_2"
+            ],
+            "synonyms" : [
+               "Test18_2",
+               "ExampleGene18_2"
+            ],
+            "taxonId" : "NCBITaxon:10090"
+         },
+         "geneSynopsis" : "Duplicate primaryId - entry 2 of 2",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_18_2", 
+         "name" : "Test gene 18_2",
+         "soTermId" : "SO:0001217",
+         "symbol" : "Tg18_2"
+      }
+   ],
+   "metaData" : {
+      "dataProvider" : {
+         "crossReference" : {
+            "id" : "TEST",
+            "pages" : [
+               "homepage"
+            ]
+         },
+         "type" : "curated"
+      },
+      "dateProduced" : "2021-09-13T12:39:18+01:00",
+      "release" : "TEST"
+   }
+}
