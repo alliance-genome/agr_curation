@@ -104,7 +104,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         List<String> annotationsIDsBefore = diseaseAnnotationDAO.findAllAnnotationIDs(taxonID);
         List<String> annotationsIDsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Disease Annotation Update", annotationData.getData().size());
+        ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
         annotationData.getData().forEach(annotationDTO -> {
             DiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null)
