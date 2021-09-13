@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path("/disease-annotations")
+@Path("/disease-annotation")
 @Tag(name = "Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
