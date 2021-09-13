@@ -1,11 +1,12 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
+import org.alliancegenome.curation_api.services.CurieGenerator;
 
-public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
+public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 
     /**
-     * genotype ID + DOID + PubID
+     * gene ID + DOID + PubID
      *
      * @param annotationDTO DiseaseModelAnnotationDTO
      * @return curie string
@@ -15,7 +16,7 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
         CurieGenerator curie = new CurieGenerator();
         curie.add(annotationDTO.getObjectId());
         curie.add(annotationDTO.getDoId());
-        curie.add(annotationDTO.getEvidence().getCurie());
+        curie.add(annotationDTO.getEvidence().getPublication().getCurie());
         return curie.getCurie();
     }
 }

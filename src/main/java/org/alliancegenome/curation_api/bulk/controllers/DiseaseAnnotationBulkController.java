@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.bulk.controllers;
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.interfaces.bulk.DiseaseAnnotationBulkRESTInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
-import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationService;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

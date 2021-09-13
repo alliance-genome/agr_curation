@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.BaseService;
@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.services.CurieGenerator;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -44,7 +45,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         setSQLDao(diseaseAnnotationDAO);
     }
 
-    private DiseaseAnnotation upsertZFIN(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
+    private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
 
         String annotationID = getUniqueID(annotationDTO);
         DiseaseAnnotation annotation = diseaseAnnotationDAO.find(annotationID);
@@ -93,10 +94,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
         }
-        if (entity.getTaxon().equals("NCBITaxon:7955"))
-            return upsertZFIN(annotationDTO, entity, disease, reference);
-
-        return null;
+        return upsertAnnotation(annotationDTO, entity, disease, reference);
     }
 
     private String getUniqueID(DiseaseModelAnnotationDTO annotationDTO) {

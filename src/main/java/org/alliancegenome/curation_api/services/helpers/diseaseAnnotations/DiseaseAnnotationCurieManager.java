@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import lombok.extern.jbosslog.JBossLog;
 
