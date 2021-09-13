@@ -108,32 +108,6 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         return DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(entity.getTaxon()).getCurieID(annotationDTO);
     }
 
-    /**
-     * fishID + DOID + PubID + Experimental Condition IDs +
-     *
-     * @param annotationDTO
-     * @return
-     */
-    private String getZFINCurie(DiseaseModelAnnotationDTO annotationDTO) {
-        CurieGenerator curie = new CurieGenerator();
-        curie.add(annotationDTO.getObjectId());
-        curie.add(annotationDTO.getDoId());
-        curie.add(annotationDTO.getEvidence().getCurie());
-        if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
-            curie.add(annotationDTO.getConditionRelations().stream()
-                    .map(conditionDTO -> {
-                        CurieGenerator gen = new CurieGenerator();
-                        gen.add(conditionDTO.getConditionRelationType());
-                        gen.add(conditionDTO.getConditions().stream()
-                                .map(ExperimentalConditionDTO::getCurie).collect(Collectors.joining("|"))
-                        );
-                        return gen.getCurie();
-                    }).collect(Collectors.joining("|"))
-            );
-        }
-        return curie.getCurie();
-    }
-
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
         List<String> annotationsIDsBefore = diseaseAnnotationDAO.findAllAnnotationIDs(taxonID);
         List<String> annotationsIDsAfter = new ArrayList<>();
