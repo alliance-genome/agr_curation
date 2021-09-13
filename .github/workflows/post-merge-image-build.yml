@@ -5,6 +5,7 @@ on:
       - main
     paths-ignore:
       - README.md
+      - pom.xml
       - .gitignore
 jobs:
   build-and-push-docker-image:
