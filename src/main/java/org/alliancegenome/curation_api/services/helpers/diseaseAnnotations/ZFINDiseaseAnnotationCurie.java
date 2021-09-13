@@ -20,14 +20,14 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
         CurieGenerator curie = new CurieGenerator();
         curie.add(annotationDTO.getObjectId());
         curie.add(annotationDTO.getDoId());
-        curie.add(annotationDTO.getEvidence().getCurie());
+        curie.add(getEvidenceCurie(annotationDTO.getEvidence()));
         if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
             curie.add(annotationDTO.getConditionRelations().stream()
                     .map(conditionDTO -> {
                         CurieGenerator gen = new CurieGenerator();
                         gen.add(conditionDTO.getConditionRelationType());
                         gen.add(conditionDTO.getConditions().stream()
-                                .map(ExperimentalConditionDTO::getCurie).collect(Collectors.joining(DELIMITER))
+                                .map(e -> getExperimentalConditionCurie(e)).collect(Collectors.joining(DELIMITER))
                         );
                         return gen.getCurie();
                     }).collect(Collectors.joining(DELIMITER))
