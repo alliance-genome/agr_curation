@@ -57,5 +57,9 @@ public class DiseaseAnnotationBulkController implements DiseaseAnnotationBulkRES
         return "OK";
     }
 
-
+    @Override
+    public String updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData) {
+        diseaseService.runLoad("NCBITaxon:559292", annotationData);
+        return "OK";
+    }
 }

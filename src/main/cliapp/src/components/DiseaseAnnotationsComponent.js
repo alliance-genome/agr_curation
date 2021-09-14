@@ -36,7 +36,8 @@ export const DiseaseAnnotationsComponent = () => {
             },
             keepPreviousData: true
 
-        })
+        }
+    );
 
 
     const onLazyLoad = (event) => {

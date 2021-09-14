@@ -17,7 +17,7 @@ export const DiseasesComponent = () => {
   const [totalRecords, setTotalRecords] = useState(0);
 
   const diseaseService = new DiseaseService();
-  const errorMessage = useRef(null)
+  const errorMessage = useRef(null);
 
   useQuery(['diseases', rows, page, multiSortMeta, filters],
     () => diseaseService.getDiseases(rows, page, multiSortMeta, filters), {
@@ -31,7 +31,7 @@ export const DiseasesComponent = () => {
           ])
       },
     keepPreviousData: true
-  })
+  });
 
 
 
