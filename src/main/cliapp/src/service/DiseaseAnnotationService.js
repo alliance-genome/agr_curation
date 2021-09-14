@@ -10,14 +10,14 @@ export class DiseaseAnnotationService {
             sortArray[o.field] = o.order;
           });
         }
-    
+
         var filterArray = {};
         if(filters) {
           Object.keys(filters).forEach((key) => {
             filterArray[key] = filters[key]["value"];
           });
         }
-    
+
         if(Object.keys(filterArray).length > 0) {
           sortOptions["searchFilters"] = filterArray;
         }
@@ -25,8 +25,8 @@ export class DiseaseAnnotationService {
           sortOptions["sortOrders"] = sortArray;
         }
 
-        return axios.post(`/api/disease-annotations/search?limit=${limit}&page=${page}`, sortOptions).then(res => res.data);
+        return axios.post(`/api/disease-annotation/search?limit=${limit}&page=${page}`, sortOptions).then(res => res.data);
     }
 }
 
- 
+
