@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -65,6 +66,11 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         // do not create DA if no entity / subject is found.
         if (entity == null) return null;
+
+        // if there are primary genetic entity IDs available it is an
+        // inferred annotation. Skip it then.
+        if(CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
+            return null;
 
         String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
