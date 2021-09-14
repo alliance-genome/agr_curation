@@ -246,6 +246,7 @@
 						<version>3.0.0-M4</version>
 						<configuration>
 							<tagBase>https://github.com/alliance-genome/agr_curation/releases</tagBase>
+							<tagNameFormat>@{project.version}</tagNameFormat>
 						</configuration>
 					</plugin>
 				</plugins>
