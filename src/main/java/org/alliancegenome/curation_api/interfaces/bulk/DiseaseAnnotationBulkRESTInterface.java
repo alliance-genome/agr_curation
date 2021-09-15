@@ -39,4 +39,9 @@ public interface DiseaseAnnotationBulkRESTInterface {
     @POST
     @Path("/humanAnnotationFile")
     public String updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    
+    @POST
+    @Path("/sgdAnnotationFile")
+    public String updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    
 }
