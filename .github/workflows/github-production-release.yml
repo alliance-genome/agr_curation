@@ -55,3 +55,9 @@ jobs:
         version_label: ${{ steps.vars.outputs.tagname }}
         deployment_package: ${{ steps.vars.outputs.tagname }}.zip
         region: us-east-1
+    - name: Slack Notification
+      uses: tokorom/action-slack-incoming-webhook@main
+      env:
+        INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        text: "Deployment of release ${{ steps.vars.outputs.tagname }} to production completed! :tada:"
