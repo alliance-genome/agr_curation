@@ -1,12 +1,13 @@
 package org.alliancegenome.curation_api.bulk.controllers;
 
-import lombok.extern.jbosslog.JBossLog;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.interfaces.bulk.DiseaseAnnotationBulkRESTInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped

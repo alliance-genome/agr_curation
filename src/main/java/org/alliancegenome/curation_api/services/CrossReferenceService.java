@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -11,10 +10,9 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.model.input.Pagination;
-import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
 

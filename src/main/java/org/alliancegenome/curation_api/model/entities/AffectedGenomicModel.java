@@ -15,22 +15,21 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(callSuper = false)
-@ToString(exclude = {"Affected_Genomic_Model"})
+@ToString
 public class AffectedGenomicModel extends GenomicEntity {
 
-    
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private Subtype subtype;
-    
+
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
     private String parental_population;
 
     //private List<AffectedGenomicModelComponent> components;
     //private List<SequenceTargetingReagent> sequence_targeting_reagents;
-    
+
     public enum Subtype {
         strain, genotype;
     }

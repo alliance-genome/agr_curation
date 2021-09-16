@@ -1,11 +1,11 @@
 package org.alliancegenome.curation_api.services;
 
-import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 
 public class DtoConverter {
 

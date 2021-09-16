@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO> {
     

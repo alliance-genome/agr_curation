@@ -88,11 +88,7 @@ public class GenericOntologyLoader<T extends OntologyTerm> implements OWLObjectV
                 //System.out.println(termParent);
 
                 if(allNodes.containsKey(termParent.getCurie())) {
-                    //for(int i = 0; i < depth; i++) System.out.print(" ");
-                    //System.out.print(depth + ":");
-
-                    //System.out.println(" ID: " + termParent.getCurie());
-                    return allNodes.get(termParent.getCurie());
+                        return allNodes.get(termParent.getCurie());
                 } else {
                     if(termParent.getCurie() != null) {
                         allNodes.put(termParent.getCurie(), termParent);
@@ -104,46 +100,39 @@ public class GenericOntologyLoader<T extends OntologyTerm> implements OWLObjectV
                     if (!child.equals(parent)) {
                         try {
                             T childTerm = traverse(child, depth + 1);
-                            if(childTerm != null) {
-                                termParent.addChild(childTerm);
-                                if(termParent.getCurie() != null) {
-                                    childTerm.addParent(termParent);
-                                }
-
-                                childTerm.addAncestor(termParent);
-                                if(termParent.getAncestors() != null) {
-                                    for(OntologyTerm a: termParent.getAncestors()) {
-                                        if(!childTerm.getAncestors().contains(a)) {
-                                            childTerm.addAncestor(a);
-                                        }
-                                    }
-                                }
-                                termParent.addDescendant(childTerm);
-                                if(childTerm.getDescendants() != null) {
-                                    for(OntologyTerm d: childTerm.getDescendants()) {
-                                        if(!termParent.getDescendants().contains(d)) {
-                                            termParent.addDescendant(d);
-                                        }
-                                    }
-                                }
-                                //System.out.println("Adding: " + termParent.getDescendants().size());
-                            }
+                            
+//                          TODO LinkML to define the following fields                          
+//                          if(childTerm != null) {
+//                              
+//                              termParent.addChild(childTerm);
+//                              if(termParent.getCurie() != null) {
+//                                  childTerm.addParent(termParent);
+//                              }
+//
+//                              childTerm.addAncestor(termParent);
+//                              if(termParent.getAncestors() != null) {
+//                                  for(OntologyTerm a: termParent.getAncestors()) {
+//                                      if(!childTerm.getAncestors().contains(a)) {
+//                                          childTerm.addAncestor(a);
+//                                      }
+//                                  }
+//                              }
+//                              termParent.addDescendant(childTerm);
+//                              if(childTerm.getDescendants() != null) {
+//                                  for(OntologyTerm d: childTerm.getDescendants()) {
+//                                      if(!termParent.getDescendants().contains(d)) {
+//                                          termParent.addDescendant(d);
+//                                      }
+//                                  }
+//                              }
+//                              
+//                          }
+                            
                         } catch (Exception e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
                 }
-                //for(int i = 0; i < depth; i++) System.out.print(" ");
-                //System.out.print(depth + ":");
-
-                //System.out.print(" ID: " + termParent.getCurie());
-                //System.out.print(" H: " + termParent.hashCode());
-                //if(termParent.getParents() != null) System.out.print(" P: " + termParent.getParents().size());
-                //if(termParent.getChildren() != null) System.out.print(" C: " + termParent.getChildren().size());
-                //if(termParent.getAncesters() != null) System.out.print(" A: " + termParent.getAncesters().size());
-                //if(termParent.getDescendants() != null) System.out.print(" D: " + termParent.getDescendants().size());
-                //System.out.println();
 
             }
 

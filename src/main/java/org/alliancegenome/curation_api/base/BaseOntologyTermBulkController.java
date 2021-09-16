@@ -2,9 +2,7 @@ package org.alliancegenome.curation_api.base;
 
 import java.util.Map;
 
-import javax.ws.rs.core.UriInfo;
-
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoader;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 

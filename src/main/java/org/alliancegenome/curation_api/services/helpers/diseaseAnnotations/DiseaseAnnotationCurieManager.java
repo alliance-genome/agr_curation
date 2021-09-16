@@ -1,9 +1,8 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 public abstract class DiseaseAnnotationCurieManager {
