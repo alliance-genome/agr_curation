@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.bulk.controllers.ontology;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.*;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.interfaces.bulk.ontology.DoTermBulkRESTIn
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class DoTermBulkController extends BaseOntologyTermBulkController<DoTermService, DOTerm, DoTermDAO> implements DoTermBulkRESTInterface {
 
