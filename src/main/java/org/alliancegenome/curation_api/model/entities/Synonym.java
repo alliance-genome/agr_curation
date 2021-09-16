@@ -16,7 +16,7 @@ import lombok.*;
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicEntities"})
 public class Synonym extends BaseGeneratedEntity {
 

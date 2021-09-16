@@ -12,7 +12,7 @@ import lombok.*;
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(callSuper = true)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 //@ToString(exclude = {"genomicLocations"})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public class DiseaseAnnotation extends Association {

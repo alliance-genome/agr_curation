@@ -18,7 +18,7 @@ import lombok.*;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"subject","object","referenceList"})
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "association", description = "Annotation class representing a disease annotation")

@@ -17,7 +17,7 @@ import lombok.*;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"pageAreas"})
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
 public class CrossReference extends BaseCurieEntity {

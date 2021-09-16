@@ -14,7 +14,7 @@ import lombok.*;
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class AffectedGenomicModel extends GenomicEntity {
 

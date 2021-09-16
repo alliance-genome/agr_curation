@@ -12,13 +12,14 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @MappedSuperclass
 public class BaseGeneratedEntity extends BaseEntity {
 
     @Id @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
+    @EqualsAndHashCode.Include
     protected Long id;
     
     @GenericField

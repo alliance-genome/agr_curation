@@ -17,7 +17,7 @@ import lombok.*;
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicLocations"})
 @Schema(name="Gene", description="POJO that represents the Gene")
 public class Gene extends GenomicEntity {
