@@ -32,6 +32,11 @@ public abstract class DiseaseAnnotationCurie {
         return curie.getCurie();
     }
 
+    public String getAssociationType(DiseaseObjectRelationDTO objectRelation) {
+        return objectRelation.getAssociationType();
+    }
+
+
     public String getPublicationCurie(PublicationDTO dto) {
         CurieGenerator curie = new CurieGenerator();
         curie.add(dto.getPublicationId());

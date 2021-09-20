@@ -11,7 +11,7 @@ public abstract class DiseaseAnnotationCurieManager {
 
     static {
         curieTaxonMap.put("NCBITaxon:7955", new ZFINDiseaseAnnotationCurie());
-        //curieTaxonMap.put("NCBITaxon:9606", new HUMANDiseaseAnnotationCurie());
+        curieTaxonMap.put("NCBITaxon:9606", new RGDDiseaseAnnotationCurie());
         curieTaxonMap.put("NCBITaxon:10116", new RGDDiseaseAnnotationCurie());
         curieTaxonMap.put("NCBITaxon:10090", new MGIDiseaseAnnotationCurie());
         curieTaxonMap.put("NCBITaxon:6239", new WormDiseaseAnnotationCurie());
