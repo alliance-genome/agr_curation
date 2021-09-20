@@ -11,8 +11,8 @@ import lombok.*;
 @Indexed
 @Entity
 @Data
-@EqualsAndHashCode(callSuper = false)
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
 public class MPTerm extends OntologyTerm {
 
 }

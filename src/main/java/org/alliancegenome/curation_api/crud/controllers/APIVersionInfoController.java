@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.crud.controllers;
 
 import javax.enterprise.context.RequestScoped;
 
-import org.alliancegenome.curation_api.interfaces.rest.*;
+import org.alliancegenome.curation_api.interfaces.rest.APIVersionRESTInterface;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 

@@ -9,11 +9,11 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public abstract class BaseService<E extends BaseEntity, D extends BaseSQLDAO<E>> {
+public abstract class BaseService<E extends BaseEntity, D extends BaseDAO<E>> {
     
-    private BaseSQLDAO<E> dao;
+    protected BaseSQLDAO<E> dao;
 
-    protected void setSQLDao(D dao) {
+    protected void setSQLDao(BaseSQLDAO<E> dao) {
         this.dao = dao;
     }
     

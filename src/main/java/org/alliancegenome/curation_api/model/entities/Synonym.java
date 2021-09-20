@@ -1,22 +1,22 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import java.util.List;
 
-import lombok.*;
+import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.*;
 
 @Audited
 @Entity
 @Data
 @NoArgsConstructor
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicEntities"})
 public class Synonym extends BaseGeneratedEntity {
 

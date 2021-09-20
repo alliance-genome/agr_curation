@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -18,7 +17,7 @@ import lombok.*;
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicLocations"})
 @Schema(name="Gene", description="POJO that represents the Gene")
 public class Gene extends GenomicEntity {

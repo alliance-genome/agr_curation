@@ -16,7 +16,7 @@ import lombok.*;
 @Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"})
 public class GenomicEntity extends BiologicalEntity {
 

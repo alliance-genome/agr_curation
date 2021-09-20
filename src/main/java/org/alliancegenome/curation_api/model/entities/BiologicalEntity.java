@@ -15,7 +15,7 @@ import lombok.*;
 @Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class BiologicalEntity extends BaseCurieEntity {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)

@@ -9,7 +9,7 @@ import lombok.*;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(callSuper = false)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class GeneGenomicLocation extends BaseGeneratedEntity {
     
     //private Subject subject;

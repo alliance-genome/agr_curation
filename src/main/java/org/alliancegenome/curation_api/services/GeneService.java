@@ -1,27 +1,23 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.base.SearchResults;
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
-import org.alliancegenome.curation_api.model.input.Pagination;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.map.HashedMap;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.map.HashedMap;
+
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped

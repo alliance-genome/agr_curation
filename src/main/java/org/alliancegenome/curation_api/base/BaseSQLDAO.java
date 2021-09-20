@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.base;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import javax.inject.Inject;
@@ -247,6 +248,31 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         query.where(builder.and(restrictions.toArray(new Predicate[0])));
 
         return entityManager.createQuery(query).getResultList();
+    }
+
+    public E getNewInstance() {
+        try {
+            return myClass.getDeclaredConstructor().newInstance();
+        } catch (InstantiationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }

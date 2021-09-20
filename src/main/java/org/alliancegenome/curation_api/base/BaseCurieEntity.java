@@ -13,13 +13,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
-@Data @EqualsAndHashCode(callSuper = false)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @MappedSuperclass
 public class BaseCurieEntity extends BaseEntity {
 
     @Id @DocumentId
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
+    @EqualsAndHashCode.Include
     private String curie;
 
     @GenericField

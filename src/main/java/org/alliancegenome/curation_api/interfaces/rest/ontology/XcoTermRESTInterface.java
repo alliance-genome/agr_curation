@@ -1,16 +1,16 @@
-package org.alliancegenome.curation_api.interfaces.rest;
+package org.alliancegenome.curation_api.interfaces.rest.ontology;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.XcoTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path("/doterm")
-@Tag(name = "Ontology - DO")
+@Path("/xcoterm")
+@Tag(name = "Ontology - XCO")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface DoTermRESTInterface extends BaseCrudRESTInterface<DOTerm> {
+public interface XcoTermRESTInterface extends BaseCrudRESTInterface<XcoTerm> {
 
 }

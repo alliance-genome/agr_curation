@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
+
+import org.apache.commons.lang3.StringUtils;
 
 public class CurieGenerator extends ArrayList<String> {
 
