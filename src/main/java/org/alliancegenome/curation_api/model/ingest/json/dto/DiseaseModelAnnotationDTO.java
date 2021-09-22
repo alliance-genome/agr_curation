@@ -31,7 +31,7 @@ public class DiseaseModelAnnotationDTO extends BaseDTO {
     private List<ConditionRelationDTO> conditionRelations;
     
 
-    private enum Negation {
+    public enum Negation {
         not;
     }
 
