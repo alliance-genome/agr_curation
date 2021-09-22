@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-export class DiseaseService {
-    getDiseases(limit, page, sorts, filters) {
+export class OntologyService {
+    getTerms(termType, limit, page, sorts, filters) {
         var sortOptions = {};
 
         var sortArray = {};
@@ -25,6 +25,6 @@ export class DiseaseService {
           sortOptions["sortOrders"] = sortArray;
         }
 
-        return axios.post('/api/doterm/search?limit=' + limit + '&page=' + page, sortOptions).then(res => res.data);
+        return axios.post('/api/' + termType + '/search?limit=' + limit + '&page=' + page, sortOptions).then(res => res.data);
     }
 }
