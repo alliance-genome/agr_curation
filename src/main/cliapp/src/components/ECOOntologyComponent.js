@@ -2,13 +2,13 @@ import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
-import { DiseaseService } from '../service/DiseaseService';
+import { OntologyService } from '../service/OntologyService';
 import { useQuery } from 'react-query';
-import {Messages} from "primereact/messages";
+import { Messages } from "primereact/messages";
 
-export const DiseasesComponent = () => {
+export const ECOOntologyComponent = () => {
 
-  const [diseases, setDiseases] = useState(null);
+  const [terms, setTerms] = useState(null);
   const [multiSortMeta, setMultiSortMeta] = useState([]);
   const [filters, setFilters] = useState({});
   const [page, setPage] = useState(0);
@@ -16,13 +16,13 @@ export const DiseasesComponent = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const diseaseService = new DiseaseService();
+  const ontologyService = new OntologyService();
   const errorMessage = useRef(null);
 
-  useQuery(['diseases', rows, page, multiSortMeta, filters],
-    () => diseaseService.getDiseases(rows, page, multiSortMeta, filters), {
+  useQuery(['terms', rows, page, multiSortMeta, filters],
+    () => ontologyService.getTerms('ecoterm', rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
-      setDiseases(data.results);
+      setTerms(data.results);
       setTotalRecords(data.totalResults);
     },
       onError: (error) => {
@@ -73,9 +73,9 @@ export const DiseasesComponent = () => {
   return (
       <div>
         <div className="card">
-            <h3>Diseases Table</h3>
+            <h3>ECO Table</h3>
             <Messages ref={errorMessage}/>
-          <DataTable value={diseases} className="p-datatable-sm"
+          <DataTable value={terms} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             onFilter={onFilter} filters={filters}
             paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
