@@ -45,17 +45,17 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         String annotationID = getUniqueID(annotationDTO);
         DiseaseAnnotation annotation = diseaseAnnotationDAO.find(annotationID);
-        boolean create = false;
+
 
         if (annotation == null) {
             annotation = new DiseaseAnnotation();
             annotation.setCurie(annotationID);
-            create = true;
         }
         annotation.setSubject(entity);
         annotation.setObject(disease);
         annotation.setReferenceList(List.of(reference));
         annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
+
         annotation.setCreated(
                     annotationDTO.getDateAssigned()
                             .toInstant()
@@ -68,11 +68,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                         .getAssociationType())
         );
 
-        if(create){
-            create(annotation);
-        }else{
-            update(annotation);
-        }
+        diseaseAnnotationDAO.persist(annotation);
 
         return annotation;
     }

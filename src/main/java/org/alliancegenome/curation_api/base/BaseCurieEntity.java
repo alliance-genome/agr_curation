@@ -24,7 +24,7 @@ public class BaseCurieEntity extends BaseEntity {
     @EqualsAndHashCode.Include
     private String curie;
 
-    @GenericField
+    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @CreationTimestamp
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime created;

@@ -76,6 +76,10 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
+    const negatedTemplate = (rowData) => {
+        return <div>{rowData.negated.toString()}</div>
+    };
+
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
     const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
 
@@ -96,6 +100,9 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="subject.curie" header="Subject" sortable filter></Column>
                     <Column field="object.curie" header="Disease" sortable filter></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
+                    <Column field="negated" header="Negated" body={negatedTemplate} sortable filter></Column>
+                    <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
+                    <Column field="created" header="Creation Date" sortable filter ></Column>
                 </DataTable>
             </div>
         </div>
