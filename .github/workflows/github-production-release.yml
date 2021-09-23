@@ -54,6 +54,7 @@ jobs:
         environment_name: curation-production
         version_label: ${{ steps.vars.outputs.tagname }}
         deployment_package: ${{ steps.vars.outputs.tagname }}.zip
+        use_existing_version_if_available: true
         region: us-east-1
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main

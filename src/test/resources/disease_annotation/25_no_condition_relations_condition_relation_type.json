@@ -1,0 +1,73 @@
+{
+    "data" : [
+	{
+            "DOid" : "DOID:4",
+            "dataProvider" : [
+		{
+		    "crossReference" : {
+			"id" : "TEST:TestGene000025",
+			"pages" : [
+			    "gene"
+			]
+		    },
+		    "type" : "curated"
+		}
+            ],
+            "dateAssigned" : "2021-05-24T00:00:00-04:00",
+            "evidence" : {
+		"evidenceCodes" : [
+		    "ECO:0000033"
+		],
+		"publication" : {
+		    "crossReference" : {
+			"id" : "TEST:xref25",
+			"pages" : [
+			    "reference"
+			]
+		    },
+		    "publicationId" : "PMID:0000025"
+		}
+            },
+            "negation" : "not",
+            "objectId" : "TEST:TestGene000025",
+            "objectName" : "Test gene 25",
+            "objectRelation" : {
+		"associationType" : "is_implicated_in",
+		"objectType" : "gene"
+            },
+	    "with" : [
+		"HGNC:1121",
+		"HGNC:323"
+            ],
+	    "conditionRelations" : [
+		{
+		    "conditions" : [
+			{
+			    "conditionClassId" : "ZECO:0000101",
+			    "conditionId" : "XCO:0000131",
+			    "conditionStatement" : "chemical treatment:4-nitroquinoline N-oxide",
+			    "conditionQuantity" : "some amount",
+			    "anatomicalOntologyId" : "ZFA:0000001",
+			    "geneOntologyId" : "GO:0007569",
+			    "NCBITaxonId" : "NCBITaxon:1781",
+			    "chemicalOntologyId" : "CHEBI:46631",
+			}
+		    ]
+		}
+            ],
+	}
+    ],
+    "metaData" : {
+	"dataProvider" : {
+            "crossReference" : {
+		"id" : "TEST",
+		"pages" : [
+		    "homepage"
+		]
+            },
+            "type" : "curated"
+	},
+	"dateProduced" : "2021-09-13T12:39:18+01:00",
+	"release" : "TEST"
+    }
+}

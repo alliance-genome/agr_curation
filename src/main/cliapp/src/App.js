@@ -12,11 +12,14 @@ import { AppConfig } from './AppConfig';
 import { Dashboard } from './components/Dashboard';
 
 import { GenesComponent } from './components/GenesComponent';
-import { DiseasesComponent } from './components/DiseasesComponent';
 import { AllelesComponent } from './components/AllelesComponent';
 import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
 import { FMSComponent } from './components/FMSComponent';
 import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
+
+import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
+import { ECOOntologyComponent } from './components/ECOOntologyComponent';
+import { MPOntologyComponent } from './components/MPOntologyComponent';
 
 import { ApiVersionService } from './service/ApiVersionService';
 
@@ -152,7 +155,9 @@ const App = () => {
     {
       label: 'Ontologies', icon: 'pi pi-fw pi-sitemap',
       items: [
-        { label: 'Diseases', icon: 'pi pi-fw pi-home', to: '/diseases' }
+        { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
+        { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
+        { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' }
       ]
     },
     {
@@ -316,7 +321,9 @@ const App = () => {
         <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
         <Route path="/genes" component={GenesComponent} />
         <Route path="/alleles" component={AllelesComponent} />
-        <Route path="/diseases" component={DiseasesComponent} />
+        <Route path="/ontology/do" component={DiseaseOntologyComponent} />
+        <Route path="/ontology/eco" component={ECOOntologyComponent} />
+        <Route path="/ontology/mp" component={MPOntologyComponent} />
         <Route path="/fmspage" component={FMSComponent} />
         <Route path="/agms" component={AffectedGenomicModelComponent} />
         <Route path="/formlayout" component={FormLayoutDemo} />
