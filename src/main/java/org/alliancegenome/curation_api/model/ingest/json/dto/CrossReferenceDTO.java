@@ -10,4 +10,8 @@ import lombok.Data;
 public class CrossReferenceDTO extends BaseDTO {
     private String id;
     private List<String> pages;
+
+    public String getCurie() {
+        return id;
+    }
 }
