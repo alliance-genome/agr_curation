@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -44,18 +45,31 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         String annotationID = getUniqueID(annotationDTO);
         DiseaseAnnotation annotation = diseaseAnnotationDAO.find(annotationID);
+
+
         if (annotation == null) {
-            DiseaseAnnotation da = new DiseaseAnnotation();
-            da.setCurie(annotationID);
-            da.setSubject(entity);
-            da.setObject(disease);
-            da.setReferenceList(List.of(reference));
-            return create(da);
-        } else {
-            // logic for updates
-            // currently no fields persisted in PG that need to be updated, only fields that make the unique key, i.e.
-            // it would be a new annotation.
+            annotation = new DiseaseAnnotation();
+            annotation.setCurie(annotationID);
         }
+        annotation.setSubject(entity);
+        annotation.setObject(disease);
+        annotation.setReferenceList(List.of(reference));
+        annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
+
+        annotation.setCreated(
+                    annotationDTO.getDateAssigned()
+                            .toInstant()
+                            .atZone(ZoneId.systemDefault())
+                            .toLocalDateTime()
+            );
+        annotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.valueOf(
+                annotationDTO
+                        .getObjectRelation()
+                        .getAssociationType())
+        );
+
+        diseaseAnnotationDAO.persist(annotation);
+
         return annotation;
     }
 
