@@ -39,9 +39,11 @@ public abstract class DiseaseAnnotationCurie {
 
     public String getPublicationCurie(PublicationDTO dto) {
         CurieGenerator curie = new CurieGenerator();
-        curie.add(dto.getPublicationId());
+        // if there is a
         if (dto.getCrossReference() != null) {
             curie.add(dto.getCrossReference().getId());
+        } else {
+            curie.add(dto.getPublicationId());
         }
         return curie.getCurie();
     }
