@@ -6,7 +6,7 @@
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
-	<version>0.0.23-SNAPSHOT</version>
+	<version>0.0.26-SNAPSHOT</version>
 
 	<properties>
 
