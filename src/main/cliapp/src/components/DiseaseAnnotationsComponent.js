@@ -76,8 +76,10 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const negatedTemplate = (rowData) => {
-        return <div>{rowData.negated.toString()}</div>
+    const publicationTemplate = (rowData) => {
+        if (rowData) {
+            return <div>{rowData.referenceList.map(a => a.curie)}</div>
+        }
     };
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
