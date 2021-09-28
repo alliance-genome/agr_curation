@@ -77,8 +77,8 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const negatedTemplate = (rowData) => {
-        if(rowData && rowData.negated !== null){
-            return <div>{rowData.negated.toString()}</div>
+        if(rowData && rowData.negated !== null && rowData.negated !== undefined){
+            return <div>{JSON.stringify(rowData.negated)}</div>
         }
     };
 
