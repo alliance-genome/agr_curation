@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -33,6 +35,7 @@ public class DiseaseAnnotation extends Association {
 
     @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
+    @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean negated = false;
 
 

@@ -77,7 +77,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const negatedTemplate = (rowData) => {
-        if(rowData && rowData.negated){
+        if(rowData && rowData.negated !== null){
             return <div>{rowData.negated.toString()}</div>
         }
     };
@@ -102,9 +102,9 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="subject.curie" header="Subject" sortable filter></Column>
                     <Column field="object.curie" header="Disease" sortable filter></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
-                    <Column field="negated" header="Negated" body={negatedTemplate} sortable filter></Column>
+                    <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
-                    <Column field="created" header="Creation Date" sortable filter ></Column>
+                    <Column field="created" header="Creation Date" sortable ></Column>
                 </DataTable>
             </div>
         </div>
