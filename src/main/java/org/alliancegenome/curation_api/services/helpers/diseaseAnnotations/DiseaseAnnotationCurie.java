@@ -24,7 +24,13 @@ public abstract class DiseaseAnnotationCurie {
 
     public String getEvidenceCurie(EvidenceDTO dto) {
         CurieGenerator curie = new CurieGenerator();
-        curie.add(dto.getPublication().getCrossReference().getCurie());
+
+        if(dto.getPublication().getCrossReference() != null){
+            curie.add(dto.getPublication().getCrossReference().getCurie());
+        }else{
+            curie.add(dto.getPublication().getPublicationId());
+        }
+
         if (CollectionUtils.isNotEmpty(dto.getEvidenceCodes())) {
             dto.getEvidenceCodes().sort(Comparator.naturalOrder());
             curie.add(StringUtils.join(dto.getEvidenceCodes(), "::"));
