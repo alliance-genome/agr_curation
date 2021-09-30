@@ -26,9 +26,8 @@ public class TestElasticSearchReourse {
         private Map<String, String> getConfig() {
             final Map<String, String> map = new HashMap<>();
 
-            map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", container.getHost() + ":9200");
-            
-            map.put("", mqContainer.getHost());
+            map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", container.getHost() + ":" + container.getMappedPort(9200));
+
             map.put("quarkus.qpid-jms.username", mqContainer.getUsername());
             map.put("quarkus.qpid-jms.password", mqContainer.getPassword());
             map.put("quarkus.qpid-jms.url", mqContainer.getUrl());
@@ -40,6 +39,9 @@ public class TestElasticSearchReourse {
         public void stop() {
             if(container != null) {
                 container.close();
+            }
+            if(mqContainer != null) {
+                mqContainer.close();
             }
         }
         

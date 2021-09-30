@@ -14,6 +14,9 @@ public interface GeneBulkRESTInterface {
     
     @POST
     @Path("/bgifile")
-    public String updateBGI(GeneMetaDataDTO geneData);
+    public String updateBGI(
+        GeneMetaDataDTO geneData, 
+        @DefaultValue("true") 
+        @QueryParam("async") boolean async);
 
 }
