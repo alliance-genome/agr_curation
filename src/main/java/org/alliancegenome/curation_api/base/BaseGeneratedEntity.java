@@ -23,12 +23,6 @@ public class BaseGeneratedEntity extends BaseEntity {
     @EqualsAndHashCode.Include
     protected Long id;
     
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-    @Column(unique = true)
-    @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    private String curie;
-    
     @GenericField
     @CreationTimestamp
     @JsonView({View.FieldsOnly.class})

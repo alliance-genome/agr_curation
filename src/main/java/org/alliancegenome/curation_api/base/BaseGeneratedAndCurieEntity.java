@@ -6,6 +6,7 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
+import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -21,6 +22,12 @@ public class BaseGeneratedAndCurieEntity extends BaseEntity {
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
     protected Long id;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @Column(unique = true)
+    @JsonView({View.FieldsOnly.class})
+    @EqualsAndHashCode.Include
+    private String curie;
     
     @GenericField
     @CreationTimestamp
