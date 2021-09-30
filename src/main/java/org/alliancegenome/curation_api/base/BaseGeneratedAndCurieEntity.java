@@ -15,13 +15,19 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @MappedSuperclass
-public class BaseGeneratedEntity extends BaseEntity {
+public class BaseGeneratedAndCurieEntity extends BaseEntity {
 
     @Id @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
     protected Long id;
+    
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @Column(unique = true)
+    @JsonView({View.FieldsOnly.class})
+    @EqualsAndHashCode.Include
+    private String curie;
     
     @GenericField
     @CreationTimestamp
