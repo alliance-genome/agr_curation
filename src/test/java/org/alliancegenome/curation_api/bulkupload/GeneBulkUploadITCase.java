@@ -11,6 +11,8 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.*;
 
+import static org.hamcrest.Matchers.is;
+
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchReourse.Initializer.class)
 public class GeneBulkUploadITCase {
@@ -27,6 +29,7 @@ public class GeneBulkUploadITCase {
     public void geneBulkUpload() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/gene/00_mod_examples.json"));
 
+        // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
@@ -34,8 +37,13 @@ public class GeneBulkUploadITCase {
             post("/api/gene/bulk/bgifile?async=false").
             then().
             statusCode(200);
-        //body("$.size()", is(605),
-        //   "[0].primaryId", is("MGI:1934609"));
 
+        // check if all the genes uploaded
+        RestAssured.given().
+                when().
+                get("/api/gene/all").
+                then().
+                statusCode(200).
+                body("totalResults", is(605));
     }
 }
