@@ -38,14 +38,7 @@ public class TestElasticSearchReourse {
         @Override
         public void stop() {
             // Don't shutdown the containers manually, the testing framework will do it for us
-            // this prevents errors when the services shutdown before quarkus does
-//          if(container != null) {
-//              container.close();
-//          }
-//          if(mqContainer != null) {
-//              mqContainer.close();
-//          }
+            // and this prevents errors when the services shutdown before quarkus does
         }
-        
     }
 }
