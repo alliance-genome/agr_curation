@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.bulkupload;
 
-import static io.restassured.RestAssured.given;
-
 import java.io.IOException;
 import java.nio.file.*;
 
@@ -12,9 +10,7 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.config.*;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchReourse.Initializer.class)
 public class GeneBulkUploadITCase {
@@ -25,14 +21,13 @@ public class GeneBulkUploadITCase {
                 .httpClient(HttpClientConfig.httpClientConfig()
                     .setParam("http.socket.timeout", 100000)
                     .setParam("http.connection.timeout", 100000));
-        log.info("Setting Timeout");
     }
     
     @Test
     public void geneBulkUpload() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/gene/00_mod_examples.json"));
 
-        given().
+        RestAssured.given().
             contentType("application/json").
             body(content).
             when().
