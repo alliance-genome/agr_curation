@@ -44,13 +44,18 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
 
         String annotationID = getUniqueID(annotationDTO);
-        DiseaseAnnotation annotation = diseaseAnnotationDAO.find(annotationID);
+        Map<String, Object> params = new HashMap<>();
+        params.put("curie", annotationID);
+        List<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByParams(params);
 
-
-        if (annotation == null) {
+        DiseaseAnnotation annotation = null;
+        if(annotationList == null || annotationList.size() == 0 ){
             annotation = new DiseaseAnnotation();
             annotation.setCurie(annotationID);
+        } else{
+            annotation = annotationList.get(0);
         }
+
         annotation.setSubject(entity);
         annotation.setObject(disease);
         annotation.setReferenceList(List.of(reference));
