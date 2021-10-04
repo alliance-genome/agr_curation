@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -156,7 +157,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
     
     private void handleNewSynonyms(GeneDTO gene, Gene g) {
         if (CollectionUtils.isNotEmpty(gene.getBasicGeneticEntity().getSynonyms())) {
-            List<Synonym> synonyms = DtoConverter.getSynonyms(gene);
+            List<Synonym> synonyms = DtoConverterHelper.getSynonyms(gene);
             synonyms.forEach(synonym -> synonymService.create(synonym));
             g.setSynonyms(synonyms);
         }
@@ -164,7 +165,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
 
     private void handleUpdateSynonyms(GeneDTO geneDTO, Gene gene) {
         if (CollectionUtils.isNotEmpty(geneDTO.getBasicGeneticEntity().getSynonyms())) {
-            List<Synonym> newSynonyms = DtoConverter.getSynonyms(geneDTO);
+            List<Synonym> newSynonyms = DtoConverterHelper.getSynonyms(geneDTO);
 
             List<Synonym> existingSynonyms = gene.getSynonyms();
 

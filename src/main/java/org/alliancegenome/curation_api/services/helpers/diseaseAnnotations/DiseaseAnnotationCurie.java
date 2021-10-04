@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.Comparator;
 
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.services.CurieGenerator;
+import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +14,7 @@ public abstract class DiseaseAnnotationCurie {
     public abstract String getCurieID(DiseaseModelAnnotationDTO annotationDTO);
 
     public String getExperimentalConditionCurie(ExperimentalConditionDTO dto) {
-        CurieGenerator curie = new CurieGenerator();
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(dto.getConditionClassId());
         curie.add(dto.getConditionStatement());
         curie.add(dto.getConditionId());
@@ -23,7 +23,7 @@ public abstract class DiseaseAnnotationCurie {
     }
 
     public String getEvidenceCurie(EvidenceDTO dto) {
-        CurieGenerator curie = new CurieGenerator();
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
 
         if(dto.getPublication().getCrossReference() != null){
             curie.add(dto.getPublication().getCrossReference().getCurie());
@@ -44,7 +44,7 @@ public abstract class DiseaseAnnotationCurie {
 
 
     public String getPublicationCurie(PublicationDTO dto) {
-        CurieGenerator curie = new CurieGenerator();
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
         // if there is a MOD ID
         if (dto.getCrossReference() != null) {
             curie.add(dto.getCrossReference().getId());

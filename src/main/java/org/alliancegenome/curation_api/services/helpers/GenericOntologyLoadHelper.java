@@ -15,7 +15,7 @@ import org.semanticweb.owlapi.search.EntitySearcher;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public class GenericOntologyLoader<T extends OntologyTerm> implements OWLObjectVisitor {
+public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObjectVisitor {
 
     private OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
     //private OWLDataFactory df = OWLManager.getOWLDataFactory();
@@ -28,7 +28,7 @@ public class GenericOntologyLoader<T extends OntologyTerm> implements OWLObjectV
 
     private HashMap<String, T> allNodes = new HashMap<>();
 
-    public GenericOntologyLoader(Class<T> clazz) {
+    public GenericOntologyLoadHelper(Class<T> clazz) {
         this.clazz = clazz;
     }
     
