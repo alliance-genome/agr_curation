@@ -1,10 +1,10 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.helpers;
 
 import java.util.ArrayList;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class CurieGenerator extends ArrayList<String> {
+public class CurieGeneratorHelper extends ArrayList<String> {
 
     public String getCurie() {
         return StringUtils.join(this, "|");

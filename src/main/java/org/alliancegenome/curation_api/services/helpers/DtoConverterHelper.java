@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.helpers;
 
 import static java.util.stream.Collectors.toList;
 
@@ -7,7 +7,7 @@ import java.util.List;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 
-public class DtoConverter {
+public class DtoConverterHelper {
 
     public static List<Synonym> getSynonyms(GeneDTO gene) {
         if (gene.getBasicGeneticEntity().getSynonyms() == null)

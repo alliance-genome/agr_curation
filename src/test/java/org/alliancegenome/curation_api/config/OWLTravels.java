@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.model.entities.ontology.*;
-import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoader;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -22,7 +22,7 @@ public class OWLTravels {
         //IRI do_iri = IRI.create();
 
         
-        GenericOntologyLoader<EcoTerm> loader = new GenericOntologyLoader<EcoTerm>(EcoTerm.class);
+        GenericOntologyLoadHelper<EcoTerm> loader = new GenericOntologyLoadHelper<EcoTerm>(EcoTerm.class);
         
         Map<String, EcoTerm> list = loader.load(new File("/Users/olinblodgett/Desktop/FMS/eco.owl"));
         
