@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
-import org.alliancegenome.curation_api.services.CurieGenerator;
+import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 
 public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
@@ -14,7 +14,7 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
      */
     @Override
     public String getCurieID(DiseaseModelAnnotationDTO annotationDTO) {
-        CurieGenerator curie = new CurieGenerator();
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(annotationDTO.getObjectId());
         curie.add(annotationDTO.getDoId());
         curie.add(getEvidenceCurie(annotationDTO.getEvidence()));
@@ -25,7 +25,7 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
     public String getWithCuries(DiseaseModelAnnotationDTO annotationDTO) {
         if (CollectionUtils.isEmpty(annotationDTO.getWith()))
             return null;
-        CurieGenerator generator = new CurieGenerator();
+        CurieGeneratorHelper generator = new CurieGeneratorHelper();
         generator.addAll(annotationDTO.getWith());
         return generator.getCurie();
     }

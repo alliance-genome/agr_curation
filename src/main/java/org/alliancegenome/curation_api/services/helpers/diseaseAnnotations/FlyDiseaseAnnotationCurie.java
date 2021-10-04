@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseObjectRelationDTO;
-import org.alliancegenome.curation_api.services.CurieGenerator;
+import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 
@@ -14,7 +14,7 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
      */
     @Override
     public String getCurieID(DiseaseModelAnnotationDTO annotationDTO) {
-        CurieGenerator curie = new CurieGenerator();
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(annotationDTO.getObjectId());
         curie.add(annotationDTO.getDoId());
         curie.add(getEvidenceCurie(annotationDTO.getEvidence()));
