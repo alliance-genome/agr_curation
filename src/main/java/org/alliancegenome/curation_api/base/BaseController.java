@@ -10,7 +10,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> {
+public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseCrudRESTInterface<E> {
 
     private BaseService<E, D> service;
 
@@ -23,12 +23,8 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     public E create(E entity) {
         return service.create(entity);
     }
-    
-    public E get(String id) {
-        return service.get(id);
-    }
 
-    public E get(Long id) {
+    public E get(String id) {
         return service.get(id);
     }
 

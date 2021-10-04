@@ -24,11 +24,11 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDAO<E>> {
         return dao.persist(entity);
     }
 
-    public E get(String id) {
+    public E get(Long id) {
         return dao.find(id);
     }
-
-    public E get(Long id) {
+    
+    public E get(String id) {
         return dao.find(id);
     }
 

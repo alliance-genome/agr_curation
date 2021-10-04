@@ -1,12 +1,11 @@
 package org.alliancegenome.curation_api.base;
 
-import java.util.*;
+import java.util.HashMap;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.view.View;
-import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,25 +18,20 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
     @Path("/")
     public E create(E entity);
 
-    @GET //@Secured
-    @Path("/{id}")
-    @JsonView(View.FieldsOnly.class)
-    public E get(@PathParam("id") String id);
-
     @GET
-    @Path("/view/{id}")
+    @Path("/{curie}")
     @JsonView(View.FieldsOnly.class)
-    public E get(@PathParam("id") Long id);
-
+    public E get(@PathParam("curie") String id);
+    
     @PUT //@Secured
     @Path("/")
     public E update(E entity);
 
     @DELETE //@Secured
-    @Path("/{id}")
-    public E delete(@PathParam("id") String id);
+    @Path("/{curie}")
+    public E delete(@PathParam("curie") String curie);
 
-    @POST //@Secured
+    @POST
     @Path("/find")
     @JsonView(View.FieldsOnly.class)
     public SearchResults<E> find(
@@ -45,7 +39,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
     
-    @POST //@Secured
+    @POST
     @Path("/search")
     @JsonView(View.FieldsOnly.class)
     public SearchResults<E> search(
