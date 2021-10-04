@@ -27,10 +27,6 @@ public class AlleleService extends BaseService<Allele, AlleleDAO> {
         setSQLDao(alleleDAO);
     }
 
-    public SearchResults<Allele> getAllAlleles(Pagination pagination) {
-        return getAll(pagination);
-    }
-
     @Transactional
     public void processUpdate(AlleleDTO allele) {
 

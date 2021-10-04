@@ -46,13 +46,8 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDAO<E>> {
     public E delete(Long id) {
         return dao.remove(id);
     }
-
-    public SearchResults<E> getAll(Pagination pagination) {
-        return dao.findAll(pagination);
-    }
-    
-    public List<E> findByParams(Map<String, Object> params) {
-        return dao.findByParams(params);
+    public SearchResults<E> findByParams(Pagination pagination, Map<String, Object> params) {
+        return dao.findByParams(pagination, params);
     }
     
     public SearchResults<E> searchByParams(Pagination pagination, Map<String, Object> params) {
