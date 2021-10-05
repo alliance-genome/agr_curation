@@ -171,35 +171,40 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
     }
 
-    public List<E> findByField(String field, String value) {
+    public SearchResults<E> findByField(String field, String value) {
         log.debug("SqlDAO: findByField: " + field + " " + value);
         HashMap<String, Object> params = new HashMap<>();
         params.put(field, value);
-        List<E> list = findByParams(params);
-        log.debug("Result List: " + list);
-        if(list.size() > 0) {
-            return list;
+        SearchResults<E> results = findByParams(null, params);
+        log.debug("Result List: " + results);
+        if(results.getResults().size() > 0) {
+            return results;
         } else {
             return null;
         }
     }
 
-    public List<E> findByParams(Map<String, Object> params) {
-        return findByParams(params, null);
+    public SearchResults<E> findByParams(Pagination pagination, Map<String, Object> params) {
+        return findByParams(pagination, params, null);
     }
 
-    public List<E> findByParams(Map<String, Object> params, String orderByField) {
+    public SearchResults<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
         if(orderByField != null) {
             log.debug("Search By Params: " + params + " Order by: " + orderByField);
         }
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> query = builder.createQuery(myClass);
+        CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
         Root<E> root = query.from(myClass);
+        Root<E> countRoot = countQuery.from(myClass);
+
         //System.out.println("Root: " + root);
         List<Predicate> restrictions = new ArrayList<>();
+        List<Predicate> countRestrictions = new ArrayList<>();
         //System.out.println(params);
         for(String key: params.keySet()) {
             Path<Object> column = null;
+            Path<Object> countColumn = null;
             //System.out.println("Key: " + key);
             if(key.contains(".")) {
                 String[] objects = key.split("\\.");
@@ -207,13 +212,16 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                     //System.out.println("Looking up: " + s);
                     if(column != null) {
                         column = column.get(s);
+                        countColumn = countColumn.get(s);
                     } else {
                         column = root.get(s);
+                        countColumn = countRoot.get(s);
                     }
                     //System.out.println(column.getAlias());
                 }
             } else {
                 column = root.get(key);
+                countColumn = countRoot.get(key);
             }
 
             //System.out.println(column.getAlias());
@@ -224,30 +232,53 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 log.debug("Integer Type: " + value);
                 Integer desiredValue = (Integer) value;
                 restrictions.add(builder.equal(column, desiredValue));
+                countRestrictions.add(builder.equal(countColumn, desiredValue));
             } else if(value instanceof Enum) {
                 log.debug("Enum Type: " + value);
                 restrictions.add(builder.equal(column, value));
+                countRestrictions.add(builder.equal(countColumn, value));
             } else if(value instanceof Long) {
                 log.debug("Long Type: " + value);
                 Long desiredValue = (Long) value;
                 restrictions.add(builder.equal(column, desiredValue));
+                countRestrictions.add(builder.equal(countColumn, desiredValue));
             } else if(value instanceof Boolean) {
                 log.debug("Boolean Type: " + value);
                 Boolean desiredValue = (Boolean) value;
                 restrictions.add(builder.equal(column, desiredValue));
+                countRestrictions.add(builder.equal(countColumn, desiredValue));
             } else {
                 log.debug("String Type: " + value);
                 String desiredValue = (String) value;
                 restrictions.add(builder.equal(column, desiredValue));
+                countRestrictions.add(builder.equal(countColumn, desiredValue));
             }
         }
+
         if(orderByField != null) {
             query.orderBy(builder.asc(root.get(orderByField)));
         }
 
         query.where(builder.and(restrictions.toArray(new Predicate[0])));
 
-        return entityManager.createQuery(query).getResultList();
+
+        countQuery.select(builder.count(countRoot));
+        countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
+        Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+
+        TypedQuery<E> allQuery = entityManager.createQuery(query);
+        if(pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
+            int first = pagination.getPage() * pagination.getLimit();
+            if(first < 0) first = 0;
+            allQuery.setFirstResult(first);
+            allQuery.setMaxResults(pagination.getLimit());
+        }
+
+        SearchResults<E> results = new SearchResults<E>();
+        results.setResults(allQuery.getResultList());
+        results.setTotalResults(totalResults);
+        return results;
+
     }
 
     public E getNewInstance() {

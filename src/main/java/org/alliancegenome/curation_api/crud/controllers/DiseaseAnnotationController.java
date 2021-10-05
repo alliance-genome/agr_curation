@@ -21,4 +21,8 @@ public class DiseaseAnnotationController extends BaseController<DiseaseAnnotatio
         setService(annotationService);
     }
 
+    public DiseaseAnnotation get(Long id) {
+        return annotationService.get(id);
+    }
+
 }

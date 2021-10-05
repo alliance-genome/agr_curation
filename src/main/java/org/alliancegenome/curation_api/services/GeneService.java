@@ -39,10 +39,6 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         setSQLDao(geneDAO);
     }
 
-    public SearchResults<Gene> getAllGenes(Pagination pagination) {
-        return getAll(pagination);
-    }
-
     @Transactional
     public Gene getByIdOrCurie(String id) {
         Gene gene = geneDAO.getByIdOrCurie(id);

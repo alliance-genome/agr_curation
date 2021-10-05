@@ -30,10 +30,6 @@ public class CrossReferenceService extends BaseService<CrossReference, CrossRefe
         setSQLDao(crossReferenceDAO);
     }
 
-    public SearchResults<CrossReference> getAllCrossReferences(Pagination pagination) {
-        return getAll(pagination);
-    }
-
     @Transactional
     public CrossReference processUpdate(CrossReferenceDTO crossReferenceDTO) {
 

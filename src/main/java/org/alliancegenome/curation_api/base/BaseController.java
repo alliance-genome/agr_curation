@@ -10,7 +10,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> {
+public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseCrudRESTInterface<E> {
 
     private BaseService<E, D> service;
 
@@ -23,12 +23,8 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     public E create(E entity) {
         return service.create(entity);
     }
-    
-    public E get(String id) {
-        return service.get(id);
-    }
 
-    public E get(Long id) {
+    public E get(String id) {
         return service.get(id);
     }
 
@@ -40,15 +36,12 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
         return service.delete(id);
     }
 
-    public SearchResults<E> getAll(Integer page, Integer limit) {
+    public SearchResults<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
+        if(params == null) params = new HashMap<String, Object>();
         Pagination pagination = new Pagination();
         pagination.setLimit(limit);
         pagination.setPage(page);
-        return service.getAll(pagination);
-    }
-
-    public List<E> find(HashMap<String, Object> params) {
-        return service.findByParams(params);
+        return service.findByParams(pagination, params);
     }
 
     public SearchResults<E> search(Integer page, Integer limit, HashMap<String, Object> params) {

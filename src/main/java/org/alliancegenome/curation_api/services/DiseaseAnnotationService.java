@@ -9,7 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -44,16 +44,15 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
 
         String annotationID = getUniqueID(annotationDTO);
-        Map<String, Object> params = new HashMap<>();
-        params.put("curie", annotationID);
-        List<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByParams(params);
+
+        SearchResults<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
 
         DiseaseAnnotation annotation = null;
-        if(annotationList == null || annotationList.size() == 0 ){
+        if(annotationList == null || annotationList.getResults().size() == 0 ){
             annotation = new DiseaseAnnotation();
             annotation.setCurie(annotationID);
         } else{
-            annotation = annotationList.get(0);
+            annotation = annotationList.getResults().get(0);
         }
 
         annotation.setSubject(entity);
