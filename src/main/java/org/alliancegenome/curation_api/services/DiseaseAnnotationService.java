@@ -9,12 +9,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
@@ -45,7 +46,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         String annotationID = getUniqueID(annotationDTO);
 
-        SearchResults<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
+        SearchResponse<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
 
         DiseaseAnnotation annotation = null;
         if(annotationList == null || annotationList.getResults().size() == 0 ){

@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.hibernate.search.engine.search.query.*;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
@@ -60,7 +61,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         }
     }
 
-    public SearchResults<E> findAll(Pagination pagination) {
+    public SearchResponse<E> findAll(Pagination pagination) {
         log.debug("SqlDAO: findAll: " + myClass);
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
         CriteriaQuery<E> findQuery = cb.createQuery(myClass);
@@ -78,7 +79,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
             allQuery.setFirstResult(first);
             allQuery.setMaxResults(pagination.getLimit());
         }
-        SearchResults<E> results = new SearchResults<E>();
+        SearchResponse<E> results = new SearchResponse<E>();
         results.setResults(allQuery.getResultList());
         results.setTotalResults(totalResults);
         return results;
@@ -112,18 +113,18 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         indexer.start();
     }
 
-    public SearchResults<E> searchAll(Pagination pagination) {
+    public SearchResponse<E> searchAll(Pagination pagination) {
         return searchByParams(pagination, null);
     }
 
-    public SearchResults<E> searchByField(Pagination pagination, String field, String value) {
+    public SearchResponse<E> searchByField(Pagination pagination, String field, String value) {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put(field, value);
         return searchByParams(pagination, params);
     }
 
 
-    public SearchResults<E> searchByParams(Pagination pagination, Map<String, Object> params) {
+    public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 
         log.debug("Search: " + pagination + " Params: " + params);
         //SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
@@ -163,7 +164,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         log.debug(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
-        SearchResults<E> results = new SearchResults<E>();
+        SearchResponse<E> results = new SearchResponse<E>();
         results.setResults(result.hits());
         results.setTotalResults(result.total().hitCount());
 
@@ -171,11 +172,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
     }
 
-    public SearchResults<E> findByField(String field, String value) {
+    public SearchResponse<E> findByField(String field, String value) {
         log.debug("SqlDAO: findByField: " + field + " " + value);
         HashMap<String, Object> params = new HashMap<>();
         params.put(field, value);
-        SearchResults<E> results = findByParams(null, params);
+        SearchResponse<E> results = findByParams(null, params);
         log.debug("Result List: " + results);
         if(results.getResults().size() > 0) {
             return results;
@@ -184,11 +185,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         }
     }
 
-    public SearchResults<E> findByParams(Pagination pagination, Map<String, Object> params) {
+    public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params) {
         return findByParams(pagination, params, null);
     }
 
-    public SearchResults<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
+    public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
         if(orderByField != null) {
             log.debug("Search By Params: " + params + " Order by: " + orderByField);
         }
@@ -274,7 +275,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
             allQuery.setMaxResults(pagination.getLimit());
         }
 
-        SearchResults<E> results = new SearchResults<E>();
+        SearchResponse<E> results = new SearchResponse<E>();
         results.setResults(allQuery.getResultList());
         results.setTotalResults(totalResults);
         return results;

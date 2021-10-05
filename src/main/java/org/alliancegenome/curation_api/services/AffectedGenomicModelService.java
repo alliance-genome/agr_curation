@@ -27,7 +27,7 @@ public class AffectedGenomicModelService extends BaseService<AffectedGenomicMode
     @Transactional
     public void processUpdate(AffectedGenomicModelDTO agm) {
 
-        AffectedGenomicModel dbAgm = get(agm.getPrimaryID());
+        AffectedGenomicModel dbAgm = affectedGenomicModelDAO.find(agm.getPrimaryID());
         
         if(dbAgm == null) {
             dbAgm = new AffectedGenomicModel();

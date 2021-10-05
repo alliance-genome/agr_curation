@@ -66,7 +66,7 @@ public class GeneDTOConsumer implements Runnable {
                 geneService.processUpdate(gene);
                 end = new Date();
                 queue.add(end.getTime() - start.getTime());
-                if((c % 200) == 0 && c > 0) {
+                if((c % 500) == 0 && c > 0) {
                     long sum = queue.stream().reduce(0L, Long::sum);
                     long rps = (200 * 1000) / sum;
                     log.info("GeneDTOConsumer " + rps + " r/s");
