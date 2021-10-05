@@ -9,8 +9,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.jms.*;
 
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
-import org.alliancegenome.curation_api.services.GeneService;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.services.*;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import io.quarkus.runtime.*;
@@ -18,9 +18,9 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
-public class GeneDTOConsumer implements Runnable {
+public class AffectedGenomicModelDTOConsumer implements Runnable {
 
-    @Inject GeneService geneService;
+    @Inject AffectedGenomicModelService affectedGenomicModelService;
 
     @Inject ConnectionFactory connectionFactory1;
     @Inject ConnectionFactory connectionFactory2;
@@ -29,12 +29,12 @@ public class GeneDTOConsumer implements Runnable {
     private JMSContext context;
 
     private int threadCount = 4;
-    private String queueName = "geneQueue";
+    private String queueName = "affectedGenomicModelQueue";
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(threadCount);
 
     void onStart(@Observes StartupEvent ev) {
-        log.info("GeneDTOConsumer Starting: " + threadCount + " threads Factory: " + connectionFactory1);
+        log.info("AffectedGenomicModelDTOConsumer Starting: " + threadCount + " threads Factory: " + connectionFactory1);
         context = connectionFactory1.createContext(Session.AUTO_ACKNOWLEDGE);
         producer = context.createProducer().setDeliveryMode(DeliveryMode.NON_PERSISTENT); // In memory only will loose all messages if the broker restarts
         for(int i = 0; i < threadCount; i++) {
@@ -52,7 +52,7 @@ public class GeneDTOConsumer implements Runnable {
     public void run() {
         JMSContext ctx = null;
         CircularFifoQueue<Long> queue = new CircularFifoQueue<>(100);
-        GeneDTO gene = null;
+        AffectedGenomicModelDTO agm = null;
         try {
             ctx = connectionFactory2.createContext(Session.AUTO_ACKNOWLEDGE);
             JMSConsumer consumer = ctx.createConsumer(ctx.createQueue(queueName));
@@ -61,29 +61,29 @@ public class GeneDTOConsumer implements Runnable {
             int c = 0;
             while (true) {
                 Message message = consumer.receive();
-                gene = message.getBody(GeneDTO.class);
+                agm = message.getBody(AffectedGenomicModelDTO.class);
                 start = new Date();
-                geneService.processUpdate(gene);
+                affectedGenomicModelService.processUpdate(agm);
                 end = new Date();
                 queue.add(end.getTime() - start.getTime());
                 if((c % 200) == 0 && c > 0) {
                     long sum = queue.stream().reduce(0L, Long::sum);
                     long rps = (200 * 1000) / sum;
-                    log.info("GeneDTOConsumer " + rps + " r/s");
+                    log.info("AffectedGenomicModelDTOConsumer " + rps + " r/s");
                 }
                 c++;
             }
         } catch (Exception e) {
             if(ctx != null) ctx.close();
-            log.info("Failed Gene: " + gene);
+            log.info("Failed AffectedGenomicModel: " + agm);
             log.info("Thread process failed: Error: " + e);
             e.printStackTrace();
             throw new RuntimeException(e);
         }
     }
 
-    public void send(GeneDTO gene) {
-        producer.send(context.createQueue(queueName), context.createObjectMessage(gene));
+    public void send(AffectedGenomicModelDTO agm) {
+        producer.send(context.createQueue(queueName), context.createObjectMessage(agm));
     }
 
 }

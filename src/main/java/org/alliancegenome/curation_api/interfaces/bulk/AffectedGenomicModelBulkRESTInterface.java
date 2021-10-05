@@ -14,6 +14,9 @@ public interface AffectedGenomicModelBulkRESTInterface {
     
     @POST
     @Path("/agmfile")
-    public String updateAGMs(AffectedGenomicModelMetaDataDTO agmData);
+    public String updateAGMs(
+            AffectedGenomicModelMetaDataDTO agmData,
+            @DefaultValue("true") 
+            @QueryParam("async") boolean async);
 
 }

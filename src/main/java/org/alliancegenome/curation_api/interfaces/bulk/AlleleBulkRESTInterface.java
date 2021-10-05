@@ -14,6 +14,9 @@ public interface AlleleBulkRESTInterface {
     
     @POST
     @Path("/allelefile")
-    public String updateAlleles(AlleleMetaDataDTO alleleData);
+    public String updateAlleles(
+        AlleleMetaDataDTO alleleData,
+        @DefaultValue("true") 
+        @QueryParam("async") boolean async);
 
 }
