@@ -6,7 +6,7 @@
 	<groupId>org.alliancegenome</groupId>
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
-	<version>0.0.29</version>
+	<version>0.0.30-SNAPSHOT</version>
 
 	<properties>
 
@@ -24,7 +24,7 @@
 
 	<scm>
 		<developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
-		<tag>0.0.29</tag>
+		<tag>HEAD</tag>
 	</scm>
 
 	<distributionManagement>
