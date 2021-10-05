@@ -28,27 +28,19 @@ public class AlleleService extends BaseService<Allele, AlleleDAO> {
     }
 
     @Transactional
-    public void processUpdate(AlleleDTO allele) {
+    public void processUpdate(AlleleDTO alleleDTO) {
 
-        Map<String, Object> params = new HashMap<String, Object>();
-
-        params.put("curie", allele.getPrimaryId());
-        Allele dbAllele = get(allele.getPrimaryId());
-        if(dbAllele == null) {
-            dbAllele = new Allele();
-            dbAllele.setCurie(allele.getPrimaryId());
-            dbAllele.setSymbol(allele.getSymbol());
-            dbAllele.setDescription(allele.getDescription());
-            dbAllele.setTaxon(allele.getTaxonId());
-            create(dbAllele);
-        } else {
-            if(dbAllele.getCurie().equals(allele.getPrimaryId())) {
-                dbAllele.setSymbol(allele.getSymbol());
-                dbAllele.setDescription(allele.getDescription());
-                dbAllele.setTaxon(allele.getTaxonId());
-                update(dbAllele);
-            }
+        Allele allele = get(alleleDTO.getPrimaryId());
+        //log.info("Allele: " + allele + " : " + alleleDTO.getPrimaryId());
+        if(allele == null) {
+            allele = new Allele();
+            allele.setCurie(alleleDTO.getPrimaryId());
         }
+        
+        allele.setSymbol(alleleDTO.getSymbol());
+        allele.setDescription(alleleDTO.getDescription());
+        allele.setTaxon(alleleDTO.getTaxonId());
+        alleleDAO.persist(allele);
 
     }
 

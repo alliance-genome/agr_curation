@@ -30,7 +30,7 @@ public abstract class BaseOntologyTermBulkController<S extends BaseOntologyTermS
     private JMSProducer producer;
     private JMSContext context;
 
-    private int threadCount = 4;
+    private int threadCount = 1;
     private String queueName;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(threadCount);
@@ -76,7 +76,7 @@ public abstract class BaseOntologyTermBulkController<S extends BaseOntologyTermS
     void onStart(@Observes StartupEvent ev) {
         log.info("BaseOntologyTermService(" + termClazz.getSimpleName() + "): Starting: " + threadCount + " threads Factory: " + connectionFactory1);
         for(int i = 0; i < threadCount; i++) {
-            scheduler.scheduleAtFixedRate(new Thread(this), 0L, 10L, TimeUnit.SECONDS); // Only reexecutes the thread if it fails
+            scheduler.scheduleAtFixedRate(new Thread(this), 0L, 60L, TimeUnit.SECONDS); // Only reexecutes the thread if it fails
         }
     }
 
