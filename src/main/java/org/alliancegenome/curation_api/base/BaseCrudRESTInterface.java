@@ -5,6 +5,7 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 
@@ -16,25 +17,25 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 
     @POST //@Secured
     @Path("/")
-    public E create(E entity);
+    public ObjectResponse<E> create(E entity);
 
     @GET
     @Path("/{curie}")
     @JsonView(View.FieldsOnly.class)
-    public E get(@PathParam("curie") String id);
+    public ObjectResponse<E> get(@PathParam("curie") String id);
     
     @PUT //@Secured
     @Path("/")
-    public E update(E entity);
+    public ObjectResponse<E> update(E entity);
 
     @DELETE //@Secured
     @Path("/{curie}")
-    public E delete(@PathParam("curie") String curie);
+    public ObjectResponse<E> delete(@PathParam("curie") String curie);
 
     @POST
     @Path("/find")
     @JsonView(View.FieldsOnly.class)
-    public SearchResults<E> find(
+    public SearchResponse<E> find(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
@@ -42,7 +43,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
     @POST
     @Path("/search")
     @JsonView(View.FieldsOnly.class)
-    public SearchResults<E> search(
+    public SearchResponse<E> search(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);

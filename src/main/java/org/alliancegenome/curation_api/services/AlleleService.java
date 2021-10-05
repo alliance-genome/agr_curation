@@ -30,7 +30,7 @@ public class AlleleService extends BaseService<Allele, AlleleDAO> {
     @Transactional
     public void processUpdate(AlleleDTO alleleDTO) {
 
-        Allele allele = get(alleleDTO.getPrimaryId());
+        Allele allele = alleleDAO.find(alleleDTO.getPrimaryId());
         //log.info("Allele: " + allele + " : " + alleleDTO.getPrimaryId());
         if(allele == null) {
             allele = new Allele();

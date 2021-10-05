@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.interfaces.rest.GeneRESTInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 
 @RequestScoped
@@ -22,7 +23,7 @@ public class GeneController extends BaseController<GeneService, Gene, GeneDAO> i
     }
 
     @Override
-    public Gene get(String id) {
+    public ObjectResponse<Gene> get(String id) {
         return geneService.get(id);
     }
 

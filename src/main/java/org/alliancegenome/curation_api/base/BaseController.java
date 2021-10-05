@@ -1,10 +1,11 @@
 package org.alliancegenome.curation_api.base;
 
-import java.util.*;
+import java.util.HashMap;
 
 import javax.enterprise.context.RequestScoped;
 
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.*;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -20,23 +21,23 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     
     protected abstract void init();
     
-    public E create(E entity) {
+    public ObjectResponse<E> create(E entity) {
         return service.create(entity);
     }
 
-    public E get(String id) {
+    public ObjectResponse<E> get(String id) {
         return service.get(id);
     }
 
-    public E update(E entity) {
+    public ObjectResponse<E> update(E entity) {
         return service.update(entity);
     }
 
-    public E delete(String id) {
+    public ObjectResponse<E> delete(String id) {
         return service.delete(id);
     }
 
-    public SearchResults<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
+    public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
         if(params == null) params = new HashMap<String, Object>();
         Pagination pagination = new Pagination();
         pagination.setLimit(limit);
@@ -44,7 +45,7 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
         return service.findByParams(pagination, params);
     }
 
-    public SearchResults<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
+    public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
         if(params == null) params = new HashMap<String, Object>();
         Pagination pagination = new Pagination();
         pagination.setLimit(limit);

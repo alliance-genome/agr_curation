@@ -54,12 +54,11 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         //log.info("processUpdate Gene: ");
 
         Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
-        boolean newGene = false;
 
         if (g == null) {
             g = new Gene();
             g.setCurie(gene.getBasicGeneticEntity().getPrimaryId());
-            newGene = true;
+
             handleNewSynonyms(gene, g);
         } else {
             handleUpdateSynonyms(gene, g);
@@ -76,9 +75,7 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         handleCrossReferences(gene, g);
         handleSecondaryIds(gene, g);
 
-        if (newGene) {
-            geneDAO.persist(g);
-        }
+        geneDAO.persist(g);
 
     }
     

@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.rest.DiseaseAnnotationRESTInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 
 @RequestScoped
@@ -21,7 +22,7 @@ public class DiseaseAnnotationController extends BaseController<DiseaseAnnotatio
         setService(annotationService);
     }
 
-    public DiseaseAnnotation get(Long id) {
+    public ObjectResponse<DiseaseAnnotation> get(Long id) {
         return annotationService.get(id);
     }
 
