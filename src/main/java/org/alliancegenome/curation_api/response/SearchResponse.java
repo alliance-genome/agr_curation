@@ -25,7 +25,7 @@ public class SearchResponse<E> extends APIResponse {
     public SearchResponse() {}
     
     public SearchResponse(List<E> results) {
-        this.results = results;
+        setResults(results);
     }
 
     public void setResults(List<E> results) {
