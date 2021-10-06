@@ -42,6 +42,9 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
+      with:
+        submodules: 'recursive'
+    - run: git fetch --prune --unshallow
     - name: Declare some variables
       id: vars
       shell: bash
