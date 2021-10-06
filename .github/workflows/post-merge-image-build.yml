@@ -70,6 +70,8 @@ jobs:
         deployment_package: ${{ steps.vars.outputs.tagname }}.zip
         use_existing_version_if_available: true
         region: us-east-1
+    - name: Set COMMIT_MESSAGE
+      run: echo "COMMIT_MESSAGE=${{ github.event.head_commit.message }}" | tr '\n' ' ' >> $GITHUB_ENV
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main
       env:
