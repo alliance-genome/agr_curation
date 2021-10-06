@@ -1,15 +1,18 @@
-import {useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {Button} from 'primereact/button';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
-import {useQuery} from 'react-query';
+import {useMutation, useQuery} from 'react-query';
 import {Messages} from "primereact/messages";
+import {InputText} from "primereact/inputtext";
+import {AutoComplete} from "primereact/autocomplete";
+import {BiologicalEntityService} from "../service/BiologicalEntityService";
 
 
 export const DiseaseAnnotationsComponent = () => {
 
-    const [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
+    let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
 
     const [page, setPage] = useState(0);
     const [multiSortMeta, setMultiSortMeta] = useState([]);
@@ -18,8 +21,15 @@ export const DiseaseAnnotationsComponent = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [first, setFirst] = useState(0);
     const [expandedRows, setExpandedRows] = useState(null);
+    const [selectedSubject, setSelectedSubject] = useState(null);
+    const [filteredSubjects, setFilteredSubjects] = useState(null);
+    const [subjects, setSubjects] = useState(null);
+    // let [originalRows, setOriginalRows] = useState({});
+    let originalRows = {};
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
+    const biologicalEntityService = new BiologicalEntityService();
+
     const errorMessage = useRef(null);
 
 
@@ -38,6 +48,26 @@ export const DiseaseAnnotationsComponent = () => {
 
         }
     );
+
+    // const { refetch } = useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
+    //     () => biologicalEntityService.getBiologicalEntities(rows, page, null, filters), {
+    //         onSuccess: (data) => {
+    //             setFilteredSubjects(data.results);
+    //         },
+    //         onError: (error) => {
+    //             errorMessage.current.show([
+    //                 {severity: 'error', summary: 'Error', detail: error.message, sticky: true}
+    //             ])
+    //         },
+    //         keepPreviousData: true,
+    //         enabled:false
+    //
+    //     }
+    // );
+
+    const mutation = useMutation(newAnnotation => {
+        return diseaseAnnotationService.saveDiseaseAnnotation(newAnnotation)
+    });
 
 
     const onLazyLoad = (event) => {
@@ -71,7 +101,7 @@ export const DiseaseAnnotationsComponent = () => {
     }
 
     const publicationTemplate = (rowData) => {
-        if (rowData) {
+        if (rowData && rowData.referenceList) {
             return <div>{rowData.referenceList.map(a => a.curie)}</div>
         }
     };
@@ -82,8 +112,58 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
+    // const searchSubject = (event) => {
+    //     setTimeout(() => {
+    //         let _filteredSubjects;
+    //         if (!event.query.trim().length) {
+    //             _filteredSubjects = [...subjects];
+    //         }
+    //         else {
+    //             refetch()
+    //         }
+    //
+    //         setFilteredSubjects(_filteredSubjects);
+    //     }, 250);
+    // } this was from when I was working on autocomplete
+
+    const onEditorValueChange = (props, value) => {
+        let updatedAnnotations = [...props.value];
+        updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+        updatedAnnotations[props.rowIndex].subject.curie = value;
+        setDiseaseAnnotations(updatedAnnotations);
+        console.log(originalRows);
+    }
+
+
+    const subjectEditor = (props) => {
+        return <InputText type="text" value={props.rowData.subject.curie} onChange={(e) => onEditorValueChange(props, e.target.value)} />;
+        //return <AutoComplete value={selectedSubject} suggestions={filteredSubjects} completeMethod={searchSubject} field="subject" onChange={(e) => setSelectedSubject(e.value)} />
+    }
+
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
     const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
+
+    const onRowEditInit = (event) => {
+        // setOriginalRows({...diseaseAnnotations[event.index]});
+        // console.log(event);
+        originalRows[event.index] = { ...diseaseAnnotations[event.index] };
+        // console.log(originalRows);
+        // console.log(event);
+    }
+
+    const onRowEditCancel = (event) => {
+
+        console.log(event);
+        let annotations = [...diseaseAnnotations];
+        annotations[event.index] = originalRows[event.index];
+        delete originalRows[event.index];
+        setDiseaseAnnotations(annotations);
+
+    }
+
+    const onRowEditSave = (props) =>{
+        mutation.mutate(props.data);
+    }
 
     return (
         <div>
@@ -91,6 +171,7 @@ export const DiseaseAnnotationsComponent = () => {
                 <h3>Disease Annotations Table</h3>
                 <Messages ref={errorMessage}/>
                 <DataTable value={diseaseAnnotations} className="p-datatable-md"
+                           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
                            sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
                            first={first} onFilter={onFilter} filters={filters}
                            dataKey="id" expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)}
@@ -99,12 +180,13 @@ export const DiseaseAnnotationsComponent = () => {
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
                            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pre-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
-                    <Column field="subject.curie" header="Subject" sortable filter></Column>
+                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} ></Column>
                     <Column field="object.curie" header="Disease" sortable filter></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
                     <Column field="created" header="Creation Date" sortable ></Column>
+                    <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </div>
         </div>
