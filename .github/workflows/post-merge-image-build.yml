@@ -1,4 +1,4 @@
-name: Post-merge image build
+name: Post-merge into Main
 on:
   push:
     branches:
@@ -31,10 +31,43 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
-        IMAGE_TAG: ${{ github.sha }}
+        IMAGE_TAG: alpha
         GITHUB_BRANCH: ${{ github.ref }}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
+  deploy-to-alpha:
+    needs: [build-and-push-docker-image]
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=tagname;]$(echo `git describe`)"
+    - name: Save curation app version to be deployed in EB env variables through config file
+      run: |
+        cat .ebextensions/version.config
+        sed -i.bak "s/0.0.0/alpha/g" .ebextensions/version.config
+        cat .ebextensions/version.config
+    - name: Generate deployment package
+      run: zip -r ${{ steps.vars.outputs.tagname }}.zip docker-compose.yml .ebextensions/
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: curation-app
+        environment_name: curation-alpha
+        version_label: ${{ steps.vars.outputs.tagname }}
+        deployment_package: ${{ steps.vars.outputs.tagname }}.zip
+        use_existing_version_if_available: true
+        region: us-east-1
+    - name: Slack Notification
+      uses: tokorom/action-slack-incoming-webhook@main
+      env:
+        INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        text: "Deployment of release ${{ steps.vars.outputs.tagname }} to alpha completed! :tada:"

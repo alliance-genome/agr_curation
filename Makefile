@@ -5,7 +5,7 @@ FLAGS = -Dquarkus.package.type=uber-jar
 RELEASE = 0.0.8
 REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
 
-ENV_NAME=curation-test
+ENV_NAME=curation-alpha
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
