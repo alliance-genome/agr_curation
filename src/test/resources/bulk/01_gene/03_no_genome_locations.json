@@ -15,7 +15,7 @@
                      "gene/expression_images",
                      "gene/phenotype"
                   ]
-               },
+               }
             ],
             "primaryId" : "TEST:TestGene00003",
             "secondaryIds" : [

@@ -50,7 +50,7 @@ public class GeneBulkUploadITCase {
                body("totalResults", is(1)).
                body("results", hasSize(1)).
                body("results[0].curie", is("TEST:TestGene00001")).
-               body( "results[0].taxon", is("NCBITaxon:10090")).
+               body("results[0].taxon", is("NCBITaxon:10090")).
                body("results[0].name", is( "Test gene 1")).
                body("results[0].synonyms[0].name", is("Test1")).
                body("results[0].synonyms[1].name", is("ExampleGene1")).
@@ -86,7 +86,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(2)).
                 body("results", hasSize(2)).
                 body("results[1].curie", is("TEST:TestGene00002")).
-                body( "results[1].taxon", is("NCBITaxon:10090")).
+                body("results[1].taxon", is("NCBITaxon:10090")).
                 body("results[1].name", is( "Test gene 2")).
                 body("results[1].synonyms[0].name", is("Test2")).
                 body("results[1].synonyms[1].name", is("ExampleGene2")).
@@ -94,6 +94,40 @@ public class GeneBulkUploadITCase {
                 body("results[1].geneSynopsis", is("Test gene with all fields populated except crossReferences")).
                 body("results[1].geneSynopsisURL", is("http://test.org/test_synopsis_2")).
                 body("results[1].type", is("SO:0001217"));
+    }
+
+    @Test
+    public void geneBulkUploadNoGenomeLocations() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/03_no_genome_locations.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(3)).
+                body("results", hasSize(3)).
+                body("results[2].curie", is("TEST:TestGene00003")).
+                body("results[2].taxon", is("NCBITaxon:10090")).
+                body("results[2].name", is( "Test gene 3")).
+                body("results[2].synonyms[0].name", is("Test3")).
+                body("results[2].synonyms[1].name", is("ExampleGene3")).
+                body("results[2].symbol", is("Tg3")).
+                body("results[2].geneSynopsis", is("Test gene with all fields populated except genomeLocations")).
+                body("results[2].geneSynopsisURL", is("http://test.org/test_synopsis_3")).
+                body("results[2].type", is("SO:0001217"));
     }
 
     @Test
@@ -117,6 +151,6 @@ public class GeneBulkUploadITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(835));
+                body("totalResults", is(836));
     }
 }
