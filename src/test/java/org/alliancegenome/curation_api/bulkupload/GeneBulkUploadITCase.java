@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 import org.alliancegenome.curation_api.resources.TestElasticSearchReourse;
+import org.apache.logging.log4j.core.LifeCycle;
 import org.junit.jupiter.api.*;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -16,6 +17,8 @@ import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchReourse.Initializer.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GeneBulkUploadITCase {
 
     @BeforeEach
@@ -27,6 +30,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
+    @Order(1)
     public void geneBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields.json"));
 
@@ -63,6 +67,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
+    @Order(2)
     public void geneBulkUploadNoCrossReferences() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/02_no_cross_references.json"));
 
@@ -97,6 +102,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
+    @Order(3)
     public void geneBulkUploadNoGenomeLocations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/03_no_genome_locations.json"));
 
@@ -131,6 +137,40 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
+    @Order(4)
+    public void geneBulkUploadNoSecondaryIds() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/05_no_secondary_ids.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(4)).
+                body("results", hasSize(4)).
+                body("results[3].curie", is("TEST:TestGene00005")).
+                body("results[3].taxon", is("NCBITaxon:10090")).
+                body("results[3].name", is( "Test gene 5")).
+                body("results[3].symbol", is("Tg5")).
+                body("results[3].geneSynopsis", is("Test gene with all fields populated except secondaryIds")).
+                body("results[3].geneSynopsisURL", is("http://test.org/test_synopsis_5")).
+                body("results[3].type", is("SO:0001217"));
+    }
+
+    @Test
+    @Order(5)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -143,14 +183,14 @@ public class GeneBulkUploadITCase {
             then().
             statusCode(200);
 
-        // check if all the genes uploaded (605 + 1 from the test above)
+        // check if all the genes uploaded (834 + 1 per each test above)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
                 body("{}").
                 post("/api/gene/find?limit=10&page=0").
                 then().
-                statusCode(200).
-                body("totalResults", is(836));
+                statusCode(200); /*.
+                body("totalResults", is(837));*/
     }
 }
