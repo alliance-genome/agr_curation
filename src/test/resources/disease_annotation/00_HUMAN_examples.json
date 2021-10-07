@@ -1,0 +1,2295 @@
+{
+   "data" : [
+      {
+         "DOid" : "DOID:1273",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1273",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2010-10-08T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:4144164",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:17449325"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:11850",
+         "objectName" : "TLR4",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1612",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1612",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-05-06T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8553053",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:15034868"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:3467",
+         "objectName" : "ESR1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1070",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1070",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-06-17T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8661806",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:15807891"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:1784",
+         "objectName" : "CDKN1A",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:8398",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:8398",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2012-02-28T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:5688331",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:10743824"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:2197",
+         "objectName" : "COL1A1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:7147",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:7147",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-02-02T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:10755579",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:21927904"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:4932",
+         "objectName" : "HLA-B",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:13641",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:13641",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-06-16T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8661783",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:20835238"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:1527",
+         "objectName" : "CAV1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:9538",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:9538",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-08-08T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11522764",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:10848780"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:6000",
+         "objectName" : "IL1RN",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:4448",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:4448",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-09-09T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:9491392",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:25050486"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:2558",
+         "objectName" : "CX3CR1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:7148",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:7148",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2007-07-30T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:1626283",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:17565662"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:1606",
+         "objectName" : "CCR5",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:4971",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:4971",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-01-29T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:10755491",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:19258483"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:4886",
+         "objectName" : "HFE",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:2841",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2841",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2010-10-12T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:4144188",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:19159017"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:11850",
+         "objectName" : "TLR4",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:2513",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2513",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-06-03T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8657158",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:15466987"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:8125",
+         "objectName" : "OGG1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:2152",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2152",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-07-18T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2298723",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:15924337"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:9817",
+         "objectName" : "RAD51",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:9352",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:9352",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2009-08-19T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2312476",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:19631916"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:24041",
+         "objectName" : "ADIPOR2",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:13544",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:13544",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-01-10T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:7794769",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:21921986"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:11850",
+         "objectName" : "TLR4",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:9074",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:9074",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-08-11T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11528536",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:11844145"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:10618",
+         "objectName" : "CCL2",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:615",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:615",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-02-23T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11038727",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:20308917"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:12014",
+         "objectName" : "TPMT",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:10652",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:10652",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2015-10-29T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:10402810",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:20197062"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:6019",
+         "objectName" : "IL6R",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:12361",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:12361",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-05-22T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8655916",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:16571086"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:5986",
+         "objectName" : "IL18",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1727",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1727",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2015-12-29T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:10449405",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:23289804"
+            }
+         },
+         "negation" : "not",
+         "objectId" : "HGNC:7436",
+         "objectName" : "MTHFR",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1094",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1094",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2017-09-05T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:13210577",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:23083021"
+            }
+         },
+         "objectId" : "HGNC:3025",
+         "objectName" : "DRD4",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:737381",
+            "RGD:1312823"
+         ]
+      },
+      {
+         "DOid" : "DOID:1935",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1935",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-09-29T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11352646",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:24746959"
+            }
+         },
+         "objectId" : "HGNC:7905",
+         "objectName" : "NPHP1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1316858",
+            "RGD:732435",
+            "RGD:1319511",
+            "RGD:1603660"
+         ]
+      },
+      {
+         "DOid" : "DOID:684",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:684",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2019-07-24T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:14696775",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:21993994"
+            }
+         },
+         "objectId" : "HGNC:7989",
+         "objectName" : "NRAS",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:732909"
+         ]
+      },
+      {
+         "DOid" : "DOID:7998",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:7998",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2007-02-28T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:1600139",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:2505856"
+            }
+         },
+         "objectId" : "HGNC:11583",
+         "objectName" : "SERPINA7",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:619833"
+         ]
+      },
+      {
+         "DOid" : "DOID:9955",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:9955",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2017-03-22T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:12798513",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:27789736"
+            }
+         },
+         "objectId" : "HGNC:7577",
+         "objectName" : "MYH7",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:737147"
+         ]
+      },
+      {
+         "DOid" : "DOID:8552",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:8552",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2018-07-10T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:13674161",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:25133686"
+            }
+         },
+         "objectId" : "HGNC:1014",
+         "objectName" : "BCR",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1342972"
+         ]
+      },
+      {
+         "DOid" : "DOID:0110414",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:0110414",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-10-03T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11537386",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:21857984"
+            }
+         },
+         "objectId" : "HGNC:28949",
+         "objectName" : "IQCB1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1352855"
+         ]
+      },
+      {
+         "DOid" : "DOID:6000",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:6000",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2006-11-30T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:1598465",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:16461369"
+            }
+         },
+         "objectId" : "HGNC:5962",
+         "objectName" : "IL10",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:2886"
+         ]
+      },
+      {
+         "DOid" : "DOID:0080600",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:0080600",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2020-06-18T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:30309200",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:32427582"
+            }
+         },
+         "objectId" : "HGNC:10637",
+         "objectName" : "CXCL10",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:620209"
+         ]
+      },
+      {
+         "DOid" : "DOID:2870",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2870",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2017-09-21T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:13432156",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:11940574"
+            }
+         },
+         "objectId" : "HGNC:904",
+         "objectName" : "AXIN2",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:733705"
+         ]
+      },
+      {
+         "DOid" : "DOID:1380",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1380",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2017-10-30T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:13441595",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:21478295"
+            }
+         },
+         "objectId" : "HGNC:8977",
+         "objectName" : "PIK3CD",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1352691"
+         ]
+      },
+      {
+         "DOid" : "DOID:3429",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:3429",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-10-04T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11537409",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:14972325"
+            }
+         },
+         "objectId" : "HGNC:2666",
+         "objectName" : "DAG1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:732554"
+         ]
+      },
+      {
+         "DOid" : "DOID:1935",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1935",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-09-29T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11352646",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:24746959"
+            }
+         },
+         "objectId" : "HGNC:26291",
+         "objectName" : "BBS10",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1317734"
+         ]
+      },
+      {
+         "DOid" : "DOID:0110414",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:0110414",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-10-03T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11352374",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:22183348"
+            }
+         },
+         "objectId" : "HGNC:28949",
+         "objectName" : "IQCB1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1352855"
+         ]
+      },
+      {
+         "DOid" : "DOID:1935",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1935",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2016-09-29T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:11352646",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:24746959"
+            }
+         },
+         "objectId" : "HGNC:7905",
+         "objectName" : "NPHP1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1605944"
+         ]
+      },
+      {
+         "DOid" : "DOID:6432",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:6432",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2019-10-10T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:14975304",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:31462075"
+            }
+         },
+         "objectId" : "HGNC:435",
+         "objectName" : "ALOX5",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:735373"
+         ]
+      },
+      {
+         "DOid" : "DOID:6432",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:6432",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2019-10-10T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:14975304",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:31462075"
+            }
+         },
+         "objectId" : "HGNC:435",
+         "objectName" : "ALOX5",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:14981588"
+         ]
+      },
+      {
+         "DOid" : "DOID:8552",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:8552",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2018-07-10T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:13674161",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:25133686"
+            }
+         },
+         "objectId" : "HGNC:76",
+         "objectName" : "ABL1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1317506"
+         ]
+      },
+      {
+         "DOid" : "DOID:3070",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:3070",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-05-01T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2292675",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:16944316"
+            }
+         },
+         "objectId" : "HGNC:936",
+         "objectName" : "BAD",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:620103"
+         ]
+      },
+      {
+         "DOid" : "DOID:684",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:684",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2019-08-27T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:9685423",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:23633480"
+            }
+         },
+         "objectId" : "HGNC:6091",
+         "objectName" : "INSR",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:2917"
+         ]
+      },
+      {
+         "DOid" : "DOID:2043",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2043",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2019-10-21T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000316"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:14995327",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:19017985"
+            }
+         },
+         "objectId" : "HGNC:10632",
+         "objectName" : "CCL5",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:1604061"
+         ]
+      },
+      {
+         "DOid" : "DOID:1824",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1824",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2007-08-21T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:1627571",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:14614900"
+            }
+         },
+         "objectId" : "HGNC:6021",
+         "objectName" : "IL6ST",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         },
+         "with" : [
+            "RGD:2903"
+         ]
+      },
+      {
+         "DOid" : "DOID:2671",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2671",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-02-26T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2290058",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:16541433"
+            }
+         },
+         "objectId" : "HGNC:11920",
+         "objectName" : "FAS",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1485",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1485",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2017-05-12T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:12903971",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:18685642"
+            }
+         },
+         "objectId" : "HGNC:11920",
+         "objectName" : "FAS",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:0111188",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "OMIM:188840",
+                  "pages" : [
+                     "gene"
+                  ]
+               },
+               "type" : "curated"
+            },
+            {
+               "crossReference" : {
+                  "id" : "DOID:0111188",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "loaded"
+            }
+         ],
+         "dateAssigned" : "2019-07-03T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:7240710",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "RGD:7240710"
+            }
+         },
+         "objectId" : "HGNC:12403",
+         "objectName" : "TTN",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:12306",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:12306",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-01-08T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:7794736",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:16911396"
+            }
+         },
+         "objectId" : "HGNC:5991",
+         "objectName" : "IL1A",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1793",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1793",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2012-03-12T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:6478801",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:15221989"
+            }
+         },
+         "objectId" : "HGNC:11141",
+         "objectName" : "SNCG",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1826",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1826",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2012-02-17T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000314"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:5688133",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:7634486"
+            }
+         },
+         "objectId" : "HGNC:983",
+         "objectName" : "BCHE",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:0110633",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:0110633",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2015-07-23T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:1599352",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:11528383"
+            }
+         },
+         "objectId" : "HGNC:15999",
+         "objectName" : "SELENON",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:3458",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:3458",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-01-25T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000314"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2289225",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:18089785"
+            }
+         },
+         "objectId" : "HGNC:1589",
+         "objectName" : "CCNE1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:4450",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:4450",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-04-21T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2292500",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:17886097"
+            }
+         },
+         "objectId" : "HGNC:9588",
+         "objectName" : "PTEN",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1380",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1380",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-08-01T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000314"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2298926",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:15159323"
+            }
+         },
+         "objectId" : "HGNC:19382",
+         "objectName" : "SOCS2",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:13378",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:13378",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-05-22T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8655898",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:19288449"
+            }
+         },
+         "objectId" : "HGNC:5986",
+         "objectName" : "IL18",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:12361",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:12361",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2013-10-18T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:7365089",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:11263477"
+            }
+         },
+         "objectId" : "HGNC:4948",
+         "objectName" : "HLA-DRB1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:8869",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:8869",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2014-08-11T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000314"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:8696033",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:18420727"
+            }
+         },
+         "objectId" : "HGNC:637",
+         "objectName" : "AQP4",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:399",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "OMIM:600266",
+                  "pages" : [
+                     "gene"
+                  ]
+               },
+               "type" : "curated"
+            },
+            {
+               "crossReference" : {
+                  "id" : "DOID:399",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "loaded"
+            }
+         ],
+         "dateAssigned" : "2019-05-02T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:7240710",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "RGD:7240710"
+            }
+         },
+         "objectId" : "HGNC:10907",
+         "objectName" : "SLC11A1",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1485",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1485",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2011-04-13T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:5130902",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:19386685"
+            }
+         },
+         "objectId" : "HGNC:10630",
+         "objectName" : "CCL4",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:11132",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:11132",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-01-21T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2289085",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:11482780"
+            }
+         },
+         "objectId" : "HGNC:3685",
+         "objectName" : "FGF7",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:4947",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:4947",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2010-04-16T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000270"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2317705",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:12903495"
+            }
+         },
+         "objectId" : "HGNC:7107",
+         "objectName" : "MKI67",
+         "objectRelation" : {
+            "associationType" : "is_marker_for",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:13207",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:13207",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2008-11-04T00:00:00.000-06:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000315"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:2301854",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:18541841"
+            }
+         },
+         "objectId" : "HGNC:9236",
+         "objectName" : "PPARG",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:1612",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:1612",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2012-05-24T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0000314"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:6483528",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:21880954"
+            }
+         },
+         "objectId" : "HGNC:7107",
+         "objectName" : "MKI67",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      },
+      {
+         "DOid" : "DOID:2377",
+         "dataProvider" : [
+            {
+               "crossReference" : {
+                  "id" : "DOID:2377",
+                  "pages" : [
+                     "disease/human"
+                  ]
+               },
+               "type" : "curated"
+            }
+         ],
+         "dateAssigned" : "2012-04-24T00:00:00.000-05:00",
+         "evidence" : {
+            "evidenceCodes" : [
+               "ECO:0007191"
+            ],
+            "publication" : {
+               "crossReference" : {
+                  "id" : "RGD:6482280",
+                  "pages" : [
+                     "reference"
+                  ]
+               },
+               "publicationId" : "PMID:7928442"
+            }
+         },
+         "objectId" : "HGNC:44",
+         "objectName" : "TAP2",
+         "objectRelation" : {
+            "associationType" : "is_implicated_in",
+            "objectType" : "gene"
+         }
+      }
+   ],
+   "metaData" : {
+      "dataProvider" : {
+         "crossReference" : {
+            "id" : "RGD",
+            "pages" : [
+               "homepage"
+            ]
+         },
+         "type" : "curated"
+      },
+      "dateProduced" : "2021-07-22T17:00:11.531-05:00",
+      "release" : "RGD Daf Extractor, AGR schema 1.0.1.4, build  Jun 14, 2021"
+   }
+}
