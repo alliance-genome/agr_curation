@@ -16,7 +16,7 @@ public class TestElasticSearchReourse {
         
         @Override
         public Map<String, String> start() {
-            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.9.0");
+            container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.10.2");
             container.start();
             mqContainer = new ActiveMQContainer("vromero/activemq-artemis:2.9.0-alpine");
             mqContainer.start();
