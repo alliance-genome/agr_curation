@@ -7,7 +7,7 @@ import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class RestErrorExceptionMapper implements ExceptionMapper<RestErrorException> {
+public class ApiErrorExceptionMapper implements ExceptionMapper<RestErrorException> {
 
     @Override
     @Produces(MediaType.APPLICATION_JSON)

@@ -6,15 +6,15 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 
 @Setter
 @Getter
-public class RestErrorException extends RuntimeException {
+public class ApiErrorException extends RuntimeException {
 
     private ObjectResponse objectResponse;
 
-    public RestErrorException(String message) {
+    public ApiErrorException(String message) {
         super();
     }
 
-    public RestErrorException(ObjectResponse error) {
+    public ApiErrorException(ObjectResponse error) {
         //super(String.join(", ", error.getErrors()));
         this.objectResponse = error;
     }
