@@ -23,13 +23,9 @@ export const DiseaseAnnotationsComponent = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [first, setFirst] = useState(0);
     const [expandedRows, setExpandedRows] = useState(null);
-    // const [selectedSubject, setSelectedSubject] = useState(null);
-    const [filteredSubjects, setFilteredSubjects] = useState(null);
-    const [subjects, setSubjects] = useState(null);
-    let [originalRows, setOriginalRows] = useState({});
+    const [originalRows, setOriginalRows] = useState({});
     const [submitted, setSubmitted] = useState(false);
     const [editingRows, setEditingRows] = useState({});
-    //let originalRows = {};
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
@@ -54,8 +50,8 @@ export const DiseaseAnnotationsComponent = () => {
         }
     );
 
-    const mutation = useMutation(newAnnotation => {
-        return diseaseAnnotationService.saveDiseaseAnnotation(newAnnotation);
+    const mutation = useMutation(updatedAnnotation => {
+        return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
 
     const onLazyLoad = (event) => {
@@ -114,10 +110,10 @@ export const DiseaseAnnotationsComponent = () => {
         if(typeof event.target.value === "object"){
             updatedAnnotations[props.rowIndex].subject = {"curie": event.target.value.curie };
         } else {
-        if(value != null || value != '') {
-            updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-            updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
-        }
+            if(value != null || value != '') {
+                updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+                updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
+            }
 
             setDiseaseAnnotations(updatedAnnotations);
             setSubmitted(true);
@@ -167,23 +163,26 @@ export const DiseaseAnnotationsComponent = () => {
         setSubmitted(true);
         mutation.mutate(props.data, {
             onSuccess: (data, variables, context) => {
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
+                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated', life: 3000 });
             },
             onError: (error, variables, context) => {
                 console.log(error.response.data.details);
                 errorMessage.current.show([
                     {severity: 'error', summary: 'Error', detail: error.response.data.details, sticky: true}
                 ]);
-                setDiseaseAnnotations(diseaseAnnotations);
                 setSubmitted(false);
+                //setDiseaseAnnotations(diseaseAnnotations);
+                let annotations = [...diseaseAnnotations];
+                annotations[props.index] = originalRows[props.index];
+                delete originalRows[props.index];
+                setOriginalRows(originalRows);
+                setDiseaseAnnotations(annotations);
             },
             onSettled: (data, error, variables, context) => {
                 console.log(data);
                 console.log(error.response.data);
             },
         })
-        mutation.mutate(props.data);
-
     };
 
     const subjectItemTemplate = (item) => {
