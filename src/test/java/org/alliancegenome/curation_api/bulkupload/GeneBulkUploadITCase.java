@@ -190,7 +190,7 @@ public class GeneBulkUploadITCase {
                 body("{}").
                 post("/api/gene/find?limit=10&page=0").
                 then().
-                statusCode(200); /*.
-                body("totalResults", is(837));*/
+                statusCode(200).
+                body("totalResults", is(837));
     }
 }
