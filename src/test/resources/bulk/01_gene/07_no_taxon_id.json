@@ -33,7 +33,7 @@
             "synonyms" : [
                "Test7",
                "ExampleGene7"
-            ],
+            ]
          },
          "geneSynopsis" : "Test gene with all fields populated except taxonId",
 	 "geneSynopsisUrl" : "http://test.org/test_synopsis_7", 
