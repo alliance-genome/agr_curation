@@ -348,6 +348,78 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(10)
+    public void geneBulkUploadNoTermId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/11_no_so_term_id.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(10)).
+                body("results", hasSize(10)).
+                body("results[9].curie", is("TEST:TestGene00011")).
+                body("results[9].taxon", is("NCBITaxon:10090")).
+                body("results[9].name", is( "Test gene 11")).
+                body("results[9].synonyms[0].name", is("Test11")).
+                body("results[9].synonyms[1].name", is("ExampleGene11")).
+                body("results[9].crossReferences[0].curie", is("TEST:xref11b")).
+                body("results[9].crossReferences[1].curie", is("TEST:xref11a")).
+                body("results[9].symbol", is("Tg11")).
+                body("results[9].geneSynopsis", is("Test gene with all fields populated except soTermId")).
+                body("results[9].geneSynopsisURL", is("http://test.org/test_synopsis_11"));
+    }
+
+    @Test
+    @Order(11)
+    public void geneBulkUploadNoSymbol() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/12_no_symbol.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+                RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=20&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(11)).
+                body("results", hasSize(11)).
+                body("results[10].curie", is("TEST:TestGene00012")).
+                body("results[10].taxon", is("NCBITaxon:10090")).
+                body("results[10].name", is( "Test gene 12")).
+                body("results[10].synonyms[0].name", is("Test12")).
+                body("results[10].synonyms[1].name", is("ExampleGene12")).
+                body("results[10].crossReferences[0].curie", is("TEST:xref12a")).
+                body("results[10].crossReferences[1].curie", is("TEST:xref12b")).
+                body("results[10].geneSynopsis", is("Test gene with all fields populated except symbol")).
+                body("results[10].geneSynopsisURL", is("http://test.org/test_synopsis_12")).
+                body("results[10].type", is("SO:0001217"));
+    }
+
+    @Test
+    @Order(12)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -368,6 +440,6 @@ public class GeneBulkUploadITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(842));
+                body("totalResults", is(844));
     }
 }
