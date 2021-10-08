@@ -107,26 +107,24 @@ export const DiseaseAnnotationsComponent = () => {
 
         let updatedAnnotations = [...props.value];
 
-        if(typeof event.target.value === "object"){
-            updatedAnnotations[props.rowIndex].subject = {"curie": event.target.value.curie };
-        } else {
-            if(value != null || value != '') {
+        if(event.target.value) {
+            if(typeof event.target.value === "object"){
+                updatedAnnotations[props.rowIndex].subject = {"curie": event.target.value.curie };
+            } else {
                 updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
                 updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
             }
-
-            setDiseaseAnnotations(updatedAnnotations);
             setSubmitted(true);
-        }else{
+        } else {
             setSubmitted(false);
         }
         console.log(originalRows);
-    }
+    };
 
     const requiredValidator = (rowData) => {
         let value = rowData['subject']['curie'];
         return value.length > 0;
-    }
+    };
 
     const subjectEditor = (props) => {
 
@@ -138,10 +136,10 @@ export const DiseaseAnnotationsComponent = () => {
                 completeMethod={searchSubject}
                 onChange={(e) => onSubjectEditorValueChange(props, e)}
             />
+
+        // return <InputText type="text" value={props.rowData.subject.curie} onChange={(e) => onEditorValueChange(props, e.target.value)} required autoFocus
+        //                    className={classNames({ 'p-invalid': submitted && !props.rowData.subject.curie })} />;
     };
-        return <InputText type="text" value={props.rowData.subject.curie} onChange={(e) => onEditorValueChange(props, e.target.value)} required autoFocus
-                           className={classNames({ 'p-invalid': submitted && !props.rowData.subject.curie })} />;
-    }
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
     const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
@@ -149,7 +147,7 @@ export const DiseaseAnnotationsComponent = () => {
     const onRowEditInit = (event) => {
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
-    }
+    };
 
     const onRowEditCancel = (event) => {
         let annotations = [...diseaseAnnotations];
@@ -222,4 +220,4 @@ export const DiseaseAnnotationsComponent = () => {
             </div>
         </div>
     )
-}
+};
