@@ -151,6 +151,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
 
     @Override
+    @Transactional
     public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation entity) {
         validateAnnotation(entity);
         // assumes the incoming object is a complete object
