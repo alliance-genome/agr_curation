@@ -312,6 +312,42 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(9)
+    public void geneBulkUploadNoName() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/10_no_name.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(9)).
+                body("results", hasSize(9)).
+                body("results[8].curie", is("TEST:TestGene00010")).
+                body("results[8].taxon", is("NCBITaxon:10090")).
+                body("results[8].synonyms[0].name", is("Test10")).
+                body("results[8].synonyms[1].name", is("ExampleGene10")).
+                body("results[8].crossReferences[0].curie", is("TEST:xref10a")).
+                body("results[8].crossReferences[1].curie", is("TEST:xref10b")).
+                body("results[8].symbol", is("Tg10")).
+                body("results[8].geneSynopsis", is("Test gene with all fields populated except name")).
+                body("results[8].geneSynopsisURL", is("http://test.org/test_synopsis_10")).
+                body("results[8].type", is("SO:0001217"));
+    }
+
+    @Test
+    @Order(10)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -332,6 +368,6 @@ public class GeneBulkUploadITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(841));
+                body("totalResults", is(842));
     }
 }
