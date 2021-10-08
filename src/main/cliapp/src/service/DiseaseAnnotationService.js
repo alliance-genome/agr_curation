@@ -2,10 +2,11 @@ import axios from 'axios';
 
 export class DiseaseAnnotationService {
 
-    saveDiseaseAnnotation(newAnnotation){
-        return axios.put(`api/disease-annotation`, newAnnotation)
+    saveDiseaseAnnotation(updatedAnnotation){
+        return axios.put(`api/disease-annotation`, updatedAnnotation)
     }
     getDiseaseAnnotations(limit, page, sorts, filters) {
+        console.log("Filters " + JSON.stringify(filters));
         var sortOptions = {};
 
         var sortArray = {};

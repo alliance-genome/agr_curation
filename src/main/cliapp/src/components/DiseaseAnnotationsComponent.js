@@ -21,11 +21,13 @@ export const DiseaseAnnotationsComponent = () => {
     const [totalRecords, setTotalRecords] = useState(0);
     const [first, setFirst] = useState(0);
     const [expandedRows, setExpandedRows] = useState(null);
-    const [selectedSubject, setSelectedSubject] = useState(null);
+    // const [selectedSubject, setSelectedSubject] = useState(null);
     const [filteredSubjects, setFilteredSubjects] = useState(null);
-    const [subjects, setSubjects] = useState(null);
-    // let [originalRows, setOriginalRows] = useState({});
-    let originalRows = {};
+    // const [subjects, setSubjects] = useState(null);
+    // const [subjectFilter, setSubjectFilter] = useState({});
+    // const [subjectSort, setSubjectSort] = useState([]);
+
+    let [originalRows, setOriginalRows] = useState({});
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
@@ -44,26 +46,11 @@ export const DiseaseAnnotationsComponent = () => {
                     {severity: 'error', summary: 'Error', detail: error.message, sticky: true}
                 ])
             },
-            keepPreviousData: true
+            keepPreviousData: true,
+            refetchOnWindowFocus: false
 
         }
     );
-
-    // const { refetch } = useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
-    //     () => biologicalEntityService.getBiologicalEntities(rows, page, null, filters), {
-    //         onSuccess: (data) => {
-    //             setFilteredSubjects(data.results);
-    //         },
-    //         onError: (error) => {
-    //             errorMessage.current.show([
-    //                 {severity: 'error', summary: 'Error', detail: error.message, sticky: true}
-    //             ])
-    //         },
-    //         keepPreviousData: true,
-    //         enabled:false
-    //
-    //     }
-    // );
 
     const mutation = useMutation(newAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(newAnnotation)
@@ -75,12 +62,12 @@ export const DiseaseAnnotationsComponent = () => {
         setPage(event.page);
         setFirst(event.first);
 
-    }
+    };
 
 
     const onFilter = (event) => {
         setFilters(event.filters);
-    }
+    };
 
     const onSort = (event) => {
         let found = false;
@@ -98,7 +85,7 @@ export const DiseaseAnnotationsComponent = () => {
         } else {
             setMultiSortMeta(newSort);
         }
-    }
+    };
 
     const publicationTemplate = (rowData) => {
         if (rowData && rowData.referenceList) {
@@ -112,58 +99,72 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    // const searchSubject = (event) => {
-    //     setTimeout(() => {
-    //         let _filteredSubjects;
-    //         if (!event.query.trim().length) {
-    //             _filteredSubjects = [...subjects];
-    //         }
-    //         else {
-    //             refetch()
-    //         }
-    //
-    //         setFilteredSubjects(_filteredSubjects);
-    //     }, 250);
-    // } this was from when I was working on autocomplete
+    const searchSubject = (event) => {
+        biologicalEntityService.getBiologicalEntities(15, 0, null, {"curie":{"value": event.query}})
+            .then((data) => {
+                setFilteredSubjects(data.results);
+            });
+    };
 
-    const onEditorValueChange = (props, value) => {
+    const onSubjectEditorValueChange = (props, event) => {
+
         let updatedAnnotations = [...props.value];
-        updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-        updatedAnnotations[props.rowIndex].subject.curie = value;
+
+        if(typeof event.target.value === "object"){
+            updatedAnnotations[props.rowIndex].subject = {"curie": event.target.value.curie };
+        } else {
+            updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
+        }
+
         setDiseaseAnnotations(updatedAnnotations);
-        console.log(originalRows);
-    }
+
+    };
+
 
 
     const subjectEditor = (props) => {
-        return <InputText type="text" value={props.rowData.subject.curie} onChange={(e) => onEditorValueChange(props, e.target.value)} />;
-        //return <AutoComplete value={selectedSubject} suggestions={filteredSubjects} completeMethod={searchSubject} field="subject" onChange={(e) => setSelectedSubject(e.value)} />
-    }
+
+            return <AutoComplete
+                field="curie"
+                value={props.rowData.subject.curie}
+                suggestions={filteredSubjects}
+                itemTemplate={subjectItemTemplate}
+                completeMethod={searchSubject}
+                onChange={(e) => onSubjectEditorValueChange(props, e)}
+            />
+    };
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
     const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
 
     const onRowEditInit = (event) => {
-        // setOriginalRows({...diseaseAnnotations[event.index]});
-        // console.log(event);
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
-        // console.log(originalRows);
-        // console.log(event);
-    }
+    };
 
     const onRowEditCancel = (event) => {
 
-        console.log(event);
+        // console.log(event);
         let annotations = [...diseaseAnnotations];
         annotations[event.index] = originalRows[event.index];
         delete originalRows[event.index];
         setDiseaseAnnotations(annotations);
 
-    }
+    };
 
     const onRowEditSave = (props) =>{
         mutation.mutate(props.data);
-    }
+
+    };
+
+    const subjectItemTemplate = (item) => {
+        if(item.symbol){
+            return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.symbol + ')'}}/>;
+        } else {
+            return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.name + ')'}}/>;
+        }
+
+    };
 
     return (
         <div>

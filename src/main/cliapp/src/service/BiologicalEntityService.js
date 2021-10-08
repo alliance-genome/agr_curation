@@ -2,16 +2,17 @@ import axios from 'axios';
 
 export class BiologicalEntityService {
     getBiologicalEntities(limit, page, sorts, filters) {
-        var sortOptions = {};
+        console.log("Filters " + JSON.stringify(filters));
+        let sortOptions = {};
 
-        var sortArray = {};
+        let sortArray = {};
         if(sorts) {
             sorts.forEach((o) => {
                 sortArray[o.field] = o.order;
             });
         }
 
-        var filterArray = {};
+        let filterArray = {};
         if(filters) {
             Object.keys(filters).forEach((key) => {
                 filterArray[key] = filters[key]["value"];
