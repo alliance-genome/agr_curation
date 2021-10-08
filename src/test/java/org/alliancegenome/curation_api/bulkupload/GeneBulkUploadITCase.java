@@ -423,7 +423,7 @@ public class GeneBulkUploadITCase {
     public void geneBulkUploadAdditionalField() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/13_additional_field.json"));
 
-        // upload file
+        // upload file and trigger Bad Request response with the additional field
         RestAssured.given().
                 contentType("application/json").
                 body(content).
