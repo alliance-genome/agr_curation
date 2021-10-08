@@ -7,15 +7,14 @@ import org.alliancegenome.curation_api.view.View;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class APIResponse {
 
     @JsonView({View.FieldsOnly.class})
-    private Integer statusCode;
-    
-    @JsonView({View.FieldsOnly.class})
-    private String errorMessage = "";
+    private String errorMessage;
     
     @JsonView({View.FieldsOnly.class})
     private Map<String, String> errorMessages;
@@ -23,5 +22,14 @@ public class APIResponse {
     @JsonView({View.FieldsOnly.class})
     private String requestDuration;
 
+    public void addErrorMessage(String fieldName, String errorMessage){
+        if(errorMessages== null)
+            errorMessages = new HashMap<>(3);
+        errorMessages.put(fieldName, errorMessage);
+    }
+
+    public boolean hasErrors() {
+        return StringUtils.isNotEmpty(errorMessage) || MapUtils.isNotEmpty(errorMessages);
+    }
 
 }
