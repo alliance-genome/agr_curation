@@ -4,10 +4,10 @@
          "basicGeneticEntity" : {
             "crossReferences" : [
                {
-                  "id" : "TEST:xref6a"
+                  "id" : "TEST:xref16a"
                },
                {
-                  "id" : "TEST:xref6b",
+                  "id" : "TEST:xref16b",
                   "pages" : [
                      "gene",
                      "gene/references",
@@ -15,28 +15,32 @@
                      "gene/expression_images",
                      "gene/phenotype"
                   ]
-               },
+               }
             ],
             "genomeLocations" : [
                {
                   "assembly" : "TEST_assembly",
-                  "chromosome" : "6",
-                  "endPosition" : 100,
-                  "startPosition" : 1,
+                  "chromosome" : "16",
+                  "endPosition" : 1,
+                  "startPosition" : 100,
                   "strand" : "+"
                }
             ],
-            "primaryId" : "TEST:TestGene00006",
+            "primaryId" : "TEST:TestGene00016",
             "secondaryIds" : [
-               "TEST:TG00006"
+               "TEST:TG00016"
+            ],
+            "synonyms" : [
+               "Test16",
+               "ExampleGene16"
             ],
             "taxonId" : "NCBITaxon:10090"
          },
-         "geneSynopsis" : "Test gene with all fields populated except synonyms",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_6", 
-         "name" : "Test gene 6",
+         "geneSynopsis" : "Test gene with gene start position downstream of gene end position",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_16", 
+         "name" : "Test gene 16",
          "soTermId" : "SO:0001217",
-         "symbol" : "Tg6"
+         "symbol" : "Tg16"
       }
    ],
    "metaData" : {

@@ -4,10 +4,10 @@
          "basicGeneticEntity" : {
             "crossReferences" : [
                {
-                  "id" : "TEST:xref10a"
+                  "id" : "TEST:xref5a"
                },
                {
-                  "id" : "TEST:xref10b",
+                  "id" : "TEST:xref5b",
                   "pages" : [
                      "gene",
                      "gene/references",
@@ -15,31 +15,29 @@
                      "gene/expression_images",
                      "gene/phenotype"
                   ]
-               },
+               }
             ],
             "genomeLocations" : [
                {
                   "assembly" : "TEST_assembly",
-                  "chromosome" : "10",
+                  "chromosome" : "5",
                   "endPosition" : 100,
                   "startPosition" : 1,
                   "strand" : "+"
                }
             ],
-            "primaryId" : "TEST:TestGene00010",
-            "secondaryIds" : [
-               "TEST:TG00010"
-            ],
+            "primaryId" : "TEST:TestGene00005",
             "synonyms" : [
-               "Test10",
-               "ExampleGene10"
+               "Test5",
+               "ExampleGene5"
             ],
             "taxonId" : "NCBITaxon:10090"
          },
-         "geneSynopsis" : "Test gene with all fields populated except name",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_10", 
+         "geneSynopsis" : "Test gene with all fields populated except secondaryIds",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_5", 
+         "name" : "Test gene 5",
          "soTermId" : "SO:0001217",
-         "symbol" : "Tg10"
+         "symbol" : "Tg5"
       }
    ],
    "metaData" : {

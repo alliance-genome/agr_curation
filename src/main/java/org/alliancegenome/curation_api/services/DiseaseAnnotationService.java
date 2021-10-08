@@ -1,27 +1,37 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.exceptions.RestErrorException;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -36,6 +46,9 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
 
+    @Inject
+    AffectedGenomicModelDAO agmDAO;
+
     @Override
     @PostConstruct
     protected void init() {
@@ -49,10 +62,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         SearchResponse<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
 
         DiseaseAnnotation annotation = null;
-        if(annotationList == null || annotationList.getResults().size() == 0 ){
+        if (annotationList == null || annotationList.getResults().size() == 0) {
             annotation = new DiseaseAnnotation();
             annotation.setCurie(annotationID);
-        } else{
+        } else {
             annotation = annotationList.getResults().get(0);
         }
 
@@ -62,11 +75,11 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
 
         annotation.setCreated(
-                    annotationDTO.getDateAssigned()
-                            .toInstant()
-                            .atZone(ZoneId.systemDefault())
-                            .toLocalDateTime()
-            );
+                annotationDTO.getDateAssigned()
+                        .toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime()
+        );
         annotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.valueOf(
                 annotationDTO
                         .getObjectRelation()
@@ -89,7 +102,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         // if there are primary genetic entity IDs available it is an
         // inferred annotation. Skip it then.
-        if(CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
+        if (CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
             return null;
 
         String doTermId = annotationDTO.getDoId();
@@ -143,4 +156,89 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         List<String> idsToRemove = ListUtils.subtract(annotationsIDsBefore, distinctAfter);
         idsToRemove.forEach(this::delete);
     }
+
+    public void validateAnnotation(DiseaseAnnotation entity) {
+        Long id = entity.getId();
+        ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
+        if (id == null) {
+            response.setErrorMessage("No Disease Annotation ID provided");
+            throw new RestErrorException(response);
+        }
+        DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
+        if (diseaseAnnotation == null) {
+            response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
+            throw new RestErrorException(response);
+            // do not continue validation if Disease Annotation ID has not been found
+        }
+        // check required fields
+        // ToDo: implement mandatory / optional fields for each MOD
+        //
+        final String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
+        validateSubject(entity, response);
+        validateDisease(entity, response);
+        if (response.hasErrors()) {
+            response.setErrorMessage(errorTitle);
+            throw new RestErrorException(response);
+        }
+    }
+
+    private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        String fieldName = "object";
+
+
+        if (validateRequiredObject(entity, response))
+            return validateDiseaseAnnotationDisease(entity.getObject(), fieldName, response);
+        return false;
+    }
+
+    private boolean validateSubject(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        String fieldName = "subject";
+        if (validateRequiredSubject(entity, response))
+            return validateDiseaseAnnotationSubject(entity.getSubject(), fieldName, response);
+        return false;
+    }
+
+    private boolean validateRequiredSubject(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        if (entity.getSubject() == null || StringUtils.isEmpty(entity.getSubject().getCurie())) {
+            addRequiredMessageToResponse("subject", response);
+            return false;
+        }
+        return true;
+    }
+
+    private boolean validateRequiredObject(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        if (ObjectUtils.isEmpty(entity.getObject()) || StringUtils.isEmpty(entity.getObject().getCurie())) {
+            addRequiredMessageToResponse("object", response);
+            return false;
+        }
+        return true;
+    }
+
+    private void addRequiredMessageToResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        response.addErrorMessage(fieldName, "Required field is empty");
+    }
+
+    public boolean validateDiseaseAnnotationSubject(BiologicalEntity entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        BiologicalEntity subjectEntity = biologicalEntityDAO.find(entity.getCurie());
+        if (subjectEntity == null) {
+            addInvalidMessagetoResponse(fieldName, response);
+            return false;
+        }
+        return true;
+    }
+
+    public boolean validateDiseaseAnnotationDisease(DOTerm entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        DOTerm diseaseTerm = doTermDAO.find(entity.getCurie());
+        if (diseaseTerm == null) {
+            addInvalidMessagetoResponse(fieldName, response);
+            return false;
+        }
+        return true;
+    }
+
+    private void addInvalidMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        response.addErrorMessage(fieldName, "Not a valid entry");
+    }
+
+
 }

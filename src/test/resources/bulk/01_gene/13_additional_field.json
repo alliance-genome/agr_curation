@@ -1,13 +1,14 @@
 {
    "data" : [
-      {
-         "basicGeneticEntity" : {
+       {
+	  "additionalField" : "Not in BGI ingest schema", 
+          "basicGeneticEntity" : {
             "crossReferences" : [
                {
-                  "id" : "TEST:xref15a"
+                  "id" : "TEST:xref13a"
                },
                {
-                  "id" : "TEST:xref15b",
+                  "id" : "TEST:xref13b",
                   "pages" : [
                      "gene",
                      "gene/references",
@@ -15,32 +16,32 @@
                      "gene/expression_images",
                      "gene/phenotype"
                   ]
-               },
+               }
             ],
             "genomeLocations" : [
                {
                   "assembly" : "TEST_assembly",
-                  "chromosome" : "15",
+                  "chromosome" : "13",
                   "endPosition" : 100,
                   "startPosition" : 1,
                   "strand" : "+"
                }
             ],
-            "primaryId" : "TEST:TestGene00015",
+            "primaryId" : "TEST:TestGene00013",
             "secondaryIds" : [
-               "TEST:TG00015"
+               "TEST:TG00013"
             ],
             "synonyms" : [
-               "Test15",
-               "ExampleGene15"
+               "Test13",
+               "ExampleGene13"
             ],
-            "taxonId" : "NCBITaxon:999999999"
+            "taxonId" : "NCBITaxon:10090"
          },
-         "geneSynopsis" : "Test gene invalid taxon ID",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_15", 
-         "name" : "Test gene 15",
+         "geneSynopsis" : "Test gene with additional field not in BGI schema",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_13", 
+         "name" : "Test gene 13",
          "soTermId" : "SO:0001217",
-         "symbol" : "Tg15"
+         "symbol" : "Tg13"
       }
    ],
    "metaData" : {

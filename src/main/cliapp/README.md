@@ -1125,7 +1125,7 @@ You may also specify any configuration value [`http-proxy-middleware`](https://g
 }
 ```
 
-All requests matching this path will be proxies, no exceptions. This includes requests for `text/html`, which the standard `proxy` option does not proxy.
+All requests matching this path will be proxies, no org.alliancegenome.curation_api.exceptions. This includes requests for `text/html`, which the standard `proxy` option does not proxy.
 
 If you need to specify multiple proxies, you may do so by specifying additional entries.
 Matches are regular expressions, so that you can use a regexp to match multiple paths.

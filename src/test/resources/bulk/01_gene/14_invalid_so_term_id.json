@@ -4,10 +4,10 @@
          "basicGeneticEntity" : {
             "crossReferences" : [
                {
-                  "id" : "TEST:xref3a"
+                  "id" : "TEST:xref14a"
                },
                {
-                  "id" : "TEST:xref3b",
+                  "id" : "TEST:xref14b",
                   "pages" : [
                      "gene",
                      "gene/references",
@@ -15,23 +15,32 @@
                      "gene/expression_images",
                      "gene/phenotype"
                   ]
-               },
+               }
             ],
-            "primaryId" : "TEST:TestGene00003",
+            "genomeLocations" : [
+               {
+                  "assembly" : "TEST_assembly",
+                  "chromosome" : "14",
+                  "endPosition" : 100,
+                  "startPosition" : 1,
+                  "strand" : "+"
+               }
+            ],
+            "primaryId" : "TEST:TestGene00014",
             "secondaryIds" : [
-               "TEST:TG00003"
+               "TEST:TG00014"
             ],
             "synonyms" : [
-               "Test3",
-               "ExampleGene3"
+               "Test14",
+               "ExampleGene14"
             ],
             "taxonId" : "NCBITaxon:10090"
          },
-         "geneSynopsis" : "Test gene with all fields populated except genomeLocations",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_3", 
-         "name" : "Test gene 3",
-         "soTermId" : "SO:0001217",
-         "symbol" : "Tg3"
+         "geneSynopsis" : "Test gene invalid SO term ID",
+	 "geneSynopsisUrl" : "http://test.org/test_synopsis_14", 
+         "name" : "Test gene 14",
+         "soTermId" : "SO:99999999999",
+         "symbol" : "Tg14"
       }
    ],
    "metaData" : {

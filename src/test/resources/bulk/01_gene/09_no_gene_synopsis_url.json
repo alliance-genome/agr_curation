@@ -4,10 +4,10 @@
          "basicGeneticEntity" : {
             "crossReferences" : [
                {
-                  "id" : "TEST:xref17a"
+                  "id" : "TEST:xref9a"
                },
                {
-                  "id" : "TEST:xref17b",
+                  "id" : "TEST:xref9b",
                   "pages" : [
                      "gene",
                      "gene/references",
@@ -15,32 +15,31 @@
                      "gene/expression_images",
                      "gene/phenotype"
                   ]
-               },
+               }
             ],
             "genomeLocations" : [
                {
                   "assembly" : "TEST_assembly",
-                  "chromosome" : "17",
+                  "chromosome" : "9",
                   "endPosition" : 100,
                   "startPosition" : 1,
-                  "strand" : "x"
+                  "strand" : "+"
                }
             ],
-            "primaryId" : "TEST:TestGene00017",
+            "primaryId" : "TEST:TestGene00009",
             "secondaryIds" : [
-               "TEST:TG00017"
+               "TEST:TG00009"
             ],
             "synonyms" : [
-               "Test17",
-               "ExampleGene17"
+               "Test9",
+               "ExampleGene9"
             ],
             "taxonId" : "NCBITaxon:10090"
          },
-         "geneSynopsis" : "Test gene invalid strand",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_17", 
-         "name" : "Test gene 17",
+         "geneSynopsis" : "Test gene with all fields populated except geneSynopsisUrl",
+         "name" : "Test gene 9",
          "soTermId" : "SO:0001217",
-         "symbol" : "Tg17"
+         "symbol" : "Tg9"
       }
    ],
    "metaData" : {
