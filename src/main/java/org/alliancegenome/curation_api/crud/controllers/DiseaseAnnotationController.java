@@ -18,9 +18,6 @@ public class DiseaseAnnotationController extends BaseController<DiseaseAnnotatio
     @Inject
     DiseaseAnnotationService annotationService;
 
-    @Inject
-    DiseaseAnnotationDAO diseaseDAO;
-
     @Override
     @PostConstruct
     protected void init() {
