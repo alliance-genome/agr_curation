@@ -241,6 +241,41 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(7)
+    public void geneBulkUploadNoGeneSynopsis() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/08_no_gene_synopsis.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(7)).
+                body("results", hasSize(7)).
+                body("results[6].curie", is("TEST:TestGene00008")).
+                body("results[6].name", is( "Test gene 8")).
+                body("results[6].synonyms[0].name", is("Test8")).
+                body("results[6].synonyms[1].name", is("ExampleGene8")).
+                body("results[6].crossReferences[0].curie", is("TEST:xref8b")).
+                body("results[6].crossReferences[1].curie", is("TEST:xref8a")).
+                body("results[6].symbol", is("Tg8")).
+                body("results[6].geneSynopsisURL", is("http://test.org/test_synopsis_8")).
+                body("results[6].type", is("SO:0001217"));
+    }
+
+    @Test
+    @Order(8)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -261,6 +296,6 @@ public class GeneBulkUploadITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(839));
+                body("totalResults", is(840));
     }
 }
