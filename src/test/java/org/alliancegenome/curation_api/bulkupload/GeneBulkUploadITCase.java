@@ -202,8 +202,45 @@ public class GeneBulkUploadITCase {
                 body("results[4].geneSynopsisURL", is("http://test.org/test_synopsis_6")).
                 body("results[4].type", is("SO:0001217"));
     }
+
     @Test
     @Order(6)
+    public void geneBulkUploadNoTaxonId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/07_no_taxon_id.json"));
+
+        // upload file
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
+
+        // check if all the fields are correctly read
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(6)).
+                body("results", hasSize(6)).
+                body("results[5].curie", is("TEST:TestGene00007")).
+                body("results[5].name", is( "Test gene 7")).
+                body("results[5].synonyms[0].name", is("Test7")).
+                body("results[5].synonyms[1].name", is("ExampleGene7")).
+                body("results[5].crossReferences[0].curie", is("TEST:xref7a")).
+                body("results[5].crossReferences[1].curie", is("TEST:xref7b")).
+                body("results[5].symbol", is("Tg7")).
+                body("results[5].geneSynopsis", is("Test gene with all fields populated except taxonId")).
+                body("results[5].geneSynopsisURL", is("http://test.org/test_synopsis_7")).
+                body("results[5].type", is("SO:0001217"));
+    }
+
+    @Test
+    @Order(7)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -224,6 +261,6 @@ public class GeneBulkUploadITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(838));
+                body("totalResults", is(839));
     }
 }
