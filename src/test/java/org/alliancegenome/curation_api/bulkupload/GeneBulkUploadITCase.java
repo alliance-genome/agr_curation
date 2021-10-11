@@ -420,6 +420,21 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(12)
+    public void geneBulkUploadAdditionalField() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/13_additional_field.json"));
+
+        // upload file and trigger Bad Request response with the additional field
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(13)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
