@@ -9,12 +9,16 @@ ENV_NAME=curation-alpha
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
+GIT_VERSION = $(shell git describe)
+
 .PHONY: docker all
 
 all: ui api
 
 api:
+	mvn versions:set -DnewVersion=${GIT_VERSION}
 	mvn ${OPTS}
+	mvn versions:revert
 
 ui:
 	make -B -C src/main/cliapp
@@ -27,7 +31,9 @@ run:
 	java -jar target/agr_curation_api-runner.jar
 
 apirun:
+	mvn versions:set -DnewVersion=${GIT_VERSION}
 	mvn compile quarkus:dev
+	mvn versions:revert
 
 docker:
 	docker build -t ${REG}/agr_curation:${RELEASE} .
