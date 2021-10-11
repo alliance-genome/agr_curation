@@ -8,10 +8,10 @@ import lombok.Data;
 @Schema(name="ObjectResponse", description="POJO that represents the ObjectResponse")
 public class ObjectResponse<E> extends APIResponse {
 
-    private E object;
+    private E entity;
     
     public ObjectResponse(E object) {
-        this.object = object;
+        this.entity = object;
     }
-    
+
 }
