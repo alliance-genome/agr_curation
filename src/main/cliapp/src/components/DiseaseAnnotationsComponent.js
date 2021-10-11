@@ -109,21 +109,22 @@ export const DiseaseAnnotationsComponent = () => {
             });
     };
 
-    const onSubjectEditorValueChange = (rowData, event) => {
-
+    const onSubjectEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
         if(event.target.value || event.target.value === '') {
-            rowData.subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
             if(typeof event.target.value === "object"){
-                rowData.subject.curie = event.target.value.curie;
+                updatedAnnotations[props.rowIndex].subject.curie = event.target.value.curie;
             } else {
-                rowData.subject.curie = event.target.value;
+                updatedAnnotations[props.rowIndex].subject.curie  = event.target.value;
             }
+            setDiseaseAnnotations(updatedAnnotations);
             setSubmitted(true);
         } else {
             setSubmitted(false);
         }
         console.log("in editorValueChange");
-        console.log(rowData);
+
     };
 
     const requiredValidator = (rowData) => {
@@ -132,15 +133,15 @@ export const DiseaseAnnotationsComponent = () => {
         return value.length > 0;
     };
 
-    const subjectEditor = (rowData) => {
+    const subjectEditor = (props) => {
 
             return <AutoComplete
                 field="curie"
-                value={rowData.subject.curie}
+                value={props.rowData.subject.curie}
                 suggestions={filteredSubjects}
                 itemTemplate={subjectItemTemplate}
                 completeMethod={searchSubject}
-                onChange={(e) => onSubjectEditorValueChange(rowData, e)}
+                onChange={(e) => onSubjectEditorValueChange(props, e)}
                 forceSelection
                 // required autoFocus
                 // className={classNames({ 'p-invalid': submitted && !rowData.subject.curie })}
@@ -224,7 +225,7 @@ export const DiseaseAnnotationsComponent = () => {
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
-                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props.rowData)}></Column>
+                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)}></Column>
                     <Column field="object.curie" header="Disease" sortable filter></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
