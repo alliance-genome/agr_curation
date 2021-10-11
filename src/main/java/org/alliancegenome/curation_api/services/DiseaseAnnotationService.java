@@ -1,37 +1,29 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
-import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.exceptions.RestErrorException;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+
+import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.*;
+
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
@@ -157,17 +149,26 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         idsToRemove.forEach(this::delete);
     }
 
+
+    @Override
+    @Transactional
+    public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation entity) {
+        validateAnnotation(entity);
+        // assumes the incoming object is a complete object
+        return super.update(entity);
+    }
+    
     public void validateAnnotation(DiseaseAnnotation entity) {
         Long id = entity.getId();
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
         if (id == null) {
             response.setErrorMessage("No Disease Annotation ID provided");
-            throw new RestErrorException(response);
+            throw new ApiErrorException(response);
         }
         DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
         if (diseaseAnnotation == null) {
             response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
-            throw new RestErrorException(response);
+            throw new ApiErrorException(response);
             // do not continue validation if Disease Annotation ID has not been found
         }
         // check required fields
@@ -178,7 +179,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         validateDisease(entity, response);
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
-            throw new RestErrorException(response);
+            throw new ApiErrorException(response);
         }
     }
 
