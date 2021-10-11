@@ -40,6 +40,7 @@ import { PanelDemo } from './components/PanelDemo';
 import { TableDemo } from './components/TableDemo';
 import { TreeDemo } from './components/TreeDemo';
 import { InvalidStateDemo } from './components/InvalidStateDemo';
+import { TableEditDemo } from './components/TableEditDemo';
 
 import { Calendar } from './pages/Calendar';
 import { Crud } from './pages/Crud';
@@ -90,9 +91,9 @@ const App = () => {
     } else {
       removeClass(document.body, "body-overflow-hidden");
     }
-    
+
     const service = new ApiVersionService();
-    
+
     service.getApiVersion().then(json => {
       setApiVersion(json);
     });
@@ -149,7 +150,8 @@ const App = () => {
         { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
         { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
         { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
-        { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' }
+        { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
+        // { label: 'Table Edit Demo', icon: 'pi pi-fw pi-home', to: '/tableEditDemo' }
       ]
     },
     {
@@ -318,6 +320,7 @@ const App = () => {
 
       <div className="layout-main">
         <Route path="/" exact component={Dashboard} />
+        <Route path="/tableEditDemo" component={TableEditDemo} />
         <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
         <Route path="/genes" component={GenesComponent} />
         <Route path="/alleles" component={AllelesComponent} />
