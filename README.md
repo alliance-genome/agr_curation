@@ -9,18 +9,18 @@ These instructions will get you a copy of the project and the API up and running
 ## Contents
 
 - [Installing](#installing)
-	* [Docker Setup](#docker_setup)
+	* [Docker Setup](#docker-setup)
 	* [Postgres](#postgres)
-	* [ElasticSearch](#elasticsearch)
+	* [ElasticSearch](#elastic-search)
 	* [Cerebro](#cerebro)
-	* [ActiveMQ](#activemq)
+	* [ActiveMQ](#activeMQ)
 - [Building](#building)
-	* [Building API](#building_api)
-	* [Building UI](#building_ui)
+	* [Building API](#building-api)
+	* [Building UI](#building-ui)
 - [Running](#running)
-	* [Running API](#running_api)
-	* [Running UI](#running_ui)
-- [Loading Data](#loading_data)
+	* [Running API](#running-api)
+	* [Running UI](#running-ui)
+- [Loading Data](#loading-data)
 
 
 
@@ -121,7 +121,8 @@ docker run -d --net curation -p 9000:9000 --name agr.cerebro.server yannart/cere
 
 Connect to this by browsing to `http://localhost:9000`, this is used to connect to the ES server, Which will be running at `http://elasticsearch:9200` inside docker or `http://localhost:9200` on the local machine.
 
-### Active MQ (Message Queue)
+
+### Active MQ (Message Queue)<a id="activeMQ"/></a>
 
 [Run Active MQ Script](docker/run_activemq) which runs the following docker command:
 
