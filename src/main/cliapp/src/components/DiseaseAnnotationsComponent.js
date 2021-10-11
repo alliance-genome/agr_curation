@@ -5,10 +5,8 @@ import {Button} from 'primereact/button';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
 import {useMutation, useQuery} from 'react-query';
 import {Messages} from "primereact/messages";
-import {InputText} from "primereact/inputtext";
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
-import classNames from "classnames";
 import { Toast } from 'primereact/toast';
 
 
@@ -22,10 +20,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [rows, setRows] = useState(50);
     const [totalRecords, setTotalRecords] = useState(0);
     const [first, setFirst] = useState(0);
-    const [expandedRows, setExpandedRows] = useState(null);
     const [originalRows, setOriginalRows] = useState([]);
-    const [submitted, setSubmitted] = useState(false);
-    // const [editingRows, setEditingRows] = useState({});
     const [filteredSubjects, setFilteredSubjects] = useState([]);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
@@ -64,7 +59,6 @@ export const DiseaseAnnotationsComponent = () => {
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
-        setSubmitted(false);
     };
 
 
@@ -119,19 +113,11 @@ export const DiseaseAnnotationsComponent = () => {
                 updatedAnnotations[props.rowIndex].subject.curie  = event.target.value;
             }
             setDiseaseAnnotations(updatedAnnotations);
-            setSubmitted(true);
-        } else {
-            setSubmitted(false);
         }
         console.log("in editorValueChange");
 
     };
 
-    const requiredValidator = (rowData) => {
-        console.log("in requiredValidator");
-        let value = rowData['subject']['curie'];
-        return value.length > 0;
-    };
 
     const subjectEditor = (props) => {
 
@@ -143,8 +129,6 @@ export const DiseaseAnnotationsComponent = () => {
                 completeMethod={searchSubject}
                 onChange={(e) => onSubjectEditorValueChange(props, e)}
                 forceSelection
-                // required autoFocus
-                // className={classNames({ 'p-invalid': submitted && !rowData.subject.curie })}
 
             />
 
@@ -171,7 +155,6 @@ export const DiseaseAnnotationsComponent = () => {
 
     const onRowEditSave = (event) =>{
         console.log(event);
-        setSubmitted(true);
         mutation.mutate(event.data, {
             onSuccess: (data, variables, context) => {
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated', life: 3000 });
@@ -181,8 +164,6 @@ export const DiseaseAnnotationsComponent = () => {
                 errorMessage.current.show([
                     {severity: 'error', summary: 'Error: ', detail: error.response.data.errorMessage, sticky: true}
                 ]);
-                setSubmitted(false);
-                //setDiseaseAnnotations(diseaseAnnotations);
                 let annotations = [...diseaseAnnotations];
                 annotations[event.index] = originalRows[event.index];
                 delete originalRows[event.index];
