@@ -4,7 +4,7 @@ import {Column} from 'primereact/column';
 import {Button} from 'primereact/button';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
 import {useMutation, useQuery} from 'react-query';
-import {Messages} from "primereact/messages";
+import {Message} from "primereact/message";
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
@@ -22,12 +22,13 @@ export const DiseaseAnnotationsComponent = () => {
     const [first, setFirst] = useState(0);
     const [originalRows, setOriginalRows] = useState([]);
     const [filteredSubjects, setFilteredSubjects] = useState([]);
+    const [editingRows, setEditingRows] = useState({});
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
 
-    const errorMessage = useRef(null);
-    const toast = useRef(null);
+    const toast_topleft = useRef(null);
+    const toast_topright = useRef(null);
 
     useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
         () => diseaseAnnotationService.getDiseaseAnnotations(rows, page, multiSortMeta, filters), {
@@ -37,8 +38,8 @@ export const DiseaseAnnotationsComponent = () => {
                 setTotalRecords(data.totalResults);
             },
             onError: (error) => {
-                errorMessage.current.show([
-                    {severity: 'error', summary: 'Error', detail: error.message, sticky: false }
+                toast_topleft.current.show([
+                    {life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
                 ])
             },
             onSettled:() => {
@@ -109,7 +110,7 @@ export const DiseaseAnnotationsComponent = () => {
             if(typeof event.target.value === "object"){
                 updatedAnnotations[props.rowIndex].subject.curie = event.target.value.curie;
             } else {
-                updatedAnnotations[props.rowIndex].subject.curie  = event.target.value;
+                updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
             }
             setDiseaseAnnotations(updatedAnnotations);
         }
@@ -117,20 +118,15 @@ export const DiseaseAnnotationsComponent = () => {
 
 
     const subjectEditor = (props) => {
-
-            return <AutoComplete
-                field="curie"
-                value={props.rowData.subject.curie}
-                suggestions={filteredSubjects}
-                itemTemplate={subjectItemTemplate}
-                completeMethod={searchSubject}
-                onChange={(e) => onSubjectEditorValueChange(props, e)}
-                forceSelection
-
-            />
-
-        // return <InputText type="text" value={props.rowData.subject.curie} onChange={(e) => onEditorValueChange(props, e.target.value)} required autoFocus
-        //                    className={classNames({ 'p-invalid': submitted && !props.rowData.subject.curie })} />;
+        return (<div><AutoComplete
+            field="curie"
+            value={props.rowData.subject.curie}
+            suggestions={filteredSubjects}
+            itemTemplate={subjectItemTemplate}
+            completeMethod={searchSubject}
+            onChange={(e) => onSubjectEditorValueChange(props, e)}
+            forceSelection
+        /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
     };
 
     const onRowEditInit = (event) => {
@@ -156,23 +152,30 @@ export const DiseaseAnnotationsComponent = () => {
 
         mutation.mutate(updatedRow, {
             onSuccess: (data, variables, context) => {
-                toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated', life: 3000 });
+                toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
             },
             onError: (error, variables, context) => {
-                errorMessage.current.show([
-                    {severity: 'error', summary: 'Error: ', detail: error.response.data.errorMessage, sticky: false}
+                toast_topright.current.show([
+                    {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
+
                 let annotations = [...diseaseAnnotations];
-                annotations[event.index] = originalRows[event.index];
-                delete originalRows[event.index];
-                setOriginalRows(originalRows);
+                annotations[event.index].subject.errorSeverity = "error";
+                annotations[event.index].subject.errorMessage = "Subject: " + error.response.data.errorMessages.subject;
                 setDiseaseAnnotations(annotations);
+                let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
+                setEditingRows(_editingRows);
+
             },
             onSettled: (data, error, variables, context) => {
 
             },
         })
     };
+
+    const onRowEditChange = (event) => {
+        setEditingRows(event.data);
+    }
 
     const subjectItemTemplate = (item) => {
         if(item.symbol){
@@ -189,18 +192,15 @@ export const DiseaseAnnotationsComponent = () => {
     return (
         <div>
             <div className="card">
-                <Toast ref={toast} />
+                <Toast ref={toast_topleft} position="top-left" />
+                <Toast ref={toast_topright} position="top-right" />
                 <h3>Disease Annotations Table</h3>
-                <Messages ref={errorMessage}/>
                 <DataTable value={diseaseAnnotations} className="p-datatable-md"
-                           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(event) => onRowEditSave(event)}
-                           // editingRows={editingRows} onRowEditChange={(e) => setEditingRows(e.data)}
-                           // rowEditorValidator={(data) => requiredValidator(data)}
+                           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+                           editingRows={editingRows} onRowEditChange={onRowEditChange}
                            sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
                            first={first} onFilter={onFilter} filters={filters}
                            dataKey="id"
-                           // expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)}
-
                            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
