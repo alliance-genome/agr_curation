@@ -13,26 +13,6 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
-    - name: Slack Notification
-      uses: tokorom/action-slack-incoming-webhook@main
-      env:
-        INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-      with:
-        text: "Auto Deployment to alpha initiated"
-        attachments: |
-          [
-            {
-              "color": "good",
-              "author_name": "${{ github.actor }}",
-              "author_icon": "${{ github.event.sender.avatar_url }}",
-              "fields": [
-                {
-                  "title": "GitHub Actions URL",
-                  "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
-                }
-              ]
-            }
-          ]
     - name: Declare some variables
       id: vars
       shell: bash
@@ -67,6 +47,26 @@ jobs:
     needs: [build-and-push-docker-image]
     runs-on: ubuntu-20.04
     steps:
+    - name: Slack Notification
+      uses: tokorom/action-slack-incoming-webhook@main
+      env:
+        INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        text: "Auto Deployment to alpha initiated"
+        attachments: |
+          [
+            {
+              "color": "good",
+              "author_name": "${{ github.actor }}",
+              "author_icon": "${{ github.event.sender.avatar_url }}",
+              "fields": [
+                {
+                  "title": "GitHub Actions URL",
+                  "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                }
+              ]
+            }
+          ]
     - name: Check out repository code
       uses: actions/checkout@v2
       with:
