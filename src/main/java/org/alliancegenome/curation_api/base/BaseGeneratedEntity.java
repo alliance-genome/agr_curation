@@ -23,12 +23,12 @@ public class BaseGeneratedEntity extends BaseEntity {
     @EqualsAndHashCode.Include
     protected Long id;
     
-    @GenericField
+    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @CreationTimestamp
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime created;
     
-    @GenericField
+    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @UpdateTimestamp
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime lastUpdated;
