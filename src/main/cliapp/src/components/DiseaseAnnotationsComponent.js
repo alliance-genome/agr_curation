@@ -160,7 +160,7 @@ export const DiseaseAnnotationsComponent = () => {
             },
             onError: (error, variables, context) => {
                 errorMessage.current.show([
-                    {severity: 'error', summary: 'Error: ', detail: error.response.data.errorMessage, sticky: true}
+                    {severity: 'error', summary: 'Error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
                 let annotations = [...diseaseAnnotations];
                 annotations[event.index] = originalRows[event.index];
