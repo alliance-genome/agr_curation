@@ -1,4 +1,4 @@
-name: Post-merge into Main
+name: Main branch Build and Deployment
 on:
   push:
     branches:
@@ -13,6 +13,43 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=tagname;]$(git describe)"
+    - name: Overwrite application version
+      run: |
+        mvn versions:set -DnewVersion=${{ steps.vars.outputs.tagname }}
+    - name: Build application
+      run: |
+        make all
+    # This step will configure environment variables to be used by all steps
+    # involving AWS interaction further down
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Amazon ECR login
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: agr_curation
+        IMAGE_TAG: ${{ steps.vars.outputs.tagname }}
+        GITHUB_BRANCH: ${GITHUB_REF#refs/heads/}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_BRANCH
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_BRANCH
+  deploy-to-alpha:
+    needs: [build-and-push-docker-image]
+    runs-on: ubuntu-20.04
+    steps:
     - name: Slack Notification
       uses: tokorom/action-slack-incoming-webhook@main
       env:
@@ -33,35 +70,6 @@ jobs:
               ]
             }
           ]
-    - name: Build application
-      run: |
-        make all
-    # This step will configure environment variables to be used by all steps
-    # involving AWS interaction further down
-    - name: AWS credentials configuration
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: us-east-1
-    - name: Amazon ECR login
-      id: login-ecr
-      uses: aws-actions/amazon-ecr-login@v1
-    - name: Build, tag, and push image to Amazon ECR
-      env:
-        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-        ECR_REPOSITORY: agr_curation
-        IMAGE_TAG: alpha
-        GITHUB_BRANCH: ${{ github.ref }}
-      run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
-  deploy-to-alpha:
-    needs: [build-and-push-docker-image]
-    runs-on: ubuntu-20.04
-    steps:
     - name: Check out repository code
       uses: actions/checkout@v2
       with:
@@ -74,8 +82,9 @@ jobs:
         echo "##[set-output name=tagname;]$(git describe)"
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
-        cat .ebextensions/version.config
-        sed -i.bak "s/0.0.0/alpha/g" .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${{ steps.vars.outputs.tagname }}/g" .ebextensions/version.config
+        echo "Stored version config:"
+        echo "----------------------"
         cat .ebextensions/version.config
     - name: Generate deployment package
       run: zip -r ${{ steps.vars.outputs.tagname }}.zip docker-compose.yml .ebextensions/

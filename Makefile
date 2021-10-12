@@ -9,6 +9,8 @@ ENV_NAME=curation-alpha
 
 OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 
+GIT_VERSION = $(shell git describe)
+
 .PHONY: docker all
 
 all: ui api
@@ -50,6 +52,12 @@ integration-test:
 
 verify:
 	mvn verify
+
+set-app-version-as-git:
+	mvn versions:set -DnewVersion=${GIT_VERSION}
+
+reset-app-version:
+	mvn versions:revert
 
 #EB commands
 .PHONY: eb-init eb-create eb-deploy eb-terminate
