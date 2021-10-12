@@ -16,9 +16,7 @@ GIT_VERSION = $(shell git describe)
 all: ui api
 
 api:
-	mvn versions:set -DnewVersion=${GIT_VERSION}
 	mvn ${OPTS}
-	mvn versions:revert
 
 ui:
 	make -B -C src/main/cliapp
@@ -31,9 +29,7 @@ run:
 	java -jar target/agr_curation_api-runner.jar
 
 apirun:
-	mvn versions:set -DnewVersion=${GIT_VERSION}
 	mvn compile quarkus:dev
-	mvn versions:revert
 
 docker:
 	docker build -t ${REG}/agr_curation:${RELEASE} .
@@ -56,6 +52,12 @@ integration-test:
 
 verify:
 	mvn verify
+
+set-app-version-as-git:
+	mvn versions:set -DnewVersion=${GIT_VERSION}
+
+reset-app-version:
+	mvn versions:revert
 
 #EB commands
 .PHONY: eb-init eb-create eb-deploy eb-terminate
