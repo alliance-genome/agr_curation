@@ -33,6 +33,11 @@ jobs:
               ]
             }
           ]
+    - name: Declare some variables
+      id: vars
+      shell: bash
+      run: |
+        echo "##[set-output name=tagname;]$(git describe)"
     - name: Build application
       run: |
         make all
@@ -51,13 +56,13 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
-        IMAGE_TAG: alpha
-        GITHUB_BRANCH: ${{ github.ref }}
+        IMAGE_TAG: ${{ steps.vars.outputs.tagname }}
+        GITHUB_BRANCH: ${GITHUB_REF#refs/heads/}
       run: |
         docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
+        docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_BRANCH
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_BRANCH
   deploy-to-alpha:
     needs: [build-and-push-docker-image]
     runs-on: ubuntu-20.04
@@ -74,8 +79,9 @@ jobs:
         echo "##[set-output name=tagname;]$(git describe)"
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
-        cat .ebextensions/version.config
-        sed -i.bak "s/0.0.0/alpha/g" .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${{ steps.vars.outputs.tagname }}/g" .ebextensions/version.config
+        echo "Stored version config:"
+        echo "----------------------"
         cat .ebextensions/version.config
     - name: Generate deployment package
       run: zip -r ${{ steps.vars.outputs.tagname }}.zip docker-compose.yml .ebextensions/
