@@ -29,7 +29,7 @@ public class BaseCurieEntity extends BaseEntity {
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime created;
 
-    @GenericField
+    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @UpdateTimestamp
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime lastUpdated;
