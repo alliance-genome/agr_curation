@@ -38,7 +38,7 @@ export const DiseaseAnnotationsComponent = () => {
             },
             onError: (error) => {
                 errorMessage.current.show([
-                    {severity: 'error', summary: 'Error', detail: error.message, sticky: true}
+                    {severity: 'error', summary: 'Error', detail: error.message, sticky: false }
                 ])
             },
             onSettled:() => {
@@ -51,7 +51,6 @@ export const DiseaseAnnotationsComponent = () => {
     );
 
     const mutation = useMutation(updatedAnnotation => {
-        console.log("in useMutation");
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
 
@@ -114,8 +113,6 @@ export const DiseaseAnnotationsComponent = () => {
             }
             setDiseaseAnnotations(updatedAnnotations);
         }
-        console.log("in editorValueChange");
-
     };
 
 
@@ -136,9 +133,6 @@ export const DiseaseAnnotationsComponent = () => {
         //                    className={classNames({ 'p-invalid': submitted && !props.rowData.subject.curie })} />;
     };
 
-    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
-    const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
-
     const onRowEditInit = (event) => {
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
@@ -154,15 +148,19 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const onRowEditSave = (event) =>{
-        console.log(event);
-        mutation.mutate(event.data, {
+        let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
+        if(Object.keys(event.data.subject).length > 1){
+            updatedRow.subject = {};
+            updatedRow.subject.curie = event.data.subject.curie;
+        }
+
+        mutation.mutate(updatedRow, {
             onSuccess: (data, variables, context) => {
                 toast.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated', life: 3000 });
             },
             onError: (error, variables, context) => {
-                console.log(error.response.data.errorMessage);
                 errorMessage.current.show([
-                    {severity: 'error', summary: 'Error: ', detail: error.response.data.errorMessage, sticky: true}
+                    {severity: 'error', summary: 'Error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
                 let annotations = [...diseaseAnnotations];
                 annotations[event.index] = originalRows[event.index];
@@ -184,6 +182,9 @@ export const DiseaseAnnotationsComponent = () => {
         }
 
     };
+
+    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
+    const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
 
     return (
         <div>
