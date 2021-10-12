@@ -1,4 +1,4 @@
-name: Post-merge into Main
+name: Main branch Build and Deployment
 on:
   push:
     branches:
