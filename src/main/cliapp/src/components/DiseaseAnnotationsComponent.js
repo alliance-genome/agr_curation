@@ -171,8 +171,7 @@ export const DiseaseAnnotationsComponent = () => {
                 setDiseaseAnnotations(annotations);
             },
             onSettled: (data, error, variables, context) => {
-                console.log(data);
-                console.log(error.response);
+
             },
         })
     };
