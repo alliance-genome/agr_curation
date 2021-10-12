@@ -21,7 +21,7 @@ jobs:
         echo "##[set-output name=tagname;]$(git describe)"
     - name: Overwrite application version
       run: |
-        mvn versions:set -DnewVersion=${{ steps.vars.outputs.tagname }}
+        mvn versions:set -ntp -DnewVersion=${{ steps.vars.outputs.tagname }}
     - name: Build application
       run: |
         make all
