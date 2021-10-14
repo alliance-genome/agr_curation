@@ -24,7 +24,6 @@ import static org.hamcrest.Matchers.hasSize;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class DiseaseAnnotationITCase {
 
-
     @Test
     @Order(1)
     public void createDiseaseAnnotation() throws Exception {
