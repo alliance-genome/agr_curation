@@ -25,6 +25,12 @@ ui:
 uirun:
 	make -B -C src/main/cliapp run
 
+uirunalpha:
+	make -B -C src/main/cliapp run-alpha
+
+uirunlocal:
+	make -B -C src/main/cliapp run-local
+
 run:
 	java -jar target/agr_curation_api-runner.jar
 
