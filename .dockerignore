@@ -1,0 +1,6 @@
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+.git
+.gitignore
+src/main/cliapp/node_modules
+target
