@@ -4,6 +4,12 @@ all:
 run:
 	npm start
 
+run-alpha:
+	npm run start-alpha
+
+run-local:
+	npm run start-local
+
 build:
 	npm run-script build
 	cp build/index.html ../resources/META-INF/resources
