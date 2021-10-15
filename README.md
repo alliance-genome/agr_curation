@@ -281,7 +281,7 @@ Current maintainers:
  * Andrés Becerra Sandoval - [https://github.com/abecerra](https://github.com/abecerra)
  * Christian Pich - [https://github.com/cmpich](https://github.com/cmpich)
  * Jyothi Thota - [https://github.com/jt15](https://github.com/jt15)
+ * Ketaki Thorat - [https://github.com/kthorat-prog](https://github.com/kthorat-prog)
  * Mark Quinton-Tulloch - [https://github.com/markquintontulloch](https://github.com/markquintontulloch)
  * Manuel Luypaert - [https://github.com/mluypaert](https://github.com/mluypaert)
- * Marek Tutaj - [https://github.com/tutajm](https://github.com/tutaj)
  * Olin Blodgett - [https://github.com/oblodgett](https://github.com/oblodgett)
