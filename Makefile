@@ -36,7 +36,7 @@ docker:
 docker-push:
 	docker push ${REG}/agr_curation:${RELEASE}
 docker-run:
-	docker run --rm -it -p 8080:8080 -e QUARKUS_DATASOURCE_JDBC_URL=jdbc:postgresql://192.168.1.251:5432/curation -e QUARKUS_ARTEMIS_URL=tcp://192.168.1.251:61616 -e QUARKUS_HIBERNATE_SEARCH_ORM_ELASTICSEARCH_HOSTS=192.168.1.251:9200 ${REG}/agr_curation:${RELEASE}
+	docker run --rm -it -p 8080:8080 --network=curation ${REG}/agr_curation:${RELEASE}
 
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
