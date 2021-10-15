@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.bulkupload;
 import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.resources.TestElasticSearchReourse;
+import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -15,7 +15,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchReourse.Initializer.class)
+@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class GeneBulkUploadITCase {
