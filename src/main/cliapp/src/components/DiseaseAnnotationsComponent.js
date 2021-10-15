@@ -8,6 +8,7 @@ import {Message} from "primereact/message";
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
+import {OntologyService} from "../service/OntologyService";
 
 
 export const DiseaseAnnotationsComponent = () => {
@@ -22,10 +23,12 @@ export const DiseaseAnnotationsComponent = () => {
     const [first, setFirst] = useState(0);
     const [originalRows, setOriginalRows] = useState([]);
     const [filteredSubjects, setFilteredSubjects] = useState([]);
+    const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
+    const ontologyService = new OntologyService();
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
@@ -103,6 +106,13 @@ export const DiseaseAnnotationsComponent = () => {
             });
     };
 
+    const searchDisease = (event) => {
+        ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
+            .then((data) => {
+                setFilteredDiseases(data.results);
+            });
+    };
+
     const onSubjectEditorValueChange = (props, event) => {
         let updatedAnnotations = [...props.value];
         if(event.target.value || event.target.value === '') {
@@ -129,6 +139,31 @@ export const DiseaseAnnotationsComponent = () => {
         /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
     };
 
+    const onDiseaseEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.target.value || event.target.value === '') {
+            updatedAnnotations[props.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            if(typeof event.target.value === "object"){
+                updatedAnnotations[props.rowIndex].object.curie = event.target.value.curie;
+            } else {
+                updatedAnnotations[props.rowIndex].object.curie = event.target.value;
+            }
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const diseaseEditor = (props) => {
+        return (<div><AutoComplete
+            field="curie"
+            value={props.rowData.object.curie}
+            suggestions={filteredDiseases}
+            itemTemplate={diseaseItemTemplate}
+            completeMethod={searchDisease}
+            onChange={(e) => onDiseaseEditorValueChange(props, e)}
+            forceSelection
+        /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
+    };
+
     const onRowEditInit = (event) => {
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
@@ -149,10 +184,20 @@ export const DiseaseAnnotationsComponent = () => {
             updatedRow.subject = {};
             updatedRow.subject.curie = event.data.subject.curie;
         }
+        if(Object.keys(event.data.object).length > 1){
+            updatedRow.object = {};
+            updatedRow.object.curie = event.data.object.curie;
+        }
 
         mutation.mutate(updatedRow, {
             onSuccess: (data, variables, context) => {
+                console.log(data);
                 toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
+
+                let annotations = [...diseaseAnnotations];
+                annotations[event.index].subject = data.data.entity.subject;
+                annotations[event.index].object = data.data.entity.object;
+                setDiseaseAnnotations(annotations);
             },
             onError: (error, variables, context) => {
                 toast_topright.current.show([
@@ -160,12 +205,17 @@ export const DiseaseAnnotationsComponent = () => {
                 ]);
 
                 let annotations = [...diseaseAnnotations];
-                annotations[event.index].subject.errorSeverity = "error";
-                annotations[event.index].subject.errorMessage = "Subject: " + error.response.data.errorMessages.subject;
+                if(error.response.data.errorMessages.subject) {
+                    annotations[event.index].subject.errorSeverity = "error";
+                    annotations[event.index].subject.errorMessage = error.response.data.errorMessages.subject;
+                }
+                if(error.response.data.errorMessages.object){
+                    annotations[event.index].object.errorSeverity = "error";
+                    annotations[event.index].object.errorMessage = error.response.data.errorMessages.object;
+                }
                 setDiseaseAnnotations(annotations);
                 let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
                 setEditingRows(_editingRows);
-
             },
             onSettled: (data, error, variables, context) => {
 
@@ -180,10 +230,29 @@ export const DiseaseAnnotationsComponent = () => {
     const subjectItemTemplate = (item) => {
         if(item.symbol){
             return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.symbol + ')'}}/>;
-        } else {
+        } else if(item.name){
             return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.name + ')'}}/>;
+        }else {
+            return <div>{item.curie}</div>;
         }
+    };
 
+    const subjectBodyTemplate = (rowData) => {
+        if(rowData.subject.symbol){
+            return <div dangerouslySetInnerHTML={{__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'}}/>;
+        } else if(rowData.subject.name) {
+            return <div dangerouslySetInnerHTML={{__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'}}/>;
+        }else {
+            return <div>({rowData.subject.curie})</div>;
+        }
+    };
+
+    const diseaseItemTemplate = (item) => {
+        return <div>{item.curie} ({item.name})</div>;
+    };
+
+    const diseaseBodyTemplate = (rowData) => {
+        return <div>{rowData.object.name} ({rowData.object.curie})</div>;
     };
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
@@ -206,11 +275,11 @@ export const DiseaseAnnotationsComponent = () => {
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
-                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)}></Column>
-                    <Column field="object.curie" header="Disease" sortable filter></Column>
-                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
-                    <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
+                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
+                    <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
+                    <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
+                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
                     <Column field="created" header="Creation Date" sortable ></Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
