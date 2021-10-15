@@ -191,7 +191,13 @@ export const DiseaseAnnotationsComponent = () => {
 
         mutation.mutate(updatedRow, {
             onSuccess: (data, variables, context) => {
+                console.log(data);
                 toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
+
+                let annotations = [...diseaseAnnotations];
+                annotations[event.index].subject = data.data.entity.subject;
+                annotations[event.index].object = data.data.entity.object;
+                setDiseaseAnnotations(annotations);
             },
             onError: (error, variables, context) => {
                 toast_topright.current.show([
@@ -224,14 +230,29 @@ export const DiseaseAnnotationsComponent = () => {
     const subjectItemTemplate = (item) => {
         if(item.symbol){
             return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.symbol + ')'}}/>;
-        } else {
+        } else if(item.name){
             return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.name + ')'}}/>;
+        }else {
+            return <div>{item.curie}</div>;
         }
+    };
 
+    const subjectBodyTemplate = (rowData) => {
+        if(rowData.subject.symbol){
+            return <div dangerouslySetInnerHTML={{__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'}}/>;
+        } else if(rowData.subject.name) {
+            return <div dangerouslySetInnerHTML={{__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'}}/>;
+        }else {
+            return <div>({rowData.subject.curie})</div>;
+        }
     };
 
     const diseaseItemTemplate = (item) => {
-        return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.name + ')'}}/>;
+        return <div>{item.curie} ({item.name})</div>;
+    };
+
+    const diseaseBodyTemplate = (rowData) => {
+        return <div>{rowData.object.name} ({rowData.object.curie})</div>;
     };
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
@@ -254,10 +275,10 @@ export const DiseaseAnnotationsComponent = () => {
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
-                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)}></Column>
+                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
-                    <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)}></Column>
+                    <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
                     <Column field="created" header="Creation Date" sortable ></Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
