@@ -2,8 +2,9 @@ PROCS = -T 8
 PACKAGE = clean package
 #FLAGS = -DskipTests=true -ntp -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
 FLAGS = -Dquarkus.package.type=uber-jar -ntp
-RELEASE = 0.0.8
+RELEASE = main
 REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
+AWS_DEFAULT_REGION := us-east-1
 
 ENV_NAME=curation-alpha
 
@@ -12,6 +13,16 @@ OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
 GIT_VERSION = $(shell git describe)
 
 .PHONY: docker all
+
+registry-docker-login:
+ifneq ($(shell echo ${REG} | egrep "ecr\..+\.amazonaws\.com"),)
+	@$(eval DOCKER_LOGIN_CMD=docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli)
+ifneq (${AWS_PROFILE},)
+	@$(eval DOCKER_LOGIN_CMD=${DOCKER_LOGIN_CMD} --profile ${AWS_PROFILE})
+endif
+	@$(eval DOCKER_LOGIN_CMD=${DOCKER_LOGIN_CMD} ecr get-login-password --region=${AWS_DEFAULT_REGION} | docker login -u AWS --password-stdin https://${REG})
+	${DOCKER_LOGIN_CMD}
+endif
 
 all: ui api
 
