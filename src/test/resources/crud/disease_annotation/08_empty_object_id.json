@@ -1,0 +1,14 @@
+{
+    "subject" : {
+        "curie" : "WB:WBGene0000000"
+    },
+    "object" : {
+	"curie" : ""
+    },
+    "referenceList" : [
+	{
+	    "curie" : "PMID:12829789"
+	}
+    ],
+    "diseaseRelation" : "is_implicated_in"
+}
