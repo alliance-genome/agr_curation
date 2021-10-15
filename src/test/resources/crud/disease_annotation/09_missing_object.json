@@ -1,9 +1,6 @@
 {
     "subject" : {
-        "curie" : "WB:WBGene0000000"
-    },
-    "object" : {
-	"curie" : "DOID:14681"
+        "curie" : "WB:WBGene00005643"
     },
     "referenceList" : [
 	{

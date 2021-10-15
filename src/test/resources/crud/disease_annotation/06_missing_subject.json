@@ -1,6 +1,6 @@
 {
     "subject" : {
-        "curie" : "WB:WBGene0000000"
+        "curie" : ""
     },
     "object" : {
 	"curie" : "DOID:14681"

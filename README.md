@@ -51,11 +51,7 @@ Once docker is setup and installed you will need to issue the following docker c
 
 ### Postgres
 
-[Run Postgres Script](docker/run_postgres) which runs the following docker command:
-
-```bash
-docker run -d -p 5432:5432 --net curation --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust postgres:13
-```
+[Run Postgres Script](docker/run_postgres) which will launch an empty postgres instance locally from the official postgres docker image.
 
 If you are needing to connect to the production version of the database, use your personal postgres credentials that have been provided to you,
 or contact a system admin to recover them when you lost them.
@@ -82,11 +78,7 @@ The output will look something like the following:
 
 ### Elastic Search
 
-[Run Elastic Search Script](docker/run_es) which runs the following docker command:
-
-```bash
-docker run -d --net curation -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.9.0
-```
+[Run Elastic Search Script](docker/run_es) which will launch elasticsearch from the appropriate elastic.co docker image.
 
 If you point a browser over to `http://localhost:9200` you should see something like the following:
 
@@ -113,23 +105,16 @@ If you point a browser over to `http://localhost:9200` you should see something 
 
 ### Cerebro
 
-[Run Cerebro Script](docker/run_cerebro) which runs the following docker command:
+[Run Cerebro Script](docker/run_cerebro) which will launch cerebro, an ES control plane, from the appropriate docker image.
 
-```bash
-docker run -d --net curation -p 9000:9000 --name agr.cerebro.server yannart/cerebro
-```
-
-Connect to this by browsing to `http://localhost:9000`, this is used to connect to the ES server, Which will be running at `http://elasticsearch:9200` inside docker or `http://localhost:9200` on the local machine.
+Connect to this by browsing to `http://localhost:9000`, this is used to connect to the ES server, which can be accessed by
+entering `http://elasticsearch:9200` (the internal docker address) in the Node address field, while elasticsearch is directly
+accessible at `http://localhost:9200` on the local machine.
 
 
 ### Active MQ (Message Queue)<a id="activeMQ"/></a>
 
-[Run Active MQ Script](docker/run_activemq) which runs the following docker command:
-
-```bash
-docker run -d --net curation -p 5672:5672 -p 8161:8161 -p 61616:61616 -e ARTEMIS_USERNAME=quarkus -e ARTEMIS_PASSWORD=quarkus --name activemq vromero/activemq-artemis:2.9.0-alpine
-
-```
+[Run Active MQ Script](docker/run_activemq) which will launch activeMQ-artemis, from the last vromero activeMQ image.
 
 The Active MQ is used to queue incoming update requests, the locally running interface can be found at: `http://localhost:8161/console`
 
@@ -296,7 +281,7 @@ Current maintainers:
  * Andrés Becerra Sandoval - [https://github.com/abecerra](https://github.com/abecerra)
  * Christian Pich - [https://github.com/cmpich](https://github.com/cmpich)
  * Jyothi Thota - [https://github.com/jt15](https://github.com/jt15)
+ * Ketaki Thorat - [https://github.com/kthorat-prog](https://github.com/kthorat-prog)
  * Mark Quinton-Tulloch - [https://github.com/markquintontulloch](https://github.com/markquintontulloch)
  * Manuel Luypaert - [https://github.com/mluypaert](https://github.com/mluypaert)
- * Marek Tutaj - [https://github.com/tutajm](https://github.com/tutaj)
  * Olin Blodgett - [https://github.com/oblodgett](https://github.com/oblodgett)
