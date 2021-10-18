@@ -158,6 +158,7 @@ npm install
 ...
 ```
 This will download all npm dependencies and produce a compacted js files ready for deployment.
+ 
 
 ### Building Both
 
@@ -224,7 +225,23 @@ npm start
 ...
 ```
 
-This will start the local UI and it will be running at: [http://localhost:3000](http://localhost:3000) this is in develop mode so any changes made to code will automatically restart the UI. The UI also proxies all `/api` requests over to the API. If need be the API_URL can be changed by setting it on the command line before running the UI.
+This will start the local UI and it will be running at: [http://localhost:3000](http://localhost:3000) this is in develop mode so any changes made to code will automatically restart the UI. The UI also proxies all `/api` requests over to the API. 
+
+If need be the API_URL can be changed by setting it on the command line before running the UI:
+
+```bash
+> export API_URL=https://alpha-curation.alliancegenome.org  # to send proxied requests to the alpha server.
+```
+
+Additionally, there are two convenience commands that will proxy `/api` requests to either the alpha or beta environment
+
+```bash
+> make uirunalpha
+```
+
+```bash
+> make uirunbeta
+```
 
 ### Running Both
 
