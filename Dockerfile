@@ -5,7 +5,6 @@ FROM node:12 AS BUILD_UI_STAGE
 
 WORKDIR /agr_curation
 COPY src/main/cliapp ./cliapp
-COPY src/main/resources ./resources
 
 WORKDIR /agr_curation/cliapp
 RUN make all build
@@ -16,9 +15,13 @@ RUN make all build
 FROM maven:3.8-openjdk-11 as BUILD_API_STAGE
 ARG OVERWRITE_VERSION
 
-# copy the pom and src code to the container
+# copy the src code to the container
 COPY ./ ./
-COPY --from=BUILD_UI_STAGE /agr_curation/resources ./src/main/resources
+# copy the UI build artifacts to the container
+COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/index.html  ./src/main/resources/META-INF/resources/index.html
+COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/favicon.ico ./src/main/resources/META-INF/resources/favicon.ico
+COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/assets/ ./src/main/resources/META-INF/resources/assets/
+COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/static/ ./src/main/resources/META-INF/resources/static/
 
 # Install make
 RUN apt-get update -qq && \
