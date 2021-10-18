@@ -26,10 +26,10 @@ uirun:
 	make -B -C src/main/cliapp run
 
 uirunalpha:
-	export API_URL=http://alpha-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
+	export API_URL=https://alpha-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
 
 uirunbeta:
-	export API_URL=http://beta-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
+	export API_URL=https://beta-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
 
 run:
 	java -jar target/agr_curation_api-runner.jar
