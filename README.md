@@ -172,13 +172,12 @@ npm install
 
 This will start by building the UI and then will package the UI into the API and build the API, into a single linux binary file under the target directory. 
 
-### Building for Docker Release
+### Building Docker Image
 
-If needed, build for a release the following commands can be issued after a full build has been completed:
+If needed, the following command can be issued to build a complete runnable application as a docker image:
 
 ```bash
 > make docker
-> make docker-push
 ```
 
 ## Running
@@ -237,6 +236,13 @@ mvn compile quarkus:dev
 ...
 ```
 If you have made the UI, the UI has been bundled into the API you can find the whole site running at the following: [http://localhost:8080](http://localhost:8080) this will include the UI and give links to Swagger and other resources that are being used.
+
+### Running the docker image
+
+To run the complete application as the [locally built docker image](#Building-Docker-Image), execute the following command:
+```bash
+> make docker-run
+```
 
 ## Loading Data
 
