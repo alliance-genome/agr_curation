@@ -1,3 +1,5 @@
+ARG OVERWRITE_VERSION
+
 ### Stage 1: build UI
 FROM node:12 AS BUILD_UI_STAGE
 
@@ -12,6 +14,7 @@ RUN make all build
 
 ### Stage 2: build API (and include UI components)
 FROM maven:3.8-openjdk-11 as BUILD_API_STAGE
+ARG OVERWRITE_VERSION
 
 # copy the pom and src code to the container
 COPY ./ ./
@@ -20,6 +23,11 @@ COPY --from=BUILD_UI_STAGE /agr_curation/resources ./src/main/resources
 # Install make
 RUN apt-get update
 RUN apt-get install -y build-essential
+
+# Optionally overwrite the application version stored in the pom.xml
+RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
+        mvn versions:set -ntp -DnewVersion=$OVERWRITE_VERSION; \
+    fi;
 # build the api jar
 RUN make api
 

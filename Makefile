@@ -43,7 +43,7 @@ apirun:
 	mvn compile quarkus:dev
 
 docker:
-	docker build -t ${REG}/agr_curation:${RELEASE} .
+	docker build --build-arg OVERWRITE_VERSION=${GIT_VERSION} -t ${REG}/agr_curation:${RELEASE} .
 docker-push:
 	docker push ${REG}/agr_curation:${RELEASE}
 docker-run:
