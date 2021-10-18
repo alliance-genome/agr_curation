@@ -26,10 +26,7 @@ uirun:
 	make -B -C src/main/cliapp run
 
 uirunalpha:
-	make -B -C src/main/cliapp run-alpha
-
-uirunlocal:
-	make -B -C src/main/cliapp run-local
+	export API_URL=http://alpha-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
 
 run:
 	java -jar target/agr_curation_api-runner.jar
