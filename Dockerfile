@@ -21,8 +21,8 @@ COPY ./ ./
 COPY --from=BUILD_UI_STAGE /agr_curation/resources ./src/main/resources
 
 # Install make
-RUN apt-get update
-RUN apt-get install -y build-essential
+RUN apt-get update -qq && \
+    apt-get install -qq -y build-essential
 
 # Optionally overwrite the application version stored in the pom.xml
 RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
