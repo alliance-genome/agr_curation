@@ -8,9 +8,6 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
-    - name: Build application
-      run: |
-        make all
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v1
       with:
