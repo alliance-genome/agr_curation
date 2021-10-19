@@ -3,12 +3,16 @@ import { GeneService } from '../service/GeneService';
 import { AlleleService } from '../service/AlleleService';
 import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
+import { OntologyService } from '../service/OntologyService'
 
 export const Dashboard = () => {
     const [geneCount, setGeneCount] = useState(0);
     const [alleleCount, setAlleleCount] = useState(0);
     const [diseaseAnnotationCount, setDiseaseAnnotationCount] = useState(0);
     const [agmCount, setAgmCount] = useState(0);
+
+    const [ECOCount, setECOCount] = useState(0);
+    const [DOCount, setDOCount] = useState(0);
 
     useEffect(() => {
         const geneService = new GeneService();
@@ -28,6 +32,14 @@ export const Dashboard = () => {
         const agmService = new AffectedGenomicModelService();
         agmService.getAgms(0, 0).then(searchResults => {
             setAgmCount(searchResults.totalResults);
+        });
+        const ontologyService = new OntologyService();
+        ontologyService.getTerms('ecoterm', 0, 0).then(results => {
+          setECOCount(results.totalResults);
+        });
+
+        ontologyService.getTerms('doterm', 0, 0).then(results => {
+          setDOCount(results.totalResults);
         });
     }, []);
 
@@ -64,41 +76,21 @@ export const Dashboard = () => {
 
             <div className="p-col-12 p-md-6 p-xl-3">
                 <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#007be5', color: '#00448f' }}><span>TV</span></div>
+                    <div className="initials" style={{ backgroundColor: '#007be5', color: '#00448f' }}><span>ECO</span></div>
                     <div className="highlight-details ">
                         <i className="pi pi-search"></i>
-                        <span>Total Queries</span>
-                        <span className="count">523</span>
+                        <span>Total Term Count</span>
+                        <span className="count">{ECOCount}</span>
                     </div>
                 </div>
             </div>
             <div className="p-col-12 p-md-6 p-xl-3">
                 <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>TI</span></div>
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>DO</span></div>
                     <div className="highlight-details ">
                         <i className="pi pi-question-circle"></i>
-                        <span>Total Issues</span>
-                        <span className="count">81</span>
-                    </div>
-                </div>
-            </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#20d077', color: '#038d4a' }}><span>OI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-filter"></i>
-                        <span>Open Issues</span>
-                        <span className="count">21</span>
-                    </div>
-                </div>
-            </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#f9c851', color: '#b58c2b' }}><span>CI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-check"></i>
-                        <span>Closed Issues</span>
-                        <span className="count">60</span>
+                        <span>Total Term Count</span>
+                        <span className="count">{DOCount}</span>
                     </div>
                 </div>
             </div>
