@@ -16,45 +16,14 @@ import { AllelesComponent } from './components/AllelesComponent';
 import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
 import { FMSComponent } from './components/FMSComponent';
 import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
-
 import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ECOOntologyComponent';
 import { MPOntologyComponent } from './components/MPOntologyComponent';
-
 import { ApiVersionService } from './service/ApiVersionService';
-
-
-import { ButtonDemo } from './components/ButtonDemo';
-import { ChartDemo } from './components/ChartDemo';
 import { Documentation } from './components/Documentation';
-import { FileDemo } from './components/FileDemo';
-import { FloatLabelDemo } from './components/FloatLabelDemo';
-import { FormLayoutDemo } from './components/FormLayoutDemo';
-import { InputDemo } from './components/InputDemo';
-import { ListDemo } from './components/ListDemo';
-import { MenuDemo } from './components/MenuDemo';
-import { MessagesDemo } from './components/MessagesDemo';
-import { MiscDemo } from './components/MiscDemo';
-import { OverlayDemo } from './components/OverlayDemo';
-import { PanelDemo } from './components/PanelDemo';
-import { TableDemo } from './components/TableDemo';
-import { TreeDemo } from './components/TreeDemo';
-import { InvalidStateDemo } from './components/InvalidStateDemo';
-import { TableEditDemo } from './components/TableEditDemo';
-
 import { Calendar } from './pages/Calendar';
 import { Crud } from './pages/Crud';
 import { EmptyPage } from './pages/EmptyPage';
-
-import { DisplayDemo } from './utilities/DisplayDemo';
-import { ElevationDemo } from './utilities/ElevationDemo';
-import { FlexBoxDemo } from './utilities/FlexBoxDemo';
-import { GridDemo } from './utilities/GridDemo';
-import { IconsDemo } from './utilities/IconsDemo';
-import { SpacingDemo } from './utilities/SpacingDemo';
-import { TextDemo } from './utilities/TextDemo';
-import { TypographyDemo } from './utilities/TypographyDemo';
-import { TimelineDemo } from './utilities/TimelineDemo';
 
 import PrimeReact from 'primereact/api';
 
