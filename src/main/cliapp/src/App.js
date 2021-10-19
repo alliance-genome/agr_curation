@@ -6,7 +6,6 @@ import { CSSTransition } from 'react-transition-group';
 import { AppTopbar } from './AppTopbar';
 import { AppFooter } from './AppFooter';
 import { AppMenu } from './AppMenu';
-import { AppProfile } from './AppProfile';
 import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
@@ -173,7 +172,6 @@ const App = () => {
                     <div style={{cursor: 'pointer'}} onClick={() => history.push('/')}>
                         <div class="card">AGR Curation: {apiVersion.version}<br /></div>
                     </div>
-                    <AppProfile />
                     <AppMenu model={menu} onMenuItemClick={onMenuItemClick} />
                 </div>
             </CSSTransition>
