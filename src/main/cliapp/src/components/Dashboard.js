@@ -39,7 +39,7 @@ export const Dashboard = () => {
                     <span className="detail">Total number of genes</span>
                     <span className="count visitors">{ geneCount }</span>
                 </div>
-            </div>;
+            </div>
             <div className="p-col-12 p-lg-3">
                 <div className="card summary">
                     <span className="title">Alleles</span>
