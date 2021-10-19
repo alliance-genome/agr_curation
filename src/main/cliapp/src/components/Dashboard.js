@@ -12,8 +12,6 @@ import { FullCalendar } from 'primereact/fullcalendar';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { ProductService } from '../service/ProductService';
-import { EventService } from '../service/EventService';
 
 
 import { GeneService } from '../service/GeneService';
@@ -66,8 +64,6 @@ export const Dashboard = () => {
 
     const [tasksCheckbox, setTasksCheckbox] = useState([]);
     const [dropdownCity, setDropdownCity] = useState(null);
-    const [events, setEvents] = useState(null);
-    const [products, setProducts] = useState(null);
 
     const [geneCount, setGeneCount] = useState(0);
     const [alleleCount, setAlleleCount] = useState(0);
@@ -78,10 +74,7 @@ export const Dashboard = () => {
     const [DOCount, setDOCount] = useState(0);
 
     useEffect(() => {
-        const productService = new ProductService();
-        const eventService = new EventService();
-        productService.getProductsSmall().then(data => setProducts(data));
-        eventService.getEvents().then(data => setEvents(data));
+
 
         const geneService = new GeneService();
         geneService.getGenes(0, 0).then(searchReults => {
@@ -93,7 +86,7 @@ export const Dashboard = () => {
           setAlleleCount(searchReults.totalResults);
         });
         const diseaseAnnotationService = new DiseaseAnnotationService();
-        diseaseAnnotationService.getDiseaseAnnotations(0, 0).then(searchResults => {  
+        diseaseAnnotationService.getDiseaseAnnotations(0, 0).then(searchResults => {
           setDiseaseAnnotationCount(searchResults.totalResults);
         });
 
@@ -296,7 +289,7 @@ export const Dashboard = () => {
             <div className="p-col-12 p-lg-6">
                 <div className="card">
                     <h1 style={{ fontSize: '16px' }}>Recent Sales</h1>
-                    <DataTable value={products} className="p-datatable-customers" rows={5} style={{ marginBottom: '20px' }} paginator>
+                    <DataTable className="p-datatable-customers" rows={5} style={{ marginBottom: '20px' }} paginator>
                         <Column header="Logo" body={(data) => <img src={`assets/demo/images/product/${data.image}`} alt={data.image} width="50" />}></Column>
                         <Column field="name" header="Name" sortable></Column>
                         <Column field="category" header="Category" sortable></Column>
@@ -318,7 +311,7 @@ export const Dashboard = () => {
 
             <div className="p-col-12 p-lg-8">
                 <Panel header="Calendar" style={{ height: '100%' }}>
-                    <FullCalendar events={events} options={options} />
+                    <FullCalendar options={options} />
                 </Panel>
             </div>
 
