@@ -28,7 +28,7 @@
         "react-router-dom": "^5.2.0",
         "react-scripts": "4.0.0",
         "react-transition-group": "^4.4.1",
-        "http-proxy-middleware": "latest"
+        "http-proxy-middleware": "^2.0.1"
     },
     "scripts": {
         "start": "react-scripts start",
@@ -46,6 +46,4 @@
         "not ie <= 11",
         "not op_mini all"
     ]
-
 }
-
