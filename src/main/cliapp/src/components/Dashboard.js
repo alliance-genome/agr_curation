@@ -1,28 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { ProductService } from '../service/ProductService';
-import { EventService } from '../service/EventService';
 import { GeneService } from '../service/GeneService';
 import { AlleleService } from '../service/AlleleService';
 import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
 
 export const Dashboard = () => {
-
-    const [tasksCheckbox, setTasksCheckbox] = useState([]);
-    const [events, setEvents] = useState(null);
-    const [products, setProducts] = useState(null);
-
     const [geneCount, setGeneCount] = useState(0);
     const [alleleCount, setAlleleCount] = useState(0);
     const [diseaseAnnotationCount, setDiseaseAnnotationCount] = useState(0);
     const [agmCount, setAgmCount] = useState(0);
 
     useEffect(() => {
-        const productService = new ProductService();
-        const eventService = new EventService();
-        productService.getProductsSmall().then(data => setProducts(data));
-        eventService.getEvents().then(data => setEvents(data));
-
         const geneService = new GeneService();
         geneService.getGenes(0, 0).then(searchReults => {
             setGeneCount(searchReults.totalResults);
@@ -41,7 +29,6 @@ export const Dashboard = () => {
         agmService.getAgms(0, 0).then(searchResults => {
             setAgmCount(searchResults.totalResults);
         });
-
     }, []);
 
     return (
@@ -52,7 +39,7 @@ export const Dashboard = () => {
                     <span className="detail">Total number of genes</span>
                     <span className="count visitors">{ geneCount }</span>
                 </div>
-            </div>
+            </div>;
             <div className="p-col-12 p-lg-3">
                 <div className="card summary">
                     <span className="title">Alleles</span>
