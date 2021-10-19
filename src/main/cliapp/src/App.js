@@ -4,7 +4,6 @@ import { Route, useHistory } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
 import { AppTopbar } from './AppTopbar';
-import { AppFooter } from './AppFooter';
 import { AppMenu } from './AppMenu';
 import { AppConfig } from './AppConfig';
 
@@ -191,7 +190,6 @@ const App = () => {
                 <Route path="/agms" component={AffectedGenomicModelComponent} />
 
             </div>
-            <AppFooter />
 
         </div>
     );
