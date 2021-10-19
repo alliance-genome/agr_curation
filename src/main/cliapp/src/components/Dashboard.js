@@ -94,26 +94,6 @@ export const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#20d077', color: '#038d4a' }}><span>OI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-filter"></i>
-                        <span>Open Issues</span>
-                        <span className="count">21</span>
-                    </div>
-                </div>
-            </div>
-            <div className="p-col-12 p-md-6 p-xl-3">
-                <div className="highlight-box">
-                    <div className="initials" style={{ backgroundColor: '#f9c851', color: '#b58c2b' }}><span>CI</span></div>
-                    <div className="highlight-details ">
-                        <i className="pi pi-check"></i>
-                        <span>Closed Issues</span>
-                        <span className="count">60</span>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 }
