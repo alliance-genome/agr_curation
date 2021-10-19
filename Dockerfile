@@ -25,7 +25,7 @@ COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/static/ ./src/main/resourc
 
 # Install make
 RUN apt-get update -qq && \
-    apt-get install -qq -y build-essential
+    apt-get install -qq -y make
 
 # Optionally overwrite the application version stored in the pom.xml
 RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
