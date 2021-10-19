@@ -134,52 +134,18 @@ b6ed9006b28e   vromero/activemq-artemis:2.9.0-alpine   "/docker-entrypoint.…" 
 
 ## Building
 
-These next steps will get either the UI or API or both up and running locally. Most of these commands are done via the Makefile in order to save typing.
+Both the UI or API can be run locally without needing a separate build step.
+For instructions on how to do so, see [Running](#Running).
 
-### Building API
+Building the application uberjar is done as part of the Docker image creation,
+instructions on how to use this process for local image building can be found [below](#building-docker-image).
 
-Once you have cloned the repo issue the following command in the root of the project:
+### Building Docker Image
 
-```bash
-> make api
-mvn -T 8 clean package -Dnative -Dquarkus.native.container-build=true
-[INFO] Scanning for projects...
-...
-```
-
-This will download all the dependencies from maven central and build out a bootable jar file.
-
-### Building UI
-
-```bash
-> make ui
-make -B -C src/main/cliapp
-npm install
-...
-```
-This will download all npm dependencies and produce a compacted js files ready for deployment.
- 
-
-### Building Both
-
-If you are looking just to run everything at once just issue the following:
-
-```bash
-> make
-make -B -C src/main/cliapp
-npm install
-...
-```
-
-This will start by building the UI and then will package the UI into the API and build the API, into a single linux binary file under the target directory. 
-
-### Building for Docker Release
-
-If needed, build for a release the following commands can be issued after a full build has been completed:
+When needed, the following command can be issued to build a complete runnable application as a docker image:
 
 ```bash
 > make docker
-> make docker-push
 ```
 
 ## Running
@@ -216,12 +182,10 @@ Some notable commands are `s` for restarting the server to pick up java changes.
 
 ### Running UI
 
-After the UI has been build issue the following command:
+To build and run the UI, issue the following command:
 
 ```bash
 > make uirun
-make -B -C src/main/cliapp run
-npm start
 ...
 ```
 
@@ -243,17 +207,12 @@ Additionally, there are two convenience commands that will proxy `/api` requests
 > make uirunbeta
 ```
 
-### Running Both
+### Running the docker image
 
-Make sure to fully build the UI before running `make run` in order for the UI to be served via the API server. Otherwise going to `http://localhost:8080` will give a `Resource not found`
-
+To run the complete application as the [locally built docker image](#Building-Docker-Image), execute the following command:
 ```bash
-> make run
-mvn compile quarkus:dev
-[INFO] Scanning for projects...
-...
+> make docker-run
 ```
-If you have made the UI, the UI has been bundled into the API you can find the whole site running at the following: [http://localhost:8080](http://localhost:8080) this will include the UI and give links to Swagger and other resources that are being used.
 
 ## Loading Data
 
