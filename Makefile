@@ -83,11 +83,7 @@ eb-init:
 	eb init --region us-east-1 -p Docker curation-app
 
 eb-create:
-	@eb create ${ENV_NAME} \
-	        --region=us-east-1 \
-	        --cname="${ENV_NAME}" \
-			--envvars QUARKUS_DATASOURCE_USERNAME=${QUARKUS_DATASOURCE_USERNAME},QUARKUS_DATASOURCE_PASSWORD=${QUARKUS_DATASOURCE_PASSWORD} \
-			--elb-type application
+	@eb create ${ENV_NAME} --region=us-east-1 --cname="${ENV_NAME}" --elb-type application
 
 eb-deploy:
 	@eb deploy ${ENV_NAME}
