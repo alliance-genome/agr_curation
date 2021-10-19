@@ -23,16 +23,12 @@ COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/favicon.ico ./src/main/res
 COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/assets/ ./src/main/resources/META-INF/resources/assets/
 COPY --from=BUILD_UI_STAGE /agr_curation/cliapp/build/static/ ./src/main/resources/META-INF/resources/static/
 
-# Install make
-RUN apt-get update -qq && \
-    apt-get install -qq -y make
-
 # Optionally overwrite the application version stored in the pom.xml
 RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
         mvn versions:set -ntp -DnewVersion=$OVERWRITE_VERSION; \
     fi;
 # build the api jar
-RUN make api
+RUN mvn -T 8 clean package -Dquarkus.package.type=uber-jar -ntp
 
 
 

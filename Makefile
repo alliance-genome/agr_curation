@@ -1,18 +1,14 @@
-PROCS = -T 8
-PACKAGE = clean package
-#FLAGS = -DskipTests=true -ntp -Dorg.slf4j.simpleLogger.defaultLogLevel=WARN
-FLAGS = -Dquarkus.package.type=uber-jar -ntp
 RELEASE = main
 REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
 AWS_DEFAULT_REGION := us-east-1
 
 ENV_NAME=curation-alpha
 
-OPTS = $(PROCS) $(PACKAGE) $(FLAGS)
-
 GIT_VERSION = $(shell git describe)
 
 .PHONY: docker all
+
+all: docker
 
 registry-docker-login:
 ifneq ($(shell echo ${REG} | egrep "ecr\..+\.amazonaws\.com"),)
@@ -24,16 +20,8 @@ endif
 	${DOCKER_LOGIN_CMD}
 endif
 
-all: ui api
-
-api:
-	mvn ${OPTS}
-
-ui:
-	make -B -C src/main/cliapp
-	make -B -C src/main/cliapp build
-
 uirun:
+	make -B -C src/main/cliapp
 	make -B -C src/main/cliapp run
 
 uirunalpha:
@@ -42,8 +30,7 @@ uirunalpha:
 uirunbeta:
 	export API_URL=https://beta-curation.alliancegenome.org; make -B -C src/main/cliapp run; unset API_URL
 
-run:
-	java -jar target/agr_curation_api-runner.jar
+run: docker-run
 
 apirun:
 	mvn compile quarkus:dev
