@@ -93,6 +93,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
+    const evidenceTemplate = (rowData) => {
+        if (rowData && rowData.evidenceCodes) {
+            return <div>{rowData.evidenceCodes.map(a => a.curie)}</div>
+        }
+    };
+
     const negatedTemplate = (rowData) => {
         if(rowData && rowData.negated !== null && rowData.negated !== undefined){
             return <div>{JSON.stringify(rowData.negated)}</div>
@@ -277,6 +283,7 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
                     <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable filter></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
                     <Column field="created" header="Creation Date" sortable ></Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
