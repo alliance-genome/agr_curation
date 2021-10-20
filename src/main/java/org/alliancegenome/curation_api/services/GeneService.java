@@ -9,11 +9,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;

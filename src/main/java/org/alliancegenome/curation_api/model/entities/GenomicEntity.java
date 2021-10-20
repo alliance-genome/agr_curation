@@ -27,12 +27,12 @@ public class GenomicEntity extends BiologicalEntity {
 
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private List<Synonym> synonyms;
 
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private List<CrossReference> crossReferences;
     
     @ElementCollection

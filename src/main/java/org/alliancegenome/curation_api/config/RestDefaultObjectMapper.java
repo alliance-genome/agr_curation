@@ -20,6 +20,11 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
         
         mapper.registerModule(new JavaTimeModule());
         
+        
+        //Hibernate5Module hm = new Hibernate5Module();
+        //hm.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, false);
+        //mapper.registerModule(new Hibernate5Module());
+        
            //.addModule(new ParameterNamesModule())
            //.addModule(new Jdk8Module())
            // and possibly other configuration, modules, then:
@@ -32,7 +37,7 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
         mapper.setSerializationInclusion(Include.NON_EMPTY);
 
         //if (!ConfigHelper.isProduction())
-        //  mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        //mapper.enable(SerializationFeature.INDENT_OUTPUT);
         //mapper.setSerializerFactory(mapper.getSerializerFactory().withSerializerModifier(new APIBeanSerializerModifier()));
     }
 

@@ -3,10 +3,10 @@ package org.alliancegenome.curation_api.bulk.controllers;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.consumers.*;
+import org.alliancegenome.curation_api.consumers.AffectedGenomicModelDTOConsumer;
 import org.alliancegenome.curation_api.interfaces.bulk.AffectedGenomicModelBulkRESTInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;

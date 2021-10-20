@@ -1,25 +1,20 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.List;
+
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.List;
+import lombok.*;
 
 
 @Audited
