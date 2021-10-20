@@ -8,11 +8,6 @@ jobs:
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
-    - name: Declare some variables
-      id: vars
-      shell: bash
-      run: |
-        echo "##[set-output name=tagname;]$(echo ${GITHUB_REF#refs/tags/})"
     - name: AWS credentials configuration
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -27,45 +22,35 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.vars.outputs.tagname }} .
-        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ steps.vars.outputs.tagname }}
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }}
   generate-deployment-package:
     needs: [build-release-image]
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2
-    - name: Declare some variables
-      id: vars
-      shell: bash
-      run: |
-        echo "##[set-output name=tagname;]$(echo ${GITHUB_REF#refs/tags/})"
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
         cat .ebextensions/version.config
-        sed -i.bak "s/0.0.0/${{ steps.vars.outputs.tagname }}/g" .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${{ github.event.release.tag_name }}/g" .ebextensions/version.config
         cat .ebextensions/version.config
     - name: Generate deployment package
-      run: zip -r ${{ steps.vars.outputs.tagname }}.zip docker-compose.yml .ebextensions/
+      run: zip -r ${{ github.event.release.tag_name }}.zip docker-compose.yml .ebextensions/
     - name: Store deployment package in cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.vars.outputs.tagname }}.zip
+        path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
   deploy-to-production:
     if: github.event.release.prerelease == false
     needs: [generate-deployment-package]
     runs-on: ubuntu-20.04
     steps:
-    - name: Declare some variables
-      id: vars
-      shell: bash
-      run: |
-        echo "##[set-output name=tagname;]$(echo ${GITHUB_REF#refs/tags/})"
     - name: Fetch deployment package from cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.vars.outputs.tagname }}.zip
+        path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
@@ -74,8 +59,8 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-production
-        version_label: ${{ steps.vars.outputs.tagname }}
-        deployment_package: ${{ steps.vars.outputs.tagname }}.zip
+        version_label: ${{ github.event.release.tag_name }}
+        deployment_package: ${{ github.event.release.tag_name }}.zip
         use_existing_version_if_available: true
         region: us-east-1
     - name: Slack Notification
@@ -83,20 +68,15 @@ jobs:
       env:
         INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       with:
-        text: "Deployment of release ${{ steps.vars.outputs.tagname }} to production completed! :tada:"
+        text: "Deployment of release ${{ github.event.release.tag_name }} to production completed! :tada:"
   deploy-to-beta:
     needs: [generate-deployment-package]
     runs-on: ubuntu-20.04
     steps:
-    - name: Declare some variables
-      id: vars
-      shell: bash
-      run: |
-        echo "##[set-output name=tagname;]$(echo ${GITHUB_REF#refs/tags/})"
     - name: Fetch deployment package from cache
       uses: actions/cache@v2
       with:
-        path: ${{ steps.vars.outputs.tagname }}.zip
+        path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
@@ -105,8 +85,8 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-beta
-        version_label: ${{ steps.vars.outputs.tagname }}
-        deployment_package: ${{ steps.vars.outputs.tagname }}.zip
+        version_label: ${{ github.event.release.tag_name }}
+        deployment_package: ${{ github.event.release.tag_name }}.zip
         use_existing_version_if_available: true
         region: us-east-1
     - name: Slack Notification
@@ -114,4 +94,4 @@ jobs:
       env:
         INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       with:
-        text: "Deployment of (pre)release ${{ steps.vars.outputs.tagname }} to beta completed! :tada:"
+        text: "Deployment of (pre)release ${{ github.event.release.tag_name }} to beta completed! :tada:"
