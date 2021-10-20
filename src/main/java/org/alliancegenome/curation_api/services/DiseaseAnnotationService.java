@@ -1,29 +1,38 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.ZoneId;
-import java.util.*;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
+import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.response.*;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.*;
-
-import lombok.extern.jbosslog.JBossLog;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -35,6 +44,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     ReferenceDAO referenceDAO;
     @Inject
     DoTermDAO doTermDAO;
+    @Inject
+    EcoTermDAO ecoTermDAO;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
 
@@ -64,6 +75,16 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         annotation.setSubject(entity);
         annotation.setObject(disease);
         annotation.setReferenceList(List.of(reference));
+
+        if (CollectionUtils.isNotEmpty(annotationDTO.getEvidence().getEvidenceCodes())) {
+            List<EcoTerm> ecoTerms = new ArrayList<>();
+            annotationDTO.getEvidence().getEvidenceCodes()
+                    .forEach(evidence -> {
+                        EcoTerm ecoTerm = ecoTermDAO.find(evidence);
+                        ecoTerms.add(ecoTerm);
+                    });
+            annotation.setEvidenceCodes(ecoTerms);
+        }
         annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
 
         annotation.setCreated(
@@ -157,7 +178,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         // assumes the incoming object is a complete object
         return super.update(entity);
     }
-    
+
     public void validateAnnotation(DiseaseAnnotation entity) {
         Long id = entity.getId();
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
