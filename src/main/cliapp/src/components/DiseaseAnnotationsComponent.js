@@ -245,11 +245,11 @@ export const DiseaseAnnotationsComponent = () => {
 
     const subjectBodyTemplate = (rowData) => {
         if(rowData.subject.symbol){
-            return <div dangerouslySetInnerHTML={{__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'}}/>;
+            return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
         } else if(rowData.subject.name) {
-            return <div dangerouslySetInnerHTML={{__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'}}/>;
+            return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
         }else {
-            return <div>({rowData.subject.curie})</div>;
+            return <div>{rowData.subject.curie}</div>;
         }
     };
 
@@ -258,7 +258,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseBodyTemplate = (rowData) => {
-        return <div>{rowData.object.name} ({rowData.object.curie})</div>;
+        return <div>{rowData.object.curie} ({rowData.object.name})</div>;
     };
 
     const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
