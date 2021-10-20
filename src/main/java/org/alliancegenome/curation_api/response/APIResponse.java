@@ -3,12 +3,12 @@ package org.alliancegenome.curation_api.response;
 import java.util.*;
 
 import org.alliancegenome.curation_api.view.View;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @Data
 public class APIResponse {

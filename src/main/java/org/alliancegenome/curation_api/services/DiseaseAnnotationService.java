@@ -1,38 +1,29 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
-import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+
+import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.*;
+
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped

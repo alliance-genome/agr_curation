@@ -7,8 +7,8 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseController;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.interfaces.rest.BiologicalEntityRESTInterface;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.services.BiologicalEntityService;
 
 @RequestScoped
 public class BiologicalEntityController extends BaseController<BiologicalEntityService, BiologicalEntity, BiologicalEntityDAO> implements BiologicalEntityRESTInterface {

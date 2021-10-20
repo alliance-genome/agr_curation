@@ -8,11 +8,10 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.*;
+import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
-import org.alliancegenome.curation_api.model.input.Pagination;
 
 import lombok.extern.jbosslog.JBossLog;
 
