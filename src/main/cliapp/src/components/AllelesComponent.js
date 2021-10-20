@@ -1,7 +1,6 @@
 import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Button } from 'primereact/button';
 import { AlleleService } from '../service/AlleleService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
