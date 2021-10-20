@@ -45,30 +45,30 @@ public class OntologyTerm extends BaseCurieEntity {
     private String definition;
 
     @ElementCollection
-    @JsonView(View.FieldsOnly.class)
+    @JsonView(View.FieldsAndLists.class)
     @Column(columnDefinition="TEXT")
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> definitionUrls;
 
     @ElementCollection
-    @JsonView(View.FieldsOnly.class)
+    @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> subsets;
 
     @ElementCollection
-    @JsonView(View.FieldsOnly.class)
+    @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> secondaryIdentifiers;
 
     @ElementCollection
-    @JsonView(View.FieldsOnly.class)
+    @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     @Column(columnDefinition="TEXT")
     private List<String> synonyms;
 
     @ManyToMany
     @JoinTable(indexes = { @Index( columnList = "ontologyterm_curie"), @Index( columnList = "crossreferences_curie")})
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private List<CrossReference> crossReferences;
 
 //  TODO LinkML to define the following fields
