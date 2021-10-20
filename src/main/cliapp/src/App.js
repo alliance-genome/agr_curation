@@ -106,7 +106,7 @@ const App = () => {
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
         {
-            label: 'Search Forms', icon: 'pi pi-fw pi-sitemap',
+            label: 'Data Tables', icon: 'pi pi-fw pi-sitemap',
             items: [
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
