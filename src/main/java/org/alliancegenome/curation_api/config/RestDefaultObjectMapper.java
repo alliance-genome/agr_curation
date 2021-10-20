@@ -4,6 +4,7 @@ import javax.ws.rs.ext.*;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -20,6 +21,11 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
         
         mapper.registerModule(new JavaTimeModule());
         
+        
+        Hibernate5Module hm = new Hibernate5Module();
+        hm.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, false);
+        mapper.registerModule(hm);
+        
            //.addModule(new ParameterNamesModule())
            //.addModule(new Jdk8Module())
            // and possibly other configuration, modules, then:
@@ -32,7 +38,7 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
         mapper.setSerializationInclusion(Include.NON_EMPTY);
 
         //if (!ConfigHelper.isProduction())
-        //  mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        //mapper.enable(SerializationFeature.INDENT_OUTPUT);
         //mapper.setSerializerFactory(mapper.getSerializerFactory().withSerializerModifier(new APIBeanSerializerModifier()));
     }
 

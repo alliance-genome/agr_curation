@@ -209,14 +209,14 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
 
         if (validateRequiredObject(entity, response))
-            return validateDiseaseAnnotationDisease(entity.getObject(), fieldName, response);
+            return validateDiseaseAnnotationDisease(entity, fieldName, response);
         return false;
     }
 
     private boolean validateSubject(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
         String fieldName = "subject";
         if (validateRequiredSubject(entity, response))
-            return validateDiseaseAnnotationSubject(entity.getSubject(), fieldName, response);
+            return validateDiseaseAnnotationSubject(entity, fieldName, response);
         return false;
     }
 
@@ -240,21 +240,23 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Required field is empty");
     }
 
-    public boolean validateDiseaseAnnotationSubject(BiologicalEntity entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        BiologicalEntity subjectEntity = biologicalEntityDAO.find(entity.getCurie());
+    public boolean validateDiseaseAnnotationSubject(DiseaseAnnotation entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        BiologicalEntity subjectEntity = biologicalEntityDAO.find(entity.getSubject().getCurie());
         if (subjectEntity == null) {
             addInvalidMessagetoResponse(fieldName, response);
             return false;
         }
+        entity.setSubject(subjectEntity);
         return true;
     }
 
-    public boolean validateDiseaseAnnotationDisease(DOTerm entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        DOTerm diseaseTerm = doTermDAO.find(entity.getCurie());
+    public boolean validateDiseaseAnnotationDisease(DiseaseAnnotation entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        DOTerm diseaseTerm = doTermDAO.find(entity.getObject().getCurie());
         if (diseaseTerm == null) {
             addInvalidMessagetoResponse(fieldName, response);
             return false;
         }
+        entity.setObject(diseaseTerm);
         return true;
     }
 
