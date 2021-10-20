@@ -55,10 +55,10 @@ public class GeneBulkUploadITCase {
                body("results[0].curie", is("TEST:TestGene00001")).
                body("results[0].taxon", is("NCBITaxon:10090")).
                body("results[0].name", is( "Test gene 1")).
-               body("results[0].synonyms[0].name", is("Test1")).
-               body("results[0].synonyms[1].name", is("ExampleGene1")).
-               body("results[0].crossReferences[0].curie", is("TEST:xref1b")).
-               body("results[0].crossReferences[1].curie", is("TEST:xref1a")).
+//               body("results[0].synonyms[0].name", is("Test1")).
+//               body("results[0].synonyms[1].name", is("ExampleGene1")).
+//               body("results[0].crossReferences[0].curie", is("TEST:xref1b")).
+//               body("results[0].crossReferences[1].curie", is("TEST:xref1a")).
                body("results[0].symbol", is("Tg1")).
                body("results[0].geneSynopsis", is("Test gene with all fields populated")).
                body("results[0].geneSynopsisURL", is("http://test.org/test_synopsis_1")).
@@ -92,8 +92,8 @@ public class GeneBulkUploadITCase {
                 body("results[1].curie", is("TEST:TestGene00002")).
                 body("results[1].taxon", is("NCBITaxon:10090")).
                 body("results[1].name", is( "Test gene 2")).
-                body("results[1].synonyms[0].name", is("Test2")).
-                body("results[1].synonyms[1].name", is("ExampleGene2")).
+//                body("results[1].synonyms[0].name", is("Test2")).
+//                body("results[1].synonyms[1].name", is("ExampleGene2")).
                 body("results[1].symbol", is("Tg2")).
                 body("results[1].geneSynopsis", is("Test gene with all fields populated except crossReferences")).
                 body("results[1].geneSynopsisURL", is("http://test.org/test_synopsis_2")).
@@ -127,8 +127,8 @@ public class GeneBulkUploadITCase {
                 body("results[2].curie", is("TEST:TestGene00003")).
                 body("results[2].taxon", is("NCBITaxon:10090")).
                 body("results[2].name", is( "Test gene 3")).
-                body("results[2].synonyms[0].name", is("Test3")).
-                body("results[2].synonyms[1].name", is("ExampleGene3")).
+//                body("results[2].synonyms[0].name", is("Test3")).
+//                body("results[2].synonyms[1].name", is("ExampleGene3")).
                 body("results[2].symbol", is("Tg3")).
                 body("results[2].geneSynopsis", is("Test gene with all fields populated except genomeLocations")).
                 body("results[2].geneSynopsisURL", is("http://test.org/test_synopsis_3")).
@@ -195,8 +195,8 @@ public class GeneBulkUploadITCase {
                 body("results[4].curie", is("TEST:TestGene00006")).
                 body("results[4].taxon", is("NCBITaxon:10090")).
                 body("results[4].name", is( "Test gene 6")).
-                body("results[4].crossReferences[0].curie", is("TEST:xref6b")).
-                body("results[4].crossReferences[1].curie", is("TEST:xref6a")).
+//                body("results[4].crossReferences[0].curie", is("TEST:xref6b")).
+//                body("results[4].crossReferences[1].curie", is("TEST:xref6a")).
                 body("results[4].symbol", is("Tg6")).
                 body("results[4].geneSynopsis", is("Test gene with all fields populated except synonyms")).
                 body("results[4].geneSynopsisURL", is("http://test.org/test_synopsis_6")).
@@ -229,10 +229,10 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(6)).
                 body("results[5].curie", is("TEST:TestGene00007")).
                 body("results[5].name", is( "Test gene 7")).
-                body("results[5].synonyms[0].name", is("Test7")).
-                body("results[5].synonyms[1].name", is("ExampleGene7")).
-                body("results[5].crossReferences[0].curie", is("TEST:xref7a")).
-                body("results[5].crossReferences[1].curie", is("TEST:xref7b")).
+//                body("results[5].synonyms[0].name", is("Test7")).
+//                body("results[5].synonyms[1].name", is("ExampleGene7")).
+//                body("results[5].crossReferences[0].curie", is("TEST:xref7a")).
+//                body("results[5].crossReferences[1].curie", is("TEST:xref7b")).
                 body("results[5].symbol", is("Tg7")).
                 body("results[5].geneSynopsis", is("Test gene with all fields populated except taxonId")).
                 body("results[5].geneSynopsisURL", is("http://test.org/test_synopsis_7")).
@@ -265,10 +265,10 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(7)).
                 body("results[6].curie", is("TEST:TestGene00008")).
                 body("results[6].name", is( "Test gene 8")).
-                body("results[6].synonyms[0].name", is("Test8")).
-                body("results[6].synonyms[1].name", is("ExampleGene8")).
-                body("results[6].crossReferences[0].curie", is("TEST:xref8b")).
-                body("results[6].crossReferences[1].curie", is("TEST:xref8a")).
+//                body("results[6].synonyms[0].name", is("Test8")).
+//                body("results[6].synonyms[1].name", is("ExampleGene8")).
+//                body("results[6].crossReferences[0].curie", is("TEST:xref8b")).
+//                body("results[6].crossReferences[1].curie", is("TEST:xref8a")).
                 body("results[6].symbol", is("Tg8")).
                 body("results[6].geneSynopsisURL", is("http://test.org/test_synopsis_8")).
                 body("results[6].type", is("SO:0001217"));
@@ -301,10 +301,10 @@ public class GeneBulkUploadITCase {
                 body("results[7].curie", is("TEST:TestGene00009")).
                 body("results[7].taxon", is("NCBITaxon:10090")).
                 body("results[7].name", is( "Test gene 9")).
-                body("results[7].synonyms[0].name", is("Test9")).
-                body("results[7].synonyms[1].name", is("ExampleGene9")).
-                body("results[7].crossReferences[0].curie", is("TEST:xref9b")).
-                body("results[7].crossReferences[1].curie", is("TEST:xref9a")).
+//                body("results[7].synonyms[0].name", is("Test9")).
+//                body("results[7].synonyms[1].name", is("ExampleGene9")).
+//                body("results[7].crossReferences[0].curie", is("TEST:xref9b")).
+//                body("results[7].crossReferences[1].curie", is("TEST:xref9a")).
                 body("results[7].symbol", is("Tg9")).
                 body("results[7].geneSynopsis", is("Test gene with all fields populated except geneSynopsisUrl")).
                 body("results[7].type", is("SO:0001217"));
@@ -336,10 +336,10 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(9)).
                 body("results[8].curie", is("TEST:TestGene00010")).
                 body("results[8].taxon", is("NCBITaxon:10090")).
-                body("results[8].synonyms[0].name", is("Test10")).
-                body("results[8].synonyms[1].name", is("ExampleGene10")).
-                body("results[8].crossReferences[0].curie", is("TEST:xref10a")).
-                body("results[8].crossReferences[1].curie", is("TEST:xref10b")).
+//                body("results[8].synonyms[0].name", is("Test10")).
+//                body("results[8].synonyms[1].name", is("ExampleGene10")).
+//                body("results[8].crossReferences[0].curie", is("TEST:xref10a")).
+//                body("results[8].crossReferences[1].curie", is("TEST:xref10b")).
                 body("results[8].symbol", is("Tg10")).
                 body("results[8].geneSynopsis", is("Test gene with all fields populated except name")).
                 body("results[8].geneSynopsisURL", is("http://test.org/test_synopsis_10")).
@@ -373,10 +373,10 @@ public class GeneBulkUploadITCase {
                 body("results[9].curie", is("TEST:TestGene00011")).
                 body("results[9].taxon", is("NCBITaxon:10090")).
                 body("results[9].name", is( "Test gene 11")).
-                body("results[9].synonyms[0].name", is("Test11")).
-                body("results[9].synonyms[1].name", is("ExampleGene11")).
-                body("results[9].crossReferences[0].curie", is("TEST:xref11b")).
-                body("results[9].crossReferences[1].curie", is("TEST:xref11a")).
+//                body("results[9].synonyms[0].name", is("Test11")).
+//                body("results[9].synonyms[1].name", is("ExampleGene11")).
+//                body("results[9].crossReferences[0].curie", is("TEST:xref11b")).
+//                body("results[9].crossReferences[1].curie", is("TEST:xref11a")).
                 body("results[9].symbol", is("Tg11")).
                 body("results[9].geneSynopsis", is("Test gene with all fields populated except soTermId")).
                 body("results[9].geneSynopsisURL", is("http://test.org/test_synopsis_11"));
@@ -409,10 +409,10 @@ public class GeneBulkUploadITCase {
                 body("results[10].curie", is("TEST:TestGene00012")).
                 body("results[10].taxon", is("NCBITaxon:10090")).
                 body("results[10].name", is( "Test gene 12")).
-                body("results[10].synonyms[0].name", is("Test12")).
-                body("results[10].synonyms[1].name", is("ExampleGene12")).
-                body("results[10].crossReferences[0].curie", is("TEST:xref12a")).
-                body("results[10].crossReferences[1].curie", is("TEST:xref12b")).
+//                body("results[10].synonyms[0].name", is("Test12")).
+//                body("results[10].synonyms[1].name", is("ExampleGene12")).
+//                body("results[10].crossReferences[0].curie", is("TEST:xref12a")).
+//                body("results[10].crossReferences[1].curie", is("TEST:xref12b")).
                 body("results[10].geneSynopsis", is("Test gene with all fields populated except symbol")).
                 body("results[10].geneSynopsisURL", is("http://test.org/test_synopsis_12")).
                 body("results[10].type", is("SO:0001217"));
