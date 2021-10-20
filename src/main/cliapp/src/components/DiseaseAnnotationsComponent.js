@@ -93,6 +93,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
+    const evidenceTemplate = (rowData) => {
+        if (rowData && rowData.evidenceCodes) {
+            return <div>{rowData.evidenceCodes.map(a => a.curie)}</div>
+        }
+    };
+
     const negatedTemplate = (rowData) => {
         if(rowData && rowData.negated !== null && rowData.negated !== undefined){
             return <div>{JSON.stringify(rowData.negated)}</div>
@@ -255,8 +261,6 @@ export const DiseaseAnnotationsComponent = () => {
         return <div>{rowData.object.curie} ({rowData.object.name})</div>;
     };
 
-    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
-    const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
 
     return (
         <div>
@@ -273,12 +277,13 @@ export const DiseaseAnnotationsComponent = () => {
                            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
-                           paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
+                >
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
                     <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
                     <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable filter></Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
                     <Column field="created" header="Creation Date" sortable ></Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>

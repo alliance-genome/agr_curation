@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.base;
 
-import java.util.*;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 

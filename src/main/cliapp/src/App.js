@@ -4,9 +4,7 @@ import { Route, useHistory } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
 import { AppTopbar } from './AppTopbar';
-import { AppFooter } from './AppFooter';
 import { AppMenu } from './AppMenu';
-import { AppProfile } from './AppProfile';
 import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
@@ -20,10 +18,7 @@ import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent'
 import { ECOOntologyComponent } from './components/ECOOntologyComponent';
 import { MPOntologyComponent } from './components/MPOntologyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
-import { Documentation } from './components/Documentation';
-import { Calendar } from './pages/Calendar';
-import { Crud } from './pages/Crud';
-import { EmptyPage } from './pages/EmptyPage';
+
 
 import PrimeReact from 'primereact/api';
 
@@ -33,9 +28,6 @@ import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
 import 'react-transition-group'
 import 'prismjs/themes/prism-coy.css';
-import '@fullcalendar/core/main.css';
-import '@fullcalendar/daygrid/main.css';
-import '@fullcalendar/timegrid/main.css';
 import './layout/flags/flags.css';
 import './layout/layout.scss';
 import './App.scss';
@@ -114,7 +106,7 @@ const App = () => {
     const menu = [
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
         {
-            label: 'Search Forms', icon: 'pi pi-fw pi-sitemap',
+            label: 'Data Tables', icon: 'pi pi-fw pi-sitemap',
             items: [
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
@@ -179,7 +171,6 @@ const App = () => {
                     <div style={{cursor: 'pointer'}} onClick={() => history.push('/')}>
                         <div class="card">AGR Curation: {apiVersion.version}<br /></div>
                     </div>
-                    <AppProfile />
                     <AppMenu model={menu} onMenuItemClick={onMenuItemClick} />
                 </div>
             </CSSTransition>
@@ -197,12 +188,8 @@ const App = () => {
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />
-                <Route path="/calendar" component={Calendar} />
-                <Route path="/crud" component={Crud} />
-                <Route path="/empty" component={EmptyPage} />
-                <Route path="/documentation" component={Documentation} />
+
             </div>
-            <AppFooter />
 
         </div>
     );

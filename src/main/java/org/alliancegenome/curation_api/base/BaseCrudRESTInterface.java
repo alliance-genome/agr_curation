@@ -17,6 +17,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 
     @POST //@Secured
     @Path("/")
+    @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> create(E entity);
 
     @GET
@@ -26,10 +27,12 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
     
     @PUT //@Secured
     @Path("/")
+    @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> update(E entity);
 
     @DELETE //@Secured
     @Path("/{curie}")
+    @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> delete(@PathParam("curie") String curie);
 
     @POST

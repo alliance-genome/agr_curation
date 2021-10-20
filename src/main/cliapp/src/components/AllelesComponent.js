@@ -70,8 +70,6 @@ useQuery(['alleles', rows, page, multiSortMeta, filters],
     return <div dangerouslySetInnerHTML={{__html: rowData.symbol}} />
   }
 
-  const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" />;
-  const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text" />;
 
   return (
       <div>
@@ -84,7 +82,7 @@ useQuery(['alleles', rows, page, multiSortMeta, filters],
             onFilter={onFilter} filters={filters}
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
-            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
+          >
 
             <Column field="curie" header="Curie" sortable filter></Column>
             <Column field="description" header="Description" sortable filter></Column>
