@@ -1,4 +1,4 @@
-name: Production Release Deployment
+name: Release Deployment
 on:
   release:
     types: [published]
