@@ -255,8 +255,6 @@ export const DiseaseAnnotationsComponent = () => {
         return <div>{rowData.object.curie} ({rowData.object.name})</div>;
     };
 
-    const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text"/>;
-    const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text"/>;
 
     return (
         <div>
@@ -273,7 +271,7 @@ export const DiseaseAnnotationsComponent = () => {
                            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
-                           paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
+                >
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
                     <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
