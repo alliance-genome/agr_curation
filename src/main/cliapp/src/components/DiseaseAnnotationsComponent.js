@@ -95,7 +95,13 @@ export const DiseaseAnnotationsComponent = () => {
 
     const evidenceTemplate = (rowData) => {
         if (rowData && rowData.evidenceCodes) {
-            return <div>{rowData.evidenceCodes.map(a => a.curie)}</div>
+            return (<div>
+                <ul style={{listStyleType : 'none'}}>
+                    {rowData.evidenceCodes.map((a,index) =>
+                        <li key={index}>{a.curie}</li>
+                    )}
+                </ul>
+            </div>);
         }
     };
 
