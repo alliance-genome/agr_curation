@@ -49,6 +49,7 @@ release:
 	git fetch -p -P                           # Prune local branches and tags (to prevent deprecated branch/tag pushing)
 	mvn release:prepare -DpushChanges=false
 	mvn release:clean
+	git push
 	git push --tags
 
 test:
