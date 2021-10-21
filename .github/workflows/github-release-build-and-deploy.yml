@@ -22,7 +22,7 @@ jobs:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} .
+        docker build --build-arg OVERWRITE_VERSION=${{ github.event.release.tag_name }} -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }}
   generate-deployment-package:
     needs: [build-release-image]
