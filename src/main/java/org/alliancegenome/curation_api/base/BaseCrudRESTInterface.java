@@ -22,8 +22,8 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 
     @GET
     @Path("/{curie}")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> get(@PathParam("curie") String id);
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<E> get(@PathParam("curie") String curie);
     
     @PUT //@Secured
     @Path("/")
