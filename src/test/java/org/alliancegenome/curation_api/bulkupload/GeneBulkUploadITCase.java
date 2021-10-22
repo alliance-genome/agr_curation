@@ -450,6 +450,81 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(14)
+    public void geneBulkUploadInvalidSoTermId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/14_invalid_so_term_id.json"));
+
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(15)
+    public void geneBulkUploadInvalidTaxon() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/15_invalid_taxon_id.json"));
+
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(16)
+    public void geneBulkUploadStartAfterEnd() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/16_start_after_end.json"));
+
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(17)
+    public void geneBulkUploadInvalidStrand() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/17_invalid_strand.json"));
+
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(18)
+    public void geneBulkUploadDuplicatedPrimaryIds() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/18_duplicate_primary_ids.json"));
+
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(19)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -470,6 +545,6 @@ public class GeneBulkUploadITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(844));
+                body("totalResults", is(849));
     }
 }
