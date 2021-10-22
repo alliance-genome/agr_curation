@@ -435,6 +435,21 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(13)
+    public void geneBulkUploadNoPrimaryId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/04_no_primary_id.json"));
+
+        // TODO: make the endpoint to respond with 400 (Bad Request) not 500 (internal server error)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
+
+    @Test
+    @Order(14)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
