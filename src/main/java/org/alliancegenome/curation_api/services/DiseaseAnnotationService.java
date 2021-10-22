@@ -198,7 +198,6 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
         String fieldName = "object";
 
-
         if (validateRequiredObject(entity, response))
             return validateDiseaseAnnotationDisease(entity, fieldName, response);
         return false;
