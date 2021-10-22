@@ -6,11 +6,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/disease-annotation")
 @Tag(name = "Disease Annotations")
@@ -18,9 +14,4 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DiseaseAnnotationRESTInterface extends BaseCrudRESTInterface<DiseaseAnnotation> {
 
-    @GET //@Secured
-    @Path("/by/{id}")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<DiseaseAnnotation> get(@PathParam("id") Long id);
-    
 }
