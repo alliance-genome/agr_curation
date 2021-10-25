@@ -4,6 +4,7 @@ import {Column} from 'primereact/column';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
 import {useMutation, useQuery} from 'react-query';
 import {Message} from "primereact/message";
+import {Dropdown} from "primereact/dropdown"
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
@@ -24,6 +25,11 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
+    const RELATIONS = [
+        { label: 'Is Model Of', value: 'is_model_of' },
+        { label: 'Is Implciated In', value: 'is_implicated_in' },
+        { label: 'Is Marker For', value: 'is_marker_for' }
+    ]
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
@@ -175,6 +181,30 @@ export const DiseaseAnnotationsComponent = () => {
         /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
     };
 
+    const onRelationEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.target.value || event.target.value === '') {
+            updatedAnnotations[props.rowIndex].diseaseRelation = event.target.value;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const relationEditor = (props, disabled=false) => {
+        return (
+            <div>
+                <Dropdown 
+                    value={props.rowData.diseaseRelation} 
+                    options={RELATIONS} 
+                    onChange={(e) => onRelationEditorValueChange(props, e)} 
+                    optionLabel="label"
+                    optionValue="value" 
+                    style={{ width: '100%' }}
+                />       
+                <Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} />
+            </div>
+        )
+    };
+
     const onRowEditInit = (event) => {
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
@@ -266,7 +296,6 @@ export const DiseaseAnnotationsComponent = () => {
         return <div>{rowData.object.curie} ({rowData.object.name})</div>;
     };
 
-
     return (
         <div>
             <div className="card">
@@ -285,7 +314,7 @@ export const DiseaseAnnotationsComponent = () => {
                 >
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
                     <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
-                    <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
+                    <Column field="diseaseRelation" editor = {relationEditor} header="Disease Relation" sortable filter></Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
                     <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
                     <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable filter></Column>
