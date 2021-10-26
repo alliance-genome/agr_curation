@@ -25,7 +25,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
-    const [isDisabled, setIsDisabled] = useState(true);
+    const [isEnabled, setIsEnabled] = useState(true);
    
     const [curieFilterValue, setCurieFilterValue] = useState('');
     const [subjectFilterValue, setSubjectFilterValue] = useState('');
@@ -186,7 +186,7 @@ export const DiseaseAnnotationsComponent = () => {
 
     const onRowEditInit = (event) => {
         rowsInEdit.current++;
-        setIsDisabled(false);
+        setIsEnabled(false);
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
         console.log("in onRowEditInit")
@@ -195,7 +195,7 @@ export const DiseaseAnnotationsComponent = () => {
     const onRowEditCancel = (event) => {
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
-            setIsDisabled(true);
+            setIsEnabled(true);
         }; 
 
         let annotations = [...diseaseAnnotations];
@@ -208,7 +208,7 @@ export const DiseaseAnnotationsComponent = () => {
     const onRowEditSave = (event) =>{
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
-            setIsDisabled(true);
+            setIsEnabled(true);
         } 
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length > 1){
@@ -232,6 +232,7 @@ export const DiseaseAnnotationsComponent = () => {
             },
             onError: (error, variables, context) => {
                 rowsInEdit.current++;
+                setIsEnabled(false);
                 toast_topright.current.show([
                     {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
@@ -393,26 +394,26 @@ export const DiseaseAnnotationsComponent = () => {
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isDisabled} 
-                        filter={isDisabled} filterElement={curieFilterElement}>
+                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
+                        filter={isEnabled} filterElement={curieFilterElement}>
                     </Column>
-                    <Column field="subject.curie" header="Subject" sortable={isDisabled} 
-                        filter={isDisabled} filterElement={subjectFilterElement}
+                    <Column field="subject.curie" header="Subject" sortable={isEnabled} 
+                        filter={isEnabled} filterElement={subjectFilterElement}
                         editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
-                    <Column field="diseaseRelation" header="Disease Relation" sortable={isDisabled} 
-                        filter={isDisabled} filterElement={relationFilterElement}>
+                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
+                        filter={isEnabled} filterElement={relationFilterElement}>
                     </Column>
-                    <Column field="negated" header="Negated" body={negatedTemplate} sortable={isDisabled} ></Column>
-                    <Column field="object.curie" header="Disease" sortable={isDisabled} 
-                        filter={isDisabled} filterElement={diseaseFilterElement}
+                    <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
+                    <Column field="object.curie" header="Disease" sortable={isEnabled} 
+                        filter={isEnabled} filterElement={diseaseFilterElement}
                         editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}>
                     </Column>
-                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isDisabled} 
-                        filter={isDisabled} filterElement={evidenceFilterElement}>
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
+                        filter={isEnabled} filterElement={evidenceFilterElement}>
                     </Column>
-                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isDisabled} 
-                        filter={isDisabled} filterElement={referenceFilterElement}>
+                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
+                        filter={isEnabled} filterElement={referenceFilterElement}>
                     </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
