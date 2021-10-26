@@ -148,7 +148,6 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={subjectItemTemplate}
             completeMethod={searchSubject}
             onChange={(e) => onSubjectEditorValueChange(props, e)}
-            forceSelection
         /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
     };
 
@@ -173,7 +172,6 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={diseaseItemTemplate}
             completeMethod={searchDisease}
             onChange={(e) => onDiseaseEditorValueChange(props, e)}
-            forceSelection
         /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
     };
 
@@ -224,6 +222,7 @@ export const DiseaseAnnotationsComponent = () => {
                 setDiseaseAnnotations(annotations);
             },
             onError: (error, variables, context) => {
+                rowsInEdit.current++;
                 toast_topright.current.show([
                     {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
