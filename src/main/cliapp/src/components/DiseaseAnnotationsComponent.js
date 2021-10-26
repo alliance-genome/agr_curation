@@ -262,12 +262,14 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const subjectBodyTemplate = (rowData) => {
-        if(rowData.subject.symbol){
-            return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
-        } else if(rowData.subject.name) {
-            return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
-        }else {
-            return <div>{rowData.subject.curie}</div>;
+        if(rowData.subject){
+            if(rowData.subject.symbol){
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
+            } else if(rowData.subject.name) {
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
+            }else {
+                return <div>{rowData.subject.curie}</div>;
+            }
         }
     };
 
@@ -276,7 +278,9 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseBodyTemplate = (rowData) => {
-        return <div>{rowData.object.curie} ({rowData.object.name})</div>;
+        if(rowData.object){
+            return <div>{rowData.object.curie} ({rowData.object.name})</div>;
+        }
     };
 
 
