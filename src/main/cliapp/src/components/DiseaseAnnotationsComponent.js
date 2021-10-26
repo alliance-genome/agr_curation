@@ -24,6 +24,8 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
+    const [isDisabled, setIsDisabled] = useState(true);
+    const rowsInEdit = useRef(0);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
@@ -176,12 +178,19 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const onRowEditInit = (event) => {
+        rowsInEdit.current++;
+        setIsDisabled(false);
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
         console.log("in onRowEditInit")
     };
 
     const onRowEditCancel = (event) => {
+        rowsInEdit.current--;
+        if(rowsInEdit.current === 0){
+            setIsDisabled(true);
+        }; 
+
         let annotations = [...diseaseAnnotations];
         annotations[event.index] = originalRows[event.index];
         delete originalRows[event.index];
@@ -190,6 +199,10 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const onRowEditSave = (event) =>{
+        rowsInEdit.current--;
+        if(rowsInEdit.current === 0){
+            setIsDisabled(true);
+        } 
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length > 1){
             updatedRow.subject = {};
@@ -283,14 +296,13 @@ export const DiseaseAnnotationsComponent = () => {
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
-                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
-                    <Column field="diseaseRelation" header="Disease Relation" sortable filter></Column>
-                    <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
-                    <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
-                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable filter></Column>
-                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
-                    <Column field="created" header="Creation Date" sortable ></Column>
+                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isDisabled} filter={isDisabled}></Column>
+                    <Column field="subject.curie" header="Subject" sortable={isDisabled} filter={isDisabled} editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
+                    <Column field="diseaseRelation" header="Disease Relation" sortable={isDisabled} filter={isDisabled}></Column>
+                    <Column field="negated" header="Negated" body={negatedTemplate} sortable={isDisabled} ></Column>
+                    <Column field="object.curie" header="Disease" sortable={isDisabled} filter={isDisabled} editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isDisabled} filter={isDisabled}></Column>
+                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isDisabled} filter={isDisabled}></Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </div>
