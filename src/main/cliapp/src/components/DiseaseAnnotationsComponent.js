@@ -25,7 +25,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
-    const [isEnabled, setIsEnabled] = useState(true);
+    const [isEnabled, setIsEnabled] = useState(true); //needs better name
    
     const [curieFilterValue, setCurieFilterValue] = useState('');
     const [subjectFilterValue, setSubjectFilterValue] = useState('');
@@ -293,88 +293,102 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const curieFilterElement = <InputText value={curieFilterValue} onChange={(e) => {
-        setCurieFilterValue(e.target.value);
-        const filter = {
-            filters: {
-                "curie": {
-                    value: e.target.value,
-                    matchMode: "startsWith"
+    const curieFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={curieFilterValue} 
+        onChange={(e) => {
+            setCurieFilterValue(e.target.value);
+            const filter = {
+                filters: {
+                    "curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
                 }
             }
-        }
-        onFilter(filter);
+            onFilter(filter);
     }
 } />;
 
-    const subjectFilterElement = <InputText value={subjectFilterValue} onChange={(e) => {
-            setSubjectFilterValue(e.target.value);
-            const filter = {
-                filters: {
-                    "subject.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
+    const subjectFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={subjectFilterValue} onChange={(e) => {//needs to be generalized into one function
+            
+                setSubjectFilterValue(e.target.value);
+                const filter = {
+                    filters: {
+                        "subject.curie": {
+                            value: e.target.value,
+                            matchMode: "startsWith"
+                        }
                     }
                 }
+                onFilter(filter);
             }
-            onFilter(filter);
-        }
     } />;
 
-    const relationFilterElement = <InputText value={relationFilterValue} onChange={(e) => {
-            setRelationFilterValue(e.target.value);
-            const filter = {
-                filters: {
-                    "diseaseRelation": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
+    const relationFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={relationFilterValue} onChange={(e) => {
+                setRelationFilterValue(e.target.value);
+                const filter = {
+                    filters: {
+                        "diseaseRelation": {
+                            value: e.target.value,
+                            matchMode: "startsWith"
+                        }
                     }
                 }
+                onFilter(filter);
             }
-            onFilter(filter);
-        }
     } />;
 
-    const diseaseFilterElement = <InputText value={diseaseFilterValue} onChange={(e) => {
-            setDiseaseFilterValue(e.target.value);
-            const filter = {
-                filters: {
-                    "object.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
+    const diseaseFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={diseaseFilterValue} onChange={(e) => {
+                setDiseaseFilterValue(e.target.value);
+                const filter = {
+                    filters: {
+                        "object.curie": {
+                            value: e.target.value,
+                            matchMode: "startsWith"
+                        }
                     }
                 }
+                onFilter(filter);
             }
-            onFilter(filter);
-        }
     } />;
 
-    const evidenceFilterElement = <InputText value={evidenceFilterValue} onChange={(e) => {
-            setEvidenceFilterValue(e.target.value);
-            const filter = {
-                filters: {
-                    "evidenceCodes.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
+    const evidenceFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={evidenceFilterValue} onChange={(e) => {
+                setEvidenceFilterValue(e.target.value);
+                const filter = {
+                    filters: {
+                        "evidenceCodes.curie": {
+                            value: e.target.value,
+                            matchMode: "startsWith"
+                        }
                     }
                 }
+                onFilter(filter);
             }
-            onFilter(filter);
-        }
     } />;
 
-    const referenceFilterElement = <InputText value={referenceFilterValue} onChange={(e) => {
-            setReferenceFilterValue(e.target.value);
-            const filter = {
-                filters: {
-                    "referenceList.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
+    const referenceFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={referenceFilterValue} onChange={(e) => {
+                setReferenceFilterValue(e.target.value);
+                const filter = {
+                    filters: {
+                        "referenceList.curie": {
+                            value: e.target.value,
+                            matchMode: "startsWith"
+                        }
                     }
                 }
+                onFilter(filter);
             }
-            onFilter(filter);
-        }
     } />;
 
 
@@ -395,25 +409,25 @@ export const DiseaseAnnotationsComponent = () => {
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
-                        filter={isEnabled} filterElement={curieFilterElement}>
+                        filter filterElement={curieFilterElement}>
                     </Column>
                     <Column field="subject.curie" header="Subject" sortable={isEnabled} 
-                        filter={isEnabled} filterElement={subjectFilterElement}
+                        filter filterElement={subjectFilterElement}
                         editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
-                        filter={isEnabled} filterElement={relationFilterElement}>
+                        filter filterElement={relationFilterElement}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
                     <Column field="object.curie" header="Disease" sortable={isEnabled} 
-                        filter={isEnabled} filterElement={diseaseFilterElement}
+                        filter filterElement={diseaseFilterElement}
                         editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}>
                     </Column>
                     <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
-                        filter={isEnabled} filterElement={evidenceFilterElement}>
+                        filter filterElement={evidenceFilterElement}>
                     </Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
-                        filter={isEnabled} filterElement={referenceFilterElement}>
+                        filter filterElement={referenceFilterElement}>
                     </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
