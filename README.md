@@ -20,6 +20,9 @@ These instructions will get you a copy of the project and the API up and running
 - [Running](#running)
 	* [Running API](#running-api)
 	* [Running UI](#running-ui)
+- [Releasing and Deploying](#releasing-and-deploying)
+	* [Deployment environments](#deployment-environments)
+	* [Release Creation](#release-creation)
 - [Loading Data](#loading-data)
 
 
@@ -213,6 +216,73 @@ To run the complete application as the [locally built docker image](#Building-Do
 ```bash
 > make docker-run
 ```
+
+## Releasing and deploying
+### Deployment environments
+There are three environments to which code automatically gets deployed at different stages during development:
+ * The alpha environment should be regarded as the developers environment, where active code development can be happening
+   at any moment, and things are expected to break every now and then.
+   This environment receives new deployments on every push made to the main branch.
+ * The beta environment should be regarded as the testers environment, where testers can have a first look at
+   newly developed functionality before it is ready to be pushed to production. It is more stable than alpha,
+   but is still subject to regular change as feedback is collected and the final kinks are being ironed out.
+   This environment receives new deployments for every pre- and full release created on Github.
+ * The production environment is the final stage of deployment, where users can rely on full-tested and ready-to-use
+   features and functionality at any moment. This is the most stable and reliable environment.
+   This environment receives new deployments for every full release created on Github.
+
+All deployments are fully automated through Github actions, for which the configuration files can be found in the [`.github/workflows/` directory](.github/workflows/).
+Deployments to alpha happen automatically as code gets pushed to main (after merging a PR), but for
+deployments to beta and production, a small number of steps needs to be taken in order to create a release and trigger deployment.
+
+### Release Creation
+To create a new (pre-)release and deploy to beta and/or production, do the following steps:
+
+ 1. Ensure you're on the main branch and pull the latest code.
+    ```bash
+	git checkout main
+	git pull
+	```
+
+ 2. Decide on a proper release version number to be used for the release being created.
+    We apply [Semantic Versioning](https://semver.org/) whereby
+		* `MAJOR`.`MINOR`.`PATCH` is used for full releases
+		* Release-candidate extensions are used for prereleases in the format `MAJOR`.`MINOR`.`PATCH`-rc`x`
+		  where x is an increment starting at one.
+	For the time being, the `MAJOR` release number is kept at 0 to indicate the early development phase,
+	until the product is ready for active usage by users external to the development team, in a stable
+	production environment.
+
+ 3. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file as required and commit the changes.
+    When creating a full release, ensure the release notes contains a section describing
+	(noteworthy) changes made since the last full release, and include PR and JIRA ticket
+	references where possible.
+
+ 4. Ensure you have a clean working directory before continuing, you can save any local changes for later using `git stash` if needed.
+
+ 5. Prepare the release. This step will update the pom.xml, create a git tag and push
+    those changes to github, in accordance to the details you provide during execution.
+	```bash
+	make release
+	```
+	Provide the following details during execution:
+	 * **release version**: the release version to be used for the release being created (as decided in step 2)
+	 * **SCM release tag or label**: accept the default (v`release version`)
+	 * **new development version**: the release version of the next release being worked.
+	   When creating a release candidate, this version should be `MAJOR`.`MINOR`.`PATCH`-SNAPSHOT,
+	   When creating a final release, this version should be `MAJOR`.`MINOR+1`.`PATCH`-SNAPSHOT.
+
+ 6. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
+	* In the "Choose a tag" selection box, select the SCM release tag you provided in the previous step
+	* Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
+	* **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
+		* **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
+		* Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment as well.
+
+7. Confirm all entered details are correct and publish the release.
+
+Once published, github actions kicks in and the release will get deployed to the appropriate environments.
+Completion of these deployments is reported in the #a-team-code slack channel.
 
 ## Loading Data
 
