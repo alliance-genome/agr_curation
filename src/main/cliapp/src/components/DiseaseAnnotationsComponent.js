@@ -75,8 +75,8 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (event) => {
-        setFilters(event.filters);
+    const onFilter = (filter) => {
+        setFilters({...filters, ...filter});
     };
 
     const onSort = (event) => {
@@ -299,13 +299,12 @@ export const DiseaseAnnotationsComponent = () => {
         onChange={(e) => {
             setCurieFilterValue(e.target.value);
             const filter = {
-                filters: {
-                    "curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
-                    }
+                "curie": {
+                    value: e.target.value,
+                    matchMode: "startsWith"
                 }
             }
+
             onFilter(filter);
     }
 } />;
@@ -316,13 +315,12 @@ export const DiseaseAnnotationsComponent = () => {
             
                 setSubjectFilterValue(e.target.value);
                 const filter = {
-                    filters: {
-                        "subject.curie": {
-                            value: e.target.value,
-                            matchMode: "startsWith"
-                        }
+                    "subject.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
                     }
                 }
+                
                 onFilter(filter);
             }
     } />;
@@ -332,11 +330,9 @@ export const DiseaseAnnotationsComponent = () => {
         value={relationFilterValue} onChange={(e) => {
                 setRelationFilterValue(e.target.value);
                 const filter = {
-                    filters: {
-                        "diseaseRelation": {
-                            value: e.target.value,
-                            matchMode: "startsWith"
-                        }
+                    "diseaseRelation": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
                     }
                 }
                 onFilter(filter);
@@ -348,11 +344,9 @@ export const DiseaseAnnotationsComponent = () => {
         value={diseaseFilterValue} onChange={(e) => {
                 setDiseaseFilterValue(e.target.value);
                 const filter = {
-                    filters: {
-                        "object.curie": {
-                            value: e.target.value,
-                            matchMode: "startsWith"
-                        }
+                    "object.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
                     }
                 }
                 onFilter(filter);
@@ -364,11 +358,9 @@ export const DiseaseAnnotationsComponent = () => {
         value={evidenceFilterValue} onChange={(e) => {
                 setEvidenceFilterValue(e.target.value);
                 const filter = {
-                    filters: {
-                        "evidenceCodes.curie": {
-                            value: e.target.value,
-                            matchMode: "startsWith"
-                        }
+                    "evidenceCodes.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
                     }
                 }
                 onFilter(filter);
@@ -380,11 +372,9 @@ export const DiseaseAnnotationsComponent = () => {
         value={referenceFilterValue} onChange={(e) => {
                 setReferenceFilterValue(e.target.value);
                 const filter = {
-                    filters: {
-                        "referenceList.curie": {
-                            value: e.target.value,
-                            matchMode: "startsWith"
-                        }
+                    "referenceList.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
                     }
                 }
                 onFilter(filter);
