@@ -1,0 +1,42 @@
+import React, {useState} from 'react';
+import {AutoComplete} from "primereact/autocomplete";
+import {Message} from "primereact/message";
+
+export const DiseaseEditor = (props) => {//ditto line 152    
+    const [filteredDiseases, setFilteredDiseases] = useState([]);
+    
+    const searchDisease = (event) => {
+        props.ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
+            .then((data) => {
+                setFilteredDiseases(data.results);
+            });
+    };
+    
+    const onDiseaseEditorValueChange = (event) => {//ditto line 138
+        let updatedAnnotations = [...props.rowProps.value];
+        
+
+        if(event.target.value || event.target.value === '') {
+            updatedAnnotations[props.rowProps.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            if(typeof event.target.value === "object"){
+                updatedAnnotations[props.rowProps.rowIndex].object.curie = event.target.value.curie;
+            } else {
+                updatedAnnotations[props.rowProps.rowIndex].object.curie = event.target.value;
+            }
+            props.setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+    
+    const diseaseItemTemplate = (item) => {//put into it's own component?
+        return <div>{item.curie} ({item.name})</div>;
+    };
+
+    return (<div><AutoComplete
+        field="curie"
+       value={props.rowProps.rowData.object.curie}
+        suggestions={filteredDiseases}
+        itemTemplate={diseaseItemTemplate}
+        completeMethod={searchDisease}
+        onChange={(e) => onDiseaseEditorValueChange(e)}
+    /><Message severity={props.rowProps.rowData.object.errorSeverity ? props.rowProps.rowData.object.errorSeverity : ""} text={props.rowProps.rowData.object.errorMessage} /></div>)
+};

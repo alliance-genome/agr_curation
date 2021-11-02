@@ -3,13 +3,13 @@ import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
 import {useMutation, useQuery} from 'react-query';
-import {Message} from "primereact/message";
-import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
 import {OntologyService} from "../service/OntologyService";
 import { InputText } from 'primereact/inputtext';
-
+import { returnSorted } from '../utils/utils';
+import { SubjectEditor } from './SubjectEditor';
+import { DiseaseEditor } from './DiseaseEditor';
 
 export const DiseaseAnnotationsComponent = () => {
 
@@ -21,12 +21,9 @@ export const DiseaseAnnotationsComponent = () => {
     const [rows, setRows] = useState(50);
     const [totalRecords, setTotalRecords] = useState(0);
     const [first, setFirst] = useState(0);
-    const [originalRows, setOriginalRows] = useState([]);
-    const [filteredSubjects, setFilteredSubjects] = useState([]);
-    const [filteredDiseases, setFilteredDiseases] = useState([]);
-    const [editingRows, setEditingRows] = useState({});
+    const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
-   
+
     const [curieFilterValue, setCurieFilterValue] = useState('');
     const [subjectFilterValue, setSubjectFilterValue] = useState('');
     const [relationFilterValue, setRelationFilterValue] = useState('');
@@ -68,42 +65,33 @@ export const DiseaseAnnotationsComponent = () => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
 
-    const onLazyLoad = (event) => {
+    const onLazyLoad = (event) => { //extract into it's own hook? 
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
     };
 
 
-    const onFilter = (filter) => {
+    const onFilter = (filter) => { //also extracted into hook
         setFilters({...filters, ...filter});
     };
 
-    const onSort = (event) => {
-        let found = false;
-        const newSort = [...multiSortMeta];
-
-        newSort.forEach((o) => {
-            if (o.field === event.multiSortMeta[0].field) {
-                o.order = event.multiSortMeta[0].order;
-                found = true;
-            }
-        });
-
-        if (!found) {
-            setMultiSortMeta(newSort.concat(event.multiSortMeta));
-        } else {
-            setMultiSortMeta(newSort);
-        }
+    const onSort = (event) => { //also extracted into hook
+        setMultiSortMeta(
+            returnSorted(event, multiSortMeta)
+        )
     };
 
-    const publicationTemplate = (rowData) => {
+    
+    const publicationTemplate = (rowData) => { //maybe its own component?
         if (rowData && rowData.referenceList) {
             return <div>{rowData.referenceList.map(a => a.curie)}</div>
         }
     };
+    
+        
 
-    const evidenceTemplate = (rowData) => {
+    const evidenceTemplate = (rowData) => { //maybe its own component?
         if (rowData && rowData.evidenceCodes) {
             return (<div>
                 <ul style={{listStyleType : 'none'}}>
@@ -115,76 +103,44 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const negatedTemplate = (rowData) => {
+    const negatedTemplate = (rowData) => { //maybe its own component?
         if(rowData && rowData.negated !== null && rowData.negated !== undefined){
             return <div>{JSON.stringify(rowData.negated)}</div>
         }
     };
 
-    const searchSubject = (event) => {
-        biologicalEntityService.getBiologicalEntities(15, 0, null, {"curie":{"value": event.query}})
-            .then((data) => {
-                setFilteredSubjects(data.results);
-            });
-    };
+    // const searchDisease = (event) => {
+    //     ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
+    //         .then((data) => {
+    //             setFilteredDiseases(data.results);
+    //         });
+    // };
 
-    const searchDisease = (event) => {
-        ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
-            .then((data) => {
-                setFilteredDiseases(data.results);
-            });
-    };
+    // const onDiseaseEditorValueChange = (props, event) => {//ditto line 138
+    //     let updatedAnnotations = [...props.value];
+    //     if(event.target.value || event.target.value === '') {
+    //         updatedAnnotations[props.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+    //         if(typeof event.target.value === "object"){
+    //             updatedAnnotations[props.rowIndex].object.curie = event.target.value.curie;
+    //         } else {
+    //             updatedAnnotations[props.rowIndex].object.curie = event.target.value;
+    //         }
+    //         setDiseaseAnnotations(updatedAnnotations);
+    //     }
+    // };
 
-    const onSubjectEditorValueChange = (props, event) => {
-        let updatedAnnotations = [...props.value];
-        if(event.target.value || event.target.value === '') {
-            updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-            if(typeof event.target.value === "object"){
-                updatedAnnotations[props.rowIndex].subject.curie = event.target.value.curie;
-            } else {
-                updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
-            }
-            setDiseaseAnnotations(updatedAnnotations);
-        }
-    };
+    // const diseaseEditor = (props) => {//ditto line 152
+    //     return (<div><AutoComplete
+    //         field="curie"
+    //         value={props.rowData.object.curie}
+    //         suggestions={filteredDiseases}
+    //         itemTemplate={diseaseItemTemplate}
+    //         completeMethod={searchDisease}
+    //         onChange={(e) => onDiseaseEditorValueChange(props, e)}
+    //     /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
+    // };
 
-
-    const subjectEditor = (props) => {
-        return (<div><AutoComplete
-            field="curie"
-            value={props.rowData.subject.curie}
-            suggestions={filteredSubjects}
-            itemTemplate={subjectItemTemplate}
-            completeMethod={searchSubject}
-            onChange={(e) => onSubjectEditorValueChange(props, e)}
-        /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
-    };
-
-    const onDiseaseEditorValueChange = (props, event) => {
-        let updatedAnnotations = [...props.value];
-        if(event.target.value || event.target.value === '') {
-            updatedAnnotations[props.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-            if(typeof event.target.value === "object"){
-                updatedAnnotations[props.rowIndex].object.curie = event.target.value.curie;
-            } else {
-                updatedAnnotations[props.rowIndex].object.curie = event.target.value;
-            }
-            setDiseaseAnnotations(updatedAnnotations);
-        }
-    };
-
-    const diseaseEditor = (props) => {
-        return (<div><AutoComplete
-            field="curie"
-            value={props.rowData.object.curie}
-            suggestions={filteredDiseases}
-            itemTemplate={diseaseItemTemplate}
-            completeMethod={searchDisease}
-            onChange={(e) => onDiseaseEditorValueChange(props, e)}
-        /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
-    };
-
-    const onRowEditInit = (event) => {
+    const onRowEditInit = (event) => {//can these row logic methods be extracted? Either into a lib file or into custom hooks?
         rowsInEdit.current++;
         setIsEnabled(false);
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
@@ -205,7 +161,7 @@ export const DiseaseAnnotationsComponent = () => {
         setDiseaseAnnotations(annotations);
     };
 
-    const onRowEditSave = (event) =>{
+    const onRowEditSave = (event) =>{//possible to shrink?
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
             setIsEnabled(true);
@@ -260,17 +216,7 @@ export const DiseaseAnnotationsComponent = () => {
         setEditingRows(event.data);
     }
 
-    const subjectItemTemplate = (item) => {
-        if(item.symbol){
-            return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.symbol + ')'}}/>;
-        } else if(item.name){
-            return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.name + ')'}}/>;
-        }else {
-            return <div>{item.curie}</div>;
-        }
-    };
-
-    const subjectBodyTemplate = (rowData) => {
+    const subjectBodyTemplate = (rowData) => {//put into it's own component?
         if(rowData.subject){
             if(rowData.subject.symbol){
                 return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
@@ -282,11 +228,11 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const diseaseItemTemplate = (item) => {
-        return <div>{item.curie} ({item.name})</div>;
-    };
+    // const diseaseItemTemplate = (item) => {//put into it's own component?
+    //     return <div>{item.curie} ({item.name})</div>;
+    // };
 
-    const diseaseBodyTemplate = (rowData) => {
+    const diseaseBodyTemplate = (rowData) => {//put into it's own component?
         if(rowData.object){
             return <div>{rowData.object.curie} ({rowData.object.name})</div>;
         }
@@ -309,7 +255,8 @@ export const DiseaseAnnotationsComponent = () => {
     }
 } />;
 
-    const subjectFilterElement = <InputText 
+    const subjectFilterElement = //hopefully these can all be extracted into one component
+    <InputText 
         disabled={!isEnabled}
         value={subjectFilterValue} onChange={(e) => {//needs to be generalized into one function
             
@@ -323,7 +270,8 @@ export const DiseaseAnnotationsComponent = () => {
                 
                 onFilter(filter);
             }
-    } />;
+        } 
+    />;
 
     const relationFilterElement = <InputText 
         disabled={!isEnabled}
@@ -403,7 +351,12 @@ export const DiseaseAnnotationsComponent = () => {
                     </Column>
                     <Column field="subject.curie" header="Subject" sortable={isEnabled} 
                         filter filterElement={subjectFilterElement}
-                        editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
+                        editor={(props) => <SubjectEditor 
+                                                rowProps={props} 
+                                                biologicalEntityService={biologicalEntityService} 
+                                                setDiseaseAnnotations={setDiseaseAnnotations}
+                                            />} 
+                        body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
                         filter filterElement={relationFilterElement}>
@@ -411,7 +364,12 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
                     <Column field="object.curie" header="Disease" sortable={isEnabled} 
                         filter filterElement={diseaseFilterElement}
-                        editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}>
+                        editor={(props) => <DiseaseEditor
+                                                rowProps={props} 
+                                                ontologyService={ontologyService} 
+                                                setDiseaseAnnotations={setDiseaseAnnotations}
+                                            />} 
+                        body={diseaseBodyTemplate}>
                     </Column>
                     <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
                         filter filterElement={evidenceFilterElement}>
