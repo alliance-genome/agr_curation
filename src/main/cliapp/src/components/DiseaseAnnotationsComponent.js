@@ -10,7 +10,7 @@ import { InputText } from 'primereact/inputtext';
 import { returnSorted } from '../utils/utils';
 import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
-
+import { FilterComponent } from './FilterComponent'
 export const DiseaseAnnotationsComponent = () => {
 
     let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
@@ -24,13 +24,6 @@ export const DiseaseAnnotationsComponent = () => {
     const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
 
-    const [curieFilterValue, setCurieFilterValue] = useState('');
-    const [subjectFilterValue, setSubjectFilterValue] = useState('');
-    const [relationFilterValue, setRelationFilterValue] = useState('');
-    const [diseaseFilterValue, setDiseaseFilterValue] = useState('');
-    const [evidenceFilterValue, setEvidenceFilterValue] = useState('');
-    const [referenceFilterValue, setReferenceFilterValue] = useState('');
-   
     const rowsInEdit = useRef(0);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
@@ -72,8 +65,8 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter, field) => { //also extracted into hook
-        const filtersCopy = filters;
+    const onFilter = (filter, field) => { //also extracted into hook? Because it modifies filters, does that count as a side effect? Does that mean it should be a hook?
+        const filtersCopy = filters; //maybe filters could be set to a custom useFilters hook?
         if(filter[field].value.length === 0){
             delete filtersCopy[field]
             setFilters({...filtersCopy});
@@ -211,97 +204,6 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const curieFilterElement = <InputText 
-        disabled={!isEnabled}
-        value={curieFilterValue}
-        onChange={(e) => {
-            setCurieFilterValue(e.target.value);
-                const filter = {};
-                filter["curie"] = {
-                    value: e.target.value,
-                    matchMode: "startsWith"
-                }
-                onFilter(filter, "curie");
-        }
-    } />;
-
-    
-
-    const subjectFilterElement = //hopefully these can all be extracted into one component
-    <InputText 
-        disabled={!isEnabled}
-        value={subjectFilterValue} onChange={(e) => {//needs to be generalized into one function
-            
-                setSubjectFilterValue(e.target.value);
-                const filter = {
-                    "subject.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
-                    }
-                }
-                
-                onFilter(filter, "subject.curie");
-            }
-        } 
-    />;
-
-    const relationFilterElement = <InputText 
-        disabled={!isEnabled}
-        value={relationFilterValue} onChange={(e) => {
-                setRelationFilterValue(e.target.value);
-                const filter = {
-                    "diseaseRelation": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
-                    }
-                }
-                onFilter(filter, "diseaseRelation");
-            }
-    } />;
-
-    const diseaseFilterElement = <InputText 
-        disabled={!isEnabled}
-        value={diseaseFilterValue} onChange={(e) => {
-                setDiseaseFilterValue(e.target.value);
-                const filter = {
-                    "object.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
-                    }
-                }
-                onFilter(filter, "object.curie");
-            }
-    } />;
-
-    const evidenceFilterElement = <InputText 
-        disabled={!isEnabled}
-        value={evidenceFilterValue} onChange={(e) => {
-                setEvidenceFilterValue(e.target.value);
-                const filter = {
-                    "evidenceCodes.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
-                    }
-                }
-                onFilter(filter, "evidenceCodes.curie");
-            }
-    } />;
-
-    const referenceFilterElement = <InputText 
-        disabled={!isEnabled}
-        value={referenceFilterValue} onChange={(e) => {
-                setReferenceFilterValue(e.target.value);
-                const filter = {
-                    "referenceList.curie": {
-                        value: e.target.value,
-                        matchMode: "startsWith"
-                    }
-                }
-                onFilter(filter, "referenceList.curie");
-            }
-    } />;
-
-
     return (
         <div>
             <div className="card">
@@ -319,10 +221,18 @@ export const DiseaseAnnotationsComponent = () => {
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
-                        filter filterElement={curieFilterElement}>
+                        filter filterElement={<FilterComponent 
+                                                    isEnabled={isEnabled} 
+                                                    field={"curie"} 
+                                                    onFilter={onFilter}
+                                                />}>
                     </Column>
                     <Column field="subject.curie" header="Subject" sortable={isEnabled} 
-                        filter filterElement={subjectFilterElement}
+                        filter filterElement={<FilterComponent 
+                                                    isEnabled={isEnabled} 
+                                                    field={"subject.curie"} 
+                                                    onFilter={onFilter}
+                                                />}
                         editor={(props) => <SubjectEditor 
                                                 rowProps={props} 
                                                 biologicalEntityService={biologicalEntityService} 
@@ -331,11 +241,19 @@ export const DiseaseAnnotationsComponent = () => {
                         body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
-                        filter filterElement={relationFilterElement}>
+                        filter filterElement={<FilterComponent 
+                                                    isEnabled={isEnabled} 
+                                                    field={"diseaseRelation"} 
+                                                    onFilter={onFilter}
+                                                />}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
                     <Column field="object.curie" header="Disease" sortable={isEnabled} 
-                        filter filterElement={diseaseFilterElement}
+                        filter filterElement={<FilterComponent 
+                                                isEnabled={isEnabled} 
+                                                field={"object.curie"} 
+                                                onFilter={onFilter}
+                                            />}
                         editor={(props) => <DiseaseEditor
                                                 rowProps={props} 
                                                 ontologyService={ontologyService} 
@@ -344,10 +262,18 @@ export const DiseaseAnnotationsComponent = () => {
                         body={diseaseBodyTemplate}>
                     </Column>
                     <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
-                        filter filterElement={evidenceFilterElement}>
+                        filter filterElement={<FilterComponent 
+                                                isEnabled={isEnabled} 
+                                                field={"evidenceCodes.curie"} 
+                                                onFilter={onFilter}
+                                            />}>
                     </Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
-                        filter filterElement={referenceFilterElement}>
+                        filter filterElement={<FilterComponent 
+                                                isEnabled={isEnabled} 
+                                                field={"referenceList.curie"} 
+                                                onFilter={onFilter}
+                                            />}>
                     </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
