@@ -72,8 +72,14 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter) => { //also extracted into hook
-        setFilters({...filters, ...filter});
+    const onFilter = (filter, field) => { //also extracted into hook
+        const filtersCopy = filters;
+        if(filter[field].value.length === 0){
+            delete filtersCopy[field]
+            setFilters({...filtersCopy});
+        }else {
+            setFilters({...filters, ...filter});
+        }
     };
 
     const onSort = (event) => { //also extracted into hook
@@ -108,37 +114,6 @@ export const DiseaseAnnotationsComponent = () => {
             return <div>{JSON.stringify(rowData.negated)}</div>
         }
     };
-
-    // const searchDisease = (event) => {
-    //     ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
-    //         .then((data) => {
-    //             setFilteredDiseases(data.results);
-    //         });
-    // };
-
-    // const onDiseaseEditorValueChange = (props, event) => {//ditto line 138
-    //     let updatedAnnotations = [...props.value];
-    //     if(event.target.value || event.target.value === '') {
-    //         updatedAnnotations[props.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-    //         if(typeof event.target.value === "object"){
-    //             updatedAnnotations[props.rowIndex].object.curie = event.target.value.curie;
-    //         } else {
-    //             updatedAnnotations[props.rowIndex].object.curie = event.target.value;
-    //         }
-    //         setDiseaseAnnotations(updatedAnnotations);
-    //     }
-    // };
-
-    // const diseaseEditor = (props) => {//ditto line 152
-    //     return (<div><AutoComplete
-    //         field="curie"
-    //         value={props.rowData.object.curie}
-    //         suggestions={filteredDiseases}
-    //         itemTemplate={diseaseItemTemplate}
-    //         completeMethod={searchDisease}
-    //         onChange={(e) => onDiseaseEditorValueChange(props, e)}
-    //     /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
-    // };
 
     const onRowEditInit = (event) => {//can these row logic methods be extracted? Either into a lib file or into custom hooks?
         rowsInEdit.current++;
@@ -228,10 +203,7 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    // const diseaseItemTemplate = (item) => {//put into it's own component?
-    //     return <div>{item.curie} ({item.name})</div>;
-    // };
-
+    
     const diseaseBodyTemplate = (rowData) => {//put into it's own component?
         if(rowData.object){
             return <div>{rowData.object.curie} ({rowData.object.name})</div>;
@@ -241,19 +213,19 @@ export const DiseaseAnnotationsComponent = () => {
 
     const curieFilterElement = <InputText 
         disabled={!isEnabled}
-        value={curieFilterValue} 
+        value={curieFilterValue}
         onChange={(e) => {
             setCurieFilterValue(e.target.value);
-            const filter = {
-                "curie": {
+                const filter = {};
+                filter["curie"] = {
                     value: e.target.value,
                     matchMode: "startsWith"
                 }
-            }
+                onFilter(filter, "curie");
+        }
+    } />;
 
-            onFilter(filter);
-    }
-} />;
+    
 
     const subjectFilterElement = //hopefully these can all be extracted into one component
     <InputText 
@@ -268,7 +240,7 @@ export const DiseaseAnnotationsComponent = () => {
                     }
                 }
                 
-                onFilter(filter);
+                onFilter(filter, "subject.curie");
             }
         } 
     />;
@@ -283,7 +255,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "diseaseRelation");
             }
     } />;
 
@@ -297,7 +269,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "object.curie");
             }
     } />;
 
@@ -311,7 +283,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "evidenceCodes.curie");
             }
     } />;
 
@@ -325,7 +297,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "referenceList.curie");
             }
     } />;
 
