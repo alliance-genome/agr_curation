@@ -75,8 +75,14 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter) => {
-        setFilters({...filters, ...filter});
+    const onFilter = (filter, field) => { //also extracted into hook
+        const filtersCopy = filters;
+        if(filter[field].value.length === 0){
+            delete filtersCopy[field]
+            setFilters({...filtersCopy});
+        }else {
+            setFilters({...filters, ...filter});
+        }
     };
 
     const onSort = (event) => {
@@ -295,19 +301,19 @@ export const DiseaseAnnotationsComponent = () => {
 
     const curieFilterElement = <InputText 
         disabled={!isEnabled}
-        value={curieFilterValue} 
+        value={curieFilterValue}
         onChange={(e) => {
             setCurieFilterValue(e.target.value);
-            const filter = {
-                "curie": {
+                const filter = {};
+                filter["curie"] = {
                     value: e.target.value,
                     matchMode: "startsWith"
                 }
-            }
+                onFilter(filter, "curie");
+        }
+    } />;
 
-            onFilter(filter);
-    }
-} />;
+    
 
     const subjectFilterElement = <InputText 
         disabled={!isEnabled}
@@ -321,7 +327,7 @@ export const DiseaseAnnotationsComponent = () => {
                     }
                 }
                 
-                onFilter(filter);
+                onFilter(filter, "subject.curie");
             }
     } />;
 
@@ -335,7 +341,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "diseaseRelation");
             }
     } />;
 
@@ -349,7 +355,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "object.curie");
             }
     } />;
 
@@ -363,7 +369,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "evidenceCodes.curie");
             }
     } />;
 
@@ -377,7 +383,7 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter);
+                onFilter(filter, "referenceList.curie");
             }
     } />;
 
