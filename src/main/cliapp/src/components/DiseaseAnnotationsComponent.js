@@ -26,14 +26,14 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
-   
+
     const [curieFilterValue, setCurieFilterValue] = useState('');
     const [subjectFilterValue, setSubjectFilterValue] = useState('');
     const [relationFilterValue, setRelationFilterValue] = useState('');
     const [diseaseFilterValue, setDiseaseFilterValue] = useState('');
     const [evidenceFilterValue, setEvidenceFilterValue] = useState('');
     const [referenceFilterValue, setReferenceFilterValue] = useState('');
-   
+
     const rowsInEdit = useRef(0);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
@@ -128,6 +128,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const searchSubject = (event) => {
+        event.query = event.query.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
         biologicalEntityService.getBiologicalEntities(15, 0, null, {"curie":{"value": event.query}})
             .then((data) => {
                 setFilteredSubjects(data.results);
@@ -135,6 +136,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const searchDisease = (event) => {
+        event.query = event.query.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
         ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
             .then((data) => {
                 setFilteredDiseases(data.results);
@@ -163,6 +165,7 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={subjectItemTemplate}
             completeMethod={searchSubject}
             onChange={(e) => onSubjectEditorValueChange(props, e)}
+            forceSelection={true}
         /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
     };
 
@@ -202,7 +205,7 @@ export const DiseaseAnnotationsComponent = () => {
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
             setIsEnabled(true);
-        }; 
+        };
 
         let annotations = [...diseaseAnnotations];
         annotations[event.index] = originalRows[event.index];
@@ -215,7 +218,7 @@ export const DiseaseAnnotationsComponent = () => {
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
             setIsEnabled(true);
-        } 
+        }
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length > 1){
             updatedRow.subject = {};
@@ -299,7 +302,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const curieFilterElement = <InputText 
+    const curieFilterElement = <InputText
         disabled={!isEnabled}
         value={curieFilterValue}
         onChange={(e) => {
@@ -313,12 +316,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
     } />;
 
-    
 
-    const subjectFilterElement = <InputText 
+
+    const subjectFilterElement = <InputText
         disabled={!isEnabled}
         value={subjectFilterValue} onChange={(e) => {//needs to be generalized into one function
-            
+
                 setSubjectFilterValue(e.target.value);
                 const filter = {
                     "subject.curie": {
@@ -326,12 +329,12 @@ export const DiseaseAnnotationsComponent = () => {
                         matchMode: "startsWith"
                     }
                 }
-                
+
                 onFilter(filter, "subject.curie");
             }
     } />;
 
-    const relationFilterElement = <InputText 
+    const relationFilterElement = <InputText
         disabled={!isEnabled}
         value={relationFilterValue} onChange={(e) => {
                 setRelationFilterValue(e.target.value);
@@ -345,7 +348,7 @@ export const DiseaseAnnotationsComponent = () => {
             }
     } />;
 
-    const diseaseFilterElement = <InputText 
+    const diseaseFilterElement = <InputText
         disabled={!isEnabled}
         value={diseaseFilterValue} onChange={(e) => {
                 setDiseaseFilterValue(e.target.value);
@@ -359,7 +362,7 @@ export const DiseaseAnnotationsComponent = () => {
             }
     } />;
 
-    const evidenceFilterElement = <InputText 
+    const evidenceFilterElement = <InputText
         disabled={!isEnabled}
         value={evidenceFilterValue} onChange={(e) => {
                 setEvidenceFilterValue(e.target.value);
@@ -373,7 +376,7 @@ export const DiseaseAnnotationsComponent = () => {
             }
     } />;
 
-    const referenceFilterElement = <InputText 
+    const referenceFilterElement = <InputText
         disabled={!isEnabled}
         value={referenceFilterValue} onChange={(e) => {
                 setReferenceFilterValue(e.target.value);
@@ -404,25 +407,25 @@ export const DiseaseAnnotationsComponent = () => {
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
+                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled}
                         filter filterElement={curieFilterElement}>
                     </Column>
-                    <Column field="subject.curie" header="Subject" sortable={isEnabled} 
+                    <Column field="subject.curie" header="Subject" sortable={isEnabled}
                         filter filterElement={subjectFilterElement}
                         editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
-                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
+                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled}
                         filter filterElement={relationFilterElement}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
-                    <Column field="object.curie" header="Disease" sortable={isEnabled} 
+                    <Column field="object.curie" header="Disease" sortable={isEnabled}
                         filter filterElement={diseaseFilterElement}
                         editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}>
                     </Column>
-                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled}
                         filter filterElement={evidenceFilterElement}>
                     </Column>
-                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
+                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled}
                         filter filterElement={referenceFilterElement}>
                     </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
@@ -431,3 +434,4 @@ export const DiseaseAnnotationsComponent = () => {
         </div>
     )
 };
+
