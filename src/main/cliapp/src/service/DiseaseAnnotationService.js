@@ -7,7 +7,7 @@ export class DiseaseAnnotationService {
     }
     getDiseaseAnnotations(limit, page, sorts, filters) {
         console.log("Filters " + JSON.stringify(filters));
-        var sortOptions = {};
+        const sortAndFilterOptions = {};
 
         var sortArray = {};
         if(sorts) {
@@ -16,21 +16,19 @@ export class DiseaseAnnotationService {
           });
         }
 
-        var filterArray = {};
-        if(filters) {
-          Object.keys(filters).forEach((key) => {
-            filterArray[key] = filters[key]["value"];
-          });
-        }
+        // var filterArray = {};
+        // if(filters) {
+        //   Object.keys(filters).forEach((key) => {
+        //     filterArray[key] = filters[key]["value"];
+        //   });
+        // }
 
-        if(Object.keys(filterArray).length > 0) {
-          sortOptions["searchFilters"] = filterArray;
-        }
+        sortAndFilterOptions["searchFilters"] = filters;
         if(Object.keys(sortArray).length > 0) {
-          sortOptions["sortOrders"] = sortArray;
+          sortAndFilterOptions["sortOrders"] = sortArray;
         }
 
-        return axios.post(`/api/disease-annotation/search?limit=${limit}&page=${page}`, sortOptions).then(res => res.data);
+        return axios.post(`/api/disease-annotation/search?limit=${limit}&page=${page}`, sortAndFilterOptions).then(res => res.data);
     }
 }
 

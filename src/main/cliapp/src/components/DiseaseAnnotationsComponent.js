@@ -65,14 +65,14 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter, field) => { //also extracted into hook? Because it modifies filters, does that count as a side effect? Does that mean it should be a hook?
-        const filtersCopy = filters; //maybe filters could be set to a custom useFilters hook?
-        if(filter[field].value.length === 0){
-            delete filtersCopy[field]
-            setFilters({...filtersCopy});
+    const onFilter = (filterName, filter) => { 
+        const filtersCopy = filters; 
+        if(filter===null){
+            delete filtersCopy[filterName];
         }else {
-            setFilters({...filters, ...filter});
+            filtersCopy[filterName] = filter;
         }
+        setFilters({...filtersCopy});
     };
 
     const onSort = (event) => { //also extracted into hook
@@ -81,16 +81,15 @@ export const DiseaseAnnotationsComponent = () => {
         )
     };
 
-    
-    const publicationTemplate = (rowData) => { //maybe its own component?
+    const publicationTemplate = (rowData) => { 
         if (rowData && rowData.referenceList) {
             return <div>{rowData.referenceList.map(a => a.curie)}</div>
         }
+        
     };
-    
         
 
-    const evidenceTemplate = (rowData) => { //maybe its own component?
+    const evidenceTemplate = (rowData) => { 
         if (rowData && rowData.evidenceCodes) {
             return (<div>
                 <ul style={{listStyleType : 'none'}}>
@@ -102,7 +101,7 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const negatedTemplate = (rowData) => { //maybe its own component?
+    const negatedTemplate = (rowData) => { 
         if(rowData && rowData.negated !== null && rowData.negated !== undefined){
             return <div>{JSON.stringify(rowData.negated)}</div>
         }
@@ -214,7 +213,7 @@ export const DiseaseAnnotationsComponent = () => {
                            editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
                            editingRows={editingRows} onRowEditChange={onRowEditChange}
                            sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-                           first={first} onFilter={onFilter} filters={filters}
+                           first={first} 
                            dataKey="id"
                            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
@@ -223,14 +222,16 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                     isEnabled={isEnabled} 
-                                                    field={"curie"} 
+                                                    fields={["curie"]} 
+                                                    filterName={"curie"}
                                                     onFilter={onFilter}
                                                 />}>
                     </Column>
                     <Column field="subject.curie" header="Subject" sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
-                                                    isEnabled={isEnabled} 
-                                                    field={"subject.curie"} 
+                                                    isEnabled={isEnabled}
+                                                    filterName={"subject"}
+                                                    fields={["subject.curie", "subject.name", "subject.symbol"]} 
                                                     onFilter={onFilter}
                                                 />}
                         editor={(props) => <SubjectEditor 
@@ -243,7 +244,8 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                     isEnabled={isEnabled} 
-                                                    field={"diseaseRelation"} 
+                                                    fields={["diseaseRelation"]}
+                                                    filterName={"diseaseRelation"} 
                                                     onFilter={onFilter}
                                                 />}>
                     </Column>
@@ -251,7 +253,8 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="object.curie" header="Disease" sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                 isEnabled={isEnabled} 
-                                                field={"object.curie"} 
+                                                fields={["object.curie", "object.name"]} 
+                                                filterName={"object"} 
                                                 onFilter={onFilter}
                                             />}
                         editor={(props) => <DiseaseEditor
@@ -264,14 +267,16 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                 isEnabled={isEnabled} 
-                                                field={"evidenceCodes.curie"} 
+                                                fields={["evidenceCodes.curie"]} 
+                                                filterName={"evidenceCodes"} 
                                                 onFilter={onFilter}
                                             />}>
                     </Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                 isEnabled={isEnabled} 
-                                                field={"referenceList.curie"} 
+                                                fields={["referenceList.curie"]}
+                                                filterName={"referenceList"} 
                                                 onFilter={onFilter}
                                             />}>
                     </Column>
