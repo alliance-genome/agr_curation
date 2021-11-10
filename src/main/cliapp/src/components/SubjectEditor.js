@@ -25,7 +25,7 @@ import {Message} from "primereact/message";
             }
         };
 
-        const subjectItemTemplate = (item) => {//put into it's own component?
+        const subjectItemTemplate = (item) => {
             if(item.symbol){
                 return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.symbol + ')'}}/>;
             } else if(item.name){
@@ -36,12 +36,20 @@ import {Message} from "primereact/message";
         };
 
 
-        return (<><AutoComplete
-                field="curie"
-                value={props.rowProps.rowData.subject.curie}
-                suggestions={filteredSubjects}
-                itemTemplate={subjectItemTemplate}
-                completeMethod={searchSubject}
-                onChange={(e) => onSubjectEditorValueChange(e)}
-            /><Message severity={props.rowProps.rowData.subject.errorSeverity ? props.rowProps.rowData.subject.errorSeverity : ""} text={props.rowProps.rowData.subject.errorMessage} /></>)
-        };
+        return (
+            <>
+                <AutoComplete
+                        field="curie"
+                        value={props.rowProps.rowData.subject.curie}
+                        suggestions={filteredSubjects}
+                        itemTemplate={subjectItemTemplate}
+                        completeMethod={searchSubject}
+                        onChange={(e) => onSubjectEditorValueChange(e)}
+                />
+                <Message 
+                    severity={props.rowProps.rowData.subject.errorSeverity ? props.rowProps.rowData.subject.errorSeverity : ""} 
+                    text={props.rowProps.rowData.subject.errorMessage} 
+                />
+            </>
+        )
+    };

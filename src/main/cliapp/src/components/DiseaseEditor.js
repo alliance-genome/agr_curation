@@ -12,7 +12,7 @@ export const DiseaseEditor = (props) => {//ditto line 152
             });
     };
     
-    const onDiseaseEditorValueChange = (event) => {//ditto line 138
+    const onDiseaseEditorValueChange = (event) => {
         let updatedAnnotations = [...props.rowProps.value];
         
 
