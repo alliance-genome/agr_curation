@@ -9,6 +9,7 @@ import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
 import {OntologyService} from "../service/OntologyService";
+import { InputText } from 'primereact/inputtext';
 
 
 export const DiseaseAnnotationsComponent = () => {
@@ -25,11 +26,16 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
-    const RELATIONS = [
-        { label: 'Is Model Of', value: 'is_model_of' },
-        { label: 'Is Implciated In', value: 'is_implicated_in' },
-        { label: 'Is Marker For', value: 'is_marker_for' }
-    ]
+    const [isEnabled, setIsEnabled] = useState(true); //needs better name
+   
+    const [curieFilterValue, setCurieFilterValue] = useState('');
+    const [subjectFilterValue, setSubjectFilterValue] = useState('');
+    const [relationFilterValue, setRelationFilterValue] = useState('');
+    const [diseaseFilterValue, setDiseaseFilterValue] = useState('');
+    const [evidenceFilterValue, setEvidenceFilterValue] = useState('');
+    const [referenceFilterValue, setReferenceFilterValue] = useState('');
+   
+    const rowsInEdit = useRef(0);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
@@ -70,8 +76,14 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (event) => {
-        setFilters(event.filters);
+    const onFilter = (filter, field) => { //also extracted into hook
+        const filtersCopy = filters;
+        if(filter[field].value.length === 0){
+            delete filtersCopy[field]
+            setFilters({...filtersCopy});
+        }else {
+            setFilters({...filters, ...filter});
+        }
     };
 
     const onSort = (event) => {
@@ -152,7 +164,6 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={subjectItemTemplate}
             completeMethod={searchSubject}
             onChange={(e) => onSubjectEditorValueChange(props, e)}
-            forceSelection
         /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
     };
 
@@ -177,7 +188,6 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={diseaseItemTemplate}
             completeMethod={searchDisease}
             onChange={(e) => onDiseaseEditorValueChange(props, e)}
-            forceSelection
         /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
     };
 
@@ -206,12 +216,19 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const onRowEditInit = (event) => {
+        rowsInEdit.current++;
+        setIsEnabled(false);
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
         setOriginalRows(originalRows);
         console.log("in onRowEditInit")
     };
 
     const onRowEditCancel = (event) => {
+        rowsInEdit.current--;
+        if(rowsInEdit.current === 0){
+            setIsEnabled(true);
+        }; 
+
         let annotations = [...diseaseAnnotations];
         annotations[event.index] = originalRows[event.index];
         delete originalRows[event.index];
@@ -220,6 +237,10 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const onRowEditSave = (event) =>{
+        rowsInEdit.current--;
+        if(rowsInEdit.current === 0){
+            setIsEnabled(true);
+        } 
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length > 1){
             updatedRow.subject = {};
@@ -241,6 +262,8 @@ export const DiseaseAnnotationsComponent = () => {
                 setDiseaseAnnotations(annotations);
             },
             onError: (error, variables, context) => {
+                rowsInEdit.current++;
+                setIsEnabled(false);
                 toast_topright.current.show([
                     {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
@@ -279,12 +302,14 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const subjectBodyTemplate = (rowData) => {
-        if(rowData.subject.symbol){
-            return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
-        } else if(rowData.subject.name) {
-            return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
-        }else {
-            return <div>{rowData.subject.curie}</div>;
+        if(rowData.subject){
+            if(rowData.subject.symbol){
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
+            } else if(rowData.subject.name) {
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
+            }else {
+                return <div>{rowData.subject.curie}</div>;
+            }
         }
     };
 
@@ -293,8 +318,100 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseBodyTemplate = (rowData) => {
-        return <div>{rowData.object.curie} ({rowData.object.name})</div>;
+        if(rowData.object){
+            return <div>{rowData.object.curie} ({rowData.object.name})</div>;
+        }
     };
+
+
+    const curieFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={curieFilterValue}
+        onChange={(e) => {
+            setCurieFilterValue(e.target.value);
+                const filter = {};
+                filter["curie"] = {
+                    value: e.target.value,
+                    matchMode: "startsWith"
+                }
+                onFilter(filter, "curie");
+        }
+    } />;
+
+    
+
+    const subjectFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={subjectFilterValue} onChange={(e) => {//needs to be generalized into one function
+            
+                setSubjectFilterValue(e.target.value);
+                const filter = {
+                    "subject.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
+                }
+                
+                onFilter(filter, "subject.curie");
+            }
+    } />;
+
+    const relationFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={relationFilterValue} onChange={(e) => {
+                setRelationFilterValue(e.target.value);
+                const filter = {
+                    "diseaseRelation": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
+                }
+                onFilter(filter, "diseaseRelation");
+            }
+    } />;
+
+    const diseaseFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={diseaseFilterValue} onChange={(e) => {
+                setDiseaseFilterValue(e.target.value);
+                const filter = {
+                    "object.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
+                }
+                onFilter(filter, "object.curie");
+            }
+    } />;
+
+    const evidenceFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={evidenceFilterValue} onChange={(e) => {
+                setEvidenceFilterValue(e.target.value);
+                const filter = {
+                    "evidenceCodes.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
+                }
+                onFilter(filter, "evidenceCodes.curie");
+            }
+    } />;
+
+    const referenceFilterElement = <InputText 
+        disabled={!isEnabled}
+        value={referenceFilterValue} onChange={(e) => {
+                setReferenceFilterValue(e.target.value);
+                const filter = {
+                    "referenceList.curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
+                }
+                onFilter(filter, "referenceList.curie");
+            }
+    } />;
+
 
     return (
         <div>
@@ -312,14 +429,27 @@ export const DiseaseAnnotationsComponent = () => {
                            paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                            currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable filter></Column>
-                    <Column field="subject.curie" header="Subject" sortable filter editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}></Column>
-                    <Column field="diseaseRelation" editor = {relationEditor} header="Disease Relation" sortable filter></Column>
-                    <Column field="negated" header="Negated" body={negatedTemplate} sortable ></Column>
-                    <Column field="object.curie" header="Disease" sortable filter editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}></Column>
-                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable filter></Column>
-                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable filter></Column>
-                    <Column field="created" header="Creation Date" sortable ></Column>
+                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
+                        filter filterElement={curieFilterElement}>
+                    </Column>
+                    <Column field="subject.curie" header="Subject" sortable={isEnabled} 
+                        filter filterElement={subjectFilterElement}
+                        editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
+                    </Column>
+                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
+                        filter filterElement={relationFilterElement}>
+                    </Column>
+                    <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
+                    <Column field="object.curie" header="Disease" sortable={isEnabled} 
+                        filter filterElement={diseaseFilterElement}
+                        editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}>
+                    </Column>
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
+                        filter filterElement={evidenceFilterElement}>
+                    </Column>
+                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
+                        filter filterElement={referenceFilterElement}>
+                    </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </div>
