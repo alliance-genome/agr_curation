@@ -4,12 +4,13 @@ import {Column} from 'primereact/column';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
 import {useMutation, useQuery} from 'react-query';
 import {Message} from "primereact/message";
-import {Dropdown} from "primereact/dropdown"
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
 import {OntologyService} from "../service/OntologyService";
 import { InputText } from 'primereact/inputtext';
+import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
+import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
 
 
 export const DiseaseAnnotationsComponent = () => {
@@ -27,6 +28,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
+    const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
    
     const [curieFilterValue, setCurieFilterValue] = useState('');
     const [subjectFilterValue, setSubjectFilterValue] = useState('');
@@ -40,6 +42,7 @@ export const DiseaseAnnotationsComponent = () => {
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
     const ontologyService = new OntologyService();
+    const controlledVocabularyService = new ControlledVocabularyService();
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
@@ -65,6 +68,15 @@ export const DiseaseAnnotationsComponent = () => {
         }
     );
 
+    useQuery(['diseaseRelationTerms'],
+        () => controlledVocabularyService.getTerms('disease_relation_terms'), {
+            onSuccess: (data) => {
+                setDiseaseRelationTerms(data)
+            }
+        }
+    
+    )
+
     const mutation = useMutation(updatedAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
@@ -76,7 +88,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter, field) => { //also extracted into hook
+    const onFilter = (filter, field) => { 
         const filtersCopy = filters;
         if(filter[field].value.length === 0){
             delete filtersCopy[field]
@@ -193,25 +205,19 @@ export const DiseaseAnnotationsComponent = () => {
 
     const onRelationEditorValueChange = (props, event) => {
         let updatedAnnotations = [...props.value];
-        if(event.target.value || event.target.value === '') {
-            updatedAnnotations[props.rowIndex].diseaseRelation = event.target.value;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+        if(event.value || event.value === '') {
+            updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
             setDiseaseAnnotations(updatedAnnotations);
         }
     };
 
     const relationEditor = (props, disabled=false) => {
         return (
-            <div>
-                <Dropdown 
-                    value={props.rowData.diseaseRelation} 
-                    options={RELATIONS} 
-                    onChange={(e) => onRelationEditorValueChange(props, e)} 
-                    optionLabel="label"
-                    optionValue="value" 
-                    style={{ width: '100%' }}
-                />       
-                <Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} />
-            </div>
+            <ControlledVocabularyDropdown
+                options={diseaseRelationsTerms}
+                editorChange={onRelationEditorValueChange}
+                props={props}
+            />
         )
     };
 
@@ -437,7 +443,7 @@ export const DiseaseAnnotationsComponent = () => {
                         editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
                     <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
-                        filter filterElement={relationFilterElement}>
+                        filter editor={(props) => relationEditor(props)} filterElement={relationFilterElement}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
                     <Column field="object.curie" header="Disease" sortable={isEnabled} 
