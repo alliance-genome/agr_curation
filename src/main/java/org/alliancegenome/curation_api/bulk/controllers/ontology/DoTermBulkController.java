@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.bulk.controllers.ontology;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.*;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;

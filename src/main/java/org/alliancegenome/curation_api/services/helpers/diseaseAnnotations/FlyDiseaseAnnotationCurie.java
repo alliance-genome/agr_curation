@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseObjectRelationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {

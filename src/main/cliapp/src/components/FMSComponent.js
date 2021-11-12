@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dropdown } from 'primereact/dropdown';
-import { Button } from 'primereact/button';
 import { FMSService } from '../service/FMSService';
 
 export const FMSComponent = () => {
@@ -79,9 +78,6 @@ export const FMSComponent = () => {
     setSelectedRelease(event.value);
   };
 
-  const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" />;
-  const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text" />;
-
   return (
       <div>
         <div className="card">
@@ -94,7 +90,7 @@ export const FMSComponent = () => {
             onFilter={onFilter} filters={filters}
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
-            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
+          >
 
             <Column field="md5Sum" header="MD5" sortable filter></Column>
             <Column field="uploadDate" header="Uploaded" body={uploadTemplate} sortable filter></Column>

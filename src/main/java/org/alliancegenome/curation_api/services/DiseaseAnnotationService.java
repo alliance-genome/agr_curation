@@ -11,10 +11,10 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
@@ -35,6 +35,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     ReferenceDAO referenceDAO;
     @Inject
     DoTermDAO doTermDAO;
+    @Inject
+    EcoTermDAO ecoTermDAO;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
 
@@ -64,6 +66,16 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         annotation.setSubject(entity);
         annotation.setObject(disease);
         annotation.setReferenceList(List.of(reference));
+
+        if (CollectionUtils.isNotEmpty(annotationDTO.getEvidence().getEvidenceCodes())) {
+            List<EcoTerm> ecoTerms = new ArrayList<>();
+            annotationDTO.getEvidence().getEvidenceCodes()
+                    .forEach(evidence -> {
+                        EcoTerm ecoTerm = ecoTermDAO.find(evidence);
+                        ecoTerms.add(ecoTerm);
+                    });
+            annotation.setEvidenceCodes(ecoTerms);
+        }
         annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
 
         annotation.setCreated(
@@ -157,7 +169,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         // assumes the incoming object is a complete object
         return super.update(entity);
     }
-    
+
     public void validateAnnotation(DiseaseAnnotation entity) {
         Long id = entity.getId();
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
@@ -186,16 +198,15 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
         String fieldName = "object";
 
-
         if (validateRequiredObject(entity, response))
-            return validateDiseaseAnnotationDisease(entity.getObject(), fieldName, response);
+            return validateDiseaseAnnotationDisease(entity, fieldName, response);
         return false;
     }
 
     private boolean validateSubject(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
         String fieldName = "subject";
         if (validateRequiredSubject(entity, response))
-            return validateDiseaseAnnotationSubject(entity.getSubject(), fieldName, response);
+            return validateDiseaseAnnotationSubject(entity, fieldName, response);
         return false;
     }
 
@@ -219,21 +230,23 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Required field is empty");
     }
 
-    public boolean validateDiseaseAnnotationSubject(BiologicalEntity entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        BiologicalEntity subjectEntity = biologicalEntityDAO.find(entity.getCurie());
+    public boolean validateDiseaseAnnotationSubject(DiseaseAnnotation entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        BiologicalEntity subjectEntity = biologicalEntityDAO.find(entity.getSubject().getCurie());
         if (subjectEntity == null) {
             addInvalidMessagetoResponse(fieldName, response);
             return false;
         }
+        entity.setSubject(subjectEntity);
         return true;
     }
 
-    public boolean validateDiseaseAnnotationDisease(DOTerm entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        DOTerm diseaseTerm = doTermDAO.find(entity.getCurie());
+    public boolean validateDiseaseAnnotationDisease(DiseaseAnnotation entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        DOTerm diseaseTerm = doTermDAO.find(entity.getObject().getCurie());
         if (diseaseTerm == null) {
             addInvalidMessagetoResponse(fieldName, response);
             return false;
         }
+        entity.setObject(diseaseTerm);
         return true;
     }
 

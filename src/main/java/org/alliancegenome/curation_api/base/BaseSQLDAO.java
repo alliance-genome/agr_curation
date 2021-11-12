@@ -106,10 +106,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public void reindex() {
-        log.debug("Starting Index for: " + myClass);
-        MassIndexer indexer = searchSession.massIndexer(myClass).threadsToLoadObjects(4);
+        reindex(myClass, 4);
+    }
+    
+    public void reindex(Class<E> objectClass, int threads) {
+        log.debug("Starting Index for: " + objectClass);
+        MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);
         //indexer.dropAndCreateSchemaOnStart(true);
-        indexer.transactionTimeout(600);
+        indexer.transactionTimeout(900);
         indexer.start();
     }
 

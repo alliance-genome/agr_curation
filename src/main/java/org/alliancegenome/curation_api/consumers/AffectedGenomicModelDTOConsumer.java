@@ -9,8 +9,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.jms.*;
 
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
+import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 import io.quarkus.runtime.*;
