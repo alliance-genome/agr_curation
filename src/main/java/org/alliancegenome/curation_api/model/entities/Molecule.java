@@ -51,11 +51,11 @@ public class Molecule extends BaseCurieEntity {
 	
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "molecule_curie"))
-    @JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsAndLists.class})
 	private List<Synonym> synonyms;
 	
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "molecule_curie"))
-    @JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsAndLists.class})
 	private List<CrossReference> crossReferences;
 }
