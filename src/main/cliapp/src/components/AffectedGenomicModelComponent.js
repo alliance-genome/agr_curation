@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { Button } from 'primereact/button';
 import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
 
 export const AffectedGenomicModelComponent = () => {
@@ -19,10 +18,10 @@ export const AffectedGenomicModelComponent = () => {
 
       const agmService = new AffectedGenomicModelService();
       agmService.getAgms(rows, page, multiSortMeta, filters).then(searchResults => {
-          
+
           setAgms(searchResults.results);
           setTotalRecords(searchResults.totalResults);
-          
+
 
       });
 
@@ -41,7 +40,7 @@ export const AffectedGenomicModelComponent = () => {
       //console.log(event.filters);
       setFilters(event.filters);
     }
-  
+
   const onSort = (event) => {
     //console.log("On Sort: ");
     //console.log(event);
@@ -66,19 +65,17 @@ export const AffectedGenomicModelComponent = () => {
     return <div dangerouslySetInnerHTML={{__html: rowData.name}} />
   }
 
-  const paginatorLeft = <Button type="button" icon="pi pi-refresh" className="p-button-text" />;
-  const paginatorRight = <Button type="button" icon="pi pi-cloud" className="p-button-text" />;
 
   return (
       <div>
         <div className="card">
-          <DataTable value={agms} className="p-datatable-md" 
+          <DataTable value={agms} className="p-datatable-md"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             first={first} onFilter={onFilter} filters={filters}
-            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy 
+            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
-            paginatorLeft={paginatorLeft} paginatorRight={paginatorRight}>
+    >
             <Column field="curie" header="Curie" sortable filter></Column>
             <Column field="name" header="Name" body={nameTemplate} sortable filter></Column>
             <Column field="subtype" header="Sub Type" sortable filter></Column>

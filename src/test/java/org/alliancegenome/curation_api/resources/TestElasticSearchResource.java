@@ -6,8 +6,8 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 import io.quarkus.test.common.*;
 
-@QuarkusTestResource(TestElasticSearchReourse.Initializer.class)
-public class TestElasticSearchReourse {
+@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+public class TestElasticSearchResource {
 
     public static class Initializer implements QuarkusTestResourceLifecycleManager {
 

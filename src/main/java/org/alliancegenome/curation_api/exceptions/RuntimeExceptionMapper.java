@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api.exceptions;
 
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.ext.ExceptionMapper;
-import javax.ws.rs.ext.Provider;
+import javax.ws.rs.core.*;
+import javax.ws.rs.ext.*;
 
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {

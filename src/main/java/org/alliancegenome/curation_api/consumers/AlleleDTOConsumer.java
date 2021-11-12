@@ -9,7 +9,7 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.jms.*;
 
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleDTO;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 

@@ -15,4 +15,5 @@ Makefile
 Dockerfile
 .project
 README.md
+RELEASE-NOTES.md
 checkstyle.xml

@@ -1,0 +1,97 @@
+name: Release Deployment
+on:
+  release:
+    types: [published]
+jobs:
+  build-release-image:
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: AWS credentials configuration
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+    - name: Amazon ECR login
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+    - name: Build, tag, and push image to Amazon ECR
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        ECR_REPOSITORY: agr_curation
+      run: |
+        docker build --build-arg OVERWRITE_VERSION=${{ github.event.release.tag_name }} -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }}
+  generate-deployment-package:
+    needs: [build-release-image]
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+    - name: Save curation app version to be deployed in EB env variables through config file
+      run: |
+        cat .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${{ github.event.release.tag_name }}/g" .ebextensions/version.config
+        cat .ebextensions/version.config
+    - name: Generate deployment package
+      run: zip -r ${{ github.event.release.tag_name }}.zip docker-compose.yml .ebextensions/
+    - name: Store deployment package in cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.event.release.tag_name }}.zip
+        key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
+  deploy-to-production:
+    if: github.event.release.prerelease == false
+    needs: [generate-deployment-package]
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Fetch deployment package from cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.event.release.tag_name }}.zip
+        key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: curation-app
+        environment_name: curation-production
+        version_label: ${{ github.event.release.tag_name }}
+        deployment_package: ${{ github.event.release.tag_name }}.zip
+        use_existing_version_if_available: true
+        region: us-east-1
+    - name: Slack Notification
+      uses: tokorom/action-slack-incoming-webhook@main
+      env:
+        INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        text: "Deployment of release ${{ github.event.release.tag_name }} to production completed! :tada:"
+  deploy-to-beta:
+    needs: [generate-deployment-package]
+    runs-on: ubuntu-20.04
+    steps:
+    - name: Fetch deployment package from cache
+      uses: actions/cache@v2
+      with:
+        path: ${{ github.event.release.tag_name }}.zip
+        key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
+    - name: Deploy to EB
+      uses: einaregilsson/beanstalk-deploy@v14
+      with:
+        aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        application_name: curation-app
+        environment_name: curation-beta
+        version_label: ${{ github.event.release.tag_name }}
+        deployment_package: ${{ github.event.release.tag_name }}.zip
+        use_existing_version_if_available: true
+        region: us-east-1
+    - name: Slack Notification
+      uses: tokorom/action-slack-incoming-webhook@main
+      env:
+        INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      with:
+        text: "Deployment of (pre)release ${{ github.event.release.tag_name }} to beta completed! :tada:"

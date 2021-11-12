@@ -1,27 +1,20 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseModelAnnotationDTO;
+import javax.persistence.*;
+
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
-import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.GenericField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 
 @Audited
@@ -44,6 +37,11 @@ public class DiseaseAnnotation extends Association {
     @Enumerated(EnumType.STRING)
     private DiseaseRelation diseaseRelation;
 
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToMany
+    @JsonView({View.FieldsOnly.class})
+    private List<EcoTerm> evidenceCodes;
 
     public enum DiseaseRelation {
         is_model_of,

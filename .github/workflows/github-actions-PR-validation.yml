@@ -2,7 +2,7 @@ name: PR validation
 on:
   pull_request:
     paths-ignore:
-      - README.md
+      - '**.md'
       - .gitignore
 jobs:
   verify-test-api:
@@ -36,17 +36,10 @@ jobs:
         run: |
           mvn --no-transfer-progress --batch-mode --update-snapshots verify
   test-build-docker-image:
-      needs: [verify-test-api]
       runs-on: ubuntu-20.04
       steps:
         - name: Check out repository code
           uses: actions/checkout@v2
-        - name: Build and package UI
-          run: |
-            make ui
-        - name: Build and package API
-          run: |
-            make api
         - name: Build docker image
           env:
             ECR_REPOSITORY: agr_curation

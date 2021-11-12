@@ -4,8 +4,7 @@ on:
     branches:
       - main
     paths-ignore:
-      - README.md
-      - pom.xml
+      - '**.md'
       - .gitignore
 jobs:
   build-and-push-docker-image:
@@ -19,12 +18,6 @@ jobs:
       shell: bash
       run: |
         echo "##[set-output name=tagname;]$(git describe)"
-    - name: Overwrite application version
-      run: |
-        mvn versions:set -ntp -DnewVersion=${{ steps.vars.outputs.tagname }}
-    - name: Build application
-      run: |
-        make all
     # This step will configure environment variables to be used by all steps
     # involving AWS interaction further down
     - name: AWS credentials configuration
@@ -42,7 +35,7 @@ jobs:
         ECR_REPOSITORY: agr_curation
         IMAGE_TAG: ${{ steps.vars.outputs.tagname }}
       run: |
-        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker build --build-arg OVERWRITE_VERSION=${IMAGE_TAG} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
