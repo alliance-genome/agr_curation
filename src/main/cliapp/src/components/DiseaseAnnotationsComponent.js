@@ -74,7 +74,6 @@ export const DiseaseAnnotationsComponent = () => {
                 setDiseaseRelationTerms(data)
             }
         }
-
     )
 
     const mutation = useMutation(updatedAnnotation => {
@@ -88,7 +87,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter, field) => {
+    const onFilter = (filter, field) => { 
         const filtersCopy = filters;
         if(filter[field].value.length === 0){
             delete filtersCopy[field]
@@ -457,7 +456,8 @@ export const DiseaseAnnotationsComponent = () => {
                         filter filterElement={subjectFilterElement}
                         editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
-                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled}
+
+                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
                         filter editor={(props) => relationEditor(props)} filterElement={relationFilterElement}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
