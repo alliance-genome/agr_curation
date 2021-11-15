@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class MoleculeDTO extends BaseDTO {
-    private BasicGeneticEntityDTO basicGeneticEntity;
     private String name;
     private String inchi;
     private String inchiKey;

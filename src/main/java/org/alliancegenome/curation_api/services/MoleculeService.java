@@ -43,7 +43,6 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
         Molecule molecule = moleculeDAO.getByIdOrCurie(id);
         if (molecule != null) {
             molecule.getSynonyms().size();
-            molecule.getSecondaryIdentifiers().size();
         }
         return molecule;
     }
@@ -53,7 +52,7 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     public void processUpdate(MoleculeDTO molecule) {
         //log.info("processUpdate Molecule: ");
 
-        Molecule m = moleculeDAO.find(molecule.getBasicGeneticEntity().getPrimaryId());
+        Molecule m = moleculeDAO.find(molecule.getPrimaryId());
 
         if (m == null) {
             m = new Molecule();
@@ -117,7 +116,7 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     }
     
     private void handleNewSynonyms(MoleculeDTO molecule, Molecule m) {
-        if (CollectionUtils.isNotEmpty(molecule.getBasicGeneticEntity().getSynonyms())) {
+        if (CollectionUtils.isNotEmpty(molecule.getSynonyms())) {
             List<Synonym> synonyms = DtoConverterHelper.getSynonyms(molecule);
             synonyms.forEach(synonym -> synonymService.create(synonym));
             m.setSynonyms(synonyms);
@@ -145,7 +144,7 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
                 List<String> existingSynonymStrings = existingSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
                 final List<Synonym> newCollect = newSynonyms.stream().filter(synonym -> !existingSynonymStrings.contains(synonym.getName())).collect(Collectors.toList());
                 newCollect.forEach(synonym -> {
-                    synonym.setGenomicEntities(List.of(gene));
+                    synonym.setMolecules(List.of(molecule));
                     synonymService.create(synonym);
                 });
                 existingSynonyms.addAll(newCollect);
