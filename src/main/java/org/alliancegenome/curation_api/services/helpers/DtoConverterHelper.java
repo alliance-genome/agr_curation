@@ -21,14 +21,4 @@ public class DtoConverterHelper {
                 }).collect(toList());
     }
     
-    public static List<Synonym> getSynonyms(MoleculeDTO molecule) {
-        if (molecule.getSynonyms() == null)
-            return null;
-        return molecule.getSynonyms().stream()
-                .map(s -> {
-                    Synonym syn = new Synonym();
-                    syn.setName(s);
-                    return syn;
-                }).collect(toList());
-    }
 }

@@ -17,7 +17,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicEntities", "molecules"})
+@ToString(exclude = {"genomicEntities"})
 public class Synonym extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
