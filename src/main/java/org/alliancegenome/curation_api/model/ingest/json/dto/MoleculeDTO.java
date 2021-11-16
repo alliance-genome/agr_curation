@@ -8,7 +8,7 @@ import lombok.Data;
 
 @Data
 public class MoleculeDTO extends BaseDTO {
-	private String id;
+    private String id;
     private String name;
     private String inchi;
     private String inchikey;

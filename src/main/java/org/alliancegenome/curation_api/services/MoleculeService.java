@@ -48,12 +48,12 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     @Transactional
     public void processUpdate(MoleculeDTO molecule) {
         log.info("processUpdate Molecule: ");
-	
+    
         Molecule m = moleculeDAO.find(molecule.getId());
-	
+    
         if (molecule.getId().startsWith("CHEBI:")) {
-	    log.info("Skipping processing of " + molecule.getId());
-	    return;
+            log.info("Skipping processing of " + molecule.getId());
+            return;
         }
         if (m == null) {
             m = new Molecule();
@@ -67,11 +67,11 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
         m.setFormula(molecule.getFormula());
         m.setSmiles(molecule.getSmiles());
         m.setSynonyms(molecule.getSynonyms());
-	
+    
         moleculeDAO.persist(m);
-	
+    
         handleCrossReferences(molecule, m);    
-	
+    
     }
     
     
