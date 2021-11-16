@@ -17,7 +17,7 @@ import lombok.*;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicEntities"})
+@ToString(exclude = {"genomicEntities", "molecules"})
 public class Synonym extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
@@ -25,5 +25,8 @@ public class Synonym extends BaseGeneratedEntity {
 
     @ManyToMany(mappedBy="synonyms")
     private List<GenomicEntity> genomicEntities;
+    
+    @ManyToMany(mappedBy="synonyms")
+    private List<Molecule> molecules;
 
 }

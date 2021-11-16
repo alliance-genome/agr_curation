@@ -18,8 +18,4 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface MoleculeRESTInterface extends BaseCrudRESTInterface<Molecule> {
 
-    @JsonView(View.FieldsAndLists.class)
-    @Override
-    ObjectResponse<Molecule> get(@PathParam("id") String id);
-
 }

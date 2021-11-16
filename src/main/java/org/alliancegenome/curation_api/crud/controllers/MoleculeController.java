@@ -22,9 +22,4 @@ public class MoleculeController extends BaseController<MoleculeService, Molecule
         setService(moleculeService);
     }
 
-    @Override
-    public ObjectResponse<Molecule> get(String id) {
-        return moleculeService.get(id);
-    }
-
 }

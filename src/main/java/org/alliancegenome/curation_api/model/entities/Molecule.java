@@ -50,7 +50,7 @@ public class Molecule extends BaseCurieEntity {
 	private String smiles;
 	
 	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "molecule_curie"))
+	@JoinTable(indexes = @Index( columnList = "molecules_curie"))
 	@JsonView({View.FieldsAndLists.class})
 	private List<Synonym> synonyms;
 	
