@@ -31,6 +31,7 @@ public class Molecule extends BaseCurieEntity {
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
+	@Column(columnDefinition="TEXT")
 	private String inchi;
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
@@ -39,6 +40,7 @@ public class Molecule extends BaseCurieEntity {
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
+	@Column(columnDefinition="TEXT")
 	private String iupac;
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
@@ -47,12 +49,13 @@ public class Molecule extends BaseCurieEntity {
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@JsonView({View.FieldsOnly.class})
+	@Column(columnDefinition="TEXT")
 	private String smiles;
 	
-	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "molecules_curie"))
-	@JsonView({View.FieldsAndLists.class})
-	private List<Synonym> synonyms;
+	@ElementCollection
+	@JsonView(View.FieldsAndLists.class)
+	@JoinTable(indexes = @Index( columnList = "molecule_curie"))
+	private List<String> synonyms;
 	
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "molecule_curie"))

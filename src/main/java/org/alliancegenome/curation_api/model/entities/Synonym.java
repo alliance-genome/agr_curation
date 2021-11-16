@@ -25,8 +25,5 @@ public class Synonym extends BaseGeneratedEntity {
 
     @ManyToMany(mappedBy="synonyms")
     private List<GenomicEntity> genomicEntities;
-    
-    @ManyToMany(mappedBy="synonyms")
-    private List<Molecule> molecules;
 
 }

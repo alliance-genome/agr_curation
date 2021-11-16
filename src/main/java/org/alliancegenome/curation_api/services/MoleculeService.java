@@ -13,8 +13,6 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -49,16 +47,13 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     
     @Transactional
     public void processUpdate(MoleculeDTO molecule) {
-        //log.info("processUpdate Molecule: ");
+        log.info("processUpdate Molecule: ");
 
         Molecule m = moleculeDAO.find(molecule.getId());
 
         if (m == null) {
             m = new Molecule();
             m.setCurie(molecule.getId());
-            handleNewSynonyms(molecule, m);
-        } else {
-        	handleUpdateSynonyms(molecule,m);
         }
 
         m.setName(molecule.getName());
@@ -67,6 +62,7 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
         m.setIupac(molecule.getIupac());
         m.setFormula(molecule.getFormula());
         m.setSmiles(molecule.getSmiles());
+        m.setSynonyms(molecule.getSynonyms());
        
         moleculeDAO.persist(m);
 
@@ -113,47 +109,5 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
         });
 
     }
-    
-    private void handleNewSynonyms(MoleculeDTO molecule, Molecule m) {
-        if (CollectionUtils.isNotEmpty(molecule.getSynonyms())) {
-            List<Synonym> synonyms = DtoConverterHelper.getSynonyms(molecule);
-            synonyms.forEach(synonym -> synonymService.create(synonym));
-            m.setSynonyms(synonyms);
-        }
-    }
-
-    private void handleUpdateSynonyms(MoleculeDTO moleculeDTO, Molecule molecule) {
-        if (CollectionUtils.isNotEmpty(moleculeDTO.getSynonyms())) {
-            List<Synonym> newSynonyms = DtoConverterHelper.getSynonyms(moleculeDTO);
-
-            List<Synonym> existingSynonyms = molecule.getSynonyms();
-
-            // remove synonyms that are not found in the new synonym list
-            if (CollectionUtils.isNotEmpty(existingSynonyms)) {
-                List<String> existingSynonymStrings = existingSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
-                List<Long> removeSynIDs = existingSynonyms.stream()
-                        .filter(synonym -> !existingSynonymStrings.contains(synonym.getName()))
-                        .map(Synonym::getId)
-                        .collect(Collectors.toList());
-                removeSynIDs.forEach(id -> synonymService.delete(id));
-                existingSynonyms.removeIf(synonym -> newSynonyms.stream().noneMatch(synonym1 -> synonym1.getName().equals(synonym.getName())));
-            }
-            // add new synonyms that are not found in the existing synonym list
-            if (existingSynonyms != null) {
-                List<String> existingSynonymStrings = existingSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
-                final List<Synonym> newCollect = newSynonyms.stream().filter(synonym -> !existingSynonymStrings.contains(synonym.getName())).collect(Collectors.toList());
-                newCollect.forEach(synonym -> {
-                    synonym.setMolecules(List.of(molecule));
-                    synonymService.create(synonym);
-                });
-                existingSynonyms.addAll(newCollect);
-            }
-        } else {
-            // remove all existing synonyms if there are no incoming synonyms
-            molecule.getSynonyms().forEach(synonym -> synonymService.delete(synonym.getId()));
-            molecule.setSynonyms(new ArrayList<>());
-        }
-    }
-
 
 }
