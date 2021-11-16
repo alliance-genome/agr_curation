@@ -55,6 +55,7 @@ public class Molecule extends BaseCurieEntity {
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
 	@JoinTable(indexes = @Index( columnList = "molecule_curie"))
+	@Column(columnDefinition="TEXT")
 	private List<String> synonyms;
 	
 	@ManyToMany
