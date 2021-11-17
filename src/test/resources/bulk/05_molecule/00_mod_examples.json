@@ -24,7 +24,7 @@
          "smiles" : "CC(\\\\C=C\\\\[C@@]1(O)C(C)=CC(=O)CC1(C)C)=C\\\\C(O)=O"
        },
        {
-         "crossReferences" :
+         "crossReferences" : [
 	    {
               "id" : "WB:WBMol:00001323",
               "pages" : [
