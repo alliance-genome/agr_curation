@@ -1,4 +1,4 @@
-package org.acme.hibernate.search.elasticsearch.config;
+package org.alliancegenome.curation_api.config;
 
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurationContext;
 import org.hibernate.search.backend.elasticsearch.analysis.ElasticsearchAnalysisConfigurer;
@@ -7,13 +7,32 @@ import javax.enterprise.context.Dependent;
 import javax.inject.Named;
 
 @Dependent
-@Named("myAnalysisConfigurer")
+@Named("ApplicationAnalysisConfig")
 public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
 
     @Override
     public void configure(ElasticsearchAnalysisConfigurationContext context) {
-        context.analyzer("caseInsensitive").custom()
-                .tokenizer("standard")
-                .tokenFilters("asciifolding","lowercase");
+        context.analyzer("autocompleteAnalyzer").custom()
+                .tokenizer("ngram_tokenizer")
+                .tokenFilters("asciifolding", "lowercase");
+        
+        context.analyzer("autocompleteSearchAnalyzer").custom()
+                .tokenizer("ngram_tokenizer")
+                .tokenFilters("asciifolding", "lowercase");
+        
+        context.tokenizer("ngram_tokenizer")
+                .type("edge_ngram")
+                .param("min_gram", 1)
+                .param("max_gram", 20)
+                .param("token_chars", "letter", "digit");
+        
+        context.tokenFilter( "ngram_filter" )
+                .type( "edge_ngram" )
+                .param( "min_gram", 1 )
+                .param( "max_gram", 20 );
+
+        context.normalizer("sortNormalizer").custom() 
+                .tokenFilters("asciifolding", "lowercase");
+
     }
 }

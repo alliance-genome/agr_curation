@@ -154,10 +154,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                         HashMap<String, Object> sortOrders = (HashMap<String, Object>)params.get("sortOrders");
                         for(String key: sortOrders.keySet()) {
                             if((int)sortOrders.get(key) == 1) {
-                                com.add(f.field(key).asc());
+                                com.add(f.field(key + "_keyword").asc());
                             }
                             if((int)sortOrders.get(key) == -1) {
-                                com.add(f.field(key).desc());
+                                com.add(f.field(key + "_keyword").desc());
                             }
                         }
                     }
