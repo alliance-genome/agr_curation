@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -18,9 +19,23 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"})
+/*
+@AnalyzerDef(name = "caseInsensitiveAnalyzer",
+        tokenizer = @TokenizerDef(factory = StandardTokenizerFactory.class),
+        filters = {
+                @TokenFilterDef(factory = LowerCaseFilterFactory.class)*/
+/*,
+                params = {
+                        @Parameter(name="ignoreCase", value="true")
+                }*//*
+
+        })
+*/
 public class GenomicEntity extends BiologicalEntity {
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    //@Analyzer(definition = "caseInsensitiveAnalyzer")
+    @FullTextField(analyzer = "caseInsensitive")
+    //@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @Column(columnDefinition="TEXT")
     @JsonView({View.FieldsOnly.class})
     private String name;
