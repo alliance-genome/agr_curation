@@ -11,6 +11,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import javax.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -27,6 +28,8 @@ public class Molecule extends BaseCurieEntity {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
+    @NotNull(message="'name' is a required field")
+    @NotEmpty(message="'name' cannot be an empty string")
     private String name;
     
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
