@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.MoleculeDTO;
 
 public class DtoConverterHelper {
 
@@ -19,4 +20,5 @@ public class DtoConverterHelper {
                     return syn;
                 }).collect(toList());
     }
+    
 }

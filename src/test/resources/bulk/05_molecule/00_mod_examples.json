@@ -1,0 +1,163 @@
+{
+   "data" : [
+       {
+         "crossReferences" : [
+            {
+               "id" : "WB:WBMol:00002019",
+               "pages" : [
+                  "molecule"
+               ]
+            },
+            {
+               "id" : "CHEBI:2365",
+               "pages" : [
+                  "entry"
+               ]
+            }
+         ],
+         "formula" : "C15H20O4",
+         "id" : "CHEBI:2365",
+         "inchi" : "InChI=1S/C15H20O4/c1-10(7-13(17)18)5-6-15(19)11(2)8-12(16)9-14(15,3)4/h5-8,19H,9H2,1-4H3,(H,17,18)/b6-5+,10-7-/t15-/m1/s1",
+         "inchikey" : "JLIDBLDQVAYHNE-YKALOCIXSA-N",
+         "iupac" : "(2Z,4E)-5-[(1S)-1-hydroxy-2,6,6-trimethyl-4-oxocyclohex-2-en-1-yl]-3-methylpenta-2,4-dienoic acid",
+         "name" : "Abscisic Acid",
+         "smiles" : "CC(\\\\C=C\\\\[C@@]1(O)C(C)=CC(=O)CC1(C)C)=C\\\\C(O)=O"
+       },
+       {
+         "crossReferences" : [
+	    {
+              "id" : "WB:WBMol:00001323",
+              "pages" : [
+                "molecule"
+              ]
+            }
+         ],
+         "formula" : "C9H18NO2",
+         "id" : "WB:WBMol:00001323",
+         "name" : "tempol",
+         "synonyms" : [
+            "Tempol",
+            "2,2,6,6-tetramethyl-4-piperidinol-N-oxyl",
+            "4-hydroxy-1-oxyl-2,2,6,6-tetramethylpiperidine",
+            "4-hydroxy-2,2,6,6-tetramethylpiperidine-N-oxyl",
+            "4-hydroxy-2,2,6,6-tetramethylpiperidinoxy radical",
+            "4-hydroxy-2,2,6,6-tetramethylpiperidinyl-1-oxy",
+            "HyTEMPO",
+            "nitroxide 4-hydroxy-2,2,6,6-tetramethylpiperidinyl-N-oxyl",
+            "nitroxyl-2 (2,2,6,6-tetramethyl 4-oxypiperidine)-1-oxyl",
+            "N-Oxyl-2,2,6,6-tetramethylpiperidine",
+            "tanol",
+            "TMPNTEMPOL"
+         ]
+      },
+      {
+         "crossReferences" : [
+            {
+               "id" : "WB:WBMol:00006523",
+               "pages" : [
+                  "molecule"
+               ]
+            }
+         ],
+         "formula" : "C11H16O6",
+         "id" : "WB:WBMol:00006523",
+         "inchi" : "InChI=1S/C11H16O6/c1-16-8-3-6(10(14)7(13)5-12)4-9(17-2)11(8)15/h3-4,7,10,12-15H,5H2,1-2H3",
+         "inchikey" : "GIZSHQYTTBQKOQ-UHFFFAOYSA-N",
+         "iupac" : "1-(4-hydroxy-3,5-dimethoxyphenyl)propane-1,2,3-triol",
+         "name" : "threo-Syringoylglycerol",
+         "smiles" : "COC1=CC(=CC(=C1O)OC)C(C(CO)O)O",
+         "synonyms" : [
+            "threo-Syringoylglycerol"
+         ]
+      },
+      {
+         "crossReferences" : [
+            {
+               "id" : "WB:WBMol:00007786",
+               "pages" : [
+                  "molecule"
+               ]
+            }
+         ],
+         "formula" : "C12H12Cl2N2O",
+         "id" : "WB:WBMol:00007786",
+         "inchi" : "InChI=1S/C12H12Cl2N2O/c1-16(2)6-7-3-4-8-9(13)5-10(14)12(17)11(8)15-7/h3-5,17H,6H2,1-2H3",
+         "inchikey" : "YZPOQCQXOSEMAZ-UHFFFAOYSA-N",
+         "iupac" : "5,7-Dichloro-2-[(dimethylamino)methyl]quinolin-8-ol",
+         "name" : "PBT2",
+         "smiles" : "CN(C)CC1=NC2=C(C=C1)C(=CC(=C2O)Cl)Cl",
+         "synonyms" : [
+            "PBT2 compound"
+         ]
+      },
+      {
+         "crossReferences" : [
+            {
+               "id" : "WB:WBMol:00007787",
+               "pages" : [
+                  "molecule"
+               ]
+            }
+         ],
+         "id" : "WB:WBMol:00007787",
+         "name" : "EGb 761",
+         "synonyms" : [
+            "ginko biloba extract",
+            "Ginkor",
+            "Ginkgo biloba extract EGb 761",
+            "EGb761",
+            "Ginko biloba extract 761",
+            "EGb-761",
+            "GBE 761",
+            "GBE-761",
+            "GBE 761 ONC",
+            "Rokan",
+            "Tanakan",
+            "Tebofortran",
+            "Tebokan",
+            "Tebonin"
+         ]
+      },
+      {
+         "crossReferences" : [
+            {
+               "id" : "WB:WBMol:00007847",
+               "pages" : [
+                  "molecule"
+               ]
+            }
+         ],
+         "id" : "WB:WBMol:00007847",
+         "name" : "methanol extracts of Sorbus alnifolia",
+         "synonyms" : [
+            "MESA",
+            "Sorbus alnifolia extract"
+         ]
+      },
+      {
+         "crossReferences" : [
+            {
+               "id" : "WB:WBMol:00000002",
+               "pages" : [
+                  "molecule"
+               ]
+            }
+         ],
+         "id" : "WB:WBMol:00000002",
+         "name" : "alpha-cobratoxin"
+      },
+   ],
+   "metaData" : {
+      "dataProvider" : {
+         "crossReference" : {
+            "id" : "WB",
+            "pages" : [
+               "homepage"
+            ]
+         },
+         "type" : "curated"
+      },
+      "dateProduced" : "2021-11-09T23:51:50+00:00",
+      "release" : "WS283"
+   }
+}
