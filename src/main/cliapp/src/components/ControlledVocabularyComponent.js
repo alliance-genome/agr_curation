@@ -1,10 +1,9 @@
 import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { GeneService } from '../service/GeneService';
+import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
-import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
 
 export const ControlledVocabularyComponent = () => {
 
