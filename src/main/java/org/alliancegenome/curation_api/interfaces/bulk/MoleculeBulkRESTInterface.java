@@ -16,6 +16,8 @@ public interface MoleculeBulkRESTInterface {
     @POST
     @Path("/moleculefile")
     public String updateMolecules(
-        MoleculeMetaDataDTO moleculeData);
+        MoleculeMetaDataDTO moleculeData,
+        @DefaultValue("true")
+        @QueryParam("async") boolean async);
 
 }
