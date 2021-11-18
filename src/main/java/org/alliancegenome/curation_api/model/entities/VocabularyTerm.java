@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,7 +20,8 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
+@ToString(exclude = {"vocabulary"})
+@Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 public class VocabularyTerm extends BaseGeneratedEntity {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
@@ -33,7 +35,22 @@ public class VocabularyTerm extends BaseGeneratedEntity {
     @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition = "boolean default false", nullable = false)
-    private Boolean isObsolete;
+    private Boolean isObsolete = false;
     
+    @ManyToMany
+    @JoinTable(indexes = { @Index( columnList = "vocabularyterm_id"), @Index( columnList = "crossreferences_curie")})
+    @JsonView({View.FieldsAndLists.class})
+    private List<CrossReference> crossReferences;
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.VocabularyTermView.class})
+    private Vocabulary vocabulary;
+    
+    @ElementCollection
+    @JsonView(View.FieldsAndLists.class)
+    @JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))
+    @Column(columnDefinition="TEXT")
     private List<String> textSynonyms;
 }

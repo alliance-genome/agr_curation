@@ -27,7 +27,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     protected EntityManager entityManager;
 
     @Inject
-    SearchSession searchSession;
+    protected SearchSession searchSession;
 
     protected BaseSQLDAO(Class<E> myClass) {
         super(myClass);
@@ -134,7 +134,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 
-        log.debug("Search: " + pagination + " Params: " + params);
+        log.info("Search: " + pagination + " Params: " + params);
         //SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
         //sourceBuilder.sort(new FieldSortBuilder("id").order(SortOrder.ASC)); 
