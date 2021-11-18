@@ -134,7 +134,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 
-        log.info("Search: " + pagination + " Params: " + params);
+        log.debug("Search: " + pagination + " Params: " + params);
         //SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
 
         //sourceBuilder.sort(new FieldSortBuilder("id").order(SortOrder.ASC)); 
