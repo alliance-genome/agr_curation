@@ -22,7 +22,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 
     @GET
     @Path("/{curie}")
-    @JsonView(View.FieldsAndLists.class)
+    @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> get(@PathParam("curie") String curie);
     
     @PUT //@Secured
@@ -37,7 +37,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 
     @POST
     @Path("/find")
-    @JsonView(View.FieldsAndLists.class)
+    @JsonView(View.FieldsOnly.class)
     public SearchResponse<E> find(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
