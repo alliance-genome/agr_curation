@@ -25,7 +25,7 @@ public class MoleculeBulkController implements MoleculeBulkRESTInterface {
 
         for(MoleculeDTO molecule: moleculeData.getData()) {
            
-        	moleculeService.processUpdate(molecule);
+            moleculeService.processUpdate(molecule);
             
             ph.progressProcess();
         }
