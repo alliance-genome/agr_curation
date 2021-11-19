@@ -6,11 +6,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
 import org.alliancegenome.curation_api.model.entities.Molecule;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/molecule")
 @Tag(name = "Molecules")
