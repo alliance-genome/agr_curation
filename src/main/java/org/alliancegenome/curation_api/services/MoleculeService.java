@@ -26,9 +26,7 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     
     @Inject
     CrossReferenceService crossReferenceService;
-    @Inject
-    SynonymService synonymService;
-    
+
     @Override
     @PostConstruct
     protected void init() {
@@ -49,12 +47,18 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     public void processUpdate(MoleculeDTO molecule) {
         log.info("processUpdate Molecule: ");
     
-        Molecule m = moleculeDAO.find(molecule.getId());
-    
         if (molecule.getId().startsWith("CHEBI:")) {
             log.info("Skipping processing of " + molecule.getId());
             return;
         }
+        
+        if (molecule.getName() == null || molecule.getName().length() == 0) {
+            log.info(molecule.getId() + " has no name - skipping");
+            return;
+        }
+        
+        Molecule m = moleculeDAO.find(molecule.getId());
+        
         if (m == null) {
             m = new Molecule();
             m.setCurie(molecule.getId());
@@ -67,11 +71,10 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
         m.setFormula(molecule.getFormula());
         m.setSmiles(molecule.getSmiles());
         m.setSynonyms(molecule.getSynonyms());
+            
+        moleculeDAO.persist(m); 
     
-        moleculeDAO.persist(m);
-    
-        handleCrossReferences(molecule, m);    
-    
+        handleCrossReferences(molecule, m);
     }
     
     

@@ -37,7 +37,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
 
     @POST
     @Path("/find")
-    @JsonView(View.FieldsOnly.class)
+    @JsonView(View.FieldsAndLists.class)
     public SearchResponse<E> find(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
