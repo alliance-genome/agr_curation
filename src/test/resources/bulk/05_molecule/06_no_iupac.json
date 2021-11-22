@@ -1,37 +1,37 @@
 {
-   "data" : [
-       {
-         "crossReferences" : [
-            {
-               "id" : "TEST:TestMol00000006",
-               "pages" : [
-                  "molecule"
-               ]
-            }
-         ],
-         "formula" : "C15H20O4",
-         "id" : "TEST:TestMol00000006",
-         "inchi" : "InChI=1S/C15H20O4/c1-10(7-13(17)18)5-6-15(19)11(2)8-12(16)9-14(15,3)4/h5-8,19H,9H2,1-4H3,(H,17,18)/b6-5+,10-7-/t15-/m1/s1",
-         "inchikey" : "JLIDBLDQVAYHNE-YKALOCIXSA-N",
-         "name" : "Test molecule 6",
-         "smiles" : "CC(\\\\C=C\\\\[C@@]1(O)C(C)=CC(=O)CC1(C)C)=C\\\\C(O)=O",
-	 "synonyms" :  [
-	    "TM6",
-	    "TestMol6"
-	 ] 
-       }
-   ],
-   "metaData" : {
-      "dataProvider" : {
-         "crossReference" : {
-            "id" : "TEST",
-            "pages" : [
-               "homepage"
-            ]
-         },
-         "type" : "curated"
+  "data": [
+    {
+      "crossReferences": [
+        {
+          "id": "TEST:TestMol00000006",
+          "pages": [
+            "molecule"
+          ]
+        }
+      ],
+      "formula": "C15H20O4",
+      "id": "TEST:TestMol00000006",
+      "inchi": "InChI=1S/C15H20O4/c1-10(7-13(17)18)5-6-15(19)11(2)8-12(16)9-14(15,3)4/h5-8,19H,9H2,1-4H3,(H,17,18)/b6-5+,10-7-/t15-/m1/s1",
+      "inchikey": "JLIDBLDQVAYHNE-YKALOCIXSA-N",
+      "name": "Test molecule 6",
+      "smiles": "CC(\\\\C=C\\\\[C@@]1(O)C(C)=CC(=O)CC1(C)C)=C\\\\C(O)=O",
+      "synonyms": [
+        "TM6",
+        "TestMol6"
+      ]
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
       },
-      "dateProduced" : "2021-11-09T23:51:50+00:00",
-      "release" : "TEST"
-   }
+      "type": "curated"
+    },
+    "dateProduced": "2021-11-09T23:51:50+00:00",
+    "release": "TEST"
+  }
 }
