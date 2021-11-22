@@ -9,6 +9,10 @@ import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.hibernate.search.engine.search.common.*;
+import org.hibernate.search.engine.search.predicate.SearchPredicate;
+import org.hibernate.search.engine.search.predicate.dsl.*;
+import org.hibernate.search.engine.search.predicate.spi.MatchPredicateBuilder;
 import org.hibernate.search.engine.search.query.*;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
@@ -142,9 +146,16 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                     if(params.containsKey("searchFilters")) {
                         HashMap<String, Object> searchFilters = (HashMap<String, Object>)params.get("searchFilters");
                         for(String key: searchFilters.keySet()) {
-                            b.filter(
-                                    p.wildcard().field(key).matching("*" + (String)searchFilters.get(key) + "*")
-                                    );
+                            b.must(
+                                p.simpleQueryString()
+                                    .field(key)
+                                    .matching((String)searchFilters.get(key))
+                                    .defaultOperator(BooleanOperator.AND)
+                            );
+                            
+                            //b.filter(
+                            //      p.wildcard().field(key).matching("*" + (String)searchFilters.get(key) + "*")
+                            //      );
                         }
                     }
                 }))
@@ -154,10 +165,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                         HashMap<String, Object> sortOrders = (HashMap<String, Object>)params.get("sortOrders");
                         for(String key: sortOrders.keySet()) {
                             if((int)sortOrders.get(key) == 1) {
-                                com.add(f.field(key).asc());
+                                com.add(f.field(key + "_keyword").asc());
                             }
                             if((int)sortOrders.get(key) == -1) {
-                                com.add(f.field(key).desc());
+                                com.add(f.field(key + "_keyword").desc());
                             }
                         }
                     }

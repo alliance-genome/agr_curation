@@ -87,7 +87,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filter, field) => { 
+    const onFilter = (filter, field) => {
         const filtersCopy = filters;
         if(filter[field].value.length === 0){
             delete filtersCopy[field]
@@ -141,12 +141,12 @@ export const DiseaseAnnotationsComponent = () => {
 
     const editorValidator = (value) => {
         value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
-        if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
+        /*if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
             let subStr = value.split(':');
             value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
         }else{
             value = value.toUpperCase();
-        }
+        }*/
         return value;
     }
 
@@ -457,7 +457,7 @@ export const DiseaseAnnotationsComponent = () => {
                         editor={(props) => subjectEditor(props)} body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
                     </Column>
 
-                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
+                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled}
                         filter editor={(props) => relationEditor(props)} filterElement={relationFilterElement}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
