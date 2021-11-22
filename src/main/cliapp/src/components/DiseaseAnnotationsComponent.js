@@ -5,11 +5,17 @@ import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { useMutation, useQuery } from 'react-query';
 import { BiologicalEntityService } from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
+
 import { returnSorted } from '../utils/utils';
 import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
 import { FilterComponent } from './FilterComponent'
 import { SearchService } from '../service/SearchService';
+
+import { InputText } from 'primereact/inputtext';
+import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
+import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
+
 export const DiseaseAnnotationsComponent = () => {
 
     let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
@@ -22,12 +28,15 @@ export const DiseaseAnnotationsComponent = () => {
     const [first, setFirst] = useState(0);
     const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
+    const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
 
     const rowsInEdit = useRef(0);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
     const searchService = new SearchService();
+
+    const controlledVocabularyService = new ControlledVocabularyService();
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
@@ -55,7 +64,13 @@ export const DiseaseAnnotationsComponent = () => {
         }
     );
 
-
+    useQuery(['diseaseRelationTerms'],
+        () => controlledVocabularyService.getTerms('disease_relation_terms'), {
+            onSuccess: (data) => {
+                setDiseaseRelationTerms(data)
+            }
+        }
+    )
 
     const mutation = useMutation(updatedAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
@@ -66,7 +81,6 @@ export const DiseaseAnnotationsComponent = () => {
         setPage(event.page);
         setFirst(event.first);
     };
-
 
     const onFilter = (filtersCopy) => { 
         setFilters({...filtersCopy});
@@ -116,7 +130,7 @@ export const DiseaseAnnotationsComponent = () => {
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
             setIsEnabled(true);
-        }; 
+        };
 
         let annotations = [...diseaseAnnotations];
         annotations[event.index] = originalRows[event.index];
@@ -129,13 +143,15 @@ export const DiseaseAnnotationsComponent = () => {
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
             setIsEnabled(true);
-        } 
+        }
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
-        if(Object.keys(event.data.subject).length > 1){
+        if(Object.keys(event.data.subject).length >= 1){
+            //event.data.subject.curie = editorValidator(event.data.subject.curie);
             updatedRow.subject = {};
             updatedRow.subject.curie = event.data.subject.curie;
         }
-        if(Object.keys(event.data.object).length > 1){
+        if(Object.keys(event.data.object).length >= 1){
+            //event.data.object.curie = editorValidator(event.data.object.curie);
             updatedRow.object = {};
             updatedRow.object.curie = event.data.object.curie;
         }
@@ -193,12 +209,11 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     
-    const diseaseBodyTemplate = (rowData) => {//put into it's own component?
-        if(rowData.object){
+    const diseaseBodyTemplate = (rowData) => {
+            if(rowData.object){
             return <div>{rowData.object.curie} ({rowData.object.name})</div>;
         }
     };
-
 
     return (
         <div>

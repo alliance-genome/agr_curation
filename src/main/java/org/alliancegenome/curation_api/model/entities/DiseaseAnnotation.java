@@ -31,8 +31,8 @@ public class DiseaseAnnotation extends Association {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean negated = false;
 
-
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "diseaseRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private DiseaseRelation diseaseRelation;

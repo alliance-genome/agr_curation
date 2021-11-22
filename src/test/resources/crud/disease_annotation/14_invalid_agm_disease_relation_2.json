@@ -1,0 +1,14 @@
+{
+    "subject" : {
+        "curie" : "ZFIN:ZDB-FISH-150901-1967"
+    },
+    "object" : {
+	"curie" : "DOID:10907"
+    },
+    "referenceList" : [
+	{
+	    "curie" : "PMID:23332918"
+	}
+    ],
+    "diseaseRelation" : "is_marker_for"
+}
