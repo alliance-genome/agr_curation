@@ -3,7 +3,7 @@ import { GeneService } from '../service/GeneService';
 import { AlleleService } from '../service/AlleleService';
 import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
-import { OntologyService } from '../service/OntologyService'
+import { SearchService } from '../service/SearchService'
 
 export const Dashboard = () => {
     const [geneCount, setGeneCount] = useState(0);
@@ -33,12 +33,12 @@ export const Dashboard = () => {
         agmService.getAgms(0, 0).then(searchResults => {
             setAgmCount(searchResults.totalResults);
         });
-        const ontologyService = new OntologyService();
-        ontologyService.getTerms('ecoterm', 0, 0).then(results => {
+        const searchService = new SearchService();
+        searchService.search('ecoterm', 0, 0).then(results => {
           setECOCount(results.totalResults);
         });
 
-        ontologyService.getTerms('doterm', 0, 0).then(results => {
+        searchService.search('doterm', 0, 0).then(results => {
           setDOCount(results.totalResults);
         });
     }, []);

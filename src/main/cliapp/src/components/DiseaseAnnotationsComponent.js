@@ -1,16 +1,15 @@
-import React, {useRef, useState} from 'react';
-import {DataTable} from 'primereact/datatable';
-import {Column} from 'primereact/column';
-import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
-import {useMutation, useQuery} from 'react-query';
-import {BiologicalEntityService} from "../service/BiologicalEntityService";
+import React, { useRef, useState } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
+import { useMutation, useQuery } from 'react-query';
+import { BiologicalEntityService } from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
-import {OntologyService} from "../service/OntologyService";
-import { InputText } from 'primereact/inputtext';
 import { returnSorted } from '../utils/utils';
 import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
 import { FilterComponent } from './FilterComponent'
+import { SearchService } from '../service/SearchService';
 export const DiseaseAnnotationsComponent = () => {
 
     let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
@@ -28,13 +27,15 @@ export const DiseaseAnnotationsComponent = () => {
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const biologicalEntityService = new BiologicalEntityService();
-    const ontologyService = new OntologyService();
+    const searchService = new SearchService();
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
 
+
+
     useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
-        () => diseaseAnnotationService.getDiseaseAnnotations(rows, page, multiSortMeta, filters), {
+        () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters), {
             onSuccess: (data) => {
 
                 setDiseaseAnnotations(data.results);
@@ -54,6 +55,8 @@ export const DiseaseAnnotationsComponent = () => {
         }
     );
 
+
+
     const mutation = useMutation(updatedAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
@@ -65,13 +68,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
 
-    const onFilter = (filterName, filter) => { 
-        const filtersCopy = filters; 
-        if(filter===null){
-            delete filtersCopy[filterName];
-        }else {
-            filtersCopy[filterName] = filter;
-        }
+    const onFilter = (filtersCopy) => { 
         setFilters({...filtersCopy});
     };
 
@@ -224,14 +221,16 @@ export const DiseaseAnnotationsComponent = () => {
                                                     isEnabled={isEnabled} 
                                                     fields={["curie"]} 
                                                     filterName={"curie"}
+                                                    currentFilters={filters}
                                                     onFilter={onFilter}
                                                 />}>
                     </Column>
-                    <Column field="subject.curie" header="Subject" sortable={isEnabled} 
+                    <Column  header="Subject" sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                     isEnabled={isEnabled}
                                                     filterName={"subject"}
                                                     fields={["subject.curie", "subject.name", "subject.symbol"]} 
+                                                    currentFilters={filters}
                                                     onFilter={onFilter}
                                                 />}
                         editor={(props) => <SubjectEditor 
@@ -245,21 +244,23 @@ export const DiseaseAnnotationsComponent = () => {
                         filter filterElement={<FilterComponent 
                                                     isEnabled={isEnabled} 
                                                     fields={["diseaseRelation"]}
-                                                    filterName={"diseaseRelation"} 
+                                                    filterName={"diseaseRelation"}
+                                                    currentFilters={filters}
                                                     onFilter={onFilter}
                                                 />}>
                     </Column>
-                    <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
-                    <Column field="object.curie" header="Disease" sortable={isEnabled} 
+                    <Column header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
+                    <Column header="Disease" sortable={isEnabled} 
                         filter filterElement={<FilterComponent 
                                                 isEnabled={isEnabled} 
                                                 fields={["object.curie", "object.name"]} 
                                                 filterName={"object"} 
+                                                currentFilters={filters}
                                                 onFilter={onFilter}
                                             />}
                         editor={(props) => <DiseaseEditor
                                                 rowProps={props} 
-                                                ontologyService={ontologyService} 
+                                                searchService={searchService} 
                                                 setDiseaseAnnotations={setDiseaseAnnotations}
                                             />} 
                         body={diseaseBodyTemplate}>
@@ -268,7 +269,8 @@ export const DiseaseAnnotationsComponent = () => {
                         filter filterElement={<FilterComponent 
                                                 isEnabled={isEnabled} 
                                                 fields={["evidenceCodes.curie"]} 
-                                                filterName={"evidenceCodes"} 
+                                                filterName={"evidenceCodes"}
+                                                currentFilters={filters}
                                                 onFilter={onFilter}
                                             />}>
                     </Column>
@@ -277,6 +279,7 @@ export const DiseaseAnnotationsComponent = () => {
                                                 isEnabled={isEnabled} 
                                                 fields={["referenceList.curie"]}
                                                 filterName={"referenceList"} 
+                                                currentFilters={filters}
                                                 onFilter={onFilter}
                                             />}>
                     </Column>

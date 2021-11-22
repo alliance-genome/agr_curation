@@ -1,7 +1,7 @@
 import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { OntologyService } from '../service/OntologyService';
+import { SearchService } from '../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from "primereact/messages";
 
@@ -15,11 +15,11 @@ export const DiseaseOntologyComponent = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
 
-  const ontologyService = new OntologyService();
+  const searchService = new SearchService();
   const errorMessage = useRef(null);
 
   useQuery(['terms', rows, page, multiSortMeta, filters],
-    () => ontologyService.getTerms('doterm', rows, page, multiSortMeta, filters), {
+    () => searchService.search('doterm', rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setTerms(data.results);
       setTotalRecords(data.totalResults);

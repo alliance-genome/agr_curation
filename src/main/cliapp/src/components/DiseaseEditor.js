@@ -6,7 +6,7 @@ export const DiseaseEditor = (props) => {//ditto line 152
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     
     const searchDisease = (event) => {
-        props.ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
+        props.searchService.search('doterm', 15, 0, [], {"curieFilter":{"curie": event.query}})
             .then((data) => {
                 setFilteredDiseases(data.results);
             });
@@ -33,7 +33,7 @@ export const DiseaseEditor = (props) => {//ditto line 152
 
     return (<div><AutoComplete
         field="curie"
-       value={props.rowProps.rowData.object.curie}
+        value={props.rowProps.rowData.object.curie}
         suggestions={filteredDiseases}
         itemTemplate={diseaseItemTemplate}
         completeMethod={searchDisease}

@@ -1,18 +1,35 @@
 export function returnSorted(event, originalSort){
+    
     let found = false;
-    const newSort = [...originalSort];
+    let replace = false;
+    let newSort = [...originalSort];
 
-    newSort.forEach((o) => {
-        if (o.field === event.multiSortMeta[0].field) {
-            o.order = event.multiSortMeta[0].order;
-            found = true;
-        }
-    });
+    // console.log(event);
+    if(event.multiSortMeta.length > 0){
+        newSort.forEach((o) => {
+            if (o.field === event.multiSortMeta[0].field) {
+                if(o.order === event.multiSortMeta[0].order){
+                    replace = true;
+                    found = true;
+                } else{
+                    o.order = event.multiSortMeta[0].order;
+                    found = true;
+                }
+            }
+        });
+    }else {
+        newSort = [];
+    }
 
     if (!found) {
         return newSort.concat(event.multiSortMeta);
     } else {
-        return newSort;
+        if(replace){
+            return event.multiSortMeta;
+        }else{
+            return newSort;
+        }
     }
 
 }
+
