@@ -99,14 +99,30 @@ export const DiseaseAnnotationsComponent = () => {
 
     const onSort = (event) => {
         let found = false;
-        const newSort = [...multiSortMeta];
+        let remove = false;
+        let newSort = [];
+         
 
-        newSort.forEach((o) => {
-            if (o.field === event.multiSortMeta[0].field) {
-                o.order = event.multiSortMeta[0].order;
-                found = true;
+        if(event.multiSortMeta.length > 0){
+            newSort = [...multiSortMeta];
+            newSort.forEach((o) => {
+                if (o.field === event.multiSortMeta[0].field) {
+                    if(o.order === event.multiSortMeta[0].order){
+                        remove = true;
+                    }
+                    o.order = event.multiSortMeta[0].order;
+                    found = true;
+                }
+            });
+            
+            if(event.multiSortMeta.length === multiSortMeta.length -1){
+                if(found && remove){
+                    newSort = [...event.multiSortMeta]
+                }
             }
-        });
+            
+        }
+
 
         if (!found) {
             setMultiSortMeta(newSort.concat(event.multiSortMeta));
