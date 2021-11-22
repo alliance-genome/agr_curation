@@ -139,6 +139,17 @@ export const DiseaseAnnotationsComponent = () => {
         setDiseaseAnnotations(annotations);
     };
 
+    const editorValidator = (value) => {
+        value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
+        if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
+            let subStr = value.split(':');
+            value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
+        }else{
+            value = value.toUpperCase();
+        }
+        return value;
+    }
+
     const onRowEditSave = (event) =>{//possible to shrink?
         rowsInEdit.current--;
         if(rowsInEdit.current === 0){
@@ -146,12 +157,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length >= 1){
-            //event.data.subject.curie = editorValidator(event.data.subject.curie);
+            event.data.subject.curie = editorValidator(event.data.subject.curie);
             updatedRow.subject = {};
             updatedRow.subject.curie = event.data.subject.curie;
         }
         if(Object.keys(event.data.object).length >= 1){
-            //event.data.object.curie = editorValidator(event.data.object.curie);
+            event.data.object.curie = editorValidator(event.data.object.curie);
             updatedRow.object = {};
             updatedRow.object.curie = event.data.object.curie;
         }
