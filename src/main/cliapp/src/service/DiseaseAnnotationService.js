@@ -7,16 +7,16 @@ export class DiseaseAnnotationService {
     }
     getDiseaseAnnotations(limit, page, sorts, filters) {
         console.log("Filters " + JSON.stringify(filters));
-        var sortOptions = {};
+        const sortOptions = {};
 
-        var sortArray = {};
+        const sortArray = {};
         if(sorts) {
           sorts.forEach((o) => {
             sortArray[o.field] = o.order;
           });
         }
 
-        var filterArray = {};
+        const filterArray = {};
         if(filters) {
           Object.keys(filters).forEach((key) => {
             filterArray[key] = filters[key]["value"];
