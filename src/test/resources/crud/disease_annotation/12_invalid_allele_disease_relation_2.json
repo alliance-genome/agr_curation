@@ -1,0 +1,14 @@
+{
+    "subject" : {
+        "curie" : "RGD:1290492"
+    },
+    "object" : {
+	"curie" : "DOID:2018"
+    },
+    "referenceList" : [
+	{
+	    "curie" : "PMID:22948215"
+	}
+    ],
+    "diseaseRelation" : "is_marker_for"
+}

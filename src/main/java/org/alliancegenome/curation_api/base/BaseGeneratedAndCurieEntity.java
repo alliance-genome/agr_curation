@@ -22,8 +22,9 @@ public class BaseGeneratedAndCurieEntity extends BaseEntity {
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
     protected Long id;
-    
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
