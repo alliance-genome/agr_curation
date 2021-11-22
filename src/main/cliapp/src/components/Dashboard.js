@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { GeneService } from '../service/GeneService';
-import { AlleleService } from '../service/AlleleService';
-import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
-import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
+
 import { SearchService } from '../service/SearchService'
 
 export const Dashboard = () => {

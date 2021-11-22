@@ -9,10 +9,7 @@ import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.hibernate.search.engine.search.common.*;
-import org.hibernate.search.engine.search.predicate.SearchPredicate;
-import org.hibernate.search.engine.search.predicate.dsl.*;
-import org.hibernate.search.engine.search.predicate.spi.MatchPredicateBuilder;
+import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.query.*;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
@@ -143,8 +140,19 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
         SearchQuery<E> query = searchSession.search(myClass)
                 .where( p -> p.bool( b -> {
+
                     if(params.containsKey("searchFilters")) {
-                        HashMap<String, Object> searchFilters = (HashMap<String, Object>)params.get("searchFilters");
+                        HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
+                        for(String filterName: searchFilters.keySet()) {
+                            for(String field: searchFilters.get(filterName).keySet()) {
+                                b.must(
+                                    p.simpleQueryString()
+                                        .field(field)
+                                        .matching((String)searchFilters.get(filterName).get(field))
+                                        .defaultOperator(BooleanOperator.AND)
+                                );
+                            }
+                        }
                     }
                 }))
                 .sort(f -> {

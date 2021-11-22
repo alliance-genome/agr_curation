@@ -226,6 +226,16 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
+    const filterComponentTemplate = (filterName, fields) => {
+      return (<FilterComponent 
+            isEnabled={isEnabled} 
+            fields={fields} 
+            filterName={filterName}
+            currentFilters={filters}
+            onFilter={onFilter}
+        />);
+    };
+
     return (
         <div>
             <div className="card">
@@ -233,83 +243,67 @@ export const DiseaseAnnotationsComponent = () => {
                 <Toast ref={toast_topright} position="top-right" />
                 <h3>Disease Annotations Table</h3>
                 <DataTable value={diseaseAnnotations} className="p-datatable-md"
-                           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-                           editingRows={editingRows} onRowEditChange={onRowEditChange}
-                           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-                           first={first} 
-                           dataKey="id"
-                           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
-                           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-                           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
+                  editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+                  editingRows={editingRows} onRowEditChange={onRowEditChange}
+                  sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
+                  first={first} 
+                  dataKey="id"
+                  paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
+                  paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+                  currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-                    <Column field="curie" header="Curie" style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} sortable={isEnabled} 
-                        filter filterElement={<FilterComponent 
-                                                    isEnabled={isEnabled} 
-                                                    fields={["curie"]} 
-                                                    filterName={"curie"}
-                                                    currentFilters={filters}
-                                                    onFilter={onFilter}
-                                                />}>
-                    </Column>
-                    <Column  header="Subject" sortable={isEnabled} 
-                        filter filterElement={<FilterComponent 
-                                                    isEnabled={isEnabled}
-                                                    filterName={"subject"}
-                                                    fields={["subject.curie", "subject.name", "subject.symbol"]} 
-                                                    currentFilters={filters}
-                                                    onFilter={onFilter}
-                                                />}
-                        editor={(props) => <SubjectEditor 
-                                                rowProps={props} 
-                                                biologicalEntityService={biologicalEntityService} 
-                                                setDiseaseAnnotations={setDiseaseAnnotations}
-                                            />} 
-                        body={subjectBodyTemplate}  style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} >
-                    </Column>
-                    <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled} 
-                        filter filterElement={<FilterComponent 
-                                                    isEnabled={isEnabled} 
-                                                    fields={["diseaseRelation"]}
-                                                    filterName={"diseaseRelation"}
-                                                    currentFilters={filters}
-                                                    onFilter={onFilter}
-                                                />}>
-                    </Column>
-                    <Column header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
-                    <Column header="Disease" sortable={isEnabled} 
-                        filter filterElement={<FilterComponent 
-                                                isEnabled={isEnabled} 
-                                                fields={["object.curie", "object.name"]} 
-                                                filterName={"object"} 
-                                                currentFilters={filters}
-                                                onFilter={onFilter}
-                                            />}
-                        editor={(props) => <DiseaseEditor
-                                                rowProps={props} 
-                                                searchService={searchService} 
-                                                setDiseaseAnnotations={setDiseaseAnnotations}
-                                            />} 
-                        body={diseaseBodyTemplate}>
-                    </Column>
-                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled} 
-                        filter filterElement={<FilterComponent 
-                                                isEnabled={isEnabled} 
-                                                fields={["evidenceCodes.curie"]} 
-                                                filterName={"evidenceCodes"}
-                                                currentFilters={filters}
-                                                onFilter={onFilter}
-                                            />}>
-                    </Column>
-                    <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled} 
-                        filter filterElement={<FilterComponent 
-                                                isEnabled={isEnabled} 
-                                                fields={["referenceList.curie"]}
-                                                filterName={"referenceList"} 
-                                                currentFilters={filters}
-                                                onFilter={onFilter}
-                                            />}>
-                    </Column>
-                    <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+
+                  <Column field="curie" header="Curie" 
+                    style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} 
+                    sortable={isEnabled} 
+                    filter 
+                    filterElement={filterComponentTemplate("curieFilter", ["curie"])}
+                  />
+
+                  <Column
+                    header="Subject"
+                    sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("subject", ["subject.curie", "subject.name", "subject.symbol"])}                    
+                    editor={(props) => <SubjectEditor rowProps={props} biologicalEntityService={biologicalEntityService} setDiseaseAnnotations={setDiseaseAnnotations} />} 
+                    body={subjectBodyTemplate}  
+                    style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}
+                  />
+
+                  <Column 
+                    field="diseaseRelation"
+                    header="Disease Relation"
+                    sortable={isEnabled}
+                    filter 
+                    filterElement={filterComponentTemplate("diseaseRelation", ["diseaseRelation"])}
+                    editor={(props) => relationEditor(props)}
+                  />
+                  
+                  <Column header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
+                  
+                  <Column 
+                    header="Disease"
+                    sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("object", ["object.curie", "object.name"])}
+                    editor={(props) => <DiseaseEditor rowProps={props} searchService={searchService} setDiseaseAnnotations={setDiseaseAnnotations} />} 
+                    body={diseaseBodyTemplate} 
+                  />
+
+                  <Column
+                    field="evidenceCodes.curie"
+                    header="Evidence Code"
+                    body={evidenceTemplate} sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
+                  />
+
+                  <Column 
+                    field="referenceList.curie"
+                    header="Reference"
+                    body={publicationTemplate} 
+                    sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("referenceList", ["referenceList.curie"])}
+
+                  />
+                  <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </div>
         </div>

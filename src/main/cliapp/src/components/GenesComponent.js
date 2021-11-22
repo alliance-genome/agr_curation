@@ -84,14 +84,39 @@ export const GenesComponent = () => {
             filter filterElement={<FilterComponent
               isEnabled={true}
               fields={["curie"]}
-              filterName={"curie"}
+              filterName={"curieFilter"}
               currentFilters={filters}
               onFilter={onFilter}
             />}>
           </Column>
-          <Column field="name" header="Name" sortable filter></Column>
-          <Column field="symbol" header="Symbol" sortable filter></Column>
-          <Column field="taxon" header="Taxon" sortable filter filterPlaceholder="Search by Taxon"></Column>
+
+          <Column field="name" header="Name" sortable
+              filter filterElement={<FilterComponent 
+              isEnabled={true} 
+              fields={["name"]}
+              filterName={"nameFilter"}
+              currentFilters={filters}
+              onFilter={onFilter}
+          />} />
+
+          <Column field="symbol" header="Symbol" sortable
+              filter filterElement={<FilterComponent 
+              isEnabled={true} 
+              fields={["symbol"]}
+              filterName={"symbolFilter"}
+              currentFilters={filters}
+              onFilter={onFilter}
+          />} />
+
+          <Column field="taxon" header="Taxon" sortable
+              filter filterElement={<FilterComponent 
+              isEnabled={true} 
+              fields={["taxon"]}
+              filterName={"taxonFilter"}
+              currentFilters={filters}
+              onFilter={onFilter}
+          />} />
+
         </DataTable>
 
       </div>
