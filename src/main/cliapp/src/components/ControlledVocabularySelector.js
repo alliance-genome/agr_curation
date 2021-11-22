@@ -16,7 +16,7 @@ export function ControlledVocabularyDropdown({options, editorChange, props}) {
                 options={options}
                 onChange={(e) => onChange(e)}
                 optionLabel="name"
-                placeholder="Select Term"
+                placeholder={props.rowData[props.field]}
                 style={{ width: '100%' }}
             />
             <Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} />
