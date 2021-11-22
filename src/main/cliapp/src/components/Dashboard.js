@@ -15,25 +15,24 @@ export const Dashboard = () => {
     const [DOCount, setDOCount] = useState(0);
 
     useEffect(() => {
-        const geneService = new GeneService();
-        geneService.getGenes(0, 0).then(searchReults => {
-            setGeneCount(searchReults.totalResults);
-        });
-
-        const alleleService = new AlleleService();
-        alleleService.getAlleles(0, 0).then(searchReults => {
-            setAlleleCount(searchReults.totalResults);
-        });
-        const diseaseAnnotationService = new DiseaseAnnotationService();
-        diseaseAnnotationService.getDiseaseAnnotations(0, 0).then(searchResults => {
-            setDiseaseAnnotationCount(searchResults.totalResults);
-        });
-
-        const agmService = new AffectedGenomicModelService();
-        agmService.getAgms(0, 0).then(searchResults => {
-            setAgmCount(searchResults.totalResults);
-        });
         const searchService = new SearchService();
+
+        searchService.search('gene', 0, 0).then(searchResults => {
+          setGeneCount(searchResults.totalResults);
+        });
+
+        searchService.search('allele', 0, 0).then(searchResults => {
+          setAlleleCount(searchResults.totalResults);
+        });
+
+        searchService.search('disease-annotation', 0, 0).then(searchResults => {
+          setDiseaseAnnotationCount(searchResults.totalResults);
+        });
+
+        searchService.search('agm', 0, 0).then(searchResults => {
+          setAgmCount(searchResults.totalResults);
+        });
+
         searchService.search('ecoterm', 0, 0).then(results => {
           setECOCount(results.totalResults);
         });

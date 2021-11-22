@@ -141,22 +141,27 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 .where( p -> p.bool( b -> {
                     if(params.containsKey("searchFilters")) {
                         HashMap<String, Object> searchFilters = (HashMap<String, Object>)params.get("searchFilters");
-                        for(String key: searchFilters.keySet()) {
-                            b.filter(
-                                    p.wildcard().field(key).matching("*" + (String)searchFilters.get(key) + "*")
-                                    );
-                        }
+//                      for(String key: searchFilters.keySet()) {
+//                          b.filter(
+//                                  p.wildcard().field(key).matching("*" + (String)searchFilters.get(key) + "*")
+//                                  );
+//                      }
                     }
                 }))
                 .sort(f -> {
                     CompositeSortComponentsStep<?> com = f.composite();
                     if(params.containsKey("sortOrders")) {
-                        HashMap<String, Object> sortOrders = (HashMap<String, Object>)params.get("sortOrders");
-                        for(String key: sortOrders.keySet()) {
-                            if((int)sortOrders.get(key) == 1) {
+                        ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
+                        for(HashMap<String, Object> map: sortOrders) {
+                            log.info("Map: " + map);
+                            String key = (String)map.get("field");
+                            log.info("Key: " + key);
+                            int value = (int)map.get("order");
+                            log.info("Value: " + value);
+                            if(value == 1) {
                                 com.add(f.field(key).asc());
                             }
-                            if((int)sortOrders.get(key) == -1) {
+                            if(value == -1) {
                                 com.add(f.field(key).desc());
                             }
                         }
