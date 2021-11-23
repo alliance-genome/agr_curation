@@ -2,13 +2,13 @@ import React from 'react';
 import { Message }  from "primereact/message";
 
 
-export function ErrorMessageComponent({ errorField, errorMessages }) {
-    if(errorMessages){
+export function ErrorMessageComponent({ errorField, errorMessages: errorMessagesRow }) {
+    if(errorMessagesRow){
         return (
             <div>
                 <Message 
-                    severity={errorMessages[errorField] ? errorMessages[errorField].severity : ""} 
-                    text={errorMessages[errorField] ? errorMessages[errorField].message : ""} 
+                    severity={errorMessagesRow[errorField] ? errorMessagesRow[errorField].severity : ""} 
+                    text={errorMessagesRow[errorField] ? errorMessagesRow[errorField].message : ""} 
                 />
             </div>
         );
