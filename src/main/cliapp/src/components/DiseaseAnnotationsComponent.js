@@ -12,7 +12,6 @@ import { DiseaseEditor } from './DiseaseEditor';
 import { FilterComponent } from './FilterComponent'
 import { SearchService } from '../service/SearchService';
 
-import { InputText } from 'primereact/inputtext';
 import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
 import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
 
@@ -71,6 +70,24 @@ export const DiseaseAnnotationsComponent = () => {
             }
         }
     )
+
+    const onRelationEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.value || event.value === '') {
+            updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const relationEditor = (props, disabled=false) => {
+        return (
+            <ControlledVocabularyDropdown
+                options={diseaseRelationsTerms}
+                editorChange={onRelationEditorValueChange}
+                props={props}
+            />
+        )
+    };
 
     const mutation = useMutation(updatedAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
