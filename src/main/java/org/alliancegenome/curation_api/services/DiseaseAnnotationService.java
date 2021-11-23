@@ -210,7 +210,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_marker_for);
         }
         if (!correctTypeAndSubject) {
-            addRequiredMessageToResponse("relation", response);
+            addInvalidMessagetoResponse("diseaseRelation", response);
         }
         return correctTypeAndSubject;
     }
