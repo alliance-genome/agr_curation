@@ -14,7 +14,4 @@ public class ObjectResponse<E> extends APIResponse {
     @JsonView(View.FieldsOnly.class)
     private E entity;
 
-    // Needed for external usage
-    public ObjectResponse() {
-    }
 }
