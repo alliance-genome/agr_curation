@@ -38,7 +38,7 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     }
 
     public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
-        if(params == null) params = new HashMap<String, Object>();
+        if(params == null) params = new HashMap<>();
         Pagination pagination = new Pagination();
         pagination.setLimit(limit);
         pagination.setPage(page);
@@ -46,7 +46,7 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     }
 
     public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
-        if(params == null) params = new HashMap<String, Object>();
+        if(params == null) params = new HashMap<>();
         Pagination pagination = new Pagination();
         pagination.setLimit(limit);
         pagination.setPage(page);

@@ -1,15 +1,19 @@
 package org.alliancegenome.curation_api.bulkupload;
 
-import java.io.IOException;
-import java.nio.file.*;
-
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
-import org.junit.jupiter.api.*;
-
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.config.*;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
+import org.alliancegenome.curation_api.interfaces.rest.DiseaseAnnotationRESTInterface;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.junit.jupiter.api.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -24,8 +28,8 @@ public class GeneBulkUploadITCase {
     public void init() {
         RestAssured.config = RestAssuredConfig.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.socket.timeout", 100000)
-                    .setParam("http.connection.timeout", 100000));
+                        .setParam("http.socket.timeout", 100000)
+                        .setParam("http.connection.timeout", 100000));
     }
 
     @Test
@@ -35,34 +39,34 @@ public class GeneBulkUploadITCase {
 
         // upload file
         RestAssured.given().
-            contentType("application/json").
-            body(content).
-            when().
-            post("/api/gene/bulk/bgifile?async=false").
-            then().
-            statusCode(200);
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
 
         // check if all the fields are correctly read
-       RestAssured.given().
-            when().
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/gene/find?limit=10&page=0").
-            then().
-            statusCode(200).
-               body("totalResults", is(1)).
-               body("results", hasSize(1)).
-               body("results[0].curie", is("TEST:TestGene00001")).
-               body("results[0].taxon", is("NCBITaxon:10090")).
-               body("results[0].name", is( "Test gene 1")).
-               body("results[0].synonyms[0].name", is("Test1")).
-               body("results[0].synonyms[1].name", is("ExampleGene1")).
-               body("results[0].crossReferences[0].curie", is("TEST:xref1b")).
-               body("results[0].crossReferences[1].curie", is("TEST:xref1a")).
-               body("results[0].symbol", is("Tg1")).
-               body("results[0].geneSynopsis", is("Test gene with all fields populated")).
-               body("results[0].geneSynopsisURL", is("http://test.org/test_synopsis_1")).
-               body("results[0].type", is("SO:0001217"));
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00001")).
+                body("results[0].taxon", is("NCBITaxon:10090")).
+                body("results[0].name", is("Test gene 1")).
+                body("results[0].synonyms[0].name", is("Test1")).
+                body("results[0].synonyms[1].name", is("ExampleGene1")).
+                body("results[0].crossReferences[0].curie", is("TEST:xref1b")).
+                body("results[0].crossReferences[1].curie", is("TEST:xref1a")).
+                body("results[0].symbol", is("Tg1")).
+                body("results[0].geneSynopsis", is("Test gene with all fields populated")).
+                body("results[0].geneSynopsisURL", is("http://test.org/test_synopsis_1")).
+                body("results[0].type", is("SO:0001217"));
     }
 
     @Test
@@ -91,7 +95,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(2)).
                 body("results[1].curie", is("TEST:TestGene00002")).
                 body("results[1].taxon", is("NCBITaxon:10090")).
-                body("results[1].name", is( "Test gene 2")).
+                body("results[1].name", is("Test gene 2")).
                 body("results[1].synonyms[0].name", is("Test2")).
                 body("results[1].synonyms[1].name", is("ExampleGene2")).
                 body("results[1].symbol", is("Tg2")).
@@ -126,7 +130,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(3)).
                 body("results[2].curie", is("TEST:TestGene00003")).
                 body("results[2].taxon", is("NCBITaxon:10090")).
-                body("results[2].name", is( "Test gene 3")).
+                body("results[2].name", is("Test gene 3")).
                 body("results[2].synonyms[0].name", is("Test3")).
                 body("results[2].synonyms[1].name", is("ExampleGene3")).
                 body("results[2].symbol", is("Tg3")).
@@ -161,7 +165,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(4)).
                 body("results[3].curie", is("TEST:TestGene00005")).
                 body("results[3].taxon", is("NCBITaxon:10090")).
-                body("results[3].name", is( "Test gene 5")).
+                body("results[3].name", is("Test gene 5")).
                 body("results[3].symbol", is("Tg5")).
                 body("results[3].geneSynopsis", is("Test gene with all fields populated except secondaryIds")).
                 body("results[3].geneSynopsisURL", is("http://test.org/test_synopsis_5")).
@@ -194,7 +198,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(5)).
                 body("results[4].curie", is("TEST:TestGene00006")).
                 body("results[4].taxon", is("NCBITaxon:10090")).
-                body("results[4].name", is( "Test gene 6")).
+                body("results[4].name", is("Test gene 6")).
                 body("results[4].crossReferences[0].curie", is("TEST:xref6b")).
                 body("results[4].crossReferences[1].curie", is("TEST:xref6a")).
                 body("results[4].symbol", is("Tg6")).
@@ -228,7 +232,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(6)).
                 body("results", hasSize(6)).
                 body("results[5].curie", is("TEST:TestGene00007")).
-                body("results[5].name", is( "Test gene 7")).
+                body("results[5].name", is("Test gene 7")).
                 body("results[5].synonyms[0].name", is("Test7")).
                 body("results[5].synonyms[1].name", is("ExampleGene7")).
                 body("results[5].crossReferences[0].curie", is("TEST:xref7a")).
@@ -264,7 +268,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(7)).
                 body("results", hasSize(7)).
                 body("results[6].curie", is("TEST:TestGene00008")).
-                body("results[6].name", is( "Test gene 8")).
+                body("results[6].name", is("Test gene 8")).
                 body("results[6].synonyms[0].name", is("Test8")).
                 body("results[6].synonyms[1].name", is("ExampleGene8")).
                 body("results[6].crossReferences[0].curie", is("TEST:xref8b")).
@@ -300,7 +304,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(8)).
                 body("results[7].curie", is("TEST:TestGene00009")).
                 body("results[7].taxon", is("NCBITaxon:10090")).
-                body("results[7].name", is( "Test gene 9")).
+                body("results[7].name", is("Test gene 9")).
                 body("results[7].synonyms[0].name", is("Test9")).
                 body("results[7].synonyms[1].name", is("ExampleGene9")).
                 body("results[7].crossReferences[0].curie", is("TEST:xref9b")).
@@ -372,7 +376,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(10)).
                 body("results[9].curie", is("TEST:TestGene00011")).
                 body("results[9].taxon", is("NCBITaxon:10090")).
-                body("results[9].name", is( "Test gene 11")).
+                body("results[9].name", is("Test gene 11")).
                 body("results[9].synonyms[0].name", is("Test11")).
                 body("results[9].synonyms[1].name", is("ExampleGene11")).
                 body("results[9].crossReferences[0].curie", is("TEST:xref11b")).
@@ -397,7 +401,7 @@ public class GeneBulkUploadITCase {
                 statusCode(200);
 
         // check if all the fields are correctly read
-                RestAssured.given().
+        RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
                 body("{}").
@@ -408,7 +412,7 @@ public class GeneBulkUploadITCase {
                 body("results", hasSize(11)).
                 body("results[10].curie", is("TEST:TestGene00012")).
                 body("results[10].taxon", is("NCBITaxon:10090")).
-                body("results[10].name", is( "Test gene 12")).
+                body("results[10].name", is("Test gene 12")).
                 body("results[10].synonyms[0].name", is("Test12")).
                 body("results[10].synonyms[1].name", is("ExampleGene12")).
                 body("results[10].crossReferences[0].curie", is("TEST:xref12a")).
@@ -530,12 +534,12 @@ public class GeneBulkUploadITCase {
 
         // upload file
         RestAssured.given().
-            contentType("application/json").
-            body(content).
-            when().
-            post("/api/gene/bulk/bgifile?async=false").
-            then().
-            statusCode(200);
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(200);
 
         // check if all the genes uploaded (834 + 1 per each test above)
         RestAssured.given().
