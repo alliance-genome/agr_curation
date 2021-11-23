@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import { Message } from "primereact/message"
 import { Dropdown } from "primereact/dropdown"
 
 export function ControlledVocabularyDropdown({ options, editorChange, props }) {
