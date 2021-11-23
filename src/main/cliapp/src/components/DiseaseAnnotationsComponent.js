@@ -3,7 +3,6 @@ import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
 import {useMutation, useQuery} from 'react-query';
-import {Message} from "primereact/message";
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
@@ -11,6 +10,7 @@ import {OntologyService} from "../service/OntologyService";
 import { InputText } from 'primereact/inputtext';
 import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
 import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
+import { ErrorMessageComponent } from './ErrorMessageComponent';
 
 
 export const DiseaseAnnotationsComponent = () => {
@@ -32,10 +32,11 @@ export const DiseaseAnnotationsComponent = () => {
 
     const [curieFilterValue, setCurieFilterValue] = useState('');
     const [subjectFilterValue, setSubjectFilterValue] = useState('');
-    const [relationFilterValue, setRelationFilterValue] = useState('');
+    const [diseaseRelationFilterValue, setDiseaseRelationFilterValue] = useState('');
     const [diseaseFilterValue, setDiseaseFilterValue] = useState('');
     const [evidenceFilterValue, setEvidenceFilterValue] = useState('');
     const [referenceFilterValue, setReferenceFilterValue] = useState('');
+    const [errorMessages, setErrorMessages] = useState({});
 
     const rowsInEdit = useRef(0);
 
@@ -204,7 +205,7 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={subjectItemTemplate}
             completeMethod={searchSubject}
             onChange={(e) => onSubjectEditorValueChange(props, e)}
-        /><Message severity={props.rowData.subject.errorSeverity ? props.rowData.subject.errorSeverity : ""} text={props.rowData.subject.errorMessage} /></div>)
+        /><ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"subject"} /></div>)
     };
 
     const onDiseaseEditorValueChange = (props, event) => {
@@ -228,10 +229,10 @@ export const DiseaseAnnotationsComponent = () => {
             itemTemplate={diseaseItemTemplate}
             completeMethod={searchDisease}
             onChange={(e) => onDiseaseEditorValueChange(props, e)}
-        /><Message severity={props.rowData.object.errorSeverity ? props.rowData.object.errorSeverity : ""} text={props.rowData.object.errorMessage} /></div>)
+        /> <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"object"} /></div>)
     };
 
-    const onRelationEditorValueChange = (props, event) => {
+    const onDiseaseRelationEditorValueChange = (props, event) => {
         let updatedAnnotations = [...props.value];
         if(event.value || event.value === '') {
             updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
@@ -239,13 +240,16 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const relationEditor = (props, disabled=false) => {
+    const diseaseRelationEditor = (props, disabled=false) => {
         return (
-            <ControlledVocabularyDropdown
-                options={diseaseRelationsTerms}
-                editorChange={onRelationEditorValueChange}
-                props={props}
-            />
+            <>
+                <ControlledVocabularyDropdown
+                    options={diseaseRelationsTerms}
+                    editorChange={onDiseaseRelationEditorValueChange}
+                    props={props}
+                />
+                <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
+            </>
         )
     };
 
@@ -268,6 +272,10 @@ export const DiseaseAnnotationsComponent = () => {
         delete originalRows[event.index];
         setOriginalRows(originalRows);
         setDiseaseAnnotations(annotations);
+        const errorMessagesCopy = errorMessages;
+        errorMessagesCopy[event.index] = {};
+        setErrorMessages({...errorMessagesCopy});
+
     };
 
     const onRowEditSave = (event) =>{
@@ -287,6 +295,7 @@ export const DiseaseAnnotationsComponent = () => {
             updatedRow.object.curie = event.data.object.curie;
         }
 
+
         mutation.mutate(updatedRow, {
             onSuccess: (data, variables, context) => {
                 console.log(data);
@@ -296,6 +305,9 @@ export const DiseaseAnnotationsComponent = () => {
                 annotations[event.index].subject = data.data.entity.subject;
                 annotations[event.index].object = data.data.entity.object;
                 setDiseaseAnnotations(annotations);
+                const errorMessagesCopy = errorMessages;
+                errorMessagesCopy[event.index] = {};
+                setErrorMessages({...errorMessagesCopy});
             },
             onError: (error, variables, context) => {
                 rowsInEdit.current++;
@@ -303,16 +315,26 @@ export const DiseaseAnnotationsComponent = () => {
                 toast_topright.current.show([
                     {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
-
+                
                 let annotations = [...diseaseAnnotations];
-                if(error.response.data.errorMessages.subject) {
-                    annotations[event.index].subject.errorSeverity = "error";
-                    annotations[event.index].subject.errorMessage = error.response.data.errorMessages.subject;
-                }
-                if(error.response.data.errorMessages.object){
-                    annotations[event.index].object.errorSeverity = "error";
-                    annotations[event.index].object.errorMessage = error.response.data.errorMessages.object;
-                }
+                
+                const errorMessagesCopy = errorMessages;
+                
+                console.log(errorMessagesCopy);
+                errorMessagesCopy[event.index] = {};
+                Object.keys(error.response.data.errorMessages).forEach((field) => {
+                    let messageObject = {
+                        severity: "error",
+                        message: error.response.data.errorMessages[field]
+                    }
+                    errorMessagesCopy[event.index][field] = messageObject;
+                });
+
+                console.log(errorMessagesCopy);
+                setErrorMessages({...errorMessagesCopy});
+
+                
+                
                 setDiseaseAnnotations(annotations);
                 let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
                 setEditingRows(_editingRows);
@@ -392,10 +414,10 @@ export const DiseaseAnnotationsComponent = () => {
             }
     } />;
 
-    const relationFilterElement = <InputText
+    const diseaseRelationFilterElement = <InputText
         disabled={!isEnabled}
-        value={relationFilterValue} onChange={(e) => {
-                setRelationFilterValue(e.target.value);
+        value={diseaseRelationFilterValue} onChange={(e) => {
+                setDiseaseRelationFilterValue(e.target.value);
                 const filter = {
                     "diseaseRelation": {
                         value: e.target.value,
@@ -474,7 +496,7 @@ export const DiseaseAnnotationsComponent = () => {
                     </Column>
 
                     <Column field="diseaseRelation" header="Disease Relation" sortable={isEnabled}
-                        filter editor={(props) => relationEditor(props)} filterElement={relationFilterElement}>
+                        filter editor={(props) => diseaseRelationEditor(props)} filterElement={diseaseRelationFilterElement}>
                     </Column>
                     <Column field="negated" header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
                     <Column field="object.curie" header="Disease" sortable={isEnabled}
