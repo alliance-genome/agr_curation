@@ -32,65 +32,12 @@ public class DiseaseAnnotationITCase {
     @Order(1)
     public void createDiseaseAnnotation() {
 
-        CrossReference crossReference = new CrossReference();
-        crossReference.setDisplayName("AGRreference");
-        crossReference.setCurie("CROSSREF:0001");
-        crossReference.setPrefix("agr");
-        crossReference.setPageAreas(Arrays.asList("reference"));
-        crossReference.setCreated(LocalDateTime.now());
-        crossReference.setLastUpdated(LocalDateTime.now());
-
-        RestAssured.given().
-                body(crossReference).
-                contentType("application/json").
-                when().
-                post("/api/cross-reference").
-                then().
-                statusCode(200);
-
-        DOTerm doTerm = new DOTerm();
-        doTerm.setCurie("DOID:0001");
-        doTerm.setCrossReferences(Collections.singletonList(crossReference));
-
-        RestAssured.given().
-                contentType("application/json").
-                body(doTerm).
-                when().
-                post("/api/doterm").
-                then().
-                statusCode(200);
-
-        BiologicalEntity biologicalEntity = new BiologicalEntity();
-        biologicalEntity.setCurie("BO:0001");
-        biologicalEntity.setTaxon("taxon:0001");
-
-        RestAssured.given().
-                contentType("application/json").
-                body(biologicalEntity).
-                when().
-                post("/api/biologicalentity").
-                then().
-                statusCode(200);
-
-        Reference reference = new Reference();
-        reference.setCurie("REF:0001");
-
-        DiseaseAnnotation diseaseAnnotation = new DiseaseAnnotation();
-        diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        diseaseAnnotation.setCurie("Disease0001");
-        diseaseAnnotation.setNegated(false);
-        diseaseAnnotation.setObject(doTerm);
-        diseaseAnnotation.setSubject(biologicalEntity);
-//        Not ready for references yet:
-//        diseaseAnnotation.setReferenceList(Arrays.asList(reference));
-
-        RestAssured.given().
-                contentType("application/json").
-                body(diseaseAnnotation).
-                when().
-                post("/api/disease-annotation").
-                then().
-                statusCode(200);
+        // ToDo: Load Disease Annotation and miscellaneous entities through JSON file
+        // more scalable for testing all attributes.
+        CrossReference crossReference = createCrossReference("CROSSREF:0001", "AGRreference");
+        DOTerm doTerm = createDiseaseTerm("DOID:0001",crossReference);
+        BiologicalEntity biologicalEntity = createBiologicalEntity("BO:0001", "taxon:0001");
+        createDiseaseAnnotation("DiseaseAnnotation0001", doTerm, biologicalEntity);
 
         final ValidatableResponse validatableResponse = RestAssured.given().
                 when().
@@ -102,7 +49,7 @@ public class DiseaseAnnotationITCase {
         validatableResponse.
                 body("totalResults", is(1)).
                 body("results", hasSize(1)).
-                body("results[0].curie", is("Disease0001")).
+                body("results[0].curie", is("DiseaseAnnotation0001")).
                 body("results[0].subject.curie", is("BO:0001")).
                 body("results[0].object.curie", is("DOID:0001"));
     }
@@ -121,52 +68,18 @@ public class DiseaseAnnotationITCase {
 
         DiseaseAnnotation annotation = searchAnnotation.getResults().get(0);
 
-        CrossReference crossReference = new CrossReference();
-        crossReference.setDisplayName("AGRreference");
-        crossReference.setCurie("CROSSREF:0002");
-        crossReference.setPrefix("agr");
-        crossReference.setPageAreas(Arrays.asList("reference"));
-        crossReference.setCreated(LocalDateTime.now());
-        crossReference.setLastUpdated(LocalDateTime.now());
-
-        RestAssured.given().
-                body(crossReference).
-                contentType("application/json").
-                when().
-                post("/api/cross-reference").
-                then().
-                statusCode(200);
-
-        DOTerm doTerm = new DOTerm();
-        doTerm.setCurie("DOID:0002");
-        doTerm.setCrossReferences(List.of(crossReference));
+        CrossReference crossReference = createCrossReference("CROSSREF:0002", "AGRreference");
+        DOTerm doTerm = createDiseaseTerm("DOID:0002",crossReference);
+        BiologicalEntity biologicalEntity = createBiologicalEntity("BO:0002", "taxon:0001");
+        // update DA
         annotation.setObject(doTerm);
-
-        RestAssured.given().
-                contentType("application/json").
-                body(doTerm).
-                when().
-                post("/api/doterm").
-                then().
-                statusCode(200);
-
-        BiologicalEntity biologicalEntity = new BiologicalEntity();
-        biologicalEntity.setCurie("BO:0002");
-        biologicalEntity.setTaxon("taxon:0001");
         annotation.setSubject(biologicalEntity);
-
-        RestAssured.given().
-                contentType("application/json").
-                body(biologicalEntity).
-                when().
-                post("/api/biologicalentity").
-                then().
-                statusCode(200);
 
         RestAssured.given().
                 contentType("application/json").
                 body(annotation).
                 when().
+                // update
                 put("/api/disease-annotation").
                 then().
                 statusCode(200);
@@ -181,9 +94,79 @@ public class DiseaseAnnotationITCase {
         validatableResponse.
                 body("totalResults", is(1)).
                 body("results", hasSize(1)).
-                body("results[0].curie", is("Disease0001")).
+                body("results[0].curie", is("DiseaseAnnotation0001")).
                 body("results[0].subject.curie", is("BO:0002")).
                 body("results[0].object.curie", is("DOID:0002"));
 
+    }
+
+    private CrossReference createCrossReference(String curie, String name) {
+        CrossReference crossReference = new CrossReference();
+        crossReference.setCurie(curie);
+        crossReference.setDisplayName(name);
+        crossReference.setPrefix("agr");
+        crossReference.setPageAreas(Arrays.asList("reference"));
+        crossReference.setCreated(LocalDateTime.now());
+        crossReference.setLastUpdated(LocalDateTime.now());
+
+        RestAssured.given().
+                body(crossReference).
+                contentType("application/json").
+                when().
+                post("/api/cross-reference").
+                then().
+                statusCode(200);
+        return crossReference;
+    }
+
+    private DOTerm createDiseaseTerm(String curie, CrossReference crossReference) {
+        DOTerm doTerm = new DOTerm();
+        doTerm.setCurie(curie);
+        doTerm.setCrossReferences(Collections.singletonList(crossReference));
+
+        RestAssured.given().
+                contentType("application/json").
+                body(doTerm).
+                when().
+                post("/api/doterm").
+                then().
+                statusCode(200);
+        return doTerm;
+    }
+
+    private BiologicalEntity createBiologicalEntity(String curie, String taxon) {
+        BiologicalEntity biologicalEntity = new BiologicalEntity();
+        biologicalEntity.setCurie(curie);
+        biologicalEntity.setTaxon(taxon);
+
+        RestAssured.given().
+                contentType("application/json").
+                body(biologicalEntity).
+                when().
+                post("/api/biologicalentity").
+                then().
+                statusCode(200);
+        return biologicalEntity;
+    }
+
+    private void createDiseaseAnnotation(String curie, DOTerm doTerm, BiologicalEntity biologicalEntity) {
+        Reference reference = new Reference();
+        reference.setCurie("REF:0001");
+        DiseaseAnnotation diseaseAnnotation = new DiseaseAnnotation();
+        diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
+        diseaseAnnotation.setCurie(curie);
+        diseaseAnnotation.setNegated(false);
+        diseaseAnnotation.setObject(doTerm);
+        diseaseAnnotation.setSubject(biologicalEntity);
+//        Not ready for references yet:
+//        diseaseAnnotation.setReferenceList(Arrays.asList(reference));
+
+        RestAssured.given().
+                contentType("application/json").
+                body(diseaseAnnotation).
+                when().
+                post("/api/disease-annotation").
+                then().
+                statusCode(200);
     }
 }
