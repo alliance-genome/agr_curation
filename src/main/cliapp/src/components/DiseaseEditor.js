@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
 import {Message} from "primereact/message";
 
-export const DiseaseEditor = (props) => {//ditto line 152    
+export const DiseaseEditor = (props) => {    
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     
     const searchDisease = (event) => {
@@ -27,7 +27,7 @@ export const DiseaseEditor = (props) => {//ditto line 152
         }
     };
     
-    const diseaseItemTemplate = (item) => {//put into it's own component?
+    const diseaseItemTemplate = (item) => {
         return <div>{item.curie} ({item.name})</div>;
     };
 

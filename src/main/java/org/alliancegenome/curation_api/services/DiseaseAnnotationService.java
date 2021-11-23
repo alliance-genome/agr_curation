@@ -189,10 +189,30 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         final String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
         validateSubject(entity, response);
         validateDisease(entity, response);
+        validateTypeAndSubject(entity, response);
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
         }
+    }
+
+    private boolean validateTypeAndSubject(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        boolean correctTypeAndSubject = true;
+        DiseaseAnnotation.DiseaseRelation relation = entity.getDiseaseRelation();
+        if (entity.getSubject() instanceof Gene) {
+            correctTypeAndSubject = ( relation == DiseaseAnnotation.DiseaseRelation.is_implicated_in ||
+              relation == DiseaseAnnotation.DiseaseRelation.is_marker_for);
+        }
+        if (entity.getSubject() instanceof Allele) {
+            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_implicated_in);
+        }
+        if (entity.getSubject() instanceof AffectedGenomicModel) {
+            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_marker_for);
+        }
+        if (!correctTypeAndSubject) {
+            addInvalidMessagetoResponse("diseaseRelation", response);
+        }
+        return correctTypeAndSubject;
     }
 
     private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {

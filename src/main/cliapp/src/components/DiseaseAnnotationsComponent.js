@@ -14,6 +14,7 @@ import { SearchService } from '../service/SearchService';
 
 import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
 import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
+import { ErrorMessageComponent } from './ErrorMessageComponent';
 
 export const DiseaseAnnotationsComponent = () => {
 
@@ -28,6 +29,8 @@ export const DiseaseAnnotationsComponent = () => {
     const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
     const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
+
+    const [errorMessages, setErrorMessages] = useState({});
 
     const rowsInEdit = useRef(0);
 
@@ -135,7 +138,104 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const onRowEditInit = (event) => {//can these row logic methods be extracted? Either into a lib file or into custom hooks?
+    const editorValidator = (value) => {
+        value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
+        /*if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
+            let subStr = value.split(':');
+            value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
+        }else{
+            value = value.toUpperCase();
+        }*/
+        return value;
+    }
+
+    const searchSubject = (event) => {
+        event.query = editorValidator(event.query);
+        biologicalEntityService.getBiologicalEntities(15, 0, null, {"curie":{"value": event.query}})
+            .then((data) => {
+                setFilteredSubjects(data.results);
+            });
+    };
+
+    const searchDisease = (event) => {
+        event.query = editorValidator(event.query);
+        ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
+            .then((data) => {
+                setFilteredDiseases(data.results);
+            });
+    };
+
+    const onSubjectEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.target.value || event.target.value === '') {
+            updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            if(typeof event.target.value === "object"){
+                updatedAnnotations[props.rowIndex].subject.curie = event.target.value.curie;
+            } else {
+                updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
+            }
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+
+    const subjectEditor = (props) => {
+        return (<div><AutoComplete
+            field="curie"
+            value={props.rowData.subject.curie}
+            suggestions={filteredSubjects}
+            itemTemplate={subjectItemTemplate}
+            completeMethod={searchSubject}
+            onChange={(e) => onSubjectEditorValueChange(props, e)}
+        /><ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"subject"} /></div>)
+    };
+
+    const onDiseaseEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.target.value || event.target.value === '') {
+            updatedAnnotations[props.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            if(typeof event.target.value === "object"){
+                updatedAnnotations[props.rowIndex].object.curie = event.target.value.curie;
+            } else {
+                updatedAnnotations[props.rowIndex].object.curie = event.target.value;
+            }
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const diseaseEditor = (props) => {
+        return (<div><AutoComplete
+            field="curie"
+            value={props.rowData.object.curie}
+            suggestions={filteredDiseases}
+            itemTemplate={diseaseItemTemplate}
+            completeMethod={searchDisease}
+            onChange={(e) => onDiseaseEditorValueChange(props, e)}
+        /> <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"object"} /></div>)
+    };
+
+    const onDiseaseRelationEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.value || event.value === '') {
+            updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const diseaseRelationEditor = (props, disabled=false) => {
+        return (
+            <>
+                <ControlledVocabularyDropdown
+                    options={diseaseRelationsTerms}
+                    editorChange={onDiseaseRelationEditorValueChange}
+                    props={props}
+                />
+                <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
+            </>
+        )
+    };
+
+    const onRowEditInit = (event) => {
         rowsInEdit.current++;
         setIsEnabled(false);
         originalRows[event.index] = { ...diseaseAnnotations[event.index] };
@@ -154,18 +254,12 @@ export const DiseaseAnnotationsComponent = () => {
         delete originalRows[event.index];
         setOriginalRows(originalRows);
         setDiseaseAnnotations(annotations);
+        const errorMessagesCopy = errorMessages;
+        errorMessagesCopy[event.index] = {};
+        setErrorMessages({...errorMessagesCopy});
+
     };
 
-    const editorValidator = (value) => {
-        value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
-        if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
-            let subStr = value.split(':');
-            value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
-        }else{
-            value = value.toUpperCase();
-        }
-        return value;
-    }
 
     const onRowEditSave = (event) =>{//possible to shrink?
         rowsInEdit.current--;
@@ -184,6 +278,7 @@ export const DiseaseAnnotationsComponent = () => {
             updatedRow.object.curie = event.data.object.curie;
         }
 
+
         mutation.mutate(updatedRow, {
             onSuccess: (data, variables, context) => {
                 console.log(data);
@@ -193,6 +288,9 @@ export const DiseaseAnnotationsComponent = () => {
                 annotations[event.index].subject = data.data.entity.subject;
                 annotations[event.index].object = data.data.entity.object;
                 setDiseaseAnnotations(annotations);
+                const errorMessagesCopy = errorMessages;
+                errorMessagesCopy[event.index] = {};
+                setErrorMessages({...errorMessagesCopy});
             },
             onError: (error, variables, context) => {
                 rowsInEdit.current++;
@@ -200,16 +298,26 @@ export const DiseaseAnnotationsComponent = () => {
                 toast_topright.current.show([
                     {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
-
+                
                 let annotations = [...diseaseAnnotations];
-                if(error.response.data.errorMessages.subject) {
-                    annotations[event.index].subject.errorSeverity = "error";
-                    annotations[event.index].subject.errorMessage = error.response.data.errorMessages.subject;
-                }
-                if(error.response.data.errorMessages.object){
-                    annotations[event.index].object.errorSeverity = "error";
-                    annotations[event.index].object.errorMessage = error.response.data.errorMessages.object;
-                }
+                
+                const errorMessagesCopy = errorMessages;
+                
+                console.log(errorMessagesCopy);
+                errorMessagesCopy[event.index] = {};
+                Object.keys(error.response.data.errorMessages).forEach((field) => {
+                    let messageObject = {
+                        severity: "error",
+                        message: error.response.data.errorMessages[field]
+                    }
+                    errorMessagesCopy[event.index][field] = messageObject;
+                });
+
+                console.log(errorMessagesCopy);
+                setErrorMessages({...errorMessagesCopy});
+
+                
+                
                 setDiseaseAnnotations(annotations);
                 let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
                 setEditingRows(_editingRows);
