@@ -207,7 +207,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_implicated_in);
         }
         if (entity.getSubject() instanceof AffectedGenomicModel) {
-            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_marker_for);
+            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_model_of);
         }
         if (!correctTypeAndSubject) {
             addInvalidMessagetoResponse("diseaseRelation", response);
