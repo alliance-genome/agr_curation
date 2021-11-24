@@ -1,3003 +1,3003 @@
 {
-   "data" : [
-      {
-         "DOid" : "DOID:332",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0233896",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:27634045"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0276459",
-         "objectName" : "chic[NIG.9553R]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0111099",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0244350",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:31875549"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0358397",
-         "objectName" : "Hnf4[R167W.UAS.Tag:HA]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:1289",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0213942",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21518731"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0277307",
-         "objectName" : "Zzzz\\CAG[term.CAA.114.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0110199",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0243981",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:31695036"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0356258",
-         "objectName" : "Hsap\\YARS1[E196K.DeltaNLS.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226153",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25103406"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0300897",
-         "objectName" : "Zzzz\\GGGGCC[RO-108.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:1062",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0244350",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:31875549"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0358400",
-         "objectName" : "Hnf4[R171W.UAS.Tag:HA]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0060213",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0228084",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25521377"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0325752",
-         "objectName" : "Zzzz\\poly-PA[50.UAS.Tag:FLAG,EGFP]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226153",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25103406"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0300909",
-         "objectName" : "Zzzz\\poly-GA[PO-100.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0227546",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25447237"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0324820",
-         "objectName" : "Hsap\\FUS[R495X.UAS.Tag:HA]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:1926",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0243404",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:31505865"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0192304",
-         "objectName" : "Gba1a[MB02296]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:332",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226153",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25103406"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0300911",
-         "objectName" : "Zzzz\\poly-PA[PO-100.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:680",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0211366",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:20658989"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0043132",
-         "objectName" : "Hsap\\MAPT[UAS.cAa]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:2476",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0222593",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:23770702"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0194504",
-         "objectName" : "unc-104[bris]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226153",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25103406"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0300908",
-         "objectName" : "Zzzz\\poly-GA[PO-36.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:1574",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0209720",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:19951294"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0189833",
-         "objectName" : "Orco[1]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226153",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25103406"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0300895",
-         "objectName" : "Zzzz\\GGGGCC[RO-36.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0227546",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25447237"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0324823",
-         "objectName" : "caz[Q349X.UAS.Tag:HA]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:769",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0237923",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:29317532"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0343649",
-         "objectName" : "Drer\\ltk[UAS.cFa]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:649",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0214139",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:20817727"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0285137",
-         "objectName" : "Ocun\\PRNP[UAS.cFa]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:4644",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0229017",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25830653"
-            }
-         },
-         "negation" : "not",
-         "objectId" : "FB:FBal0342183",
-         "objectName" : "Hsap\\KRT14[R125C.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0110885",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007014"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0237070",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28982685"
-            }
-         },
-         "objectId" : "FB:FBgn0039705",
-         "objectName" : "Atg16",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0242831",
-            "FB:FBal0325052"
-         ]
-      },
-      {
-         "DOid" : "DOID:0060370",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0190504",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:16203113"
-            }
-         },
-         "objectId" : "FB:FBgn0039802",
-         "objectName" : "dj-1beta",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0195124",
-            "FB:FBal0195123"
-         ]
-      },
-      {
-         "DOid" : "DOID:9970",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0232605",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:27280443"
-            }
-         },
-         "objectId" : "FB:FBgn0039225",
-         "objectName" : "Ets96B",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0263097",
-            "FB:FBal0244903"
-         ]
-      },
-      {
-         "DOid" : "DOID:0080348",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0234171",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:27932950"
-            }
-         },
-         "objectId" : "FB:FBgn0000108",
-         "objectName" : "Appl",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0365274",
-            "FB:FBal0221088"
-         ]
-      },
-      {
-         "DOid" : "DOID:0060160",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226016",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25144193"
-            }
-         },
-         "objectId" : "FB:FBgn0036641",
-         "objectName" : "Smn",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0277064",
-            "FB:FBal0299577",
-            "FB:FBal0299579",
-            "FB:FBal0299578",
-            "FB:FBal0299586",
-            "FB:FBal0299582",
-            "FB:FBal0299576",
-            "FB:FBal0299585",
-            "FB:FBal0299581",
-            "FB:FBal0299584",
-            "FB:FBal0299583",
-            "FB:FBal0299580"
-         ]
-      },
-      {
-         "DOid" : "DOID:1059",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0228459",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25935478"
-            }
-         },
-         "objectId" : "FB:FBgn0061469",
-         "objectName" : "Ube3a",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0244609",
-            "FB:FBal0244600",
-            "FB:FBal0316239",
-            "FB:FBal0198772",
-            "FB:FBal0244599"
-         ]
-      },
-      {
-         "DOid" : "DOID:896",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0229614",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26199316"
-            }
-         },
-         "objectId" : "FB:FBgn0050077",
-         "objectName" : "Blos1",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0242577",
-            "FB:FBal0242578"
-         ]
-      },
-      {
-         "DOid" : "DOID:422",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0211153",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:20452215"
-            }
-         },
-         "objectId" : "FB:FBgn0000047",
-         "objectName" : "Act88F",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0028753",
-            "FB:FBal0062243",
-            "FB:FBal0038095",
-            "FB:FBal0248514",
-            "FB:FBal0000272"
-         ]
-      },
-      {
-         "DOid" : "DOID:14261",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0234784",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28119500"
-            }
-         },
-         "objectId" : "FB:FBgn0028734",
-         "objectName" : "Fmr1",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0301533",
-            "FB:FBal0131033"
-         ]
-      },
-      {
-         "DOid" : "DOID:1289",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0219395",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:22714410"
-            }
-         },
-         "objectId" : "FB:FBgn0001308",
-         "objectName" : "Khc",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0260817",
-            "FB:FBal0029878",
-            "FB:FBal0278203"
-         ]
-      },
-      {
-         "DOid" : "DOID:2476",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0234028",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:27170313"
-            }
-         },
-         "objectId" : "FB:FBgn0038453",
-         "objectName" : "Arl6IP1",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0198984",
-            "FB:FBal0236094"
-         ]
-      },
-      {
-         "DOid" : "DOID:10584",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0211918",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:20865169"
-            }
-         },
-         "objectId" : "FB:FBgn0002940",
-         "objectName" : "ninaE",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0241243",
-            "FB:FBal0046168"
-         ]
-      },
-      {
-         "DOid" : "DOID:14791",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0235893",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28515229"
-            }
-         },
-         "objectId" : "FB:FBgn0259685",
-         "objectName" : "crb",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0343125",
-            "FB:FBal0343127",
-            "FB:FBal0343124",
-            "FB:FBal0343126",
-            "FB:FBal0001817"
-         ]
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0225139",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:24799714"
-            }
-         },
-         "objectId" : "FB:FBgn0286784",
-         "objectName" : "TER94",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0104711",
-            "FB:FBal0282575"
-         ]
-      },
-      {
-         "DOid" : "DOID:0060201",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226354",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25088712"
-            }
-         },
-         "objectId" : "FB:FBgn0025790",
-         "objectName" : "TBPH",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0365526",
-            "FB:FBal0365527"
-         ]
-      },
-      {
-         "DOid" : "DOID:10907",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0223188",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:24142104"
-            }
-         },
-         "objectId" : "FB:FBgn0000140",
-         "objectName" : "asp",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0030524",
-            "FB:FBal0240072",
-            "FB:FBal0030522",
-            "FB:FBal0000773"
-         ]
-      },
-      {
-         "DOid" : "DOID:0050888",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0221980",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:23685073"
-            }
-         },
-         "objectId" : "FB:FBgn0004436",
-         "objectName" : "Ubc6",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0288690",
-            "FB:FBal0155722"
-         ]
-      },
-      {
-         "DOid" : "DOID:0050752",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0242566",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:30741620"
-            }
-         },
-         "objectId" : "FB:FBgn0029687",
-         "objectName" : "Vap33",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0316818",
-            "FB:FBal0141328",
-            "FB:FBal0316820"
-         ]
-      },
-      {
-         "DOid" : "DOID:0050476",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0193302",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:16855048"
-            }
-         },
-         "objectId" : "FB:FBgn0026619",
-         "objectName" : "Taz",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0193558",
-            "FB:FBal0193559",
-            "FB:FBal0193557"
-         ]
-      },
-      {
-         "DOid" : "DOID:0050570",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0232240",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26940433"
-            }
-         },
-         "objectId" : "FB:FBgn0036300",
-         "objectName" : "Pmm2",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0281651",
-            "FB:FBal0320426",
-            "FB:FBal0320425",
-            "FB:FBal0230553"
-         ]
-      },
-      {
-         "DOid" : "DOID:10283",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226167",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25117438"
-            }
-         },
-         "objectId" : "FB:FBgn0015609",
-         "objectName" : "CadN",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0275430"
-         ]
-      },
-      {
-         "DOid" : "DOID:1574",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0209720",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:19951294"
-            }
-         },
-         "objectId" : "FB:FBgn0023129",
-         "objectName" : "aay",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0083142"
-         ]
-      },
-      {
-         "DOid" : "DOID:14261",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0236412",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28819289"
-            }
-         },
-         "objectId" : "FB:FBgn0028734",
-         "objectName" : "Fmr1",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0131033"
-         ]
-      },
-      {
-         "DOid" : "DOID:8466",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0230428",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26659849"
-            }
-         },
-         "objectId" : "FB:FBgn0262467",
-         "objectName" : "Scox",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0160873"
-         ]
-      },
-      {
-         "DOid" : "DOID:0050013",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0227906",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25821834"
-            }
-         },
-         "objectId" : "FB:FBgn0285926",
-         "objectName" : "Imp",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0207375"
-         ]
-      },
-      {
-         "DOid" : "DOID:863",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0239685",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:30057031"
-            }
-         },
-         "objectId" : "FB:FBgn0030400",
-         "objectName" : "Pits",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0235913"
-         ]
-      },
-      {
-         "DOid" : "DOID:10283",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226167",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25117438"
-            }
-         },
-         "objectId" : "FB:FBgn0003391",
-         "objectName" : "shg",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0273928"
-         ]
-      },
-      {
-         "DOid" : "DOID:423",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0232081",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26956799"
-            }
-         },
-         "objectId" : "FB:FBgn0000308",
-         "objectName" : "chic",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0152067"
-         ]
-      },
-      {
-         "DOid" : "DOID:0050700",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0206565",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:19074289"
-            }
-         },
-         "objectId" : "FB:FBgn0261963",
-         "objectName" : "mid",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0178885"
-         ]
-      },
-      {
-         "DOid" : "DOID:3211",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0216574",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21923734"
-            }
-         },
-         "objectId" : "FB:FBgn0030141",
-         "objectName" : "Gga",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0269004"
-         ]
-      },
-      {
-         "DOid" : "DOID:162",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0229443",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26287461"
-            }
-         },
-         "objectId" : "FB:FBgn0262656",
-         "objectName" : "Myc",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0155388"
-         ]
-      },
-      {
-         "DOid" : "DOID:9352",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0213585",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21464442"
-            }
-         },
-         "objectId" : "FB:FBgn0024248",
-         "objectName" : "chico",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0031303"
-         ]
-      },
-      {
-         "DOid" : "DOID:9884",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0214383",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21256839"
-            }
-         },
-         "objectId" : "FB:FBgn0260003",
-         "objectName" : "Dys",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0216503"
-         ]
-      },
-      {
-         "DOid" : "DOID:332",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0234031",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:27056981"
-            }
-         },
-         "objectId" : "FB:FBgn0285954",
-         "objectName" : "caz",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0265755"
-         ]
-      },
-      {
-         "DOid" : "DOID:1682",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0234793",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28084990"
-            }
-         },
-         "objectId" : "FB:FBgn0260936",
-         "objectName" : "scny",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0279156"
-         ]
-      },
-      {
-         "DOid" : "DOID:3762",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0228685",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25792727"
-            }
-         },
-         "objectId" : "FB:FBgn0262467",
-         "objectName" : "Scox",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0206030"
-         ]
-      },
-      {
-         "DOid" : "DOID:3652",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0238103",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:29285794"
-            }
-         },
-         "objectId" : "FB:FBgn0017567",
-         "objectName" : "ND-23",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0301524"
-         ]
-      },
-      {
-         "DOid" : "DOID:0111274",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0240421",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:30374414"
-            }
-         },
-         "objectId" : "FB:FBgn0036892",
-         "objectName" : "Lon",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0206000"
-         ]
-      },
-      {
-         "DOid" : "DOID:1289",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0243164",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:31233884"
-            }
-         },
-         "objectId" : "FB:FBgn0003656",
-         "objectName" : "sws",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0016670"
-         ]
-      },
-      {
-         "DOid" : "DOID:896",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0229614",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26199316"
-            }
-         },
-         "objectId" : "FB:FBgn0036819",
-         "objectName" : "Dysb",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "gene"
-         },
-         "primaryGeneticEntityIDs" : [
-            "FB:FBal0161105"
-         ]
-      },
-      {
-         "DOid" : "DOID:10652",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0210286",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:18301778"
-            }
-         },
-         "objectId" : "FB:FBal0243230",
-         "objectName" : "Hsap\\APP[L17P.Abeta42.UAS.Tag:SS(rPENK)]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9255",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0214718",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21850253"
-            }
-         },
-         "objectId" : "FB:FBal0263819",
-         "objectName" : "Hsap\\TARDBP[DeltaN251.UAS.EGFP]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0050589",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0220843",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:23378635"
-            }
-         },
-         "objectId" : "FB:FBal0198157",
-         "objectName" : "bbg[B211]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:13374",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0217004",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:22174087"
-            }
-         },
-         "objectId" : "FB:FBal0268549",
-         "objectName" : "Hsap\\ACVR1[R206H.UAS.Tag:FLAG]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0050763",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0212933",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21282466"
-            }
-         },
-         "objectId" : "FB:FBal0258124",
-         "objectName" : "Vps16B[1]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:14261",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0221507",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:23602499"
-            }
-         },
-         "objectId" : "FB:FBal0280774",
-         "objectName" : "Zzzz\\CGG[90.UAS.EGFP]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:332",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0240788",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:30339961"
-            }
-         },
-         "objectId" : "FB:FBal0270170",
-         "objectName" : "Hsap\\TAF15[UAS.cCa]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:1574",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0213908",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21658589"
-            }
-         },
-         "objectId" : "FB:FBal0157364",
-         "objectName" : "Akt[UAS.Exel]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:1826",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0180013",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:15312786"
-            }
-         },
-         "objectId" : "FB:FBal0128043",
-         "objectName" : "eas[unspecified]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:5419",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0227264",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25568125"
-            }
-         },
-         "objectId" : "FB:FBal0242577",
-         "objectName" : "Blos1[ex2]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:332",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0236005",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28677678"
-            }
-         },
-         "objectId" : "FB:FBal0300894",
-         "objectName" : "Zzzz\\poly-GR[PO-36.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:162",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0244980",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:32117966"
-            }
-         },
-         "objectId" : "FB:FBal0239731",
-         "objectName" : "yki[S168A.UAS.EGFP,Tag:HA]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:9884",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0214383",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:21256839"
-            }
-         },
-         "objectId" : "FB:FBal0218114",
-         "objectName" : "Dg[O86]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:162",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0244433",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:31882643"
-            }
-         },
-         "objectId" : "FB:FBal0278740",
-         "objectName" : "shot[GL01286]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0050700",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0226514",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:25081566"
-            }
-         },
-         "objectId" : "FB:FBal0320395",
-         "objectName" : "Pp2B-14D[act.UAS.EYFP]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:14261",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0235347",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:28073926"
-            }
-         },
-         "objectId" : "FB:FBal0160460",
-         "objectName" : "Fmr1[unspecified]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:423",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0231072",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:26744327"
-            }
-         },
-         "objectId" : "FB:FBal0288448",
-         "objectName" : "Hsap\\HNRNPA2B1[D290V.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0060201",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0239422",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:29778779"
-            }
-         },
-         "objectId" : "FB:FBal0344590",
-         "objectName" : "Hsap\\TARDBP[A315T.UAS.TDPBR]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:14330",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0225777",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:24718285"
-            }
-         },
-         "objectId" : "FB:FBal0249097",
-         "objectName" : "Hsap\\LRRK2[G2019S.UAS.Tag:FLAG]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      },
-      {
-         "DOid" : "DOID:0060367",
-         "dataProvider" : [
-            {
-               "crossReference" : {
-                  "id" : "FB",
-                  "pages" : [
-                     "homepage"
-                  ]
-               },
-               "type" : "curated"
-            }
-         ],
-         "dateAssigned" : "2021-05-27T12:25:45-04:00",
-         "evidence" : {
-            "evidenceCodes" : [
-               "ECO:0007013"
-            ],
-            "publication" : {
-               "crossReference" : {
-                  "id" : "FB:FBrf0240679",
-                  "pages" : [
-                     "reference"
-                  ]
-               },
-               "publicationId" : "PMID:29906099"
-            }
-         },
-         "objectId" : "FB:FBal0344494",
-         "objectName" : "Hsap\\SNCA[H50Q.UAS]",
-         "objectRelation" : {
-            "associationType" : "is_implicated_in",
-            "objectType" : "allele"
-         }
-      }
-   ],
-   "metaData" : {
-      "dataProvider" : {
-         "crossReference" : {
-            "id" : "FB",
-            "pages" : [
-               "homepage"
+  "data": [
+    {
+      "DOid": "DOID:332",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
             ]
-         },
-         "type" : "curated"
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0233896",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:27634045"
+        }
       },
-      "dateProduced" : "2021-05-27T12:25:45-04:00",
-      "release" : "2021_02"
-   }
+      "negation": "not",
+      "objectId": "FB:FBal0276459",
+      "objectName": "chic[NIG.9553R]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0111099",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0244350",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:31875549"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0358397",
+      "objectName": "Hnf4[R167W.UAS.Tag:HA]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:1289",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0213942",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21518731"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0277307",
+      "objectName": "Zzzz\\CAG[term.CAA.114.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0110199",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0243981",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:31695036"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0356258",
+      "objectName": "Hsap\\YARS1[E196K.DeltaNLS.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226153",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25103406"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0300897",
+      "objectName": "Zzzz\\GGGGCC[RO-108.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:1062",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0244350",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:31875549"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0358400",
+      "objectName": "Hnf4[R171W.UAS.Tag:HA]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0060213",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0228084",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25521377"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0325752",
+      "objectName": "Zzzz\\poly-PA[50.UAS.Tag:FLAG,EGFP]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226153",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25103406"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0300909",
+      "objectName": "Zzzz\\poly-GA[PO-100.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0227546",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25447237"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0324820",
+      "objectName": "Hsap\\FUS[R495X.UAS.Tag:HA]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:1926",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0243404",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:31505865"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0192304",
+      "objectName": "Gba1a[MB02296]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:332",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226153",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25103406"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0300911",
+      "objectName": "Zzzz\\poly-PA[PO-100.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:680",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0211366",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:20658989"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0043132",
+      "objectName": "Hsap\\MAPT[UAS.cAa]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:2476",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0222593",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:23770702"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0194504",
+      "objectName": "unc-104[bris]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226153",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25103406"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0300908",
+      "objectName": "Zzzz\\poly-GA[PO-36.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:1574",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0209720",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:19951294"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0189833",
+      "objectName": "Orco[1]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226153",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25103406"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0300895",
+      "objectName": "Zzzz\\GGGGCC[RO-36.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0227546",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25447237"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0324823",
+      "objectName": "caz[Q349X.UAS.Tag:HA]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:769",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0237923",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:29317532"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0343649",
+      "objectName": "Drer\\ltk[UAS.cFa]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:649",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0214139",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:20817727"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0285137",
+      "objectName": "Ocun\\PRNP[UAS.cFa]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:4644",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0229017",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25830653"
+        }
+      },
+      "negation": "not",
+      "objectId": "FB:FBal0342183",
+      "objectName": "Hsap\\KRT14[R125C.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0110885",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007014"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0237070",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28982685"
+        }
+      },
+      "objectId": "FB:FBgn0039705",
+      "objectName": "Atg16",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0242831",
+        "FB:FBal0325052"
+      ]
+    },
+    {
+      "DOid": "DOID:0060370",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0190504",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:16203113"
+        }
+      },
+      "objectId": "FB:FBgn0039802",
+      "objectName": "dj-1beta",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0195124",
+        "FB:FBal0195123"
+      ]
+    },
+    {
+      "DOid": "DOID:9970",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0232605",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:27280443"
+        }
+      },
+      "objectId": "FB:FBgn0039225",
+      "objectName": "Ets96B",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0263097",
+        "FB:FBal0244903"
+      ]
+    },
+    {
+      "DOid": "DOID:0080348",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0234171",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:27932950"
+        }
+      },
+      "objectId": "FB:FBgn0000108",
+      "objectName": "Appl",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0365274",
+        "FB:FBal0221088"
+      ]
+    },
+    {
+      "DOid": "DOID:0060160",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226016",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25144193"
+        }
+      },
+      "objectId": "FB:FBgn0036641",
+      "objectName": "Smn",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0277064",
+        "FB:FBal0299577",
+        "FB:FBal0299579",
+        "FB:FBal0299578",
+        "FB:FBal0299586",
+        "FB:FBal0299582",
+        "FB:FBal0299576",
+        "FB:FBal0299585",
+        "FB:FBal0299581",
+        "FB:FBal0299584",
+        "FB:FBal0299583",
+        "FB:FBal0299580"
+      ]
+    },
+    {
+      "DOid": "DOID:1059",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0228459",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25935478"
+        }
+      },
+      "objectId": "FB:FBgn0061469",
+      "objectName": "Ube3a",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0244609",
+        "FB:FBal0244600",
+        "FB:FBal0316239",
+        "FB:FBal0198772",
+        "FB:FBal0244599"
+      ]
+    },
+    {
+      "DOid": "DOID:896",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0229614",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26199316"
+        }
+      },
+      "objectId": "FB:FBgn0050077",
+      "objectName": "Blos1",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0242577",
+        "FB:FBal0242578"
+      ]
+    },
+    {
+      "DOid": "DOID:422",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0211153",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:20452215"
+        }
+      },
+      "objectId": "FB:FBgn0000047",
+      "objectName": "Act88F",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0028753",
+        "FB:FBal0062243",
+        "FB:FBal0038095",
+        "FB:FBal0248514",
+        "FB:FBal0000272"
+      ]
+    },
+    {
+      "DOid": "DOID:14261",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0234784",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28119500"
+        }
+      },
+      "objectId": "FB:FBgn0028734",
+      "objectName": "Fmr1",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0301533",
+        "FB:FBal0131033"
+      ]
+    },
+    {
+      "DOid": "DOID:1289",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0219395",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:22714410"
+        }
+      },
+      "objectId": "FB:FBgn0001308",
+      "objectName": "Khc",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0260817",
+        "FB:FBal0029878",
+        "FB:FBal0278203"
+      ]
+    },
+    {
+      "DOid": "DOID:2476",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0234028",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:27170313"
+        }
+      },
+      "objectId": "FB:FBgn0038453",
+      "objectName": "Arl6IP1",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0198984",
+        "FB:FBal0236094"
+      ]
+    },
+    {
+      "DOid": "DOID:10584",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0211918",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:20865169"
+        }
+      },
+      "objectId": "FB:FBgn0002940",
+      "objectName": "ninaE",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0241243",
+        "FB:FBal0046168"
+      ]
+    },
+    {
+      "DOid": "DOID:14791",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0235893",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28515229"
+        }
+      },
+      "objectId": "FB:FBgn0259685",
+      "objectName": "crb",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0343125",
+        "FB:FBal0343127",
+        "FB:FBal0343124",
+        "FB:FBal0343126",
+        "FB:FBal0001817"
+      ]
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0225139",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:24799714"
+        }
+      },
+      "objectId": "FB:FBgn0286784",
+      "objectName": "TER94",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0104711",
+        "FB:FBal0282575"
+      ]
+    },
+    {
+      "DOid": "DOID:0060201",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226354",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25088712"
+        }
+      },
+      "objectId": "FB:FBgn0025790",
+      "objectName": "TBPH",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0365526",
+        "FB:FBal0365527"
+      ]
+    },
+    {
+      "DOid": "DOID:10907",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0223188",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:24142104"
+        }
+      },
+      "objectId": "FB:FBgn0000140",
+      "objectName": "asp",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0030524",
+        "FB:FBal0240072",
+        "FB:FBal0030522",
+        "FB:FBal0000773"
+      ]
+    },
+    {
+      "DOid": "DOID:0050888",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0221980",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:23685073"
+        }
+      },
+      "objectId": "FB:FBgn0004436",
+      "objectName": "Ubc6",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0288690",
+        "FB:FBal0155722"
+      ]
+    },
+    {
+      "DOid": "DOID:0050752",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0242566",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:30741620"
+        }
+      },
+      "objectId": "FB:FBgn0029687",
+      "objectName": "Vap33",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0316818",
+        "FB:FBal0141328",
+        "FB:FBal0316820"
+      ]
+    },
+    {
+      "DOid": "DOID:0050476",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0193302",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:16855048"
+        }
+      },
+      "objectId": "FB:FBgn0026619",
+      "objectName": "Taz",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0193558",
+        "FB:FBal0193559",
+        "FB:FBal0193557"
+      ]
+    },
+    {
+      "DOid": "DOID:0050570",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0232240",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26940433"
+        }
+      },
+      "objectId": "FB:FBgn0036300",
+      "objectName": "Pmm2",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0281651",
+        "FB:FBal0320426",
+        "FB:FBal0320425",
+        "FB:FBal0230553"
+      ]
+    },
+    {
+      "DOid": "DOID:10283",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226167",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25117438"
+        }
+      },
+      "objectId": "FB:FBgn0015609",
+      "objectName": "CadN",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0275430"
+      ]
+    },
+    {
+      "DOid": "DOID:1574",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0209720",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:19951294"
+        }
+      },
+      "objectId": "FB:FBgn0023129",
+      "objectName": "aay",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0083142"
+      ]
+    },
+    {
+      "DOid": "DOID:14261",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0236412",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28819289"
+        }
+      },
+      "objectId": "FB:FBgn0028734",
+      "objectName": "Fmr1",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0131033"
+      ]
+    },
+    {
+      "DOid": "DOID:8466",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0230428",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26659849"
+        }
+      },
+      "objectId": "FB:FBgn0262467",
+      "objectName": "Scox",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0160873"
+      ]
+    },
+    {
+      "DOid": "DOID:0050013",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0227906",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25821834"
+        }
+      },
+      "objectId": "FB:FBgn0285926",
+      "objectName": "Imp",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0207375"
+      ]
+    },
+    {
+      "DOid": "DOID:863",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0239685",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:30057031"
+        }
+      },
+      "objectId": "FB:FBgn0030400",
+      "objectName": "Pits",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0235913"
+      ]
+    },
+    {
+      "DOid": "DOID:10283",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226167",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25117438"
+        }
+      },
+      "objectId": "FB:FBgn0003391",
+      "objectName": "shg",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0273928"
+      ]
+    },
+    {
+      "DOid": "DOID:423",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0232081",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26956799"
+        }
+      },
+      "objectId": "FB:FBgn0000308",
+      "objectName": "chic",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0152067"
+      ]
+    },
+    {
+      "DOid": "DOID:0050700",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0206565",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:19074289"
+        }
+      },
+      "objectId": "FB:FBgn0261963",
+      "objectName": "mid",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0178885"
+      ]
+    },
+    {
+      "DOid": "DOID:3211",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0216574",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21923734"
+        }
+      },
+      "objectId": "FB:FBgn0030141",
+      "objectName": "Gga",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0269004"
+      ]
+    },
+    {
+      "DOid": "DOID:162",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0229443",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26287461"
+        }
+      },
+      "objectId": "FB:FBgn0262656",
+      "objectName": "Myc",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0155388"
+      ]
+    },
+    {
+      "DOid": "DOID:9352",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0213585",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21464442"
+        }
+      },
+      "objectId": "FB:FBgn0024248",
+      "objectName": "chico",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0031303"
+      ]
+    },
+    {
+      "DOid": "DOID:9884",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0214383",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21256839"
+        }
+      },
+      "objectId": "FB:FBgn0260003",
+      "objectName": "Dys",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0216503"
+      ]
+    },
+    {
+      "DOid": "DOID:332",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0234031",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:27056981"
+        }
+      },
+      "objectId": "FB:FBgn0285954",
+      "objectName": "caz",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0265755"
+      ]
+    },
+    {
+      "DOid": "DOID:1682",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0234793",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28084990"
+        }
+      },
+      "objectId": "FB:FBgn0260936",
+      "objectName": "scny",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0279156"
+      ]
+    },
+    {
+      "DOid": "DOID:3762",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0228685",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25792727"
+        }
+      },
+      "objectId": "FB:FBgn0262467",
+      "objectName": "Scox",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0206030"
+      ]
+    },
+    {
+      "DOid": "DOID:3652",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0238103",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:29285794"
+        }
+      },
+      "objectId": "FB:FBgn0017567",
+      "objectName": "ND-23",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0301524"
+      ]
+    },
+    {
+      "DOid": "DOID:0111274",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0240421",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:30374414"
+        }
+      },
+      "objectId": "FB:FBgn0036892",
+      "objectName": "Lon",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0206000"
+      ]
+    },
+    {
+      "DOid": "DOID:1289",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0243164",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:31233884"
+        }
+      },
+      "objectId": "FB:FBgn0003656",
+      "objectName": "sws",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0016670"
+      ]
+    },
+    {
+      "DOid": "DOID:896",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0229614",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26199316"
+        }
+      },
+      "objectId": "FB:FBgn0036819",
+      "objectName": "Dysb",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "gene"
+      },
+      "primaryGeneticEntityIDs": [
+        "FB:FBal0161105"
+      ]
+    },
+    {
+      "DOid": "DOID:10652",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0210286",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:18301778"
+        }
+      },
+      "objectId": "FB:FBal0243230",
+      "objectName": "Hsap\\APP[L17P.Abeta42.UAS.Tag:SS(rPENK)]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9255",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0214718",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21850253"
+        }
+      },
+      "objectId": "FB:FBal0263819",
+      "objectName": "Hsap\\TARDBP[DeltaN251.UAS.EGFP]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0050589",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0220843",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:23378635"
+        }
+      },
+      "objectId": "FB:FBal0198157",
+      "objectName": "bbg[B211]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:13374",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0217004",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:22174087"
+        }
+      },
+      "objectId": "FB:FBal0268549",
+      "objectName": "Hsap\\ACVR1[R206H.UAS.Tag:FLAG]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0050763",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0212933",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21282466"
+        }
+      },
+      "objectId": "FB:FBal0258124",
+      "objectName": "Vps16B[1]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:14261",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0221507",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:23602499"
+        }
+      },
+      "objectId": "FB:FBal0280774",
+      "objectName": "Zzzz\\CGG[90.UAS.EGFP]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:332",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0240788",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:30339961"
+        }
+      },
+      "objectId": "FB:FBal0270170",
+      "objectName": "Hsap\\TAF15[UAS.cCa]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:1574",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0213908",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21658589"
+        }
+      },
+      "objectId": "FB:FBal0157364",
+      "objectName": "Akt[UAS.Exel]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:1826",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0180013",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:15312786"
+        }
+      },
+      "objectId": "FB:FBal0128043",
+      "objectName": "eas[unspecified]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:5419",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0227264",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25568125"
+        }
+      },
+      "objectId": "FB:FBal0242577",
+      "objectName": "Blos1[ex2]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:332",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0236005",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28677678"
+        }
+      },
+      "objectId": "FB:FBal0300894",
+      "objectName": "Zzzz\\poly-GR[PO-36.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:162",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0244980",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:32117966"
+        }
+      },
+      "objectId": "FB:FBal0239731",
+      "objectName": "yki[S168A.UAS.EGFP,Tag:HA]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:9884",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0214383",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:21256839"
+        }
+      },
+      "objectId": "FB:FBal0218114",
+      "objectName": "Dg[O86]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:162",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0244433",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:31882643"
+        }
+      },
+      "objectId": "FB:FBal0278740",
+      "objectName": "shot[GL01286]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0050700",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0226514",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25081566"
+        }
+      },
+      "objectId": "FB:FBal0320395",
+      "objectName": "Pp2B-14D[act.UAS.EYFP]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:14261",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0235347",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:28073926"
+        }
+      },
+      "objectId": "FB:FBal0160460",
+      "objectName": "Fmr1[unspecified]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:423",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0231072",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:26744327"
+        }
+      },
+      "objectId": "FB:FBal0288448",
+      "objectName": "Hsap\\HNRNPA2B1[D290V.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0060201",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0239422",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:29778779"
+        }
+      },
+      "objectId": "FB:FBal0344590",
+      "objectName": "Hsap\\TARDBP[A315T.UAS.TDPBR]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:14330",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0225777",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:24718285"
+        }
+      },
+      "objectId": "FB:FBal0249097",
+      "objectName": "Hsap\\LRRK2[G2019S.UAS.Tag:FLAG]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    },
+    {
+      "DOid": "DOID:0060367",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "FB",
+            "pages": [
+              "homepage"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-27T12:25:45-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0007013"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "FB:FBrf0240679",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:29906099"
+        }
+      },
+      "objectId": "FB:FBal0344494",
+      "objectName": "Hsap\\SNCA[H50Q.UAS]",
+      "objectRelation": {
+        "associationType": "is_implicated_in",
+        "objectType": "allele"
+      }
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "FB",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2021-05-27T12:25:45-04:00",
+    "release": "2021_02"
+  }
 }

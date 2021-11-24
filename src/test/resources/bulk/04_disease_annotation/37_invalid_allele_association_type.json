@@ -1,71 +1,71 @@
 {
-    "data" : [
-	{
-            "DOid" : "DOID:4",
-            "dataProvider" : [
-		{
-		    "crossReference" : {
-			"id" : "TEST:TestAllele000037",
-			"pages" : [
-			    "allele"
-			]
-		    },
-		    "type" : "curated"
-		}
-            ],
-            "dateAssigned" : "2021-05-24T00:00:00-04:00",
-            "evidence" : {
-		"evidenceCodes" : [
-		    "ECO:0000033"
-		],
-		"publication" : {
-		    "crossReference" : {
-			"id" : "TEST:xref37",
-			"pages" : [
-			    "reference"
-			]
-		    },
-		    "publicationId" : "PMID:0000037"
-		}
-            },
-            "negation" : "not",
-            "objectId" : "TEST:TestAllele000037",
-            "objectName" : "Test allele 37",
-            "objectRelation" : {
-		"associationType" : "is_model_of",
-		"objectType" : "allele",
-		"inferredGeneAssociation" : "TEST:TestGene000037"
-            },
-	    "conditionRelations" : [
-		{
-		    "conditionRelationType" : "has_condition",
-		    "conditions" : [
-			{
-			    "conditionClassId" : "ZECO:0000101",
-			    "conditionId" : "XCO:0000131",
-			    "conditionStatement" : "stress:auditory stimulus",
-			    "conditionQuantity" : "some amount",
-			    "anatomicalOntologyId" : "ZFA:0000002",
-			    "geneOntologyId" : "GO:0007569",
-			    "NCBITaxonId" : "NCBITaxon:1781",
-			    "chemicalOntologyId" : "CHEBI:46631",
-			}
-		    ]
-		}
-            ],
-	}
-    ],
-    "metaData" : {
-	"dataProvider" : {
-            "crossReference" : {
-		"id" : "TEST",
-		"pages" : [
-		    "homepage"
-		]
-            },
-            "type" : "curated"
-	},
-	"dateProduced" : "2021-09-13T12:39:18+01:00",
-	"release" : "TEST"
+  "data": [
+    {
+      "DOid": "DOID:4",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "TEST:TestAllele000037",
+            "pages": [
+              "allele"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-24T00:00:00-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0000033"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "TEST:xref37",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25920554"
+        }
+      },
+      "negation": "not",
+      "objectId": "MGI:4879001",
+      "objectName": "Test allele 37",
+      "objectRelation": {
+        "associationType": "is_model_of",
+        "objectType": "allele",
+        "inferredGeneAssociation": "TEST:TestGene000037"
+      },
+      "conditionRelations": [
+        {
+          "conditionRelationType": "has_condition",
+          "conditions": [
+            {
+              "conditionClassId": "ZECO:0000101",
+              "conditionId": "XCO:0000131",
+              "conditionStatement": "stress:auditory stimulus",
+              "conditionQuantity": "some amount",
+              "anatomicalOntologyId": "ZFA:0000002",
+              "geneOntologyId": "GO:0007569",
+              "NCBITaxonId": "NCBITaxon:1781",
+              "chemicalOntologyId": "CHEBI:46631"
+            }
+          ]
+        }
+      ]
     }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2021-09-13T12:39:18+01:00",
+    "release": "TEST"
+  }
 }
