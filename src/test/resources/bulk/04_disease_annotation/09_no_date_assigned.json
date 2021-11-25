@@ -28,7 +28,7 @@
         }
       },
       "negation": "not",
-      "objectId": "WBGene00010748",
+      "objectId": "WB:WBGene00010748",
       "objectName": "Test gene annotation 9",
       "objectRelation": {
         "associationType": "is_implicated_in",
