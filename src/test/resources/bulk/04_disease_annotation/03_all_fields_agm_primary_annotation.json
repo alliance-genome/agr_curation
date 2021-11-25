@@ -34,7 +34,9 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain",
-        "inferredGeneAssociation": "TEST:TestGene000003"
+        "inferredGeneAssociation": [
+          "WB:WBGene00000406"
+        ]
       },
       "conditionRelations": [
         {

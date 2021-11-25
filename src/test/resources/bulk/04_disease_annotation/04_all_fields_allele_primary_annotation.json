@@ -34,7 +34,9 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "allele",
-        "inferredGeneAssociation": "TEST:TestGene000004"
+        "inferredGeneAssociation": [
+          "WB:WBGene00000406"
+        ]
       },
       "conditionRelations": [
         {
