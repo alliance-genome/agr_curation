@@ -96,6 +96,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
     @Transactional
     public DiseaseAnnotation upsert(DiseaseModelAnnotationDTO annotationDTO) {
+        
         String entityId = annotationDTO.getObjectId();
 
         BiologicalEntity entity = biologicalEntityDAO.find(entityId);
@@ -103,12 +104,23 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         // do not create DA if no entity / subject is found.
         if (entity == null) return null;
 
+        // creation_date is a required field
+        if (annotationDTO.getDateAssigned() == null) {
+            log.info("No creation date given for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        
         // if there are primary genetic entity IDs available it is an
         // inferred annotation. Skip it then.
         if (CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
             return null;
 
         String doTermId = annotationDTO.getDoId();
+        if (doTermId == null) {
+            log.info("No DOTerm ID for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        
         DOTerm disease = doTermDAO.find(doTermId);
         // TODo: Change logic when ontology loader is in place
         // do not create new DOTerm records here
