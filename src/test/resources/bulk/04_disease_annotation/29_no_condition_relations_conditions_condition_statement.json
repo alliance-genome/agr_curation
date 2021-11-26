@@ -29,7 +29,7 @@
         }
       },
       "negation": "not",
-      "objectId": "FBgn0045473",
+      "objectId": "FB:FBgn0045473",
       "objectName": "Test gene 29",
       "objectRelation": {
         "associationType": "is_implicated_in",

@@ -26,7 +26,7 @@
         }
       },
       "negation": "not",
-      "objectId": "HGNV:30470",
+      "objectId": "HGNC:30470",
       "objectName": "Test gene 15",
       "objectRelation": {
         "associationType": "is_implicated_in",
