@@ -102,7 +102,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         BiologicalEntity entity = biologicalEntityDAO.find(entityId);
 
         // do not create DA if no entity / subject is found.
-        if (entity == null) return null;
+        if (entity == null) {
+            log.info("Entity " + entityId + " not found in database - skipping annotation");
+            return null;
+        }
 
         // creation_date is a required field
         if (annotationDTO.getDateAssigned() == null) {
@@ -131,7 +134,35 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             doTermDAO.persist(disease);
         }
 
+        if (annotationDTO.getEvidence() == null) {
+            log.info("No evidence for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        if (annotationDTO.getEvidence().getEvidenceCodes() == null) {
+            log.info("No evidence codes for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        if (annotationDTO.getEvidence().getPublication() == null) {
+            log.info("No publication for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
         String publicationId = annotationDTO.getEvidence().getPublication().getPublicationId();
+        if (publicationId == null) {
+            log.info("No publication ID for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        if (annotationDTO.getObjectRelation() == null) {
+            log.info("No object relation for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        if (annotationDTO.getObjectRelation().getAssociationType() == null) {
+            log.info("No object relation association type for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
+        if (annotationDTO.getObjectRelation().getObjectType() == null) {
+            log.info("No object type for annotation with " + entity.getCurie() + " - skipping");
+            return null;
+        }
         Reference reference = referenceDAO.find(publicationId);
         if (reference == null) {
             reference = new Reference();
