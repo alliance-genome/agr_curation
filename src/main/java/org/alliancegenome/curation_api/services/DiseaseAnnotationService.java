@@ -107,23 +107,12 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             return null;
         }
 
-        // creation_date is a required field
-        if (annotationDTO.getDateAssigned() == null) {
-            log.info("No creation date given for annotation with " + entity.getCurie() + " - skipping");
+        if (!validateAnnotationDTO(annotationDTO)) {
+            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
             return null;
         }
         
-        // if there are primary genetic entity IDs available it is an
-        // inferred annotation. Skip it then.
-        if (CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
-            return null;
-
         String doTermId = annotationDTO.getDoId();
-        if (doTermId == null) {
-            log.info("No DOTerm ID for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
-        
         DOTerm disease = doTermDAO.find(doTermId);
         // TODo: Change logic when ontology loader is in place
         // do not create new DOTerm records here
@@ -134,35 +123,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             doTermDAO.persist(disease);
         }
 
-        if (annotationDTO.getEvidence() == null) {
-            log.info("No evidence for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
-        if (annotationDTO.getEvidence().getEvidenceCodes() == null) {
-            log.info("No evidence codes for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
-        if (annotationDTO.getEvidence().getPublication() == null) {
-            log.info("No publication for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
         String publicationId = annotationDTO.getEvidence().getPublication().getPublicationId();
-        if (publicationId == null) {
-            log.info("No publication ID for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
-        if (annotationDTO.getObjectRelation() == null) {
-            log.info("No object relation for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
-        if (annotationDTO.getObjectRelation().getAssociationType() == null) {
-            log.info("No object relation association type for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
-        if (annotationDTO.getObjectRelation().getObjectType() == null) {
-            log.info("No object type for annotation with " + entity.getCurie() + " - skipping");
-            return null;
-        }
         Reference reference = referenceDAO.find(publicationId);
         if (reference == null) {
             reference = new Reference();
@@ -321,5 +282,21 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Not a valid entry");
     }
 
+    private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
+        if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs()) ||
+                dto.getDoId() == null ||
+                dto.getDateAssigned() == null ||
+                dto.getEvidence() == null ||
+                dto.getEvidence().getEvidenceCodes() == null ||
+                dto.getEvidence().getPublication() == null ||
+                dto.getEvidence().getPublication().getPublicationId() == null ||
+                dto.getObjectRelation() == null ||
+                dto.getObjectRelation().getAssociationType() == null ||
+                dto.getObjectRelation().getObjectType() == null
+                ) {
+            return false;
+        }
+        return true;
+    }
 
 }
