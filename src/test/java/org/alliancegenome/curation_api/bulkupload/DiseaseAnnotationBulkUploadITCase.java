@@ -469,7 +469,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(103)); // 154 annotations replaced with 0
+            body("totalResults", is(103)); // 154 RGD annotations replaced with 0
     }
     
     @Test
@@ -575,5 +575,784 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(63)); // 1 WB annotation replaced with 0
     }
+
+    @Test
+    @Order(20)
+    public void diseaseAnnotationBulkUploadNoEvidence() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/10_no_evidence.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
     
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(63)); // no annotations loaded
+    }
+    
+    @Test
+    @Order(21)
+    public void diseaseAnnotationBulkUploadNoEvidenceCodes() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/11_no_evidence_evidence_codes.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(63)); // no annotations loaded
+    }
+
+    @Test
+    @Order(22)
+    public void diseaseAnnotationBulkUploadNoPublication() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/12_no_evidence_publication.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(3)); // 60 human annotations replaced with 0
+    }
+
+    @Test
+    @Order(23)
+    public void diseaseAnnotationBulkUploadNoPublicationXref() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/13_no_evidence_publication_cross_reference.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // 1 human annotation added
+    }
+
+    @Test
+    @Order(24)
+    public void diseaseAnnotationBulkUploadNoPublicationXrefId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/14_no_evidence_publication_cross_reference_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // 1 human annotation replaced with 1
+    }
+
+    @Test
+    @Order(25)
+    public void diseaseAnnotationBulkUploadNoPublicationXrefPages() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/15_no_evidence_publication_cross_reference_pages.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // 1 human annotation replaced with 1
+    }
+
+    @Test
+    @Order(26)
+    public void diseaseAnnotationBulkUploadNoPublicationId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/16_no_evidence_publication_publication_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(3)); // 1 human annotation replaced with 0
+    }
+
+    @Test
+    @Order(27)
+    public void diseaseAnnotationBulkUploadNoNegation() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/17_no_negation.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // 1 human annotation added
+    }
+
+    @Test
+    @Order(28)
+    public void diseaseAnnotationBulkUploadNoObjectId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/18_no_object_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(3)); // 1 human annotation replaced with 0
+    }
+
+    @Test
+    @Order(29)
+    public void diseaseAnnotationBulkUploadNoObjectName() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/19_no_object_name.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/humanAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // 1 human annotation added
+    }
+
+    @Test
+    @Order(30)
+    public void diseaseAnnotationBulkUploadNoObjectRelation() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/20_no_object_relation.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/mgiAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No change in MGI annotations
+    }
+
+    @Test
+    @Order(31)
+    public void diseaseAnnotationBulkUploadNoObjectRelationAssociationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/21_no_object_relation_association_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/mgiAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No change in MGI annotations
+    }
+
+    @Test
+    @Order(32)
+    public void diseaseAnnotationBulkUploadNoObjectRelationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/22_no_object_relation_object_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/mgiAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No change in MGI annotations
+    }
+
+    @Test
+    @Order(33)
+    public void diseaseAnnotationBulkUploadNoWith() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/23_no_with.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/mgiAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 MGI annotation added
+    }
+
+    @Test
+    @Order(34)
+    public void diseaseAnnotationBulkUploadNoConditionRelations() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/24_no_condition_relations.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/mgiAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 MGI annotation replaced with 1
+    }
+
+    @Test
+    @Order(35)
+    public void diseaseAnnotationBulkUploadNoConditionRelationsType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/25_no_condition_relations_condition_relation_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(36)
+    public void diseaseAnnotationBulkUploadNoConditions() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_no_condition_relations_conditions.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(37)
+    public void diseaseAnnotationBulkUploadNoConditionClassId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/27_no_condition_relations_conditions_condition_class_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(38)
+    public void diseaseAnnotationBulkUploadNoConditionId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/28_no_condition_relations_conditions_condition_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(39)
+    public void diseaseAnnotationBulkUploadNoConditionStatement() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/29_no_condition_relations_conditions_condition_statement.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(40)
+    public void diseaseAnnotationBulkUploadNoConditionQuantity() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/30_no_condition_relations_conditions_condition_quantity.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(41)
+    public void diseaseAnnotationBulkUploadNoAnatomicalOntologyId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/31_no_condition_relations_conditions_anatomical_ontology_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/fbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+    }
+
+    @Test
+    @Order(42)
+    public void diseaseAnnotationBulkUploadNoTaxonId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/32_no_condition_relations_conditions_ncbi_taxon_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/zfinAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 ZFIN annotation replaced with 1
+    }
+
+    @Test
+    @Order(43)
+    public void diseaseAnnotationBulkUploadNoChemicalOntologyId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/33_no_condition_relations_conditions_chemical_ontology_id.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/zfinAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 ZFIN annotation replaced with 1
+    }
+
+    @Test
+    @Order(44)
+    public void diseaseAnnotationBulkUploadNoInferredGeneAssociation() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/34_no_object_relation_inferred_gene_association.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(6)); // 1 WB annotation added
+    }
+
+    @Test
+    @Order(45)
+    public void diseaseAnnotationBulkUploadDuplicateCuries() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/35_duplicate_curies.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/sgdAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(6));
+    }
+
+    // @Test
+    @Order(46)
+    public void diseaseAnnotationBulkUploadInvalidGeneAssociationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/36_invalid_gene_association_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/zfinAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 ZFIN annotation replaced with 0
+    }
+
+    // @Test
+    @Order(47)
+    public void diseaseAnnotationBulkUploadInvalidAgmAssociationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/37_invalid_agm_association_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/zfinAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 0 ZFIN annotations added
+    }
+
+    // @Test
+    @Order(48)
+    public void diseaseAnnotationBulkUploadInvalidAlleleAssociationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/38_invalid_allele_association_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/mgiAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // 1 MGI annotation replaced with 1
+    }
+
+    // @Test
+    @Order(49)
+    public void diseaseAnnotationBulkUploadInvalidObjectType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/39_invalid_object_type.json"));
+        
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease/bulk/zfinAnnotationFile").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(5)); // No ZFIN annotations added
+    }
 }
