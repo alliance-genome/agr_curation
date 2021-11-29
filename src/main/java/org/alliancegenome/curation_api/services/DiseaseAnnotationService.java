@@ -184,40 +184,40 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     @Override
     @Transactional
     public ObjectResponse<DiseaseAnnotation> create(DiseaseAnnotation entity) {
-        ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
-        validateWith(entity, response);
-        if (response.hasErrors()) {
-            response.setErrorMessage("Could not create disease annotation");
-            throw new ApiErrorException(response);
-        }
+        validateAnnotation(entity, false);
         return super.create(entity);
     }
     
     @Override
     @Transactional
     public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation entity) {
-        validateAnnotation(entity);
+        validateAnnotation(entity, true);
         // assumes the incoming object is a complete object
         return super.update(entity);
     }
 
-    public void validateAnnotation(DiseaseAnnotation entity) {
-        Long id = entity.getId();
+    public void validateAnnotation(DiseaseAnnotation entity, boolean isUpdate) {
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
-        if (id == null) {
-            response.setErrorMessage("No Disease Annotation ID provided");
-            throw new ApiErrorException(response);
+        String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
+        if (isUpdate) {
+            Long id = entity.getId();
+            if (id == null) {
+                response.setErrorMessage("No Disease Annotation ID provided");
+                throw new ApiErrorException(response);
+            }
+            DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
+            if (diseaseAnnotation == null) {
+                response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
+                throw new ApiErrorException(response);
+                // do not continue validation for update if Disease Annotation ID has not been found
+            }       
         }
-        DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
-        if (diseaseAnnotation == null) {
-            response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
-            throw new ApiErrorException(response);
-            // do not continue validation if Disease Annotation ID has not been found
+        else {
+            errorTitle = "Could not create DiseaseAnnotation";
         }
         // check required fields
         // ToDo: implement mandatory / optional fields for each MOD
         //
-        final String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
         validateSubject(entity, response);
         validateDisease(entity, response);
         validateTypeAndSubject(entity, response);
