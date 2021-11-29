@@ -83,6 +83,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
             List <Gene> withGenes = new ArrayList<>();
             annotationDTO.getWith().forEach(with -> {
+                if (!with.startsWith("HGNC:")) return;
                 Gene withGene = geneDAO.getByIdOrCurie(with);
                 withGenes.add(withGene);
             });
@@ -180,35 +181,47 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         idsToRemove.forEach(this::delete);
     }
 
-
+    @Override
+    @Transactional
+    public ObjectResponse<DiseaseAnnotation> create(DiseaseAnnotation entity) {
+        validateAnnotation(entity, false);
+        return super.create(entity);
+    }
+    
     @Override
     @Transactional
     public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation entity) {
-        validateAnnotation(entity);
+        validateAnnotation(entity, true);
         // assumes the incoming object is a complete object
         return super.update(entity);
     }
 
-    public void validateAnnotation(DiseaseAnnotation entity) {
-        Long id = entity.getId();
+    public void validateAnnotation(DiseaseAnnotation entity, boolean isUpdate) {
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
-        if (id == null) {
-            response.setErrorMessage("No Disease Annotation ID provided");
-            throw new ApiErrorException(response);
+        String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
+        if (isUpdate) {
+            Long id = entity.getId();
+            if (id == null) {
+                response.setErrorMessage("No Disease Annotation ID provided");
+                throw new ApiErrorException(response);
+            }
+            DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
+            if (diseaseAnnotation == null) {
+                response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
+                throw new ApiErrorException(response);
+                // do not continue validation for update if Disease Annotation ID has not been found
+            }       
         }
-        DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
-        if (diseaseAnnotation == null) {
-            response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
-            throw new ApiErrorException(response);
-            // do not continue validation if Disease Annotation ID has not been found
+        else {
+            errorTitle = "Could not create DiseaseAnnotation";
         }
         // check required fields
         // ToDo: implement mandatory / optional fields for each MOD
         //
-        final String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
         validateSubject(entity, response);
         validateDisease(entity, response);
         validateTypeAndSubject(entity, response);
+        validateWith(entity, response);
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
@@ -232,6 +245,20 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             addInvalidMessagetoResponse("diseaseRelation", response);
         }
         return correctTypeAndSubject;
+    }
+    
+    private boolean validateWith(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        boolean validWithEntries = true;
+        if (CollectionUtils.isNotEmpty(entity.getWith())) {
+            for (Gene withGene : entity.getWith()) {
+                if (!withGene.getCurie().startsWith("HGNC:")) {
+                    addInvalidMessagetoResponse("with", response);
+                    validWithEntries = false;
+                    break;
+                }
+            }
+        }
+        return validWithEntries;
     }
 
     private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
