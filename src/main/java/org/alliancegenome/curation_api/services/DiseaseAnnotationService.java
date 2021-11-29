@@ -83,7 +83,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
             List <Gene> withGenes = new ArrayList<>();
             annotationDTO.getWith().forEach(with -> {
-                Gene withGene = geneDAO.find(with);
+                Gene withGene = geneDAO.getByIdOrCurie(with);
                 withGenes.add(withGene);
             });
             annotation.setWith(withGenes);
