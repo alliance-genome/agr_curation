@@ -39,6 +39,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     EcoTermDAO ecoTermDAO;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
+    @Inject
+    GeneDAO geneDAO;
 
     @Inject
     AffectedGenomicModelDAO agmDAO;
@@ -78,6 +80,15 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         }
         annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
 
+        if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
+            List <Gene> withGenes = new ArrayList<>();
+            annotationDTO.getWith().forEach(with -> {
+                Gene withGene = geneDAO.find(with);
+                withGenes.add(withGene);
+            });
+            annotation.setWith(withGenes);
+        }
+        
         annotation.setCreated(
                 annotationDTO.getDateAssigned()
                         .toInstant()

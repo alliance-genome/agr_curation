@@ -42,6 +42,11 @@ public class DiseaseAnnotation extends Association {
     @ManyToMany
     @JsonView({View.FieldsAndLists.class})
     private List<EcoTerm> evidenceCodes;
+    
+    @ManyToMany
+    @JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
+    @JsonView({View.FieldsAndLists.class})
+    private List<Gene> with;
 
     public enum DiseaseRelation {
         is_model_of,
