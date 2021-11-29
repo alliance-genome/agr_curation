@@ -4,12 +4,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @Provider
 public class ApiErrorExceptionMapper implements ExceptionMapper<ApiErrorException> {
 
     @Override
     @Produces(MediaType.APPLICATION_JSON)
     public Response toResponse(ApiErrorException e) {
+        log.debug("Exception: " + e);
         Response.ResponseBuilder rb = Response.status(Response.Status.BAD_REQUEST);
         // dereference entity to make sure it's not tried to be serialized
         // due to lazy-initialization issues
