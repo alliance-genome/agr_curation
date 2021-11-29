@@ -1,27 +1,28 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {Message} from "primereact/message";
 
-   export const SubjectEditor = (props) => { //it's own component?
+   export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations }) => { 
         const [filteredSubjects, setFilteredSubjects] = useState([]);
 
         const searchSubject = (event) => {
-            props.biologicalEntityService.getBiologicalEntities(15, 0, null, {"curie":{"value": event.query}})
+            console.log(event);
+            searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":{"curie": event.query}})
                 .then((data) => {
+                    console.log(data);
                     setFilteredSubjects(data.results);
                 });
         };
 
         const onSubjectEditorValueChange = (event) => {//this should propably be generalized so that all of these editor value changes can use the same method
-            let updatedAnnotations = [...props.rowProps.value];
+            let updatedAnnotations = [...rowProps.value];
             if(event.target.value || event.target.value === '') {
-                updatedAnnotations[props.rowProps.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+                updatedAnnotations[rowProps.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
                 if(typeof event.target.value === "object"){
-                    updatedAnnotations[props.rowProps.rowIndex].subject.curie = event.target.value.curie;
+                    updatedAnnotations[rowProps.rowIndex].subject.curie = event.target.value.curie;
                 } else {
-                    updatedAnnotations[props.rowProps.rowIndex].subject.curie = event.target.value;
+                    updatedAnnotations[rowProps.rowIndex].subject.curie = event.target.value;
                 }
-                props.setDiseaseAnnotations(updatedAnnotations);
+                setDiseaseAnnotations(updatedAnnotations);
             }
         };
 
@@ -37,19 +38,15 @@ import {Message} from "primereact/message";
 
 
         return (
-            <>
-                <AutoComplete
-                        field="curie"
-                        value={props.rowProps.rowData.subject.curie}
-                        suggestions={filteredSubjects}
-                        itemTemplate={subjectItemTemplate}
-                        completeMethod={searchSubject}
-                        onChange={(e) => onSubjectEditorValueChange(e)}
-                />
-                <Message 
-                    severity={props.rowProps.rowData.subject.errorSeverity ? props.rowProps.rowData.subject.errorSeverity : ""} 
-                    text={props.rowProps.rowData.subject.errorMessage} 
-                />
-            </>
+            
+            <AutoComplete
+                    field="curie"
+                    value={rowProps.rowData.subject.curie}
+                    suggestions={filteredSubjects}
+                    itemTemplate={subjectItemTemplate}
+                    completeMethod={searchSubject}
+                    onChange={(e) => onSubjectEditorValueChange(e)}
+            />
+           
         )
     };

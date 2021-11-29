@@ -4,7 +4,8 @@ export function returnSorted(event, originalSort){
     let replace = false;
     let newSort = [...originalSort];
 
-    // console.log(event);
+    console.log(event);
+    console.log(newSort);
     if(event.multiSortMeta.length > 0){
         newSort.forEach((o) => {
             if (o.field === event.multiSortMeta[0].field) {

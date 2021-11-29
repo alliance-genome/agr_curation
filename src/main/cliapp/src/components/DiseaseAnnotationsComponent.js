@@ -74,29 +74,11 @@ export const DiseaseAnnotationsComponent = () => {
         }
     )
 
-    const onRelationEditorValueChange = (props, event) => {
-        let updatedAnnotations = [...props.value];
-        if(event.value || event.value === '') {
-            updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;
-            setDiseaseAnnotations(updatedAnnotations);
-        }
-    };
-
-    const relationEditor = (props, disabled=false) => {
-        return (
-            <ControlledVocabularyDropdown
-                options={diseaseRelationsTerms}
-                editorChange={onRelationEditorValueChange}
-                props={props}
-            />
-        )
-    };
-
     const mutation = useMutation(updatedAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
 
-    const onLazyLoad = (event) => { //extract into it's own hook? 
+    const onLazyLoad = (event) => { 
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
@@ -106,7 +88,7 @@ export const DiseaseAnnotationsComponent = () => {
         setFilters({...filtersCopy});
     };
 
-    const onSort = (event) => { //also extracted into hook
+    const onSort = (event) => {
         setMultiSortMeta(
             returnSorted(event, multiSortMeta)
         )
@@ -149,91 +131,7 @@ export const DiseaseAnnotationsComponent = () => {
         return value;
     }
 
-    const searchSubject = (event) => {
-        event.query = editorValidator(event.query);
-        biologicalEntityService.getBiologicalEntities(15, 0, null, {"curie":{"value": event.query}})
-            .then((data) => {
-                setFilteredSubjects(data.results);
-            });
-    };
 
-    const searchDisease = (event) => {
-        event.query = editorValidator(event.query);
-        ontologyService.getTerms('doterm', 15, 0, null, {"curie":{"value": event.query}})
-            .then((data) => {
-                setFilteredDiseases(data.results);
-            });
-    };
-
-    const onSubjectEditorValueChange = (props, event) => {
-        let updatedAnnotations = [...props.value];
-        if(event.target.value || event.target.value === '') {
-            updatedAnnotations[props.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-            if(typeof event.target.value === "object"){
-                updatedAnnotations[props.rowIndex].subject.curie = event.target.value.curie;
-            } else {
-                updatedAnnotations[props.rowIndex].subject.curie = event.target.value;
-            }
-            setDiseaseAnnotations(updatedAnnotations);
-        }
-    };
-
-
-    const subjectEditor = (props) => {
-        return (<div><AutoComplete
-            field="curie"
-            value={props.rowData.subject.curie}
-            suggestions={filteredSubjects}
-            itemTemplate={subjectItemTemplate}
-            completeMethod={searchSubject}
-            onChange={(e) => onSubjectEditorValueChange(props, e)}
-        /><ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"subject"} /></div>)
-    };
-
-    const onDiseaseEditorValueChange = (props, event) => {
-        let updatedAnnotations = [...props.value];
-        if(event.target.value || event.target.value === '') {
-            updatedAnnotations[props.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-            if(typeof event.target.value === "object"){
-                updatedAnnotations[props.rowIndex].object.curie = event.target.value.curie;
-            } else {
-                updatedAnnotations[props.rowIndex].object.curie = event.target.value;
-            }
-            setDiseaseAnnotations(updatedAnnotations);
-        }
-    };
-
-    const diseaseEditor = (props) => {
-        return (<div><AutoComplete
-            field="curie"
-            value={props.rowData.object.curie}
-            suggestions={filteredDiseases}
-            itemTemplate={diseaseItemTemplate}
-            completeMethod={searchDisease}
-            onChange={(e) => onDiseaseEditorValueChange(props, e)}
-        /> <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"object"} /></div>)
-    };
-
-    const onDiseaseRelationEditorValueChange = (props, event) => {
-        let updatedAnnotations = [...props.value];
-        if(event.value || event.value === '') {
-            updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
-            setDiseaseAnnotations(updatedAnnotations);
-        }
-    };
-
-    const diseaseRelationEditor = (props, disabled=false) => {
-        return (
-            <>
-                <ControlledVocabularyDropdown
-                    options={diseaseRelationsTerms}
-                    editorChange={onDiseaseRelationEditorValueChange}
-                    props={props}
-                />
-                <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
-            </>
-        )
-    };
 
     const onRowEditInit = (event) => {
         rowsInEdit.current++;
@@ -332,7 +230,7 @@ export const DiseaseAnnotationsComponent = () => {
         setEditingRows(event.data);
     }
 
-    const subjectBodyTemplate = (rowData) => {//put into it's own component?
+    const subjectBodyTemplate = (rowData) => {
         if(rowData.subject){
             if(rowData.subject.symbol){
                 return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
@@ -361,6 +259,60 @@ export const DiseaseAnnotationsComponent = () => {
         />);
     };
 
+
+    const onDiseaseRelationEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.value || event.value === '') {
+            updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const diseaseRelationEditor = (props, disabled=false) => {
+        return (
+            <>
+                <ControlledVocabularyDropdown
+                    options={diseaseRelationsTerms}
+                    editorChange={onDiseaseRelationEditorValueChange}
+                    props={props}
+                />
+                <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
+            </>
+        )
+    };
+
+    const subjectEditorTemplate = (props) => {
+        return (
+            <>
+                <SubjectEditor 
+                    rowProps={props} 
+                    biologicalEntityService={biologicalEntityService} 
+                    setDiseaseAnnotations={setDiseaseAnnotations} 
+                />
+                <ErrorMessageComponent  
+                    errorMessages={errorMessages[props.rowIndex]} 
+                    errorField={"subject"} 
+                />
+            </>
+        );
+    };
+
+    const diseaseEditorTemplate = (props) => {
+        return (
+            <>
+                <DiseaseEditor 
+                    rowProps={props} 
+                    searchService={searchService} 
+                    setDiseaseAnnotations={setDiseaseAnnotations} 
+                />
+                <ErrorMessageComponent  
+                    errorMessages={errorMessages[props.rowIndex]} 
+                    errorField={"object"} 
+                />
+            </>
+        );
+    };
+
     return (
         <div>
             <div className="card">
@@ -386,10 +338,11 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                   <Column
+                    field="subject.curie"//needed for sorting
                     header="Subject"
                     sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("subject", ["subject.curie", "subject.name", "subject.symbol"])}                    
-                    editor={(props) => <SubjectEditor rowProps={props} biologicalEntityService={biologicalEntityService} setDiseaseAnnotations={setDiseaseAnnotations} />} 
+                    filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}                    
+                    editor={(props) => subjectEditorTemplate(props)} 
                     body={subjectBodyTemplate}  
                     style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}
                   />
@@ -400,16 +353,23 @@ export const DiseaseAnnotationsComponent = () => {
                     sortable={isEnabled}
                     filter 
                     filterElement={filterComponentTemplate("diseaseRelation", ["diseaseRelation"])}
-                    editor={(props) => relationEditor(props)}
+                    editor={(props) => diseaseRelationEditor(props)}
                   />
                   
-                  <Column header="Negated" body={negatedTemplate} sortable={isEnabled} ></Column>
+                  <Column 
+                    field="negated" 
+                    header="Negated" 
+                    body={negatedTemplate} 
+                    filter filterElement={filterComponentTemplate("negated", ["negated"])}
+                    sortable={isEnabled} 
+                  />
                   
                   <Column 
+                    field="object.curie"
                     header="Disease"
                     sortable={isEnabled} 
                     filter filterElement={filterComponentTemplate("object", ["object.curie", "object.name"])}
-                    editor={(props) => <DiseaseEditor rowProps={props} searchService={searchService} setDiseaseAnnotations={setDiseaseAnnotations} />} 
+                    editor={(props) => diseaseEditorTemplate(props)} 
                     body={diseaseBodyTemplate} 
                   />
 
