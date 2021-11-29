@@ -104,11 +104,11 @@ public class DiseaseAnnotationITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)).
-            body("results", hasSize(1)).
-            body("results[0].curie", is("Disease:0001")).
-            body("results[0].subject.curie", is("BO:0001")).
-            body("results[0].object.curie", is("DOT:0001"));
+            body("totalResults", is(7)). // 6 annotations inserted by bulk upload tests
+            body("results", hasSize(7)).
+            body("results[6].curie", is("Disease:0001")).
+            body("results[6].subject.curie", is("BO:0001")).
+            body("results[6].object.curie", is("DOT:0001"));
     }
 
     @Test

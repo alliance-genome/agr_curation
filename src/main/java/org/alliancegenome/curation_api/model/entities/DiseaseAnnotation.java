@@ -40,7 +40,7 @@ public class DiseaseAnnotation extends Association {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private List<EcoTerm> evidenceCodes;
 
     public enum DiseaseRelation {

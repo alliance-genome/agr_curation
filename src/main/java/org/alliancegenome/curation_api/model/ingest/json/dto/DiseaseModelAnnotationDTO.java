@@ -12,6 +12,7 @@ import lombok.Data;
 public class DiseaseModelAnnotationDTO extends BaseDTO {
 
     private String objectId;
+    
     private String objectName;
     
     private DiseaseObjectRelationDTO objectRelation;
@@ -22,12 +23,15 @@ public class DiseaseModelAnnotationDTO extends BaseDTO {
     
     @JsonProperty("DOid")
     private String doId;
+
     private List<DataProviderDTO> dataProvider;
     
     private List<String> with;
+    
     private EvidenceDTO evidence;
 
     private Date dateAssigned;
+    
     private List<ConditionRelationDTO> conditionRelations;
     
 

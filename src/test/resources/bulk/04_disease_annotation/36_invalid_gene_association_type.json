@@ -5,7 +5,7 @@
       "dataProvider": [
         {
           "crossReference": {
-            "id": "TEST:TestGene000010",
+            "id": "TEST:TestGene000035",
             "pages": [
               "gene"
             ]
@@ -14,11 +14,25 @@
         }
       ],
       "dateAssigned": "2021-05-24T00:00:00-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0000033"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "TEST:xref35",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25920554"
+        }
+      },
       "negation": "not",
-      "objectId": "WB:WBGene00001010",
-      "objectName": "Test gene 10",
+      "objectId": "ZFIN:ZDB-GENE-130116-1",
+      "objectName": "Test gene 35",
       "objectRelation": {
-        "associationType": "is_implicated_in",
+        "associationType": "is_model_of",
         "objectType": "gene"
       },
       "with": [

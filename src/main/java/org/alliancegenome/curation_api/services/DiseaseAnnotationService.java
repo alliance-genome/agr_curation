@@ -52,7 +52,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
 
         String annotationID = getUniqueID(annotationDTO);
-
+        
         SearchResponse<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
 
         DiseaseAnnotation annotation = null;
@@ -91,24 +91,27 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         );
 
         diseaseAnnotationDAO.persist(annotation);
-
         return annotation;
     }
 
     @Transactional
     public DiseaseAnnotation upsert(DiseaseModelAnnotationDTO annotationDTO) {
+        
         String entityId = annotationDTO.getObjectId();
 
         BiologicalEntity entity = biologicalEntityDAO.find(entityId);
 
         // do not create DA if no entity / subject is found.
-        if (entity == null) return null;
-
-        // if there are primary genetic entity IDs available it is an
-        // inferred annotation. Skip it then.
-        if (CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
+        if (entity == null) {
+            log.info("Entity " + entityId + " not found in database - skipping annotation");
             return null;
+        }
 
+        if (!validateAnnotationDTO(annotationDTO)) {
+            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
+            return null;
+        }
+        
         String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
         // TODo: Change logic when ontology loader is in place
@@ -144,20 +147,25 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
 
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
-        List<String> annotationsIDsBefore = diseaseAnnotationDAO.findAllAnnotationIDs(taxonID);
-        List<String> annotationsIDsAfter = new ArrayList<>();
+        List<String> annotationsCuriesBefore = diseaseAnnotationDAO.findAllAnnotationCuries(taxonID);
+        List<String> annotationsCuriesAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
         annotationData.getData().forEach(annotationDTO -> {
             DiseaseAnnotation annotation = upsert(annotationDTO);
-            if (annotation != null)
-                annotationsIDsAfter.add(annotation.getCurie());
+            if (annotation != null) {
+                annotationsCuriesAfter.add(annotation.getCurie());
+            }
             ph.progressProcess();
         });
         ph.finishProcess();
-
-        List<String> distinctAfter = annotationsIDsAfter.stream().distinct().collect(Collectors.toList());
-        List<String> idsToRemove = ListUtils.subtract(annotationsIDsBefore, distinctAfter);
+        
+        List<String> distinctAfter = annotationsCuriesAfter.stream().distinct().collect(Collectors.toList());
+        List<String> curiesToRemove = ListUtils.subtract(annotationsCuriesBefore, distinctAfter);
+        List<Long> idsToRemove = new ArrayList<>();
+        for (String curie : curiesToRemove) {
+            idsToRemove.add(diseaseAnnotationDAO.getIdFromCurie(curie));
+        }
         idsToRemove.forEach(this::delete);
     }
 
@@ -274,5 +282,21 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Not a valid entry");
     }
 
+    private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
+        if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs()) ||
+                dto.getDoId() == null ||
+                dto.getDateAssigned() == null ||
+                dto.getEvidence() == null ||
+                dto.getEvidence().getEvidenceCodes() == null ||
+                dto.getEvidence().getPublication() == null ||
+                dto.getEvidence().getPublication().getPublicationId() == null ||
+                dto.getObjectRelation() == null ||
+                dto.getObjectRelation().getAssociationType() == null ||
+                dto.getObjectRelation().getObjectType() == null
+                ) {
+            return false;
+        }
+        return true;
+    }
 
 }

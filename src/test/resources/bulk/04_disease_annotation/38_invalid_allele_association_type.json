@@ -5,36 +5,47 @@
       "dataProvider": [
         {
           "crossReference": {
-            "id": "TEST:TestGene000010",
+            "id": "TEST:TestAllele000037",
             "pages": [
-              "gene"
+              "allele"
             ]
           },
           "type": "curated"
         }
       ],
       "dateAssigned": "2021-05-24T00:00:00-04:00",
-      "negation": "not",
-      "objectId": "WB:WBGene00001010",
-      "objectName": "Test gene 10",
-      "objectRelation": {
-        "associationType": "is_implicated_in",
-        "objectType": "gene"
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0000033"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "TEST:xref37",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25920554"
+        }
       },
-      "with": [
-        "HGNC:1121",
-        "HGNC:323"
-      ],
+      "negation": "not",
+      "objectId": "MGI:4879001",
+      "objectName": "Test allele 37",
+      "objectRelation": {
+        "associationType": "is_model_of",
+        "objectType": "allele",
+        "inferredGeneAssociation": "TEST:TestGene000037"
+      },
       "conditionRelations": [
         {
-          "conditionRelationType": "induces",
+          "conditionRelationType": "has_condition",
           "conditions": [
             {
               "conditionClassId": "ZECO:0000101",
               "conditionId": "XCO:0000131",
-              "conditionStatement": "chemical treatment:4-nitroquinoline N-oxide",
+              "conditionStatement": "stress:auditory stimulus",
               "conditionQuantity": "some amount",
-              "anatomicalOntologyId": "ZFA:0000001",
+              "anatomicalOntologyId": "ZFA:0000002",
               "geneOntologyId": "GO:0007569",
               "NCBITaxonId": "NCBITaxon:1781",
               "chemicalOntologyId": "CHEBI:46631"

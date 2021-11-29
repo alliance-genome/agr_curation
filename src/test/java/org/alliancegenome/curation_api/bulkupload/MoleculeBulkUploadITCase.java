@@ -113,7 +113,17 @@ public class MoleculeBulkUploadITCase {
                 when().
                 post("/api/molecule/bulk/moleculefile").
                 then().
-                statusCode(500);
+                statusCode(200);
+        
+        RestAssured.given().
+                when(). 
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/molecule/find?limit=20&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(7)).
+                body("results", hasSize(7));
     }
 
     @Test
@@ -131,14 +141,14 @@ public class MoleculeBulkUploadITCase {
                 statusCode(200);
         
         RestAssured.given().
-            when(). 
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/molecule/find?limit=20&page=0").
-            then().
-            statusCode(200).
-            body("totalResults", is(7)).
-            body("results", hasSize(7));
+                when(). 
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/molecule/find?limit=20&page=0").
+                then().
+                statusCode(200).
+                body("totalResults", is(7)).
+                body("results", hasSize(7));
     }
     
     @Test
