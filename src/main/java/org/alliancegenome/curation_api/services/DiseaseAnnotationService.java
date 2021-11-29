@@ -83,6 +83,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
             List <Gene> withGenes = new ArrayList<>();
             annotationDTO.getWith().forEach(with -> {
+                if (!with.startsWith("HGNC:")) return;
                 Gene withGene = geneDAO.getByIdOrCurie(with);
                 withGenes.add(withGene);
             });
@@ -180,7 +181,18 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         idsToRemove.forEach(this::delete);
     }
 
-
+    @Override
+    @Transactional
+    public ObjectResponse<DiseaseAnnotation> create(DiseaseAnnotation entity) {
+        ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
+        validateWith(entity, response);
+        if (response.hasErrors()) {
+            response.setErrorMessage("Could not create disease annotation");
+            throw new ApiErrorException(response);
+        }
+        return super.create(entity);
+    }
+    
     @Override
     @Transactional
     public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation entity) {
@@ -209,6 +221,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         validateSubject(entity, response);
         validateDisease(entity, response);
         validateTypeAndSubject(entity, response);
+        validateWith(entity, response);
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
@@ -232,6 +245,20 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             addInvalidMessagetoResponse("diseaseRelation", response);
         }
         return correctTypeAndSubject;
+    }
+    
+    private boolean validateWith(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        boolean validWithEntries = true;
+        if (CollectionUtils.isNotEmpty(entity.getWith())) {
+            for (Gene withGene : entity.getWith()) {
+                if (!withGene.getCurie().startsWith("HGNC:")) {
+                    addInvalidMessagetoResponse("with", response);
+                    validWithEntries = false;
+                    break;
+                }
+            }
+        }
+        return validWithEntries;
     }
 
     private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
