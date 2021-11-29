@@ -3,6 +3,7 @@ import { GeneService } from '../service/GeneService';
 import { AlleleService } from '../service/AlleleService';
 import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
+import { MoleculeService } from '../service/MoleculeService'
 import { OntologyService } from '../service/OntologyService'
 
 export const Dashboard = () => {
@@ -10,6 +11,7 @@ export const Dashboard = () => {
     const [alleleCount, setAlleleCount] = useState(0);
     const [diseaseAnnotationCount, setDiseaseAnnotationCount] = useState(0);
     const [agmCount, setAgmCount] = useState(0);
+    const [moleculeCount, setMoleculeCount] = useState(0);
 
     const [ECOCount, setECOCount] = useState(0);
     const [DOCount, setDOCount] = useState(0);
@@ -33,6 +35,10 @@ export const Dashboard = () => {
         const agmService = new AffectedGenomicModelService();
         agmService.getAgms(0, 0).then(searchResults => {
             setAgmCount(searchResults.totalResults);
+        });
+        const moleculeService = new MoleculeService();
+        moleculeService.getMolecules(0,0).then(searchResults => {
+            setMoleculeCount(searchResults.totalResults);
         });
         const ontologyService = new OntologyService();
         ontologyService.getTerms('ecoterm', 0, 0).then(results => {
@@ -76,6 +82,14 @@ export const Dashboard = () => {
                     <span className="title">Affected Genomic Models</span>
                     <span className="detail">Total number of Affected Genomic Models</span>
                     <span className="count agm">{ agmCount }</span>
+                </div>
+            </div>
+
+            <div className="p-col-12 p-lg-3">
+                <div className="card summary">
+                    <span className="title">Molecules</span>
+                    <span className="detail">Total number of Molecules</span>
+                    <span className="count agm">{ moleculeCount }</span>
                 </div>
             </div>
 
