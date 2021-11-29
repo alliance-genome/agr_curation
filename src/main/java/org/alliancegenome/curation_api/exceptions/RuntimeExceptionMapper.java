@@ -4,6 +4,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @Provider
 public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException> {
 

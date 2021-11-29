@@ -17,6 +17,7 @@ import { AffectedGenomicModelComponent } from './components/AffectedGenomicModel
 import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ECOOntologyComponent';
 import { MPOntologyComponent } from './components/MPOntologyComponent';
+import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
 
@@ -123,6 +124,12 @@ const App = () => {
             ]
         },
         {
+            label: 'Controlled Vocabularies', icon: 'pi pi-fw pi-sitemap',
+            items: [
+                { label: 'Terms', icon: 'pi pi-fw pi-home', to: '/vocabterms' }
+            ]
+        },
+        {
             label: 'Other Links', icon: 'pi pi-fw pi-sitemap',
             items: [
                 { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
@@ -183,6 +190,7 @@ const App = () => {
                 <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
+                <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
