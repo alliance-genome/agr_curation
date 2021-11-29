@@ -39,7 +39,7 @@ export const Dashboard = () => {
           setDOCount(results.totalResults);
         });
 
-        ontologyService.getTerms('materm', 0, 0).then(results => {
+        searchService.search('materm', 0, 0).then(results => {
           setMACount(results.totalResults);
         });
     }, []);
