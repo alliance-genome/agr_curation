@@ -47,6 +47,11 @@ public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
     public void processUpdate(MoleculeDTO molecule) {
         log.info("processUpdate Molecule: ");
     
+        if (molecule.getId() == null) {
+            log.info(molecule.getId() + " has no ID - skipping");
+            return;
+        }
+        
         if (molecule.getId().startsWith("CHEBI:")) {
             log.info("Skipping processing of " + molecule.getId());
             return;

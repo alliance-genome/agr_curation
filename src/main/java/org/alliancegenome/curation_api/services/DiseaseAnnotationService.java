@@ -39,6 +39,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     EcoTermDAO ecoTermDAO;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
+    @Inject
+    GeneDAO geneDAO;
 
     @Inject
     AffectedGenomicModelDAO agmDAO;
@@ -52,7 +54,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
 
         String annotationID = getUniqueID(annotationDTO);
-
+        
         SearchResponse<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
 
         DiseaseAnnotation annotation = null;
@@ -78,6 +80,16 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         }
         annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationDTO.Negation.not);
 
+        if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
+            List <Gene> withGenes = new ArrayList<>();
+            annotationDTO.getWith().forEach(with -> {
+                if (!with.startsWith("HGNC:")) return;
+                Gene withGene = geneDAO.getByIdOrCurie(with);
+                withGenes.add(withGene);
+            });
+            annotation.setWith(withGenes);
+        }
+        
         annotation.setCreated(
                 annotationDTO.getDateAssigned()
                         .toInstant()
@@ -91,24 +103,27 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         );
 
         diseaseAnnotationDAO.persist(annotation);
-
         return annotation;
     }
 
     @Transactional
     public DiseaseAnnotation upsert(DiseaseModelAnnotationDTO annotationDTO) {
+        
         String entityId = annotationDTO.getObjectId();
 
         BiologicalEntity entity = biologicalEntityDAO.find(entityId);
 
         // do not create DA if no entity / subject is found.
-        if (entity == null) return null;
-
-        // if there are primary genetic entity IDs available it is an
-        // inferred annotation. Skip it then.
-        if (CollectionUtils.isNotEmpty(annotationDTO.getPrimaryGeneticEntityIDs()))
+        if (entity == null) {
+            log.info("Entity " + entityId + " not found in database - skipping annotation");
             return null;
+        }
 
+        if (!validateAnnotationDTO(annotationDTO)) {
+            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
+            return null;
+        }
+        
         String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
         // TODo: Change logic when ontology loader is in place
@@ -144,52 +159,69 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
 
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
-        List<String> annotationsIDsBefore = diseaseAnnotationDAO.findAllAnnotationIDs(taxonID);
-        List<String> annotationsIDsAfter = new ArrayList<>();
+        List<String> annotationsCuriesBefore = diseaseAnnotationDAO.findAllAnnotationCuries(taxonID);
+        List<String> annotationsCuriesAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
         annotationData.getData().forEach(annotationDTO -> {
             DiseaseAnnotation annotation = upsert(annotationDTO);
-            if (annotation != null)
-                annotationsIDsAfter.add(annotation.getCurie());
+            if (annotation != null) {
+                annotationsCuriesAfter.add(annotation.getCurie());
+            }
             ph.progressProcess();
         });
         ph.finishProcess();
-
-        List<String> distinctAfter = annotationsIDsAfter.stream().distinct().collect(Collectors.toList());
-        List<String> idsToRemove = ListUtils.subtract(annotationsIDsBefore, distinctAfter);
+        
+        List<String> distinctAfter = annotationsCuriesAfter.stream().distinct().collect(Collectors.toList());
+        List<String> curiesToRemove = ListUtils.subtract(annotationsCuriesBefore, distinctAfter);
+        List<Long> idsToRemove = new ArrayList<>();
+        for (String curie : curiesToRemove) {
+            idsToRemove.add(diseaseAnnotationDAO.getIdFromCurie(curie));
+        }
         idsToRemove.forEach(this::delete);
     }
 
-
+    @Override
+    @Transactional
+    public ObjectResponse<DiseaseAnnotation> create(DiseaseAnnotation entity) {
+        validateAnnotation(entity, false);
+        return super.create(entity);
+    }
+    
     @Override
     @Transactional
     public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation entity) {
-        validateAnnotation(entity);
+        validateAnnotation(entity, true);
         // assumes the incoming object is a complete object
         return super.update(entity);
     }
 
-    public void validateAnnotation(DiseaseAnnotation entity) {
-        Long id = entity.getId();
+    public void validateAnnotation(DiseaseAnnotation entity, boolean isUpdate) {
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
-        if (id == null) {
-            response.setErrorMessage("No Disease Annotation ID provided");
-            throw new ApiErrorException(response);
+        String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
+        if (isUpdate) {
+            Long id = entity.getId();
+            if (id == null) {
+                response.setErrorMessage("No Disease Annotation ID provided");
+                throw new ApiErrorException(response);
+            }
+            DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
+            if (diseaseAnnotation == null) {
+                response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
+                throw new ApiErrorException(response);
+                // do not continue validation for update if Disease Annotation ID has not been found
+            }       
         }
-        DiseaseAnnotation diseaseAnnotation = diseaseAnnotationDAO.find(id);
-        if (diseaseAnnotation == null) {
-            response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
-            throw new ApiErrorException(response);
-            // do not continue validation if Disease Annotation ID has not been found
+        else {
+            errorTitle = "Could not create DiseaseAnnotation";
         }
         // check required fields
         // ToDo: implement mandatory / optional fields for each MOD
         //
-        final String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
         validateSubject(entity, response);
         validateDisease(entity, response);
         validateTypeAndSubject(entity, response);
+        validateWith(entity, response);
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
@@ -207,12 +239,26 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_implicated_in);
         }
         if (entity.getSubject() instanceof AffectedGenomicModel) {
-            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_marker_for);
+            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_model_of);
         }
         if (!correctTypeAndSubject) {
             addInvalidMessagetoResponse("diseaseRelation", response);
         }
         return correctTypeAndSubject;
+    }
+    
+    private boolean validateWith(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+        boolean validWithEntries = true;
+        if (CollectionUtils.isNotEmpty(entity.getWith())) {
+            for (Gene withGene : entity.getWith()) {
+                if (!withGene.getCurie().startsWith("HGNC:")) {
+                    addInvalidMessagetoResponse("with", response);
+                    validWithEntries = false;
+                    break;
+                }
+            }
+        }
+        return validWithEntries;
     }
 
     private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
@@ -274,5 +320,21 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Not a valid entry");
     }
 
+    private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
+        if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs()) ||
+                dto.getDoId() == null ||
+                dto.getDateAssigned() == null ||
+                dto.getEvidence() == null ||
+                dto.getEvidence().getEvidenceCodes() == null ||
+                dto.getEvidence().getPublication() == null ||
+                dto.getEvidence().getPublication().getPublicationId() == null ||
+                dto.getObjectRelation() == null ||
+                dto.getObjectRelation().getAssociationType() == null ||
+                dto.getObjectRelation().getObjectType() == null
+                ) {
+            return false;
+        }
+        return true;
+    }
 
 }

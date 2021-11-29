@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.model.ingest.json.dto;
 
 import org.alliancegenome.curation_api.base.BaseDTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Data;
 
 @Data
@@ -13,7 +15,8 @@ public class ExperimentalConditionDTO extends BaseDTO {
     private String conditionQuantity;
     private String anatomicalOntologyId;
     private String geneOntologyId;
-    private String ncbitaxonId;
+    @JsonProperty("NCBITaxonId")
+    private String ncbiTaxonId;
     private String chemicalOntologyId;
 
 }

@@ -24,7 +24,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     protected EntityManager entityManager;
 
     @Inject
-    SearchSession searchSession;
+    protected SearchSession searchSession;
 
     protected BaseSQLDAO(Class<E> myClass) {
         super(myClass);
@@ -109,7 +109,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     public void reindex() {
         reindex(myClass, 4);
     }
-    
+
     public void reindex(Class<E> objectClass, int threads) {
         log.debug("Starting Index for: " + objectClass);
         MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);

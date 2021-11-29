@@ -10,6 +10,7 @@ export const Dashboard = () => {
 
     const [ECOCount, setECOCount] = useState(0);
     const [DOCount, setDOCount] = useState(0);
+    const [MACount, setMACount] = useState(0);
 
     useEffect(() => {
         const searchService = new SearchService();
@@ -36,6 +37,10 @@ export const Dashboard = () => {
 
         searchService.search('doterm', 0, 0).then(results => {
           setDOCount(results.totalResults);
+        });
+
+        ontologyService.getTerms('materm', 0, 0).then(results => {
+          setMACount(results.totalResults);
         });
     }, []);
 
@@ -87,6 +92,16 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{DOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>MA</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{MACount}</span>
                     </div>
                 </div>
             </div>

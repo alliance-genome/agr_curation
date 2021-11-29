@@ -16,7 +16,9 @@ import { FMSComponent } from './components/FMSComponent';
 import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
 import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ECOOntologyComponent';
+import { MAOntologyComponent } from './components/MAOntologyComponent';
 import { MPOntologyComponent } from './components/MPOntologyComponent';
+import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
 
@@ -119,7 +121,14 @@ const App = () => {
             items: [
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
+                { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
                 { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' }
+            ]
+        },
+        {
+            label: 'Controlled Vocabularies', icon: 'pi pi-fw pi-sitemap',
+            items: [
+                { label: 'Terms', icon: 'pi pi-fw pi-home', to: '/vocabterms' }
             ]
         },
         {
@@ -183,8 +192,10 @@ const App = () => {
                 <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
+                <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
+                <Route path="/ontology/ma" component={MAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />

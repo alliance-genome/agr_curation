@@ -40,8 +40,13 @@ public class DiseaseAnnotation extends Association {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private List<EcoTerm> evidenceCodes;
+    
+    @ManyToMany
+    @JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
+    @JsonView({View.FieldsAndLists.class})
+    private List<Gene> with;
 
     public enum DiseaseRelation {
         is_model_of,
