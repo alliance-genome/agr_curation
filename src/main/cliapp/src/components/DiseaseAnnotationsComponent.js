@@ -483,12 +483,12 @@ export const DiseaseAnnotationsComponent = () => {
         value={withFilterValue} onChange={(e) => {
                 setWithFilterValue(e.target.value);
                 const filter = {
-                    "curie": {
+                    "with.curie": {
                         value: e.target.value,
                         matchMode: "startsWith"
                     }
                 }
-                onFilter(filter, "curie");
+                onFilter(filter, "with.curie");
             }
     } />;
 
