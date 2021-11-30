@@ -1,19 +1,19 @@
 import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
+import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService'
 import { useMutation, useQuery } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted } from '../utils/utils';
-import { SubjectEditor } from './SubjectEditor';
-import { DiseaseEditor } from './DiseaseEditor';
-import { FilterComponent } from './FilterComponent'
-import { SearchService } from '../service/SearchService';
+import { returnSorted } from '../../utils/utils';
+import { SubjectEditor } from './../SubjectEditor';
+import { DiseaseEditor } from './../DiseaseEditor';
+import { FilterComponent } from './../FilterComponent'
+import { SearchService } from '../../service/SearchService';
 
-import { ControlledVocabularyDropdown } from './ControlledVocabularySelector';
-import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
-import { ErrorMessageComponent } from './ErrorMessageComponent';
+import { ControlledVocabularyDropdown } from './../ControlledVocabularySelector';
+import { ControlledVocabularyService } from '../../service/ControlledVocabularyService';
+import { ErrorMessageComponent } from './../ErrorMessageComponent';
 
 export const DiseaseAnnotationsComponent = () => {
 

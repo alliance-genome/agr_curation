@@ -9,16 +9,17 @@ import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
 
-import { GenesComponent } from './components/GenesComponent';
-import { AllelesComponent } from './components/AllelesComponent';
-import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
-import { FMSComponent } from './components/FMSComponent';
-import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
+import { GenesComponent } from './components/datatables/GenesComponent';
+import { AllelesComponent } from './components/datatables/AllelesComponent';
+import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
+import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
+import { MoleculesComponent } from './components/datatables/MoleculesComponent';
 
+import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
-import { MoleculesComponent } from './components/MoleculesComponent';
+
 import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
 import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
