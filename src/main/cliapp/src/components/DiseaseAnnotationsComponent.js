@@ -392,7 +392,6 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-
     const curieFilterElement = <InputText
         disabled={!isEnabled}
         value={curieFilterValue}
@@ -406,8 +405,6 @@ export const DiseaseAnnotationsComponent = () => {
                 onFilter(filter, "curie");
         }
     } />;
-
-
 
     const subjectFilterElement = <InputText
         disabled={!isEnabled}
@@ -528,11 +525,11 @@ export const DiseaseAnnotationsComponent = () => {
                         filter filterElement={diseaseFilterElement}
                         editor={(props) => diseaseEditor(props)} body={diseaseBodyTemplate}>
                     </Column>
-                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled}
-                        filter filterElement={evidenceFilterElement}>
-                    </Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled}
                         filter filterElement={referenceFilterElement}>
+                    </Column>
+                    <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled}
+                        filter filterElement={evidenceFilterElement}>
                     </Column>
                     <Column field="with.curie" header="With" body={withTemplate} sortable={isEnabled}
                         filter filterElement={withFilterElement}>
