@@ -35,7 +35,6 @@ export const DiseaseAnnotationsComponent = () => {
     const rowsInEdit = useRef(0);
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
-    const biologicalEntityService = new BiologicalEntityService();
     const searchService = new SearchService();
 
     const controlledVocabularyService = new ControlledVocabularyService();
@@ -284,9 +283,10 @@ export const DiseaseAnnotationsComponent = () => {
     const subjectEditorTemplate = (props) => {
         return (
             <>
-                <SubjectEditor 
+                <SubjectEditor
+                    autocompleteFields={["curie", "name", "symbol", "crossReferences.name", "synonyms.curie"]} 
                     rowProps={props} 
-                    biologicalEntityService={biologicalEntityService} 
+                    searchService={searchService} 
                     setDiseaseAnnotations={setDiseaseAnnotations} 
                 />
                 <ErrorMessageComponent  

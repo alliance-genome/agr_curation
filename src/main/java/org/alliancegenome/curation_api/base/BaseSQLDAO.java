@@ -144,14 +144,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                     if(params.containsKey("searchFilters")) {
                         HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
                         for(String filterName: searchFilters.keySet()) {
-                            for(String field: searchFilters.get(filterName).keySet()) {
-                                b.must(
-                                    p.simpleQueryString()
-                                        .field(field)
-                                        .matching((String)searchFilters.get(filterName).get(field))
-                                        .defaultOperator(BooleanOperator.AND)
-                                );
-                            }
+                            b.must(
+                                p.simpleQueryString()
+                                    .fields(searchFilters.get(filterName).keySet().toArray(new String[0]))
+                                    .matching((String)searchFilters.get(filterName).entrySet().iterator().next().getValue())
+                                    .defaultOperator(BooleanOperator.AND)
+                            );
                         }
                     }
                 }))
@@ -159,25 +157,28 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                     CompositeSortComponentsStep<?> com = f.composite();
                     if(params.containsKey("sortOrders")) {
                         ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
-                        for(HashMap<String, Object> map: sortOrders) {
-                            log.info("Map: " + map);
-                            String key = (String)map.get("field");
-                            log.info("Key: " + key);
-                            int value = (int)map.get("order");
-                            log.info("Value: " + value);
-                            if(value == 1) {
-                                com.add(f.field(key + "_keyword").asc());
-                            }
-                            if(value == -1) {
-                                com.add(f.field(key + "_keyword").desc());
+                        if(sortOrders != null){
+                            for(HashMap<String, Object> map: sortOrders) {
+                                log.info("Map: " + map);
+                                String key = (String)map.get("field");
+                                log.info("Key: " + key);
+                                int value = (int)map.get("order");
+                                log.info("Value: " + value);
+                                if(value == 1) {
+                                    com.add(f.field(key + "_keyword").asc());
+                                }
+                                if(value == -1) {
+                                    com.add(f.field(key + "_keyword").desc());
+                                }
                             }
                         }
+
                     }
                     return com;
                 })
                 .toQuery();
 
-        log.debug(query);
+        log.info(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
         SearchResponse<E> results = new SearchResponse<E>();

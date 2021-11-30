@@ -4,6 +4,9 @@ export class SearchService {
 
     search(endpoint, rows, page, sorts, filters) {
         const searchOptions = {};
+        if(!sorts){
+            sorts = [];
+        }
         searchOptions["searchFilters"] = filters;
         searchOptions["sortOrders"] = sorts;
         //console.log(searchOptions);

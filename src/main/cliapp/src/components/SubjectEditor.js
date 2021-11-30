@@ -1,12 +1,20 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
 
-   export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations }) => { 
+   export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => { 
         const [filteredSubjects, setFilteredSubjects] = useState([]);
 
         const searchSubject = (event) => {
             console.log(event);
-            searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":{"curie": event.query}})
+            let subjectFilter = {};
+            autocompleteFields.forEach( field => {
+                subjectFilter[field] = event.query;
+            });
+            
+
+            
+
+            searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":subjectFilter})
                 .then((data) => {
                     console.log(data);
                     setFilteredSubjects(data.results);
