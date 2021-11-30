@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -23,11 +24,13 @@ import lombok.*;
 @ToString(exclude = {/* "parents", "children", "ancesters", "descendants", */ "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
 public class OntologyTerm extends BaseCurieEntity {
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView(View.FieldsOnly.class)
     private String name;
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "type_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView(View.FieldsOnly.class)
     private String type;
 
@@ -35,37 +38,45 @@ public class OntologyTerm extends BaseCurieEntity {
     @JsonView(View.FieldsOnly.class)
     private Boolean obsolete;
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "namespace_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView(View.FieldsOnly.class)
     private String namespace;
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @Column(columnDefinition="TEXT")
     @JsonView(View.FieldsOnly.class)
     private String definition;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JsonView(View.FieldsAndLists.class)
     @Column(columnDefinition="TEXT")
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> definitionUrls;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> subsets;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> secondaryIdentifiers;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     @Column(columnDefinition="TEXT")
     private List<String> synonyms;
 
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = { @Index( columnList = "ontologyterm_curie"), @Index( columnList = "crossreferences_curie")})
     @JsonView({View.FieldsAndLists.class})

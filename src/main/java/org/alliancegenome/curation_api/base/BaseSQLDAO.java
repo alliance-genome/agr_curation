@@ -107,16 +107,25 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public void reindex() {
-        reindex(myClass, 4);
+        reindex(myClass, 4, 0);
     }
 
-    public void reindex(Class<E> objectClass, int threads) {
+    public void reindex(int threads, int indexAmount) {
+        reindex(myClass, threads, indexAmount);
+    }
+
+    public void reindex(Class<E> objectClass, int threads, int indexAmount) {
         log.debug("Starting Index for: " + objectClass);
         MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);
         //indexer.dropAndCreateSchemaOnStart(true);
         indexer.transactionTimeout(900);
+        if(indexAmount > 0){
+            indexer.limitIndexedObjectsTo(indexAmount);
+        }
         indexer.start();
     }
+
+
 
     public SearchResponse<E> searchAll(Pagination pagination) {
         return searchByParams(pagination, null);

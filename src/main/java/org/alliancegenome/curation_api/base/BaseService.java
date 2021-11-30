@@ -70,4 +70,9 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDAO<E>> {
     public void reindex() {
         dao.reindex();
     }
+
+    public void reindex(int threads, int indexAmount) {
+        dao.reindex(threads, indexAmount);
+    }
+
 }

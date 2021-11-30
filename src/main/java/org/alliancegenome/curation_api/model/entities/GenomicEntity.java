@@ -27,17 +27,22 @@ public class GenomicEntity extends BiologicalEntity {
     @Column(columnDefinition="TEXT")
     @JsonView({View.FieldsOnly.class})
     private String name;
-
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
     @JsonView({View.FieldsAndLists.class})
     private List<Synonym> synonyms;
-
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
     @JsonView({View.FieldsAndLists.class})
     private List<CrossReference> crossReferences;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
     @JsonView({View.FieldsAndLists.class})
