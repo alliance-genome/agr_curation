@@ -36,6 +36,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [diseaseFilterValue, setDiseaseFilterValue] = useState('');
     const [evidenceFilterValue, setEvidenceFilterValue] = useState('');
     const [referenceFilterValue, setReferenceFilterValue] = useState('');
+    const [withFilterValue, setWithFilterValue] = useState('');
     const [errorMessages, setErrorMessages] = useState({});
 
     const rowsInEdit = useRef(0);
@@ -129,6 +130,16 @@ export const DiseaseAnnotationsComponent = () => {
             setMultiSortMeta(newSort.concat(event.multiSortMeta));
         } else {
             setMultiSortMeta(newSort);
+        }
+    };
+
+    const withTemplate = (rowData) => {
+        if (rowData && rowData.with) {
+            return <div>
+                <ul style={{listStyleType : 'none'}}>
+                    {rowData.with.map((a,index) => <li key={index}>{a.curie + ' (' + a.symbol + ')'}</li>)}
+                </ul>
+            </div>
         }
     };
 
@@ -470,6 +481,20 @@ export const DiseaseAnnotationsComponent = () => {
             }
     } />;
 
+    const withFilterElement = <InputText
+        disabled={!isEnabled}
+        value={withFilterValue} onChange={(e) => {
+                setWithFilterValue(e.target.value);
+                const filter = {
+                    "curie": {
+                        value: e.target.value,
+                        matchMode: "startsWith"
+                    }
+                }
+                onFilter(filter, "curie");
+            }
+    } />;
+
 
     return (
         <div>
@@ -508,6 +533,9 @@ export const DiseaseAnnotationsComponent = () => {
                     </Column>
                     <Column field="referenceList.curie" header="Reference" body={publicationTemplate} sortable={isEnabled}
                         filter filterElement={referenceFilterElement}>
+                    </Column>
+                    <Column field="with.curie" header="With" body={withTemplate} sortable={isEnabled}
+                        filter filterElement={withFilterElement}>
                     </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
