@@ -24,6 +24,7 @@ export const MAOntologyComponent = () => {
   useQuery(['terms', rows, page, multiSortMeta, filters],
     () => searchService.search('materm', rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
+      setIsEnabled(true);
       setTerms(data.results);
       setTotalRecords(data.totalResults);
     },

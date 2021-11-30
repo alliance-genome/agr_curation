@@ -24,6 +24,7 @@ export const DiseaseOntologyComponent = () => {
   useQuery(['terms', rows, page, multiSortMeta, filters],
     () => searchService.search('doterm', rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
+      setIsEnabled(true);
       setTerms(data.results);
       setTotalRecords(data.totalResults);
     },

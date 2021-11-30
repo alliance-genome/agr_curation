@@ -24,6 +24,7 @@ export const ECOOntologyComponent = () => {
   useQuery(['terms', rows, page, multiSortMeta, filters],
     () => searchService.search('ecoterm', rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
+      setIsEnabled(true);
       setTerms(data.results);
       setTotalRecords(data.totalResults);
     },

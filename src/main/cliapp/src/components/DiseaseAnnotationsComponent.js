@@ -92,7 +92,17 @@ export const DiseaseAnnotationsComponent = () => {
         )
     };
 
-    const publicationTemplate = (rowData) => { 
+    const withTemplate = (rowData) => {
+        if (rowData && rowData.with) {
+            return <div>
+                <ul style={{listStyleType : 'none'}}>
+                    {rowData.with.map((a,index) => <li key={index}>{a.curie + ' (' + a.symbol + ')'}</li>)}
+                </ul>
+            </div>
+        }
+    };
+
+    const publicationTemplate = (rowData) => {
         if (rowData && rowData.referenceList) {
             return <div>{rowData.referenceList.map(a => a.curie)}</div>
         }
@@ -240,7 +250,6 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    
     const diseaseBodyTemplate = (rowData) => {
             if(rowData.object){
             return <div>{rowData.object.curie} ({rowData.object.name})</div>;
@@ -329,7 +338,6 @@ export const DiseaseAnnotationsComponent = () => {
                   paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-
                   <Column field="curie" header="Curie" 
                     style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} 
                     sortable={isEnabled} 
@@ -376,7 +384,8 @@ export const DiseaseAnnotationsComponent = () => {
                   <Column
                     field="evidenceCodes.curie"
                     header="Evidence Code"
-                    body={evidenceTemplate} sortable={isEnabled} 
+                    body={evidenceTemplate}
+                    sortable={isEnabled} 
                     filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
                   />
 
@@ -388,6 +397,15 @@ export const DiseaseAnnotationsComponent = () => {
                     filter filterElement={filterComponentTemplate("referenceList", ["referenceList.curie"])}
 
                   />
+
+                  <Column 
+                    field="with.curie"
+                    header="With"
+                    body={withTemplate} 
+                    sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("withFilter", ["with.curie", "with.name", "with.symbol"])}
+                  />
+
                   <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
             </div>

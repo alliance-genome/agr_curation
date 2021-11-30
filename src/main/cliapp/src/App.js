@@ -18,6 +18,7 @@ import { AffectedGenomicModelComponent } from './components/AffectedGenomicModel
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
+import { MoleculesComponent } from './components/MoleculesComponent';
 import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
 import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
@@ -115,7 +116,8 @@ const App = () => {
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
-                { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' }
+                { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
+                { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules'}
             ]
         },
         {
@@ -194,6 +196,7 @@ const App = () => {
                 <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
+                <Route path="/molecules" component={MoleculesComponent} />
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
