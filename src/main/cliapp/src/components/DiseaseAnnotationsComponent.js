@@ -3,7 +3,6 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
 import { useMutation, useQuery } from 'react-query';
-import { BiologicalEntityService } from "../service/BiologicalEntityService";
 import { Toast } from 'primereact/toast';
 
 import { returnSorted } from '../utils/utils';

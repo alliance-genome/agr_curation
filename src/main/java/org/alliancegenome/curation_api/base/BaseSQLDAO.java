@@ -168,11 +168,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                         ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
                         if(sortOrders != null){
                             for(HashMap<String, Object> map: sortOrders) {
-                                log.info("Map: " + map);
+                                //log.info("Map: " + map);
                                 String key = (String)map.get("field");
-                                log.info("Key: " + key);
+                                //log.info("Key: " + key);
                                 int value = (int)map.get("order");
-                                log.info("Value: " + value);
+                                //log.info("Value: " + value);
                                 if(value == 1) {
                                     com.add(f.field(key + "_keyword").asc());
                                 }

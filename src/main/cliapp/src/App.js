@@ -14,12 +14,14 @@ import { AllelesComponent } from './components/AllelesComponent';
 import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
 import { FMSComponent } from './components/FMSComponent';
 import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
-import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
-import { ECOOntologyComponent } from './components/ECOOntologyComponent';
-import { MAOntologyComponent } from './components/MAOntologyComponent';
-import { MPOntologyComponent } from './components/MPOntologyComponent';
+
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
+
+import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
+import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
+import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
+import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
