@@ -24,11 +24,13 @@ import lombok.*;
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 public class VocabularyTerm extends BaseGeneratedEntity {
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     private String name;
     
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     private String definition;
     
@@ -37,6 +39,8 @@ public class VocabularyTerm extends BaseGeneratedEntity {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean isObsolete = false;
     
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = { @Index( columnList = "vocabularyterm_id"), @Index( columnList = "crossreferences_curie")})
     @JsonView({View.FieldsAndLists.class})
@@ -48,6 +52,7 @@ public class VocabularyTerm extends BaseGeneratedEntity {
     @JsonView({View.VocabularyTermView.class})
     private Vocabulary vocabulary;
     
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))

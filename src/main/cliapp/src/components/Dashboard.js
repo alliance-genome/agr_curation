@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { GeneService } from '../service/GeneService';
-import { AlleleService } from '../service/AlleleService';
-import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
-import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
-import { MoleculeService } from '../service/MoleculeService'
-import { OntologyService } from '../service/OntologyService'
+
+import { SearchService } from '../service/SearchService'
 
 export const Dashboard = () => {
     const [geneCount, setGeneCount] = useState(0);
@@ -18,38 +14,37 @@ export const Dashboard = () => {
     const [MACount, setMACount] = useState(0);
 
     useEffect(() => {
-        const geneService = new GeneService();
-        geneService.getGenes(0, 0).then(searchReults => {
-            setGeneCount(searchReults.totalResults);
+        const searchService = new SearchService();
+
+        searchService.search('gene', 0, 0).then(searchResults => {
+          setGeneCount(searchResults.totalResults);
         });
 
-        const alleleService = new AlleleService();
-        alleleService.getAlleles(0, 0).then(searchReults => {
-            setAlleleCount(searchReults.totalResults);
-        });
-        const diseaseAnnotationService = new DiseaseAnnotationService();
-        diseaseAnnotationService.getDiseaseAnnotations(0, 0).then(searchResults => {
-            setDiseaseAnnotationCount(searchResults.totalResults);
+        searchService.search('allele', 0, 0).then(searchResults => {
+          setAlleleCount(searchResults.totalResults);
         });
 
-        const agmService = new AffectedGenomicModelService();
-        agmService.getAgms(0, 0).then(searchResults => {
-            setAgmCount(searchResults.totalResults);
+        searchService.search('disease-annotation', 0, 0).then(searchResults => {
+          setDiseaseAnnotationCount(searchResults.totalResults);
         });
-        const moleculeService = new MoleculeService();
-        moleculeService.getMolecules(0,0).then(searchResults => {
-            setMoleculeCount(searchResults.totalResults);
+
+        searchService.search('agm', 0, 0).then(searchResults => {
+          setAgmCount(searchResults.totalResults);
         });
-        const ontologyService = new OntologyService();
-        ontologyService.getTerms('ecoterm', 0, 0).then(results => {
+
+        searchService.search("molecule", 0, 0).then(searchResults => {
+          setMoleculeCount(searchResults.totalResults);
+        });
+
+        searchService.search('ecoterm', 0, 0).then(results => {
           setECOCount(results.totalResults);
         });
 
-        ontologyService.getTerms('doterm', 0, 0).then(results => {
+        searchService.search('doterm', 0, 0).then(results => {
           setDOCount(results.totalResults);
         });
 
-        ontologyService.getTerms('materm', 0, 0).then(results => {
+        searchService.search('materm', 0, 0).then(results => {
           setMACount(results.totalResults);
         });
     }, []);

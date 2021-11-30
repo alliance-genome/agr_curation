@@ -7,6 +7,7 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -20,6 +21,7 @@ import lombok.*;
 @ToString(exclude = {"genomicEntities"})
 public class Synonym extends BaseGeneratedEntity {
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @JsonView({View.FieldsOnly.class})
     private String name;
 

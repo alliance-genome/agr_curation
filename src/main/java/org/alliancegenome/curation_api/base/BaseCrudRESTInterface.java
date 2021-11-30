@@ -53,7 +53,10 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
     
     @GET
     @Path("/reindex")
-    public void reindex();
+    public void reindex(
+        @DefaultValue("4") @QueryParam("threads") Integer threads,
+        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount 
+    );
     
 }
 

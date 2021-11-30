@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.bulk.controllers.ontology;
+package org.alliancegenome.curation_api.controllers.bulk.ontology;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;

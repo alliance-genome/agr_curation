@@ -9,18 +9,21 @@ import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
 
-import { GenesComponent } from './components/GenesComponent';
-import { AllelesComponent } from './components/AllelesComponent';
-import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
+import { GenesComponent } from './components/datatables/GenesComponent';
+import { AllelesComponent } from './components/datatables/AllelesComponent';
+import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
+import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
+import { MoleculesComponent } from './components/datatables/MoleculesComponent';
+
 import { FMSComponent } from './components/FMSComponent';
-import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
-import { MoleculesComponent } from './components/MoleculesComponent';
-import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
-import { ECOOntologyComponent } from './components/ECOOntologyComponent';
-import { MAOntologyComponent } from './components/MAOntologyComponent';
-import { MPOntologyComponent } from './components/MPOntologyComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
+
+
+import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
+import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
+import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
+import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
