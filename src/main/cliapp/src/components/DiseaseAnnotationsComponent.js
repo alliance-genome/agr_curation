@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {DataTable} from 'primereact/datatable';
 import {Column} from 'primereact/column';
 import {DiseaseAnnotationService} from '../service/DiseaseAnnotationService'
+import {GeneService} from '../service/GeneService'
 import {useMutation, useQuery} from 'react-query';
 import {AutoComplete} from "primereact/autocomplete";
 import {BiologicalEntityService} from "../service/BiologicalEntityService";
@@ -26,6 +27,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [originalRows, setOriginalRows] = useState([]);
     const [filteredSubjects, setFilteredSubjects] = useState([]);
     const [filteredDiseases, setFilteredDiseases] = useState([]);
+    const [filteredWithGenes, setFilteredWithGenes] = useState([]);
     const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
     const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
@@ -45,6 +47,7 @@ export const DiseaseAnnotationsComponent = () => {
     const biologicalEntityService = new BiologicalEntityService();
     const ontologyService = new OntologyService();
     const controlledVocabularyService = new ControlledVocabularyService();
+    const geneService = new GeneService();
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
@@ -133,7 +136,7 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const withTemplate = (rowData) => {
+    const withBodyTemplate = (rowData) => {
         if (rowData && rowData.with) {
             return <div>
                 <ul style={{listStyleType : 'none'}}>
@@ -141,6 +144,11 @@ export const DiseaseAnnotationsComponent = () => {
                 </ul>
             </div>
         }
+    };
+
+
+    const withItemTemplate = (item) => {
+        return <div>{item.curie} ({item.symbol})</div>
     };
 
     const publicationTemplate = (rowData) => {
@@ -207,6 +215,14 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
+    const searchWithGenes = (event) => {
+        event.query=editorValidator(event.query);
+        geneService.getGenes(15, 0, null, {"curie":{"value": event.query}})
+                .then((data) => {
+                    setFilteredWithGenes(data.results.filter((gene) => gene.curie.startsWith("HGNC:")) );
+                });
+        
+    };
 
     const subjectEditor = (props) => {
         return (<div><AutoComplete
@@ -263,6 +279,27 @@ export const DiseaseAnnotationsComponent = () => {
             </>
         )
     };
+
+    const withEditor = (props, disabled=false) => {
+        return (<div><AutoComplete
+            multiple
+            value={props.rowData.with}
+            field="curie"
+            suggestions={filteredWithGenes}
+            itemTemplate={withItemTemplate}
+            completeMethod={searchWithGenes}
+            onChange={(e) => onWithEditorValueChange(props, e)}
+        /><ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"with"} /></div>)
+    };
+
+    const onWithEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.value) {
+             updatedAnnotations[props.rowIndex].with = event.value;
+        }
+        setDiseaseAnnotations(updatedAnnotations);
+    };
+
 
     const onRowEditInit = (event) => {
         rowsInEdit.current++;
@@ -531,8 +568,8 @@ export const DiseaseAnnotationsComponent = () => {
                     <Column field="evidenceCodes.curie" header="Evidence Code" body={evidenceTemplate} sortable={isEnabled}
                         filter filterElement={evidenceFilterElement}>
                     </Column>
-                    <Column field="with.curie" header="With" body={withTemplate} sortable={isEnabled}
-                        filter filterElement={withFilterElement}>
+                    <Column field="with.curie" header="With" body={withBodyTemplate} sortable={isEnabled}
+                        filter filterElement={withFilterElement} editor={(props) => withEditor(props)}>
                     </Column>
                     <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
                 </DataTable>
