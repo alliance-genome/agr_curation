@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.EmapaTermDAO;
 import org.alliancegenome.curation_api.interfaces.bulk.ontology.EmapaTermBulkRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.EMAPATerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 
 @RequestScoped
@@ -18,8 +19,9 @@ public class EmapaTermBulkController extends BaseOntologyTermBulkController<Emap
     @Override
     @PostConstruct
     public void init() {
-        setService(emapaTermService, EMAPATerm.class);
+        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+        config.setAltNameSpace("anatomical_structure");
+        setService(emapaTermService, EMAPATerm.class, config);
     }
 
 }
-

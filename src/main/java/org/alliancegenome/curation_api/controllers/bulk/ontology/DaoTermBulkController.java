@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.DaoTermDAO;
 import org.alliancegenome.curation_api.interfaces.bulk.ontology.DaoTermBulkRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 
 @RequestScoped
