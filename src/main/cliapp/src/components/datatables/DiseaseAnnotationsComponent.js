@@ -8,6 +8,7 @@ import { Toast } from 'primereact/toast';
 import { returnSorted } from '../../utils/utils';
 import { SubjectEditor } from './../SubjectEditor';
 import { DiseaseEditor } from './../DiseaseEditor';
+import { WithEditor } from './../WithEditor';
 import { FilterComponent } from './../FilterComponent'
 import { SearchService } from '../../service/SearchService';
 
@@ -322,6 +323,23 @@ export const DiseaseAnnotationsComponent = () => {
         );
     };
 
+    const withEditorTemplate = (props) => {
+        return (
+            <>
+                <WithEditor
+                    autocompleteFields={["curie", "symbol", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+                    rowProps={props}
+                    searchService={searchService}
+                    setDiseaseAnnotations={setDiseaseAnnotations}
+                />
+                <ErrorMessageComponent
+                    errorMessages={errorMessages[props.rowIndex]}
+                    errorField="with"
+                />
+            </>
+        );
+    };
+
     return (
         <div>
             <div className="card">
@@ -381,14 +399,6 @@ export const DiseaseAnnotationsComponent = () => {
                     body={diseaseBodyTemplate} 
                   />
 
-                  <Column
-                    field="evidenceCodes.curie"
-                    header="Evidence Code"
-                    body={evidenceTemplate}
-                    sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
-                  />
-
                   <Column 
                     field="referenceList.curie"
                     header="Reference"
@@ -398,12 +408,21 @@ export const DiseaseAnnotationsComponent = () => {
 
                   />
 
-                  <Column 
+                 <Column
+                    field="evidenceCodes.curie"
+                    header="Evidence Code"
+                    body={evidenceTemplate}
+                    sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
+                  />
+
+                   <Column 
                     field="with.curie"
                     header="With"
                     body={withTemplate} 
                     sortable={isEnabled} 
                     filter filterElement={filterComponentTemplate("withFilter", ["with.curie", "with.name", "with.symbol"])}
+                    editor={(props) => withEditorTemplate(props)}
                   />
 
                   <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
