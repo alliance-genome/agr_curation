@@ -3,19 +3,16 @@ package org.alliancegenome.curation_api.crud.controllers;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-
 import io.restassured.common.mapper.TypeRef;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasSize;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
@@ -28,10 +25,10 @@ public class DiseaseAnnotationITCase {
     private BiologicalEntity biologicalEntity;
     private Reference reference;
     private DiseaseAnnotation diseaseAnnotation;
+    private final String DISEASE_ANNOTATION = "Disease:0001";
 
-    private TypeRef<SearchResponse<DiseaseAnnotation>> getSearchResponseTypeRef() {
-        return new TypeRef<SearchResponse <DiseaseAnnotation>>() {
-        };
+    private TypeRef<ObjectResponse<DiseaseAnnotation>> getObjectResponseTypeRef() {
+        return new TypeRef<ObjectResponse <DiseaseAnnotation>>() { };
     }
 
     @Test
@@ -42,9 +39,6 @@ public class DiseaseAnnotationITCase {
         crossReference.setDisplayName("AGRreference");
         crossReference.setCurie("DOID:0001");
         crossReference.setPrefix("agr");
-        crossReference.setPageAreas(Arrays.asList("reference"));
-        crossReference.setCreated(LocalDateTime.now());
-        crossReference.setLastUpdated(LocalDateTime.now());
 
         RestAssured.given().
             body(crossReference).
@@ -80,14 +74,10 @@ public class DiseaseAnnotationITCase {
 
         diseaseAnnotation = new DiseaseAnnotation();
         diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        diseaseAnnotation.setCurie("Disease:0001");
+        diseaseAnnotation.setCurie(DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
         diseaseAnnotation.setSubject(biologicalEntity);
-//        Not ready for references yet:
-//        reference = new Reference();
-//        reference.setCurie("REF:0001");
-//        diseaseAnnotation.setReferenceList(Arrays.asList(reference));
 
         RestAssured.given().
             contentType("application/json").
@@ -99,41 +89,32 @@ public class DiseaseAnnotationITCase {
 
         RestAssured.given().
             when().
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/disease-annotation/find?limit=10&page=0").
+            get("/api/disease-annotation/"+DISEASE_ANNOTATION).
             then().
             statusCode(200).
-            body("totalResults", is(7)). // 6 annotations inserted by bulk upload tests
-            body("results", hasSize(7)).
-            body("results[6].curie", is("Disease:0001")).
-            body("results[6].subject.curie", is("BO:0001")).
-            body("results[6].object.curie", is("DOT:0001"));
+            body("entity.curie", is(DISEASE_ANNOTATION)).
+            body("entity.subject.curie", is("BO:0001")).
+            body("entity.object.curie", is("DOT:0001"));
     }
 
     @Test
     @Order(2)
     public void editDiseaseAnnotation() throws Exception {
-        SearchResponse<DiseaseAnnotation> res = RestAssured.given().
+        ObjectResponse<DiseaseAnnotation> res = RestAssured.given().
             when().
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/disease-annotation/find?limit=10&page=0").
+            get("/api/disease-annotation/"+DISEASE_ANNOTATION).
             then().
             statusCode(200).
-            extract().body().as(getSearchResponseTypeRef());
+            extract().body().as(getObjectResponseTypeRef());
 
-        DiseaseAnnotation editedDiseaseAnnotation = res.getResults().get(0);
+        DiseaseAnnotation editedDiseaseAnnotation = res.getEntity();
         editedDiseaseAnnotation.setNegated(true);
-//        editedDiseaseAnnotation.setReferenceList(Arrays.asList());
-//        editedDiseaseAnnotation.setEvidenceCodes(Arrays.asList());
-//
-//        RestAssured.given().
-//            contentType("application/json").
-//            body(diseaseAnnotation).
-//            when().
-//            put("/api/disease-annotation").
-//            then().
-//            statusCode(200);
+        RestAssured.given().
+            contentType("application/json").
+            body(editedDiseaseAnnotation).
+            when().
+            put("/api/disease-annotation").
+            then().
+            statusCode(200);
     }
 }
