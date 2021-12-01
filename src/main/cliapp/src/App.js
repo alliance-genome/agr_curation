@@ -24,6 +24,9 @@ import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntolog
 import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
 import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
 import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
+import { DAOOntologyComponent } from './components/ontologies/DAOOntologyComponent';
+import { EMAPAOntologyComponent } from './components/ontologies/EMAPAOntologyComponent';
+import { WBbtOntologyComponent } from './components/ontologies/WBbtOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
@@ -127,7 +130,10 @@ const App = () => {
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
                 { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
-                { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' }
+                { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
+                { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
+//                { label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
+                { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' }
             ]
         },
         {
@@ -176,6 +182,9 @@ const App = () => {
         'layout-sidebar-light': layoutColorMode === 'light'
     });
 
+
+    // Need to add following once EMAP ontology sorted
+    // <Route path="/ontology/emapa" component={EMAPAOntologyComponent} />
     return (
         <div className={wrapperClass} onClick={onWrapperClick}>
             <AppTopbar onToggleMenu={onToggleMenu} />
@@ -203,6 +212,8 @@ const App = () => {
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
                 <Route path="/ontology/ma" component={MAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
+                <Route path="/ontology/dao" component={DAOOntologyComponent} />
+                <Route path="/ontology/wbbt" component={WBbtOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />
 

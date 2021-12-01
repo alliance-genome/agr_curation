@@ -12,7 +12,10 @@ export const Dashboard = () => {
     const [ECOCount, setECOCount] = useState(0);
     const [DOCount, setDOCount] = useState(0);
     const [MACount, setMACount] = useState(0);
-
+    const [DAOCount, setDAOCount] = useState(0);
+    const [EMAPACount, setEMAPACount] = useState(0);
+    const [WBbtCount, setWBbtCount] = useState(0);
+    
     useEffect(() => {
         const searchService = new SearchService();
 
@@ -47,7 +50,32 @@ export const Dashboard = () => {
         searchService.search('materm', 0, 0).then(results => {
           setMACount(results.totalResults);
         });
+
+         searchService.search('daoterm', 0, 0).then(results => {
+          setDAOCount(results.totalResults);
+        });
+
+         searchService.search('emapaterm', 0, 0).then(results => {
+          setEMAPACount(results.totalResults);
+        });
+
+         searchService.search('wbbtterm', 0, 0).then(results => {
+          setWBbtCount(results.totalResults);
+        });
     }, []);
+
+    // Need to add following once EMAPA ontology sorted out
+    //            <div className="p-col-12 p-md-6 p-xl-3">
+    //            <div className="highlight-box">
+    //                <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>EMAPA</span></div>
+    //                <div className="highlight-details ">
+    //                    <i className="pi pi-question-circle"></i>
+    //                    <span>Total Term Count</span>
+    //                    <span className="count">{EMAPACount}</span>
+    //                </div>
+    //           </div>
+    //        </div>
+            
 
     return (
         <div className="p-grid p-fluid dashboard">
@@ -115,6 +143,26 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{MACount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#007be5', color: '#00448f' }}><span>DAO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-search"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{DAOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>WBbt</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{WBbtCount}</span>
                     </div>
                 </div>
             </div>
