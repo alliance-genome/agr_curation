@@ -117,4 +117,14 @@ public class DiseaseAnnotationITCase {
             then().
             statusCode(200);
     }
+
+    @Test
+    @Order(3)
+    public void deleteDiseaseAnnotation() throws Exception {
+        RestAssured.given().
+            when().
+            delete("/api/disease-annotation/" + DISEASE_ANNOTATION).
+            then().
+            statusCode(200);
+    }
 }
