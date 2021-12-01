@@ -421,7 +421,7 @@ export const DiseaseAnnotationsComponent = () => {
                     header="With"
                     body={withTemplate} 
                     sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("withFilter", ["with.curie", "with.name", "with.symbol"])}
+                    filter filterElement={filterComponentTemplate("with", ["with.curie", "with.symbol"])}
                     editor={(props) => withEditorTemplate(props)}
                   />
 
