@@ -91,10 +91,14 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
             termParent = getOntologyTerm(parent);
 
+            String requiredNamespace = config.getAltNameSpace();
+            if (requiredNamespace == null) {
+                requiredNamespace = defaultNamespace;
+            }
+            
             if(
-                    (termParent.getNamespace() != null && defaultNamespace != null && termParent.getNamespace().equals(defaultNamespace)) ||
-                    (termParent.getNamespace() != null && termParent.getNamespace().equals(config.getAltNameSpace())) ||
-                    config.isLoadWithoutDefaultNameSpace()
+                (termParent.getNamespace() != null && requiredNamespace != null && termParent.getNamespace().equals(requiredNamespace)) ||
+                config.isLoadWithoutDefaultNameSpace()
             ) {
                 //System.out.println(termParent);
 
