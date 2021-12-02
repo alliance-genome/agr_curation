@@ -17,7 +17,7 @@ export const Dashboard = () => {
     const [DAOCount, setDAOCount] = useState(0);
     const [EMAPACount, setEMAPACount] = useState(0);
     const [WBbtCount, setWBbtCount] = useState(0);
-    const [ZECOCount, setZECOCount] = useState();
+    const [ZECOCount, setZECOCount] = useState(0);
     
     useEffect(() => {
         const searchService = new SearchService();
