@@ -132,7 +132,7 @@ const App = () => {
                 { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
                 { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
                 { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
-//                { label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
+                { label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
                 { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' }
             ]
         },
@@ -183,8 +183,6 @@ const App = () => {
     });
 
 
-    // Need to add following once EMAP ontology sorted
-    // <Route path="/ontology/emapa" component={EMAPAOntologyComponent} />
     return (
         <div className={wrapperClass} onClick={onWrapperClick}>
             <AppTopbar onToggleMenu={onToggleMenu} />
@@ -213,6 +211,7 @@ const App = () => {
                 <Route path="/ontology/ma" component={MAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
                 <Route path="/ontology/dao" component={DAOOntologyComponent} />
+                <Route path="/ontology/emapa" component={EMAPAOntologyComponent} />
                 <Route path="/ontology/wbbt" component={WBbtOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />

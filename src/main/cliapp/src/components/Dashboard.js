@@ -68,18 +68,6 @@ export const Dashboard = () => {
           setWBbtCount(results.totalResults);
         });
     }, []);
-
-    // Need to add following once EMAPA ontology sorted out
-    //            <div className="p-col-12 p-md-6 p-xl-3">
-    //            <div className="highlight-box">
-    //                <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>EMAPA</span></div>
-    //                <div className="highlight-details ">
-    //                    <i className="pi pi-question-circle"></i>
-    //                    <span>Total Term Count</span>
-    //                    <span className="count">{EMAPACount}</span>
-    //                </div>
-    //           </div>
-    //        </div>
             
 
     return (
@@ -170,6 +158,16 @@ export const Dashboard = () => {
                         <span className="count">{DAOCount}</span>
                     </div>
                 </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                    <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>EMAPA</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{EMAPACount}</span>
+                    </div>
+               </div>
             </div>
             <div className="p-col-12 p-md-6 p-xl-3">
                 <div className="highlight-box">
