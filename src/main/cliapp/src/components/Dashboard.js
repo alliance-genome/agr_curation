@@ -12,6 +12,7 @@ export const Dashboard = () => {
     const [ECOCount, setECOCount] = useState(0);
     const [DOCount, setDOCount] = useState(0);
     const [MACount, setMACount] = useState(0);
+    const [ZFACount, setZFACount] = useState(0);
     const [MPCount, setMPCount] = useState(0);
     const [DAOCount, setDAOCount] = useState(0);
     const [EMAPACount, setEMAPACount] = useState(0);
@@ -53,6 +54,10 @@ export const Dashboard = () => {
           setMACount(results.totalResults);
         });
 
+        searchService.search('zfaterm', 0, 0).then(results => {
+          setZFACount(results.totalResults);
+        });
+
         searchService.search('mpterm', 0, 0).then(results => {
           setMPCount(results.totalResults);
         });
@@ -73,7 +78,6 @@ export const Dashboard = () => {
           setZECOCount(results.totalResults);
         });
     }, []);
-            
 
     return (
         <div className="p-grid p-fluid dashboard">
@@ -141,6 +145,16 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{MACount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>ZFA</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{ZFACount}</span>
                     </div>
                 </div>
             </div>
