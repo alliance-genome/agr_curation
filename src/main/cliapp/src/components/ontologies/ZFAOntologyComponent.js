@@ -22,7 +22,7 @@ export const ZFAOntologyComponent = () => {
   const errorMessage = useRef(null);
 
   useQuery(['terms', rows, page, multiSortMeta, filters],
-    () => searchService.search('zfaTerm', rows, page, multiSortMeta, filters), {
+    () => searchService.search('zfaterm', rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
       setIsEnabled(true);
       setTerms(data.results);

@@ -53,7 +53,7 @@ export const Dashboard = () => {
           setMACount(results.totalResults);
         });
 
-        searchService.search('zfaTerm', 0, 0).then(results => {
+        searchService.search('zfaterm', 0, 0).then(results => {
           setZFACount(results.totalResults);
         });
 

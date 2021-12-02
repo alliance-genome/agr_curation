@@ -7,7 +7,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-@Path("/zfaTerm/bulk")
+@Path("/zfaterm/bulk")
 @Tag(name = "Ontology - ZFA")
 @Tag(name = "Ontology - Bulk Import")
 @Produces(MediaType.APPLICATION_JSON)
