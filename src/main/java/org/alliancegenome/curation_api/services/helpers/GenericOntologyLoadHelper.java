@@ -178,11 +178,11 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
         T term = clazz.getDeclaredConstructor().newInstance();
         term.setObsolete(false);
-
+        
+        
         EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {
-
             String key = annotation.getProperty().getIRI().getShortForm();
-
+            
             if(key.equals("id")) {
                 term.setCurie(getString(annotation.getValue()));
             }
@@ -239,6 +239,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
             }
 
         });
+        
+        if (term.getCurie() == null && EntitySearcher.getAnnotationObjects(node, ontology).count() > 0) {
+            term.setCurie(node.getIRI().getFragment().replaceFirst("_", ":"));  
+        }
 
         return term;
 

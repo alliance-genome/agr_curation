@@ -28,6 +28,7 @@ import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent
 import { DAOOntologyComponent } from './components/ontologies/DAOOntologyComponent';
 import { EMAPAOntologyComponent } from './components/ontologies/EMAPAOntologyComponent';
 import { WBbtOntologyComponent } from './components/ontologies/WBbtOntologyComponent';
+import { ZECOOntologyComponent } from './components/ontologies/ZECOOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
@@ -135,7 +136,8 @@ const App = () => {
                 { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
                 { label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' },
                 { label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
-                { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' }
+                { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
+                { label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' }
             ]
         },
         {
@@ -216,6 +218,7 @@ const App = () => {
                 <Route path="/ontology/dao" component={DAOOntologyComponent} />
                 <Route path="/ontology/emapa" component={EMAPAOntologyComponent} />
                 <Route path="/ontology/wbbt" component={WBbtOntologyComponent} />
+                <Route path="/ontology/zeco" component={ZECOOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />
 
