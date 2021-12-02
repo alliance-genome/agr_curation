@@ -23,13 +23,20 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
     private OWLReasoner reasoner;
     private OWLOntology ontology;
 
-    private String defaultNamespace;
+    private GenericOntologyLoadConfig config;
+    private String defaultNamespace = null;
     private Class<T> clazz;
 
     private HashMap<String, T> allNodes = new HashMap<>();
 
     public GenericOntologyLoadHelper(Class<T> clazz) {
         this.clazz = clazz;
+        this.config = new GenericOntologyLoadConfig();
+    }
+    
+    public GenericOntologyLoadHelper(Class<T> clazz, GenericOntologyLoadConfig config) {
+        this.clazz = clazz;
+        this.config = config;
     }
     
     public Map<String, T> load(String fullText) throws Exception {
@@ -84,7 +91,15 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
             termParent = getOntologyTerm(parent);
 
-            if((termParent.getNamespace() != null && termParent.getNamespace().equals(defaultNamespace)) || depth == 0) {
+            String requiredNamespace = config.getAltNameSpace();
+            if (requiredNamespace == null) {
+                requiredNamespace = defaultNamespace;
+            }
+            
+            if(
+                (termParent.getNamespace() != null && requiredNamespace != null && termParent.getNamespace().equals(requiredNamespace)) ||
+                config.isLoadWithoutDefaultNameSpace()
+            ) {
                 //System.out.println(termParent);
 
                 if(allNodes.containsKey(termParent.getCurie())) {
@@ -94,12 +109,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
                         allNodes.put(termParent.getCurie(), termParent);
                     }
                 }
+            }
 
-                for(OWLClass child: reasoner.getSubClasses(parent, true).entities().collect(Collectors.toList())) {
+            for(OWLClass child: reasoner.getSubClasses(parent, true).entities().collect(Collectors.toList())) {
 
-                    if (!child.equals(parent)) {
-                        try {
-                            T childTerm = traverse(child, depth + 1);
+                if (!child.equals(parent)) {
+                    try {
+                        T childTerm = traverse(child, depth + 1);
                             
 //                          TODO LinkML to define the following fields                          
 //                          if(childTerm != null) {
@@ -127,15 +143,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 //                              }
 //                              
 //                          }
-                            
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-
             }
-
         }
 
         return termParent;

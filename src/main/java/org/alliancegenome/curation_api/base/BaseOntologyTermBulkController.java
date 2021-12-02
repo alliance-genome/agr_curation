@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.jms.*;
 
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
+import org.alliancegenome.curation_api.services.helpers.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.queue.CircularFifoQueue;
 
@@ -40,6 +40,13 @@ public abstract class BaseOntologyTermBulkController<S extends BaseOntologyTermS
         this.termClazz = termClazz;
         this.queueName = termClazz.getSimpleName() + "Queue";
         loader = new GenericOntologyLoadHelper<T>(termClazz);
+    }
+    
+    protected void setService(S service, Class<T> termClazz, GenericOntologyLoadConfig config) {
+        this.service = service;
+        this.termClazz = termClazz;
+        this.queueName = termClazz.getSimpleName() + "Queue";
+        loader = new GenericOntologyLoadHelper<T>(termClazz, config);
     }
 
     public String updateTerms(String fullText) {
