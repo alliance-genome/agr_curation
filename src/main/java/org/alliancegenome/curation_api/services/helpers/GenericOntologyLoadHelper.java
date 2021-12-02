@@ -240,7 +240,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
         });
         
-        if (EntitySearcher.getAnnotationObjects(node, ontology).count() > 0 && term.getCurie() == null) {
+        if (term.getCurie() == null && EntitySearcher.getAnnotationObjects(node, ontology).count() > 0) {
             term.setCurie(node.getIRI().getFragment().replaceFirst("_", ":"));  
         }
 
