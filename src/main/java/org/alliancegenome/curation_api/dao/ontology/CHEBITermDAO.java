@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.dao;
+package org.alliancegenome.curation_api.dao.ontology;
 
 import org.alliancegenome.curation_api.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;

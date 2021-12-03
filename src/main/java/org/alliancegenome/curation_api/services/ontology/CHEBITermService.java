@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.services.ontology;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermService;
-import org.alliancegenome.curation_api.dao.CHEBITermDAO;
+import org.alliancegenome.curation_api.dao.ontology.CHEBITermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 
 import javax.annotation.PostConstruct;

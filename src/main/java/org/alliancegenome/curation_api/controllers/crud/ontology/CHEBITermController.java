@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.controllers.crud.ontology;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermController;
-import org.alliancegenome.curation_api.dao.CHEBITermDAO;
+import org.alliancegenome.curation_api.dao.ontology.CHEBITermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.CHEBITermRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
