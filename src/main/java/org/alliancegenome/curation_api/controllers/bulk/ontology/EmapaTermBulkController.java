@@ -20,7 +20,7 @@ public class EmapaTermBulkController extends BaseOntologyTermBulkController<Emap
     @PostConstruct
     public void init() {
         GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setAltNameSpace("anatomical_structure");
+        config.getAltNameSpaces().add("anatomical_structure");
         setService(emapaTermService, EMAPATerm.class, config);
     }
 

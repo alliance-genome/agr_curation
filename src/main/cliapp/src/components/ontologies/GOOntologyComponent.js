@@ -1,14 +1,14 @@
 import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { SearchService } from '../service/SearchService';
+import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
-import { Messages } from 'primereact/messages';
-import { FilterComponent } from './FilterComponent'
+import { Messages } from "primereact/messages";
+import { FilterComponent } from '../FilterComponent'
 
-import { returnSorted } from '../utils/utils';
+import { returnSorted } from '../../utils/utils';
 
-export const ControlledVocabularyComponent = () => {
+export const GOOntologyComponent = () => {
 
   const [terms, setTerms] = useState(null);
   const [multiSortMeta, setMultiSortMeta] = useState([]);
@@ -21,20 +21,20 @@ export const ControlledVocabularyComponent = () => {
   const searchService = new SearchService();
   const errorMessage = useRef(null);
 
-    useQuery(['genes', rows, page, multiSortMeta, filters],
-    () => searchService.search("vocabularyterm", rows, page, multiSortMeta, filters), {
-        onSuccess: (data) => {
-          setIsEnabled(true);
-          setTerms(data.results);
-          setTotalRecords(data.totalResults);
-        },
-        onError: (error) => {
-            errorMessage.current.show([
-                { severity: 'error', summary: 'Error:&nbsp;', detail: error.message, sticky: true }
-            ])
-        },
-         keepPreviousData:true
-    });
+  useQuery(['terms', rows, page, multiSortMeta, filters],
+    () => searchService.search('goterm', rows, page, multiSortMeta, filters), {
+    onSuccess: (data) => {
+      setIsEnabled(true);
+      setTerms(data.results);
+      setTotalRecords(data.totalResults);
+    },
+      onError: (error) => {
+          errorMessage.current.show([
+              { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+          ])
+      },
+    keepPreviousData: true
+  });
 
 
 
@@ -67,24 +67,19 @@ export const ControlledVocabularyComponent = () => {
   return (
       <div>
         <div className="card">
-          <h3>Controlled Vocabulary Terms Table</h3>
+            <h3>GO Table</h3>
             <Messages ref={errorMessage}/>
           <DataTable value={terms} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-            first={first} onFilter={onFilter} filters={filters}
-            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
+            paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
           >
-
-            <Column field="id" header="Id" />
-            <Column field="name" header="Name" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameFilter", ["name"])}></Column>
-            <Column field="vocabulary.name" header="Vocabulary" sortable={isEnabled} filter filterElement={filterComponentTemplate("vocabularyNameFilter", ["vocabulary.name"])} />
+            <Column field="curie" header="Curie" sortable={isEnabled} filter filterElement={filterComponentTemplate("curieFilter", ["curie"])} />
+            <Column field="name" header="Name" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameFilter", ["name"])} />
+            <Column field="namespace" header="Name Space" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameSpaceFilter", ["namespace"])} />
             <Column field="definition" header="Definition" sortable={isEnabled} filter filterElement={filterComponentTemplate("definitionFilter", ["definition"])} />
-            <Column field="isObsolete" header="Obsolete" sortable={isEnabled} filter filterElement={filterComponentTemplate("isObsoleteFilter", ["isObsolete"])} />
-            
           </DataTable>
-
         </div>
       </div>
   )

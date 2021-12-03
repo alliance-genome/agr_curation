@@ -22,12 +22,14 @@ import { ApiVersionService } from './service/ApiVersionService';
 
 import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
+import { GOOntologyComponent } from './components/ontologies/GOOntologyComponent';
 import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
 import { ZFAOntologyComponent } from './components/ontologies/ZFAOntologyComponent';
 import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
 import { DAOOntologyComponent } from './components/ontologies/DAOOntologyComponent';
 import { EMAPAOntologyComponent } from './components/ontologies/EMAPAOntologyComponent';
 import { WBbtOntologyComponent } from './components/ontologies/WBbtOntologyComponent';
+import { XCOOntologyComponent } from './components/ontologies/XCOOntologyComponent';
 import { ZECOOntologyComponent } from './components/ontologies/ZECOOntologyComponent';
 
 
@@ -131,12 +133,14 @@ const App = () => {
             items: [
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
+                { label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
                 { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
                 { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
                 { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
                 { label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' },
                 { label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
                 { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
+                { label: 'Experimental condition ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
                 { label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' }
             ]
         },
@@ -212,12 +216,14 @@ const App = () => {
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
+                <Route path="/ontology/go" component={GOOntologyComponent} />
                 <Route path="/ontology/ma" component={MAOntologyComponent} />
                 <Route path="/ontology/zfa" component={ZFAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
                 <Route path="/ontology/dao" component={DAOOntologyComponent} />
                 <Route path="/ontology/emapa" component={EMAPAOntologyComponent} />
                 <Route path="/ontology/wbbt" component={WBbtOntologyComponent} />
+                <Route path="/ontology/xco" component={XCOOntologyComponent} />
                 <Route path="/ontology/zeco" component={ZECOOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />
