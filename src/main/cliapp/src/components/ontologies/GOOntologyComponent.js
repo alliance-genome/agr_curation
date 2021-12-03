@@ -77,6 +77,7 @@ export const GOOntologyComponent = () => {
           >
             <Column field="curie" header="Curie" sortable={isEnabled} filter filterElement={filterComponentTemplate("curieFilter", ["curie"])} />
             <Column field="name" header="Name" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameFilter", ["name"])} />
+            <Column field="namespace" header="Name Space" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameSpaceFilter", ["namespace"])} />
             <Column field="definition" header="Definition" sortable={isEnabled} filter filterElement={filterComponentTemplate("definitionFilter", ["definition"])} />
           </DataTable>
         </div>
