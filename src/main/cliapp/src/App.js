@@ -19,7 +19,7 @@ import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
-
+import { CHEBIOntologyComponent } from './components/ontologies/CHEBIOntologyComponent';
 import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
 import { GOOntologyComponent } from './components/ontologies/GOOntologyComponent';
@@ -131,6 +131,7 @@ const App = () => {
         {
             label: 'Ontologies', icon: 'pi pi-fw pi-sitemap',
             items: [
+                { label: 'CHEBI Ontology', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
                 { label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
@@ -214,6 +215,7 @@ const App = () => {
                 <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/molecules" component={MoleculesComponent} />
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
+                <Route path="/ontology/chebi" component={CHEBIOntologyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
                 <Route path="/ontology/go" component={GOOntologyComponent} />
