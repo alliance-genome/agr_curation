@@ -65,6 +65,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
             }
         });
 
+        ArrayList<String> requiredNamespaces = config.getAltNameSpaces();
+        if (requiredNamespaces.isEmpty()) {
+            if (defaultNamespace != null) {
+                requiredNamespaces.add(defaultNamespace);
+            }
+        }
+        
         OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
         log.info("Ontology Loaded...");
@@ -76,14 +83,14 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         reasoner = reasonerFactory.createReasoner(ontology);
 
         log.info("Traversing Ontology");
-        T rootTerm = traverse(root, 0);
+        T rootTerm = traverse(root, 0, requiredNamespaces);
         log.info("Finished Traversing Ontology");
         
         return allNodes;
 
     }
 
-    public T traverse(OWLClass parent, int depth) throws Exception {
+    public T traverse(OWLClass parent, int depth, ArrayList<String> requiredNamespaces) throws Exception {
 
         T termParent = null;
 
@@ -91,12 +98,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
             termParent = getOntologyTerm(parent);
 
-            ArrayList<String> requiredNamespaces = config.getAltNameSpaces();
-            if (requiredNamespaces.isEmpty()) {
-                if (defaultNamespace != null) {
-                    requiredNamespaces.add(defaultNamespace);
-                }
-            }
+            
             
             if(
                 (termParent.getNamespace() != null && !requiredNamespaces.isEmpty() && requiredNamespaces.contains(termParent.getNamespace())) ||
@@ -117,7 +119,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
                 if (!child.equals(parent)) {
                     try {
-                        T childTerm = traverse(child, depth + 1);
+                        T childTerm = traverse(child, depth + 1, requiredNamespaces);
                             
 //                          TODO LinkML to define the following fields                          
 //                          if(childTerm != null) {
