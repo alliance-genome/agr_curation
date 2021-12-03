@@ -79,7 +79,7 @@ export const ControlledVocabularyComponent = () => {
 
             <Column field="id" header="Id" />
             <Column field="name" header="Name" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameFilter", ["name"])}></Column>
-            <Column field="vocabulary.name" header="Vocabulary" sortable={isEnabled} filter filterElement={filterComponentTemplate("ivocabularyNameFilter", ["vocabulary.name"])} />
+            <Column field="vocabulary.name" header="Vocabulary" sortable={isEnabled} filter filterElement={filterComponentTemplate("vocabularyNameFilter", ["vocabulary.name"])} />
             <Column field="definition" header="Definition" sortable={isEnabled} filter filterElement={filterComponentTemplate("definitionFilter", ["definition"])} />
             <Column field="isObsolete" header="Obsolete" sortable={isEnabled} filter filterElement={filterComponentTemplate("isObsoleteFilter", ["isObsolete"])} />
             
