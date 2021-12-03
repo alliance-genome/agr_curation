@@ -53,8 +53,8 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
         return service.searchByParams(pagination, params);
     }
     
-    public void reindex() {
-        service.reindex();
+    public void reindex(Integer threads, Integer indexAmount) {
+        service.reindex(threads, indexAmount);
     }
     
 }

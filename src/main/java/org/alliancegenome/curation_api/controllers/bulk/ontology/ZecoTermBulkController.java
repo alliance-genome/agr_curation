@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.interfaces.bulk.ontology.ZecoTermBulkRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -21,7 +22,9 @@ public class ZecoTermBulkController extends BaseOntologyTermBulkController<ZecoT
     @Override
     @PostConstruct
     public void init() {
-        setService(zecoTermService, ZecoTerm.class);
+        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+        config.setLoadWithoutDefaultNameSpace(true);
+        setService(zecoTermService, ZecoTerm.class, config);
     }
 
 }

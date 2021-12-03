@@ -1,45 +1,90 @@
 import React, { useState, useEffect } from 'react';
-import { GeneService } from '../service/GeneService';
-import { AlleleService } from '../service/AlleleService';
-import { DiseaseAnnotationService } from '../service/DiseaseAnnotationService'
-import { AffectedGenomicModelService } from '../service/AffectedGenomicModelService'
-import { OntologyService } from '../service/OntologyService'
+
+import { SearchService } from '../service/SearchService'
 
 export const Dashboard = () => {
     const [geneCount, setGeneCount] = useState(0);
     const [alleleCount, setAlleleCount] = useState(0);
     const [diseaseAnnotationCount, setDiseaseAnnotationCount] = useState(0);
     const [agmCount, setAgmCount] = useState(0);
+    const [moleculeCount, setMoleculeCount] = useState(0);
 
     const [ECOCount, setECOCount] = useState(0);
     const [DOCount, setDOCount] = useState(0);
-
+    const [GOCount, setGOCount] = useState(0);
+    const [MACount, setMACount] = useState(0);
+    const [ZFACount, setZFACount] = useState(0);
+    const [MPCount, setMPCount] = useState(0);
+    const [DAOCount, setDAOCount] = useState(0);
+    const [EMAPACount, setEMAPACount] = useState(0);
+    const [WBbtCount, setWBbtCount] = useState(0);
+    const [XCOCount, setXCOCount] = useState(0);
+    const [ZECOCount, setZECOCount] = useState(0);
+    
     useEffect(() => {
-        const geneService = new GeneService();
-        geneService.getGenes(0, 0).then(searchReults => {
-            setGeneCount(searchReults.totalResults);
+        const searchService = new SearchService();
+
+        searchService.search('gene', 0, 0).then(searchResults => {
+          setGeneCount(searchResults.totalResults);
         });
 
-        const alleleService = new AlleleService();
-        alleleService.getAlleles(0, 0).then(searchReults => {
-            setAlleleCount(searchReults.totalResults);
-        });
-        const diseaseAnnotationService = new DiseaseAnnotationService();
-        diseaseAnnotationService.getDiseaseAnnotations(0, 0).then(searchResults => {
-            setDiseaseAnnotationCount(searchResults.totalResults);
+        searchService.search('allele', 0, 0).then(searchResults => {
+          setAlleleCount(searchResults.totalResults);
         });
 
-        const agmService = new AffectedGenomicModelService();
-        agmService.getAgms(0, 0).then(searchResults => {
-            setAgmCount(searchResults.totalResults);
+        searchService.search('disease-annotation', 0, 0).then(searchResults => {
+          setDiseaseAnnotationCount(searchResults.totalResults);
         });
-        const ontologyService = new OntologyService();
-        ontologyService.getTerms('ecoterm', 0, 0).then(results => {
+
+        searchService.search('agm', 0, 0).then(searchResults => {
+          setAgmCount(searchResults.totalResults);
+        });
+
+        searchService.search("molecule", 0, 0).then(searchResults => {
+          setMoleculeCount(searchResults.totalResults);
+        });
+
+        searchService.search('ecoterm', 0, 0).then(results => {
           setECOCount(results.totalResults);
         });
 
-        ontologyService.getTerms('doterm', 0, 0).then(results => {
+        searchService.search('doterm', 0, 0).then(results => {
           setDOCount(results.totalResults);
+        });
+        searchService.search('goterm', 0, 0).then(results => {
+          setGOCount(results.totalResults);
+        });
+
+        searchService.search('materm', 0, 0).then(results => {
+          setMACount(results.totalResults);
+        });
+
+        searchService.search('zfaterm', 0, 0).then(results => {
+          setZFACount(results.totalResults);
+        });
+
+        searchService.search('mpterm', 0, 0).then(results => {
+          setMPCount(results.totalResults);
+        });
+
+        searchService.search('daoterm', 0, 0).then(results => {
+          setDAOCount(results.totalResults);
+        });
+
+         searchService.search('emapaterm', 0, 0).then(results => {
+          setEMAPACount(results.totalResults);
+        });
+
+         searchService.search('wbbtterm', 0, 0).then(results => {
+          setWBbtCount(results.totalResults);
+        });
+
+        searchService.search('xcoterm', 0, 0).then(results => {
+            setXCOCount(results.totalResults);
+        });
+
+         searchService.search('zecoterm', 0, 0).then(results => {
+          setZECOCount(results.totalResults);
         });
     }, []);
 
@@ -74,6 +119,14 @@ export const Dashboard = () => {
                 </div>
             </div>
 
+            <div className="p-col-12 p-lg-3">
+                <div className="card summary">
+                    <span className="title">Molecules</span>
+                    <span className="detail">Total number of Molecules</span>
+                    <span className="count agm">{ moleculeCount }</span>
+                </div>
+            </div>
+
             <div className="p-col-12 p-md-6 p-xl-3">
                 <div className="highlight-box">
                     <div className="initials" style={{ backgroundColor: '#007be5', color: '#00448f' }}><span>ECO</span></div>
@@ -91,6 +144,96 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{DOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>GO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{GOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>MA</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{MACount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>ZFA</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{ZFACount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>MP</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{MPCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#007be5', color: '#00448f' }}><span>DAO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-search"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{DAOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                    <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>EMAPA</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{EMAPACount}</span>
+                    </div>
+               </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>WBbt</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{WBbtCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>XCO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{XCOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>ZECO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{ZECOCount}</span>
                     </div>
                 </div>
             </div>

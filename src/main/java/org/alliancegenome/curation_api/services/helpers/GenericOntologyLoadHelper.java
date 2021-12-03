@@ -23,13 +23,20 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
     private OWLReasoner reasoner;
     private OWLOntology ontology;
 
-    private String defaultNamespace;
+    private GenericOntologyLoadConfig config;
+    private String defaultNamespace = null;
     private Class<T> clazz;
 
     private HashMap<String, T> allNodes = new HashMap<>();
 
     public GenericOntologyLoadHelper(Class<T> clazz) {
         this.clazz = clazz;
+        this.config = new GenericOntologyLoadConfig();
+    }
+    
+    public GenericOntologyLoadHelper(Class<T> clazz, GenericOntologyLoadConfig config) {
+        this.clazz = clazz;
+        this.config = config;
     }
     
     public Map<String, T> load(String fullText) throws Exception {
@@ -58,6 +65,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
             }
         });
 
+        ArrayList<String> requiredNamespaces = config.getAltNameSpaces();
+        if (requiredNamespaces.isEmpty()) {
+            if (defaultNamespace != null) {
+                requiredNamespaces.add(defaultNamespace);
+            }
+        }
+        
         OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
         log.info("Ontology Loaded...");
@@ -69,14 +83,14 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         reasoner = reasonerFactory.createReasoner(ontology);
 
         log.info("Traversing Ontology");
-        T rootTerm = traverse(root, 0);
+        T rootTerm = traverse(root, 0, requiredNamespaces);
         log.info("Finished Traversing Ontology");
         
         return allNodes;
 
     }
 
-    public T traverse(OWLClass parent, int depth) throws Exception {
+    public T traverse(OWLClass parent, int depth, ArrayList<String> requiredNamespaces) throws Exception {
 
         T termParent = null;
 
@@ -84,7 +98,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
             termParent = getOntologyTerm(parent);
 
-            if((termParent.getNamespace() != null && termParent.getNamespace().equals(defaultNamespace)) || depth == 0) {
+            
+            
+            if(
+                (termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||
+                config.isLoadWithoutDefaultNameSpace()
+            ) {
                 //System.out.println(termParent);
 
                 if(allNodes.containsKey(termParent.getCurie())) {
@@ -94,12 +113,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
                         allNodes.put(termParent.getCurie(), termParent);
                     }
                 }
+            }
 
-                for(OWLClass child: reasoner.getSubClasses(parent, true).entities().collect(Collectors.toList())) {
+            for(OWLClass child: reasoner.getSubClasses(parent, true).entities().collect(Collectors.toList())) {
 
-                    if (!child.equals(parent)) {
-                        try {
-                            T childTerm = traverse(child, depth + 1);
+                if (!child.equals(parent)) {
+                    try {
+                        T childTerm = traverse(child, depth + 1, requiredNamespaces);
                             
 //                          TODO LinkML to define the following fields                          
 //                          if(childTerm != null) {
@@ -127,15 +147,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 //                              }
 //                              
 //                          }
-                            
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
+                        
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-
             }
-
         }
 
         return termParent;
@@ -165,11 +182,11 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
         T term = clazz.getDeclaredConstructor().newInstance();
         term.setObsolete(false);
-
+        
+        
         EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {
-
             String key = annotation.getProperty().getIRI().getShortForm();
-
+            
             if(key.equals("id")) {
                 term.setCurie(getString(annotation.getValue()));
             }
@@ -226,6 +243,10 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
             }
 
         });
+        
+        if (term.getCurie() == null && EntitySearcher.getAnnotationObjects(node, ontology).count() > 0) {
+            term.setCurie(node.getIRI().getFragment().replaceFirst("_", ":"));  
+        }
 
         return term;
 
