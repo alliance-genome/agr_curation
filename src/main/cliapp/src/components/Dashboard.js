@@ -18,6 +18,7 @@ export const Dashboard = () => {
     const [DAOCount, setDAOCount] = useState(0);
     const [EMAPACount, setEMAPACount] = useState(0);
     const [WBbtCount, setWBbtCount] = useState(0);
+    const [XCOCount, setXCOCount] = useState(0);
     const [ZECOCount, setZECOCount] = useState(0);
     
     useEffect(() => {
@@ -76,6 +77,10 @@ export const Dashboard = () => {
 
          searchService.search('wbbtterm', 0, 0).then(results => {
           setWBbtCount(results.totalResults);
+        });
+
+        searchService.search('xcoterm', 0, 0).then(results => {
+            setXCOCount(results.totalResults);
         });
 
          searchService.search('zecoterm', 0, 0).then(results => {
@@ -209,6 +214,16 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{WBbtCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>XCO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{XCOCount}</span>
                     </div>
                 </div>
             </div>
