@@ -101,7 +101,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
             
             
             if(
-                (termParent.getNamespace() != null && !requiredNamespaces.isEmpty() && requiredNamespaces.contains(termParent.getNamespace())) ||
+                (termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||
                 config.isLoadWithoutDefaultNameSpace()
             ) {
                 //System.out.println(termParent);
