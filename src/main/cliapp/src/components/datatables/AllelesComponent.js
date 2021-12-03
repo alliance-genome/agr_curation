@@ -1,9 +1,12 @@
 import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { AlleleService } from '../service/AlleleService';
+import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
+import { FilterComponent } from '../FilterComponent'
+
+import { returnSorted } from '../../utils/utils';
 
 export const AllelesComponent = () => {
 
@@ -14,13 +17,14 @@ export const AllelesComponent = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
-
-  const alleleService = new AlleleService();
+  const [isEnabled, setIsEnabled] = useState(true);
+  const searchService = new SearchService();
   const errorMessage = useRef(null);
 
 useQuery(['alleles', rows, page, multiSortMeta, filters],
-    () => alleleService.getAlleles(rows, page, multiSortMeta, filters), {
+    () => searchService.search("allele", rows, page, multiSortMeta, filters), {
     onSuccess: (data) => {
+      setIsEnabled(true);
       setAlleles(data.results);
       setTotalRecords(data.totalResults);
     },
@@ -39,36 +43,29 @@ useQuery(['alleles', rows, page, multiSortMeta, filters],
     setFirst(event.first);
   }
 
-  const onFilter = (event) => {
-    //console.log("On Filter: ");
-    //console.log(event.filters);
-    setFilters(event.filters);
-  }
+  const onFilter = (filtersCopy) => { 
+      setFilters({...filtersCopy});
+  };
 
   const onSort = (event) => {
-    //console.log("On Sort: ");
-    //console.log(event);
-    let found = false;
-    const newSort = [...multiSortMeta];
-
-    newSort.forEach((o) => {
-      if(o.field === event.multiSortMeta[0].field) {
-        o.order = event.multiSortMeta[0].order;
-        found = true;
-      }
-    });
-
-    if(!found) {
-      setMultiSortMeta(newSort.concat(event.multiSortMeta));
-    } else {
-      setMultiSortMeta(newSort);
-    }
-  }
+      setMultiSortMeta(
+          returnSorted(event, multiSortMeta)
+      )
+  };
 
   const symbolTemplate = (rowData) => {
     return <div dangerouslySetInnerHTML={{__html: rowData.symbol}} />
   }
 
+  const filterComponentTemplate = (filterName, fields) => {
+    return (<FilterComponent 
+          isEnabled={isEnabled} 
+          fields={fields} 
+          filterName={filterName}
+          currentFilters={filters}
+          onFilter={onFilter}
+      />);
+  };
 
   return (
       <div>
@@ -78,15 +75,14 @@ useQuery(['alleles', rows, page, multiSortMeta, filters],
           <DataTable value={alleles} className="p-datatable-sm"
             paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-            onFilter={onFilter} filters={filters}
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
           >
 
-            <Column field="curie" header="Curie" sortable filter></Column>
-            <Column field="description" header="Description" sortable filter></Column>
-            <Column field="symbol" header="Symbol" body={symbolTemplate} sortable filter></Column>
-            <Column field="taxon" header="Taxon" sortable filter></Column>
+            <Column field="curie" header="Curie" sortable={isEnabled} filter filterElement={filterComponentTemplate("curieFilter", ["curie"])} />
+            <Column field="description" header="Description" sortable={isEnabled} filter filterElement={filterComponentTemplate("descriptionFilter", ["description"])} />
+            <Column field="symbol" header="Symbol" body={symbolTemplate} sortable={isEnabled} filter filterElement={filterComponentTemplate("symbolFilter", ["symbol"])} />
+            <Column field="taxon" header="Taxon" sortable={isEnabled} filter filterElement={filterComponentTemplate("taxonFilter", ["taxon"])} />
           </DataTable>
         </div>
       </div>

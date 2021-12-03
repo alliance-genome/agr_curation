@@ -1,9 +1,12 @@
 import React, {useRef, useState} from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { ControlledVocabularyService } from '../service/ControlledVocabularyService';
+import { SearchService } from '../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
+import { FilterComponent } from './FilterComponent'
+
+import { returnSorted } from '../utils/utils';
 
 export const ControlledVocabularyComponent = () => {
 
@@ -14,13 +17,14 @@ export const ControlledVocabularyComponent = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
-
-  const controlledVocabularyService = new ControlledVocabularyService();
+  const [isEnabled, setIsEnabled] = useState(true);
+  const searchService = new SearchService();
   const errorMessage = useRef(null);
 
     useQuery(['genes', rows, page, multiSortMeta, filters],
-    () => controlledVocabularyService.getVocabTerms(rows, page, multiSortMeta, filters), {
+    () => searchService.search("vocabularyterm", rows, page, multiSortMeta, filters), {
         onSuccess: (data) => {
+          setIsEnabled(true);
           setTerms(data.results);
           setTotalRecords(data.totalResults);
         },
@@ -40,32 +44,25 @@ export const ControlledVocabularyComponent = () => {
     setFirst(event.first);
   }
 
-  const onFilter = (event) => {
-    //console.log("On Filter: ");
-    //console.log(event.filters);
-    setFilters(event.filters);
-  }
+  const onFilter = (filtersCopy) => { 
+      setFilters({...filtersCopy});
+  };
 
   const onSort = (event) => {
-    //console.log("On Sort: ");
-    //console.log(event);
-    let found = false;
-    const newSort = [...multiSortMeta];
+      setMultiSortMeta(
+          returnSorted(event, multiSortMeta)
+      )
+  };
 
-    newSort.forEach((o) => {
-      if(o.field === event.multiSortMeta[0].field) {
-        o.order = event.multiSortMeta[0].order;
-        found = true;
-      }
-    });
-
-    if(!found) {
-      setMultiSortMeta(newSort.concat(event.multiSortMeta));
-    } else {
-      setMultiSortMeta(newSort);
-    }
-  }
-
+  const filterComponentTemplate = (filterName, fields) => {
+    return (<FilterComponent 
+          isEnabled={isEnabled} 
+          fields={fields} 
+          filterName={filterName}
+          currentFilters={filters}
+          onFilter={onFilter}
+      />);
+  };
 
   return (
       <div>

@@ -18,6 +18,7 @@ import lombok.*;
 public class BaseGeneratedEntity extends BaseEntity {
 
     @Id @DocumentId
+    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include

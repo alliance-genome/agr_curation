@@ -7,6 +7,7 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -26,17 +27,22 @@ public class GenomicEntity extends BiologicalEntity {
     @Column(columnDefinition="TEXT")
     @JsonView({View.FieldsOnly.class})
     private String name;
-
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
     @JsonView({View.FieldsAndLists.class})
     private List<Synonym> synonyms;
-
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
     @JsonView({View.FieldsAndLists.class})
     private List<CrossReference> crossReferences;
-    
+
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
     @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
     @JsonView({View.FieldsAndLists.class})

@@ -9,10 +9,7 @@ import javax.persistence.criteria.*;
 
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.hibernate.search.engine.search.common.*;
-import org.hibernate.search.engine.search.predicate.SearchPredicate;
-import org.hibernate.search.engine.search.predicate.dsl.*;
-import org.hibernate.search.engine.search.predicate.spi.MatchPredicateBuilder;
+import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.query.*;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
@@ -110,16 +107,25 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public void reindex() {
-        reindex(myClass, 4);
+        reindex(myClass, 4, 0);
     }
 
-    public void reindex(Class<E> objectClass, int threads) {
+    public void reindex(int threads, int indexAmount) {
+        reindex(myClass, threads, indexAmount);
+    }
+
+    public void reindex(Class<E> objectClass, int threads, int indexAmount) {
         log.debug("Starting Index for: " + objectClass);
         MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);
         //indexer.dropAndCreateSchemaOnStart(true);
         indexer.transactionTimeout(900);
+        if(indexAmount > 0){
+            indexer.limitIndexedObjectsTo(indexAmount);
+        }
         indexer.start();
     }
+
+
 
     public SearchResponse<E> searchAll(Pagination pagination) {
         return searchByParams(pagination, null);
@@ -143,40 +149,45 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
         SearchQuery<E> query = searchSession.search(myClass)
                 .where( p -> p.bool( b -> {
+
                     if(params.containsKey("searchFilters")) {
-                        HashMap<String, Object> searchFilters = (HashMap<String, Object>)params.get("searchFilters");
-                        for(String key: searchFilters.keySet()) {
+                        HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
+                        for(String filterName: searchFilters.keySet()) {
                             b.must(
                                 p.simpleQueryString()
-                                    .field(key)
-                                    .matching((String)searchFilters.get(key))
+                                    .fields(searchFilters.get(filterName).keySet().toArray(new String[0]))
+                                    .matching((String)searchFilters.get(filterName).entrySet().iterator().next().getValue())
                                     .defaultOperator(BooleanOperator.AND)
                             );
-                            
-                            //b.filter(
-                            //      p.wildcard().field(key).matching("*" + (String)searchFilters.get(key) + "*")
-                            //      );
                         }
                     }
                 }))
                 .sort(f -> {
                     CompositeSortComponentsStep<?> com = f.composite();
                     if(params.containsKey("sortOrders")) {
-                        HashMap<String, Object> sortOrders = (HashMap<String, Object>)params.get("sortOrders");
-                        for(String key: sortOrders.keySet()) {
-                            if((int)sortOrders.get(key) == 1) {
-                                com.add(f.field(key + "_keyword").asc());
-                            }
-                            if((int)sortOrders.get(key) == -1) {
-                                com.add(f.field(key + "_keyword").desc());
+                        ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
+                        if(sortOrders != null){
+                            for(HashMap<String, Object> map: sortOrders) {
+                                //log.info("Map: " + map);
+                                String key = (String)map.get("field");
+                                //log.info("Key: " + key);
+                                int value = (int)map.get("order");
+                                //log.info("Value: " + value);
+                                if(value == 1) {
+                                    com.add(f.field(key + "_keyword").asc());
+                                }
+                                if(value == -1) {
+                                    com.add(f.field(key + "_keyword").desc());
+                                }
                             }
                         }
+
                     }
                     return com;
                 })
                 .toQuery();
 
-        log.debug(query);
+        log.info(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
         SearchResponse<E> results = new SearchResponse<E>();

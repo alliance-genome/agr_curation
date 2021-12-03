@@ -9,16 +9,28 @@ import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
 
-import { GenesComponent } from './components/GenesComponent';
-import { AllelesComponent } from './components/AllelesComponent';
-import { DiseaseAnnotationsComponent } from './components/DiseaseAnnotationsComponent';
+import { GenesComponent } from './components/datatables/GenesComponent';
+import { AllelesComponent } from './components/datatables/AllelesComponent';
+import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
+import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
+import { MoleculesComponent } from './components/datatables/MoleculesComponent';
+
 import { FMSComponent } from './components/FMSComponent';
-import { AffectedGenomicModelComponent } from './components/AffectedGenomicModelComponent';
-import { DiseaseOntologyComponent } from './components/DiseaseOntologyComponent';
-import { ECOOntologyComponent } from './components/ECOOntologyComponent';
-import { MPOntologyComponent } from './components/MPOntologyComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
+
+
+import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
+import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
+import { GOOntologyComponent } from './components/ontologies/GOOntologyComponent';
+import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
+import { ZFAOntologyComponent } from './components/ontologies/ZFAOntologyComponent';
+import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
+import { DAOOntologyComponent } from './components/ontologies/DAOOntologyComponent';
+import { EMAPAOntologyComponent } from './components/ontologies/EMAPAOntologyComponent';
+import { WBbtOntologyComponent } from './components/ontologies/WBbtOntologyComponent';
+import { XCOOntologyComponent } from './components/ontologies/XCOOntologyComponent';
+import { ZECOOntologyComponent } from './components/ontologies/ZECOOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
@@ -112,7 +124,8 @@ const App = () => {
                 { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
                 { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
                 { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
-                { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' }
+                { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
+                { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules'}
             ]
         },
         {
@@ -120,7 +133,15 @@ const App = () => {
             items: [
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
-                { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' }
+                { label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
+                { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
+                { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
+                { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
+                { label: 'Zebrafish Anatomy Ontology (ZFA)', icon: 'pi pi-fw pi-home', to: '/ontology/zfa' },
+                { label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
+                { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
+                { label: 'Experimental condition ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
+                { label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' }
             ]
         },
         {
@@ -169,6 +190,7 @@ const App = () => {
         'layout-sidebar-light': layoutColorMode === 'light'
     });
 
+
     return (
         <div className={wrapperClass} onClick={onWrapperClick}>
             <AppTopbar onToggleMenu={onToggleMenu} />
@@ -190,10 +212,19 @@ const App = () => {
                 <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
+                <Route path="/molecules" component={MoleculesComponent} />
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
+                <Route path="/ontology/go" component={GOOntologyComponent} />
+                <Route path="/ontology/ma" component={MAOntologyComponent} />
+                <Route path="/ontology/zfa" component={ZFAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />
+                <Route path="/ontology/dao" component={DAOOntologyComponent} />
+                <Route path="/ontology/emapa" component={EMAPAOntologyComponent} />
+                <Route path="/ontology/wbbt" component={WBbtOntologyComponent} />
+                <Route path="/ontology/xco" component={XCOOntologyComponent} />
+                <Route path="/ontology/zeco" component={ZECOOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
                 <Route path="/agms" component={AffectedGenomicModelComponent} />
 
