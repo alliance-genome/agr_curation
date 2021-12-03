@@ -22,6 +22,7 @@ import { ApiVersionService } from './service/ApiVersionService';
 
 import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
+import { GOOntologyComponent } from './components/ontologies/GOOntologyComponent';
 import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
 import { ZFAOntologyComponent } from './components/ontologies/ZFAOntologyComponent';
 import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
@@ -132,6 +133,7 @@ const App = () => {
             items: [
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
+                { label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
                 { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
                 { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
                 { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
@@ -214,6 +216,7 @@ const App = () => {
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
+                <Route path="/ontology/go" component={GOOntologyComponent} />
                 <Route path="/ontology/ma" component={MAOntologyComponent} />
                 <Route path="/ontology/zfa" component={ZFAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />

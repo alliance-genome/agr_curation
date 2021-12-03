@@ -11,6 +11,7 @@ export const Dashboard = () => {
 
     const [ECOCount, setECOCount] = useState(0);
     const [DOCount, setDOCount] = useState(0);
+    const [GOCount, setGOCount] = useState(0);
     const [MACount, setMACount] = useState(0);
     const [ZFACount, setZFACount] = useState(0);
     const [MPCount, setMPCount] = useState(0);
@@ -49,6 +50,9 @@ export const Dashboard = () => {
 
         searchService.search('doterm', 0, 0).then(results => {
           setDOCount(results.totalResults);
+        });
+        searchService.search('goterm', 0, 0).then(results => {
+          setGOCount(results.totalResults);
         });
 
         searchService.search('materm', 0, 0).then(results => {
@@ -140,6 +144,16 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{DOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>GO</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{GOCount}</span>
                     </div>
                 </div>
             </div>
