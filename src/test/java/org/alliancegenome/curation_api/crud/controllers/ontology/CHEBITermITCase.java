@@ -1,21 +1,24 @@
 package org.alliancegenome.curation_api.crud.controllers.ontology;
 
+import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
+import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
+@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class CHEBITermITCase {
     private String CHEBITERMCURIE = "CH:0001";
 
@@ -34,7 +37,6 @@ public class CHEBITermITCase {
     @Test
     @Order(1)
     void testCreate() {
-
         CHEBITerm chebiTerm = new CHEBITerm();
         chebiTerm.setObsolete(false);
         chebiTerm.setCurie(CHEBITERMCURIE);
@@ -48,7 +50,6 @@ public class CHEBITermITCase {
             contentType("application/json").
             body(chebiTerm).
             when().
-//            post("http://localhost:8080/api/chebiterm").
             post("/api/chebiterm").
             then().
             statusCode(200);
@@ -59,25 +60,37 @@ public class CHEBITermITCase {
     void testEdit() {
         ObjectResponse<CHEBITerm> response = RestAssured.given().
             when().
-            get("/api/chebiterm/"+CHEBITERMCURIE).
-//            get("http://localhost:8080/api/chebiterm/"+CHEBITERMCURIE).
+            get("/api/chebiterm/" + CHEBITERMCURIE).
             then().
             statusCode(200).
             extract().body().as(getObjectResponseTypeRef());
 
         CHEBITerm editedCHEBITerm = response.getEntity();
-//        System.out.println(editedCHEBITerm.getCurie());
-//        editedCHEBITerm.setDefinition("Changed definition");
-//
-//        RestAssured.given().
-//            contentType("application/json").
-//            body(editedCHEBITerm).
-//            when().
-//            put("http://localhost:8080/api/chebiterm").
-////            put("/api/chebiterm").
-//            then().
-//            statusCode(200);
+        editedCHEBITerm.setDefinition("Changed definition");
 
-//        System.out.println(editedCHEBITerm.getCurie());
+        RestAssured.given().
+            contentType("application/json").
+            body(editedCHEBITerm).
+            when().
+            put("/api/chebiterm").
+            then().
+            statusCode(200);
+
+        RestAssured.given().
+            when().
+            get("/api/chebiterm/" + CHEBITERMCURIE).
+            then().
+            statusCode(200).
+            body("entity.definition",is("Changed definition"));
+    }
+
+    @Test
+    @Order(3)
+    void testDelete() {
+        RestAssured.given().
+            when().
+            delete("/api/chebiterm/" + CHEBITERMCURIE).
+            then().
+            statusCode(200);
     }
 }
