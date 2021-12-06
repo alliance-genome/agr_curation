@@ -11,7 +11,13 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
         });
         searchService.search('doterm', 15, 0, [], {"diseaseFilter":diseaseFilter})
             .then((data) => {
-                setFilteredDiseases(data.results);
+                console.log(data);
+                if (data.results) {
+                    setFilteredDiseases(data.results.filter((doterm) => Boolean(!doterm.obsolete)));
+                }
+                else {
+                    setFilteredDiseases([]);
+                }
             });
     };
     

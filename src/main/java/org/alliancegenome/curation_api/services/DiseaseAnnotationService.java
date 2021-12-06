@@ -199,6 +199,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     public void validateAnnotation(DiseaseAnnotation entity, boolean isUpdate) {
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
         String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
+        String originalDoTerm = null;
         if (isUpdate) {
             Long id = entity.getId();
             if (id == null) {
@@ -211,6 +212,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 throw new ApiErrorException(response);
                 // do not continue validation for update if Disease Annotation ID has not been found
             }       
+            originalDoTerm = entity.getCurie();
         }
         else {
             errorTitle = "Could not create DiseaseAnnotation";
@@ -219,7 +221,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         // ToDo: implement mandatory / optional fields for each MOD
         //
         validateSubject(entity, response);
-        validateDisease(entity, response);
+        validateDisease(entity, response, originalDoTerm);
         validateTypeAndSubject(entity, response);
         validateWith(entity, response);
         if (response.hasErrors()) {
@@ -261,11 +263,12 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         return validWithEntries;
     }
 
-    private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
+    private boolean validateDisease(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response,
+        String originalDoTerm) {
         String fieldName = "object";
 
         if (validateRequiredObject(entity, response))
-            return validateDiseaseAnnotationDisease(entity, fieldName, response);
+            return validateDiseaseAnnotationDisease(entity, fieldName, response, originalDoTerm);
         return false;
     }
 
@@ -306,11 +309,15 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         return true;
     }
 
-    public boolean validateDiseaseAnnotationDisease(DiseaseAnnotation entity, String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+    public boolean validateDiseaseAnnotationDisease(DiseaseAnnotation entity, String fieldName, ObjectResponse<DiseaseAnnotation> response,
+            String originalDoTerm) {
         DOTerm diseaseTerm = doTermDAO.find(entity.getObject().getCurie());
         if (diseaseTerm == null) {
             addInvalidMessagetoResponse(fieldName, response);
             return false;
+        }
+        if (diseaseTerm.getObsolete() && diseaseTerm.getCurie() != originalDoTerm) {
+            addObsoleteMessagetoResponse(fieldName, response);
         }
         entity.setObject(diseaseTerm);
         return true;
@@ -320,6 +327,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Not a valid entry");
     }
 
+    private void addObsoleteMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        response.addErrorMessage(fieldName, "Obsolete term specified");
+    }
+    
     private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
         if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs()) ||
                 dto.getDoId() == null ||
