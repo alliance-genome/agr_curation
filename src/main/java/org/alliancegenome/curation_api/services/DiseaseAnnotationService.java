@@ -353,9 +353,6 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         response.addErrorMessage(fieldName, "Obsolete term specified");
     }
 
-    private void addObsoleteMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        response.addErrorMessage(fieldName, "Obsolete term specified");
-    }
     
     private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
         if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs()) ||

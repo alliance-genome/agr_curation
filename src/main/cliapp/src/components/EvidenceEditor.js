@@ -6,24 +6,18 @@ import {AutoComplete} from "primereact/autocomplete";
 
         const searchEvidenceCodes = (event) => {
             console.log(event);
-            let evidenceFilter = {};
+            let evidenceFilter = {obsolete: false};
             autocompleteFields.forEach( field => {
                 evidenceFilter[field] = event.query;
             });
 
             searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter})
                 .then((data) => {
-                    console.log(data);
-                    if (data.results) {
-                        setFilteredEvidenceCodes(data.results.filter((ecoterm) => Boolean(!ecoterm.obsolete)));
-                    }
-                    else {
-                        setFilteredEvidenceCodes([]);
-                    }
+                    setFilteredEvidenceCodes(data.results);
                 });
         };
 
-        const onEvidenceEditorValueChange = (event) => {//this should propably be generalized so that all of these editor value changes can use the same method
+        const onEvidenceEditorValueChange = (event) => { //this should propably be generalized so that all of these editor value changes can use the same method
             let updatedAnnotations = [...rowProps.value];
             if(event.value) {
                 updatedAnnotations[rowProps.rowIndex].evidenceCodes = event.value;
