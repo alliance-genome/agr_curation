@@ -10,6 +10,7 @@ public class GenericOntologyLoadConfig {
     // Only change them in the bulk controller
     // that is going to make use of the GenericOntologyLoader
     private boolean loadWithoutDefaultNameSpace = false;
+    private String iriPrefixFilter = null;
     private ArrayList<String> altNameSpaces = new ArrayList<String>();
     
 }
