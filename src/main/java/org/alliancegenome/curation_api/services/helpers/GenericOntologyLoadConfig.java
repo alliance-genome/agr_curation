@@ -11,7 +11,6 @@ public class GenericOntologyLoadConfig {
     // that is going to make use of the GenericOntologyLoader
     private ArrayList<String> altNameSpaces = new ArrayList<String>();
     
-    // loadWithoutDefaultNameSpace requires that iriPrefixFilter
     // must be set and will only load that Prefix of terms
     private String loadOnlyIRIPrefix = null;
 }
