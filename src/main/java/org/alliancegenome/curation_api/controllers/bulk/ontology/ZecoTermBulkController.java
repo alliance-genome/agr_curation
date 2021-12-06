@@ -23,7 +23,7 @@ public class ZecoTermBulkController extends BaseOntologyTermBulkController<ZecoT
     @PostConstruct
     public void init() {
         GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setLoadWithoutDefaultNameSpace(true);
+        config.setLoadOnlyIRIPrefix("ZECO");
         setService(zecoTermService, ZecoTerm.class, config);
     }
 
