@@ -68,7 +68,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         annotation.setSubject(entity);
         annotation.setObject(disease);
         annotation.setReferenceList(List.of(reference));
-
+        
         if (CollectionUtils.isNotEmpty(annotationDTO.getEvidence().getEvidenceCodes())) {
             List<EcoTerm> ecoTerms = new ArrayList<>();
             annotationDTO.getEvidence().getEvidenceCodes()
@@ -200,6 +200,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>(entity);
         String errorTitle = "Could not update Disease Annotation: [" + entity.getId() + "]";
         String originalDoTerm = null;
+        List <EcoTerm> originalEvidenceCodes = new ArrayList<EcoTerm>();
         if (isUpdate) {
             Long id = entity.getId();
             if (id == null) {
@@ -213,6 +214,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 // do not continue validation for update if Disease Annotation ID has not been found
             }       
             originalDoTerm = entity.getCurie();
+            originalEvidenceCodes = diseaseAnnotation.getEvidenceCodes();
         }
         else {
             errorTitle = "Could not create DiseaseAnnotation";
@@ -223,6 +225,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         validateSubject(entity, response);
         validateDisease(entity, response, originalDoTerm);
         validateTypeAndSubject(entity, response);
+        validateEvidenceCodes(entity, response, originalEvidenceCodes);
         validateWith(entity, response);
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
@@ -247,6 +250,25 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             addInvalidMessagetoResponse("diseaseRelation", response);
         }
         return correctTypeAndSubject;
+    }
+    
+    private boolean validateEvidenceCodes(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response,
+            List<EcoTerm> originalEvidenceCodes ) {
+        boolean validEvidenceCodes = true;
+        if (CollectionUtils.isNotEmpty(entity.getEvidenceCodes())) {
+            for (EcoTerm evidenceCode : entity.getEvidenceCodes()) {
+                if (evidenceCode.getObsolete() && !originalEvidenceCodes.contains(evidenceCode)) {
+                    addObsoleteMessagetoResponse("evidence", response);
+                    validEvidenceCodes = false;
+                    break;
+                }
+            }
+        }
+        else {
+            addRequiredMessageToResponse("evidence", response);
+            validEvidenceCodes = false;
+        }
+        return validEvidenceCodes;
     }
     
     private boolean validateWith(DiseaseAnnotation entity, ObjectResponse<DiseaseAnnotation> response) {
@@ -325,6 +347,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
     private void addInvalidMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
         response.addErrorMessage(fieldName, "Not a valid entry");
+    }
+    
+    private void addObsoleteMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        response.addErrorMessage(fieldName, "Obsolete term specified");
     }
 
     private void addObsoleteMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {

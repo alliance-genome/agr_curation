@@ -6,12 +6,15 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.is;
@@ -24,6 +27,7 @@ public class DiseaseAnnotationITCase {
 
     private CrossReference crossReference;
     private DOTerm doTerm;
+    private EcoTerm ecoTerm;
     private BiologicalEntity biologicalEntity;
     private Reference reference;
     private DiseaseAnnotation diseaseAnnotation;
@@ -40,13 +44,20 @@ public class DiseaseAnnotationITCase {
 
         crossReference = createCrossReference("CROSSREF:0001", "AGRreference");
         doTerm = createDiseaseTerm("DOID:0001", crossReference);
+        ecoTerm = createEcoTerm("ECO:0001", "Test evidence code", false);
         biologicalEntity = createBiologicalEntity("BO:0001", "taxon:0001");
+        
+        List<EcoTerm> ecoTerms = new ArrayList<EcoTerm>();
+        ecoTerms.add(ecoTerm);
+        
         diseaseAnnotation = new DiseaseAnnotation();
         diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
         diseaseAnnotation.setCurie(DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
         diseaseAnnotation.setSubject(biologicalEntity);
+        diseaseAnnotation.setEvidenceCodes(ecoTerms);
+        
 
         RestAssured.given().
                 contentType("application/json").
@@ -63,7 +74,8 @@ public class DiseaseAnnotationITCase {
                 statusCode(200).
                 body("entity.curie", is(DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("BO:0001")).
-                body("entity.object.curie", is("DOID:0001"));
+                body("entity.object.curie", is("DOID:0001")).
+                body("entity.evidenceCodes[0].curie", is("ECO:0001"));
     }
 
     @Test
@@ -84,7 +96,12 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setSubject(newSubject);
         // change DOTerm
         editedDiseaseAnnotation.setObject(createDiseaseTerm("DOID:0002", null));
-
+        // change ECOTerm
+        List<EcoTerm> editedEcoTerms= new ArrayList<EcoTerm>();
+        editedEcoTerms.add(createEcoTerm("ECO:0002", "Update test", false));
+        editedDiseaseAnnotation.setEvidenceCodes(editedEcoTerms);
+        
+        
         RestAssured.given().
                 contentType("application/json").
                 body(editedDiseaseAnnotation).
@@ -95,20 +112,42 @@ public class DiseaseAnnotationITCase {
 
         RestAssured.given().
                 when().
-                header("Content-Type", "application/json").
-                body("{}").
-                post("/api/disease-annotation/find?limit=10&page=0").
+                get("/api/disease-annotation/" + DISEASE_ANNOTATION).
                 then().
                 statusCode(200).
-                body("totalResults", is(1)).
-                body("results[0].curie", is(DISEASE_ANNOTATION)).
-                body("results[0].subject.curie", is("BO:0002")).
-                body("results[0].object.curie", is("DOID:0002")).
-                body("results[0].negated", is(true));
+                body("entity.curie", is(DISEASE_ANNOTATION)).
+                body("entity.subject.curie", is("BO:0002")).
+                body("entity.object.curie", is("DOID:0002")).
+                body("entity.negated", is(true)).
+                body("entity.evidenceCodes[0].curie", is("ECO:0002"));
     }
 
     @Test
     @Order(3)
+    public void editWithObsoleteEcoTerm() {
+        ObjectResponse<DiseaseAnnotation> res = RestAssured.given().
+                when().
+                get("/api/disease-annotation/" + DISEASE_ANNOTATION).
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRef());
+
+        DiseaseAnnotation editedDiseaseAnnotation = res.getEntity();
+        List<EcoTerm> editedEcoTerms= new ArrayList<EcoTerm>();
+        editedEcoTerms.add(createEcoTerm("ECO:0003", "Update test", true));
+        editedDiseaseAnnotation.setEvidenceCodes(editedEcoTerms);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/disease-annotation").
+                then().
+                statusCode(400);        
+    }
+    
+    @Test
+    @Order(4)
     public void deleteDiseaseAnnotation() {
         RestAssured.given().
                 when().
@@ -116,7 +155,6 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200);
     }
-
 
     private DOTerm createDiseaseTerm(String curie, CrossReference crossReference) {
         DOTerm doTerm = new DOTerm();
@@ -131,6 +169,23 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200);
         return doTerm;
+    }
+    
+    
+    private EcoTerm createEcoTerm(String curie, String name, Boolean obsolete) {
+        EcoTerm ecoTerm = new EcoTerm();
+        ecoTerm.setCurie(curie);
+        ecoTerm.setName(name);
+        ecoTerm.setObsolete(obsolete);
+
+        RestAssured.given().
+                contentType("application/json").
+                body(ecoTerm).
+                when().
+                post("/api/ecoterm").
+                then().
+                statusCode(200);
+        return ecoTerm;
     }
 
     private BiologicalEntity createBiologicalEntity(String curie, String taxon) {

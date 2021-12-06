@@ -9,6 +9,7 @@ import { returnSorted } from '../../utils/utils';
 import { SubjectEditor } from './../SubjectEditor';
 import { DiseaseEditor } from './../DiseaseEditor';
 import { WithEditor } from './../WithEditor';
+import { EvidenceEditor } from './../EvidenceEditor';
 import { FilterComponent } from './../FilterComponent'
 import { SearchService } from '../../service/SearchService';
 
@@ -340,6 +341,23 @@ export const DiseaseAnnotationsComponent = () => {
         );
     };
 
+    const evidenceEditorTemplate = (props) => {
+        return (
+            <>
+                <EvidenceEditor
+                    autocompleteFields={["curie", "name"]}
+                    rowProps={props}
+                    searchService={searchService}
+                    setDiseaseAnnotations={setDiseaseAnnotations}
+                />
+                <ErrorMessageComponent
+                    errorMessages={errorMessages[props.rowIndex]}
+                    errorField="evidence"
+                />
+            </>
+        );
+    };
+
     return (
         <div>
             <div className="card">
@@ -414,6 +432,7 @@ export const DiseaseAnnotationsComponent = () => {
                     body={evidenceTemplate}
                     sortable={isEnabled} 
                     filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
+                    editor={(props) => evidenceEditorTemplate(props)}
                   />
 
                    <Column 
