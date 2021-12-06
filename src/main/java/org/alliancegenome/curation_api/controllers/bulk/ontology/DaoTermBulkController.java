@@ -21,8 +21,7 @@ public class DaoTermBulkController extends BaseOntologyTermBulkController<DaoTer
     @PostConstruct
     public void init() {
         GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setIriPrefixFilter("FBbt");
-        config.setLoadWithoutDefaultNameSpace(true);
+        config.setLoadOnlyIRIPrefix("FBbt");
         setService(daoTermService, DAOTerm.class, config);
     }
 
