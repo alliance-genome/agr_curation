@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
 
-   export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => { 
+   export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredSubjects, setFilteredSubjects] = useState([]);
 
         const searchSubject = (event) => {
@@ -10,9 +10,9 @@ import {AutoComplete} from "primereact/autocomplete";
             autocompleteFields.forEach( field => {
                 subjectFilter[field] = event.query;
             });
-            
 
-            
+
+
 
             searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":subjectFilter})
                 .then((data) => {
@@ -35,18 +35,72 @@ import {AutoComplete} from "primereact/autocomplete";
         };
 
         const subjectItemTemplate = (item) => {
+            let inputValue = rowProps.rowData.subject.curie.toLowerCase();
+            let str = "";
+            let synonymsStr = "";
+            let isSynonym = false;
+            let crossReferencesStr = "";
+            let isCrossReference = false;
+            let secondaryIdentifiersStr = "";
+            let isSecondaryIdentifier = false;
+            autocompleteFields.forEach( field => {
+                if(field == "synonyms.name" && item["synonyms"]){
+                    for(let i=0; i< item["synonyms"].length ; i++ ) {
+                        if(item["synonyms"][i].name) {
+                            if (item["synonyms"][i].name.toString().toLowerCase().indexOf(inputValue) >= 0) {
+                                synonymsStr +=  item["synonyms"][i].name.toString() + ", ";
+                                isSynonym = true;
+                            }
+                        }
+                    }
+                    if(isSynonym){
+                        str += "Synonym" + ": " + synonymsStr;
+                    }
+                }else if(field == "crossReferences.curie" && item["crossReferences"]){
+                    for(let i=0; i< item["crossReferences"].length ; i++ ) {
+                        if(item["crossReferences"][i].curie) {
+                            if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
+                                crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
+                                isCrossReference = true;
+                            }
+                        }
+                    }
+                    if(isCrossReference){
+                        str += "CrossReferences" + ": " + crossReferencesStr;
+                    }
+                }else {
+                    if (item[field]) {
+                        if(field == "secondaryIdentifiers") {
+                            for(var i=0; i< item["secondaryIdentifiers"].length ; i++ ) {
+                                if (item["secondaryIdentifiers"][i].toLowerCase().indexOf(inputValue) >= 0) {
+                                    secondaryIdentifiersStr += item["secondaryIdentifiers"][i] + ", ";
+                                    isSecondaryIdentifier = true;
+                                }
+                            }
+                            if(isSecondaryIdentifier){
+                                str += "SecondaryIdentifiers" + ": " + secondaryIdentifiersStr;
+                            }
+                        }else {
+                            if (item[field].toString().toLowerCase().indexOf(inputValue) >= 0) {
+                                if (field != "curie" && field != "symbol")
+                                    str += field + ": " + item[field].toString() + ", ";
+                            }
+                        }
+                    }
+                }
+            });
+            str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
             if(item.symbol){
-                return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.symbol + ')'}}/>;
+                return <div dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') ' + str.toString()}}/>;
             } else if(item.name){
-                return <div dangerouslySetInnerHTML={{__html: item.curie + ' (' + item.name + ')'}}/>;
+                return <div dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') ' + str.toString()}}/>;
             }else {
-                return <div>{item.curie}</div>;
+                return <div>{item.curie + str.toString()}</div>;
             }
         };
 
-
         return (
-            
+
             <AutoComplete
                     field="curie"
                     value={rowProps.rowData.subject.curie}
@@ -55,6 +109,6 @@ import {AutoComplete} from "primereact/autocomplete";
                     completeMethod={searchSubject}
                     onChange={(e) => onSubjectEditorValueChange(e)}
             />
-           
+
         )
     };

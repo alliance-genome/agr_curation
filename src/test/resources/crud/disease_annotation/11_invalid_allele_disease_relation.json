@@ -3,12 +3,17 @@
         "curie" : "FB:FBal0210563"
     },
     "object" : {
-	"curie" : "DOID:1059"
+	    "curie" : "DOID:1059"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:25125150"
-	}
+	    {
+	        "curie" : "PMID:25125150"
+	    }
     ],
-    "diseaseRelation" : "is_model_of"
+    "diseaseRelation" : "is_model_of",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }

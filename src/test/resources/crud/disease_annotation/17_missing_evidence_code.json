@@ -10,10 +10,5 @@
 	        "curie" : "PMID:12829789"
 	    }
     ],
-    "diseaseRelation" : "is_implicated_in",
-    "evidenceCodes" : [
-        {
-            "curie" : "ECO:0000033"
-        }
-    ]
+    "diseaseRelation" : "is_implicated_in"
 }

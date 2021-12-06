@@ -3,12 +3,17 @@
         "curie" : "HGNC:483"
     },
     "object" : {
-	"curie" : "DOID:10283"
+	    "curie" : "DOID:10283"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:19276260"
-	}
+	    {
+	        "curie" : "PMID:19276260"
+	    }
     ],
-    "diseaseRelation" : "is_not_a_valid_relation"
+    "diseaseRelation" : "is_not_a_valid_relation",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }

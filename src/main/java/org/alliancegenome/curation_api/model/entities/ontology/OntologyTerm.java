@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -34,7 +35,8 @@ public class OntologyTerm extends BaseCurieEntity {
     @JsonView(View.FieldsOnly.class)
     private String type;
 
-    @GenericField
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+    @KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
     @JsonView(View.FieldsOnly.class)
     private Boolean obsolete;
 
