@@ -256,7 +256,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         if (CollectionUtils.isNotEmpty(entity.getEvidenceCodes())) {
             for (EcoTerm evidenceCode : entity.getEvidenceCodes()) {
                 if (evidenceCode.getObsolete() && !originalEvidenceCodes.contains(evidenceCode)) {
-                    addInvalidMessagetoResponse("evidence", response);
+                    addObsoleteMessagetoResponse("evidence", response);
                     validEvidenceCodes = false;
                     break;
                 }
@@ -336,6 +336,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
     private void addInvalidMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
         response.addErrorMessage(fieldName, "Not a valid entry");
+    }
+    
+    private void addObsoleteMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
+        response.addErrorMessage(fieldName, "Obsolete term specified");
     }
 
     private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
