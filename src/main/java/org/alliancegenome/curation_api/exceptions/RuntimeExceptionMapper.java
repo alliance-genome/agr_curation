@@ -14,6 +14,7 @@ public class RuntimeExceptionMapper implements ExceptionMapper<RuntimeException>
     @Produces(MediaType.APPLICATION_JSON)
     public Response toResponse(RuntimeException e) {
         log.error(e);
+        e.printStackTrace();
         Response.ResponseBuilder rb = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
         return rb.build();
     }

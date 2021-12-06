@@ -4,12 +4,13 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,8 +26,9 @@ import lombok.*;
 //@ToString(exclude = {"genomicLocations"})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public class DiseaseAnnotation extends Association {
-
-    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+    @KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
     @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean negated = false;
