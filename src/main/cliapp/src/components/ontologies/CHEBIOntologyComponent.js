@@ -67,7 +67,7 @@ export const CHEBIOntologyComponent = () => {
   return (
       <div>
         <div className="card">
-            <h3>CHEBI Table</h3>
+            <h3>ChEBI Table</h3>
             <Messages ref={errorMessage}/>
           <DataTable value={terms} className="p-datatable-sm"
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}

@@ -131,7 +131,7 @@ const App = () => {
         {
             label: 'Ontologies', icon: 'pi pi-fw pi-sitemap',
             items: [
-                { label: 'CHEBI Ontology', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
+                { label: 'Chemical Entities of Biological Interest (ChEBI)', icon: 'pi pi-fw pi-home', to: '/ontology/chebi' },
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
                 { label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
