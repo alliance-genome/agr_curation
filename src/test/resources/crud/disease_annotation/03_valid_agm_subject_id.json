@@ -3,12 +3,17 @@
         "curie" : "ZFIN:ZDB-FISH-180419-4"
     },
     "object" : {
-	"curie" : "DOID:162"
+	    "curie" : "DOID:162"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:21816947"
-	}
+	    {
+	        "curie" : "PMID:21816947"
+	    }
     ],
-    "diseaseRelation" : "is_model_of"
+    "diseaseRelation" : "is_model_of",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }

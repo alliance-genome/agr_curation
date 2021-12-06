@@ -3,12 +3,17 @@
         "curie" : "RGD:1290492"
     },
     "object" : {
-	"curie" : "DOID:2018"
+	    "curie" : "DOID:2018"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:22948215"
-	}
+	    {
+	        "curie" : "PMID:22948215"
+	    }
     ],
-    "diseaseRelation" : "is_marker_for"
+    "diseaseRelation" : "is_marker_for",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }

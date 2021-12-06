@@ -3,12 +3,17 @@
         "curie" : "ZFIN:ZDB-FISH-150901-1967"
     },
     "object" : {
-	"curie" : "DOID:10907"
+	    "curie" : "DOID:10907"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:23332918"
-	}
+	    {
+	        "curie" : "PMID:23332918"
+	    }
     ],
-    "diseaseRelation" : "is_marker_for"
+    "diseaseRelation" : "is_marker_for",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }
