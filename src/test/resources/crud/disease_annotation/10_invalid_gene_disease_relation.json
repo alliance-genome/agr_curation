@@ -3,12 +3,17 @@
         "curie": "SGD:S000002889"
     },
     "object" : {
-	"curie" : "DOID:3347"
+	    "curie" : "DOID:3347"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:25860149"
-	}
+	    {
+	        "curie" : "PMID:25860149"
+    	}
     ],
-    "diseaseRelation" : "is_model_of"
+    "diseaseRelation" : "is_model_of",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }

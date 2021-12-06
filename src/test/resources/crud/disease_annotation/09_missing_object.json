@@ -3,9 +3,14 @@
         "curie" : "WB:WBGene00005643"
     },
     "referenceList" : [
-	{
-	    "curie" : "PMID:12829789"
-	}
+	    {
+	        "curie" : "PMID:12829789"
+	    }
     ],
-    "diseaseRelation" : "is_implicated_in"
+    "diseaseRelation" : "is_implicated_in",
+    "evidenceCodes" : [
+        {
+            "curie" : "ECO:0000033"
+        }
+    ]
 }
