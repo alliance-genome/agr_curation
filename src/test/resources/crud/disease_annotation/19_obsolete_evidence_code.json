@@ -1,9 +1,9 @@
 {
-    "subject" : {
-        "curie" : "WB:WBGene00005643"
+    "subject": {
+        "curie": "WB:WBGene00005643"
     },
     "object" : {
-	    "curie" : "DOID:000000"
+	    "curie" : "DOID:14681"
     },
     "referenceList" : [
 	    {
@@ -13,7 +13,7 @@
     "diseaseRelation" : "is_implicated_in",
     "evidenceCodes" : [
         {
-            "curie" : "ECO:0000033"
+            "curie" : "ECO:0000098"
         }
     ]
 }

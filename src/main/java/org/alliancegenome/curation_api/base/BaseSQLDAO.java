@@ -156,7 +156,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                             b.must(
                                 p.simpleQueryString()
                                     .fields(searchFilters.get(filterName).keySet().toArray(new String[0]))
-                                    .matching((String)searchFilters.get(filterName).entrySet().iterator().next().getValue())
+                                    .matching(searchFilters.get(filterName).entrySet().iterator().next().getValue().toString())
                                     .defaultOperator(BooleanOperator.AND)
                             );
                         }
