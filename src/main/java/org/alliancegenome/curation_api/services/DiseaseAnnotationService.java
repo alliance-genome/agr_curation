@@ -262,6 +262,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 }
             }
         }
+        else {
+            addRequiredMessageToResponse("evidence", response);
+            validEvidenceCodes = false;
+        }
         return validEvidenceCodes;
     }
     
