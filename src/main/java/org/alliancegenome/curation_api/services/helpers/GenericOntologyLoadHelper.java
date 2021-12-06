@@ -97,12 +97,11 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         if (reasoner.isSatisfiable(parent)) {
 
             termParent = getOntologyTerm(parent);
-
-            
-            
+    
             if(
-                (termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||
-                config.isLoadWithoutDefaultNameSpace()
+                ((termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||
+                config.isLoadWithoutDefaultNameSpace()) &&
+                ((config.getIriPrefixFilter() == null) || parent.getIRI().getShortForm().startsWith(config.getIriPrefixFilter()))
             ) {
                 //System.out.println(termParent);
 
