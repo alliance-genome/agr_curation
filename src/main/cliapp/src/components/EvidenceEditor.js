@@ -5,7 +5,7 @@ import {AutoComplete} from "primereact/autocomplete";
         const [filteredEvidenceCodes, setFilteredEvidenceCodes] = useState([]);
 
         const searchEvidenceCodes = (event) => {
-            console.log(event);
+            //console.log(event);
             let evidenceFilter = {};
             autocompleteFields.forEach( field => {
                 evidenceFilter[field] = event.query;
@@ -14,7 +14,7 @@ import {AutoComplete} from "primereact/autocomplete";
 
             searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter, "obsoleteFilter:":obsoleteFilter})
                 .then((data) => {
-                    console.log(data)
+                    //console.log(data)
                     setFilteredEvidenceCodes(data.results);
                 });
         };
