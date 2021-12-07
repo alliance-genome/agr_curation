@@ -182,6 +182,7 @@ public class DiseaseAnnotationITCase {
         DOTerm doTerm = new DOTerm();
         doTerm.setCurie(curie);
         doTerm.setCrossReferences(Collections.singletonList(crossReference));
+        doTerm.setObsolete(obsolete);
 
         RestAssured.given().
                 contentType("application/json").
