@@ -6,13 +6,15 @@ import {AutoComplete} from "primereact/autocomplete";
 
         const searchEvidenceCodes = (event) => {
             console.log(event);
-            let evidenceFilter = {obsolete: false};
+            let evidenceFilter = {};
             autocompleteFields.forEach( field => {
                 evidenceFilter[field] = event.query;
             });
+            let obsoleteFilter = {"obsolete": false};
 
-            searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter})
+            searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter, "obsoleteFilter:":obsoleteFilter})
                 .then((data) => {
+                    console.log(data)
                     setFilteredEvidenceCodes(data.results);
                 });
         };

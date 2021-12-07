@@ -5,11 +5,13 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
     const [filteredDiseases, setFilteredDiseases] = useState([]);
     
     const searchDisease = (event) => {
-        let diseaseFilter = {obsolete: false};
+        let diseaseFilter = {};
         autocompleteFields.forEach( field => {
             diseaseFilter[field] = event.query;
         });
-        searchService.search('doterm', 15, 0, [], {"diseaseFilter":diseaseFilter})
+        let obsoleteFilter = {"obsolete": false};
+
+        searchService.search('doterm', 15, 0, [], {"diseaseFilter":diseaseFilter, "obsoleteFilter":obsoleteFilter})
             .then((data) => {
                 setFilteredDiseases(data.results);
             });
