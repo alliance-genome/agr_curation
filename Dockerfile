@@ -56,4 +56,4 @@ ENV QUARKUS_QPID_JMS_USERNAME quarkus
 ENV QUARKUS_QPID_JMS_PASSWORD quarkus
 
 # Start the application
-CMD ["java", "-jar", "agr_curation_api-runner.jar"]
+CMD ["java", "-Xmx3850m", "-jar", "agr_curation_api-runner.jar"]
