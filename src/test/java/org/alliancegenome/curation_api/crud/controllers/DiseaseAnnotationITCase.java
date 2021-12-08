@@ -43,7 +43,7 @@ public class DiseaseAnnotationITCase {
     public void createDiseaseAnnotation() {
 
         crossReference = createCrossReference("CROSSREF:0001", "AGRreference");
-        doTerm = createDiseaseTerm("DOID:0001", crossReference);
+        doTerm = createDiseaseTerm("DOID:0001", crossReference, false);
         ecoTerm = createEcoTerm("ECO:0001", "Test evidence code", false);
         biologicalEntity = createBiologicalEntity("BO:0001", "taxon:0001");
         
@@ -95,7 +95,7 @@ public class DiseaseAnnotationITCase {
         BiologicalEntity newSubject = createBiologicalEntity("BO:0002", "taxon:0001");
         editedDiseaseAnnotation.setSubject(newSubject);
         // change DOTerm
-        editedDiseaseAnnotation.setObject(createDiseaseTerm("DOID:0002", null));
+        editedDiseaseAnnotation.setObject(createDiseaseTerm("DOID:0002", null, false));
         // change ECOTerm
         List<EcoTerm> editedEcoTerms= new ArrayList<EcoTerm>();
         editedEcoTerms.add(createEcoTerm("ECO:0002", "Update test", false));
@@ -134,7 +134,7 @@ public class DiseaseAnnotationITCase {
 
         DiseaseAnnotation editedDiseaseAnnotation = res.getEntity();
         List<EcoTerm> editedEcoTerms= new ArrayList<EcoTerm>();
-        editedEcoTerms.add(createEcoTerm("ECO:0003", "Update test", true));
+        editedEcoTerms.add(createEcoTerm("ECO:0003", "ECO update test", true));
         editedDiseaseAnnotation.setEvidenceCodes(editedEcoTerms);
         
         RestAssured.given().
@@ -148,6 +148,28 @@ public class DiseaseAnnotationITCase {
     
     @Test
     @Order(4)
+    public void editWithObsoleteDoTerm() {
+        ObjectResponse<DiseaseAnnotation> res = RestAssured.given().
+                when().
+                get("/api/disease-annotation/" + DISEASE_ANNOTATION).
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRef());
+
+        DiseaseAnnotation editedDiseaseAnnotation = res.getEntity();
+        editedDiseaseAnnotation.setObject(createDiseaseTerm("DO:0003", null, true));
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/disease-annotation").
+                then().
+                statusCode(400);        
+    }
+    
+    @Test
+    @Order(5)
     public void deleteDiseaseAnnotation() {
         RestAssured.given().
                 when().
@@ -156,10 +178,11 @@ public class DiseaseAnnotationITCase {
                 statusCode(200);
     }
 
-    private DOTerm createDiseaseTerm(String curie, CrossReference crossReference) {
+    private DOTerm createDiseaseTerm(String curie, CrossReference crossReference, Boolean obsolete) {
         DOTerm doTerm = new DOTerm();
         doTerm.setCurie(curie);
         doTerm.setCrossReferences(Collections.singletonList(crossReference));
+        doTerm.setObsolete(obsolete);
 
         RestAssured.given().
                 contentType("application/json").

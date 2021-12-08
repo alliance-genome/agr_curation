@@ -32,6 +32,56 @@ public class DiseaseAnnotationBulkUploadITCase {
 
     @Test
     @Order(1)
+    public void doTermBulkUpload() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_required_do_terms.owl"));
+        
+            // upload file
+            RestAssured.given().
+                contentType("application/xml").
+                body(content).
+                when().
+                post("/api/doterm/bulk/owl").
+                then().
+                statusCode(200);
+            
+            // check entity count
+               RestAssured.given().
+                    when().
+                    header("Content-Type", "application/json").
+                    body("{}").
+                    post("/api/doterm/find?limit=10&page=0").
+                    then().
+                    statusCode(200).
+                    body("totalResults", is(376));
+    }
+    
+    @Test
+    @Order(2)
+    public void ecoTermBulkUpload() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_required_eco_terms.owl"));
+                            
+            // upload file
+            RestAssured.given().
+                contentType("application/xml").
+                body(content).
+                when().
+                post("/api/ecoterm/bulk/owl").
+                then().
+                statusCode(200);
+                                
+            // check entity count
+              RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/ecoterm/find?limit=10&page=0").
+                then().
+                statusCode(200).
+               body("totalResults", is(10));
+    }
+              
+    @Test
+    @Order(3)
     public void geneBulkUpload() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
         
@@ -56,7 +106,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(2)
+    @Order(4)
     public void alleleBulkUpload() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/00_mod_examples.json"));
         
@@ -81,7 +131,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(3)
+    @Order(5)
     public void agmBulkUpload() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/00_mod_examples.json"));
         
@@ -106,7 +156,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(4)
+    @Order(6)
     public void diseaseAnnotationBulkUploadFB() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_FB_examples.json"));
 
@@ -131,7 +181,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void diseaseAnnotationBulkUploadHuman() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_HUMAN_examples.json"));
 
@@ -156,7 +206,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(6)
+    @Order(8)
     public void diseaseAnnotationBulkUploadMGI() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_MGI_examples.json"));
 
@@ -181,7 +231,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(7)
+    @Order(9)
     public void diseaseAnnotationBulkUploadRGD() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_RGD_examples.json"));
 
@@ -206,7 +256,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(8)
+    @Order(10)
     public void diseaseAnnotationBulkUploadSGD() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_SGD_examples.json"));
 
@@ -231,7 +281,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(9)
+    @Order(11)
     public void diseaseAnnotationBulkUploadWB() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_WB_examples.json"));
 
@@ -256,7 +306,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(10)
+    @Order(12)
     public void diseaseAnnotationBulkUploadZFIN() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_ZFIN_examples.json"));
 
@@ -281,7 +331,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(11)
+    @Order(13)
     public void geneDiseaseAnnotationBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/01_all_fields_gene_primary_annotation.json"));
         
@@ -328,7 +378,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(12)
+    @Order(14)
     public void geneDiseaseAnnotationBulkUploadSecondaryAnnotation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/02_all_fields_gene_secondary_annotation.json"));
         
@@ -354,7 +404,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(13)
+    @Order(15)
     public void agmDiseaseAnnotationBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/03_all_fields_agm_primary_annotation.json"));
         
@@ -401,7 +451,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(14)
+    @Order(16)
     public void alleleDiseaseAnnotationBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/04_all_fields_allele_primary_annotation.json"));
         
@@ -448,7 +498,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(15)
+    @Order(17)
     public void diseaseAnnotationBulkUploadNoDOid() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/05_no_doid.json"));
         
@@ -473,7 +523,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(16)
+    @Order(18)
     public void diseaseAnnotationBulkUploadNoDataProvider() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/06_no_data_provider.json"));
         
@@ -499,7 +549,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(17)
+    @Order(19)
     public void diseaseAnnotationBulkUploadNoDataProviderXref() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/07_no_data_provider_cross_reference.json"));
         
@@ -525,7 +575,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(18)
+    @Order(20)
     public void diseaseAnnotationBulkUploadNoDataProviderType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/08_no_data_provider_type.json"));
         
@@ -551,7 +601,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(19)
+    @Order(21)
     public void diseaseAnnotationBulkUploadNoDateAssigned() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/09_no_date_assigned.json"));
         
@@ -577,7 +627,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(20)
+    @Order(22)
     public void diseaseAnnotationBulkUploadNoEvidence() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/10_no_evidence.json"));
         
@@ -603,7 +653,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     @Test
-    @Order(21)
+    @Order(23)
     public void diseaseAnnotationBulkUploadNoEvidenceCodes() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/11_no_evidence_evidence_codes.json"));
         
@@ -629,7 +679,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(22)
+    @Order(24)
     public void diseaseAnnotationBulkUploadNoPublication() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/12_no_evidence_publication.json"));
         
@@ -655,7 +705,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(23)
+    @Order(25)
     public void diseaseAnnotationBulkUploadNoPublicationXref() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/13_no_evidence_publication_cross_reference.json"));
         
@@ -681,7 +731,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(24)
+    @Order(26)
     public void diseaseAnnotationBulkUploadNoPublicationXrefId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/14_no_evidence_publication_cross_reference_id.json"));
         
@@ -707,7 +757,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(25)
+    @Order(27)
     public void diseaseAnnotationBulkUploadNoPublicationXrefPages() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/15_no_evidence_publication_cross_reference_pages.json"));
         
@@ -733,7 +783,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(26)
+    @Order(28)
     public void diseaseAnnotationBulkUploadNoPublicationId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/16_no_evidence_publication_publication_id.json"));
         
@@ -759,7 +809,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(27)
+    @Order(29)
     public void diseaseAnnotationBulkUploadNoNegation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/17_no_negation.json"));
         
@@ -785,7 +835,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(28)
+    @Order(30)
     public void diseaseAnnotationBulkUploadNoObjectId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/18_no_object_id.json"));
         
@@ -811,7 +861,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(29)
+    @Order(31)
     public void diseaseAnnotationBulkUploadNoObjectName() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/19_no_object_name.json"));
         
@@ -837,7 +887,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(30)
+    @Order(32)
     public void diseaseAnnotationBulkUploadNoObjectRelation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/20_no_object_relation.json"));
         
@@ -863,7 +913,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(31)
+    @Order(33)
     public void diseaseAnnotationBulkUploadNoObjectRelationAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/21_no_object_relation_association_type.json"));
         
@@ -889,7 +939,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(32)
+    @Order(34)
     public void diseaseAnnotationBulkUploadNoObjectRelationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/22_no_object_relation_object_type.json"));
         
@@ -915,7 +965,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(33)
+    @Order(35)
     public void diseaseAnnotationBulkUploadNoWith() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/23_no_with.json"));
         
@@ -941,7 +991,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(34)
+    @Order(36)
     public void diseaseAnnotationBulkUploadNoConditionRelations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/24_no_condition_relations.json"));
         
@@ -967,7 +1017,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(35)
+    @Order(37)
     public void diseaseAnnotationBulkUploadNoConditionRelationsType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/25_no_condition_relations_condition_relation_type.json"));
         
@@ -993,7 +1043,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(36)
+    @Order(38)
     public void diseaseAnnotationBulkUploadNoConditions() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_no_condition_relations_conditions.json"));
         
@@ -1019,7 +1069,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(37)
+    @Order(39)
     public void diseaseAnnotationBulkUploadNoConditionClassId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/27_no_condition_relations_conditions_condition_class_id.json"));
         
@@ -1045,7 +1095,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(38)
+    @Order(40)
     public void diseaseAnnotationBulkUploadNoConditionId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/28_no_condition_relations_conditions_condition_id.json"));
         
@@ -1071,7 +1121,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(39)
+    @Order(41)
     public void diseaseAnnotationBulkUploadNoConditionStatement() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/29_no_condition_relations_conditions_condition_statement.json"));
         
@@ -1097,7 +1147,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(40)
+    @Order(42)
     public void diseaseAnnotationBulkUploadNoConditionQuantity() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/30_no_condition_relations_conditions_condition_quantity.json"));
         
@@ -1123,7 +1173,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(41)
+    @Order(43)
     public void diseaseAnnotationBulkUploadNoAnatomicalOntologyId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/31_no_condition_relations_conditions_anatomical_ontology_id.json"));
         
@@ -1149,7 +1199,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(42)
+    @Order(44)
     public void diseaseAnnotationBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/32_no_condition_relations_conditions_ncbi_taxon_id.json"));
         
@@ -1175,7 +1225,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(43)
+    @Order(45)
     public void diseaseAnnotationBulkUploadNoChemicalOntologyId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/33_no_condition_relations_conditions_chemical_ontology_id.json"));
         
@@ -1201,7 +1251,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(44)
+    @Order(46)
     public void diseaseAnnotationBulkUploadNoInferredGeneAssociation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/34_no_object_relation_inferred_gene_association.json"));
         
@@ -1227,7 +1277,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Order(45)
+    @Order(47)
     public void diseaseAnnotationBulkUploadDuplicateCuries() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/35_duplicate_curies.json"));
         
@@ -1253,7 +1303,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     // @Test
-    @Order(46)
+    @Order(48)
     public void diseaseAnnotationBulkUploadInvalidGeneAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/36_invalid_gene_association_type.json"));
         
@@ -1279,7 +1329,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     // @Test
-    @Order(47)
+    @Order(49)
     public void diseaseAnnotationBulkUploadInvalidAgmAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/37_invalid_agm_association_type.json"));
         
@@ -1305,7 +1355,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     // @Test
-    @Order(48)
+    @Order(50)
     public void diseaseAnnotationBulkUploadInvalidAlleleAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/38_invalid_allele_association_type.json"));
         
@@ -1331,7 +1381,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     // @Test
-    @Order(49)
+    @Order(51)
     public void diseaseAnnotationBulkUploadInvalidObjectType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/39_invalid_object_type.json"));
         
