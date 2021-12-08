@@ -20,7 +20,8 @@ export const Dashboard = () => {
     const [WBbtCount, setWBbtCount] = useState(0);
     const [XCOCount, setXCOCount] = useState(0);
     const [ZECOCount, setZECOCount] = useState(0);
-    
+    const [CHEBICount, setCHEBICount] = useState(0);
+
     useEffect(() => {
         const searchService = new SearchService();
 
@@ -42,6 +43,10 @@ export const Dashboard = () => {
 
         searchService.search("molecule", 0, 0).then(searchResults => {
           setMoleculeCount(searchResults.totalResults);
+        });
+
+        searchService.search('chebiterm', 0, 0).then(searchResults => {
+          setCHEBICount(searchResults.totalResults);
         });
 
         searchService.search('ecoterm', 0, 0).then(results => {
@@ -234,6 +239,16 @@ export const Dashboard = () => {
                         <i className="pi pi-question-circle"></i>
                         <span>Total Term Count</span>
                         <span className="count">{ZECOCount}</span>
+                    </div>
+                </div>
+            </div>
+            <div className="p-col-12 p-md-6 p-xl-3">
+                <div className="highlight-box">
+                    <div className="initials" style={{ backgroundColor: '#ef6262', color: '#a83d3b' }}><span>CHEBI</span></div>
+                    <div className="highlight-details ">
+                        <i className="pi pi-question-circle"></i>
+                        <span>Total Term Count</span>
+                        <span className="count">{CHEBICount}</span>
                     </div>
                 </div>
             </div>
