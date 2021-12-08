@@ -2,7 +2,7 @@ RELEASE = main
 REG = 100225593120.dkr.ecr.us-east-1.amazonaws.com
 AWS_DEFAULT_REGION := us-east-1
 
-ENV_NAME=curation-alpha
+ENV_NAME?=curation-alpha
 
 GIT_VERSION = $(shell git describe)
 
