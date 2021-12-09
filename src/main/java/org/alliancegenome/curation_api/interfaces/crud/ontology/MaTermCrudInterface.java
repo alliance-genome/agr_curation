@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/materm")
-@Tag(name = "Ontology - MA")
+@Tag(name = "CRUD - Ontology - MA")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface MaTermCrudInterface extends BaseCrudRESTInterface<MATerm> {

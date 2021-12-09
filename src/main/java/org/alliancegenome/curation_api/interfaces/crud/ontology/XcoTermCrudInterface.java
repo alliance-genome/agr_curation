@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.XcoTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/xcoterm")
-@Tag(name = "Ontology - XCO")
+@Tag(name = "CRUD - Ontology - XCO")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface XcoTermCrudInterface extends BaseCrudRESTInterface<XcoTerm> {

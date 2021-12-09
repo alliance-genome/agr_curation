@@ -7,8 +7,7 @@ import org.alliancegenome.curation_api.base.BaseOntologyTermBulkRESTInterface;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/chebiterm/bulk")
-@Tag(name = "Ontology - ChEBI")
-@Tag(name = "Ontology - Bulk Import")
+@Tag(name = "Bulk Import - Ontology")
 @Produces(MediaType.APPLICATION_JSON)
 public interface CHEBITermBulkInterface extends BaseOntologyTermBulkRESTInterface {
 }

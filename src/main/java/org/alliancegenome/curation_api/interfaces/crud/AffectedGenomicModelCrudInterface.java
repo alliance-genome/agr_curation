@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/agm")
-@Tag(name = "Affected Genomic Models")
+@Tag(name = "CRUD - Affected Genomic Models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AffectedGenomicModelCrudInterface extends BaseCrudRESTInterface<AffectedGenomicModel> {

@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/allele")
-@Tag(name = "Alleles")
+@Tag(name = "CRUD - Alleles")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleCrudInterface extends BaseCrudRESTInterface<Allele> {

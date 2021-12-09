@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.crud;
+package org.alliancegenome.curation_api.interfaces;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;

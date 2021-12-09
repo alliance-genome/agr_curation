@@ -12,17 +12,14 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.*;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -43,171 +40,12 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     @Inject
     GeneDAO geneDAO;
 
-    private ObjectResponse<DiseaseAnnotation> response;
-
     @Override
     @PostConstruct
     protected void init() {
         setSQLDao(diseaseAnnotationDAO);
     }
     
-    @Override
-    @Transactional
-    public ObjectResponse<DiseaseAnnotation> update(DiseaseAnnotation uiEntity) {
-        DiseaseAnnotation dbEntity = validateAnnotation(uiEntity);
-        return new ObjectResponse<DiseaseAnnotation>(diseaseAnnotationDAO.persist(dbEntity));
-    }
-
-    public DiseaseAnnotation validateAnnotation(DiseaseAnnotation uiEntity) {
-        response = new ObjectResponse<>(uiEntity);
-        String errorTitle = "Could not update Disease Annotation: [" + uiEntity.getId() + "]";
-
-        Long id = uiEntity.getId();
-        if (id == null) {
-            response.setErrorMessage("No Disease Annotation ID provided");
-            throw new ApiErrorException(response);
-        }
-        DiseaseAnnotation dbEntity = diseaseAnnotationDAO.find(id);
-        if (dbEntity == null) {
-            response.setErrorMessage("Could not find Disease Annotation with ID: [" + id + "]");
-            throw new ApiErrorException(response);
-            // do not continue validation for update if Disease Annotation ID has not been found
-        }       
-        
-        BiologicalEntity subject = validateSubject(uiEntity, dbEntity);
-        if(subject != null) dbEntity.setSubject(subject);
-        
-        DOTerm term = validateObject(uiEntity, dbEntity);
-        if(term != null) dbEntity.setObject(term);
-        
-        List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
-        if(terms != null) dbEntity.setEvidenceCodes(terms);
-        
-        DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
-        if(relation != null) dbEntity.setDiseaseRelation(relation);
-        
-        List<Gene> genes = validateWith(uiEntity, dbEntity);
-        if(genes != null) dbEntity.setWith(genes);
-        
-        if (response.hasErrors()) {
-            response.setErrorMessage(errorTitle);
-            throw new ApiErrorException(response);
-        }
-        
-        return dbEntity;
-    }
-
-    private BiologicalEntity validateSubject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isEmpty(uiEntity.getSubject().getCurie())) {
-            addRequiredMessageToResponse("subject", response);
-            return null;
-        }
-        BiologicalEntity subjectEntity = biologicalEntityDAO.find(uiEntity.getSubject().getCurie());
-        if (subjectEntity == null) {
-            addInvalidMessagetoResponse("subject", response);
-            return null;
-        }
-        return subjectEntity;
-        
-    }
-    
-    private DOTerm validateObject(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        if (ObjectUtils.isEmpty(uiEntity.getObject()) || StringUtils.isEmpty(uiEntity.getObject().getCurie())) {
-            addRequiredMessageToResponse("object", response);
-            return null;
-        }
-        DOTerm diseaseTerm = doTermDAO.find(uiEntity.getObject().getCurie());
-        if (diseaseTerm == null) {
-            addInvalidMessagetoResponse("object", response);
-            return null;
-        }
-        else if (diseaseTerm.getObsolete() && !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie())) {
-            addObsoleteMessagetoResponse("object", response);
-            return null;
-        }
-        return diseaseTerm;
-    }
-
-    private List<EcoTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        if (CollectionUtils.isEmpty(uiEntity.getEvidenceCodes())) {
-            addRequiredMessageToResponse("evidence", response);
-            return null;
-        }
-        List<EcoTerm> validEvidenceCodes = new ArrayList<>(); 
-        for (EcoTerm ec : uiEntity.getEvidenceCodes()) {
-            EcoTerm evidenceCode = ecoTermDAO.find(ec.getCurie());
-            if (evidenceCode == null ) {
-                addInvalidMessagetoResponse("evidence", response);
-                return null;
-            }
-            else if (evidenceCode.getObsolete() && !dbEntity.getEvidenceCodes().contains(evidenceCode)) {
-                addObsoleteMessagetoResponse("evidence", response);
-                return null;
-            }
-
-            validEvidenceCodes.add(evidenceCode);
-
-        }
-        return validEvidenceCodes;
-    }
-
-    private DiseaseRelation validateDiseaseRelation(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        if (StringUtils.isEmpty(uiEntity.getDiseaseRelation().toString())) {
-            addRequiredMessageToResponse("diseaseRelation", response);
-            return null;
-        }
-        
-        boolean correctTypeAndSubject = true;
-        DiseaseRelation relation = uiEntity.getDiseaseRelation();
-        if (dbEntity.getSubject() instanceof Gene) {
-            correctTypeAndSubject = ( relation == DiseaseAnnotation.DiseaseRelation.is_implicated_in ||
-              relation == DiseaseRelation.is_marker_for);
-        }
-        if (dbEntity.getSubject() instanceof Allele) {
-            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        }
-        if (dbEntity.getSubject() instanceof AffectedGenomicModel) {
-            correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_model_of);
-        }
-        if (!correctTypeAndSubject) {
-            addInvalidMessagetoResponse("diseaseRelation", response);
-            return null;
-        }
-        return relation;
-    }
-    
-    private List<Gene> validateWith(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        List<Gene> validWithGenes = new ArrayList<Gene>();
-        
-        if (CollectionUtils.isNotEmpty(uiEntity.getWith())) {
-            for (Gene wg : uiEntity.getWith()) {
-                Gene withGene = geneDAO.find(wg.getCurie());
-                if (withGene == null || !withGene.getCurie().startsWith("HGNC:")) {
-                    addInvalidMessagetoResponse("with", response);
-                    return null;
-                }
-                else {
-                    validWithGenes.add(withGene);
-                }
-            }
-        }
-        
-        return validWithGenes;
-    }
-
-    private void addRequiredMessageToResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        response.addErrorMessage(fieldName, "Required field is empty");
-    }
-
-    private void addInvalidMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        response.addErrorMessage(fieldName, "Not a valid entry");
-    }
-    
-    private void addObsoleteMessagetoResponse(String fieldName, ObjectResponse<DiseaseAnnotation> response) {
-        response.addErrorMessage(fieldName, "Obsolete term specified");
-    }
-    
-
     // The following methods are for bulk validation
     
     private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
@@ -224,9 +62,9 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             annotation = annotationList.getResults().get(0);
         }
 
-        annotation.setSubject(entity);
+        //annotation.setSubject(entity);
         annotation.setObject(disease);
-        annotation.setReferenceList(List.of(reference));
+        annotation.setReference(reference);
         
         if (CollectionUtils.isNotEmpty(annotationDTO.getEvidence().getEvidenceCodes())) {
             List<EcoTerm> ecoTerms = new ArrayList<>();

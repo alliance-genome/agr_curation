@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/gene")
-@Tag(name = "Genes")
+@Tag(name = "CRUD - Genes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneCrudInterface extends BaseCrudRESTInterface<Gene> {
@@ -28,6 +28,7 @@ public interface GeneCrudInterface extends BaseCrudRESTInterface<Gene> {
     @POST
     @Path("/find")
     @JsonView(View.FieldsAndLists.class)
+    @Tag(name = "Database Search Endpoints")
     public SearchResponse<Gene> find(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
