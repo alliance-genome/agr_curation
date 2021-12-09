@@ -119,7 +119,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
                     try {
                         T childTerm = traverse(child, depth + 1, requiredNamespaces);
                             
-//                          TODO LinkML to define the following fields                          
+//                          TODO LinkML to define the following ontology relationship fields
 //                          if(childTerm != null) {
 //                              
 //                              termParent.addChild(childTerm);
