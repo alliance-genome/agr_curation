@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.GeneMetaDataDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/gene/bulk")
-@Tag(name = "Genes")
+@Tag(name = "Bulk Import")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneBulkInterface {

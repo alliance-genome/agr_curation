@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/zecoterm")
-@Tag(name = "Ontology - ZECO")
+@Tag(name = "CRUD - Ontology - ZECO")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ZecoTermCrudInterface extends BaseCrudRESTInterface<ZecoTerm> {

@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicMode
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/agm/bulk")
-@Tag(name = "Affected Genomic Models")
+@Tag(name = "Bulk Import")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AffectedGenomicModelBulkInterface {

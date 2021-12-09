@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleMetaDataDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/allele/bulk")
-@Tag(name = "Alleles")
+@Tag(name = "Bulk Import")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleBulkInterface {

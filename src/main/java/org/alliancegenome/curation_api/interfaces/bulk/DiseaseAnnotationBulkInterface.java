@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMe
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/disease/bulk")
-@Tag(name = "Disease Annotations")
+@Tag(name = "Bulk Import")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DiseaseAnnotationBulkInterface {

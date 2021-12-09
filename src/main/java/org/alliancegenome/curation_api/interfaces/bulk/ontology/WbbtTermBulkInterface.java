@@ -7,8 +7,7 @@ import org.alliancegenome.curation_api.base.BaseOntologyTermBulkRESTInterface;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/wbbtterm/bulk")
-@Tag(name = "Ontology - WBbt")
-@Tag(name = "Ontology - Bulk Import")
+@Tag(name = "Bulk Import - Ontology")
 @Produces(MediaType.APPLICATION_JSON)
 public interface WbbtTermBulkInterface extends BaseOntologyTermBulkRESTInterface {
 

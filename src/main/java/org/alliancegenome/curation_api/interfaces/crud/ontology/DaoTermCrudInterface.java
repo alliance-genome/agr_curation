@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/daoterm")
-@Tag(name = "Ontology - DAO")
+@Tag(name = "CRUD - Ontology - DAO")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DaoTermCrudInterface extends BaseCrudRESTInterface<DAOTerm> {

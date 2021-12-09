@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/goterm")
-@Tag(name = "Ontology - GO")
+@Tag(name = "CRUD - Ontology - GO")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GoTermCrudInterface extends BaseCrudRESTInterface<GOTerm> {

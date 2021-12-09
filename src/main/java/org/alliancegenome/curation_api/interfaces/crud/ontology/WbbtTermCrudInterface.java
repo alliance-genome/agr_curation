@@ -8,7 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.WBbtTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/wbbtterm")
-@Tag(name = "Ontology - WBbt")
+@Tag(name = "CRUD - Ontology - WBbt")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface WbbtTermCrudInterface extends BaseCrudRESTInterface<WBbtTerm> {

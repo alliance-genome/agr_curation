@@ -16,7 +16,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/vocabulary")
-@Tag(name = "Vocabulary")
+@Tag(name = "CRUD - Vocabulary")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface VocabularyCrudInterface extends BaseCrudRESTInterface<Vocabulary> {
@@ -34,6 +34,7 @@ public interface VocabularyCrudInterface extends BaseCrudRESTInterface<Vocabular
     @POST
     @Path("/find")
     @JsonView(View.VocabularyView.class)
+    @Tag(name = "Database Search Endpoints")
     public SearchResponse<Vocabulary> find(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
