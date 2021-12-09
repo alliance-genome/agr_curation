@@ -41,7 +41,7 @@ import {AutoComplete} from "primereact/autocomplete";
             let secondaryIdentifiersStr = "";
             let isSecondaryIdentifier = false;
             autocompleteFields.forEach( field => {
-                if(field == "synonyms.name" && item["synonyms"]){
+                if(field === "synonyms.name" && item["synonyms"]){
                     for(let i=0; i< item["synonyms"].length ; i++ ) {
                         if(item["synonyms"][i].name) {
                             if (item["synonyms"][i].name.toString().toLowerCase().indexOf(inputValue) >= 0) {
@@ -51,12 +51,12 @@ import {AutoComplete} from "primereact/autocomplete";
                         }
                     }
                     if(isSynonym){
-                        str += "Synonym" + ": " + synonymsStr;
+                        str += "Synonym: " + synonymsStr;
                     }
-                }else if(field == "crossReferences.curie" && item["crossReferences"]){
+                }else if(field === "crossReferences.curie" && item["crossReferences"]){
                     for(let i=0; i< item["crossReferences"].length ; i++ ) {
                         if(item["crossReferences"][i].curie) {
-                            if (item["crossReferences"][i].curie.toString() != item["curie"].toString()){
+                            if (item["crossReferences"][i].curie.toString() !== item["curie"].toString()){
                                 if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
                                     crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
                                     isCrossReference = true;
@@ -65,11 +65,11 @@ import {AutoComplete} from "primereact/autocomplete";
                         }
                     }
                     if(isCrossReference){
-                        str += "CrossReferences" + ": " + crossReferencesStr;
+                        str += "CrossReferences: " + crossReferencesStr;
                     }
                 }else {
                     if (item[field]) {
-                        if(field == "secondaryIdentifiers") {
+                        if(field === "secondaryIdentifiers") {
                             for(var i=0; i< item["secondaryIdentifiers"].length ; i++ ) {
                                 if (item["secondaryIdentifiers"][i].toLowerCase().indexOf(inputValue) >= 0) {
                                     secondaryIdentifiersStr += item["secondaryIdentifiers"][i] + ", ";
@@ -77,11 +77,11 @@ import {AutoComplete} from "primereact/autocomplete";
                                 }
                             }
                             if(isSecondaryIdentifier){
-                                str += "SecondaryIdentifiers" + ": " + secondaryIdentifiersStr;
+                                str += "SecondaryIdentifiers: " + secondaryIdentifiersStr;
                             }
                         }else {
                             if (item[field].toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                if (field != "curie" && field != "symbol")
+                                if (field !== "curie" && field !== "symbol")
                                     str += field + ": " + item[field].toString() + ", ";
                             }
                         }
