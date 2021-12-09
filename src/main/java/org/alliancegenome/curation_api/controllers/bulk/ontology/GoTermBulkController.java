@@ -6,13 +6,13 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.interfaces.bulk.ontology.GoTermBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.ontology.GoTermBulkInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.GoTermService;
 
 @RequestScoped
-public class GoTermBulkController extends BaseOntologyTermBulkController<GoTermService, GOTerm, GoTermDAO> implements GoTermBulkRESTInterface {
+public class GoTermBulkController extends BaseOntologyTermBulkController<GoTermService, GOTerm, GoTermDAO> implements GoTermBulkInterface {
 
     @Inject GoTermService goTermService;
 

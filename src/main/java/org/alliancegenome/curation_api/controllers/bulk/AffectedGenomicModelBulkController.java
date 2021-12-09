@@ -4,7 +4,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.consumers.AffectedGenomicModelDTOConsumer;
-import org.alliancegenome.curation_api.interfaces.bulk.AffectedGenomicModelBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.AffectedGenomicModelBulkInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -13,7 +13,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AffectedGenomicModelBulkController implements AffectedGenomicModelBulkRESTInterface {
+public class AffectedGenomicModelBulkController implements AffectedGenomicModelBulkInterface {
 
     @Inject AffectedGenomicModelDTOConsumer affectedGenomicModelDTOConsumer;
     

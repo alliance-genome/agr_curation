@@ -1,9 +1,9 @@
 package org.alliancegenome.curation_api.dao.ontology;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
-
-import javax.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class CHEBITermDAO extends BaseSQLDAO<CHEBITerm> {
