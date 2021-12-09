@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseController;
+import org.alliancegenome.curation_api.base.BaseCrudController;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.interfaces.crud.VocabularyCrudInterface;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -15,7 +15,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class VocabularyCrudController extends BaseController<VocabularyService, Vocabulary, VocabularyDAO> implements VocabularyCrudInterface {
+public class VocabularyCrudController extends BaseCrudController<VocabularyService, Vocabulary, VocabularyDAO> implements VocabularyCrudInterface {
 
     @Inject VocabularyService vocabularyService;
     

@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -27,6 +28,13 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
+    @Inject
+    GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+    @Inject
+    AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+    @Inject
+    AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+    
     @Inject
     DiseaseAnnotationDAO diseaseAnnotationDAO;
     @Inject
@@ -47,22 +55,79 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
     
     // The following methods are for bulk validation
-    
-    private DiseaseAnnotation upsertAnnotation(DiseaseModelAnnotationDTO annotationDTO, BiologicalEntity entity, DOTerm disease, Reference reference) {
 
-        String annotationID = getUniqueID(annotationDTO);
+
+    @Transactional
+    public DiseaseAnnotation upsert(DiseaseModelAnnotationDTO annotationDTO) {
         
-        SearchResponse<DiseaseAnnotation> annotationList = diseaseAnnotationDAO.findByField("curie", annotationID);
+        String entityId = annotationDTO.getObjectId();
 
-        DiseaseAnnotation annotation = null;
-        if (annotationList == null || annotationList.getResults().size() == 0) {
-            annotation = new DiseaseAnnotation();
-            annotation.setCurie(annotationID);
-        } else {
-            annotation = annotationList.getResults().get(0);
+        BiologicalEntity subjectEntity = biologicalEntityDAO.find(entityId);
+
+        // do not create DA if no entity / subject is found.
+        if (subjectEntity == null) {
+            log.info("Subject Entity " + entityId + " not found in database - skipping annotation");
+            return null;
         }
 
-        //annotation.setSubject(entity);
+        if (!validateAnnotationDTO(annotationDTO)) {
+            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
+            return null;
+        }
+        
+        String doTermId = annotationDTO.getDoId();
+        DOTerm disease = doTermDAO.find(doTermId);
+        if (disease == null) {
+            log.info("Annotation for " + entityId + " missing DOTerm: " + doTermId + " required fields - skipping annotation");
+            return null;
+        }
+
+        String publicationId = annotationDTO.getEvidence().getPublication().getPublicationId();
+        Reference reference = referenceDAO.find(publicationId);
+        if (reference == null) {
+            reference = new Reference();
+            reference.setCurie(publicationId);
+            // ToDo: need this until references are loaded separately
+            // raise an error when reference cannot be found?
+            referenceDAO.persist(reference);
+        }
+
+        String annotationID = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(subjectEntity.getTaxon()).getCurieID(annotationDTO);
+        
+        DiseaseAnnotation annotation = null;
+        
+        if(subjectEntity instanceof Gene) {
+            SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("curie", annotationID);
+            if (annotationList == null || annotationList.getResults().size() == 0) {
+                GeneDiseaseAnnotation geneAnnotation = new GeneDiseaseAnnotation();
+                geneAnnotation.setSubject((Gene)subjectEntity);
+                annotation = geneAnnotation;
+            } else {
+                annotation = annotationList.getResults().get(0);
+            }
+        } else if(subjectEntity instanceof Allele) {
+            SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("curie", annotationID);
+            if (annotationList == null || annotationList.getResults().size() == 0) {
+                AlleleDiseaseAnnotation alleleAnnotation = new AlleleDiseaseAnnotation();
+                alleleAnnotation.setSubject((Allele)subjectEntity);
+                annotation = alleleAnnotation;
+            } else {
+                annotation = annotationList.getResults().get(0);
+            }
+        } else if(subjectEntity instanceof AffectedGenomicModel) {
+            SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("curie", annotationID);
+            if (annotationList == null || annotationList.getResults().size() == 0) {
+                AGMDiseaseAnnotation agmAnnotation = new AGMDiseaseAnnotation();
+                agmAnnotation.setSubject((AffectedGenomicModel)subjectEntity);
+                annotation = agmAnnotation;
+            } else {
+                annotation = annotationList.getResults().get(0);
+            }
+        } else {
+            log.info("Annotation for " + entityId + " missing Subject: " + subjectEntity + " not valid type - skipping annotation");
+            return null;
+        }
+
         annotation.setObject(disease);
         annotation.setReference(reference);
         
@@ -87,73 +152,14 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             annotation.setWith(withGenes);
         }
         
-        annotation.setCreated(
-                annotationDTO.getDateAssigned()
-                        .toInstant()
-                        .atZone(ZoneId.systemDefault())
-                        .toLocalDateTime()
-        );
-        annotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.valueOf(
-                annotationDTO
-                        .getObjectRelation()
-                        .getAssociationType())
-        );
+        annotation.setCreated(annotationDTO.getDateAssigned().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        annotation.setDiseaseRelation(DiseaseRelation.valueOf(annotationDTO.getObjectRelation().getAssociationType()));
 
         diseaseAnnotationDAO.persist(annotation);
         return annotation;
-    }
-
-    @Transactional
-    public DiseaseAnnotation upsert(DiseaseModelAnnotationDTO annotationDTO) {
         
-        String entityId = annotationDTO.getObjectId();
-
-        BiologicalEntity entity = biologicalEntityDAO.find(entityId);
-
-        // do not create DA if no entity / subject is found.
-        if (entity == null) {
-            log.info("Entity " + entityId + " not found in database - skipping annotation");
-            return null;
-        }
-
-        if (!validateAnnotationDTO(annotationDTO)) {
-            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
-            return null;
-        }
-        
-        String doTermId = annotationDTO.getDoId();
-        DOTerm disease = doTermDAO.find(doTermId);
-        // TODo: Change logic when ontology loader is in place
-        // do not create new DOTerm records here
-        // but raise an error if disease cannot be found
-        if (disease == null) {
-            disease = new DOTerm();
-            disease.setCurie(doTermId);
-            doTermDAO.persist(disease);
-        }
-
-        String publicationId = annotationDTO.getEvidence().getPublication().getPublicationId();
-        Reference reference = referenceDAO.find(publicationId);
-        if (reference == null) {
-            reference = new Reference();
-            reference.setCurie(publicationId);
-            // ToDo: need this until references are loaded separately
-            // raise an error when reference cannot be found?
-            referenceDAO.persist(reference);
-        }
-        return upsertAnnotation(annotationDTO, entity, disease, reference);
     }
 
-    private String getUniqueID(DiseaseModelAnnotationDTO annotationDTO) {
-
-        BiologicalEntity entity = biologicalEntityDAO.find(annotationDTO.getObjectId());
-
-        // do not create DA if no entity / subject is found.
-        if (entity == null)
-            return null;
-
-        return DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(entity.getTaxon()).getCurieID(annotationDTO);
-    }
 
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
         List<String> annotationsCuriesBefore = diseaseAnnotationDAO.findAllAnnotationCuries(taxonID);

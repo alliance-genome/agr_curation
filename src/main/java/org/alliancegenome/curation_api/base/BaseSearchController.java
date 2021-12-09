@@ -11,7 +11,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public abstract class BaseController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseCrudRESTInterface<E> {
+public abstract class BaseSearchController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseSearchInterface<E> {
 
     private BaseService<E, D> service;
 
@@ -20,22 +20,6 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     }
     
     protected abstract void init();
-    
-    public ObjectResponse<E> create(E entity) {
-        return service.create(entity);
-    }
-
-    public ObjectResponse<E> get(String id) {
-        return service.get(id);
-    }
-
-    public ObjectResponse<E> update(E entity) {
-        return service.update(entity);
-    }
-
-    public ObjectResponse<E> delete(String id) {
-        return service.delete(id);
-    }
 
     public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
         if(params == null) params = new HashMap<String, Object>();
@@ -56,5 +40,5 @@ public abstract class BaseController<S extends BaseService<E, D>, E extends Base
     public void reindex(Integer threads, Integer indexAmount) {
         service.reindex(threads, indexAmount);
     }
-    
+
 }

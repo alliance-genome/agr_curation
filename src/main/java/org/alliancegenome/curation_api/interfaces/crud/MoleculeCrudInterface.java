@@ -6,7 +6,7 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
+import org.alliancegenome.curation_api.base.BaseCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - Molecules")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface MoleculeCrudInterface extends BaseCrudRESTInterface<Molecule> {
+public interface MoleculeCrudInterface extends BaseCrudInterface<Molecule> {
 
     @POST
     @Path("/find")
