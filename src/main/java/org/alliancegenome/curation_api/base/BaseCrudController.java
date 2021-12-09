@@ -1,19 +1,21 @@
 package org.alliancegenome.curation_api.base;
 
+import java.util.HashMap;
+
 import javax.enterprise.context.RequestScoped;
 
-import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.*;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public abstract class BaseCrudController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> extends BaseSearchController<S, E, D> implements BaseCrudInterface<E> {
+public abstract class BaseCrudController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseCrudInterface<E> {
 
     private BaseService<E, D> service;
 
     protected void setService(S service) {
-        super.setService(service);
         this.service = service;
     }
     
@@ -35,4 +37,23 @@ public abstract class BaseCrudController<S extends BaseService<E, D>, E extends 
         return service.delete(id);
     }
     
+    public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
+        if(params == null) params = new HashMap<String, Object>();
+        Pagination pagination = new Pagination();
+        pagination.setLimit(limit);
+        pagination.setPage(page);
+        return service.findByParams(pagination, params);
+    }
+
+    public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
+        if(params == null) params = new HashMap<String, Object>();
+        Pagination pagination = new Pagination();
+        pagination.setLimit(limit);
+        pagination.setPage(page);
+        return service.searchByParams(pagination, params);
+    }
+    
+    public void reindex(Integer threads, Integer indexAmount) {
+        service.reindex(threads, indexAmount);
+    }
 }

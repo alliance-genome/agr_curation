@@ -6,6 +6,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseCrudController;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.interfaces.search.DiseaseAnnotationInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 

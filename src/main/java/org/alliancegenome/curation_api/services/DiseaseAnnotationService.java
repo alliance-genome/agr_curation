@@ -100,6 +100,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("curie", annotationID);
             if (annotationList == null || annotationList.getResults().size() == 0) {
                 GeneDiseaseAnnotation geneAnnotation = new GeneDiseaseAnnotation();
+                geneAnnotation.setCurie(annotationID);
                 geneAnnotation.setSubject((Gene)subjectEntity);
                 annotation = geneAnnotation;
             } else {
@@ -109,6 +110,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("curie", annotationID);
             if (annotationList == null || annotationList.getResults().size() == 0) {
                 AlleleDiseaseAnnotation alleleAnnotation = new AlleleDiseaseAnnotation();
+                alleleAnnotation.setCurie(annotationID);
                 alleleAnnotation.setSubject((Allele)subjectEntity);
                 annotation = alleleAnnotation;
             } else {
@@ -118,6 +120,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("curie", annotationID);
             if (annotationList == null || annotationList.getResults().size() == 0) {
                 AGMDiseaseAnnotation agmAnnotation = new AGMDiseaseAnnotation();
+                agmAnnotation.setCurie(annotationID);
                 agmAnnotation.setSubject((AffectedGenomicModel)subjectEntity);
                 annotation = agmAnnotation;
             } else {
@@ -145,9 +148,10 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
             List <Gene> withGenes = new ArrayList<>();
             annotationDTO.getWith().forEach(with -> {
-                if (!with.startsWith("HGNC:")) return;
-                Gene withGene = geneDAO.getByIdOrCurie(with);
-                withGenes.add(withGene);
+                if (with.startsWith("HGNC:")) {
+                    Gene withGene = geneDAO.getByIdOrCurie(with);
+                    withGenes.add(withGene);
+                }
             });
             annotation.setWith(withGenes);
         }
