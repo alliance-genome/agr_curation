@@ -6,7 +6,7 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.BaseCrudRESTInterface;
+import org.alliancegenome.curation_api.base.BaseCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - Gene Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneDiseaseAnnotationCrudInterface extends BaseCrudRESTInterface<GeneDiseaseAnnotation> {
+public interface GeneDiseaseAnnotationCrudInterface extends BaseCrudInterface<GeneDiseaseAnnotation> {
 
     @GET
     @Path("/{curie}")

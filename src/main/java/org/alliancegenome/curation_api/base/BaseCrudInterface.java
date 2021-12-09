@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseCrudRESTInterface<E extends BaseEntity> {
+public interface BaseCrudInterface<E extends BaseEntity> extends BaseSearchInterface<E> {
 
     @POST //@Secured
     @Path("/")
@@ -35,7 +35,7 @@ public interface BaseCrudRESTInterface<E extends BaseEntity> {
     @Path("/{curie}")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> delete(@PathParam("curie") String curie);
-
+    
     @POST
     @Path("/find")
     @Tag(name = "Database Search Endpoints")
