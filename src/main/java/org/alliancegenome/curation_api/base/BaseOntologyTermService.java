@@ -41,7 +41,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
     
     
     
-    private void handleDefinitionUrls(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
+    protected void handleDefinitionUrls(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
         Set<String> currentDefinitionUrls;
         if(dbTerm.getDefinitionUrls() == null) {
             currentDefinitionUrls = new HashSet<>();
@@ -74,7 +74,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
     
     
     
-    private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
+    protected void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
         Set<String> currentSubsets;
         if(dbTerm.getSubsets() == null) {
             currentSubsets = new HashSet<>();
@@ -104,7 +104,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
     }
     
-    private void handleSynonyms(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
+    protected void handleSynonyms(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
         Set<String> currentSynonyms;
         if(dbTerm.getSynonyms() == null) {
             currentSynonyms = new HashSet<>();
@@ -135,7 +135,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
     }
     
     
-    private void handleSecondaryIds(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
+    protected void handleSecondaryIds(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
         Set<String> currentIds;
         if(dbTerm.getSecondaryIdentifiers() == null) {
             currentIds = new HashSet<>();
