@@ -4,7 +4,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.consumers.GeneDTOConsumer;
-import org.alliancegenome.curation_api.interfaces.bulk.GeneBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.GeneBulkInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.GeneService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -13,7 +13,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class GeneBulkController implements GeneBulkRESTInterface {
+public class GeneBulkController implements GeneBulkInterface {
 
     @Inject GeneDTOConsumer geneDTOConsumer;
     
