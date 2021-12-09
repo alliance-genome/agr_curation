@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.BaseService;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.apache.commons.collections4.map.HashedMap;

@@ -6,12 +6,12 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.interfaces.bulk.ontology.DoTermBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.ontology.DoTermBulkInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.services.ontology.DoTermService;
 
 @RequestScoped
-public class DoTermBulkController extends BaseOntologyTermBulkController<DoTermService, DOTerm, DoTermDAO> implements DoTermBulkRESTInterface {
+public class DoTermBulkController extends BaseOntologyTermBulkController<DoTermService, DOTerm, DoTermDAO> implements DoTermBulkInterface {
 
     @Inject DoTermService doTermService;
 
