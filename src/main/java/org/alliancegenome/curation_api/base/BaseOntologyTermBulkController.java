@@ -19,19 +19,19 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 public abstract class BaseOntologyTermBulkController<S extends BaseOntologyTermService<T, D>, T extends OntologyTerm, D extends BaseDAO<T>> implements Runnable {
 
-    private GenericOntologyLoadHelper<T> loader;
+    protected GenericOntologyLoadHelper<T> loader;
 
     private BaseOntologyTermService<T, D> service;
-    private Class<T> termClazz;
+    protected Class<T> termClazz;
 
     @Inject ConnectionFactory connectionFactory1;
     @Inject ConnectionFactory connectionFactory2;
 
-    private JMSProducer producer;
-    private JMSContext context;
+    protected JMSProducer producer;
+    protected JMSContext context;
 
     private int threadCount = 1;
-    private String queueName;
+    protected String queueName;
 
     private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(threadCount);
     
