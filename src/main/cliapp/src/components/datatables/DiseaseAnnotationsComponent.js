@@ -98,7 +98,7 @@ export const DiseaseAnnotationsComponent = () => {
         if (rowData && rowData.with) {
             return <div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.with.map((a,index) => <li key={index}>{a.curie + ' (' + a.symbol + ')'}</li>)}
+                    {rowData.with.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
                 </ul>
             </div>
         }
@@ -254,7 +254,7 @@ export const DiseaseAnnotationsComponent = () => {
 
     const diseaseBodyTemplate = (rowData) => {
             if(rowData.object){
-            return <div>{rowData.object.curie} ({rowData.object.name})</div>;
+            return <div>{rowData.object.name} ({rowData.object.curie})</div>;
         }
     };
 
@@ -409,7 +409,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
                   
                   <Column 
-                    field="object.curie"
+                    field="object.name"
                     header="Disease"
                     sortable={isEnabled} 
                     filter filterElement={filterComponentTemplate("object", ["object.curie", "object.name"])}
@@ -436,7 +436,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                    <Column 
-                    field="with.curie"
+                    field="with.symbol"
                     header="With"
                     body={withTemplate} 
                     sortable={isEnabled} 
