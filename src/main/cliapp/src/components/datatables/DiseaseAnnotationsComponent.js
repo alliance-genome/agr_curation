@@ -311,7 +311,7 @@ export const DiseaseAnnotationsComponent = () => {
         return (
             <>
                 <DiseaseEditor 
-                    autocompleteFields={["curie", "name"]} 
+                    autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]} 
                     rowProps={props} 
                     searchService={searchService} 
                     setDiseaseAnnotations={setDiseaseAnnotations} 
