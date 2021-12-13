@@ -43,10 +43,17 @@ export const DiseaseAnnotationsComponent = () => {
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
 
+    const sortMapping = {
+        'object.name': ['object.curie', 'object.namespace' ],
+        // 'subject.name': ['subject.symbol', 'subject.curie' ] add after SCRUM-510
+        'with.symbol': ['with.name', 'with.curie' ]
+
+    }
+
 
 
     useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
-        () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters), {
+        () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters, sortMapping), {
             onSuccess: (data) => {
 
                 setDiseaseAnnotations(data.results);
@@ -278,6 +285,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseRelationEditor = (props, disabled=false) => {
+        
         return (
             <>
                 <ControlledVocabularyDropdown
