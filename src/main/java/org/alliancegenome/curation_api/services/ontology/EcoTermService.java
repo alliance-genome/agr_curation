@@ -19,7 +19,7 @@ public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO>
     @Inject EcoTermDAO ecoTermDAO;
     @Inject VocabularyService vocabularyService;
     
-    private final String ecoTermAbbreviationVocabularyName = "Disease annotation evidence code abbreviations";
+    private final String ecoTermAbbreviationVocabularyName = "AGR disease annotation ECO terms";
     private final String agrEcoTermSubset = "agr_eco_terms";
     
     @Override
