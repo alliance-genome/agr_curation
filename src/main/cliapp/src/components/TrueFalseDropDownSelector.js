@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { Dropdown } from "primereact/dropdown"
 
 export function TrueFalseDropdown({ options, editorChange, props }) {
-    const [selectedValue, setSelectedValue] = useState(props.rowData[props.field]);
+    const [selectedValue, setSelectedValue] = useState();
     const onChange = (e) => {
         setSelectedValue(e.value)
         editorChange(props, e)
@@ -15,7 +15,7 @@ export function TrueFalseDropdown({ options, editorChange, props }) {
                 options={options}
                 onChange={(e) => onChange(e)}
                 optionLabel="name"
-                placeholder={props.rowData[props.field]}
+                placeholder={props.rowData[props.field].toString()}
                 style={{ width: '100%' }}
             />
         </>

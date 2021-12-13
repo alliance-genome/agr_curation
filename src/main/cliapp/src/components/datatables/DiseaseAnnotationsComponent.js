@@ -31,6 +31,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
     const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
+    const [negatedTerms, setNegatedTerms] = useState();
 
     const [errorMessages, setErrorMessages] = useState({});
 
@@ -43,11 +44,6 @@ export const DiseaseAnnotationsComponent = () => {
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
-
-    const negatedTerms = [
-        { name: 'True' },
-        { name: 'False' }
-    ];
 
     useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
         () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters), {
@@ -74,6 +70,14 @@ export const DiseaseAnnotationsComponent = () => {
         () => controlledVocabularyService.getTerms('disease_relation_terms'), {
             onSuccess: (data) => {
                 setDiseaseRelationTerms(data)
+            }
+        }
+    )
+
+    useQuery(['generic_boolean_terms'],
+        () => controlledVocabularyService.getTerms('generic_boolean_terms'), {
+            onSuccess: (data) => {
+                setNegatedTerms(data)
             }
         }
     )
