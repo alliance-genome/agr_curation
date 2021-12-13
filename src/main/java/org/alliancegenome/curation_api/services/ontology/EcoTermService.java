@@ -20,6 +20,7 @@ public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO>
     @Inject VocabularyService vocabularyService;
     
     private final String ecoTermAbbreviationVocabularyName = "Disease annotation evidence code abbreviations";
+    private final String agrEcoTermSubset = "agr_eco_terms";
     
     @Override
     @PostConstruct
@@ -35,6 +36,11 @@ public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO>
             EcoTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());
             if (ecoTerm != null) {
                 ecoTerm.setAbbreviation(ecoVocabularyTerm.getAbbreviation());
+                List<String> subsets = ecoTerm.getSubsets();
+                if (!subsets.contains(agrEcoTermSubset)) {
+                    subsets.add(agrEcoTermSubset);
+                }
+                ecoTerm.setSubsets(subsets);
                 ecoTermDAO.persist(ecoTerm);
             }
         });
