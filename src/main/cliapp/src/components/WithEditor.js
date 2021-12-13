@@ -89,10 +89,8 @@ import {AutoComplete} from "primereact/autocomplete";
                 }
             });
             str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
-            if(item.name){
-                return <div dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') ' + str.toString()}}/>;
-            }else if(item.symbol){
-                return <div dangerouslySetInnerHTML={{_html: item.symbol + ' (' +item.curie + ') ' + str.toString()}}/>;
+            if(item.symbol){
+                return <div dangerouslySetInnerHTML={{__html: item.symbol + ' (' +item.curie + ') ' + str.toString()}}/>;
             }else{
                 return <div>{item.curie + str.toString()}</div>;
             }
