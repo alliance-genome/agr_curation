@@ -76,11 +76,10 @@ export const DiseaseAnnotationsComponent = () => {
     );
 
     useQuery(['diseaseRelationTerms'],
-        () => controlledVocabularyService.getTerms('disease_relation_terms'), {
-            onSuccess: (data) => {
-                setDiseaseRelationTerms(data)
-            }
-        }
+        () => searchService.search("vocabularyterm", 15, 0, null, {"vocabFilter": {"vocabulary.name": "Disease Relation Vocabulary"}})
+        .then((data) => {
+            setDiseaseRelationTerms(data.results);
+        })
     )
 
     useQuery(['generic_boolean_terms'],
