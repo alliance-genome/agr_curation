@@ -31,6 +31,9 @@ export function returnSorted(event, originalSort) {
             return newSort;
         }
     }
+};
 
-}
+export function trimWhitespace(value){
+    return value.replace(/\s{2,}/g,' ').trim();
+};
 
