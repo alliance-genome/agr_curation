@@ -467,7 +467,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                  <Column
-                    field="evidenceCodes.curie"
+                    field="evidenceCodes.abbreviation"
                     header="Evidence Code"
                     body={evidenceTemplate}
                     sortable={isEnabled} 
