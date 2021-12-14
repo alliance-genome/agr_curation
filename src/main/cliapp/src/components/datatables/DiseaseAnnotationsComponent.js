@@ -112,9 +112,10 @@ export const DiseaseAnnotationsComponent = () => {
 
     const withTemplate = (rowData) => {
         if (rowData && rowData.with) {
+            const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return <div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.with.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
+                    {sortedWithGenes.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
                 </ul>
             </div>
         }
@@ -130,9 +131,10 @@ export const DiseaseAnnotationsComponent = () => {
 
     const evidenceTemplate = (rowData) => {
         if (rowData && rowData.evidenceCodes) {
+            const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return (<div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.evidenceCodes.map((a,index) =>
+                    {sortedEvidenceCodes.map((a,index) =>
                         <li key={index}>{a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}</li>
                     )}
                 </ul>
@@ -453,7 +455,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                  <Column
-                    field="evidenceCodes.curie"
+                    field="evidenceCodes.abbreviation"
                     header="Evidence Code"
                     body={evidenceTemplate}
                     sortable={isEnabled}
