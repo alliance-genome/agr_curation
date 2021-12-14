@@ -26,6 +26,7 @@ public class Vocabulary extends BaseGeneratedEntity {
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     private String name;
 
