@@ -113,9 +113,10 @@ export const DiseaseAnnotationsComponent = () => {
 
     const withTemplate = (rowData) => {
         if (rowData && rowData.with) {
+            const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return <div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.with.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
+                    {sortedWithGenes.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
                 </ul>
             </div>
         }
