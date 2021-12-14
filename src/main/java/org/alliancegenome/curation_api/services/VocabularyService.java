@@ -26,9 +26,7 @@ public class VocabularyService extends BaseService<Vocabulary, VocabularyDAO> {
 
     @Override
     public ObjectResponse<Vocabulary> create(Vocabulary entity) {
-        System.out.println("Vocab: " + entity);
         ObjectResponse<Vocabulary> ret = super.create(entity);
-        System.out.println("Vocab: " + ret);
         return ret;
     }
     
