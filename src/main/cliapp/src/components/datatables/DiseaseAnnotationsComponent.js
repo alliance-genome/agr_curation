@@ -5,7 +5,7 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { useMutation, useQuery } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted } from '../../utils/utils';
+import { returnSorted,trimWhitespace } from '../../utils/utils';
 import { SubjectEditor } from './../SubjectEditor';
 import { DiseaseEditor } from './../DiseaseEditor';
 import { WithEditor } from './../WithEditor';
@@ -147,19 +147,6 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const editorValidator = (value) => {
-        value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
-        /*if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
-            let subStr = value.split(':');
-            value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
-        }else{
-            value = value.toUpperCase();
-        }*/
-        return value;
-    }
-
-
-
     const onRowEditInit = (event) => {
         rowsInEdit.current++;
         setIsEnabled(false);
@@ -193,12 +180,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length >= 1){
-            event.data.subject.curie = editorValidator(event.data.subject.curie);
+            event.data.subject.curie = trimWhitespace(event.data.subject.curie);
             updatedRow.subject = {};
             updatedRow.subject.curie = event.data.subject.curie;
         }
         if(Object.keys(event.data.object).length >= 1){
-            event.data.object.curie = editorValidator(event.data.object.curie);
+            event.data.object.curie = trimWhitespace(event.data.object.curie);
             updatedRow.object = {};
             updatedRow.object.curie = event.data.object.curie;
         }
@@ -295,7 +282,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseRelationEditor = (props, disabled=false) => {
-        
+
         return (
             <>
                 <ControlledVocabularyDropdown
@@ -470,7 +457,7 @@ export const DiseaseAnnotationsComponent = () => {
                     field="evidenceCodes.curie"
                     header="Evidence Code"
                     body={evidenceTemplate}
-                    sortable={isEnabled} 
+                    sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"])}
                     editor={(props) => evidenceEditorTemplate(props)}
                   />
