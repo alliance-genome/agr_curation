@@ -1,17 +1,29 @@
 package org.alliancegenome.curation_api.base;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseDAO<E>> extends BaseService<E, BaseDAO<E>> {
 
+    @Inject
+    CrossReferenceDAO crossReferenceDAO;
+    @Inject
+    CrossReferenceService crossReferenceService;
+    
     @Transactional
     public E processUpdate(E inTerm) {
 
@@ -32,6 +44,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
         handleDefinitionUrls(term, inTerm);
         handleSecondaryIds(term, inTerm);
         handleSynonyms(term, inTerm);
+        handleCrossReferences(term, inTerm);
 
         dao.persist(term);
 
@@ -102,6 +115,40 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
             }
         });
 
+    }
+    
+    private void handleCrossReferences(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
+        Map<String, CrossReference> currentIds;
+        if(dbTerm.getCrossReferences() == null) {
+            currentIds = new HashedMap<>();
+            dbTerm.setCrossReferences(new ArrayList<>());
+        } else {
+            currentIds = dbTerm.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
+        }
+        Map<String, CrossReference> newIds;
+        if(incomingTerm.getCrossReferences() == null) {
+            newIds = new HashedMap<>();
+        }
+        else {
+            newIds = incomingTerm.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
+        }
+        
+        newIds.forEach((k, v) -> {
+            if(!currentIds.containsKey(k)) {
+                if(crossReferenceDAO.find(k) == null) {
+                    CrossReference cr = new CrossReference();
+                    cr.setCurie(v.getCurie());
+                    crossReferenceService.create(cr);
+                }
+                dbTerm.getCrossReferences().add(v);
+            }
+        });
+        
+        currentIds.forEach((k, v) -> {
+            if(!newIds.containsKey(k)) {
+                dbTerm.getCrossReferences().remove(v);
+            }
+        });
     }
     
     private void handleSynonyms(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
