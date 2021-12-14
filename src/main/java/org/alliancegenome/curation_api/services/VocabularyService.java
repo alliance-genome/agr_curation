@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
@@ -22,14 +23,5 @@ public class VocabularyService extends BaseService<Vocabulary, VocabularyDAO> {
     protected void init() {
         setSQLDao(vocabularyDAO);
     }
-
-    @Override
-    public ObjectResponse<Vocabulary> create(Vocabulary entity) {
-        System.out.println("Vocab: " + entity);
-        ObjectResponse<Vocabulary> ret = super.create(entity);
-        System.out.println("Vocab: " + ret);
-        return ret;
-    }
-
 
 }
