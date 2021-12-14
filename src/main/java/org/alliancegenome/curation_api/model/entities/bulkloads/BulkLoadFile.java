@@ -3,11 +3,14 @@ package org.alliancegenome.curation_api.model.entities.bulkloads;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
+import org.hibernate.envers.Audited;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Audited
 @Entity
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(exclude = {"bulkLoad"})
 public class BulkLoadFile extends BaseGeneratedEntity {
 
     @Column(unique=true)

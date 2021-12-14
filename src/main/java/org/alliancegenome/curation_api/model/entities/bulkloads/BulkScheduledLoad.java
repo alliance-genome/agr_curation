@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.bulkloads;
 
-import javax.persistence.Entity;
+import javax.persistence.*;
 
 import org.hibernate.envers.Audited;
 
@@ -8,9 +8,11 @@ import lombok.*;
 
 @Audited
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
-public class BulkManualLoad extends BulkLoad {
+@ToString(callSuper = true)
+public class BulkScheduledLoad extends BulkLoad {
 
-    
+    private boolean scheduled;
+    private String schedule;
 }

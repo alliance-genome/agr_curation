@@ -1,5 +1,8 @@
 package org.alliancegenome.curation_api.controllers.bulk;
 
+import java.io.*;
+import java.util.zip.GZIPInputStream;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -7,7 +10,8 @@ import org.alliancegenome.curation_api.consumers.AlleleDTOConsumer;
 import org.alliancegenome.curation_api.interfaces.bulk.AlleleBulkInterface;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.AlleleService;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.alliancegenome.curation_api.util.*;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -19,7 +23,7 @@ public class AlleleBulkController implements AlleleBulkInterface {
     
     @Inject AlleleService alleleService;
 
-    @Override
+    //@Override
     public String updateAlleles(AlleleMetaDataDTO alleleData, boolean async) {
 
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
@@ -36,6 +40,25 @@ public class AlleleBulkController implements AlleleBulkInterface {
         ph.finishProcess();
 
         return "OK";
+    }
+
+    @Override
+    public String updateOldAlleles(MultipartFormDataInput input) {
+        FileUploadHelper helper = new FileUploadHelper(input, "file");
+        
+        String outputFilePath = helper.getOutputFilePath();
+        
+        
+        return outputFilePath;
+    }
+
+    @Override
+    public String updateAlleles(MultipartFormDataInput input) {
+        FileUploadHelper helper = new FileUploadHelper(input, "file");
+        
+        String outputFilePath = helper.getOutputFilePath();
+
+        return outputFilePath;
     }
     
 }

@@ -5,11 +5,15 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
+import org.hibernate.envers.Audited;
 
-import lombok.Data;
+import lombok.*;
 
-@Data
+@Audited
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(exclude = {"group"})
 public abstract class BulkLoad extends BaseGeneratedEntity {
 
     @ManyToOne
@@ -17,7 +21,5 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     
     @OneToMany(mappedBy = "bulkLoad")
     private List<BulkLoadFile> loadFiles;
-    
-    private boolean scheduled;
-    private String schedule;
+
 }
