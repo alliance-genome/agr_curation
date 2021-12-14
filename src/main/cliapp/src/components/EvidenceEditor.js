@@ -29,7 +29,62 @@ import {AutoComplete} from "primereact/autocomplete";
         };
 
         const evidenceItemTemplate = (item) => {
-            return <div>{item.abbreviation} - {item.name} ({item.curie})</div>
+            let inputValue = rowProps.rowData.object.curie.toLowerCase();
+            let str = "";
+            let synonymsStr = "";
+            let isSynonym = false;
+            let crossReferencesStr = "";
+            let isCrossReference = false;
+            let secondaryIdentifiersStr = "";
+            let isSecondaryIdentifier = false;
+            autocompleteFields.forEach( field => {
+                if(field === "synonyms" && item["synonyms"]){
+                    for(let i=0; i< item["synonyms"].length ; i++ ) {
+                        if(item["synonyms"][i]) {
+                            if (item["synonyms"][i].toLowerCase().indexOf(inputValue) >= 0) {
+                                synonymsStr +=  item["synonyms"][i] + ", ";
+                                isSynonym = true;
+                            }
+                        }
+                    }
+                if(isSynonym){
+                    str += "Synonym: " + synonymsStr;
+                }
+                }else if(field === "crossReferences.curie" && item["crossReferences"]){
+                    for(let i=0; i< item["crossReferences"].length ; i++ ) {
+                        if(item["crossReferences"][i].curie) {
+                            if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
+                                crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
+                                isCrossReference = true;
+                            }
+                        }
+                    }
+                    if(isCrossReference){
+                        str += "CrossReferences: " + crossReferencesStr;
+                    }
+                }else {
+                    if (item[field]) {
+                        if(field === "secondaryIdentifiers") {
+                            for(var i=0; i< item["secondaryIdentifiers"].length ; i++ ) {
+                                if (item["secondaryIdentifiers"][i].toLowerCase().indexOf(inputValue) >= 0) {
+                                    secondaryIdentifiersStr += item["secondaryIdentifiers"][i] + ", ";
+                                    isSecondaryIdentifier = true;
+                                }
+                            }
+                            if(isSecondaryIdentifier){
+                                str += "SecondaryIdentifiers: " + secondaryIdentifiersStr;
+                            }
+                        }else {
+                            if (item[field].toString().toLowerCase().indexOf(inputValue) >= 0) {
+                                if (field !== "curie" && field !== "name")
+                                    str += field + ": " + item[field].toString() + ", ";
+                            }
+                        }
+                    }
+                }
+            });
+            str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
+            return <div dangerouslySetInnerHTML={{__html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') ' + str.toString()}}/>;
         };
 
 
