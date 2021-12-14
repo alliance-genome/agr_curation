@@ -104,14 +104,6 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const publicationTemplate = (rowData) => {
-        if (rowData && rowData.referenceList) {
-            return <div>{rowData.referenceList.map(a => a.curie)}</div>
-        }
-        
-    };
-        
-
     const evidenceTemplate = (rowData) => { 
         if (rowData && rowData.evidenceCodes) {
             return (<div>
@@ -418,11 +410,10 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                   <Column 
-                    field="referenceList.curie"
+                    field="reference.curie"
                     header="Reference"
-                    body={publicationTemplate} 
                     sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("referenceList", ["referenceList.curie"])}
+                    filter filterElement={filterComponentTemplate("reference", ["reference.curie"])}
 
                   />
 
