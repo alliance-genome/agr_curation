@@ -24,16 +24,4 @@ public class VocabularyService extends BaseService<Vocabulary, VocabularyDAO> {
         setSQLDao(vocabularyDAO);
     }
 
-    @Override
-    public ObjectResponse<Vocabulary> create(Vocabulary entity) {
-        ObjectResponse<Vocabulary> ret = super.create(entity);
-        return ret;
-    }
-    
-    @Transactional
-    public Vocabulary getByName(String name) {
-        Vocabulary vocabulary = vocabularyDAO.find(vocabularyDAO.getIdFromName(name));
-        return vocabulary;
-    }
-
 }

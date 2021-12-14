@@ -50,10 +50,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
         return term;
     }
-    
-    
-    
-    
+
     private void handleDefinitionUrls(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
         Set<String> currentDefinitionUrls;
         if(dbTerm.getDefinitionUrls() == null) {
