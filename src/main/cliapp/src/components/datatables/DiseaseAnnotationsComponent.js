@@ -297,7 +297,7 @@ export const DiseaseAnnotationsComponent = () => {
     const onNegatedEditorValueChange = (props, event) => {
         let updatedAnnotations = [...props.value];
         if(event.value || event.value === '') {
-            updatedAnnotations[props.rowIndex].negated = Boolean(event.value.name);
+            updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
             setDiseaseAnnotations(updatedAnnotations);
         }
     };
