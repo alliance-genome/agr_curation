@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
+import {trimWhitespace } from '../utils/utils';
 
    export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredSubjects, setFilteredSubjects] = useState([]);
@@ -35,7 +36,7 @@ import {AutoComplete} from "primereact/autocomplete";
         };
 
         const subjectItemTemplate = (item) => {
-            let inputValue = rowProps.rowData.subject.curie.toLowerCase();
+            let inputValue = trimWhitespace(rowProps.rowData.subject.curie.toLowerCase());
             let str = "";
             let synonymsStr = "";
             let isSynonym = false;
