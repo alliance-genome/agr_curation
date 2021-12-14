@@ -40,13 +40,15 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
     }
     
     public Map<String, T> load(String fullText) throws Exception {
-        File outfile = new File("tmp.file2.owl");
+        File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
         log.info("Input data size: " + fullText.length());
         BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
         writer.append(fullText);
         writer.flush();
         writer.close();
-        return load(outfile);
+        Map<String, T> ret = load(outfile);
+        outfile.delete();
+        return ret;
     }
     
     public Map<String, T> load(File infile) throws Exception {
