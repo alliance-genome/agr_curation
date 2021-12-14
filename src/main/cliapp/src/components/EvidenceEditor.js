@@ -11,8 +11,9 @@ import {AutoComplete} from "primereact/autocomplete";
                 evidenceFilter[field] = event.query;
             });
             let obsoleteFilter = {"obsolete": false};
-
-            searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter, "obsoleteFilter:":obsoleteFilter})
+            let subsetFilter = {"subsets": "agr_eco_terms"};
+ 
+            searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter, "obsoleteFilter:":obsoleteFilter, "subsetFilter":subsetFilter})
                 .then((data) => {
                     //console.log(data)
                     setFilteredEvidenceCodes(data.results);
@@ -28,7 +29,7 @@ import {AutoComplete} from "primereact/autocomplete";
         };
 
         const evidenceItemTemplate = (item) => {
-            return <div>{item.curie} ({item.name})</div>
+            return <div>{item.abbreviation} - {item.name} ({item.curie})</div>
         };
 
 

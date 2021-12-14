@@ -117,7 +117,7 @@ export const DiseaseAnnotationsComponent = () => {
             return (<div>
                 <ul style={{listStyleType : 'none'}}>
                     {rowData.evidenceCodes.map((a,index) =>
-                        <li key={index}>{a.curie}</li>
+                        <li key={index}>{a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}</li>
                     )}
                 </ul>
             </div>);
@@ -345,7 +345,7 @@ export const DiseaseAnnotationsComponent = () => {
         return (
             <>
                 <EvidenceEditor
-                    autocompleteFields={["curie", "name"]}
+                    autocompleteFields={["curie", "name", "abbreviation"]}
                     rowProps={props}
                     searchService={searchService}
                     setDiseaseAnnotations={setDiseaseAnnotations}
@@ -431,7 +431,7 @@ export const DiseaseAnnotationsComponent = () => {
                     header="Evidence Code"
                     body={evidenceTemplate}
                     sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
+                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"])}
                     editor={(props) => evidenceEditorTemplate(props)}
                   />
 
