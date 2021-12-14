@@ -12,10 +12,5 @@ public class VocabularyDAO extends BaseSQLDAO<Vocabulary> {
     protected VocabularyDAO() {
         super(Vocabulary.class);
     }
-    
-    public Long getIdFromName(String name) {
-        Query jpqlQuery = entityManager.createQuery("SELECT vocabulary.id FROM Vocabulary vocabulary WHERE vocabulary.name=:name");
-        jpqlQuery.setParameter("name", name);
-        return(Long) jpqlQuery.getSingleResult();
-    }
+
 }
