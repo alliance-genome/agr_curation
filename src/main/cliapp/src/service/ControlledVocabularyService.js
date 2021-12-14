@@ -1,4 +1,4 @@
-import { SearchService } from './SearchService';
+//import axios from 'axios';
 
 export class ControlledVocabularyService {
     terms = {
@@ -42,16 +42,9 @@ export class ControlledVocabularyService {
     }
 
     getTerms(termType) {
-        if (termType in this.terms) {
-            return this.terms[termType]['terms'];
-        }
-        else {
-            SearchService.search("vocabularyterm", 15, 0, null, {"vocabFilter": {"vocabulary.name": termType}})
-            .then((data) => {
-                return data.results;
-            })
-        }
+        return this.terms[termType].terms;
     }
+
 }
 
 
