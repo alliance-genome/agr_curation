@@ -23,5 +23,14 @@ public class EcoTermBulkController extends BaseOntologyTermBulkController<EcoTer
     public void init() {
         setService(ecoTermService, EcoTerm.class);
     }
+    
+    @Override
+    public String updateTerms(String fullText) {
+        String status = super.updateTerms(fullText);
+        if (status.equals("OK")) {
+            ecoTermService.updateAbbreviations();
+        }
+        return status;
+    }
 
 }
