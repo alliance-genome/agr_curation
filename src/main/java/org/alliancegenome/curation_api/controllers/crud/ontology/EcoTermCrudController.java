@@ -20,5 +20,8 @@ public class EcoTermCrudController extends BaseOntologyTermController<EcoTermSer
     protected void init() {
         setService(ecoTermService);
     }
-
+    
+    public void updateAbbreviations() {
+        ecoTermService.updateAbbreviations();
+    }
 }

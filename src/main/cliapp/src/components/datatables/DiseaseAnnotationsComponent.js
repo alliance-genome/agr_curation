@@ -5,7 +5,7 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { useMutation, useQuery } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted } from '../../utils/utils';
+import { returnSorted,trimWhitespace } from '../../utils/utils';
 import { SubjectEditor } from './../SubjectEditor';
 import { DiseaseEditor } from './../DiseaseEditor';
 import { WithEditor } from './../WithEditor';
@@ -16,6 +16,7 @@ import { SearchService } from '../../service/SearchService';
 import { ControlledVocabularyDropdown } from './../ControlledVocabularySelector';
 import { ControlledVocabularyService } from '../../service/ControlledVocabularyService';
 import { ErrorMessageComponent } from './../ErrorMessageComponent';
+import { TrueFalseDropdown } from './../TrueFalseDropDownSelector';
 
 export const DiseaseAnnotationsComponent = () => {
 
@@ -30,6 +31,7 @@ export const DiseaseAnnotationsComponent = () => {
     const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
     const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
+    const [negatedTerms, setNegatedTerms] = useState();
 
     const [errorMessages, setErrorMessages] = useState({});
 
@@ -43,10 +45,17 @@ export const DiseaseAnnotationsComponent = () => {
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
 
+    const sortMapping = {
+        'object.name': ['object.curie', 'object.namespace' ],
+        // 'subject.name': ['subject.symbol', 'subject.curie' ] add after SCRUM-510
+        'with.symbol': ['with.name', 'with.curie' ]
+
+    }
+
 
 
     useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
-        () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters), {
+        () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters, sortMapping), {
             onSuccess: (data) => {
 
                 setDiseaseAnnotations(data.results);
@@ -67,9 +76,16 @@ export const DiseaseAnnotationsComponent = () => {
     );
 
     useQuery(['diseaseRelationTerms'],
-        () => controlledVocabularyService.getTerms('disease_relation_terms'), {
+        () => searchService.search("vocabularyterm", 15, 0, null, {"vocabFilter": {"vocabulary.name": "Disease Relation Vocabulary"}})
+        .then((data) => {
+            setDiseaseRelationTerms(data.results);
+        })
+    )
+
+    useQuery(['generic_boolean_terms'],
+        () => controlledVocabularyService.getTerms('generic_boolean_terms'), {
             onSuccess: (data) => {
-                setDiseaseRelationTerms(data)
+                setNegatedTerms(data)
             }
         }
     )
@@ -78,13 +94,13 @@ export const DiseaseAnnotationsComponent = () => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
     });
 
-    const onLazyLoad = (event) => { 
+    const onLazyLoad = (event) => {
         setRows(event.rows);
         setPage(event.page);
         setFirst(event.first);
     };
 
-    const onFilter = (filtersCopy) => { 
+    const onFilter = (filtersCopy) => {
         setFilters({...filtersCopy});
     };
 
@@ -96,9 +112,10 @@ export const DiseaseAnnotationsComponent = () => {
 
     const withTemplate = (rowData) => {
         if (rowData && rowData.with) {
+            const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return <div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.with.map((a,index) => <li key={index}>{a.curie + ' (' + a.symbol + ')'}</li>)}
+                    {sortedWithGenes.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
                 </ul>
             </div>
         }
@@ -106,34 +123,22 @@ export const DiseaseAnnotationsComponent = () => {
 
     const evidenceTemplate = (rowData) => { 
         if (rowData && rowData.evidenceCodes) {
+            const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return (<div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.evidenceCodes.map((a,index) =>
-                        <li key={index}>{a.curie}</li>
+                    {sortedEvidenceCodes.map((a,index) =>
+                        <li key={index}>{a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}</li>
                     )}
                 </ul>
             </div>);
         }
     };
 
-    const negatedTemplate = (rowData) => { 
+    const negatedTemplate = (rowData) => {
         if(rowData && rowData.negated !== null && rowData.negated !== undefined){
             return <div>{JSON.stringify(rowData.negated)}</div>
         }
     };
-
-    const editorValidator = (value) => {
-        value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
-        /*if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
-            let subStr = value.split(':');
-            value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
-        }else{
-            value = value.toUpperCase();
-        }*/
-        return value;
-    }
-
-
 
     const onRowEditInit = (event) => {
         rowsInEdit.current++;
@@ -168,12 +173,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length >= 1){
-            event.data.subject.curie = editorValidator(event.data.subject.curie);
+            event.data.subject.curie = trimWhitespace(event.data.subject.curie);
             updatedRow.subject = {};
             updatedRow.subject.curie = event.data.subject.curie;
         }
         if(Object.keys(event.data.object).length >= 1){
-            event.data.object.curie = editorValidator(event.data.object.curie);
+            event.data.object.curie = trimWhitespace(event.data.object.curie);
             updatedRow.object = {};
             updatedRow.object.curie = event.data.object.curie;
         }
@@ -198,11 +203,11 @@ export const DiseaseAnnotationsComponent = () => {
                 toast_topright.current.show([
                     {life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
                 ]);
-                
+
                 let annotations = [...diseaseAnnotations];
-                
+
                 const errorMessagesCopy = errorMessages;
-                
+
                 console.log(errorMessagesCopy);
                 errorMessagesCopy[event.index] = {};
                 Object.keys(error.response.data.errorMessages).forEach((field) => {
@@ -216,8 +221,8 @@ export const DiseaseAnnotationsComponent = () => {
                 console.log(errorMessagesCopy);
                 setErrorMessages({...errorMessagesCopy});
 
-                
-                
+
+
                 setDiseaseAnnotations(annotations);
                 let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
                 setEditingRows(_editingRows);
@@ -246,14 +251,14 @@ export const DiseaseAnnotationsComponent = () => {
 
     const diseaseBodyTemplate = (rowData) => {
             if(rowData.object){
-            return <div>{rowData.object.curie} ({rowData.object.name})</div>;
+            return <div>{rowData.object.name} ({rowData.object.curie})</div>;
         }
     };
 
     const filterComponentTemplate = (filterName, fields) => {
-      return (<FilterComponent 
-            isEnabled={isEnabled} 
-            fields={fields} 
+      return (<FilterComponent
+            isEnabled={isEnabled}
+            fields={fields}
             filterName={filterName}
             currentFilters={filters}
             onFilter={onFilter}
@@ -270,6 +275,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseRelationEditor = (props, disabled=false) => {
+
         return (
             <>
                 <ControlledVocabularyDropdown
@@ -282,18 +288,39 @@ export const DiseaseAnnotationsComponent = () => {
         )
     };
 
+    const onNegatedEditorValueChange = (props, event) => {
+        let updatedAnnotations = [...props.value];
+        if(event.value || event.value === '') {
+            updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
+            setDiseaseAnnotations(updatedAnnotations);
+        }
+    };
+
+    const negatedEditor = (props, disabled=false) => {
+        return (
+            <>
+                <TrueFalseDropdown
+                    options={negatedTerms}
+                    editorChange={onNegatedEditorValueChange}
+                    props={props}
+                />
+                <ErrorMessageComponent  errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
+            </>
+        )
+    };
+
     const subjectEditorTemplate = (props) => {
         return (
             <>
                 <SubjectEditor
-                    autocompleteFields={["curie", "name", "symbol", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]} 
-                    rowProps={props} 
-                    searchService={searchService} 
-                    setDiseaseAnnotations={setDiseaseAnnotations} 
+                    autocompleteFields={["curie", "name", "symbol", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+                    rowProps={props}
+                    searchService={searchService}
+                    setDiseaseAnnotations={setDiseaseAnnotations}
                 />
-                <ErrorMessageComponent  
-                    errorMessages={errorMessages[props.rowIndex]} 
-                    errorField={"subject"} 
+                <ErrorMessageComponent
+                    errorMessages={errorMessages[props.rowIndex]}
+                    errorField={"subject"}
                 />
             </>
         );
@@ -302,15 +329,15 @@ export const DiseaseAnnotationsComponent = () => {
     const diseaseEditorTemplate = (props) => {
         return (
             <>
-                <DiseaseEditor 
-                    autocompleteFields={["curie", "name"]} 
-                    rowProps={props} 
-                    searchService={searchService} 
-                    setDiseaseAnnotations={setDiseaseAnnotations} 
+                <DiseaseEditor
+                    autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
+                    rowProps={props}
+                    searchService={searchService}
+                    setDiseaseAnnotations={setDiseaseAnnotations}
                 />
-                <ErrorMessageComponent  
-                    errorMessages={errorMessages[props.rowIndex]} 
-                    errorField={"object"} 
+                <ErrorMessageComponent
+                    errorMessages={errorMessages[props.rowIndex]}
+                    errorField={"object"}
                 />
             </>
         );
@@ -337,7 +364,7 @@ export const DiseaseAnnotationsComponent = () => {
         return (
             <>
                 <EvidenceEditor
-                    autocompleteFields={["curie", "name"]}
+                    autocompleteFields={["curie", "name", "abbreviation"]}
                     rowProps={props}
                     searchService={searchService}
                     setDiseaseAnnotations={setDiseaseAnnotations}
@@ -360,53 +387,54 @@ export const DiseaseAnnotationsComponent = () => {
                   editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
                   editingRows={editingRows} onRowEditChange={onRowEditChange}
                   sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-                  first={first} 
+                  first={first}
                   dataKey="id"
                   paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
                   paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
                   currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
                 >
-                  <Column field="curie" header="Curie" 
-                    style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}} 
-                    sortable={isEnabled} 
-                    filter 
+                  <Column field="curie" header="Curie"
+                    style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}
+                    sortable={isEnabled}
+                    filter
                     filterElement={filterComponentTemplate("curieFilter", ["curie"])}
                   />
 
                   <Column
                     field="subject.curie"//needed for sorting
                     header="Subject"
-                    sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}                    
-                    editor={(props) => subjectEditorTemplate(props)} 
-                    body={subjectBodyTemplate}  
+                    sortable={isEnabled}
+                    filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}
+                    editor={(props) => subjectEditorTemplate(props)}
+                    body={subjectBodyTemplate}
                     style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}
                   />
 
-                  <Column 
+                  <Column
                     field="diseaseRelation"
                     header="Disease Relation"
                     sortable={isEnabled}
-                    filter 
+                    filter
                     filterElement={filterComponentTemplate("diseaseRelation", ["diseaseRelation"])}
                     editor={(props) => diseaseRelationEditor(props)}
                   />
-                  
-                  <Column 
-                    field="negated" 
-                    header="Negated" 
-                    body={negatedTemplate} 
+
+                  <Column
+                    field="negated"
+                    header="Negated"
+                    body={negatedTemplate}
                     filter filterElement={filterComponentTemplate("negated", ["negated"])}
-                    sortable={isEnabled} 
+                    sortable={isEnabled}
+                    editor={(props) => negatedEditor(props)}
                   />
-                  
-                  <Column 
-                    field="object.curie"
+
+                  <Column
+                    field="object.name"
                     header="Disease"
-                    sortable={isEnabled} 
+                    sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("object", ["object.curie", "object.name"])}
-                    editor={(props) => diseaseEditorTemplate(props)} 
-                    body={diseaseBodyTemplate} 
+                    editor={(props) => diseaseEditorTemplate(props)}
+                    body={diseaseBodyTemplate}
                   />
 
                   <Column 
@@ -418,19 +446,19 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                  <Column
-                    field="evidenceCodes.curie"
+                    field="evidenceCodes.abbreviation"
                     header="Evidence Code"
                     body={evidenceTemplate}
-                    sortable={isEnabled} 
-                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie"])}
+                    sortable={isEnabled}
+                    filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"])}
                     editor={(props) => evidenceEditorTemplate(props)}
                   />
 
-                   <Column 
-                    field="with.curie"
+                   <Column
+                    field="with.symbol"
                     header="With"
-                    body={withTemplate} 
-                    sortable={isEnabled} 
+                    body={withTemplate}
+                    sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("with", ["with.curie", "with.symbol"])}
                     editor={(props) => withEditorTemplate(props)}
                   />

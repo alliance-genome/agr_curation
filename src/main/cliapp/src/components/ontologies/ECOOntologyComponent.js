@@ -78,6 +78,7 @@ export const ECOOntologyComponent = () => {
             <Column field="curie" header="Curie" sortable={isEnabled} filter filterElement={filterComponentTemplate("curieFilter", ["curie"])} />
             <Column field="name" header="Name" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameFilter", ["name"])} />
             <Column field="definition" header="Definition" sortable={isEnabled} filter filterElement={filterComponentTemplate("definitionFilter", ["definition"])} />
+            <Column field="abbreviation" header="Abbreviation" sortable={isEnabled} filter filterElement={filterComponentTemplate("abbreviationFilter", ["abbreviation"])} />
           </DataTable>
         </div>
       </div>

@@ -184,7 +184,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         
         EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {
             String key = annotation.getProperty().getIRI().getShortForm();
-            
             if(key.equals("id")) {
                 term.setCurie(getString(annotation.getValue()));
             }
