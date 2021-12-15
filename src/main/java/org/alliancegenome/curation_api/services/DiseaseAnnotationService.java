@@ -73,7 +73,9 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             throw new ApiErrorException(response);
             // do not continue validation for update if Disease Annotation ID has not been found
         }       
-        
+
+        dbEntity.setNegated(uiEntity.getNegated());
+
         BiologicalEntity subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
         
@@ -121,7 +123,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             addInvalidMessagetoResponse("object", response);
             return null;
         }
-        else if (diseaseTerm.getObsolete() && !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie())) {
+        else if ( (diseaseTerm.getObsolete() != null ? diseaseTerm.getObsolete(): true) && !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie())) {
             addObsoleteMessagetoResponse("object", response);
             return null;
         }
@@ -140,7 +142,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 addInvalidMessagetoResponse("evidence", response);
                 return null;
             }
-            else if (evidenceCode.getObsolete() && !dbEntity.getEvidenceCodes().contains(evidenceCode)) {
+            else if ((evidenceCode.getObsolete() != null ? evidenceCode.getObsolete(): true)  && !dbEntity.getEvidenceCodes().contains(evidenceCode)) {
                 addObsoleteMessagetoResponse("evidence", response);
                 return null;
             }
