@@ -17,7 +17,7 @@ public class ApiErrorExceptionMapper implements ExceptionMapper<ApiErrorExceptio
         Response.ResponseBuilder rb = Response.status(Response.Status.BAD_REQUEST);
         // dereference entity to make sure it's not tried to be serialized
         // due to lazy-initialization issues
-        // ToDo: Once we get the jackson-hibernate HibernateSerialzers working we don't need it any longer.
+        // TODO: Once we get the jackson-hibernate HibernateSerialzers working we don't need it any longer.
         e.getObjectResponse().setEntity(null);
         rb.entity(e.getObjectResponse());
         return rb.build();
