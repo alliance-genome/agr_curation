@@ -5,7 +5,7 @@ import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService
 import { useMutation, useQuery } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted } from '../../utils/utils';
+import { returnSorted,trimWhitespace } from '../../utils/utils';
 import { SubjectEditor } from './../SubjectEditor';
 import { DiseaseEditor } from './../DiseaseEditor';
 import { WithEditor } from './../WithEditor';
@@ -76,11 +76,10 @@ export const DiseaseAnnotationsComponent = () => {
     );
 
     useQuery(['diseaseRelationTerms'],
-        () => controlledVocabularyService.getTerms('disease_relation_terms'), {
-            onSuccess: (data) => {
-                setDiseaseRelationTerms(data)
-            }
-        }
+        () => searchService.search("vocabularyterm", 15, 0, null, {"vocabFilter": {"vocabulary.name": "Disease Relation Vocabulary"}})
+        .then((data) => {
+            setDiseaseRelationTerms(data.results);
+        })
     )
 
     useQuery(['generic_boolean_terms'],
@@ -113,9 +112,10 @@ export const DiseaseAnnotationsComponent = () => {
 
     const withTemplate = (rowData) => {
         if (rowData && rowData.with) {
+            const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return <div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.with.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
+                    {sortedWithGenes.map((a,index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
                 </ul>
             </div>
         }
@@ -131,9 +131,10 @@ export const DiseaseAnnotationsComponent = () => {
 
     const evidenceTemplate = (rowData) => {
         if (rowData && rowData.evidenceCodes) {
+            const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return (<div>
                 <ul style={{listStyleType : 'none'}}>
-                    {rowData.evidenceCodes.map((a,index) =>
+                    {sortedEvidenceCodes.map((a,index) =>
                         <li key={index}>{a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}</li>
                     )}
                 </ul>
@@ -146,19 +147,6 @@ export const DiseaseAnnotationsComponent = () => {
             return <div>{JSON.stringify(rowData.negated)}</div>
         }
     };
-
-    const editorValidator = (value) => {
-        value = value.replace(/\s{2,}/g,' ').trim(); //SCRUM-601 Removing leading & trailing extra spaces from input string
-        /*if(value.toString().includes(':')) { //SCRUM-600 Making it case insensitive by defaulting to Uppercase
-            let subStr = value.split(':');
-            value = subStr[0].toUpperCase().concat(':').concat(subStr[1]);
-        }else{
-            value = value.toUpperCase();
-        }*/
-        return value;
-    }
-
-
 
     const onRowEditInit = (event) => {
         rowsInEdit.current++;
@@ -193,12 +181,12 @@ export const DiseaseAnnotationsComponent = () => {
         }
         let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
         if(Object.keys(event.data.subject).length >= 1){
-            event.data.subject.curie = editorValidator(event.data.subject.curie);
+            event.data.subject.curie = trimWhitespace(event.data.subject.curie);
             updatedRow.subject = {};
             updatedRow.subject.curie = event.data.subject.curie;
         }
         if(Object.keys(event.data.object).length >= 1){
-            event.data.object.curie = editorValidator(event.data.object.curie);
+            event.data.object.curie = trimWhitespace(event.data.object.curie);
             updatedRow.object = {};
             updatedRow.object.curie = event.data.object.curie;
         }
@@ -295,7 +283,7 @@ export const DiseaseAnnotationsComponent = () => {
     };
 
     const diseaseRelationEditor = (props, disabled=false) => {
-        
+
         return (
             <>
                 <ControlledVocabularyDropdown
@@ -311,7 +299,7 @@ export const DiseaseAnnotationsComponent = () => {
     const onNegatedEditorValueChange = (props, event) => {
         let updatedAnnotations = [...props.value];
         if(event.value || event.value === '') {
-            updatedAnnotations[props.rowIndex].negated = Boolean(event.value.name);
+            updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
             setDiseaseAnnotations(updatedAnnotations);
         }
     };
@@ -467,10 +455,10 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                  <Column
-                    field="evidenceCodes.curie"
+                    field="evidenceCodes.abbreviation"
                     header="Evidence Code"
                     body={evidenceTemplate}
-                    sortable={isEnabled} 
+                    sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"])}
                     editor={(props) => evidenceEditorTemplate(props)}
                   />
