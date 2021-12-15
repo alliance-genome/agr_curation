@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.util;
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.zip.*;
 
@@ -10,17 +11,78 @@ import org.jboss.resteasy.plugins.providers.multipart.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public class FileUploadHelper {
+public class FileTransferHelper {
 
     private MultipartFormDataInput input;
-    private String formField = "";
+    private String formField;
+    private String url;
     
-    public FileUploadHelper(MultipartFormDataInput input, String formField) {
+    public FileTransferHelper(MultipartFormDataInput input, String formField) {
         this.input = input;
         this.formField = formField;
     }
-
+    
+    public FileTransferHelper(String url) {
+        this.url = url;
+    }
+    
     public String getOutputFilePath() {
+        if(formField != null && input != null) {
+            return getFilePathFromUploadedFile();
+        }
+        if(url != null) {
+            return getFilePathFromURLFile();
+        }
+        return null;
+    }
+    
+    private String getFilePathFromURLFile() {
+
+        Date d = new Date();
+        String outFileName = "tmp.data_" + d.getTime();
+        File saveFilePath = new File(outFileName);
+        
+        try {
+
+            log.info("Downloading File: " + url);
+            log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
+            FileUtils.copyURLToFile(new URL(url), saveFilePath);
+            log.info("Save file to local filesystem complete");
+            
+            try {
+                GZIPInputStream gs = new GZIPInputStream(new FileInputStream(saveFilePath));
+            } catch (IOException e) {
+                log.info("Input stream not in the GZIP format, GZIP it");
+
+                String gzFileName = outFileName + ".gz";
+                if( !compressGzipFile(saveFilePath, gzFileName) ) {
+                    log.info("Deleting old file: " + saveFilePath);
+                    saveFilePath.delete();
+                    return null;
+                }
+                log.info("gzipped to " + gzFileName);
+
+                // delete original uncompressed file
+                log.info("Deleting old file: " + saveFilePath);
+                saveFilePath.delete();
+                outFileName = gzFileName;
+                GZIPInputStream gs = new GZIPInputStream(new FileInputStream(gzFileName));
+            }
+            
+            
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        return new File(outFileName).getAbsolutePath();
+
+    }
+
+    private String getFilePathFromUploadedFile() {
 
         Map<String, List<InputPart>> form = input.getFormDataMap();
 

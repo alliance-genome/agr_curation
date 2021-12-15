@@ -21,5 +21,19 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     
     @OneToMany(mappedBy = "bulkLoad")
     private List<BulkLoadFile> loadFiles;
+    
+    @Enumerated(EnumType.STRING)
+    private BulkLoadStatus status;
+    
+    public enum BulkLoadStatus {
+        STARTED,
+        RUNNING,
+        STOPPED,
+        FINISHED,
+        PENDING,
+        FAILED,
+        ADMINISTRATIVELY_STOPPED,
+        PAUSED;
+    }
 
 }

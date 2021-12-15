@@ -44,7 +44,7 @@ public class AlleleBulkController implements AlleleBulkInterface {
 
     @Override
     public String updateOldAlleles(MultipartFormDataInput input) {
-        FileUploadHelper helper = new FileUploadHelper(input, "file");
+        FileTransferHelper helper = new FileTransferHelper(input, "file");
         
         String outputFilePath = helper.getOutputFilePath();
         
@@ -54,7 +54,7 @@ public class AlleleBulkController implements AlleleBulkInterface {
 
     @Override
     public String updateAlleles(MultipartFormDataInput input) {
-        FileUploadHelper helper = new FileUploadHelper(input, "file");
+        FileTransferHelper helper = new FileTransferHelper(input, "file");
         
         String outputFilePath = helper.getOutputFilePath();
 

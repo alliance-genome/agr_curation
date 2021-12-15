@@ -1,11 +1,11 @@
 package org.alliancegenome.curation_api.base;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -104,6 +104,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         E entity = find(id);
         entityManager.remove(entity);
         return entity;
+    }
+    
+    public void flush() {
+        entityManager.flush();
+    }
+    
+    public void commit() {
+        entityManager.getTransaction().commit();
     }
 
     public void reindex() {

@@ -17,6 +17,8 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     private String md5Sum;
     private String s3Path;
     
+    private Long fileSize;
+    
     @ManyToOne
     private BulkLoad bulkLoad;
     
