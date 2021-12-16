@@ -458,95 +458,95 @@ public class GeneBulkUploadITCase {
                 statusCode(400);
     }
 
-//     @Test
-//     @Order(14)
-//     public void geneBulkUploadNoPrimaryId() throws Exception {
-//         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/04_no_primary_id.json"));
+    @Test
+    @Order(14)
+    public void geneBulkUploadNoPrimaryId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/04_no_primary_id.json"));
 
-//         // TODO: make the endpoint to respond with 400 (Bad Request) not 500 (internal server error)
-//         RestAssured.given().
-//                 contentType("application/json").
-//                 body(content).
-//                 when().
-//                 post("/api/gene/bulk/bgifile?async=false").
-//                 then().
-//                 statusCode(400);
-//     }
+        // TODO: make the endpoint to respond with 400 (Bad Request) not 500 (internal server error)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
 
-//     @Test
-//     @Order(15)
-//     public void geneBulkUploadInvalidSoTermId() throws Exception {
-//         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/14_invalid_so_term_id.json"));
+    @Test
+    @Order(15)
+    public void geneBulkUploadInvalidSoTermId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/14_invalid_so_term_id.json"));
 
-//         // TODO: make the endpoint to respond with 400 (Bad Request)
-//         RestAssured.given().
-//                 contentType("application/json").
-//                 body(content).
-//                 when().
-//                 post("/api/gene/bulk/bgifile?async=false").
-//                 then().
-//                 statusCode(400);
-//     }
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
 
-//     @Test
-//     @Order(16)
-//     public void geneBulkUploadInvalidTaxon() throws Exception {
-//         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/15_invalid_taxon_id.json"));
+    @Test
+    @Order(16)
+    public void geneBulkUploadInvalidTaxon() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/15_invalid_taxon_id.json"));
 
-//         // TODO: make the endpoint to respond with 400 (Bad Request)
-//         RestAssured.given().
-//                 contentType("application/json").
-//                 body(content).
-//                 when().
-//                 post("/api/gene/bulk/bgifile?async=false").
-//                 then().
-//                 statusCode(400);
-//     }
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
 
-//     @Test
-//     @Order(17)
-//     public void geneBulkUploadStartAfterEnd() throws Exception {
-//         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/16_start_after_end.json"));
+    @Test
+    @Order(17)
+    public void geneBulkUploadStartAfterEnd() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/16_start_after_end.json"));
 
-//         // TODO: make the endpoint to respond with 400 (Bad Request)
-//         RestAssured.given().
-//                 contentType("application/json").
-//                 body(content).
-//                 when().
-//                 post("/api/gene/bulk/bgifile?async=false").
-//                 then().
-//                 statusCode(400);
-//     }
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
 
-//     @Test
-//     @Order(18)
-//     public void geneBulkUploadInvalidStrand() throws Exception {
-//         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/17_invalid_strand.json"));
+    @Test
+    @Order(18)
+    public void geneBulkUploadInvalidStrand() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/17_invalid_strand.json"));
 
-//         // TODO: make the endpoint to respond with 400 (Bad Request)
-//         RestAssured.given().
-//                 contentType("application/json").
-//                 body(content).
-//                 when().
-//                 post("/api/gene/bulk/bgifile?async=false").
-//                 then().
-//                 statusCode(400);
-//     }
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
 
-//     @Test
-//     @Order(19)
-//     public void geneBulkUploadDuplicatedPrimaryIds() throws Exception {
-//         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/18_duplicate_primary_ids.json"));
+    @Test
+    @Order(19)
+    public void geneBulkUploadDuplicatedPrimaryIds() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/18_duplicate_primary_ids.json"));
 
-//         // TODO: make the endpoint to respond with 400 (Bad Request)
-//         RestAssured.given().
-//                 contentType("application/json").
-//                 body(content).
-//                 when().
-//                 post("/api/gene/bulk/bgifile?async=false").
-//                 then().
-//                 statusCode(400);
-//     }
+        // TODO: make the endpoint to respond with 400 (Bad Request)
+        RestAssured.given().
+                contentType("application/json").
+                body(content).
+                when().
+                post("/api/gene/bulk/bgifile?async=false").
+                then().
+                statusCode(400);
+    }
 
     
 }
