@@ -494,7 +494,6 @@ public class GeneBulkUploadITCase {
     public void geneBulkUploadInvalidTaxon() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/15_invalid_taxon_id.json"));
 
-        // TODO: make the endpoint to respond with 400 (Bad Request)
         RestAssured.given().
                 contentType("application/json").
                 body(content).
