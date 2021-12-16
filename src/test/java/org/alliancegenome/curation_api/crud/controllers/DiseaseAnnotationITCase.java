@@ -91,8 +91,9 @@ public class DiseaseAnnotationITCase {
                 extract().body().as(getObjectResponseTypeRef());
 
         DiseaseAnnotation editedDiseaseAnnotation = res.getEntity();
-        editedDiseaseAnnotation.setNegated(true);
 
+        // change negated
+        editedDiseaseAnnotation.setNegated(true);
         // change subject
         BiologicalEntity newSubject = createBiologicalEntity("BO:0002", "taxon:0001");
         
