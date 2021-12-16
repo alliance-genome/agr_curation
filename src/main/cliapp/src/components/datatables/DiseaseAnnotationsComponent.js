@@ -47,7 +47,7 @@ export const DiseaseAnnotationsComponent = () => {
 
     const sortMapping = {
         'object.name': ['object.curie', 'object.namespace' ],
-        // 'subject.name': ['subject.symbol', 'subject.curie' ] add after SCRUM-510
+        'subject.name': ['subject.symbol', 'subject.curie' ], 
         'with.symbol': ['with.name', 'with.curie' ]
 
     }
@@ -240,9 +240,9 @@ export const DiseaseAnnotationsComponent = () => {
     const subjectBodyTemplate = (rowData) => {
         if(rowData.subject){
             if(rowData.subject.symbol){
-                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.symbol + ' (' +  rowData.subject.curie + ')'}}/>;
             } else if(rowData.subject.name) {
-                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.name + ' (' +  rowData.subject.curie + ')'}}/>;
             }else {
                 return <div>{rowData.subject.curie}</div>;
             }
@@ -401,7 +401,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                   <Column
-                    field="subject.curie"//needed for sorting
+                    field="subject.name"//needed for sorting
                     header="Subject"
                     sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}
