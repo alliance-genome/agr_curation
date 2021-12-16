@@ -25,8 +25,8 @@ public class EcoTermBulkController extends BaseOntologyTermBulkController<EcoTer
     }
     
     @Override
-    public String updateTerms(String fullText) {
-        String status = super.updateTerms(fullText);
+    public String updateTerms(boolean async, String fullText) {
+        String status = super.updateTerms(async, fullText);
         if (status.equals("OK")) {
             ecoTermService.updateAbbreviations();
         }

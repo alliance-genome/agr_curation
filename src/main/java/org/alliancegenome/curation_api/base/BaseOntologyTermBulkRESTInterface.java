@@ -10,7 +10,10 @@ public interface BaseOntologyTermBulkRESTInterface {
     @POST
     @Path("/owl")
     @Consumes(MediaType.APPLICATION_XML)
-    public String updateTerms(@RequestBody String fullText);
+    public String updateTerms(
+            @DefaultValue("true") 
+            @QueryParam("async") boolean async,
+            @RequestBody String fullText);
     
     public void init();
 }

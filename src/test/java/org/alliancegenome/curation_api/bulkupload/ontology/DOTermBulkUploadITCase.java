@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.bulkupload.ontology;
 
 import java.nio.file.*;
+import java.util.concurrent.TimeUnit;
 
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
@@ -39,7 +40,7 @@ public class DOTermBulkUploadITCase {
             accept("application/json").
             body(content).
             when().
-            post("/api/doterm/bulk/owl").
+            post("/api/doterm/bulk/owl?async=false").
             then().
             statusCode(200);
         
