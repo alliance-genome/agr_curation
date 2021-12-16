@@ -1249,10 +1249,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(6));
+            body("totalResults", is(6)); // 1 SGD annotation replaced with 1
     }
 
-    // @Test
+    @Test
     @Order(46)
     public void diseaseAnnotationBulkUploadInvalidGeneAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/36_invalid_gene_association_type.json"));
@@ -1278,7 +1278,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(5)); // 1 ZFIN annotation replaced with 0
     }
 
-    // @Test
+    @Test
     @Order(47)
     public void diseaseAnnotationBulkUploadInvalidAgmAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/37_invalid_agm_association_type.json"));
@@ -1304,7 +1304,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(5)); // 0 ZFIN annotations added
     }
 
-    // @Test
+    @Test
     @Order(48)
     public void diseaseAnnotationBulkUploadInvalidAlleleAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/38_invalid_allele_association_type.json"));
@@ -1327,10 +1327,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // 1 MGI annotation replaced with 1
+            body("totalResults", is(4)); // 1 MGI annotation replaced with 0
     }
 
-    // @Test
+    @Test
     @Order(49)
     public void diseaseAnnotationBulkUploadInvalidObjectType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/39_invalid_object_type.json"));
@@ -1353,6 +1353,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // No ZFIN annotations added
+            body("totalResults", is(4)); // No ZFIN annotations added
     }
 }
