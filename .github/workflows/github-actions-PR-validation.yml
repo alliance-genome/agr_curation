@@ -35,6 +35,13 @@ jobs:
       - name: Run Maven verify
         run: |
           mvn --no-transfer-progress --batch-mode --update-snapshots verify
+      - name: Package API
+        run: |
+          ./build/package-api.sh
+      - name: Run Integration tests
+        run: |
+          make integration-test
+
   test-build-docker-image:
       runs-on: ubuntu-20.04
       steps:

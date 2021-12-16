@@ -300,7 +300,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         if (reference == null) {
             reference = new Reference();
             reference.setCurie(publicationId);
-            // ToDo: need this until references are loaded separately
+            // TODO: need this until references are loaded separately
             // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
         }
