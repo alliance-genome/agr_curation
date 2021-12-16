@@ -265,7 +265,7 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const diseaseRelationEditor = (props, disabled=false) => {
+    const diseaseRelationEditor = (props) => {
 
         return (
             <>
@@ -287,7 +287,7 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const negatedEditor = (props, disabled=false) => {
+    const negatedEditor = (props) => {
         return (
             <>
                 <TrueFalseDropdown
