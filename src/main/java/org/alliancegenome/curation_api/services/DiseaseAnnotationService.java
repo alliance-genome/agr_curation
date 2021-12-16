@@ -281,7 +281,6 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         }
 
         if (!validateAnnotationDTO(annotationDTO)) {
-            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
             return null;
         }
         
