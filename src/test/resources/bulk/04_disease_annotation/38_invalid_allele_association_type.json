@@ -34,7 +34,9 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "allele",
-        "inferredGeneAssociation": "TEST:TestGene000037"
+        "inferredGeneAssociation": [
+          "TEST:TestGene000037"
+        ]
       },
       "conditionRelations": [
         {
