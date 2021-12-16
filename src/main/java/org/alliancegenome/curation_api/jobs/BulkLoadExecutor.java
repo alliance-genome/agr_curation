@@ -12,8 +12,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
-import io.vertx.core.Vertx;
-import io.vertx.core.eventbus.*;
+import io.vertx.core.eventbus.Message;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.extern.jbosslog.JBossLog;
 
@@ -37,7 +36,6 @@ public class BulkLoadExecutor {
                     load.setStatus(BulkLoadStatus.STARTED);
                     bulkLoadDAO.merge(load);
                     bus.send(load.getClass().getSimpleName(), load);
-                    //log.info("Load initiated for: " + load.getClass().getSimpleName());
                 }
             }
         }
@@ -59,7 +57,6 @@ public class BulkLoadExecutor {
     public void processBulkManualLoad(Message<BulkManualLoad> load) {
         startLoad(load.body());
         bulkLoadFileProcessor.process(load.body());
-        
     }
 
     @ConsumeEvent(value = "bulkloadfile", blocking = true)
@@ -67,15 +64,7 @@ public class BulkLoadExecutor {
         BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
         if(!(bulkLoadFile.getStatus() == BulkLoadStatus.PENDING || bulkLoadFile.getStatus() == BulkLoadStatus.FAILED)) {
             log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getStatus());
-            
-            bulkLoadFile.setErrorMessage("");
-            bulkLoadFile.getBulkLoad().setStatus(BulkLoadStatus.FINISHED);
-            bulkLoadFile.setStatus(BulkLoadStatus.FINISHED);
-            File processFile = new File(bulkLoadFile.getLocalFilePath());
-            processFile.delete();
-            bulkLoadFile.setLocalFilePath(null);
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
+            endProcessing(bulkLoadFile, BulkLoadStatus.FINISHED, "Finished ended due to status: " + bulkLoadFile.getStatus());
             return;
         }
 
@@ -85,32 +74,18 @@ public class BulkLoadExecutor {
 
         try {
             bulkLoadProcessor.process(bulkLoadFile);
-            
+            endProcessing(bulkLoadFile, BulkLoadStatus.FINISHED, "");
             log.info("Load: " + bulkLoadFile + " is finished");
-            bulkLoadFile.setErrorMessage("");
-            bulkLoadFile.getBulkLoad().setStatus(BulkLoadStatus.FINISHED);
-            bulkLoadFile.setStatus(BulkLoadStatus.FINISHED);
-            File processFile = new File(bulkLoadFile.getLocalFilePath());
-            processFile.delete();
-            bulkLoadFile.setLocalFilePath(null);
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
+            
         } catch (Exception e) {
-            bulkLoadFile.setErrorMessage("Failed loading: " + file.body().getBulkLoad().getName() + " please check the logs for more info");
-            //log.error(e.getLocalizedMessage());
-            //log.error(e.getMessage());
-            bulkLoadFile.getBulkLoad().setStatus(BulkLoadStatus.FAILED);
-            bulkLoadFile.setStatus(BulkLoadStatus.FAILED);
-            File processFile = new File(bulkLoadFile.getLocalFilePath());
-            processFile.delete();
-            bulkLoadFile.setLocalFilePath(null);
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
+            endProcessing(bulkLoadFile, BulkLoadStatus.FAILED, "Failed loading: " + file.body().getBulkLoad().getName() + " please check the logs for more info");
+            log.info("Load: " + bulkLoadFile + " is failed");
             e.printStackTrace();
         }
 
         
     }
+    
 
     private void startLoad(BulkLoad load) {
         log.info("Load: " + load.getName() + " is starting");
@@ -124,6 +99,18 @@ public class BulkLoadExecutor {
         bulkLoad.setStatus(BulkLoadStatus.RUNNING);
         bulkLoadDAO.merge(bulkLoad);
         log.info("Load: " + bulkLoad.getName() + " is running");
+    }
+    
+    private void endProcessing(BulkLoadFile bulkLoadFile, BulkLoadStatus status, String message) {
+        bulkLoadFile.getBulkLoad().setStatus(status);
+        bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
+        
+        new File(bulkLoadFile.getLocalFilePath()).delete();
+        
+        bulkLoadFile.setErrorMessage(message);
+        bulkLoadFile.setStatus(status);
+        bulkLoadFile.setLocalFilePath(null);
+        bulkLoadFileDAO.merge(bulkLoadFile);
     }
 
 }

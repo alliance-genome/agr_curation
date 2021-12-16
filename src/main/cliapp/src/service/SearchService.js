@@ -15,6 +15,12 @@ export class SearchService {
         return axios.post(`/api/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
     }
 
+    find(endpoint, rows, page, findOptions) {
+        //console.log(findOptions);
+        return axios.post(`/api/${endpoint}/find?limit=${rows}&page=${page}`, findOptions).then(res => res.data);
+    }
+
+
 }
 
 function includeSecondarySorts(sorts, sortMapping) {

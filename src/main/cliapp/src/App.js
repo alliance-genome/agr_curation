@@ -14,6 +14,7 @@ import { AllelesComponent } from './components/datatables/AllelesComponent';
 import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
 import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
 import { MoleculesComponent } from './components/datatables/MoleculesComponent';
+import { DataLoadsComponent } from './components/datatables/DataLoadsComponent';
 
 import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
@@ -155,6 +156,7 @@ const App = () => {
             label: 'Other Links', icon: 'pi pi-fw pi-sitemap',
             items: [
                 { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
+                { label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
                 { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui' },
             ]
         }
@@ -214,6 +216,7 @@ const App = () => {
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/molecules" component={MoleculesComponent} />
+                <Route path="/dataloads" component={DataLoadsComponent} />
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/chebi" component={CHEBIOntologyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />

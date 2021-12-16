@@ -18,16 +18,21 @@ import lombok.*;
 @ToString(exclude = {"bulkLoad"})
 public class BulkLoadFile extends BaseGeneratedEntity {
 
+    @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private BulkLoadStatus status;
     
+    @JsonView({View.FieldsOnly.class})
     @Column(unique = true)
     private String md5Sum;
     
+    @JsonView({View.FieldsOnly.class})
     private String localFilePath;
     
+    @JsonView({View.FieldsOnly.class})
     private Long fileSize;
 
+    @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition="TEXT")
     private String errorMessage;
     
@@ -35,7 +40,7 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     private BulkLoad bulkLoad;
     
     @Transient
-    @JsonProperty("s3Url")
+    @JsonView({View.FieldsOnly.class})
     public String getS3Url() {
         // TODO craft proper URL based on system
         // Get system and craft s3URL based on md5Sum
@@ -43,7 +48,7 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     }
     
     @Transient
-    @JsonProperty("s3Path")
+    @JsonView({View.FieldsOnly.class})
     public String generateS3Path() {
         return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + ".gz";
     }

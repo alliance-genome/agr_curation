@@ -6,7 +6,10 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.jobs.BulkLoadFileProcessor;
+import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
@@ -17,14 +20,17 @@ import lombok.*;
 @ToString(exclude = {"group"})
 public abstract class BulkLoad extends BaseGeneratedEntity {
 
+    @JsonView({View.FieldsOnly.class})
     private String name;
     
+    @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private BulkLoadStatus status;
     
     @ManyToOne
     private BulkLoadGroup group;
     
+    @JsonView({View.FieldsOnly.class})
     @OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
     private List<BulkLoadFile> loadFiles;
     
