@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.jobs.BulkLoadFileProcessor;
 import org.hibernate.envers.Audited;
 
 import lombok.*;
@@ -16,14 +17,16 @@ import lombok.*;
 @ToString(exclude = {"group"})
 public abstract class BulkLoad extends BaseGeneratedEntity {
 
-    @ManyToOne
-    private BulkLoadGroup group;
-    
-    @OneToMany(mappedBy = "bulkLoad")
-    private List<BulkLoadFile> loadFiles;
+    private String name;
     
     @Enumerated(EnumType.STRING)
     private BulkLoadStatus status;
+    
+    @ManyToOne
+    private BulkLoadGroup group;
+    
+    @OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
+    private List<BulkLoadFile> loadFiles;
     
     public enum BulkLoadStatus {
         STARTED,
@@ -32,6 +35,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         FINISHED,
         PENDING,
         FAILED,
+        DOWNLOADING,
         ADMINISTRATIVELY_STOPPED,
         PAUSED;
     }

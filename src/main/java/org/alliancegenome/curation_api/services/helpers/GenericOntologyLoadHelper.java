@@ -46,18 +46,18 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         writer.append(fullText);
         writer.flush();
         writer.close();
-        Map<String, T> ret = load(outfile);
+        Map<String, T> ret = load(new FileInputStream(outfile));
         outfile.delete();
         return ret;
     }
     
-    public Map<String, T> load(File infile) throws Exception {
+    public Map<String, T> load(InputStream inStream) throws Exception {
 
         log.info("Loading Ontology File");
-        IRI term_iri = IRI.create(infile);
+        //IRI term_iri = IRI.create(infile);
         log.info("Loading Ontology File Finished");
         
-        ontology = manager.loadOntologyFromOntologyDocument(term_iri);
+        ontology = manager.loadOntologyFromOntologyDocument(inStream);
 
         ontology.annotations().forEach(a -> {
             String key = a.getProperty().getIRI().getShortForm();
@@ -77,7 +77,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
         log.info("Ontology Loaded...");
-        log.info("Document IRI: " + term_iri);
+        //log.info("Document IRI: " + term_iri);
         log.info("Ontology : " + ontology.getOntologyID());
         log.info("Default Namespace : " + defaultNamespace);
         log.info("Format        : " + manager.getOntologyFormat(ontology));

@@ -1,8 +1,5 @@
 package org.alliancegenome.curation_api.controllers.bulk;
 
-import java.io.*;
-import java.util.zip.GZIPInputStream;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -44,20 +41,15 @@ public class AlleleBulkController implements AlleleBulkInterface {
 
     @Override
     public String updateOldAlleles(MultipartFormDataInput input) {
-        FileTransferHelper helper = new FileTransferHelper(input, "file");
-        
-        String outputFilePath = helper.getOutputFilePath();
-        
-        
+        FileTransferHelper helper = new FileTransferHelper();
+        String outputFilePath = helper.saveIncomingFile(input, "file");
         return outputFilePath;
     }
 
     @Override
     public String updateAlleles(MultipartFormDataInput input) {
-        FileTransferHelper helper = new FileTransferHelper(input, "file");
-        
-        String outputFilePath = helper.getOutputFilePath();
-
+        FileTransferHelper helper = new FileTransferHelper();
+        String outputFilePath = helper.saveIncomingFile(input, "file");
         return outputFilePath;
     }
     

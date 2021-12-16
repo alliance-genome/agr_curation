@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services.fms;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.interfaces.fms.DataFileRESTInterface;
@@ -13,15 +12,7 @@ import si.mazi.rescu.RestProxyFactory;
 @ApplicationScoped
 public class DataFileService {
 
-    private String fmsURL;
-    
-    private DataFileRESTInterface api;
-
-    @PostConstruct
-    private void init() {
-        fmsURL = "https://fms.alliancegenome.org/api";
-        api = RestProxyFactory.createProxy(DataFileRESTInterface.class, fmsURL);
-    }
+    private DataFileRESTInterface api = RestProxyFactory.createProxy(DataFileRESTInterface.class, "https://fms.alliancegenome.org/api");
     
     public List<DataFile> getDataFiles(String dataType, String dataSubType) {
         return api.getDataTypeSubTypeFiles(dataType, dataSubType, true);

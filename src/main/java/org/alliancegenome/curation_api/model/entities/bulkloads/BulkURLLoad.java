@@ -13,4 +13,5 @@ import lombok.*;
 public class BulkURLLoad extends BulkScheduledLoad {
 
     private String url;
+
 }

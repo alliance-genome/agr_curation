@@ -11,7 +11,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class BulkScheduledLoad extends BulkLoad {
+public abstract class BulkScheduledLoad extends BulkLoad {
 
     private boolean scheduled;
     private String schedule;

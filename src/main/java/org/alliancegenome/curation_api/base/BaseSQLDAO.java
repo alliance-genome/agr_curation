@@ -32,6 +32,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         log.debug("SearchSession: " + searchSession);
     }
 
+    @Transactional
     public E persist(E entity) {
         log.debug("SqlDAO: persist: " + entity);
         entityManager.persist(entity);
@@ -86,6 +87,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return results;
     }
 
+    @Transactional
     public E merge(E entity) {
         log.debug("SqlDAO: merge: " + entity);
         entityManager.merge(entity);

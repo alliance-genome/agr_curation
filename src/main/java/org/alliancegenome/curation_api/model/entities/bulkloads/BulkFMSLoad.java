@@ -14,4 +14,5 @@ public class BulkFMSLoad extends BulkScheduledLoad {
 
     private String dataType;
     private String dataSubType;
+
 }

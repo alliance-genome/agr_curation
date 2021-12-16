@@ -12,5 +12,4 @@ import lombok.*;
 @ToString
 public class BulkManualLoad extends BulkLoad {
 
-    
 }
