@@ -26,8 +26,8 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void init() {
         RestAssured.config = RestAssuredConfig.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.socket.timeout", 100000)
-                    .setParam("http.connection.timeout", 100000));
+                    .setParam("http.socket.timeout", 300000)
+                    .setParam("http.connection.timeout", 300000));
     }
 
     @Test
@@ -43,7 +43,7 @@ public class DiseaseAnnotationBulkUploadITCase {
                 post("/api/gene/bulk/bgifile?async=false").
                 then().
                 statusCode(200);
-            
+    
             // check entity count
                RestAssured.given().
                     when().
