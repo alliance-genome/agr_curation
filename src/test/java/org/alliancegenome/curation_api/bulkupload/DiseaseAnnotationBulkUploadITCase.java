@@ -43,16 +43,6 @@ public class DiseaseAnnotationBulkUploadITCase {
                 post("/api/gene/bulk/bgifile?async=false").
                 then().
                 statusCode(200);
-    
-            // check entity count
-               RestAssured.given().
-                    when().
-                    header("Content-Type", "application/json").
-                    body("{}").
-                    post("/api/gene/find?limit=10&page=0").
-                    then().
-                    statusCode(200).
-                       body("totalResults", is(833));
     }
 
     @Test
