@@ -276,7 +276,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         // do not create DA if no entity / subject is found.
         if (entity == null) {
-            log.info("Entity " + entityId + " not found in database - skipping annotation");
+            log.debug("Entity " + entityId + " not found in database - skipping annotation");
             return null;
         }
 
