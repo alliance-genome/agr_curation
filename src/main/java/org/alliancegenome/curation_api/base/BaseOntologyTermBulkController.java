@@ -49,13 +49,15 @@ public abstract class BaseOntologyTermBulkController<S extends BaseOntologyTermS
         loader = new GenericOntologyLoadHelper<T>(termClazz, config);
     }
 
-    public String updateTerms(String fullText) {
+    public String updateTerms(boolean async, String fullText) {
 
-        context = connectionFactory1.createContext(Session.AUTO_ACKNOWLEDGE);
-        producer = context.createProducer().setDeliveryMode(DeliveryMode.NON_PERSISTENT); // In memory only will loose all messages if the broker restarts
+        if (async) {
+            context = connectionFactory1.createContext(Session.AUTO_ACKNOWLEDGE);
+            producer = context.createProducer().setDeliveryMode(DeliveryMode.NON_PERSISTENT); // In memory only will loose all messages if the broker restarts
 
-        log.info(context);
-        log.info(producer);
+            log.info(context);
+            log.info(producer);
+        }
         
         try {
             Map<String, T> termMap = loader.load(fullText);
@@ -63,20 +65,19 @@ public abstract class BaseOntologyTermBulkController<S extends BaseOntologyTermS
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
             ph.startProcess(termClazz.getSimpleName() + " Database Persistance", termMap.size());
             for(String termKey: termMap.keySet()) {
-                //service.processUpdate(termMap.get(termKey));
-                producer.send(context.createQueue(queueName), context.createObjectMessage(termMap.get(termKey)));
-
+                if (async) producer.send(context.createQueue(queueName), context.createObjectMessage(termMap.get(termKey)));
+                else service.processUpdate(termMap.get(termKey));
                 ph.progressProcess();
             }
             ph.finishProcess();
 
         } catch (Exception e) {
             e.printStackTrace();
-            context.close();
+            if (async) context.close();
             return "FAIL";
         }
         
-        context.close();
+        if (async) context.close();
         return "OK";
     }
 

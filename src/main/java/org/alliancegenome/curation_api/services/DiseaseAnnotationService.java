@@ -73,7 +73,9 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             throw new ApiErrorException(response);
             // do not continue validation for update if Disease Annotation ID has not been found
         }       
-        
+
+        dbEntity.setNegated(uiEntity.getNegated());
+
         BiologicalEntity subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
         
@@ -121,7 +123,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             addInvalidMessagetoResponse("object", response);
             return null;
         }
-        else if (diseaseTerm.getObsolete() && !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie())) {
+        else if ( (diseaseTerm.getObsolete() != null ? diseaseTerm.getObsolete(): true) && !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie())) {
             addObsoleteMessagetoResponse("object", response);
             return null;
         }
@@ -140,7 +142,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 addInvalidMessagetoResponse("evidence", response);
                 return null;
             }
-            else if (evidenceCode.getObsolete() && !dbEntity.getEvidenceCodes().contains(evidenceCode)) {
+            else if ((evidenceCode.getObsolete() != null ? evidenceCode.getObsolete(): true)  && !dbEntity.getEvidenceCodes().contains(evidenceCode)) {
                 addObsoleteMessagetoResponse("evidence", response);
                 return null;
             }
@@ -274,12 +276,11 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         // do not create DA if no entity / subject is found.
         if (entity == null) {
-            log.info("Entity " + entityId + " not found in database - skipping annotation");
+            log.debug("Entity " + entityId + " not found in database - skipping annotation");
             return null;
         }
 
         if (!validateAnnotationDTO(annotationDTO)) {
-            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
             return null;
         }
         
@@ -341,7 +342,13 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
     
     private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
-        if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs()) ||
+        // Check if primary annotation                                                                                                                                                              
+        if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs())) {
+            log.debug("Annotation for " + dto.getDoId() + " is a secondary annotation - skipping");
+            return false;
+        }
+        // Check required fields                                                                                                                                                                    
+        if (dto.getObjectId() == null ||
                 dto.getDoId() == null ||
                 dto.getDateAssigned() == null ||
                 dto.getEvidence() == null ||
@@ -352,8 +359,38 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 dto.getObjectRelation().getAssociationType() == null ||
                 dto.getObjectRelation().getObjectType() == null
                 ) {
+            log.debug("Annotation for " + dto.getObjectId() + " missing required fields - skipping");
             return false;
         }
+        // Check valid disease relation type                                                                                                                                                        
+        if (dto.getObjectRelation().getObjectType().equals("gene")) {
+            if (!dto.getObjectRelation().getAssociationType().equals("is_implicated_in") &&
+                    !dto.getObjectRelation().getAssociationType().equals("is_marker_for")
+                    ) {
+                log.debug("Invalid gene disease relation for " + dto.getObjectId() + " - skipping annotation");
+                return false;
+            }
+        }
+        else if (dto.getObjectRelation().getObjectType().equals("allele")) {
+            if (!dto.getObjectRelation().getAssociationType().equals("is_implicated_in")) {
+                log.debug("Invalid allele disease relation for " + dto.getObjectId() + " - skipping annotation");
+                return false;
+            }
+        }
+        else if (dto.getObjectRelation().getObjectType().equals("genotype") ||
+                dto.getObjectRelation().getObjectType().equals("strain") ||
+                dto.getObjectRelation().getObjectType().equals("fish")
+                ) {
+            if (!dto.getObjectRelation().getAssociationType().equals("is_model_of")) {
+                log.debug("Invalid AGM disease relation for " + dto.getObjectId() + " - skipping annotation");
+                return false;
+            }
+        }
+        else {
+            log.debug("Invalid object type for " + dto.getObjectId() + " - skipping annotation");
+            return false;
+        }
+        
         return true;
     }
 

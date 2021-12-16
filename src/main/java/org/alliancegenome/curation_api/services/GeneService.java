@@ -52,6 +52,9 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
     public void processUpdate(GeneDTO gene) {
         //log.info("processUpdate Gene: ");
 
+        if (!validateGeneDTO(gene)) {
+            return;
+        }
         Gene g = geneDAO.find(gene.getBasicGeneticEntity().getPrimaryId());
 
         if (g == null) {
@@ -188,5 +191,35 @@ public class GeneService extends BaseService<Gene, GeneDAO> {
         }
     }
 
+    private boolean validateGeneDTO(GeneDTO dto) {
+        // Check for required fields
+        if (dto.getBasicGeneticEntity().getPrimaryId() == null ||
+                dto.getBasicGeneticEntity().getTaxonId() == null) {
+            log.debug("Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " missing required fields - skipping");
+            return false;
+        }
+        
+        // Check any genome positions have valid start/end/strand
+        if (CollectionUtils.isNotEmpty(dto.getBasicGeneticEntity().getGenomeLocations())) {
+            for (GenomeLocationsDTO location : dto.getBasicGeneticEntity().getGenomeLocations()) {
+                if (location.getStartPosition() != null && location.getEndPosition() != null &&
+                        location.getStartPosition().intValue() > location.getEndPosition().intValue()
+                        ) {
+                    log.debug("Start position is downstream of end position for gene" +
+                            dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
+                    return false;
+                }
+                if (location.getStrand() != null && !location.getStrand().equals("+") &&
+                        !location.getStrand().equals("-") && !location.getStrand().equals(".")
+                        ) {
+                    log.debug("Invalid strand specified for " + dto.getBasicGeneticEntity().getPrimaryId() +
+                            " - skipping");
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
 
 }

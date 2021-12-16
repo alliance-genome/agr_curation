@@ -34,7 +34,9 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "strain",
-        "inferredGeneAssociation": "TEST:TestGene000036"
+        "inferredGeneAssociation": [
+          "TEST:TestGene000036"
+        ]
       },
       "conditionRelations": [
         {
