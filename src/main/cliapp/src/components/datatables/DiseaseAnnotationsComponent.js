@@ -14,7 +14,7 @@ import { FilterComponent } from './../FilterComponent'
 import { SearchService } from '../../service/SearchService';
 
 import { ControlledVocabularyDropdown } from './../ControlledVocabularySelector';
-import { ControlledVocabularyService } from '../../service/ControlledVocabularyService';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ErrorMessageComponent } from './../ErrorMessageComponent';
 import { TrueFalseDropdown } from './../TrueFalseDropDownSelector';
 
@@ -30,8 +30,8 @@ export const DiseaseAnnotationsComponent = () => {
     const [first, setFirst] = useState(0);
     const [originalRows, setOriginalRows] = useState([]);    const [editingRows, setEditingRows] = useState({});
     const [isEnabled, setIsEnabled] = useState(true); //needs better name
-    const [diseaseRelationsTerms, setDiseaseRelationTerms] = useState();
-    const [negatedTerms, setNegatedTerms] = useState();
+    const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
+    const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
 
     const [errorMessages, setErrorMessages] = useState({});
 
@@ -39,8 +39,6 @@ export const DiseaseAnnotationsComponent = () => {
 
     const diseaseAnnotationService = new DiseaseAnnotationService();
     const searchService = new SearchService();
-
-    const controlledVocabularyService = new ControlledVocabularyService();
 
     const toast_topleft = useRef(null);
     const toast_topright = useRef(null);
@@ -74,21 +72,6 @@ export const DiseaseAnnotationsComponent = () => {
 
         }
     );
-
-    useQuery(['diseaseRelationTerms'],
-        () => searchService.search("vocabularyterm", 15, 0, null, {"vocabFilter": {"vocabulary.name": "Disease Relation Vocabulary"}})
-        .then((data) => {
-            setDiseaseRelationTerms(data.results);
-        })
-    )
-
-    useQuery(['generic_boolean_terms'],
-        () => controlledVocabularyService.getTerms('generic_boolean_terms'), {
-            onSuccess: (data) => {
-                setNegatedTerms(data)
-            }
-        }
-    )
 
     const mutation = useMutation(updatedAnnotation => {
         return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);

@@ -56,7 +56,8 @@ test:
 	mvn test
 
 integration-test:
-	mvn failsafe:integration-test
+	mvn -ntp failsafe:integration-test
+	mvn failsafe:verify
 
 verify:
 	mvn verify

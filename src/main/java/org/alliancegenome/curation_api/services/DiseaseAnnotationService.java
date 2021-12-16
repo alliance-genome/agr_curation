@@ -161,7 +161,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         diseaseAnnotationDAO.persist(annotation);
         return annotation;
-        
+
     }
 
 
