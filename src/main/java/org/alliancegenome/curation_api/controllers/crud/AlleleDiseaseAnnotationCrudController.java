@@ -26,7 +26,7 @@ public class AlleleDiseaseAnnotationCrudController extends BaseCrudController<Al
     @Override
     public ObjectResponse<AlleleDiseaseAnnotation> get(String curie) {
         SearchResponse<AlleleDiseaseAnnotation> ret = findByField("curie", curie);
-        if(ret != null) {
+        if(ret != null && ret.getTotalResults() == 1) {
             return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
         } else {
             return new ObjectResponse<AlleleDiseaseAnnotation>();
