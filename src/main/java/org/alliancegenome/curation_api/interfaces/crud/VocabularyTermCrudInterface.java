@@ -6,7 +6,7 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.BaseCrudInterface;
+import org.alliancegenome.curation_api.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - VocabularyTerm")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface VocabularyTermCrudInterface extends BaseCrudInterface<VocabularyTerm> {
+public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<VocabularyTerm> {
 
     @Override
     @POST
