@@ -8,8 +8,8 @@ on:
       - '**.md'
       - .gitignore
 jobs:
-  #TODO: add context conditionals to prevent PR validation triggering on PR edits if base-ref was not changed
   verify-test-api:
+    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -47,6 +47,7 @@ jobs:
           make integration-test
 
   test-build-docker-image:
+      if: github.event.action != 'edited' || github.event.changes.base
       runs-on: ubuntu-20.04
       steps:
         - name: Check out repository code
