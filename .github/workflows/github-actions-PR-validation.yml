@@ -1,12 +1,14 @@
 name: PR validation
 on:
   pull_request:
+    types: [synchronize, opened, reopened, edited]
     branches:
       - main
     paths-ignore:
       - '**.md'
       - .gitignore
 jobs:
+  #TODO: add context conditionals to prevent PR validation triggering on PR edits if base-ref was not changed
   verify-test-api:
     runs-on: ubuntu-20.04
     steps:
