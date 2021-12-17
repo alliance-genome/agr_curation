@@ -45,7 +45,7 @@ export const DiseaseAnnotationsComponent = () => {
 
     const sortMapping = {
         'object.name': ['object.curie', 'object.namespace' ],
-        'subject.name': ['subject.symbol', 'subject.curie' ], 
+        'subject.symbol': ['subject.name', 'subject.curie' ], 
         'with.symbol': ['with.name', 'with.curie' ]
 
     }
@@ -384,7 +384,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                   <Column
-                    field="subject.name"//needed for sorting
+                    field="subject.symbol"//needed for sorting
                     header="Subject"
                     sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}
