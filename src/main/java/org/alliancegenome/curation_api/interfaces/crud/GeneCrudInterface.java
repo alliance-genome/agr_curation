@@ -6,7 +6,7 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.BaseCrudInterface;
+import org.alliancegenome.curation_api.base.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -19,11 +19,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - Genes")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface GeneCrudInterface extends BaseCrudInterface<Gene> {
+public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene> {
 
     @JsonView(View.FieldsAndLists.class)
     @Override
-    ObjectResponse<Gene> get(@PathParam("id") String id);
+    ObjectResponse<Gene> get(@PathParam("curie") String curie);
 
     @POST
     @Path("/find")

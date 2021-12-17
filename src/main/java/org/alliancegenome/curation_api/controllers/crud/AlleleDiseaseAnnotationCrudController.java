@@ -7,7 +7,8 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
-import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationCrudService;
 
 @RequestScoped
@@ -21,6 +22,15 @@ public class AlleleDiseaseAnnotationCrudController extends BaseCrudController<Al
     protected void init() {
         setService(annotationService);
     }
-
+    
+    @Override
+    public ObjectResponse<AlleleDiseaseAnnotation> get(String curie) {
+        SearchResponse<AlleleDiseaseAnnotation> ret = findByField("curie", curie);
+        if(ret != null && ret.getTotalResults() == 1) {
+            return new ObjectResponse<AlleleDiseaseAnnotation>(ret.getResults().get(0));
+        } else {
+            return new ObjectResponse<AlleleDiseaseAnnotation>();
+        }
+    }
 
 }

@@ -14,7 +14,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface BaseCrudInterface<E extends BaseEntity> {
+public interface BaseCurieCrudInterface<E extends BaseEntity> {
 
     @POST //@Secured
     @Path("/")

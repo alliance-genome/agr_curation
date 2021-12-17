@@ -11,7 +11,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public abstract class BaseCrudController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseCrudInterface<E> {
+public abstract class BaseCrudController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseIdCrudInterface<E> {
 
     private BaseService<E, D> service;
 
@@ -25,16 +25,26 @@ public abstract class BaseCrudController<S extends BaseService<E, D>, E extends 
         return service.create(entity);
     }
 
-    public ObjectResponse<E> get(String id) {
+    public ObjectResponse<E> get(Long id) {
         return service.get(id);
+    }
+    public ObjectResponse<E> get(String curie) {
+        return service.get(curie);
     }
 
     public ObjectResponse<E> update(E entity) {
         return service.update(entity);
     }
 
-    public ObjectResponse<E> delete(String id) {
+    public ObjectResponse<E> delete(Long id) {
         return service.delete(id);
+    }
+    public ObjectResponse<E> delete(String curie) {
+        return service.delete(curie);
+    }
+    
+    public SearchResponse<E> findByField(String field, String value) {
+        return service.findByField(field, value);
     }
     
     public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
