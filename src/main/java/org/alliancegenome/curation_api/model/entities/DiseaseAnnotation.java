@@ -19,13 +19,26 @@ import lombok.*;
 
 
 @Audited
-@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 //@ToString(exclude = {"genomicLocations"})
+@Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public class DiseaseAnnotation extends Association {
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "modId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @Column(unique = true)
+    @JsonView({View.FieldsOnly.class})
+    @EqualsAndHashCode.Include
+    private String modId;
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
+    private DOTerm object;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
     @KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
@@ -52,6 +65,13 @@ public class DiseaseAnnotation extends Association {
     @JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
     @JsonView({View.FieldsAndLists.class})
     private List<Gene> with;
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
+    private Reference reference;
+
 
     public enum DiseaseRelation {
         is_model_of,
