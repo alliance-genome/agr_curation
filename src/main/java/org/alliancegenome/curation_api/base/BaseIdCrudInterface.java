@@ -34,7 +34,7 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
     @DELETE //@Secured
     @Path("/{id}")
     @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> delete(@PathParam("curie") Long id);
+    public ObjectResponse<E> delete(@PathParam("id") Long id);
     
     @POST
     @Path("/find")

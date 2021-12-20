@@ -33,7 +33,7 @@ public class AGMDiseaseAnnotationCrudService extends BaseService<AGMDiseaseAnnot
     @Transactional
     public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation uiEntity) {
         AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotation(uiEntity);
-        return new ObjectResponse<AGMDiseaseAnnotation>(agmDiseaseAnnotationDAO.persist(dbEntity));
+        return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
     }
 
 }
