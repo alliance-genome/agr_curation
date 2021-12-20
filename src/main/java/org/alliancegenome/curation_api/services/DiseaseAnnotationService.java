@@ -66,19 +66,19 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         // do not create DA if no entity / subject is found.
         if (subjectEntity == null) {
-            log.info("Subject Entity " + entityId + " not found in database - skipping annotation");
+            log.debug("Subject Entity " + entityId + " not found in database - skipping annotation");
             return null;
         }
 
         if (!validateAnnotationDTO(annotationDTO)) {
-            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
+            log.debug("Annotation for " + entityId + " missing required fields - skipping annotation");
             return null;
         }
         
         String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
         if (disease == null) {
-            log.info("Annotation for " + entityId + " missing DOTerm: " + doTermId + " required fields - skipping annotation");
+            log.debug("Annotation for " + entityId + " missing DOTerm: " + doTermId + " required fields - skipping annotation");
             return null;
         }
 
@@ -127,7 +127,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 annotation = annotationList.getResults().get(0);
             }
         } else {
-            log.info("Annotation for " + entityId + " missing Subject: " + subjectEntity + " not valid type - skipping annotation");
+            log.debug("Annotation for " + entityId + " missing Subject: " + subjectEntity + " not valid type - skipping annotation");
             return null;
         }
 
