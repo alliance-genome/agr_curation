@@ -45,7 +45,7 @@ export const DiseaseAnnotationsComponent = () => {
 
     const sortMapping = {
         'object.name': ['object.curie', 'object.namespace' ],
-        // 'subject.name': ['subject.symbol', 'subject.curie' ] add after SCRUM-510
+        'subject.symbol': ['subject.name', 'subject.curie' ], 
         'with.symbol': ['with.name', 'with.curie' ]
 
     }
@@ -104,15 +104,7 @@ export const DiseaseAnnotationsComponent = () => {
         }
     };
 
-    const publicationTemplate = (rowData) => {
-        if (rowData && rowData.referenceList) {
-            return <div>{rowData.referenceList.map(a => a.curie)}</div>
-        }
-
-    };
-
-
-    const evidenceTemplate = (rowData) => {
+    const evidenceTemplate = (rowData) => { 
         if (rowData && rowData.evidenceCodes) {
             const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1 );
             return (<div>
@@ -231,9 +223,9 @@ export const DiseaseAnnotationsComponent = () => {
     const subjectBodyTemplate = (rowData) => {
         if(rowData.subject){
             if(rowData.subject.symbol){
-                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.symbol + ')'}}/>;
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.symbol + ' (' +  rowData.subject.curie + ')'}}/>;
             } else if(rowData.subject.name) {
-                return <div dangerouslySetInnerHTML={{__html: rowData.subject.curie + ' (' + rowData.subject.name + ')'}}/>;
+                return <div dangerouslySetInnerHTML={{__html: rowData.subject.name + ' (' +  rowData.subject.curie + ')'}}/>;
             }else {
                 return <div>{rowData.subject.curie}</div>;
             }
@@ -392,7 +384,7 @@ export const DiseaseAnnotationsComponent = () => {
                   />
 
                   <Column
-                    field="subject.curie"//needed for sorting
+                    field="subject.symbol"//needed for sorting
                     header="Subject"
                     sortable={isEnabled}
                     filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}
@@ -428,12 +420,11 @@ export const DiseaseAnnotationsComponent = () => {
                     body={diseaseBodyTemplate}
                   />
 
-                  <Column
-                    field="referenceList.curie"
+                  <Column 
+                    field="reference.curie"
                     header="Reference"
-                    body={publicationTemplate}
-                    sortable={isEnabled}
-                    filter filterElement={filterComponentTemplate("referenceList", ["referenceList.curie"])}
+                    sortable={isEnabled} 
+                    filter filterElement={filterComponentTemplate("reference", ["reference.curie"])}
 
                   />
 

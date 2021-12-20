@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.MpTermDAO;
-import org.alliancegenome.curation_api.interfaces.bulk.ontology.MpTermBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.ontology.MpTermBulkInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
 
@@ -14,7 +14,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MpTermBulkController extends BaseOntologyTermBulkController<MpTermService, MPTerm, MpTermDAO> implements MpTermBulkRESTInterface {
+public class MpTermBulkController extends BaseOntologyTermBulkController<MpTermService, MPTerm, MpTermDAO> implements MpTermBulkInterface {
 
     @Inject MpTermService mpTermService;
 

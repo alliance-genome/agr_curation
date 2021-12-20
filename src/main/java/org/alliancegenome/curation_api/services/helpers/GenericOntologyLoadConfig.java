@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers;
 
 import java.util.ArrayList;
+
 import lombok.Data;
 
 @Data

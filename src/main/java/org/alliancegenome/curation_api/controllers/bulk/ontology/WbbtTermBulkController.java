@@ -6,12 +6,12 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.WbbtTermDAO;
-import org.alliancegenome.curation_api.interfaces.bulk.ontology.WbbtTermBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.ontology.WbbtTermBulkInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.WBbtTerm;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
 
 @RequestScoped
-public class WbbtTermBulkController extends BaseOntologyTermBulkController<WbbtTermService, WBbtTerm, WbbtTermDAO> implements WbbtTermBulkRESTInterface {
+public class WbbtTermBulkController extends BaseOntologyTermBulkController<WbbtTermService, WBbtTerm, WbbtTermDAO> implements WbbtTermBulkInterface {
 
     @Inject WbbtTermService wbbtTermService;
 

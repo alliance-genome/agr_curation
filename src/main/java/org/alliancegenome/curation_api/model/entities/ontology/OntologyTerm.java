@@ -85,7 +85,7 @@ public class OntologyTerm extends BaseCurieEntity {
     @JsonView({View.FieldsAndLists.class})
     private List<CrossReference> crossReferences;
 
-//  TODO LinkML to define the following fields
+//  TODO LinkML to define the following ontology relationship fields
 //  @ManyToMany
 //  @JoinTable(name = "ontologyterm_parent_children", indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
 //  private Set<OntologyTerm> parents;

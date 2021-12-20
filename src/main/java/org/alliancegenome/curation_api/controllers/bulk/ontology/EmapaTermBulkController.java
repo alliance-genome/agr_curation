@@ -6,13 +6,13 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermBulkController;
 import org.alliancegenome.curation_api.dao.ontology.EmapaTermDAO;
-import org.alliancegenome.curation_api.interfaces.bulk.ontology.EmapaTermBulkRESTInterface;
+import org.alliancegenome.curation_api.interfaces.bulk.ontology.EmapaTermBulkInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.EMAPATerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 
 @RequestScoped
-public class EmapaTermBulkController extends BaseOntologyTermBulkController<EmapaTermService, EMAPATerm, EmapaTermDAO> implements EmapaTermBulkRESTInterface {
+public class EmapaTermBulkController extends BaseOntologyTermBulkController<EmapaTermService, EMAPATerm, EmapaTermDAO> implements EmapaTermBulkInterface {
 
     @Inject EmapaTermService emapaTermService;
 

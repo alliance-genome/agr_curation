@@ -59,10 +59,13 @@ public abstract class BaseService<E extends BaseEntity, D extends BaseDAO<E>> {
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
     }
+    
+    public SearchResponse<E> findByField(String field, String value) {
+        return dao.findByField(field, value);
+    }
     public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params) {
         return dao.findByParams(pagination, params);
     }
-    
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
         return dao.searchByParams(pagination, params);
     }
