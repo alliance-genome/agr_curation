@@ -24,7 +24,7 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
     @GET
     @Path("/{id}")
     @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> get(@PathParam("curie") Long id);
+    public ObjectResponse<E> get(@PathParam("id") Long id);
     
     @PUT //@Secured
     @Path("/")
