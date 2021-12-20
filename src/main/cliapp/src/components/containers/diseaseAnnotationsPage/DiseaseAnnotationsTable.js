@@ -1,24 +1,24 @@
 import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService'
 import { useMutation, useQuery } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted,trimWhitespace } from '../../utils/utils';
-import { SubjectEditor } from './../SubjectEditor';
-import { DiseaseEditor } from './../DiseaseEditor';
-import { WithEditor } from './../WithEditor';
-import { EvidenceEditor } from './../EvidenceEditor';
-import { FilterComponent } from './../FilterComponent'
-import { SearchService } from '../../service/SearchService';
+import { returnSorted,trimWhitespace } from '../../../utils/utils';
+import { SubjectEditor } from '../../SubjectEditor';
+import { DiseaseEditor } from '../../DiseaseEditor';
+import { WithEditor } from '../../WithEditor';
+import { EvidenceEditor } from '../../EvidenceEditor';
+import { FilterComponent } from '../../FilterComponent'
+import { SearchService } from '../../../service/SearchService';
+import { DiseaseAnnotationService } from '../../../service/DiseaseAnnotationService';
 
-import { ControlledVocabularyDropdown } from './../ControlledVocabularySelector';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ErrorMessageComponent } from './../ErrorMessageComponent';
-import { TrueFalseDropdown } from './../TrueFalseDropDownSelector';
+import { ControlledVocabularyDropdown } from '../../ControlledVocabularySelector';
+import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
+import { ErrorMessageComponent } from '../../ErrorMessageComponent';
+import { TrueFalseDropdown } from '../../TrueFalseDropDownSelector';
 
-export const DiseaseAnnotationsComponent = () => {
+export const DiseaseAnnotationsTable = () => {
 
     let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
 

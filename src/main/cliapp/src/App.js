@@ -9,9 +9,10 @@ import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
 
+import DiseaseAnnotationsPage from './components/containers/diseaseAnnotationsPage';
+
 import { GenesComponent } from './components/datatables/GenesComponent';
 import { AllelesComponent } from './components/datatables/AllelesComponent';
-import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
 import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
 import { MoleculesComponent } from './components/datatables/MoleculesComponent';
 
@@ -210,7 +211,7 @@ const App = () => {
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
-                <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
+                <Route path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
                 <Route path="/genes" component={GenesComponent} />
                 <Route path="/alleles" component={AllelesComponent} />
                 <Route path="/molecules" component={MoleculesComponent} />
