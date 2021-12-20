@@ -1,11 +1,15 @@
 name: PR validation
 on:
   pull_request:
+    types: [synchronize, opened, reopened, edited]
+    branches:
+      - main
     paths-ignore:
       - '**.md'
       - .gitignore
 jobs:
   verify-test-api:
+    if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-20.04
     steps:
       - name: Report workflow details
@@ -35,7 +39,15 @@ jobs:
       - name: Run Maven verify
         run: |
           mvn --no-transfer-progress --batch-mode --update-snapshots verify
+      - name: Package API
+        run: |
+          ./build/package-api.sh
+      - name: Run Integration tests
+        run: |
+          make integration-test
+
   test-build-docker-image:
+      if: github.event.action != 'edited' || github.event.changes.base
       runs-on: ubuntu-20.04
       steps:
         - name: Check out repository code
