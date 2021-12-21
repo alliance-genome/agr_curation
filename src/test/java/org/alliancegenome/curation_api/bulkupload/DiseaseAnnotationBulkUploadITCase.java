@@ -408,8 +408,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             // body("results[5].with", containsInAnyOrder("HGNC:1121", "HGNC:323")).
             // body("results[5].evidenceCodes", hasSize(1)).
             // body("results[5].evidenceCodes[0].curie", is("ECO:0000033"))
-            body("results[5].referenceList", hasSize(1)).
-            body("results[5].referenceList[0].curie", is("PMID:25920554"));
+            //body("results[5].referenceList", hasSize(1)).
+            body("results[5].reference.curie", is("PMID:25920554"));
     }
     
     @Test
@@ -456,8 +456,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             // body("results[6].with", containsInAnyOrder("HGNC:1121", "HGNC:323")).
             // body("results[6].evidenceCodes", hasSize(1)).
             // body("results[6].evidenceCodes[0].curie", is("ECO:0000033"))
-            body("results[6].referenceList", hasSize(1)).
-            body("results[6].referenceList[0].curie", is("PMID:25920554")).
+            //body("results[6].referenceList", hasSize(1)).
+            body("results[6].reference.curie", is("PMID:25920554")).
             body("results[6].negated", is(true));
     }
     

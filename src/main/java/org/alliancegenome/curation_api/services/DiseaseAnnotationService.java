@@ -164,9 +164,13 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
     }
 
-
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
-        List<String> annotationsCuriesBefore = diseaseAnnotationDAO.findAllAnnotationCuries(taxonID);
+        List<String> annotationsCuriesBefore = new ArrayList<String>();
+        annotationsCuriesBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsCuriesBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsCuriesBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        
+        log.debug("runLoad: Before: " + taxonID + " " + annotationsCuriesBefore.size());
         List<String> annotationsCuriesAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
@@ -179,13 +183,22 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         });
         ph.finishProcess();
         
+        log.debug("runLoad: After: " + taxonID + " " + annotationsCuriesAfter.size());
+        
         List<String> distinctAfter = annotationsCuriesAfter.stream().distinct().collect(Collectors.toList());
+        log.debug("runLoad: Distinct: " + taxonID + " " + distinctAfter.size());
+        
         List<String> curiesToRemove = ListUtils.subtract(annotationsCuriesBefore, distinctAfter);
-        List<Long> idsToRemove = new ArrayList<>();
+        log.debug("runLoad: Remove: " + taxonID + " " + curiesToRemove.size());
+        
         for (String curie : curiesToRemove) {
-            idsToRemove.add(diseaseAnnotationDAO.getIdFromCurie(curie));
+            SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("curie", curie);
+            if(da != null && da.getTotalResults() == 1) {
+                delete(da.getResults().get(0).getId());
+            } else {
+                log.error("Failed getting annotation: " + curie);
+            }
         }
-        idsToRemove.forEach(this::delete);
     }
     
     private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
