@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(1)
+@Order(2)
 public class GeneBulkUploadITCase {
 
     @BeforeEach
@@ -48,7 +48,7 @@ public class GeneBulkUploadITCase {
                 when().
                 header("Content-Type", "application/json").
                 body("{}").
-                post("/api/gene/find?limit=10&page=0").
+                post("/api/gene/find?limit=0&page=0").
                 then().
                 statusCode(200).
                 body("totalResults", is(833));
