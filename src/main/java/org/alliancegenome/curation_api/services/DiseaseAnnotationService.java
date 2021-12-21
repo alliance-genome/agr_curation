@@ -66,19 +66,19 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
         // do not create DA if no entity / subject is found.
         if (subjectEntity == null) {
-            log.info("Subject Entity " + entityId + " not found in database - skipping annotation");
+            log("Subject Entity " + entityId + " not found in database - skipping annotation");
             return null;
         }
 
         if (!validateAnnotationDTO(annotationDTO)) {
-            log.info("Annotation for " + entityId + " missing required fields - skipping annotation");
+            log("Annotation for " + entityId + " validation failed - skipping annotation");
             return null;
         }
         
         String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
         if (disease == null) {
-            log.info("Annotation for " + entityId + " missing DOTerm: " + doTermId + " required fields - skipping annotation");
+            log("Annotation for " + entityId + " missing DOTerm: " + doTermId + " required fields - skipping annotation");
             return null;
         }
 
@@ -127,7 +127,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 annotation = annotationList.getResults().get(0);
             }
         } else {
-            log.info("Annotation for " + entityId + " missing Subject: " + subjectEntity + " not valid type - skipping annotation");
+            log("Annotation for " + entityId + " missing Subject: " + subjectEntity + " not valid type - skipping annotation");
             return null;
         }
 
@@ -164,9 +164,13 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
 
     }
 
-
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
-        List<String> annotationsCuriesBefore = diseaseAnnotationDAO.findAllAnnotationCuries(taxonID);
+        List<String> annotationsCuriesBefore = new ArrayList<String>();
+        annotationsCuriesBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsCuriesBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsCuriesBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        
+        log.debug("runLoad: Before: " + taxonID + " " + annotationsCuriesBefore.size());
         List<String> annotationsCuriesAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
@@ -179,19 +183,28 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
         });
         ph.finishProcess();
         
+        log.debug("runLoad: After: " + taxonID + " " + annotationsCuriesAfter.size());
+        
         List<String> distinctAfter = annotationsCuriesAfter.stream().distinct().collect(Collectors.toList());
+        log.debug("runLoad: Distinct: " + taxonID + " " + distinctAfter.size());
+        
         List<String> curiesToRemove = ListUtils.subtract(annotationsCuriesBefore, distinctAfter);
-        List<Long> idsToRemove = new ArrayList<>();
+        log.debug("runLoad: Remove: " + taxonID + " " + curiesToRemove.size());
+        
         for (String curie : curiesToRemove) {
-            idsToRemove.add(diseaseAnnotationDAO.getIdFromCurie(curie));
+            SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("curie", curie);
+            if(da != null && da.getTotalResults() == 1) {
+                delete(da.getResults().get(0).getId());
+            } else {
+                log.error("Failed getting annotation: " + curie);
+            }
         }
-        idsToRemove.forEach(this::delete);
     }
     
     private boolean validateAnnotationDTO(DiseaseModelAnnotationDTO dto) {
         // Check if primary annotation                                                                                                                                                              
         if (CollectionUtils.isNotEmpty(dto.getPrimaryGeneticEntityIDs())) {
-            log.debug("Annotation for " + dto.getDoId() + " is a secondary annotation - skipping");
+            log("Annotation for " + dto.getObjectId() + " is a secondary annotation - skipping");
             return false;
         }
         // Check required fields                                                                                                                                                                    
@@ -206,7 +219,7 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 dto.getObjectRelation().getAssociationType() == null ||
                 dto.getObjectRelation().getObjectType() == null
                 ) {
-            log.debug("Annotation for " + dto.getObjectId() + " missing required fields - skipping");
+            log("Annotation for " + dto.getObjectId() + " missing required fields - skipping");
             return false;
         }
         // Check valid disease relation type                                                                                                                                                        
@@ -214,13 +227,13 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
             if (!dto.getObjectRelation().getAssociationType().equals("is_implicated_in") &&
                     !dto.getObjectRelation().getAssociationType().equals("is_marker_for")
                     ) {
-                log.debug("Invalid gene disease relation for " + dto.getObjectId() + " - skipping annotation");
+                log("Invalid gene disease relation for " + dto.getObjectId() + " - skipping annotation");
                 return false;
             }
         }
         else if (dto.getObjectRelation().getObjectType().equals("allele")) {
             if (!dto.getObjectRelation().getAssociationType().equals("is_implicated_in")) {
-                log.debug("Invalid allele disease relation for " + dto.getObjectId() + " - skipping annotation");
+                log("Invalid allele disease relation for " + dto.getObjectId() + " - skipping annotation");
                 return false;
             }
         }
@@ -229,16 +242,21 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
                 dto.getObjectRelation().getObjectType().equals("fish")
                 ) {
             if (!dto.getObjectRelation().getAssociationType().equals("is_model_of")) {
-                log.debug("Invalid AGM disease relation for " + dto.getObjectId() + " - skipping annotation");
+                log("Invalid AGM disease relation for " + dto.getObjectId() + " - skipping annotation");
                 return false;
             }
         }
         else {
-            log.debug("Invalid object type for " + dto.getObjectId() + " - skipping annotation");
+            log("Invalid object type for " + dto.getObjectId() + " - skipping annotation");
             return false;
         }
         
         return true;
+    }
+    
+    private void log(String message) {
+        //log.debug(message);
+        log.info(message);
     }
 
 }

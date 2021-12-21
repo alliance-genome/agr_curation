@@ -8,6 +8,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
@@ -18,6 +19,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
+@JsonTypeName
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
     @IndexedEmbedded(includeDepth = 1)
