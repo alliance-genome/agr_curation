@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("04 - Disease annotation bulk upload")
+@Order(4)
 public class DiseaseAnnotationBulkUploadITCase {
 
     @BeforeEach
