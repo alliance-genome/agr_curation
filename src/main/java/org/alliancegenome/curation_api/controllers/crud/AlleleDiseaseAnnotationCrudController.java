@@ -7,7 +7,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationCrudService;
 

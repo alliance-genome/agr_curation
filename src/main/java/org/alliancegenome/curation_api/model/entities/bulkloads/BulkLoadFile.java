@@ -6,9 +6,8 @@ import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 

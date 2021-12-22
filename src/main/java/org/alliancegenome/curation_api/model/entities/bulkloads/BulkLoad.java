@@ -5,7 +5,6 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
-import org.alliancegenome.curation_api.jobs.BulkLoadFileProcessor;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 

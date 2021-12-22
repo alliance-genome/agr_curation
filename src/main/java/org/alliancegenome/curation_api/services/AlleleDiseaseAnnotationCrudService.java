@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
 

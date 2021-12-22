@@ -7,11 +7,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
-import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;

@@ -1,11 +1,8 @@
 package org.alliancegenome.curation_api.model.fms;
 
-import org.alliancegenome.curation_api.interfaces.fms.*;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter @Setter
 public class DataFile {

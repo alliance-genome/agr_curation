@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.util;
 
 import java.io.*;
-import java.net.*;
+import java.net.URL;
 import java.util.*;
 import java.util.zip.*;
 
