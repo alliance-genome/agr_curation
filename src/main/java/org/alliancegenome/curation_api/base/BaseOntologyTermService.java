@@ -13,9 +13,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections4.map.HashedMap;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends BaseDAO<E>> extends BaseService<E, BaseDAO<E>> {
 
     @Inject

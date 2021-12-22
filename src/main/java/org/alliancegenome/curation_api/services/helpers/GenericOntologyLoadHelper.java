@@ -85,7 +85,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         reasoner = reasonerFactory.createReasoner(ontology);
 
         log.info("Traversing Ontology");
-        T rootTerm = traverse(root, 0, requiredNamespaces);
+        traverse(root, 0, requiredNamespaces);
         log.info("Finished Traversing Ontology");
         
         return allNodes;
@@ -177,7 +177,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         return ((OWLLiteral)owlAnnotationValue).getLiteral().equals("true");
     }
 
-    @SuppressWarnings("unchecked")
     public T getOntologyTerm(OWLClass node) throws Exception {
 
         T term = clazz.getDeclaredConstructor().newInstance();

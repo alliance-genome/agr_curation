@@ -11,9 +11,6 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.VocabularyService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class VocabularyCrudController extends BaseCrudController<VocabularyService, Vocabulary, VocabularyDAO> implements VocabularyCrudInterface {
 

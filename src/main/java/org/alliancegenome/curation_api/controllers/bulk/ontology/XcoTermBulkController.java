@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.interfaces.bulk.ontology.XcoTermBulkInter
 import org.alliancegenome.curation_api.model.entities.ontology.XcoTerm;
 import org.alliancegenome.curation_api.services.ontology.XcoTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class XcoTermBulkController extends BaseOntologyTermBulkController<XcoTermService, XcoTerm, XcoTermDAO> implements XcoTermBulkInterface {
 

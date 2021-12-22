@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.interfaces.bulk.ontology.MpTermBulkInterf
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class MpTermBulkController extends BaseOntologyTermBulkController<MpTermService, MPTerm, MpTermDAO> implements MpTermBulkInterface {
 

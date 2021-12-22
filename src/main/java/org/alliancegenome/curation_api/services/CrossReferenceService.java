@@ -13,10 +13,6 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 
-import lombok.extern.jbosslog.JBossLog;
-
-
-@JBossLog
 @RequestScoped
 public class CrossReferenceService extends BaseService<CrossReference, CrossReferenceDAO>{
 

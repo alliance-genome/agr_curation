@@ -11,9 +11,6 @@ import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AGMDiseaseAnnotationCrudService extends BaseService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> {
 

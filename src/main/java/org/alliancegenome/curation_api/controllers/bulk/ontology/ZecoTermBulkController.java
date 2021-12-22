@@ -11,9 +11,6 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ZecoTermBulkController extends BaseOntologyTermBulkController<ZecoTermService, ZecoTerm, ZecoTermDAO> implements ZecoTermBulkInterface {
 

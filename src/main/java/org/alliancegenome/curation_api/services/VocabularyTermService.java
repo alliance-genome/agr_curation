@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class VocabularyTermService extends BaseService<VocabularyTerm, VocabularyTermDAO> {
 

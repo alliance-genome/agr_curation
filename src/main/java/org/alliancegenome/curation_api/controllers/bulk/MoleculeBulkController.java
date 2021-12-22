@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class MoleculeBulkController implements MoleculeBulkInterface {
     

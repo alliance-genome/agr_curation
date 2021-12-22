@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ReferenceService extends BaseService<Reference, ReferenceDAO> {
 

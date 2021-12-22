@@ -62,6 +62,7 @@ public class FileTransferHelper {
 
         try {
             GZIPInputStream gs = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
+            gs.close();
             log.info("Input stream is compressed not compressing");
             return new File(fullFilePath).getAbsolutePath();
         } catch (IOException e) {

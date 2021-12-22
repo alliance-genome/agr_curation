@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.interfaces.bulk.ontology.EcoTermBulkInter
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class EcoTermBulkController extends BaseOntologyTermBulkController<EcoTermService, EcoTerm, EcoTermDAO> implements EcoTermBulkInterface {
 

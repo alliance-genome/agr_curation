@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.util.*;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AlleleBulkController implements AlleleBulkInterface {
 

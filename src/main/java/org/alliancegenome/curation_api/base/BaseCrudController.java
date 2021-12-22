@@ -7,9 +7,6 @@ import javax.enterprise.context.RequestScoped;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public abstract class BaseCrudController<S extends BaseService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseIdCrudInterface<E> {
 

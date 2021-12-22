@@ -10,9 +10,6 @@ import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AffectedGenomicModelService extends BaseService<AffectedGenomicModel, AffectedGenomicModelDAO> {
 

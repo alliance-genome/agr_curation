@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.base.BaseService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadGroupDAO;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class BulkLoadGroupService extends BaseService<BulkLoadGroup, BulkLoadGroupDAO> {
     
