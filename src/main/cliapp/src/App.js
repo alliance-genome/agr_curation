@@ -10,11 +10,10 @@ import { AppConfig } from './AppConfig';
 import { Dashboard } from './components/Dashboard';
 
 import DiseaseAnnotationsPage from './components/containers/diseaseAnnotationsPage';
-
-import { GenesComponent } from './components/datatables/GenesComponent';
-import { AllelesComponent } from './components/datatables/AllelesComponent';
-import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
-import { MoleculesComponent } from './components/datatables/MoleculesComponent';
+import AffectedGenomicModelPage from './components/containers/affectedGenomicModelPage';
+import AllelesPage from './components/containers/allelesPage';
+import GenesPage from './components/containers/genesPage';
+import MoleculesPage from './components/containers/moleculesPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
@@ -212,9 +211,9 @@ const App = () => {
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
                 <Route path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
-                <Route path="/genes" component={GenesComponent} />
-                <Route path="/alleles" component={AllelesComponent} />
-                <Route path="/molecules" component={MoleculesComponent} />
+                <Route path="/genes" component={GenesPage} />
+                <Route path="/alleles" component={AllelesPage} />
+                <Route path="/molecules" component={MoleculesPage} />
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/chebi" component={CHEBIOntologyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
@@ -229,7 +228,7 @@ const App = () => {
                 <Route path="/ontology/xco" component={XCOOntologyComponent} />
                 <Route path="/ontology/zeco" component={ZECOOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
-                <Route path="/agms" component={AffectedGenomicModelComponent} />
+                <Route path="/agms" component={AffectedGenomicModelPage} />
 
             </div>
 

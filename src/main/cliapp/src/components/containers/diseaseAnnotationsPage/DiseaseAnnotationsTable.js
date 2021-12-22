@@ -5,10 +5,10 @@ import { useMutation, useQuery } from 'react-query';
 import { Toast } from 'primereact/toast';
 
 import { returnSorted,trimWhitespace } from '../../../utils/utils';
-import { SubjectEditor } from '../../SubjectEditor';
-import { DiseaseEditor } from '../../DiseaseEditor';
-import { WithEditor } from '../../WithEditor';
-import { EvidenceEditor } from '../../EvidenceEditor';
+import { SubjectEditor } from './SubjectEditor';
+import { DiseaseEditor } from './DiseaseEditor';
+import { WithEditor } from './WithEditor';
+import { EvidenceEditor } from './EvidenceEditor';
 import { FilterComponent } from '../../FilterComponent'
 import { SearchService } from '../../../service/SearchService';
 import { DiseaseAnnotationService } from '../../../service/DiseaseAnnotationService';

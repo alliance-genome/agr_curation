@@ -31,7 +31,9 @@ export function useControlledVocabularyService(termType) {
             if (data.results) {
                 setTerms(data.results);
             } else {
-                setTerms(termData[termType]['terms']);
+                if(termData[termType]){
+                    setTerms(termData[termType]['terms']);
+                }
             }
         },
         refetchOnWindowFocus: false
