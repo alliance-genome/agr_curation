@@ -41,6 +41,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         PENDING,
         FAILED,
         DOWNLOADING,
+        NOT_RESPONDING,
         ADMINISTRATIVELY_STOPPED,
         PAUSED;
     }

@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.dao.loads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.eclipse.microprofile.config.inject.*;
 
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
@@ -26,9 +27,20 @@ public class BulkLoadExecutor {
     @Inject BulkLoadDAO bulkLoadDAO;
     @Inject BulkLoadFileProcessor bulkLoadFileProcessor;
     @Inject BulkLoadProcessor bulkLoadProcessor;
+    
+    @ConfigProperty(name = "bulk.data.loads.enabled")
+    Boolean loadsEnabled = false;
 
     @Scheduled(every = "1s")
     public void scheduleGroupJobs() {
+        if(loadsEnabled) {
+            // TODO loop through all the scheduled bulk load jobs setting the job to PENDING
+            // based on the schedule 
+        }
+    }
+
+    @Scheduled(every = "1s")
+    public void runGroupJobs() {
         SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
         for(BulkLoadGroup group: groups.getResults()) {
             for(BulkLoad load: group.getLoads()) {

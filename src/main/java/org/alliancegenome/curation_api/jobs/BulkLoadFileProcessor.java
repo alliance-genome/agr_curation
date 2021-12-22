@@ -62,7 +62,7 @@ public class BulkLoadFileProcessor {
         }
         return null;
     }
-    
+
     private BulkLoadFile processFilePath(BulkLoad load, String localFilePath) {
 
         String md5Sum = fileHelper.getMD5SumOfGzipFile(localFilePath);

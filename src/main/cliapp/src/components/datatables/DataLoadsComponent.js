@@ -41,7 +41,7 @@ export const DataLoadsComponent = () => {
             expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
             rowExpansionTemplate={loadTable} dataKey="id">
           <Column expander style={{ width: '3em' }} />
-          <Column field="name" header="Name" />
+          <Column field="name" header="Load Name" />
           <Column field="status" header="Status" />
 
         </DataTable>
@@ -58,7 +58,7 @@ export const DataLoadsComponent = () => {
         expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
         rowExpansionTemplate={groupTable} dataKey="id">
         <Column expander style={{ width: '3em' }} />
-        <Column field="name" header="Name" />
+        <Column field="name" header="Group Name" />
       </DataTable>
     </div>
   );

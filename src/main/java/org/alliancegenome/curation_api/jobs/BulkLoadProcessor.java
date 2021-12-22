@@ -81,6 +81,10 @@ public class BulkLoadProcessor {
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             config.setLoadOnlyIRIPrefix("ZECO");
             processTerms(ZecoTerm.class, bulkLoadFile.getLocalFilePath(), zecoTermService, config);
+        } else if(bulkLoadFile.getBulkLoad().getGroup().getName().equals("Reindex Tasks")) {
+            if(bulkLoadFile.getBulkLoad().getName().equals("Gene Reindex")) { geneService.reindex(); }
+            if(bulkLoadFile.getBulkLoad().getName().equals("Allele Reindex")) { alleleService.reindex(); }
+            if(bulkLoadFile.getBulkLoad().getName().equals("AGM Reindex")) { agmService.reindex(); }
         } else {
             Log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
         }
