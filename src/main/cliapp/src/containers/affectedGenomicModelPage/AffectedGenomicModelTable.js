@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { SearchService } from '../../../service/SearchService'
-import { FilterComponent } from '../../FilterComponent'
+import { SearchService } from '../../service/SearchService'
+import { FilterComponent } from '../../components/FilterComponent'
 
-import { returnSorted } from '../../../utils/utils';
+import { returnSorted } from '../../utils/utils';
 
 export const AffectedGenomicModelTable = () => {
 

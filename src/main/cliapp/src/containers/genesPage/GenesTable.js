@@ -1,12 +1,12 @@
 import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { SearchService } from '../../../service/SearchService';
+import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
-import { FilterComponent } from '../../FilterComponent'
+import { FilterComponent } from '../../components/FilterComponent'
 
-import { returnSorted } from '../../../utils/utils';
+import { returnSorted } from '../../utils/utils';
 
 export const GenesTable = () => {
 

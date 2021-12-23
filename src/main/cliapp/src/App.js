@@ -9,11 +9,11 @@ import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
 
-import DiseaseAnnotationsPage from './components/containers/diseaseAnnotationsPage';
-import AffectedGenomicModelPage from './components/containers/affectedGenomicModelPage';
-import AllelesPage from './components/containers/allelesPage';
-import GenesPage from './components/containers/genesPage';
-import MoleculesPage from './components/containers/moleculesPage';
+import DiseaseAnnotationsPage from './containers/diseaseAnnotationsPage';
+import AffectedGenomicModelPage from './containers/affectedGenomicModelPage';
+import AllelesPage from './containers/allelesPage';
+import GenesPage from './containers/genesPage';
+import MoleculesPage from './containers/moleculesPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
