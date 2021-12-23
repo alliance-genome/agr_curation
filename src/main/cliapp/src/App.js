@@ -14,7 +14,7 @@ import { AllelesComponent } from './components/datatables/AllelesComponent';
 import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
 import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
 import { MoleculesComponent } from './components/datatables/MoleculesComponent';
-import { DataLoadsComponent } from './components/datatables/DataLoadsComponent';
+import { DataLoadsComponent } from './components/datatables/dataLoadsPage/DataLoadsComponent';
 
 import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';

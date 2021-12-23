@@ -1,23 +1,35 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { SearchService } from '../../service/SearchService';
+import { SearchService } from '../../../service/SearchService';
 import { Messages } from 'primereact/messages';
+import { Button } from 'primereact/button';
+import NewGroupForm from './NewGroupForm';
 
 
 export const DataLoadsComponent = () => {
 
   const [groups, setGroups] = useState({});
+  const [groupDialog, setGroupDialog] = useState(false);
   const [expandedGroupRows, setExpandedGroupRows] = useState(null);
   const [expandedLoadRows, setExpandedLoadRows] = useState(null);
   const errorMessage = useRef(null);
+  const searchService = new SearchService();
 
-   useEffect(() => {
-    const searchService = new SearchService();
-    searchService.find("bulkloadgroup", 100, 0, {}).then(res => {
-      setGroups(res.results);
-    });
-   }, []);
+  const handleNewGroupOpen = (event) => {
+    setGroupDialog(true);
+  }
+
+  useQuery(['bulkloadgroup'],
+  () => searchService.find('bulkloadgroup', 100, 0, {}), {
+      onSuccess: (data) => {
+        setGroups(data.results);
+      },
+      keepPreviousData: true,
+      refetchOnWindowFocus: false
+  })
+
 
   const loadTable = (load) => {
     return (
@@ -38,8 +50,8 @@ export const DataLoadsComponent = () => {
     return (
       <div className="card">
         <DataTable value={group.loads} responsiveLayout="scroll"
-            expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
-            rowExpansionTemplate={loadTable} dataKey="id">
+          expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
+          rowExpansionTemplate={loadTable} dataKey="id">
           <Column expander style={{ width: '3em' }} />
           <Column field="name" header="Load Name" />
           <Column field="status" header="Status" />
@@ -51,8 +63,9 @@ export const DataLoadsComponent = () => {
 
   return (
     <div className="card">
+      <Button onClick={handleNewGroupOpen}>New Group</Button>
       <h3>Data Loads Table</h3>
-      <Messages ref={errorMessage}/>
+      <Messages ref={errorMessage} />
       <DataTable
         value={groups} className="p-datatable-sm"
         expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
@@ -60,6 +73,10 @@ export const DataLoadsComponent = () => {
         <Column expander style={{ width: '3em' }} />
         <Column field="name" header="Group Name" />
       </DataTable>
+      <NewGroupForm
+        groupDialog={groupDialog}
+        setGroupDialog={setGroupDialog}
+      />
     </div>
   );
 }
