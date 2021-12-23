@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.File;
+import java.time.*;
+import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -10,6 +12,12 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.eclipse.microprofile.config.inject.*;
+
+import com.cronutils.descriptor.CronDescriptor;
+import com.cronutils.model.*;
+import com.cronutils.model.definition.*;
+import com.cronutils.model.time.ExecutionTime;
+import com.cronutils.parser.CronParser;
 
 import io.quarkus.scheduler.Scheduled;
 import io.quarkus.vertx.ConsumeEvent;
@@ -28,14 +36,53 @@ public class BulkLoadExecutor {
     @Inject BulkLoadFileProcessor bulkLoadFileProcessor;
     @Inject BulkLoadProcessor bulkLoadProcessor;
     
-    @ConfigProperty(name = "bulk.data.loads.enabled")
-    Boolean loadsEnabled = false;
+    @ConfigProperty(name = "bulk.data.loads.schedulingEnabled")
+    Boolean schedulingEnabled;
+    
+    private ZonedDateTime lastCheck = null;
 
     @Scheduled(every = "1s")
     public void scheduleGroupJobs() {
-        if(loadsEnabled) {
-            // TODO loop through all the scheduled bulk load jobs setting the job to PENDING
-            // based on the schedule 
+        if(schedulingEnabled) {
+            ZonedDateTime start = ZonedDateTime.now();
+            //log.info("scheduleGroupJobs: Scheduling Enabled: " + schedulingEnabled);
+            SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
+            for(BulkLoadGroup g: groups.getResults()) {
+                if(g.getLoads().size() > 0) {
+                    for(BulkLoad b: g.getLoads()) {
+                        if(b instanceof BulkScheduledLoad) {
+                            BulkScheduledLoad bsl = (BulkScheduledLoad)b;
+                            if(bsl.getScheduleActive() && bsl.getCronSchedule() != null) {
+                                
+                                CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+                                CronParser parser = new CronParser(cronDefinition);
+                                try {
+                                    Cron unixCron = parser.parse(bsl.getCronSchedule());
+                                    unixCron.validate();
+
+                                    if(lastCheck != null) {
+                                        ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
+                                        ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
+
+                                        if(lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
+                                            log.info("Need to run Cron: " + bsl);
+                                            bsl.setSchedulingErrorMessage(null);
+                                            bsl.setStatus(BulkLoadStatus.PENDING);
+                                            bulkLoadDAO.merge(bsl);
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                    bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
+                                    bsl.setStatus(BulkLoadStatus.FAILED);
+                                    //log.error(e.getLocalizedMessage());
+                                    bulkLoadDAO.merge(bsl);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            lastCheck = start;
         }
     }
 

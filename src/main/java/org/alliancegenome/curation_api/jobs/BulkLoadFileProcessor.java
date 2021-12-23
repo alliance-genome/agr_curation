@@ -1,7 +1,8 @@
 package org.alliancegenome.curation_api.jobs;
 
-import java.io.File;
+import java.io.*;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -13,6 +14,8 @@ import org.alliancegenome.curation_api.model.fms.DataFile;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.extern.jbosslog.JBossLog;
@@ -21,11 +24,23 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class BulkLoadFileProcessor {
 
+    @ConfigProperty(name = "bulk.data.loads.s3Bucket")
+    String s3Bucket = null;
+    
+    @ConfigProperty(name = "bulk.data.loads.s3PathPrefix")
+    String s3PathPrefix = null;
+    
+    @ConfigProperty(name = "bulk.data.loads.s3AccessKey")
+    String s3AccessKey = null;
+    
+    @ConfigProperty(name = "bulk.data.loads.s3SecretKey")
+    String s3SecretKey = null;
+
     @Inject EventBus bus;
     @Inject BulkLoadDAO bulkLoadDAO;
     @Inject DataFileService fmsDataFileService;
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
-    
+
     private FileTransferHelper fileHelper = new FileTransferHelper();
 
     public void process(BulkFMSLoad bulkFMSLoad) {
@@ -65,7 +80,7 @@ public class BulkLoadFileProcessor {
 
     private BulkLoadFile processFilePath(BulkLoad load, String localFilePath) {
 
-        String md5Sum = fileHelper.getMD5SumOfGzipFile(localFilePath);
+        String md5Sum = getMD5SumOfGzipFile(localFilePath);
         log.info("MD5 Sum: " + md5Sum);
 
         File inputFile = new File(localFilePath);
@@ -85,8 +100,15 @@ public class BulkLoadFileProcessor {
         } else {
             log.info("Bulk File already exists not creating it");
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
+            bulkLoadFile.setErrorMessage(null);
             bulkLoadFile.setLocalFilePath(localFilePath);
         }
+        
+        if(bulkLoadFile.getS3Path() == null) {
+            String s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(), inputFile);
+            bulkLoadFile.setS3Path(s3Path);
+        }
+        
         if(!load.getLoadFiles().contains(bulkLoadFile)) {
             load.getLoadFiles().add(bulkLoadFile);
         }
@@ -95,5 +117,19 @@ public class BulkLoadFileProcessor {
 
         return bulkLoadFile;
     }
+    
+    
+    public String getMD5SumOfGzipFile(String fullFilePath) {
+        try {
+            InputStream is = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
+            String md5Sum = DigestUtils.md5Hex(is);
+            is.close();
+            return md5Sum;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }

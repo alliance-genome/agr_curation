@@ -17,7 +17,11 @@ import lombok.*;
 public abstract class BulkScheduledLoad extends BulkLoad {
 
     @JsonView({View.FieldsOnly.class})
-    private boolean scheduled;
+    private Boolean scheduleActive;
     @JsonView({View.FieldsOnly.class})
-    private String schedule;
+    private String cronSchedule;
+
+    @JsonView({View.FieldsOnly.class})
+    @Column(columnDefinition="TEXT")
+    private String schedulingErrorMessage;
 }
