@@ -151,7 +151,11 @@
 			<artifactId>lombok</artifactId>
 			<version>1.18.22</version>
 		</dependency>
-
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.131</version>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-annotations</artifactId>
@@ -185,6 +189,11 @@
 			<version>2.0.4</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.cronutils</groupId>
+			<artifactId>cron-utils</artifactId>
+			<version>9.1.5</version>
+		</dependency>
 
 		<dependency>
 			<groupId>io.quarkus</groupId>

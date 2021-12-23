@@ -35,8 +35,6 @@ public class BulkLoadProcessor {
     @Inject EcoTermService ecoTermService;
     @Inject ZecoTermService zecoTermService;
 
-    
-    
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
     
     public void process(BulkLoadFile bulkLoadFile) throws Exception {

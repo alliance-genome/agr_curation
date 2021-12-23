@@ -6,7 +6,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/bulkfmsload")
 @Tag(name = "Bulk Load - CRUD")

@@ -9,6 +9,11 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.jboss.resteasy.plugins.providers.multipart.*;
 
+import com.amazonaws.auth.*;
+import com.amazonaws.regions.Regions;
+import com.amazonaws.services.s3.*;
+import com.amazonaws.services.s3.transfer.*;
+
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -86,18 +91,23 @@ public class FileTransferHelper {
         
     }
     
-    public String getMD5SumOfGzipFile(String fullFilePath) {
+    public String uploadFileToS3(String AWSAccessKey, String AWSSecretKey, String bucket, String prefix, String path, File inFile) {
         try {
-            InputStream is = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
-            String md5Sum = DigestUtils.md5Hex(is);
-            is.close();
-            return md5Sum;
+            String fullS3Path = prefix + "/" + path;
+            log.info("Uploading file to S3: " + inFile.getAbsolutePath() + " -> s3://" + bucket + "/" + fullS3Path);
+            AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWSAccessKey, AWSSecretKey))).withRegion(Regions.US_EAST_1).build();
+            TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
+            final Upload uploadFile = tm.upload(bucket, fullS3Path, inFile);
+            uploadFile.waitForCompletion();
+            tm.shutdownNow();
+            log.info("S3 Upload complete");
+            s3.shutdown();
+            return fullS3Path;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
-
     
     private File generateFilePath() {
         Date d = new Date();
