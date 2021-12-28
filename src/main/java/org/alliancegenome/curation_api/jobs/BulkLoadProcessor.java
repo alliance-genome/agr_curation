@@ -9,7 +9,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadType;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
@@ -40,7 +40,7 @@ public class BulkLoadProcessor {
     
     public void process(BulkLoadFile bulkLoadFile) throws Exception {
 
-        if(bulkLoadFile.getBulkLoad().getLoadType() == BulkLoadType.GENE) {
+        if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE) {
             GeneMetaDataDTO geneData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), GeneMetaDataDTO.class);
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
             ph.startProcess("Gene Update", geneData.getData().size());
@@ -49,7 +49,7 @@ public class BulkLoadProcessor {
                 ph.progressProcess();
             }
             ph.finishProcess();
-        } else if(bulkLoadFile.getBulkLoad().getLoadType() == BulkLoadType.ALLELE) {
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ALLELE) {
             AlleleMetaDataDTO alleleData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AlleleMetaDataDTO.class);
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
             ph.startProcess("Allele Update", alleleData.getData().size());
@@ -58,7 +58,7 @@ public class BulkLoadProcessor {
                 ph.progressProcess();
             }
             ph.finishProcess();
-        } else if(bulkLoadFile.getBulkLoad().getLoadType() == BulkLoadType.AGM) {
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.AGM) {
             AffectedGenomicModelMetaDataDTO agmData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModelMetaDataDTO.class);
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
             ph.startProcess("AGM Update", agmData.getData().size());
@@ -67,11 +67,11 @@ public class BulkLoadProcessor {
                 ph.progressProcess();
             }
             ph.finishProcess();
-        } else if(bulkLoadFile.getBulkLoad().getLoadType() == BulkLoadType.DISEASE_ANNOTATION) {
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.DISEASE_ANNOTATION) {
             DiseaseAnnotationMetaDataDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataDTO.class);
             // TODO find taxon ID and send it with this load
             diseaseService.runLoad(null, diseaseData);
-        } else if(bulkLoadFile.getBulkLoad().getLoadType() == BulkLoadType.ONTOLOGY) {
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
             if(bulkLoadFile.getBulkLoad().getName().equals("ZECO Ontology Load")) {
                 GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
                 config.setLoadOnlyIRIPrefix("ZECO");
