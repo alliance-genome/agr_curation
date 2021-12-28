@@ -3,43 +3,54 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
+import { DataLoadService } from '../../../service/DataLoadService';
 
+import { useMutation, useQueryClient } from 'react-query';
 
-export const NewBulkLoadGroupForm = () => {
+function NewBulkLoadGroupForm({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) {
+
+    const [group, setGroup] = useState({});
+
     const [submitted, setSubmitted] = useState(false);
+    const dataLoadService = new DataLoadService();
 
-    let emptyGroup = {
+    const mutation = useMutation(newGroupName => {
+        return dataLoadService.createGroup(newGroupName);
+    });
 
-    };
+    const queryClient = useQueryClient();
 
-    const onChange = (e) => {
-        setSelectedValue(e.value)
+    let emptyGroup = {};
+
+    const onChange = (event, field) => {
+      const val = (event.target && event.target.value) || '';
+      let _group = {...group};
+      _group[field] = val;
+        setGroup(_group);
     }
+
     const hideDialog = () => {
-        setBulkLoadDialog(false);
+      setBulkLoadGroupDialog(false);
+      setSubmitted(false);
+      setGroup(emptyGroup);
     }
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        // const val = (e.target && e.target.value) || '';
-        // let _group = { ...group };
-        // _group[`${name}`] = val;
-        setBulkLoadDialog(false);
-        // mutation.mutate(event.target.dropdown.value,{
-        //     onSuccess: () =>{
-        //         setSelectedValue('');
-        //         queryClient.invalidateQueries('bulkloadtable')
-        //     }
-        // });
-    }
-    const openNewGroup = () => {
-        setGroup(emptyGroup);
-        setSubmitted(false);
-        setGroupDialog(true);
-    };
 
-    const saveGroup = () => {
-        setSubmitted(true);
-        setGroupDialog(false);
+    const saveGroup = (event) => {
+      event.preventDefault();
+      setSubmitted(true);
+
+      // Go other stuff
+      if (group.name && group.name.trim()) {
+        console.log(event);
+        mutation.mutate(group, {
+          onSuccess: () =>{
+            queryClient.invalidateQueries('bulkloadtable');
+            setBulkLoadGroupDialog(false);
+            setGroup(emptyGroup);
+          }
+        });
+      }
+
     };
 
     const groupDialogFooter = (
@@ -52,10 +63,11 @@ export const NewBulkLoadGroupForm = () => {
 
     return (
         <div>
-            <Dialog visible={groupDialog} style={{ width: '450px' }} header="Group Details" modal className="p-fluid" footer={groupDialogFooter} onHide={hideDialog}>
+            <Dialog visible={bulkLoadGroupDialog} style={{ width: '450px' }} header="Group Details" modal className="p-fluid" footer={groupDialogFooter} onHide={hideDialog}>
                 <div className="p-field">
-                    <label htmlFor="name">Name</label>
-                    <InputText id="name" value={group.name} onChange={(e) => onInputChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
+                    <label htmlFor="name">Group Name</label>
+
+                    <InputText id="name" value={group.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
                     {submitted && !group.name && <small className="p-error">Name is required.</small>}
                 </div>
             </Dialog>
@@ -63,3 +75,4 @@ export const NewBulkLoadGroupForm = () => {
     );
 }
 
+export default NewBulkLoadGroupForm;

@@ -3,7 +3,7 @@ import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { SearchService } from '../../service/SearchService';
+import { SearchService } from '../../../service/SearchService';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import NewBulkLoadForm from './NewBulkLoadForm';
@@ -73,8 +73,8 @@ export const DataLoadsComponent = () => {
 
   return (
     <div className="card">
-      <Button icon="pi pi-plus" className="p-button-success p-mr-2" onClick={handleNewBulkLoadGroupOpen}>New Group</Button>
-      <Button icon="pi pi-plus" className="p-button-success p-mr-2" onClick={handleNewBulkLoadOpen}>New Bulk Load</Button>
+      <Button label="New Group" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={handleNewBulkLoadGroupOpen} />
+      <Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={handleNewBulkLoadOpen} />
       <h3>Data Loads Table</h3>
       <Messages ref={errorMessage} />
       <DataTable

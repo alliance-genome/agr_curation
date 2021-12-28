@@ -76,10 +76,9 @@ public class BulkLoadProcessor {
                 GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
                 config.setLoadOnlyIRIPrefix("ZECO");
                 processTerms(ZecoTerm.class, bulkLoadFile.getLocalFilePath(), zecoTermService, config);
-            }
-            if(bulkLoadFile.getBulkLoad().getName().equals("ECO Ontology Load")) {
-                GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-                processTerms(EcoTerm.class, bulkLoadFile.getLocalFilePath(), ecoTermService, config);       
+            } else if(bulkLoadFile.getBulkLoad().getName().equals("ECO Ontology Load")) {
+                processTerms(EcoTerm.class, bulkLoadFile.getLocalFilePath(), ecoTermService);
+            } else {
             }
         } else if(bulkLoadFile.getBulkLoad().getGroup().getName().equals("Reindex Tasks")) {
             if(bulkLoadFile.getBulkLoad().getName().equals("Gene Reindex")) { geneService.reindex(); }
@@ -92,8 +91,17 @@ public class BulkLoadProcessor {
 
     }
     
+    private <T extends OntologyTerm> void processTerms(Class<T> clazz, String filePath, BaseOntologyTermService service) throws Exception {
+        processTerms(clazz, filePath, null);
+    }
+    
     private <T extends OntologyTerm> void processTerms(Class<T> clazz, String filePath, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
-        GenericOntologyLoadHelper<T> loader = new GenericOntologyLoadHelper<T>(clazz, config);
+        GenericOntologyLoadHelper<T> loader;
+        if(config != null) {
+            loader = new GenericOntologyLoadHelper<T>(clazz, config);
+        } else {
+            loader = new GenericOntologyLoadHelper<T>(clazz);
+        }
 
         Map<String, T> termMap = loader.load(new GZIPInputStream(new FileInputStream(filePath)));
 
