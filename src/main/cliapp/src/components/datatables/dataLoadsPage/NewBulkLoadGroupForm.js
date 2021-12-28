@@ -7,7 +7,7 @@ import { DataLoadService } from '../../../service/DataLoadService';
 
 import { useMutation, useQueryClient } from 'react-query';
 
-function NewBulkLoadGroupForm({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) {
+export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) => {
 
     const [group, setGroup] = useState({});
 
@@ -45,6 +45,7 @@ function NewBulkLoadGroupForm({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) {
         mutation.mutate(group, {
           onSuccess: () =>{
             queryClient.invalidateQueries('bulkloadtable');
+            setSubmitted(false);
             setBulkLoadGroupDialog(false);
             setGroup(emptyGroup);
           }
@@ -75,4 +76,3 @@ function NewBulkLoadGroupForm({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) {
     );
 }
 
-export default NewBulkLoadGroupForm;

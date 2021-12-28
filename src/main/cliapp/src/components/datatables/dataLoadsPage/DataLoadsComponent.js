@@ -13,6 +13,7 @@ import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 export const DataLoadsComponent = () => {
 
   const [groups, setGroups] = useState({});
+  const [groupNames, setGroupNames] = useState([]);
   const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
   const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
   const [expandedGroupRows, setExpandedGroupRows] = useState(null);
@@ -25,6 +26,11 @@ export const DataLoadsComponent = () => {
   }
 
   const handleNewBulkLoadOpen = (event) => {
+    let _groupNames = [];
+    for (const group in groups) {
+      _groupNames.push(groups[group].name);
+    }
+    setGroupNames(_groupNames);
     setBulkLoadDialog(true);
   }
 
@@ -87,6 +93,7 @@ export const DataLoadsComponent = () => {
       <NewBulkLoadForm
         bulkLoadDialog={bulkLoadDialog}
         setBulkLoadDialog={setBulkLoadDialog}
+        groupNames={groupNames}
       />
       <NewBulkLoadGroupForm
         bulkLoadGroupDialog={bulkLoadGroupDialog}
