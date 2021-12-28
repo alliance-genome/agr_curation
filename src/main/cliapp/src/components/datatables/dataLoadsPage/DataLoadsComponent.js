@@ -6,8 +6,8 @@ import { Column } from 'primereact/column';
 import { SearchService } from '../../../service/SearchService';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
-import NewBulkLoadForm from './NewBulkLoadForm';
-import NewBulkLoadGroupForm from './NewBulkLoadGroupForm';
+import { NewBulkLoadForm } from './NewBulkLoadForm';
+import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 
 
 export const DataLoadsComponent = () => {

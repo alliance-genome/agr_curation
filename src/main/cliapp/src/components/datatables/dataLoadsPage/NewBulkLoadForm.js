@@ -5,7 +5,7 @@ import { Button } from 'primereact/button'
 import { useMutation, useQueryClient } from 'react-query';
 import { DataLoadService } from '../../../service/DataLoadService';
 
-function NewBulkLoadForm({ bulkLoadDialog, setBulkLoadDialog }) {
+export const NewBulkLoadForm =({ bulkLoadDialog, setBulkLoadDialog }) => {
     const [selectedValue, setSelectedValue] = useState();
     const dataLoadService = new DataLoadService();
     const mutation = useMutation(newGroupName => {
@@ -14,14 +14,7 @@ function NewBulkLoadForm({ bulkLoadDialog, setBulkLoadDialog }) {
 
     const queryClient = useQueryClient();
 
-    const options = [
-        "ECO Ontology Load",
-        "Allele Bulk Loads",
-        "Gene Bulk Loads",
-        "AGM Bulk Loads",
-        "Disease Annotations Bulk Loads",
-        "ZECO Ontology Load"
-    ];
+    const loadTypes = dataLoadService.getLoadTypes();
     const onChange = (e) => {
         setSelectedValue(e.value)
     }
@@ -45,7 +38,7 @@ function NewBulkLoadForm({ bulkLoadDialog, setBulkLoadDialog }) {
                 <form onSubmit={handleSubmit}>
                     <Dropdown
                         value={selectedValue}
-                        options={options}
+                        options={loadTypes}
                         onChange={(e) => onChange(e)}
                         placeholder={"Select Group"}
                         className='p-col-12'
@@ -58,5 +51,3 @@ function NewBulkLoadForm({ bulkLoadDialog, setBulkLoadDialog }) {
         </Dialog>
     );
 }
-
-export default NewBulkLoadForm;
