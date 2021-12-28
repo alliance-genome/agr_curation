@@ -5,7 +5,7 @@ import { Button } from 'primereact/button'
 import { useMutation, useQueryClient } from 'react-query';
 import { DataLoadService } from '../../../service/DataLoadService';
 
-function NewGroupForm({ groupDialog, setGroupDialog }) {
+function NewBulkLoadForm({ bulkLoadDialog, setBulkLoadDialog }) {
     const [selectedValue, setSelectedValue] = useState();
     const dataLoadService = new DataLoadService();
     const mutation = useMutation(newGroupName => {
@@ -26,11 +26,11 @@ function NewGroupForm({ groupDialog, setGroupDialog }) {
         setSelectedValue(e.value)
     }
     const hideDialog = () => {
-        setGroupDialog(false);
+        setBulkLoadDialog(false);
     }
     const handleSubmit = (event) => {
         event.preventDefault();
-        setGroupDialog(false);
+        setBulkLoadDialog(false);
         mutation.mutate(event.target.dropdown.value,{
             onSuccess: () =>{
                 setSelectedValue('');
@@ -40,7 +40,7 @@ function NewGroupForm({ groupDialog, setGroupDialog }) {
     }
 
     return (
-        <Dialog visible={groupDialog} style={{ width: '450px' }} header="Add Group" modal className="p-fluid" onHide={hideDialog} resizeable >
+        <Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Group" modal className="p-fluid" onHide={hideDialog} resizeable >
             <div className='p-justify-center'>
                 <form onSubmit={handleSubmit}>
                     <Dropdown
@@ -59,4 +59,4 @@ function NewGroupForm({ groupDialog, setGroupDialog }) {
     );
 }
 
-export default NewGroupForm;
+export default NewBulkLoadForm;

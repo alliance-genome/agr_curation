@@ -27,6 +27,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     @Enumerated(EnumType.STRING)
     private BulkLoadStatus status;
     
+    @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
+    private BulkLoadType loadType;
+    
     @ManyToOne
     private BulkLoadGroup group;
     
@@ -45,6 +49,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         NOT_RESPONDING,
         ADMINISTRATIVELY_STOPPED,
         PAUSED;
+    }
+    
+    public enum BulkLoadType {
+        ONTOLOGY, GENE, ALLELE, AGM, DISEASE_ANNOTATION;
     }
 
 }
