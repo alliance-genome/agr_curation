@@ -28,7 +28,7 @@ export const DataLoadsComponent = () => {
     setBulkLoadDialog(true);
   }
 
-  useQuery(['bulkloadgroup'],
+  useQuery(['bulkloadtable'],
     () => searchService.find('bulkloadgroup', 100, 0, {}), {
     onSuccess: (data) => {
       setGroups(data.results);

@@ -34,13 +34,13 @@ function NewBulkLoadForm({ bulkLoadDialog, setBulkLoadDialog }) {
         mutation.mutate(event.target.dropdown.value,{
             onSuccess: () =>{
                 setSelectedValue('');
-                queryClient.invalidateQueries('bulkloadgroup')
+                queryClient.invalidateQueries('bulkloadtable')
             }
         });
     }
 
     return (
-        <Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Group" modal className="p-fluid" onHide={hideDialog} resizeable >
+        <Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" onHide={hideDialog} resizeable >
             <div className='p-justify-center'>
                 <form onSubmit={handleSubmit}>
                     <Dropdown

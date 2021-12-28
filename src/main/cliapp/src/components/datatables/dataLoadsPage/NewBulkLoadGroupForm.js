@@ -12,24 +12,29 @@ export const NewBulkLoadGroupForm = () => {
 
     };
 
-
+    const onChange = (e) => {
+        setSelectedValue(e.value)
+    }
+    const hideDialog = () => {
+        setBulkLoadDialog(false);
+    }
+    const handleSubmit = (event) => {
+        event.preventDefault();
+        // const val = (e.target && e.target.value) || '';
+        // let _group = { ...group };
+        // _group[`${name}`] = val;
+        setBulkLoadDialog(false);
+        // mutation.mutate(event.target.dropdown.value,{
+        //     onSuccess: () =>{
+        //         setSelectedValue('');
+        //         queryClient.invalidateQueries('bulkloadtable')
+        //     }
+        // });
+    }
     const openNewGroup = () => {
         setGroup(emptyGroup);
         setSubmitted(false);
         setGroupDialog(true);
-    };
-
-    const onInputChange = (e, name) => {
-        const val = (e.target && e.target.value) || '';
-        let _group = { ...group };
-        _group[`${name}`] = val;
-
-        setGroup(_group);
-    };
-
-    const hideDialog = () => {
-        setSubmitted(false);
-        setGroupDialog(false);
     };
 
     const saveGroup = () => {
