@@ -29,7 +29,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
-    private BulkLoadType loadType;
+    private BackendBulkLoadType backendBulkLoadType;
     
     @ManyToOne
     private BulkLoadGroup group;
@@ -51,7 +51,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         PAUSED;
     }
     
-    public enum BulkLoadType {
+    public enum BackendBulkLoadType {
         ONTOLOGY, GENE, ALLELE, AGM, DISEASE_ANNOTATION;
     }
 
