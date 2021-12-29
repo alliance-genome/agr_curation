@@ -6,6 +6,10 @@ export class DataLoadService {
         return axios.post(`api/bulkloadgroup`, newGroup);
     }
 
+    deleteGroup(id) {
+      return axios.delete(`api/bulkloadgroup/${id}`);
+    }
+
     createLoad(newLoad) {
         let endpoint = newLoad.type.toLowerCase();
         newLoad.group = { id: newLoad.group.id };
@@ -17,6 +21,15 @@ export class DataLoadService {
         return axios.post(`api/${endpoint}`, newLoad);
     }
 
+    deleteLoad(loadType, id) {
+      let endpoint = loadType.toLowerCase();
+      return axios.delete(`api/${endpoint}/${id}`);
+    }
+
+    restartLoad(loadType, id) {
+        let endpoint = loadType.toLowerCase();
+        return axios.get(`api/${endpoint}/restart/${id}`);
+    }
 
     getBackendBulkLoadTypes() {
         return [
@@ -25,15 +38,10 @@ export class DataLoadService {
         ];
     }
 
-
     getLoadTypes() {
         return [
             "BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
         ];
     }
 
-    restartLoad(loadType, id) {
-        let endpoint = loadType.toLowerCase();
-        return axios.get(`api/${endpoint}/restart/${id}`);
-    }
 }

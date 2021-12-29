@@ -89,7 +89,6 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             field: e.target.name,
             value: e.value
         });
-
     };
 
     const hideDialog = () => {
@@ -110,6 +109,9 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                 hideURL.current = true;
                 hideManual.current = true;
                 setBulkLoadDialog(false);
+            },
+            onError: () => {
+              // lookup group and set 
             }
         });
     };

@@ -50,15 +50,47 @@ export const DataLoadsComponent = () => {
   };
 
   const runLoad = (rowData) => {
-    dataLoadService.restartLoad(rowData.type, rowData.id);
+    dataLoadService.restartLoad(rowData.type, rowData.id).then(response => {
+      queryClient.invalidateQueries('bulkloadtable');
+    });
+  };
+  
+  const editLoad = (rowData) => {
+    console.log(rowData);
+  };
+
+  const deleteLoad = (rowData) => {
+    dataLoadService.deleteLoad(rowData.type, rowData.id).then(response => {
+      queryClient.invalidateQueries('bulkloadtable');
+    });
+  };
+
+  const deleteGroup = (rowData) => {
+    dataLoadService.deleteGroup(rowData.id).then(response => {
+      queryClient.invalidateQueries('bulkloadtable');
+    });
   };
 
   const actionBodyTemplate = (rowData) => {
-    return (
-      <React.Fragment>
-          <Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />
-      </React.Fragment>
-    );
+    let ret = [];
+
+    ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
+
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
+    }
+
+    if(!rowData.loadFiles || rowData.loadFiles.length === 0) {
+      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
+    }
+
+    return ret;
+  }
+
+  const groupActionBodyTemplate = (rowData) => {
+    if(!rowData.loads || rowData.loads.length === 0) {
+      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-success p-mr-2" onClick={() => deleteGroup(rowData)} />);
+    }
   }
 
   const nameBodyTemplate = (rowData) => {
@@ -74,6 +106,16 @@ export const DataLoadsComponent = () => {
       return <a href={rowData.url}>Source Download URL</a>
     }
   };
+
+  const backendBulkLoadTypeTemplate = (rowData) => {
+    if(rowData.backendBulkLoadType === 'ONTOLOGY') {
+      return rowData.backendBulkLoadType + "(" + rowData.ontologyType + ")";
+    } else {
+      return rowData.backendBulkLoadType;
+    }
+  };
+
+  
 
   const loadTable = (load) => {
     return (
@@ -98,14 +140,16 @@ export const DataLoadsComponent = () => {
 
     let ret = [];
 
-    for(const load of loads) {
-      if(load.type === "BulkFMSLoad") showFMSLoad = true;
-      if(load.type === "BulkURLLoad") showURLLoad = true;
+    if(loads) {
+      for(const load of loads) {
+        if(load.type === "BulkFMSLoad") showFMSLoad = true;
+        if(load.type === "BulkURLLoad") showURLLoad = true;
+      }
     }
 
     if(showFMSLoad) {
-      ret.push(<Column field="dataType" header="Data Type" />);
-      ret.push(<Column field="dataSubType" header="Data Sub Type" />);
+      ret.push(<Column field="dataType" header="FMS Data Type" />);
+      ret.push(<Column field="dataSubType" header="FMS Data Sub Type" />);
     }
     if(showURLLoad) {
       ret.push(<Column body={urlBodyTemplate} header="Data URL" />);
@@ -123,7 +167,7 @@ export const DataLoadsComponent = () => {
           <Column expander style={{ width: '3em' }} />
           <Column body={nameBodyTemplate} header="Load Name" />
           <Column field="type" header="Bulk Load Type" />
-          <Column field="backendBulkLoadType" header="Backend Bulk Load Type" />
+          <Column body={backendBulkLoadTypeTemplate} field="backendBulkLoadType" header="Backend Bulk Load Type" />
           <Column field="scheduleActive" header="Schedule Active" />
           <Column field="cronSchedule" header="Cron Schedule" />
           <Column field="nextRun" header="Next Run" />
@@ -148,6 +192,7 @@ export const DataLoadsComponent = () => {
         rowExpansionTemplate={groupTable} dataKey="id">
         <Column expander style={{ width: '3em' }} />
         <Column body={nameBodyTemplate} header="Group Name" />
+        <Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
       </DataTable>
       <NewBulkLoadForm
         bulkLoadDialog={bulkLoadDialog}
