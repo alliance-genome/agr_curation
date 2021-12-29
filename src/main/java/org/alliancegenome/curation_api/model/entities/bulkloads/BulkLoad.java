@@ -39,6 +39,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     private BulkLoadStatus status;
     
     @JsonView({View.FieldsOnly.class})
+    @Column(columnDefinition="TEXT")
+    private String errorMessage;
+    
+    @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private BackendBulkLoadType backendBulkLoadType;
     

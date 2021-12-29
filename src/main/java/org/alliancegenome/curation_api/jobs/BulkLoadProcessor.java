@@ -41,6 +41,11 @@ public class BulkLoadProcessor {
     @Inject EmapaTermService emapaTermService;
     @Inject DaoTermService daoTermService;
     @Inject CHEBITermService chebiTermService;
+    @Inject ZfaTermService zfaTermService;
+    @Inject DoTermService doTermService;
+    @Inject WbbtTermService wbbtTermService;
+    @Inject MpTermService mpTermService;
+    @Inject MaTermService maTermService;
 
 
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
@@ -104,11 +109,23 @@ public class BulkLoadProcessor {
                 service = xcoTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.CHEBI) {
                 service = chebiTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ZFA) {
+                config.getAltNameSpaces().add("zebrafish_anatomy");
+                service = zfaTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.DO) {
+                service = doTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.MP) {
+                service = mpTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.MA) {
+                service = maTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.WBBT) {
+                service = wbbtTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.DAO) {
                 config.setLoadOnlyIRIPrefix("FBbt");
                 service = daoTermService;
             } else {
                 log.info("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
+                throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
             }
             
             if(service != null) {
@@ -125,6 +142,7 @@ public class BulkLoadProcessor {
             if(bulkLoadFile.getBulkLoad().getName().equals("AGM Reindex")) { agmService.reindex(); }
         } else {
             log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
+            throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
         }
 
         //log.info("Process Finished for: " + bulkLoadFile);

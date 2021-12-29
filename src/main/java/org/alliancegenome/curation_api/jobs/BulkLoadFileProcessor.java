@@ -44,22 +44,43 @@ public class BulkLoadFileProcessor {
     private FileTransferHelper fileHelper = new FileTransferHelper();
 
     public void process(BulkFMSLoad bulkFMSLoad) {
-        String s3Url = processFMS(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
-        String filePath = fileHelper.saveIncomingURLFile(s3Url);
-        String localFilePath = fileHelper.compressInputFile(filePath);
-        processFilePath(bulkFMSLoad, localFilePath);
+        if(bulkFMSLoad.getDataType() != null && bulkFMSLoad.getDataSubType() != null) {
+            String s3Url = processFMS(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
+            String filePath = fileHelper.saveIncomingURLFile(s3Url);
+            String localFilePath = fileHelper.compressInputFile(filePath);
+            processFilePath(bulkFMSLoad, localFilePath);
+        } else {
+            BulkLoad bulkLoad = bulkLoadDAO.find(bulkFMSLoad.getId());
+            log.info("Load: " + bulkLoad.getName() + " failed: FMS Params are missing");
+            bulkLoad.setErrorMessage("FMS Params are missing load Failed");
+            bulkLoad.setStatus(BulkLoadStatus.FAILED);
+            bulkLoadDAO.merge(bulkLoad);
+        }
     }
 
     public void process(BulkURLLoad bulkURLLoad) {
-        String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getUrl());
-        String localFilePath = fileHelper.compressInputFile(filePath);
-        processFilePath(bulkURLLoad, localFilePath);
+        if(bulkURLLoad.getUrl() != null && bulkURLLoad.getUrl().length() > 0) {
+            String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getUrl());
+            String localFilePath = fileHelper.compressInputFile(filePath);
+            processFilePath(bulkURLLoad, localFilePath);
+        } else {
+            BulkLoad bulkLoad = bulkLoadDAO.find(bulkURLLoad.getId());
+            log.info("Load: " + bulkLoad.getName() + " failed: URL is missing");
+            bulkLoad.setErrorMessage("URL is missing load Failed");
+            bulkLoad.setStatus(BulkLoadStatus.FAILED);
+            bulkLoadDAO.merge(bulkLoad);
+        }
     }
     
     public void process(BulkManualLoad bulkManualLoad) {
         // TODO FIx using multi form input 
-        String localFilePath = fileHelper.compressInputFile(bulkManualLoad.getName());
-        processFilePath(bulkManualLoad, localFilePath);
+        //String localFilePath = fileHelper.compressInputFile(bulkManualLoad.getName());
+        //processFilePath(bulkManualLoad, localFilePath);
+        
+        BulkLoad bulkLoad = bulkLoadDAO.find(bulkManualLoad.getId());
+        bulkLoad.setErrorMessage("Load is not implemented: load Failed");
+        bulkLoad.setStatus(BulkLoadStatus.FAILED);
+        bulkLoadDAO.merge(bulkLoad);
     }
 
     private String processFMS(String dataType, String dataSubType) {
@@ -106,12 +127,14 @@ public class BulkLoadFileProcessor {
         log.info("Syncing with S3 Finished");
     }
 
-    private void processFilePath(BulkLoad load, String localFilePath) {
+    private void processFilePath(BulkLoad bulkLoad, String localFilePath) {
         String md5Sum = getMD5SumOfGzipFile(localFilePath);
         log.info("MD5 Sum: " + md5Sum);
 
         File inputFile = new File(localFilePath);
 
+        BulkLoad load = bulkLoadDAO.find(bulkLoad.getId());
+        
         SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
         BulkLoadFile bulkLoadFile;
 
