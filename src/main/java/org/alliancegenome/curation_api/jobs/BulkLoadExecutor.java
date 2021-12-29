@@ -1,8 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.File;
-import java.time.*;
-import java.util.*;
+import java.time.ZonedDateTime;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -11,9 +10,8 @@ import org.alliancegenome.curation_api.dao.loads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.eclipse.microprofile.config.inject.*;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import com.cronutils.descriptor.CronDescriptor;
 import com.cronutils.model.*;
 import com.cronutils.model.definition.*;
 import com.cronutils.model.time.ExecutionTime;
@@ -99,6 +97,19 @@ public class BulkLoadExecutor {
             }
         }
     }
+    
+    @Scheduled(every = "1s")
+    public void runFileJobs() {
+        SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll(null);
+        for(BulkLoadFile file: res.getResults()) {
+            if(file.getStatus() == BulkLoadStatus.PENDING) {
+                file.setStatus(BulkLoadStatus.STARTED);
+                file.setErrorMessage(null);
+                bulkLoadFileDAO.merge(file);
+                bus.send("bulkloadfile", file);
+            }
+        }
+    }
 
     @ConsumeEvent(value = "BulkURLLoad", blocking = true)
     public void processBulkURLLoad(Message<BulkURLLoad> load) {
@@ -121,27 +132,30 @@ public class BulkLoadExecutor {
     @ConsumeEvent(value = "bulkloadfile", blocking = true)
     public void bulkLoadFile(Message<BulkLoadFile> file) {
         BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
-        if(!(bulkLoadFile.getStatus() == BulkLoadStatus.PENDING || bulkLoadFile.getStatus() == BulkLoadStatus.FAILED)) {
+        if(bulkLoadFile.getStatus() != BulkLoadStatus.STARTED) {
             log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getStatus());
-            endProcessing(bulkLoadFile, BulkLoadStatus.FINISHED, "Finished ended due to status: " + bulkLoadFile.getStatus());
+            endProcessing(bulkLoadFile, bulkLoadFile.getStatus(), "Finished ended due to status: " + bulkLoadFile.getStatus());
             return;
         }
 
         bulkLoadFile.setStatus(BulkLoadStatus.RUNNING);
         bulkLoadFileDAO.merge(bulkLoadFile);
+
         log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " is running with file: " + bulkLoadFile.getLocalFilePath());
 
         try {
+            if(file.body().getLocalFilePath() == null || file.body().getS3Path() == null) {
+                bulkLoadFileProcessor.syncWithS3(bulkLoadFile);
+            }
             bulkLoadProcessor.process(bulkLoadFile);
             endProcessing(bulkLoadFile, BulkLoadStatus.FINISHED, "");
             log.info("Load: " + bulkLoadFile + " is finished");
             
         } catch (Exception e) {
-            endProcessing(bulkLoadFile, BulkLoadStatus.FAILED, "Failed loading: " + file.body().getBulkLoad().getName() + " please check the logs for more info");
-            log.info("Load: " + bulkLoadFile + " is failed");
+            endProcessing(bulkLoadFile, BulkLoadStatus.FAILED, "Failed loading: " + file.body().getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage());
+            log.error("Load: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
             e.printStackTrace();
         }
-
         
     }
     
@@ -164,7 +178,9 @@ public class BulkLoadExecutor {
         bulkLoadFile.getBulkLoad().setStatus(status);
         bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
         
-        new File(bulkLoadFile.getLocalFilePath()).delete();
+        if(bulkLoadFile.getLocalFilePath() != null) {
+            new File(bulkLoadFile.getLocalFilePath()).delete();
+        }
         
         bulkLoadFile.setErrorMessage(message);
         bulkLoadFile.setStatus(status);

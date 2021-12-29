@@ -47,22 +47,19 @@ public class BulkLoadFileProcessor {
         String s3Url = processFMS(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
         String filePath = fileHelper.saveIncomingURLFile(s3Url);
         String localFilePath = fileHelper.compressInputFile(filePath);
-        BulkLoadFile file = processFilePath(bulkFMSLoad, localFilePath);
-        bus.send("bulkloadfile", file);
+        processFilePath(bulkFMSLoad, localFilePath);
     }
 
     public void process(BulkURLLoad bulkURLLoad) {
         String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getUrl());
         String localFilePath = fileHelper.compressInputFile(filePath);
-        BulkLoadFile file = processFilePath(bulkURLLoad, localFilePath);
-        bus.send("bulkloadfile", file);
+        processFilePath(bulkURLLoad, localFilePath);
     }
     
     public void process(BulkManualLoad bulkManualLoad) {
         // TODO FIx using multi form input 
         String localFilePath = fileHelper.compressInputFile(bulkManualLoad.getName());
-        BulkLoadFile file = processFilePath(bulkManualLoad, localFilePath);
-        bus.send("bulkloadfile", file);
+        processFilePath(bulkManualLoad, localFilePath);
     }
 
     private String processFMS(String dataType, String dataSubType) {
@@ -77,9 +74,39 @@ public class BulkLoadFileProcessor {
         }
         return null;
     }
+    
+    public void syncWithS3(BulkLoadFile bulkLoadFile) {
+        log.info("Syncing with S3");
+        
+        if(bulkLoadFile.getS3Path() != null && bulkLoadFile.getLocalFilePath() == null) {
+            File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path());
+            if(outfile != null) {
+                //log.info(outfile + " is of size: " + outfile.length());
+                bulkLoadFile.setFileSize(outfile.length());
+                bulkLoadFile.setLocalFilePath(outfile.getAbsolutePath());
+            } else {
+                //log.error("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
+                bulkLoadFile.setErrorMessage("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
+                bulkLoadFile.setStatus(BulkLoadStatus.FAILED);
+            }
+            //log.info("Saving File: " + bulkLoadFile);
+            bulkLoadFileDAO.merge(bulkLoadFile);
+        }
+        if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() != null) {
+            if(s3AccessKey != null && s3AccessKey.length() > 0) {
+                String s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(), new File(bulkLoadFile.getLocalFilePath()));
+                bulkLoadFile.setS3Path(s3Path);
+            }
+            bulkLoadFileDAO.merge(bulkLoadFile);
+        }
+        if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
+            bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
+            bulkLoadFile.setStatus(BulkLoadStatus.FAILED);
+        }
+        log.info("Syncing with S3 Finished");
+    }
 
-    private BulkLoadFile processFilePath(BulkLoad load, String localFilePath) {
-
+    private void processFilePath(BulkLoad load, String localFilePath) {
         String md5Sum = getMD5SumOfGzipFile(localFilePath);
         log.info("MD5 Sum: " + md5Sum);
 
@@ -94,30 +121,23 @@ public class BulkLoadFileProcessor {
             bulkLoadFile.setBulkLoad(load);
             bulkLoadFile.setMd5Sum(md5Sum);
             bulkLoadFile.setFileSize(inputFile.length());
-            bulkLoadFile.setStatus(BulkLoadStatus.PENDING);
             bulkLoadFile.setLocalFilePath(localFilePath);
             bulkLoadFileDAO.persist(bulkLoadFile);
         } else {
             log.info("Bulk File already exists not creating it");
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
-            bulkLoadFile.setErrorMessage(null);
             bulkLoadFile.setLocalFilePath(localFilePath);
         }
         
-        if(bulkLoadFile.getS3Path() == null) {
-            String s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(), inputFile);
-            bulkLoadFile.setS3Path(s3Path);
-        }
+        bulkLoadFile.setErrorMessage(null);
+        bulkLoadFile.setStatus(BulkLoadStatus.PENDING);
         
         if(!load.getLoadFiles().contains(bulkLoadFile)) {
             load.getLoadFiles().add(bulkLoadFile);
         }
         bulkLoadFileDAO.merge(bulkLoadFile);
         bulkLoadDAO.merge(load);
-
-        return bulkLoadFile;
     }
-    
     
     public String getMD5SumOfGzipFile(String fullFilePath) {
         try {
@@ -130,6 +150,5 @@ public class BulkLoadFileProcessor {
             return null;
         }
     }
-
 
 }

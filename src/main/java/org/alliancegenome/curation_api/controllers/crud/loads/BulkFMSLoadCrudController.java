@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.BaseCrudController;
 import org.alliancegenome.curation_api.dao.loads.BulkFMSLoadDAO;
 import org.alliancegenome.curation_api.interfaces.crud.loads.BulkFMSLoadCrudInterface;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.loads.BulkFMSLoadService;
 
 @RequestScoped
@@ -19,6 +20,11 @@ public class BulkFMSLoadCrudController extends BaseCrudController<BulkFMSLoadSer
     @PostConstruct
     protected void init() {
         setService(bulkFMSLoadService);
+    }
+
+    @Override
+    public ObjectResponse<BulkFMSLoad> restartLoad(Long id) {
+        return bulkFMSLoadService.restartLoad(id);
     }
 
 }

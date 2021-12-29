@@ -34,6 +34,9 @@ public class BulkLoadFile extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
     private String s3Path;
+    
+    @JsonView({View.FieldsOnly.class})
+    private Integer recordCount;
 
     @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition="TEXT")
