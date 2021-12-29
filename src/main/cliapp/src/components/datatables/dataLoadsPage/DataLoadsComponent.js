@@ -64,10 +64,16 @@ export const DataLoadsComponent = () => {
   const nameBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-          {rowData.name} ({rowData.id})
+          {rowData.name} (Id: {rowData.id})
       </React.Fragment>
     );
   }
+
+  const urlBodyTemplate = (rowData) => {
+    if(rowData.url) {
+      return <a href={rowData.url}>Source Download URL</a>
+    }
+  };
 
   const loadTable = (load) => {
     return (
@@ -85,6 +91,29 @@ export const DataLoadsComponent = () => {
     );
   }
 
+  const dynamicColumns = (loads) => {
+    
+    let showFMSLoad = false;
+    let showURLLoad = false;
+
+    let ret = [];
+
+    for(const load of loads) {
+      if(load.type === "BulkFMSLoad") showFMSLoad = true;
+      if(load.type === "BulkURLLoad") showURLLoad = true;
+    }
+
+    if(showFMSLoad) {
+      ret.push(<Column field="dataType" header="Data Type" />);
+      ret.push(<Column field="dataSubType" header="Data Sub Type" />);
+    }
+    if(showURLLoad) {
+      ret.push(<Column body={urlBodyTemplate} header="Data URL" />);
+    }
+
+    return ret;
+  };
+
   const groupTable = (group) => {
     return (
       <div className="card">
@@ -93,11 +122,13 @@ export const DataLoadsComponent = () => {
           rowExpansionTemplate={loadTable} dataKey="id">
           <Column expander style={{ width: '3em' }} />
           <Column body={nameBodyTemplate} header="Load Name" />
+          <Column field="type" header="Bulk Load Type" />
           <Column field="backendBulkLoadType" header="Backend Bulk Load Type" />
           <Column field="scheduleActive" header="Schedule Active" />
           <Column field="cronSchedule" header="Cron Schedule" />
           <Column field="nextRun" header="Next Run" />
           <Column field="status" header="Status" />
+          { dynamicColumns(group.loads) }
           <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
