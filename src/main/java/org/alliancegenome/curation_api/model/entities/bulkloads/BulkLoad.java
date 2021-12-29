@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
@@ -44,7 +44,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
-    private OntologyType ontologyType;
+    private OntologyBulkLoadType ontologyType;
     
     @ManyToOne
     private BulkLoadGroup group;
@@ -70,10 +70,6 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         ONTOLOGY_DTO, GENE_DTO, ALLELE_DTO, AGM_DTO, DISEASE_ANNOTATION_DTO,
         ONTOLOGY, GENE, ALLELE, AGM, DISEASE_ANNOTATION
         ;
-    }
-
-    public enum OntologyType {
-        ZECO, ECO, GO, DO, SO, CHEBI, MP, MA;
     }
 
 }

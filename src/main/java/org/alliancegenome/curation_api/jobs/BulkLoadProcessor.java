@@ -102,7 +102,7 @@ public class BulkLoadProcessor {
     }
     
     private <T extends OntologyTerm> void processTerms(BulkLoadFile bulkLoadFile, Class<T> clazz, String filePath, BaseOntologyTermService service) throws Exception {
-        processTerms(bulkLoadFile, clazz, filePath, null);
+        processTerms(bulkLoadFile, clazz, filePath, service, null);
     }
     
     private <T extends OntologyTerm> void processTerms(BulkLoadFile bulkLoadFile, Class<T> clazz, String filePath, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {

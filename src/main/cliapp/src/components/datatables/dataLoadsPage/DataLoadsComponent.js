@@ -61,6 +61,14 @@ export const DataLoadsComponent = () => {
     );
   }
 
+  const nameBodyTemplate = (rowData) => {
+    return (
+      <React.Fragment>
+          {rowData.name} ({rowData.id})
+      </React.Fragment>
+    );
+  }
+
   const loadTable = (load) => {
     return (
       <div className="card">
@@ -84,7 +92,7 @@ export const DataLoadsComponent = () => {
           expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
           rowExpansionTemplate={loadTable} dataKey="id">
           <Column expander style={{ width: '3em' }} />
-          <Column field="name" header="Load Name" />
+          <Column body={nameBodyTemplate} header="Load Name" />
           <Column field="backendBulkLoadType" header="Backend Bulk Load Type" />
           <Column field="scheduleActive" header="Schedule Active" />
           <Column field="cronSchedule" header="Cron Schedule" />
@@ -108,7 +116,7 @@ export const DataLoadsComponent = () => {
         expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
         rowExpansionTemplate={groupTable} dataKey="id">
         <Column expander style={{ width: '3em' }} />
-        <Column field="name" header="Group Name" />
+        <Column body={nameBodyTemplate} header="Group Name" />
       </DataTable>
       <NewBulkLoadForm
         bulkLoadDialog={bulkLoadDialog}
