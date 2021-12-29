@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useReducer, useRef } from 'react';
 import { Dropdown } from "primereact/dropdown"
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button'
@@ -8,81 +8,98 @@ import { InputText } from 'primereact/inputtext';
 import { FMSForm } from './FMSForm';
 
 
-const initialFormState = {
+const emptyBulkLoad = {
     name: "",
-    group: "",
+    group: null,
     backendBulkLoadType: "",
     loadType: "",
     dataType: "",
-    subType: ""
+    dataSubType: ""
 }
 
-const formReducer = (state, action) => {
+const bulkLoadReducer = (state, action) => {
     switch (action.type) {
         case 'RESET':
-            return initialFormState;
+            return emptyBulkLoad;
         default:
             return { ...state, [action.field]: action.value }
     }
 }
 
 
-export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groupNames }) => {
+export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) => {
     const dataLoadService = new DataLoadService();
-    const [formState, dispatch] = useReducer(formReducer, initialFormState)
+    const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, emptyBulkLoad)
     const queryClient = useQueryClient();
-    const hideFMS= useRef(true);
-    const [hideURL, setHideURL] = useState(true);
-    const [hideManual, setHideManual] = useState(true);
+    const hideFMS = useRef(true);
+    const hideURL = useRef(true);
+    const hideManual = useRef(true);
+
+    const backendBulkLoadTypes = dataLoadService.getBackendBulkLoadTypes();
+    const loadTypes = dataLoadService.getLoadTypes();
+
+    const mutation = useMutation(newBulkLoad => {
+        return dataLoadService.createLoad(newBulkLoad);
+    });
 
     const showLoadTypeForm = (value) => {
         switch (value) {
             case 'fms':
                 hideFMS.current = false;
                 break;
-            case 'URL':
-                setHideURL(false);
+            case 'url':
+                hideURL.current = false;
                 break;
-            case 'MANUAL':
-                setHideManual(false);
+            case 'manual':
+                hideManual.current = false;
                 break;
             default:
                 break;
         }
     }
 
-    const mutation = useMutation(formState => {
-        return dataLoadService.createLoad(formState);
-    });
-
-    const backendBulkLoadTypes = dataLoadService.getBackendBulkLoadTypes();
-    const loadTypes = dataLoadService.getLoadTypes();
 
     const onChange = (e) => {
-        dispatch({
+        bulkLoadDispatch({
             field: e.target.name,
             value: e.target.value
         });
 
-        if(e.target.name === "loadType" ){
+        if (e.target.name === "loadType") {
             showLoadTypeForm(e.target.value);
         }
     }
 
+    const onGroupChange = (e) => {
+        console.log(e)
+        bulkLoadDispatch({
+            field: e.target.name,
+            value: e.value
+        });
+
+    }
+
     const hideDialog = () => {
-        dispatch({ type: "RESET" })
+        bulkLoadDispatch({ type: "RESET" })
         setBulkLoadDialog(false);
+        hideFMS.current = true;
+        hideURL.current = true;
+        hideManual.current = true;
     }
     const handleSubmit = (event) => {
         event.preventDefault();
-        dispatch({ type: "RESET" })
+        bulkLoadDispatch({ type: "RESET" })
         setBulkLoadDialog(false);
-        mutation.mutate(formState, {
+        hideFMS.current = true;
+        hideURL.current = true;
+        hideManual.current = true;
+        mutation.mutate(newBulkLoad, {
             onSuccess: () => {
                 queryClient.invalidateQueries('bulkloadtable')
             }
         });
     }
+
 
     return (
         <Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" onHide={hideDialog} resizeable >
@@ -90,19 +107,20 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groupNames 
                 <form onSubmit={handleSubmit}>
                     <InputText
                         name="name"
-                        value={formState.name}
+                        value={newBulkLoad.name}
                         onChange={onChange}
                     />
                     <Dropdown
-                        value={formState.group}
-                        options={groupNames}
-                        onChange={onChange}
+                        options={groups}
+                        value={newBulkLoad.group}
+                        onChange={onGroupChange}
                         placeholder={"Select Group"}
                         className='p-col-12'
                         name='group'
+                        optionLabel='name'
                     />
                     <Dropdown
-                        value={formState.backendBulkLoadType}
+                        value={newBulkLoad.backendBulkLoadType}
                         options={backendBulkLoadTypes}
                         onChange={onChange}
                         placeholder={"Select Backend Bulk Load Type"}
@@ -111,7 +129,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groupNames 
                     />
 
                     <Dropdown
-                        value={formState.loadType}
+                        value={newBulkLoad.loadType}
                         options={loadTypes}
                         onChange={onChange}
                         placeholder={"Select Load Type"}
@@ -120,7 +138,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groupNames 
                     />
                     <FMSForm
                         hideFMS={hideFMS}
-                        formState={formState}
+                        newBulkLoad={newBulkLoad}
                         onChange={onChange}
                     />
                     <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
