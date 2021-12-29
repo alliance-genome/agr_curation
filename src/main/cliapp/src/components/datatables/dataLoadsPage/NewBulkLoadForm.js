@@ -155,26 +155,28 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                     </div>
 
                     <div className="p-field">
-                        <label htmlFor="backendBulkLoadType">Backend Bulk Load Type</label>
-                        <Dropdown
-                            value={newBulkLoad.backendBulkLoadType}
-                            options={backendBulkLoadTypes}
-                            onChange={onChange}
-                            placeholder={"Select Backend Bulk Load Type"}
-                            className='p-col-12'
-                            name='backendBulkLoadType'
-                        />
-                    </div>
-
-                    <div className="p-field">
                         <label htmlFor="type">Load Type</label>
                         <Dropdown
+                            id="type"
                             value={newBulkLoad.type}
                             options={loadTypes}
                             onChange={onChange}
                             placeholder={"Select Load Type"}
                             className='p-col-12'
                             name='type'
+                        />
+                    </div>
+
+                    <div className="p-field">
+                        <label htmlFor="backendBulkLoadType">Backend Bulk Load Type</label>
+                        <Dropdown
+                            id="backendBulkLoadType"
+                            value={newBulkLoad.backendBulkLoadType}
+                            options={backendBulkLoadTypes}
+                            onChange={onChange}
+                            placeholder={"Select Backend Bulk Load Type"}
+                            className='p-col-12'
+                            name='backendBulkLoadType'
                         />
                     </div>
 

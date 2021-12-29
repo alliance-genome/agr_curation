@@ -31,6 +31,10 @@ export class DataLoadService {
         return axios.get(`api/${endpoint}/restart/${id}`);
     }
 
+    restartLoadFile(id) {
+      return axios.get(`api/bulkloadfile/restart/${id}`);
+    }
+
     getBackendBulkLoadTypes() {
         return [
             "GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO",
