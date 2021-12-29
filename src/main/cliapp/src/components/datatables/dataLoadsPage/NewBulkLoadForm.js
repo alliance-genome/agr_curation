@@ -76,19 +76,12 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             showLoadTypeForm(e.target.value);
         }
 
-        if(e.target.name === "scheduleActive"){
+        if(e.target.name === "scheduleActive" || e.target.name === "group"){
             bulkLoadDispatch({
                 field: e.target.name,
-                value: e.target.value.name
+                value: e.value
             });
         }
-    };
-
-    const onGroupChange = (e) => {
-        bulkLoadDispatch({
-            field: e.target.name,
-            value: e.value
-        });
     };
 
     const hideDialog = () => {
@@ -146,7 +139,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                             id="group"
                             options={groups}
                             value={newBulkLoad.group}
-                            onChange={onGroupChange}
+                            onChange={onChange}
                             placeholder={"Select Group"}
                             className='p-col-12'
                             name='group'
