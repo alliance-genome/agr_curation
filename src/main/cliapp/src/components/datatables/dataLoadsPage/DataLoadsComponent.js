@@ -7,8 +7,8 @@ import { SearchService } from '../../../service/SearchService';
 import { DataLoadService } from '../../../service/DataLoadService';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
-import NewBulkLoadForm from './NewBulkLoadForm';
-import NewBulkLoadGroupForm from './NewBulkLoadGroupForm';
+import { NewBulkLoadForm } from './NewBulkLoadForm';
+import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { useQueryClient } from 'react-query';
 
 export const DataLoadsComponent = () => {
@@ -121,6 +121,7 @@ export const DataLoadsComponent = () => {
       <NewBulkLoadForm
         bulkLoadDialog={bulkLoadDialog}
         setBulkLoadDialog={setBulkLoadDialog}
+        groups={groups}
       />
       <NewBulkLoadGroupForm
         bulkLoadGroupDialog={bulkLoadGroupDialog}
