@@ -6,18 +6,24 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
         <>
             {!hideFMS.current &&
                 <>
-                    <InputText
-                        name="dataType"
-                        value={newBulkLoad.dataType}
-                        onChange={onChange}
-                        placeholder='Enter Data Type'
-                    />
-                    <InputText
-                        name="dataSubType"
-                        value={newBulkLoad.dataSubType}
-                        onChange={onChange}
-                        placeholder='Enter Data SubType'
-                    />
+                    <div className="p-field">
+                        <label htmlFor="dataType">Data Type</label>
+                        <InputText
+                            name="dataType"
+                            value={newBulkLoad.dataType}
+                            onChange={onChange}
+                            placeholder='Enter Data Type'
+                        />
+                    </div>
+                    <div className="p-field">
+                        <label htmlFor="dataSubType">Data SubType</label>
+                        <InputText
+                            name="dataSubType"
+                            value={newBulkLoad.dataSubType}
+                            onChange={onChange}
+                            placeholder='Enter Data SubType'
+                        />
+                    </div>
 
                 </>
             }
