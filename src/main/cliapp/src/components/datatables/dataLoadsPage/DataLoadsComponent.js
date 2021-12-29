@@ -54,6 +54,12 @@ export const DataLoadsComponent = () => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
+
+  const runLoadFile = (rowData) => {
+    dataLoadService.restartLoadFile(rowData.id).then(response => {
+      queryClient.invalidateQueries('bulkloadtable');
+    });
+  };
   
   const editLoad = (rowData) => {
     console.log(rowData);
@@ -71,7 +77,13 @@ export const DataLoadsComponent = () => {
     });
   };
 
-  const actionBodyTemplate = (rowData) => {
+  const loadFileActionBodyTemplate = (rowData) => {
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+      return (<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
+    }
+  }
+
+  const loadActionBodyTemplate = (rowData) => {
     let ret = [];
 
     ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
@@ -127,7 +139,7 @@ export const DataLoadsComponent = () => {
           <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
           <Column field="lastUpdated" header="Last Loaded" />
           <Column field="status" header="Status" />
-
+          <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
     );
@@ -173,7 +185,7 @@ export const DataLoadsComponent = () => {
           <Column field="nextRun" header="Next Run" />
           <Column field="status" header="Status" />
           { dynamicColumns(group.loads) }
-          <Column body={actionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+          <Column body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
     );

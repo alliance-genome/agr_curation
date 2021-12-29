@@ -7,6 +7,10 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
         <>
             {!hideFMS.current &&
                 <>
+                    <CronFields
+                        newBulkLoad={newBulkLoad}
+                        onChange={onChange}
+                    />
                     <div className="p-field">
                         <label htmlFor="dataType">Data Type</label>
                         <InputText
@@ -25,10 +29,6 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
                             placeholder='Enter Data SubType'
                         />
                     </div>
-                    <CronFields
-                        newBulkLoad={newBulkLoad}
-                        onChange={onChange}
-                    />
                 </>
             }
         </>

@@ -8,6 +8,10 @@ export const URLForm = ({ hideURL, newBulkLoad, onChange }) => {
         <>
             {!hideURL.current &&
                 <>
+                    <CronFields
+                        newBulkLoad={newBulkLoad}
+                        onChange={onChange}
+                    />
                     <div className="p-field">
                         <label htmlFor="url">URL</label>
                         <InputText
@@ -17,10 +21,6 @@ export const URLForm = ({ hideURL, newBulkLoad, onChange }) => {
                             placeholder='Enter URL'
                         />
                     </div>
-                    <CronFields
-                        newBulkLoad={newBulkLoad}
-                        onChange={onChange}
-                    />
 
                 </>
             }
