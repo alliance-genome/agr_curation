@@ -16,7 +16,9 @@ const emptyBulkLoad = {
     type: "",
     dataType: "",
     dataSubType: "",
-    url: ""
+    url: "",
+    scheduled: null,
+    cronSchedule: ""
 };
 
 const bulkLoadReducer = (state, action) => {
@@ -72,6 +74,13 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             hideURL.current = true;
             hideManual.current = true;
             showLoadTypeForm(e.target.value);
+        }
+
+        if(e.target.name === "scheduled"){
+            bulkLoadDispatch({
+                field: e.target.name,
+                value: e.target.value.name
+            });
         }
     };
 

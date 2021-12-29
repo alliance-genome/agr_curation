@@ -1,5 +1,7 @@
 import React from 'react';
 import { InputText } from 'primereact/inputtext';
+import { CronFields } from './CronFields';
+
 
 export const URLForm = ({ hideURL, newBulkLoad, onChange }) => {
     return (
@@ -15,6 +17,10 @@ export const URLForm = ({ hideURL, newBulkLoad, onChange }) => {
                             placeholder='Enter URL'
                         />
                     </div>
+                    <CronFields
+                        newBulkLoad={newBulkLoad}
+                        onChange={onChange}
+                    />
 
                 </>
             }

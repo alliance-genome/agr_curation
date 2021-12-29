@@ -1,5 +1,6 @@
 import { InputText } from 'primereact/inputtext';
 import React from 'react';
+import { CronFields } from './CronFields';
 
 export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
     return (
@@ -24,7 +25,10 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
                             placeholder='Enter Data SubType'
                         />
                     </div>
-
+                    <CronFields
+                        newBulkLoad={newBulkLoad}
+                        onChange={onChange}
+                    />
                 </>
             }
         </>
