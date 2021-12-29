@@ -19,11 +19,11 @@ export const CronFields = ({ newBulkLoad, onChange }) => {
           <Dropdown
             id="scheduled"
             options={booleanTerms}
-            value={newBulkLoad.scheduled}
+            value={newBulkLoad.scheduleActive}
             onChange={onChange}
             placeholder={"Select if Scheduled"}
             className='p-col-12'
-            name='scheduled'
+            name='scheduleActive'
             optionLabel='name'
           />
         </div>
@@ -36,7 +36,7 @@ export const CronFields = ({ newBulkLoad, onChange }) => {
             onMouseOver={(e) => op.current.toggle(e)}
           ></i>
           <OverlayPanel ref={op}>
-            For more information, click this link <a href="https://www.google.com/"> Google</a>
+            For more information, click this link <a href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html"> Tutorial</a>
           </OverlayPanel>
           <InputText
             value={newBulkLoad.cronSchedule}

@@ -17,7 +17,7 @@ const emptyBulkLoad = {
     dataType: "",
     dataSubType: "",
     url: "",
-    scheduled: null,
+    scheduleActive: null,
     cronSchedule: ""
 };
 
@@ -76,7 +76,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             showLoadTypeForm(e.target.value);
         }
 
-        if(e.target.name === "scheduled"){
+        if(e.target.name === "scheduleActive"){
             bulkLoadDispatch({
                 field: e.target.name,
                 value: e.target.value.name
