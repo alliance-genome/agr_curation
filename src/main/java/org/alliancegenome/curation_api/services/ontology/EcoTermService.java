@@ -33,7 +33,7 @@ public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO>
     public void updateAbbreviations() {
 
         SearchResponse<Vocabulary> res = vocabularyDAO.findByField("name", ecoTermAbbreviationVocabularyName);
-        if(res.getTotalResults() == 1) {
+        if(res != null && res.getTotalResults() == 1) {
             List<VocabularyTerm> ecoVocabularyTerms = res.getResults().get(0).getMemberTerms();
             ecoVocabularyTerms.forEach((ecoVocabularyTerm) -> {
                 EcoTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());
