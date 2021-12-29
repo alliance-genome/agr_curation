@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 
 import lombok.*;
 
@@ -15,6 +15,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Schema(name="BulkFMSLoad", description="POJO that represents the BulkFMSLoad")
+@JsonTypeName
 public class BulkFMSLoad extends BulkScheduledLoad {
 
     @JsonView({View.FieldsOnly.class})

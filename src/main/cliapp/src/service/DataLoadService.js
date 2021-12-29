@@ -7,10 +7,9 @@ export class DataLoadService {
     }
 
     createLoad(newLoad) {
-        const loadType = newLoad.loadType;
-        delete newLoad.loadType;
-        newLoad.group = {id: newLoad.group.id};
-        return axios.post(`api/bulk${loadType}load`, newLoad);
+        let endpoint = newLoad.type.toLowerCase();
+        newLoad.group = { id: newLoad.group.id };
+        return axios.post(`api/${endpoint}`, newLoad);
     }
 
 
@@ -21,10 +20,15 @@ export class DataLoadService {
         ];
     }
 
-    
+
     getLoadTypes() {
         return [
-            "fms", "url", "manual"
+            "BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
         ];
+    }
+
+    restartLoad(loadType, id) {
+        let endpoint = loadType.toLowerCase();
+        return axios.get(`api/${endpoint}/restart/${id}`);
     }
 }

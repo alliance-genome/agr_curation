@@ -5,13 +5,24 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.view.View;
-import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 
 import lombok.*;
+
+@JsonTypeInfo(
+  use = JsonTypeInfo.Id.NAME, 
+  include = JsonTypeInfo.As.PROPERTY, 
+  property = "type")
+@JsonSubTypes({ 
+  @Type(value = BulkFMSLoad.class, name = "BulkFMSLoad"), 
+  @Type(value = BulkURLLoad.class, name = "BulkURLLoad"), 
+  @Type(value = BulkManualLoad.class, name = "BulkManualLoad") 
+})
 
 @Audited
 @Entity
@@ -30,6 +41,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private BackendBulkLoadType backendBulkLoadType;
+    
+    @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
+    private OntologyType ontologyType;
     
     @ManyToOne
     private BulkLoadGroup group;
@@ -52,7 +67,13 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     }
     
     public enum BackendBulkLoadType {
-        ONTOLOGY, GENE, ALLELE, AGM, DISEASE_ANNOTATION;
+        ONTOLOGY_DTO, GENE_DTO, ALLELE_DTO, AGM_DTO, DISEASE_ANNOTATION_DTO,
+        ONTOLOGY, GENE, ALLELE, AGM, DISEASE_ANNOTATION
+        ;
+    }
+
+    public enum OntologyType {
+        ZECO, ECO, GO, DO, SO, CHEBI, MP, MA;
     }
 
 }

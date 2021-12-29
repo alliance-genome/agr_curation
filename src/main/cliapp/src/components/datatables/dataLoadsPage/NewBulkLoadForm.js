@@ -12,7 +12,7 @@ const emptyBulkLoad = {
     name: "",
     group: null,
     backendBulkLoadType: "",
-    loadType: "",
+    type: "",
     dataType: "",
     dataSubType: ""
 }
@@ -44,13 +44,13 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
 
     const showLoadTypeForm = (value) => {
         switch (value) {
-            case 'fms':
+            case 'BulkFMSLoad':
                 hideFMS.current = false;
                 break;
-            case 'url':
+            case 'BulkURLLoad':
                 hideURL.current = false;
                 break;
-            case 'manual':
+            case 'BulkManualLoad':
                 hideManual.current = false;
                 break;
             default:
@@ -65,7 +65,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             value: e.target.value
         });
 
-        if (e.target.name === "loadType") {
+        if (e.target.name === "type") {
             showLoadTypeForm(e.target.value);
         }
     }
@@ -129,12 +129,12 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                     />
 
                     <Dropdown
-                        value={newBulkLoad.loadType}
+                        value={newBulkLoad.type}
                         options={loadTypes}
                         onChange={onChange}
                         placeholder={"Select Load Type"}
                         className='p-col-12'
-                        name='loadType'
+                        name='type'
                     />
                     <FMSForm
                         hideFMS={hideFMS}

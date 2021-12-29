@@ -91,6 +91,28 @@ public class FileTransferHelper {
         
     }
     
+    public File downloadFileFromS3(String AWSAccessKey, String AWSSecretKey, String bucket, String prefix, String path) {
+        
+        File localOutFile = generateFilePath();
+        
+        try {
+            String fullS3Path = prefix + "/" + path;
+            log.info("Download file From S3: " + "s3://" + bucket + "/" + fullS3Path + " -> " + localOutFile.getAbsolutePath());
+            AmazonS3 s3 = AmazonS3ClientBuilder.standard().withCredentials(new AWSStaticCredentialsProvider(new BasicAWSCredentials(AWSAccessKey, AWSSecretKey))).withRegion(Regions.US_EAST_1).build();
+            TransferManager tm = TransferManagerBuilder.standard().withS3Client(s3).build();
+            final Download downloadFile = tm.download(bucket, fullS3Path, localOutFile);
+            downloadFile.waitForCompletion();
+            tm.shutdownNow();
+            log.info("S3 Download complete");
+            s3.shutdown();
+            return localOutFile;
+        } catch (Exception e) {
+            localOutFile.delete();
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
     public String uploadFileToS3(String AWSAccessKey, String AWSSecretKey, String bucket, String prefix, String path, File inFile) {
         try {
             String fullS3Path = prefix + "/" + path;
