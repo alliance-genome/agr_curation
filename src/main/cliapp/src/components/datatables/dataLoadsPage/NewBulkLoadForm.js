@@ -88,29 +88,47 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
     }
     const handleSubmit = (event) => {
         event.preventDefault();
-        bulkLoadDispatch({ type: "RESET" })
-        setBulkLoadDialog(false);
-        hideFMS.current = true;
-        hideURL.current = true;
-        hideManual.current = true;
+
         mutation.mutate(newBulkLoad, {
             onSuccess: () => {
-                queryClient.invalidateQueries('bulkloadtable')
+                queryClient.invalidateQueries('bulkloadtable');
+                bulkLoadDispatch({ type: "RESET" });
+                hideFMS.current = true;
+                hideURL.current = true;
+                hideManual.current = true;
+                setBulkLoadDialog(false);
             }
         });
     }
 
+    const newBulkLoadDialogFooter = (
+            <React.Fragment>
+              <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
+          <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={handleSubmit} />
+            </React.Fragment>
+      );
+
 
     return (
-        <Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" onHide={hideDialog} resizeable >
+        <Dialog visible={bulkLoadDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" footer={newBulkLoadDialogFooter} onHide={hideDialog} resizeable >
             <div className='p-justify-center'>
-                <form onSubmit={handleSubmit}>
-                    <InputText
-                        name="name"
-                        value={newBulkLoad.name}
-                        onChange={onChange}
-                    />
-                    <Dropdown
+                <form>
+                    
+                    <div className="p-field">
+                      <label htmlFor="name">Name</label>
+                      <InputText
+                          id="name"
+                          name="name"
+                          placeholder={"Name"}
+                          value={newBulkLoad.name}
+                          onChange={onChange}
+                      />
+                    </div>
+
+                    <div className="p-field">
+                      <label htmlFor="group">Group Name</label>
+                      <Dropdown
+                        id="group"
                         options={groups}
                         value={newBulkLoad.group}
                         onChange={onGroupChange}
@@ -118,7 +136,9 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                         className='p-col-12'
                         name='group'
                         optionLabel='name'
-                    />
+                      />
+                    </div>
+
                     <Dropdown
                         value={newBulkLoad.backendBulkLoadType}
                         options={backendBulkLoadTypes}
@@ -141,8 +161,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
                     />
-                    <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-                    <Button label="Save" icon="pi pi-check" className="p-button-text" type='submit' />
+                    
                 </form>
             </div>
         </Dialog>
