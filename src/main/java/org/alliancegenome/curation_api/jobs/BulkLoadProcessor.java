@@ -107,6 +107,8 @@ public class BulkLoadProcessor {
                 service = goTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.XCO) {
                 service = xcoTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ECO) {
+                service = ecoTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.CHEBI) {
                 service = chebiTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ZFA) {
