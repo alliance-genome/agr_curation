@@ -71,12 +71,10 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
     }
 
     const onGroupChange = (e) => {
-        console.log(e)
         bulkLoadDispatch({
             field: e.target.name,
             value: e.value
         });
-
     }
 
     const hideDialog = () => {
@@ -97,6 +95,9 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                 hideURL.current = true;
                 hideManual.current = true;
                 setBulkLoadDialog(false);
+            },
+            onError: () => {
+              // lookup group and set 
             }
         });
     }

@@ -74,14 +74,15 @@ export const DataLoadsComponent = () => {
   const actionBodyTemplate = (rowData) => {
     let ret = [];
 
-    ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-success p-mr-2" onClick={() => editLoad(rowData)} />);
-    ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
+    ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
 
-    if(!rowData.loadFiles || rowData.loadFiles.length === 0) {
-      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-success p-mr-2" onClick={() => deleteLoad(rowData)} />);
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
     }
 
-    
+    if(!rowData.loadFiles || rowData.loadFiles.length === 0) {
+      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
+    }
 
     return ret;
   }
@@ -147,8 +148,8 @@ export const DataLoadsComponent = () => {
     }
 
     if(showFMSLoad) {
-      ret.push(<Column field="dataType" header="Data Type" />);
-      ret.push(<Column field="dataSubType" header="Data Sub Type" />);
+      ret.push(<Column field="dataType" header="FMS Data Type" />);
+      ret.push(<Column field="dataSubType" header="FMS Data Sub Type" />);
     }
     if(showURLLoad) {
       ret.push(<Column body={urlBodyTemplate} header="Data URL" />);
