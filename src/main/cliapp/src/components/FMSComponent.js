@@ -13,7 +13,7 @@ export const FMSComponent = () => {
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(20);
   const [releases, setReleases] = useState([]);
-  const [selectedRelease, setSelectedRelease] = useState(['4.2.0']);
+  const [selectedRelease, setSelectedRelease] = useState(['5.0.0']);
   //const [totalRecords, setTotalRecords] = useState(0);
 
   useEffect(() => {
