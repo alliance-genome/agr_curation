@@ -138,6 +138,8 @@ public class BulkLoadExecutor {
             return;
         }
 
+        bulkLoadFile.getBulkLoad().setStatus(BulkLoadStatus.RUNNING);
+        bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
         bulkLoadFile.setStatus(BulkLoadStatus.RUNNING);
         bulkLoadFileDAO.merge(bulkLoadFile);
 
