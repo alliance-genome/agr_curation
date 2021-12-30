@@ -255,8 +255,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
     
     private void log(String message) {
-        //log.debug(message);
-        log.info(message);
+        log.debug(message);
+        //log.info(message);
     }
 
 }

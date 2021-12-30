@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.FileInputStream;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,8 +10,8 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.*;
@@ -28,12 +28,12 @@ import lombok.extern.jbosslog.JBossLog;
 public class BulkLoadProcessor {
 
     @Inject ObjectMapper mapper;
-    
+
     @Inject AlleleService alleleService;
     @Inject GeneService geneService;
     @Inject AffectedGenomicModelService agmService;
     @Inject DiseaseAnnotationService diseaseService;
-    
+
     @Inject XcoTermService xcoTermService;
     @Inject GoTermService goTermService;
     @Inject EcoTermService ecoTermService;
@@ -49,7 +49,7 @@ public class BulkLoadProcessor {
 
 
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
-    
+
     public void process(BulkLoadFile bulkLoadFile) throws Exception {
         //log.info("Process Starting for: " + bulkLoadFile);
         if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE_DTO) {
@@ -88,9 +88,22 @@ public class BulkLoadProcessor {
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.DISEASE_ANNOTATION_DTO) {
             DiseaseAnnotationMetaDataDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataDTO.class);
             // TODO find taxon ID and send it with this load
+            BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
+
+            Map<String, String> map = Map.of(
+                    "ZFIN", "NCBITaxon:7955",
+                    "MGI", "NCBITaxon:10090",
+                    "RGD", "NCBITaxon:10116",
+                    "FB", "NCBITaxon:7227",
+                    "WB", "NCBITaxon:6239",
+                    "HUMAN", "NCBITaxon:9606",
+                    "SGD", "NCBITaxon:559292"
+            );
+            log.info("Running with: " + fms.getDataSubType() + " " + map.get(fms.getDataSubType()));
+
             bulkLoadFile.setRecordCount(diseaseData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            diseaseService.runLoad(null, diseaseData);
+            diseaseService.runLoad(map.get(fms.getDataSubType()), diseaseData);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             BaseOntologyTermService service = null;
@@ -129,15 +142,15 @@ public class BulkLoadProcessor {
                 log.info("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
                 throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
             }
-            
+
             if(service != null) {
                 processTerms(bulkLoadFile, bulkLoadFile.getBulkLoad().getOntologyType().getClazz(), bulkLoadFile.getLocalFilePath(), service, config);
                 if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ECO) {
                     ecoTermService.updateAbbreviations();
                 }
             }
-            
-        
+
+
         } else if(bulkLoadFile.getBulkLoad().getGroup().getName().equals("Reindex Tasks")) {
             if(bulkLoadFile.getBulkLoad().getName().equals("Gene Reindex")) { geneService.reindex(); }
             if(bulkLoadFile.getBulkLoad().getName().equals("Allele Reindex")) { alleleService.reindex(); }
@@ -149,11 +162,11 @@ public class BulkLoadProcessor {
 
         //log.info("Process Finished for: " + bulkLoadFile);
     }
-    
+
     private <T extends OntologyTerm> void processTerms(BulkLoadFile bulkLoadFile, Class<T> clazz, String filePath, BaseOntologyTermService service) throws Exception {
         processTerms(bulkLoadFile, clazz, filePath, service, null);
     }
-    
+
     private <T extends OntologyTerm> void processTerms(BulkLoadFile bulkLoadFile, Class<T> clazz, String filePath, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
         GenericOntologyLoadHelper<T> loader;
         if(config != null) {

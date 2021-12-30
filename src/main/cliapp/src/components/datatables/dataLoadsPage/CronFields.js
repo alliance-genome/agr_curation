@@ -1,10 +1,8 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
 import { useControlledVocabularyService } from '../../../service/useControlledVocabularyService';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import { Tooltip } from 'primereact/tooltip';
-
 
 export const CronFields = ({ newBulkLoad, onChange }) => {
   const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
