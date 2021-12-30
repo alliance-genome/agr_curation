@@ -1,4 +1,4 @@
-import React, { useReducer, useRef } from 'react';
+import React, { useReducer, useRef, useState } from 'react';
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
@@ -18,7 +18,8 @@ const emptyBulkLoad = {
     dataSubType: "",
     url: "",
     scheduleActive: null,
-    cronSchedule: ""
+    cronSchedule: "",
+    ontologyType: ""
 };
 
 const bulkLoadReducer = (state, action) => {
@@ -38,8 +39,9 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
     const hideFMS = useRef(true);
     const hideURL = useRef(true);
     const hideManual = useRef(true);
+    const hideOntology = useRef(true);
 
-    const backendBulkLoadTypes = dataLoadService.getBackendBulkLoadTypes();
+    const [backendBulkLoadTypes, setBackendLoadTypes] = useState();
     const loadTypes = dataLoadService.getLoadTypes();
 
     const mutation = useMutation(newBulkLoad => {
@@ -57,6 +59,9 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             case 'BulkManualLoad':
                 hideManual.current = false;
                 break;
+            case 'ONTOLOGY':
+                hideOntology.current = false;
+                break;
             default:
                 break;
         }
@@ -64,6 +69,13 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
 
 
     const onChange = (e) => {
+        if (e.target.name === "scheduleActive" || e.target.name === "group") {
+            bulkLoadDispatch({
+                field: e.target.name,
+                value: e.value
+            });
+        }
+
         bulkLoadDispatch({
             field: e.target.name,
             value: e.target.value
@@ -73,15 +85,16 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
             hideFMS.current = true;
             hideURL.current = true;
             hideManual.current = true;
+            setBackendLoadTypes(dataLoadService.getBackendBulkLoadTypes(e.target.value));
             showLoadTypeForm(e.target.value);
         }
 
-        if(e.target.name === "scheduleActive" || e.target.name === "group"){
-            bulkLoadDispatch({
-                field: e.target.name,
-                value: e.value
-            });
+        
+        if (e.target.name === "backendBulkLoadType") {
+            hideOntology.current = true;
+            showLoadTypeForm(e.target.value);
         }
+
     };
 
     const hideDialog = () => {
@@ -104,16 +117,16 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                 setBulkLoadDialog(false);
             },
             onError: () => {
-              // lookup group and set 
+                // lookup group and set 
             }
         });
     };
 
     const newBulkLoadDialogFooter = (
-        <React.Fragment>
+        <>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
             <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={handleSubmit} />
-        </React.Fragment>
+        </>
     );
 
 
@@ -181,6 +194,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
 
                     <URLForm
                         hideURL={hideURL}
+                        hideOntology={hideOntology}
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
                     />

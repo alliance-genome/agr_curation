@@ -7,15 +7,15 @@ export class DataLoadService {
     }
 
     deleteGroup(id) {
-      return axios.delete(`api/bulkloadgroup/${id}`);
+        return axios.delete(`api/bulkloadgroup/${id}`);
     }
 
     createLoad(newLoad) {
         let endpoint = newLoad.type.toLowerCase();
         newLoad.group = { id: newLoad.group.id };
         newLoad.scheduleActive = newLoad.scheduleActive.name;
-        for(const load in newLoad){
-            if(!newLoad[load]){
+        for (const load in newLoad) {
+            if (!newLoad[load]) {
                 delete newLoad[load];
             }
         }
@@ -23,8 +23,8 @@ export class DataLoadService {
     }
 
     deleteLoad(loadType, id) {
-      let endpoint = loadType.toLowerCase();
-      return axios.delete(`api/${endpoint}/${id}`);
+        let endpoint = loadType.toLowerCase();
+        return axios.delete(`api/${endpoint}/${id}`);
     }
 
     restartLoad(loadType, id) {
@@ -33,19 +33,27 @@ export class DataLoadService {
     }
 
     restartLoadFile(id) {
-      return axios.get(`api/bulkloadfile/restart/${id}`);
+        return axios.get(`api/bulkloadfile/restart/${id}`);
     }
 
-    getBackendBulkLoadTypes() {
-        return [
-            "GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO",
-            "ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"
-        ];
+    getBackendBulkLoadTypes(loadType) {
+        const bulkLoadTypes = {
+            BulkFMSLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO"],
+            BulkURLLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
+            BulkManualLoad: ["GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"]
+        };
+        return bulkLoadTypes[loadType];
     }
 
     getLoadTypes() {
         return [
             "BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
+        ];
+    }
+
+    getOntologyTypes() {
+        return [
+            "ECO","ZFA","DO","MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO"
         ];
     }
 
