@@ -26,9 +26,7 @@ export class SearchService {
 function includeSecondarySorts(sorts, sortMapping) {
     const newSorts = [];
 
-    console.log(sortMapping);
     sorts.forEach(sort => {
-        console.log(sort.field);
         newSorts.push(sort);
         if(sortMapping && sort.field in sortMapping){
             sortMapping[sort.field].forEach(field => {
@@ -38,9 +36,7 @@ function includeSecondarySorts(sorts, sortMapping) {
                 newSorts.push(newSort);
             })
         }
-        
     })
-    console.log(newSorts);
 
     return newSorts;
 }

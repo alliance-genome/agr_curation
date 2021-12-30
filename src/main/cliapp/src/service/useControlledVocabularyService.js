@@ -14,11 +14,13 @@ export function useControlledVocabularyService(termType) {
             "displayName": "generic_boolean_terms",
             "terms": [
                 {
-                    "id": 213423,
-                    "name": "true"
+                    id: 213423,
+                    name: true,
+                    text: "true"
                 }, {
                     id: 3428828,
-                    "name": "false"
+                    name: false,
+                    text: "false"
                 }
             ]
         }
@@ -31,7 +33,9 @@ export function useControlledVocabularyService(termType) {
             if (data.results) {
                 setTerms(data.results);
             } else {
-                setTerms(termData[termType]['terms']);
+                if(termData[termType]) {
+                  setTerms(termData[termType]['terms']);
+                }
             }
         },
         refetchOnWindowFocus: false

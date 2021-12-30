@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
@@ -8,33 +8,9 @@ import { InputText } from 'primereact/inputtext';
 import { FMSForm } from './FMSForm';
 import { URLForm } from './URLForm';
 
-
-const emptyBulkLoad = {
-    name: "",
-    group: null,
-    backendBulkLoadType: "",
-    type: "",
-    dataType: "",
-    dataSubType: "",
-    url: "",
-    scheduleActive: null,
-    cronSchedule: "",
-    ontologyType: ""
-};
-
-const bulkLoadReducer = (state, action) => {
-    switch (action.type) {
-        case 'RESET':
-            return emptyBulkLoad;
-        default:
-            return { ...state, [action.field]: action.value };
-    }
-};
-
-
-export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) => {
+export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, newBulkLoad, bulkLoadDispatch }) => {
     const dataLoadService = new DataLoadService();
-    const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, emptyBulkLoad);
+
     const queryClient = useQueryClient();
     const hideFMS = useRef(true);
     const hideURL = useRef(true);
@@ -44,9 +20,23 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
     const [backendBulkLoadTypes, setBackendLoadTypes] = useState();
     const loadTypes = dataLoadService.getLoadTypes();
 
-    const mutation = useMutation(newBulkLoad => {
-        return dataLoadService.createLoad(newBulkLoad);
+    const mutation = useMutation(bulkLoad => {
+        if(bulkLoad.id) {
+          return dataLoadService.updateLoad(bulkLoad);
+        } else {
+          return dataLoadService.createLoad(bulkLoad);
+        }
     });
+
+    useEffect(() => {
+        setBackendLoadTypes(dataLoadService.getBackendBulkLoadTypes(newBulkLoad.type));
+        hideFMS.current = true;
+        hideURL.current = true;
+        hideManual.current = true;
+        showLoadTypeForm(newBulkLoad.type);
+        hideOntology.current = true;
+        showLoadTypeForm(newBulkLoad.backendBulkLoadType);
+    }, [newBulkLoad]);
 
     const showLoadTypeForm = (value) => {
         switch (value) {
@@ -74,27 +64,12 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                 field: e.target.name,
                 value: e.value
             });
+        } else {
+          bulkLoadDispatch({
+              field: e.target.name,
+              value: e.target.value
+          });
         }
-
-        bulkLoadDispatch({
-            field: e.target.name,
-            value: e.target.value
-        });
-
-        if (e.target.name === "type") {
-            hideFMS.current = true;
-            hideURL.current = true;
-            hideManual.current = true;
-            setBackendLoadTypes(dataLoadService.getBackendBulkLoadTypes(e.target.value));
-            showLoadTypeForm(e.target.value);
-        }
-
-        
-        if (e.target.name === "backendBulkLoadType") {
-            hideOntology.current = true;
-            showLoadTypeForm(e.target.value);
-        }
-
     };
 
     const hideDialog = () => {
@@ -157,6 +132,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups }) =
                             className='p-col-12'
                             name='group'
                             optionLabel='name'
+                            optionValue='id'
                         />
                     </div>
 

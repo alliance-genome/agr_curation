@@ -50,7 +50,7 @@ public class BulkLoadExecutor {
                     for(BulkLoad b: g.getLoads()) {
                         if(b instanceof BulkScheduledLoad) {
                             BulkScheduledLoad bsl = (BulkScheduledLoad)b;
-                            if(bsl.getScheduleActive() && bsl.getCronSchedule() != null) {
+                            if(bsl.getScheduleActive() != null && bsl.getScheduleActive() && bsl.getCronSchedule() != null) {
                                 
                                 CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
                                 CronParser parser = new CronParser(cronDefinition);

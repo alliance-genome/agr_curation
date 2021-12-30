@@ -12,16 +12,32 @@ export class DataLoadService {
 
     createLoad(newLoad) {
         let endpoint = newLoad.type.toLowerCase();
-        newLoad.group = { id: newLoad.group.id };
-        if(newLoad.scheduleActive ){
-            newLoad.scheduleActive = newLoad.scheduleActive.name;
-        }
+
+        newLoad.group = { id: newLoad.group };
         for (const objectKey in newLoad) {
             if (!newLoad[objectKey]) {
                 delete newLoad[objectKey];
             }
         }
+        console.log("Creating: " );
+        console.log(newLoad);
         return axios.post(`api/${endpoint}`, newLoad);
+    }
+
+    updateLoad(newLoad) {
+
+        let endpoint = newLoad.type.toLowerCase();
+
+        newLoad.group = { id: newLoad.group };
+        for (const objectKey in newLoad) {
+            if (!newLoad[objectKey]) {
+                delete newLoad[objectKey];
+            }
+        }
+        delete newLoad["loadFiles"];
+        console.log("Saving: " );
+        console.log(newLoad);
+        return axios.put(`api/${endpoint}`, newLoad);
     }
 
     deleteLoad(loadType, id) {

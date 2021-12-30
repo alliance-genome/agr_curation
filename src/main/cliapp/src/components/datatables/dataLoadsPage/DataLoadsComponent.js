@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useReducer, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -11,7 +11,19 @@ import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { useQueryClient } from 'react-query';
 
+
 export const DataLoadsComponent = () => {
+
+  const bulkLoadReducer = (state, action) => {
+      switch (action.type) {
+          case 'EDIT':
+              return { ...action.editBulkLoad };
+          case 'RESET':
+              return { name: ""};
+          default:
+              return { ...state, [action.field]: action.value };
+      }
+  };
 
   const [groups, setGroups] = useState({});
   const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
@@ -21,6 +33,8 @@ export const DataLoadsComponent = () => {
   const errorMessage = useRef(null);
   const searchService = new SearchService();
   const dataLoadService = new DataLoadService();
+
+  const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
   
   const queryClient = useQueryClient();
 
@@ -29,12 +43,18 @@ export const DataLoadsComponent = () => {
   }
 
   const handleNewBulkLoadOpen = (event) => {
+    bulkLoadDispatch({ type: "RESET" });
     setBulkLoadDialog(true);
   }
 
   useQuery(['bulkloadtable'],
     () => searchService.find('bulkloadgroup', 100, 0, {}), {
     onSuccess: (data) => {
+      for(let group of data.results) {
+        for(let load of group.loads) {
+          load.group = group.id;
+        }
+      }
       setGroups(data.results);
     },
     keepPreviousData: true,
@@ -62,7 +82,8 @@ export const DataLoadsComponent = () => {
   };
   
   const editLoad = (rowData) => {
-    console.log(rowData);
+    bulkLoadDispatch({ type: "EDIT", editBulkLoad: rowData });
+    setBulkLoadDialog(true);
   };
 
   const deleteLoad = (rowData) => {
@@ -108,7 +129,7 @@ export const DataLoadsComponent = () => {
   const nameBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-          {rowData.name} (Id: {rowData.id})
+          {rowData.name}
       </React.Fragment>
     );
   }
@@ -129,10 +150,10 @@ export const DataLoadsComponent = () => {
 
   
 
-  const loadTable = (load) => {
+  const fileTable = (load) => {
     return (
       <div className="card">
-        <DataTable value={load.loadFiles} responsiveLayout="scroll">
+        <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll">
           <Column field="md5Sum" header="MD5 Sum" />
           <Column field="fileSize" header="File Size" />
           <Column field="recordCount" header="Record Count" />
@@ -160,32 +181,32 @@ export const DataLoadsComponent = () => {
     }
 
     if(showFMSLoad) {
-      ret.push(<Column field="dataType" header="FMS Data Type" />);
-      ret.push(<Column field="dataSubType" header="FMS Data Sub Type" />);
+      ret.push(<Column key="dataType" field="dataType" header="FMS Data Type" />);
+      ret.push(<Column key="dataSubType" field="dataSubType" header="FMS Data Sub Type" />);
     }
     if(showURLLoad) {
-      ret.push(<Column body={urlBodyTemplate} header="Data URL" />);
+      ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
     }
 
     return ret;
   };
 
-  const groupTable = (group) => {
+  const loadTable = (group) => {
     return (
       <div className="card">
-        <DataTable value={group.loads} responsiveLayout="scroll"
+        <DataTable key="loadTable" value={group.loads} responsiveLayout="scroll"
           expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
-          rowExpansionTemplate={loadTable} dataKey="id">
+          rowExpansionTemplate={fileTable} dataKey="id">
           <Column expander style={{ width: '3em' }} />
           <Column body={nameBodyTemplate} header="Load Name" />
           <Column field="type" header="Bulk Load Type" />
-          <Column body={backendBulkLoadTypeTemplate} field="backendBulkLoadType" header="Backend Bulk Load Type" />
+          <Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
           <Column field="scheduleActive" header="Schedule Active" />
           <Column field="cronSchedule" header="Cron Schedule" />
           <Column field="nextRun" header="Next Run" />
           <Column field="status" header="Status" />
           { dynamicColumns(group.loads) }
-          <Column body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+          <Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
     );
@@ -198,10 +219,10 @@ export const DataLoadsComponent = () => {
       <Button label="Refresh Data" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={refresh} />
       <h3>Data Loads Table</h3>
       <Messages ref={errorMessage} />
-      <DataTable
+      <DataTable key="groupTable"
         value={groups} className="p-datatable-sm"
         expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
-        rowExpansionTemplate={groupTable} dataKey="id">
+        rowExpansionTemplate={loadTable} dataKey="id">
         <Column expander style={{ width: '3em' }} />
         <Column body={nameBodyTemplate} header="Group Name" />
         <Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
@@ -209,6 +230,8 @@ export const DataLoadsComponent = () => {
       <NewBulkLoadForm
         bulkLoadDialog={bulkLoadDialog}
         setBulkLoadDialog={setBulkLoadDialog}
+        newBulkLoad={newBulkLoad}
+        bulkLoadDispatch={bulkLoadDispatch}
         groups={groups}
       />
       <NewBulkLoadGroupForm

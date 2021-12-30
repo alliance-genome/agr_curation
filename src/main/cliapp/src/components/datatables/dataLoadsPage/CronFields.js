@@ -22,7 +22,8 @@ export const CronFields = ({ newBulkLoad, onChange }) => {
             placeholder={"Select if Scheduled"}
             className='p-col-12'
             name='scheduleActive'
-            optionLabel='name'
+            optionLabel='text'
+            optionValue='name'
           />
         </div>
         <div className="p-field">

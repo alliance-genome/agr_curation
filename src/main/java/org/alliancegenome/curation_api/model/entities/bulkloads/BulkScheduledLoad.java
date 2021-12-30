@@ -13,7 +13,7 @@ import com.cronutils.model.*;
 import com.cronutils.model.definition.*;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 
 import lombok.*;
 
@@ -51,5 +51,7 @@ public abstract class BulkScheduledLoad extends BulkLoad {
             return "";
         }
     }
+    
+    public void setNextRun(String nextRun) { }
     
 }
