@@ -159,7 +159,7 @@ export const DataLoadsComponent = () => {
           <Column field="recordCount" header="Record Count" />
           <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
           <Column field="lastUpdated" header="Last Loaded" />
-          <Column field="status" header="Status" />
+          <Column field="status" body={statusTemplate} header="Status" />
           <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
@@ -180,15 +180,30 @@ export const DataLoadsComponent = () => {
       }
     }
 
-    if(showFMSLoad) {
-      ret.push(<Column key="dataType" field="dataType" header="FMS Data Type" />);
-      ret.push(<Column key="dataSubType" field="dataSubType" header="FMS Data Sub Type" />);
-    }
-    if(showURLLoad) {
-      ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
+    if(showFMSLoad || showURLLoad) {
+      ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" />);
+      ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
+      ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
+      if(showFMSLoad) {
+        ret.push(<Column key="dataType" field="dataType" header="FMS Data Type" />);
+        ret.push(<Column key="dataSubType" field="dataSubType" header="FMS Data Sub Type" />);
+      }
+      if(showURLLoad) {
+        ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
+      }
     }
 
     return ret;
+  };
+
+  const statusTemplate = (rowData) => {
+      let styleClass = 'p-button-text p-button-plain';
+      if(rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
+      if(rowData.status === 'STARTED' || rowData.status === 'RUNNING') { styleClass = "p-button-success"; }
+
+      return (
+        <Button label={rowData.status} className={`p-button-rounded ${styleClass}`} />
+      )
   };
 
   const loadTable = (group) => {
@@ -201,11 +216,8 @@ export const DataLoadsComponent = () => {
           <Column body={nameBodyTemplate} header="Load Name" />
           <Column field="type" header="Bulk Load Type" />
           <Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
-          <Column field="scheduleActive" header="Schedule Active" />
-          <Column field="cronSchedule" header="Cron Schedule" />
-          <Column field="nextRun" header="Next Run" />
-          <Column field="status" header="Status" />
           { dynamicColumns(group.loads) }
+          <Column field="status" body={statusTemplate} header="Status" />
           <Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
