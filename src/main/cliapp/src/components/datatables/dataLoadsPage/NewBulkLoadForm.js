@@ -8,8 +8,11 @@ import { InputText } from 'primereact/inputtext';
 import { FMSForm } from './FMSForm';
 import { URLForm } from './URLForm';
 
+
+const dataLoadService = new DataLoadService();
+
+
 export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, newBulkLoad, bulkLoadDispatch }) => {
-    const dataLoadService = new DataLoadService();
 
     const queryClient = useQueryClient();
     const hideFMS = useRef(true);
