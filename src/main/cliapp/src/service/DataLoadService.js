@@ -13,10 +13,12 @@ export class DataLoadService {
     createLoad(newLoad) {
         let endpoint = newLoad.type.toLowerCase();
         newLoad.group = { id: newLoad.group.id };
-        newLoad.scheduleActive = newLoad.scheduleActive.name;
-        for (const load in newLoad) {
-            if (!newLoad[load]) {
-                delete newLoad[load];
+        if(newLoad.scheduleActive ){
+            newLoad.scheduleActive = newLoad.scheduleActive.name;
+        }
+        for (const objectKey in newLoad) {
+            if (!newLoad[objectKey]) {
+                delete newLoad[objectKey];
             }
         }
         return axios.post(`api/${endpoint}`, newLoad);
