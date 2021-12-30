@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -71,6 +72,17 @@ public class BulkLoadProcessor {
             ph.startProcess("Allele Update", alleleData.getData().size());
             for(AlleleDTO allele: alleleData.getData()) {
                 alleleService.processUpdate(allele);
+                ph.progressProcess();
+            }
+            ph.finishProcess();
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ALLELE) {  
+            Allele[] alleles = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), Allele[].class);
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+            bulkLoadFile.setRecordCount(alleles.length);
+            bulkLoadFileDAO.merge(bulkLoadFile);
+            ph.startProcess("Allele Update", alleles.length);
+            for(Allele allele: alleles) {
+                alleleService.update(allele);
                 ph.progressProcess();
             }
             ph.finishProcess();

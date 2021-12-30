@@ -12,7 +12,7 @@ import lombok.*;
 @Audited
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
+@ToString(callSuper = true)
 @Schema(name="BulkManualLoad", description="POJO that represents the BulkManualLoad")
 @JsonTypeName
 public class BulkManualLoad extends BulkLoad {

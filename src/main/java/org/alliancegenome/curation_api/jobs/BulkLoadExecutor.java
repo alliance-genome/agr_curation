@@ -123,12 +123,6 @@ public class BulkLoadExecutor {
         bulkLoadFileProcessor.process(load.body());
     }
 
-    @ConsumeEvent(value = "BulkManualLoad", blocking = true)
-    public void processBulkManualLoad(Message<BulkManualLoad> load) {
-        startLoad(load.body());
-        bulkLoadFileProcessor.process(load.body());
-    }
-
     @ConsumeEvent(value = "bulkloadfile", blocking = true)
     public void bulkLoadFile(Message<BulkLoadFile> file) {
         BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());

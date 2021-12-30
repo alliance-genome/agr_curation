@@ -12,11 +12,6 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 public interface AlleleBulkInterface {
 
     @POST
-    @Path("/submit_oldschema")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String updateOldAlleles(MultipartFormDataInput input);
-
-    @POST
     @Path("/submit")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     public String updateAlleles(MultipartFormDataInput input);
