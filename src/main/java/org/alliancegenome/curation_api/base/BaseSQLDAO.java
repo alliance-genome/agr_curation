@@ -208,7 +208,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
     }
 
-    public SearchResponse<E> findByField(String field, String value) {
+    public SearchResponse<E> findByField(String field, Object value) {
         log.debug("SqlDAO: findByField: " + field + " " + value);
         HashMap<String, Object> params = new HashMap<>();
         params.put(field, value);

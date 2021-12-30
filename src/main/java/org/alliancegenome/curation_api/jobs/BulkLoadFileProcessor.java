@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -9,14 +9,17 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.*;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.resteasy.plugins.providers.multipart.*;
 
+import io.quarkus.vertx.ConsumeEvent;
+import io.vertx.core.eventbus.Message;
 import io.vertx.mutiny.core.eventbus.EventBus;
 import lombok.extern.jbosslog.JBossLog;
 
@@ -38,6 +41,7 @@ public class BulkLoadFileProcessor {
 
     @Inject EventBus bus;
     @Inject BulkLoadDAO bulkLoadDAO;
+    @Inject BulkManualLoadDAO bulkManualLoadDAO;
     @Inject DataFileService fmsDataFileService;
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
 
@@ -72,15 +76,26 @@ public class BulkLoadFileProcessor {
         }
     }
     
-    public void process(BulkManualLoad bulkManualLoad) {
-        // TODO FIx using multi form input 
-        //String localFilePath = fileHelper.compressInputFile(bulkManualLoad.getName());
-        //processFilePath(bulkManualLoad, localFilePath);
+    public void process(MultipartFormDataInput input, BackendBulkLoadType type) {
+        Map<String, List<InputPart>> form = input.getFormDataMap();
+        log.info(form);
+        if(form.containsKey(type)) {
+            log.warn("Key not found: " + type);
+            return;
+        }
         
-        BulkLoad bulkLoad = bulkLoadDAO.find(bulkManualLoad.getId());
-        bulkLoad.setErrorMessage("Load is not implemented: load Failed");
-        bulkLoad.setStatus(BulkLoadStatus.FAILED);
-        bulkLoadDAO.merge(bulkLoad);
+        BulkManualLoad bml = null;
+        SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByField("backendBulkLoadType", type);
+        if(load != null && load.getTotalResults() == 1) {
+            bml = load.getResults().get(0);
+        } else {
+            log.warn("BulkManualLoad not found: " + type);
+            return;
+        }
+        
+        String filePath = fileHelper.saveIncomingFile(input, bml.getBackendBulkLoadType().toString());
+        String localFilePath = fileHelper.compressInputFile(filePath);
+        processFilePath(bml, localFilePath);
     }
 
     private String processFMS(String dataType, String dataSubType) {
