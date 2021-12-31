@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
-import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
@@ -56,11 +56,23 @@ public class BulkLoadProcessor {
         if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE_DTO) {
             GeneMetaDataDTO geneData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), GeneMetaDataDTO.class);
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-            ph.startProcess("Gene Update", geneData.getData().size());
+            ph.startProcess("Gene DTO Update", geneData.getData().size());
             bulkLoadFile.setRecordCount(geneData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             for(GeneDTO gene: geneData.getData()) {
                 geneService.processUpdate(gene);
+                ph.progressProcess();
+            }
+            ph.finishProcess();
+            
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE) {    
+            Gene[] genes = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), Gene[].class);
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+            bulkLoadFile.setRecordCount(genes.length);
+            bulkLoadFileDAO.merge(bulkLoadFile);
+            ph.startProcess("Gene Update", genes.length);
+            for(Gene gene: genes) {
+                geneService.update(gene);
                 ph.progressProcess();
             }
             ph.finishProcess();
@@ -69,7 +81,7 @@ public class BulkLoadProcessor {
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
             bulkLoadFile.setRecordCount(alleleData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            ph.startProcess("Allele Update", alleleData.getData().size());
+            ph.startProcess("Allele DTO Update", alleleData.getData().size());
             for(AlleleDTO allele: alleleData.getData()) {
                 alleleService.processUpdate(allele);
                 ph.progressProcess();
