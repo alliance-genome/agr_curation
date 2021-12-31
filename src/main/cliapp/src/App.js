@@ -19,18 +19,18 @@ import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
-import { CHEBIOntologyComponent } from './components/ontologies/CHEBIOntologyComponent';
-import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
-import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
-import { GOOntologyComponent } from './components/ontologies/GOOntologyComponent';
-import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
-import { ZFAOntologyComponent } from './components/ontologies/ZFAOntologyComponent';
-import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
-import { DAOOntologyComponent } from './components/ontologies/DAOOntologyComponent';
-import { EMAPAOntologyComponent } from './components/ontologies/EMAPAOntologyComponent';
-import { WBbtOntologyComponent } from './components/ontologies/WBbtOntologyComponent';
-import { XCOOntologyComponent } from './components/ontologies/XCOOntologyComponent';
-import { ZECOOntologyComponent } from './components/ontologies/ZECOOntologyComponent';
+import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
+import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
+import { ECOOntologyComponent } from './containers/ontologies/ECOOntologyComponent';
+import { GOOntologyComponent } from './containers/ontologies/GOOntologyComponent';
+import { MAOntologyComponent } from './containers/ontologies/MAOntologyComponent';
+import { ZFAOntologyComponent } from './containers/ontologies/ZFAOntologyComponent';
+import { MPOntologyComponent } from './containers/ontologies/MPOntologyComponent';
+import { DAOOntologyComponent } from './containers/ontologies/DAOOntologyComponent';
+import { EMAPAOntologyComponent } from './containers/ontologies/EMAPAOntologyComponent';
+import { WBbtOntologyComponent } from './containers/ontologies/WBbtOntologyComponent';
+import { XCOOntologyComponent } from './containers/ontologies/XCOOntologyComponent';
+import { ZECOOntologyComponent } from './containers/ontologies/ZECOOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
