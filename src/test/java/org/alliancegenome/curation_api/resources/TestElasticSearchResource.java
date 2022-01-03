@@ -12,14 +12,12 @@ public class TestElasticSearchResource {
     public static class Initializer implements QuarkusTestResourceLifecycleManager {
 
         private ElasticsearchContainer container;
-        private ActiveMQContainer mqContainer;
         
         @Override
         public Map<String, String> start() {
             container = new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:7.10.2");
             container.start();
-            mqContainer = new ActiveMQContainer("vromero/activemq-artemis:2.9.0-alpine");
-            mqContainer.start();
+
             return getConfig();
         }
 
@@ -27,10 +25,6 @@ public class TestElasticSearchResource {
             final Map<String, String> map = new HashMap<>();
 
             map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", container.getHost() + ":" + container.getMappedPort(9200));
-
-            map.put("quarkus.qpid-jms.username", mqContainer.getUsername());
-            map.put("quarkus.qpid-jms.password", mqContainer.getPassword());
-            map.put("quarkus.qpid-jms.url", mqContainer.getUrl());
 
             return map;
         }

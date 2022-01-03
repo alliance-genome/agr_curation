@@ -32,7 +32,7 @@ public interface MoleculeCrudInterface extends BaseCurieCrudInterface<Molecule> 
             @RequestBody HashMap<String, Object> params);
     
     @POST
-    @Path("/moleculefile")
+    @Path("/bulk/moleculefile")
     public String updateMolecules(
         MoleculeMetaDataDTO moleculeData);
     

@@ -8,7 +8,7 @@ import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Tag(name = "CRUD - Ontology - Bulk")
-public interface BaseOntologyTermCrudInterface<T extends OntologyTerm> extends BaseIdCrudInterface<T> {
+public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends BaseCurieCrudInterface<E> {
 
     @POST
     @Path("/bulk/owl")

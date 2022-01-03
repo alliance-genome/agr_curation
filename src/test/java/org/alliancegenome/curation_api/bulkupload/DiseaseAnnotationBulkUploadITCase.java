@@ -41,7 +41,7 @@ public class DiseaseAnnotationBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
     }
@@ -56,7 +56,7 @@ public class DiseaseAnnotationBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/allele/bulk/allelefile?async=false").
+                post("/api/allele/bulk/allelefile").
                 then().
                 statusCode(200);
             
@@ -81,7 +81,7 @@ public class DiseaseAnnotationBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/agm/bulk/agmfile?async=false").
+                post("/api/agm/bulk/agmfile").
                 then().
                 statusCode(200);
             
@@ -109,7 +109,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
 
@@ -136,7 +136,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
 
@@ -163,7 +163,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
 
@@ -190,7 +190,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/rgdAnnotationFile").
+            post("/api/disease-annotation/bulk/rgdAnnotationFile").
             then().
             statusCode(200);
 
@@ -217,7 +217,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/sgdAnnotationFile").
+            post("/api/disease-annotation/bulk/sgdAnnotationFile").
             then().
             statusCode(200);
 
@@ -244,7 +244,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
 
@@ -271,7 +271,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
 
@@ -298,7 +298,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -347,7 +347,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -375,7 +375,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
     
@@ -424,7 +424,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
     
@@ -471,7 +471,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/rgdAnnotationFile").
+            post("/api/disease-annotation/bulk/rgdAnnotationFile").
             then().
             statusCode(200);
     
@@ -498,7 +498,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/sgdAnnotationFile").
+            post("/api/disease-annotation/bulk/sgdAnnotationFile").
             then().
             statusCode(200);
     
@@ -526,7 +526,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/sgdAnnotationFile").
+            post("/api/disease-annotation/bulk/sgdAnnotationFile").
             then().
             statusCode(200);
     
@@ -554,7 +554,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
     
@@ -582,7 +582,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
     
@@ -610,7 +610,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
     
@@ -638,7 +638,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
     
@@ -666,7 +666,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -694,7 +694,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -722,7 +722,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -750,7 +750,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -778,7 +778,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -806,7 +806,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -834,7 +834,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -862,7 +862,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/humanAnnotationFile").
+            post("/api/disease-annotation/bulk/humanAnnotationFile").
             then().
             statusCode(200);
     
@@ -890,7 +890,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -918,7 +918,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -946,7 +946,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -974,7 +974,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -1002,7 +1002,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -1030,7 +1030,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1058,7 +1058,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1086,7 +1086,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1114,7 +1114,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1142,7 +1142,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1170,7 +1170,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1198,7 +1198,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/fbAnnotationFile").
+            post("/api/disease-annotation/bulk/fbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1226,7 +1226,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
     
@@ -1254,7 +1254,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
     
@@ -1282,7 +1282,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/wbAnnotationFile").
+            post("/api/disease-annotation/bulk/wbAnnotationFile").
             then().
             statusCode(200);
     
@@ -1310,7 +1310,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/sgdAnnotationFile").
+            post("/api/disease-annotation/bulk/sgdAnnotationFile").
             then().
             statusCode(200);
     
@@ -1338,7 +1338,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
     
@@ -1366,7 +1366,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
     
@@ -1394,7 +1394,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/mgiAnnotationFile").
+            post("/api/disease-annotation/bulk/mgiAnnotationFile").
             then().
             statusCode(200);
     
@@ -1422,7 +1422,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/disease/bulk/zfinAnnotationFile").
+            post("/api/disease-annotation/bulk/zfinAnnotationFile").
             then().
             statusCode(200);
     

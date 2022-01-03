@@ -15,35 +15,35 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 public interface DiseaseAnnotationCrudInterface extends BaseCurieCrudInterface<DiseaseAnnotation> {
 
     @POST
-    @Path("/{taxonID}/annotationFile")
+    @Path("/bulk/{taxonID}/annotationFile")
     public String updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, DiseaseAnnotationMetaDataDTO annotationData);
 
     @POST
-    @Path("/zfinAnnotationFile")
+    @Path("/bulk/zfinAnnotationFile")
     public String updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
     @POST
-    @Path("/mgiAnnotationFile")
+    @Path("/bulk/mgiAnnotationFile")
     public String updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
     @POST
-    @Path("/rgdAnnotationFile")
+    @Path("/bulk/rgdAnnotationFile")
     public String updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
     @POST
-    @Path("/fbAnnotationFile")
+    @Path("/bulk/fbAnnotationFile")
     public String updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
     @POST
-    @Path("/wbAnnotationFile")
+    @Path("/bulk/wbAnnotationFile")
     public String updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
     @POST
-    @Path("/humanAnnotationFile")
+    @Path("/bulk/humanAnnotationFile")
     public String updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
     @POST
-    @Path("/sgdAnnotationFile")
+    @Path("/bulk/sgdAnnotationFile")
     public String updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
     
 }
