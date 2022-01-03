@@ -4,10 +4,10 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseCrudController;
+import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
 import org.alliancegenome.curation_api.interfaces.crud.loads.BulkURLLoadCrudInterface;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.loads.BulkURLLoadService;
 

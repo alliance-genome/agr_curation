@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseOntologyTermController;
+import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.ZfaTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.ZfaTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.ZfaTerm;
@@ -18,8 +18,8 @@ public class ZfaTermCrudController extends BaseOntologyTermController<ZfaTermSer
 
     @Override
     @PostConstruct
-    protected void init() {
-        setService(zfaTermService);
+    public void init() {
+        setService(zfaTermService, ZfaTerm.class);
     }
 
 }

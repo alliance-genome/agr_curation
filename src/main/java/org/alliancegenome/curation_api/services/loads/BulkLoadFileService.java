@@ -5,14 +5,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 
 @RequestScoped
-public class BulkLoadFileService extends BaseService<BulkLoadFile, BulkLoadFileDAO> {
+public class BulkLoadFileService extends BaseCrudService<BulkLoadFile, BulkLoadFileDAO> {
     
     @Inject
     BulkLoadFileDAO bulkLoadFileDAO;

@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.BaseGeneratedAndCurieEntity;
+import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndCurieEntity;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 

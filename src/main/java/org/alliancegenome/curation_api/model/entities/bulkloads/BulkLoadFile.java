@@ -2,10 +2,9 @@ package org.alliancegenome.curation_api.model.entities.bulkloads;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.view.View;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.*;

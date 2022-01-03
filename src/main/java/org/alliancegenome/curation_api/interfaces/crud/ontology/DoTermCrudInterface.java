@@ -3,14 +3,14 @@ package org.alliancegenome.curation_api.interfaces.crud.ontology;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.base.interfaces.BaseOntologyTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/doterm")
-@Tag(name = "CRUD - Ontology - DO")
+@Tag(name = "CRUD - Ontology")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface DoTermCrudInterface extends BaseCurieCrudInterface<DOTerm> {
+public interface DoTermCrudInterface extends BaseOntologyTermCrudInterface<DOTerm> {
 
 }

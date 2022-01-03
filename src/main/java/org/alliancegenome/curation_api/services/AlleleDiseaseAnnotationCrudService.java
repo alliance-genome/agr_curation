@@ -5,14 +5,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
 
 @RequestScoped
-public class AlleleDiseaseAnnotationCrudService extends BaseService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
+public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
 
     @Inject
     AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;

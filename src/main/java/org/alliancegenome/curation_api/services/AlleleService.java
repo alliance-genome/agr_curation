@@ -5,13 +5,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleDTO;
 
 @RequestScoped
-public class AlleleService extends BaseService<Allele, AlleleDAO> {
+public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
     @Inject AlleleDAO alleleDAO;
 

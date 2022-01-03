@@ -40,19 +40,31 @@ public class BulkLoadFileProcessor {
     String s3SecretKey = null;
 
     @Inject EventBus bus;
+    @Inject DataFileService fmsDataFileService;
+    
     @Inject BulkLoadDAO bulkLoadDAO;
     @Inject BulkManualLoadDAO bulkManualLoadDAO;
-    @Inject DataFileService fmsDataFileService;
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
+    @Inject BulkFMSLoadDAO bulkFMSLoadDAO;
+    @Inject BulkURLLoadDAO bulkURLLoadDAO;
+    @Inject BulkLoadJobExecutor bulkLoadJobExecutor;
 
     private FileTransferHelper fileHelper = new FileTransferHelper();
 
-    public void process(BulkFMSLoad bulkFMSLoad) {
+    @ConsumeEvent(value = "BulkFMSLoad", blocking = true) // Triggered by the Scheduler
+    public void processBulkFMSLoad(Message<BulkFMSLoad> load) {
+        BulkFMSLoad bulkFMSLoad = load.body();
+        startLoad(bulkFMSLoad);
+
         if(bulkFMSLoad.getDataType() != null && bulkFMSLoad.getDataSubType() != null) {
             String s3Url = processFMS(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
             String filePath = fileHelper.saveIncomingURLFile(s3Url);
             String localFilePath = fileHelper.compressInputFile(filePath);
             processFilePath(bulkFMSLoad, localFilePath);
+            bulkFMSLoad.setErrorMessage(null);
+            bulkFMSLoad = bulkFMSLoadDAO.find(bulkFMSLoad.getId());
+            bulkFMSLoad.setStatus(BulkLoadStatus.FINISHED);
+            bulkLoadDAO.merge(bulkFMSLoad);
         } else {
             BulkLoad bulkLoad = bulkLoadDAO.find(bulkFMSLoad.getId());
             log.info("Load: " + bulkLoad.getName() + " failed: FMS Params are missing");
@@ -62,11 +74,19 @@ public class BulkLoadFileProcessor {
         }
     }
 
-    public void process(BulkURLLoad bulkURLLoad) {
+    @ConsumeEvent(value = "BulkURLLoad", blocking = true) // Triggered by the Scheduler
+    public void processBulkURLLoad(Message<BulkURLLoad> load) {
+        BulkURLLoad bulkURLLoad = load.body();
+        startLoad(bulkURLLoad);
+        
         if(bulkURLLoad.getUrl() != null && bulkURLLoad.getUrl().length() > 0) {
             String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getUrl());
             String localFilePath = fileHelper.compressInputFile(filePath);
             processFilePath(bulkURLLoad, localFilePath);
+            bulkURLLoad.setErrorMessage(null);
+            bulkURLLoad = bulkURLLoadDAO.find(bulkURLLoad.getId());
+            bulkURLLoad.setStatus(BulkLoadStatus.FINISHED);
+            bulkLoadDAO.merge(bulkURLLoad);
         } else {
             BulkLoad bulkLoad = bulkLoadDAO.find(bulkURLLoad.getId());
             log.info("Load: " + bulkLoad.getName() + " failed: URL is missing");
@@ -75,28 +95,76 @@ public class BulkLoadFileProcessor {
             bulkLoadDAO.merge(bulkLoad);
         }
     }
-    
-    public void process(MultipartFormDataInput input, BackendBulkLoadType type) {
+
+    public void processBulkManualLoad(MultipartFormDataInput input, BackendBulkLoadType loadType) {  // Triggered by the API
         Map<String, List<InputPart>> form = input.getFormDataMap();
+        
         log.info(form);
-        if(form.containsKey(type)) {
-            log.warn("Key not found: " + type);
+        
+        if(form.containsKey(loadType)) {
+            log.warn("Key not found: " + loadType);
             return;
         }
         
-        BulkManualLoad bml = null;
-        SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByField("backendBulkLoadType", type);
+        BulkManualLoad bulkManualLoad = null;
+        SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByField("backendBulkLoadType", loadType);
         if(load != null && load.getTotalResults() == 1) {
-            bml = load.getResults().get(0);
+            bulkManualLoad = load.getResults().get(0);
+            startLoad(bulkManualLoad);
         } else {
-            log.warn("BulkManualLoad not found: " + type);
+            log.warn("BulkManualLoad not found: " + loadType);
             return;
         }
         
-        String filePath = fileHelper.saveIncomingFile(input, bml.getBackendBulkLoadType().toString());
+        String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString());
         String localFilePath = fileHelper.compressInputFile(filePath);
-        processFilePath(bml, localFilePath);
+        processFilePath(bulkManualLoad, localFilePath);
+        
+        bulkManualLoad.setErrorMessage(null);
+        bulkManualLoad = bulkManualLoadDAO.find(bulkManualLoad.getId());
+        bulkManualLoad.setStatus(BulkLoadStatus.FINISHED);
+        bulkLoadDAO.merge(bulkManualLoad);
     }
+    
+
+    @ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler
+    public void bulkLoadFile(Message<BulkLoadFile> file) {
+        BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
+        if(bulkLoadFile.getStatus() != BulkLoadStatus.STARTED) {
+            log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getStatus());
+            endLoad(bulkLoadFile, bulkLoadFile.getStatus(), "Finished ended due to status: " + bulkLoadFile.getStatus());
+            return;
+        }
+
+        bulkLoadFile.getBulkLoad().setStatus(BulkLoadStatus.RUNNING);
+        bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
+        bulkLoadFile.setStatus(BulkLoadStatus.RUNNING);
+        bulkLoadFileDAO.merge(bulkLoadFile);
+
+        log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " is running with file: " + bulkLoadFile.getLocalFilePath());
+
+        try {
+            if(bulkLoadFile.getLocalFilePath() == null || bulkLoadFile.getS3Path() == null) {
+                syncWithS3(bulkLoadFile);
+            }
+            bulkLoadJobExecutor.process(bulkLoadFile);
+            endLoad(bulkLoadFile, BulkLoadStatus.FINISHED, "");
+            log.info("Load: " + bulkLoadFile + " is finished");
+            
+        } catch (Exception e) {
+            endLoad(bulkLoadFile, BulkLoadStatus.FAILED, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage());
+            log.error("Load: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
+            e.printStackTrace();
+        }
+        
+    }
+    
+    
+    
+    
+    
+    
+
 
     private String processFMS(String dataType, String dataSubType) {
         List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
@@ -159,6 +227,7 @@ public class BulkLoadFileProcessor {
             bulkLoadFile.setBulkLoad(load);
             bulkLoadFile.setMd5Sum(md5Sum);
             bulkLoadFile.setFileSize(inputFile.length());
+            bulkLoadFile.setStatus(BulkLoadStatus.PENDING);
             bulkLoadFile.setLocalFilePath(localFilePath);
             bulkLoadFileDAO.persist(bulkLoadFile);
         } else {
@@ -166,10 +235,7 @@ public class BulkLoadFileProcessor {
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
             bulkLoadFile.setLocalFilePath(localFilePath);
         }
-        
-        bulkLoadFile.setErrorMessage(null);
-        bulkLoadFile.setStatus(BulkLoadStatus.PENDING);
-        
+
         if(!load.getLoadFiles().contains(bulkLoadFile)) {
             load.getLoadFiles().add(bulkLoadFile);
         }
@@ -187,6 +253,34 @@ public class BulkLoadFileProcessor {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private void startLoad(BulkLoad load) {
+        log.info("Load: " + load.getName() + " is starting");
+
+        BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
+        if(bulkLoad.getStatus() != BulkLoadStatus.STARTED) {
+            log.warn("startLoad: Job is not started returning: " + bulkLoad.getStatus());
+            return;
+        }
+
+        bulkLoad.setStatus(BulkLoadStatus.RUNNING);
+        bulkLoadDAO.merge(bulkLoad);
+        log.info("Load: " + bulkLoad.getName() + " is running");
+    }
+    
+    private void endLoad(BulkLoadFile bulkLoadFile, BulkLoadStatus status, String message) {
+        bulkLoadFile.getBulkLoad().setStatus(status);
+        bulkLoadDAO.merge(bulkLoadFile.getBulkLoad());
+        
+        if(bulkLoadFile.getLocalFilePath() != null) {
+            new File(bulkLoadFile.getLocalFilePath()).delete();
+            bulkLoadFile.setLocalFilePath(null);
+        }
+        
+        bulkLoadFile.setErrorMessage(message);
+        bulkLoadFile.setStatus(status);
+        bulkLoadFileDAO.merge(bulkLoadFile);
     }
 
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;

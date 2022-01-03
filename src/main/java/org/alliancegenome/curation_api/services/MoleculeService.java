@@ -9,7 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
@@ -19,7 +19,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MoleculeService extends BaseService<Molecule, MoleculeDAO> {
+public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
 
     @Inject
     MoleculeDAO moleculeDAO;

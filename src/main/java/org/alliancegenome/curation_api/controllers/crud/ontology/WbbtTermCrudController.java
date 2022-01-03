@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseOntologyTermController;
+import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.WbbtTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.WbbtTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.WBbtTerm;
@@ -17,8 +17,8 @@ public class WbbtTermCrudController extends BaseOntologyTermController<WbbtTermS
 
     @Override
     @PostConstruct
-    protected void init() {
-        setService(wbbtTermService);
+    public void init() {
+        setService(wbbtTermService, WBbtTerm.class);
     }
 
 }

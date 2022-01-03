@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.*;
 import java.util.zip.*;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.jboss.resteasy.plugins.providers.multipart.*;
 
