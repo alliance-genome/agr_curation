@@ -2,9 +2,6 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import java.util.*;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public abstract class DiseaseAnnotationCurieManager {
 
     static Map<String, DiseaseAnnotationCurie> curieTaxonMap = new HashMap<>();

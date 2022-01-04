@@ -9,7 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -26,7 +26,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, DiseaseAnnotationDAO> {
+public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
     @Inject
     GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -255,8 +255,8 @@ public class DiseaseAnnotationService extends BaseService<DiseaseAnnotation, Dis
     }
     
     private void log(String message) {
-        //log.debug(message);
-        log.info(message);
+        log.debug(message);
+        //log.info(message);
     }
 
 }

@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.BaseCurieEntity;
+import org.alliancegenome.curation_api.base.entity.BaseCurieEntity;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;

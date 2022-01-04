@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseOntologyTermController;
+import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.XcoTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.XcoTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.XcoTerm;
@@ -17,8 +17,8 @@ public class XcoTermCrudController extends BaseOntologyTermController<XcoTermSer
 
     @Override
     @PostConstruct
-    protected void init() {
-        setService(xcoTermService);
+    public void init() {
+        setService(xcoTermService, XcoTerm.class);
     }
 
 }

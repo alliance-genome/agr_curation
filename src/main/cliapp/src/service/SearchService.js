@@ -15,26 +15,28 @@ export class SearchService {
         return axios.post(`/api/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
     }
 
+    find(endpoint, rows, page, findOptions) {
+        //console.log(findOptions);
+        return axios.post(`/api/${endpoint}/find?limit=${rows}&page=${page}`, findOptions).then(res => res.data);
+    }
+
+
 }
 
 function includeSecondarySorts(sorts, sortMapping) {
     const newSorts = [];
 
-    // console.log(sortMapping);
     sorts.forEach(sort => {
-        // console.log(sort.field);
         newSorts.push(sort);
-        if(sortMapping && sort.field in sortMapping){
+        if (sortMapping && sort.field in sortMapping) {
             sortMapping[sort.field].forEach(field => {
-                let newSort = {}
+                let newSort = {};
                 newSort["field"] = field;
                 newSort["order"] = sort.order;
                 newSorts.push(newSort);
-            })
+            });
         }
-        
-    })
-    // console.log(newSorts);
+    });
 
     return newSorts;
 }

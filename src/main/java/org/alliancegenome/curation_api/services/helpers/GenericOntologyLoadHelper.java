@@ -40,23 +40,23 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
     }
     
     public Map<String, T> load(String fullText) throws Exception {
-        File outfile = new File("tmp.file2.owl");
+        File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
         log.info("Input data size: " + fullText.length());
         BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
         writer.append(fullText);
         writer.flush();
         writer.close();
-        return load(outfile);
+        Map<String, T> ret = load(new FileInputStream(outfile));
+        outfile.delete();
+        return ret;
     }
     
-    public Map<String, T> load(File infile) throws Exception {
+    public Map<String, T> load(InputStream inStream) throws Exception {
 
         log.info("Loading Ontology File");
-        IRI term_iri = IRI.create(infile);
+        ontology = manager.loadOntologyFromOntologyDocument(inStream);
         log.info("Loading Ontology File Finished");
         
-        ontology = manager.loadOntologyFromOntologyDocument(term_iri);
-
         ontology.annotations().forEach(a -> {
             String key = a.getProperty().getIRI().getShortForm();
             log.info(key + ": " + getString(a.getValue()));
@@ -75,7 +75,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
         log.info("Ontology Loaded...");
-        log.info("Document IRI: " + term_iri);
         log.info("Ontology : " + ontology.getOntologyID());
         log.info("Default Namespace : " + defaultNamespace);
         log.info("Format        : " + manager.getOntologyFormat(ontology));
@@ -83,7 +82,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         reasoner = reasonerFactory.createReasoner(ontology);
 
         log.info("Traversing Ontology");
-        T rootTerm = traverse(root, 0, requiredNamespaces);
+        traverse(root, 0, requiredNamespaces);
         log.info("Finished Traversing Ontology");
         
         return allNodes;
@@ -175,7 +174,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         return ((OWLLiteral)owlAnnotationValue).getLiteral().equals("true");
     }
 
-    @SuppressWarnings("unchecked")
     public T getOntologyTerm(OWLClass node) throws Exception {
 
         T term = clazz.getDeclaredConstructor().newInstance();

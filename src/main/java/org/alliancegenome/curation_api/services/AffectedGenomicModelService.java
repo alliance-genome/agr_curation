@@ -5,16 +5,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
-public class AffectedGenomicModelService extends BaseService<AffectedGenomicModel, AffectedGenomicModelDAO> {
+public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomicModel, AffectedGenomicModelDAO> {
 
     @Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 

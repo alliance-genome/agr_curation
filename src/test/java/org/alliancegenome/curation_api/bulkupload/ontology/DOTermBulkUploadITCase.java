@@ -41,7 +41,7 @@ public class DOTermBulkUploadITCase {
             accept("application/json").
             body(content).
             when().
-            post("/api/doterm/bulk/owl?async=false").
+            post("/api/doterm/bulk/owl").
             then().
             statusCode(200);
         

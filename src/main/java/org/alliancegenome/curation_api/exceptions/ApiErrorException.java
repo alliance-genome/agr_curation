@@ -8,18 +8,18 @@ import lombok.*;
 @Getter
 public class ApiErrorException extends RuntimeException {
 
-    private ObjectResponse objectResponse;
+    private ObjectResponse<?> objectResponse;
 
     public ApiErrorException(String message) {
         super();
     }
 
-    public ApiErrorException(ObjectResponse error) {
+    public ApiErrorException(ObjectResponse<?> error) {
         //super(String.join(", ", error.getErrors()));
         this.objectResponse = error;
     }
 
-    public ObjectResponse getObjectResponse() {
+    public ObjectResponse<?> getObjectResponse() {
         return objectResponse;
     }
 }

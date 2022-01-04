@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseOntologyTermController;
+import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.EcoTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
@@ -17,8 +17,17 @@ public class EcoTermCrudController extends BaseOntologyTermController<EcoTermSer
 
     @Override
     @PostConstruct
-    protected void init() {
-        setService(ecoTermService);
+    public void init() {
+        setService(ecoTermService, EcoTerm.class);
+    }
+
+    @Override
+    public String updateTerms(boolean async, String fullText) {
+        String status = super.updateTerms(async, fullText);
+        if (status.equals("OK")) {
+            ecoTermService.updateAbbreviations();
+        }
+        return status;
     }
     
     public void updateAbbreviations() {

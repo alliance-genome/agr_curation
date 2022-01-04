@@ -6,8 +6,9 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.ingest.json.dto.GeneMetaDataDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -34,4 +35,8 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene> {
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
 
+    @POST
+    @Path("/bulk/bgifile")
+    public String updateGenes(GeneMetaDataDTO geneData);
+    
 }

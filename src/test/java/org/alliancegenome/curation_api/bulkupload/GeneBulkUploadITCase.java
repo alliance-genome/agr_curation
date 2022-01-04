@@ -39,7 +39,7 @@ public class GeneBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/gene/bulk/bgifile?async=false").
+            post("/api/gene/bulk/bgifile").
             then().
             statusCode(200);
 
@@ -64,7 +64,7 @@ public class GeneBulkUploadITCase {
             contentType("application/json").
             body(content).
             when().
-            post("/api/gene/bulk/bgifile?async=false").
+            post("/api/gene/bulk/bgifile").
             then().
             statusCode(200);
 
@@ -101,7 +101,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -136,7 +136,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -171,7 +171,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -204,7 +204,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -239,7 +239,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -264,7 +264,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -299,7 +299,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -335,7 +335,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -371,7 +371,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -407,7 +407,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
 
@@ -443,7 +443,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(400);
     }
@@ -457,7 +457,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
         
@@ -482,7 +482,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(400);
     }
@@ -499,7 +499,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(400);
     }
@@ -513,7 +513,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
         
@@ -536,7 +536,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
         
@@ -559,7 +559,7 @@ public class GeneBulkUploadITCase {
                 contentType("application/json").
                 body(content).
                 when().
-                post("/api/gene/bulk/bgifile?async=false").
+                post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
         

@@ -4,15 +4,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseService;
+import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
-public class ReferenceService extends BaseService<Reference, ReferenceDAO> {
+public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
     @Inject
     ReferenceDAO referenceDAO;

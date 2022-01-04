@@ -4,10 +4,11 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.BaseOntologyTermController;
+import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.DaoTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.DaoTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.DAOTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 
 @RequestScoped
@@ -17,8 +18,10 @@ public class DaoTermCrudController extends BaseOntologyTermController<DaoTermSer
 
     @Override
     @PostConstruct
-    protected void init() {
-        setService(daoTermService);
+    public void init() {
+        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+        config.setLoadOnlyIRIPrefix("FBbt");
+        setService(daoTermService, DAOTerm.class, config);
     }
 
 }
