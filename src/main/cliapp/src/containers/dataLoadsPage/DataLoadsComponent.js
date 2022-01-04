@@ -124,7 +124,7 @@ export const DataLoadsComponent = () => {
 
   const groupActionBodyTemplate = (rowData) => {
     if (!rowData.loads || rowData.loads.length === 0) {
-      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-success p-mr-2" onClick={() => deleteGroup(rowData)} />);
+      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteGroup(rowData)} />);
     }
   };
 
@@ -148,6 +148,14 @@ export const DataLoadsComponent = () => {
     } else {
       return rowData.backendBulkLoadType;
     }
+  };
+
+  const scheduleActiveTemplate = (rowData) => {
+    return (
+      <>
+        {rowData.scheduleActive ? "true" : "false"}
+      </>
+    );
   };
 
 
@@ -185,7 +193,7 @@ export const DataLoadsComponent = () => {
     }
 
     if (showFMSLoad || showURLLoad) {
-      ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" />);
+      ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />);
       ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
       ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
       if (showFMSLoad) {

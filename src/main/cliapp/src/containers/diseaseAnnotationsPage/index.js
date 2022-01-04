@@ -1,3 +1,3 @@
 import { DiseaseAnnotationsPage } from "./DiseaseAnnotationsPage";
 
-export default DiseaseAnnotationsPage;
+export { DiseaseAnnotationsPage };
