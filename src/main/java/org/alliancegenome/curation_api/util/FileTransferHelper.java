@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.util;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.*;
 
 import org.apache.commons.io.FileUtils;
@@ -132,6 +133,11 @@ public class FileTransferHelper {
     
     private File generateFilePath() {
         Date d = new Date();
+        try {
+            TimeUnit.MILLISECONDS.sleep((long)(Math.random() * 100));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String outFileName = "tmp.data_" + d.getTime();
         return new File(outFileName);
     }

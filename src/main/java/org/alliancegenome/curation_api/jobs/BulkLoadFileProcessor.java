@@ -95,8 +95,19 @@ public class BulkLoadFileProcessor {
             bulkLoadDAO.merge(bulkLoad);
         }
     }
+    
+    @ConsumeEvent(value = "BulkManualLoad", blocking = true) // Triggered by the Scheduler
+    public void processBulkManualLoadFromAPI(Message<BulkManualLoad> load) {
+        BulkManualLoad bulkManualLoad = load.body();
+        startLoad(bulkManualLoad);
+        
+        bulkManualLoad.setErrorMessage(null);
+        bulkManualLoad = bulkManualLoadDAO.find(bulkManualLoad.getId());
+        bulkManualLoad.setStatus(BulkLoadStatus.FINISHED);
+        bulkLoadDAO.merge(bulkManualLoad);
+    }
 
-    public void processBulkManualLoad(MultipartFormDataInput input, BackendBulkLoadType loadType) {  // Triggered by the API
+    public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataType dataType) {  // Triggered by the API
         Map<String, List<InputPart>> form = input.getFormDataMap();
         
         log.info(form);
@@ -107,7 +118,11 @@ public class BulkLoadFileProcessor {
         }
         
         BulkManualLoad bulkManualLoad = null;
-        SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByField("backendBulkLoadType", loadType);
+        
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("backendBulkLoadType", loadType);
+        params.put("dataType", dataType);
+        SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(null, params);
         if(load != null && load.getTotalResults() == 1) {
             bulkManualLoad = load.getResults().get(0);
             startLoad(bulkManualLoad);
@@ -116,7 +131,7 @@ public class BulkLoadFileProcessor {
             return;
         }
         
-        String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString());
+        String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataType().toString());
         String localFilePath = fileHelper.compressInputFile(filePath);
         processFilePath(bulkManualLoad, localFilePath);
         

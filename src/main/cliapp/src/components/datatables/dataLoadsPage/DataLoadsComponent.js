@@ -170,6 +170,7 @@ export const DataLoadsComponent = () => {
     
     let showFMSLoad = false;
     let showURLLoad = false;
+    let showManualLoad = false;
 
     let ret = [];
 
@@ -177,6 +178,7 @@ export const DataLoadsComponent = () => {
       for(const load of loads) {
         if(load.type === "BulkFMSLoad") showFMSLoad = true;
         if(load.type === "BulkURLLoad") showURLLoad = true;
+        if(load.type === "BulkManualLoad") showManualLoad = true;
       }
     }
 
@@ -191,6 +193,9 @@ export const DataLoadsComponent = () => {
       if(showURLLoad) {
         ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
       }
+    }
+    if(showManualLoad) {
+      ret.push(<Column key="dataType" field="dataType" header="Load Data Type" />);
     }
 
     return ret;
