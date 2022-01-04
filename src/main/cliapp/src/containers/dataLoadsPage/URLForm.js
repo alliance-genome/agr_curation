@@ -2,7 +2,7 @@ import React from 'react';
 import { InputText } from 'primereact/inputtext';
 import { CronFields } from './CronFields';
 import { Dropdown } from "primereact/dropdown";
-import { DataLoadService } from '../../../service/DataLoadService';
+import { DataLoadService } from '../../service/DataLoadService';
 
 
 export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange }) => {

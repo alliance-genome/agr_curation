@@ -3,8 +3,8 @@ import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { SearchService } from '../../../service/SearchService';
-import { DataLoadService } from '../../../service/DataLoadService';
+import { SearchService } from '../../service/SearchService';
+import { DataLoadService } from '../../service/DataLoadService';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
@@ -15,14 +15,14 @@ import { useQueryClient } from 'react-query';
 export const DataLoadsComponent = () => {
 
   const bulkLoadReducer = (state, action) => {
-      switch (action.type) {
-          case 'EDIT':
-              return { ...action.editBulkLoad };
-          case 'RESET':
-              return { name: ""};
-          default:
-              return { ...state, [action.field]: action.value };
-      }
+    switch (action.type) {
+      case 'EDIT':
+        return { ...action.editBulkLoad };
+      case 'RESET':
+        return { name: "" };
+      default:
+        return { ...state, [action.field]: action.value };
+    }
   };
 
   const [groups, setGroups] = useState({});
@@ -35,24 +35,24 @@ export const DataLoadsComponent = () => {
   const dataLoadService = new DataLoadService();
 
   const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
-  
+
   const queryClient = useQueryClient();
 
   const handleNewBulkLoadGroupOpen = (event) => {
     setBulkLoadGroupDialog(true);
-  }
+  };
 
   const handleNewBulkLoadOpen = (event) => {
     bulkLoadDispatch({ type: "RESET" });
     setBulkLoadDialog(true);
-  }
+  };
 
   useQuery(['bulkloadtable'],
     () => searchService.find('bulkloadgroup', 100, 0, {}), {
     onSuccess: (data) => {
-      for(let group of data.results) {
-        if(group.loads){
-          for(let load of group.loads) {
+      for (let group of data.results) {
+        if (group.loads) {
+          for (let load of group.loads) {
             load.group = group.id;
           }
         }
@@ -61,10 +61,10 @@ export const DataLoadsComponent = () => {
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
-  })
+  });
 
   const urlTemplate = (rowData) => {
-    return <a href={rowData.s3Url}>Download</a>
+    return <a href={rowData.s3Url}>Download</a>;
   };
 
   const refresh = () => {
@@ -82,7 +82,7 @@ export const DataLoadsComponent = () => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
-  
+
   const editLoad = (rowData) => {
     bulkLoadDispatch({ type: "EDIT", editBulkLoad: rowData });
     setBulkLoadDialog(true);
@@ -101,56 +101,56 @@ export const DataLoadsComponent = () => {
   };
 
   const loadFileActionBodyTemplate = (rowData) => {
-    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
       return (<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
     }
-  }
+  };
 
   const loadActionBodyTemplate = (rowData) => {
     let ret = [];
 
     ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
 
-    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
       ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
     }
 
-    if(!rowData.loadFiles || rowData.loadFiles.length === 0) {
+    if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
       ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
     }
 
     return ret;
-  }
+  };
 
   const groupActionBodyTemplate = (rowData) => {
-    if(!rowData.loads || rowData.loads.length === 0) {
+    if (!rowData.loads || rowData.loads.length === 0) {
       return (<Button icon="pi pi-trash" className="p-button-rounded p-button-success p-mr-2" onClick={() => deleteGroup(rowData)} />);
     }
-  }
+  };
 
   const nameBodyTemplate = (rowData) => {
     return (
       <React.Fragment>
-          {rowData.name}
+        {rowData.name}
       </React.Fragment>
     );
-  }
+  };
 
   const urlBodyTemplate = (rowData) => {
-    if(rowData.url) {
-      return <a href={rowData.url}>Source Download URL</a>
+    if (rowData.url) {
+      return <a href={rowData.url}>Source Download URL</a>;
     }
   };
 
   const backendBulkLoadTypeTemplate = (rowData) => {
-    if(rowData.backendBulkLoadType === 'ONTOLOGY') {
+    if (rowData.backendBulkLoadType === 'ONTOLOGY') {
       return rowData.backendBulkLoadType + "(" + rowData.ontologyType + ")";
     } else {
       return rowData.backendBulkLoadType;
     }
   };
 
-  
+
 
   const fileTable = (load) => {
     return (
@@ -166,37 +166,37 @@ export const DataLoadsComponent = () => {
         </DataTable>
       </div>
     );
-  }
+  };
 
   const dynamicColumns = (loads) => {
-    
+
     let showFMSLoad = false;
     let showURLLoad = false;
     let showManualLoad = false;
 
     let ret = [];
 
-    if(loads) {
-      for(const load of loads) {
-        if(load.type === "BulkFMSLoad") showFMSLoad = true;
-        if(load.type === "BulkURLLoad") showURLLoad = true;
-        if(load.type === "BulkManualLoad") showManualLoad = true;
+    if (loads) {
+      for (const load of loads) {
+        if (load.type === "BulkFMSLoad") showFMSLoad = true;
+        if (load.type === "BulkURLLoad") showURLLoad = true;
+        if (load.type === "BulkManualLoad") showManualLoad = true;
       }
     }
 
-    if(showFMSLoad || showURLLoad) {
+    if (showFMSLoad || showURLLoad) {
       ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" />);
       ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
       ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
-      if(showFMSLoad) {
+      if (showFMSLoad) {
         ret.push(<Column key="dataType" field="dataType" header="FMS Data Type" />);
         ret.push(<Column key="dataSubType" field="dataSubType" header="FMS Data Sub Type" />);
       }
-      if(showURLLoad) {
+      if (showURLLoad) {
         ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
       }
     }
-    if(showManualLoad) {
+    if (showManualLoad) {
       ret.push(<Column key="dataType" field="dataType" header="Load Data Type" />);
     }
 
@@ -204,13 +204,13 @@ export const DataLoadsComponent = () => {
   };
 
   const statusTemplate = (rowData) => {
-      let styleClass = 'p-button-text p-button-plain';
-      if(rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-      if(rowData.status === 'STARTED' || rowData.status === 'RUNNING') { styleClass = "p-button-success"; }
+    let styleClass = 'p-button-text p-button-plain';
+    if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
+    if (rowData.status === 'STARTED' || rowData.status === 'RUNNING') { styleClass = "p-button-success"; }
 
-      return (
-        <Button label={rowData.status} className={`p-button-rounded ${styleClass}`} />
-      )
+    return (
+      <Button label={rowData.status} className={`p-button-rounded ${styleClass}`} />
+    );
   };
 
   const loadTable = (group) => {
@@ -223,13 +223,13 @@ export const DataLoadsComponent = () => {
           <Column body={nameBodyTemplate} header="Load Name" />
           <Column field="type" header="Bulk Load Type" />
           <Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
-          { dynamicColumns(group.loads) }
+          {dynamicColumns(group.loads)}
           <Column field="status" body={statusTemplate} header="Status" />
           <Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>
       </div>
     );
-  }
+  };
 
   return (
     <div className="card">
@@ -259,4 +259,4 @@ export const DataLoadsComponent = () => {
       />
     </div>
   );
-}
+};

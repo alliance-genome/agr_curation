@@ -1,5 +1,5 @@
 import React from "react";
-import { DataLoadService } from '../../../service/DataLoadService';
+import { DataLoadService } from '../../service/DataLoadService';
 import { Dropdown } from "primereact/dropdown";
 
 export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
