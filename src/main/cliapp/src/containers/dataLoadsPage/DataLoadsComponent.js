@@ -124,7 +124,7 @@ export const DataLoadsComponent = () => {
 
   const groupActionBodyTemplate = (rowData) => {
     if (!rowData.loads || rowData.loads.length === 0) {
-      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-success p-mr-2" onClick={() => deleteGroup(rowData)} />);
+      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteGroup(rowData)} />);
     }
   };
 
