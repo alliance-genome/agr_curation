@@ -10,6 +10,7 @@ import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { useQueryClient } from 'react-query';
+import { ConnectedOverlayScrollHandler } from 'primereact/utils';
 
 
 export const DataLoadsComponent = () => {
@@ -150,6 +151,15 @@ export const DataLoadsComponent = () => {
     }
   };
 
+  const scheduleActiveTemplate = (rowData) => {
+    console.log(rowData);
+    return (
+      <>
+        {rowData.scheduleActive ? "true" : "false"}
+      </>
+    );
+  };
+
 
 
   const fileTable = (load) => {
@@ -185,7 +195,7 @@ export const DataLoadsComponent = () => {
     }
 
     if (showFMSLoad || showURLLoad) {
-      ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" />);
+      ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />);
       ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
       ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
       if (showFMSLoad) {
