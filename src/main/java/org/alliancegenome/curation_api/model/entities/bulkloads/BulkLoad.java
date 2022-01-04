@@ -76,5 +76,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         ONTOLOGY
         ;
     }
+    
+    public enum BackendBulkDataType {
+        RGD, MGI, SGD, HUMAN, ZFIN, FB, WB
+        ;
+    }
 
 }
