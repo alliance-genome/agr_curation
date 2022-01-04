@@ -51,8 +51,10 @@ export const DataLoadsComponent = () => {
     () => searchService.find('bulkloadgroup', 100, 0, {}), {
     onSuccess: (data) => {
       for(let group of data.results) {
-        for(let load of group.loads) {
-          load.group = group.id;
+        if(group.loads){
+          for(let load of group.loads) {
+            load.group = group.id;
+          }
         }
       }
       setGroups(data.results);
