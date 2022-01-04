@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService'
-import { FilterComponent } from '../FilterComponent'
+import { FilterComponent } from '../../components/FilterComponent'
 
 import { returnSorted } from '../../utils/utils';
 
-export const AffectedGenomicModelComponent = () => {
+export const AffectedGenomicModelTable = () => {
 
   const [agms, setAgms] = useState(null);
 

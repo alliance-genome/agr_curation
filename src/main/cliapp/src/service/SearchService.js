@@ -28,15 +28,15 @@ function includeSecondarySorts(sorts, sortMapping) {
 
     sorts.forEach(sort => {
         newSorts.push(sort);
-        if(sortMapping && sort.field in sortMapping){
+        if (sortMapping && sort.field in sortMapping) {
             sortMapping[sort.field].forEach(field => {
-                let newSort = {}
+                let newSort = {};
                 newSort["field"] = field;
                 newSort["order"] = sort.order;
                 newSorts.push(newSort);
-            })
+            });
         }
-    })
+    });
 
     return newSorts;
 }

@@ -9,29 +9,29 @@ import { AppConfig } from './AppConfig';
 
 import { Dashboard } from './components/Dashboard';
 
-import { GenesComponent } from './components/datatables/GenesComponent';
-import { AllelesComponent } from './components/datatables/AllelesComponent';
-import { DiseaseAnnotationsComponent } from './components/datatables/DiseaseAnnotationsComponent';
-import { AffectedGenomicModelComponent } from './components/datatables/AffectedGenomicModelComponent';
-import { MoleculesComponent } from './components/datatables/MoleculesComponent';
 import DataLoadsPage from './containers/dataLoadsPage/';
+import DiseaseAnnotationsPage from './containers/diseaseAnnotationsPage';
+import AffectedGenomicModelPage from './containers/affectedGenomicModelPage';
+import AllelesPage from './containers/allelesPage';
+import GenesPage from './containers/genesPage';
+import MoleculesPage from './containers/moleculesPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
-import { CHEBIOntologyComponent } from './components/ontologies/CHEBIOntologyComponent';
-import { DiseaseOntologyComponent } from './components/ontologies/DiseaseOntologyComponent';
-import { ECOOntologyComponent } from './components/ontologies/ECOOntologyComponent';
-import { GOOntologyComponent } from './components/ontologies/GOOntologyComponent';
-import { MAOntologyComponent } from './components/ontologies/MAOntologyComponent';
-import { ZFAOntologyComponent } from './components/ontologies/ZFAOntologyComponent';
-import { MPOntologyComponent } from './components/ontologies/MPOntologyComponent';
-import { DAOOntologyComponent } from './components/ontologies/DAOOntologyComponent';
-import { EMAPAOntologyComponent } from './components/ontologies/EMAPAOntologyComponent';
-import { WBbtOntologyComponent } from './components/ontologies/WBbtOntologyComponent';
-import { XCOOntologyComponent } from './components/ontologies/XCOOntologyComponent';
-import { ZECOOntologyComponent } from './components/ontologies/ZECOOntologyComponent';
+import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
+import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
+import { ECOOntologyComponent } from './containers/ontologies/ECOOntologyComponent';
+import { GOOntologyComponent } from './containers/ontologies/GOOntologyComponent';
+import { MAOntologyComponent } from './containers/ontologies/MAOntologyComponent';
+import { ZFAOntologyComponent } from './containers/ontologies/ZFAOntologyComponent';
+import { MPOntologyComponent } from './containers/ontologies/MPOntologyComponent';
+import { DAOOntologyComponent } from './containers/ontologies/DAOOntologyComponent';
+import { EMAPAOntologyComponent } from './containers/ontologies/EMAPAOntologyComponent';
+import { WBbtOntologyComponent } from './containers/ontologies/WBbtOntologyComponent';
+import { XCOOntologyComponent } from './containers/ontologies/XCOOntologyComponent';
+import { ZECOOntologyComponent } from './containers/ontologies/ZECOOntologyComponent';
 
 
 import PrimeReact from 'primereact/api';
@@ -212,11 +212,11 @@ const App = () => {
 
             <div className="layout-main">
                 <Route path="/" exact component={Dashboard} />
-                <Route path="/diseaseAnnotations" component={DiseaseAnnotationsComponent} />
-                <Route path="/genes" component={GenesComponent} />
-                <Route path="/alleles" component={AllelesComponent} />
-                <Route path="/molecules" component={MoleculesComponent} />
                 <Route path="/dataloads" component={DataLoadsPage} />
+                <Route path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
+                <Route path="/genes" component={GenesPage} />
+                <Route path="/alleles" component={AllelesPage} />
+                <Route path="/molecules" component={MoleculesPage} />
                 <Route path="/vocabterms" component={ControlledVocabularyComponent} />
                 <Route path="/ontology/chebi" component={CHEBIOntologyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
@@ -231,7 +231,7 @@ const App = () => {
                 <Route path="/ontology/xco" component={XCOOntologyComponent} />
                 <Route path="/ontology/zeco" component={ZECOOntologyComponent} />
                 <Route path="/fmspage" component={FMSComponent} />
-                <Route path="/agms" component={AffectedGenomicModelComponent} />
+                <Route path="/agms" component={AffectedGenomicModelPage} />
 
             </div>
 

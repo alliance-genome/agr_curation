@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {trimWhitespace } from '../utils/utils';
+import {trimWhitespace } from '../../utils/utils';
 
    export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredSubjects, setFilteredSubjects] = useState([]);
