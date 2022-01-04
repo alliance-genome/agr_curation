@@ -7,17 +7,17 @@ import { AppTopbar } from './AppTopbar';
 import { AppMenu } from './AppMenu';
 import { AppConfig } from './AppConfig';
 
-import { Dashboard } from './components/Dashboard';
+import { DashboardPage } from './containers/dashboardPage';
 
-import DataLoadsPage from './containers/dataLoadsPage/';
-import DiseaseAnnotationsPage from './containers/diseaseAnnotationsPage';
-import AffectedGenomicModelPage from './containers/affectedGenomicModelPage';
-import AllelesPage from './containers/allelesPage';
-import GenesPage from './containers/genesPage';
-import MoleculesPage from './containers/moleculesPage';
+import { DataLoadsPage } from './containers/dataLoadsPage/';
+import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
+import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
+import { AllelesPage } from './containers/allelesPage';
+import { GenesPage } from './containers/genesPage';
+import { MoleculesPage } from './containers/moleculesPage';
+import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 
 import { FMSComponent } from './components/FMSComponent';
-import { ControlledVocabularyComponent } from './components/ControlledVocabularyComponent';
 import { ApiVersionService } from './service/ApiVersionService';
 
 import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
@@ -211,13 +211,13 @@ const App = () => {
                 layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
 
             <div className="layout-main">
-                <Route path="/" exact component={Dashboard} />
+                <Route path="/" exact component={DashboardPage} />
                 <Route path="/dataloads" component={DataLoadsPage} />
                 <Route path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
                 <Route path="/genes" component={GenesPage} />
                 <Route path="/alleles" component={AllelesPage} />
                 <Route path="/molecules" component={MoleculesPage} />
-                <Route path="/vocabterms" component={ControlledVocabularyComponent} />
+                <Route path="/vocabterms" component={ControlledVocabularyPage} />
                 <Route path="/ontology/chebi" component={CHEBIOntologyComponent} />
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />

@@ -1,3 +1,3 @@
 import GenesPage from "./GenesPage";
 
-export default GenesPage;
+export { GenesPage };

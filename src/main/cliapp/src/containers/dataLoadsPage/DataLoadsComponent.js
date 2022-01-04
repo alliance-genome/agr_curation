@@ -10,7 +10,6 @@ import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { useQueryClient } from 'react-query';
-import { ConnectedOverlayScrollHandler } from 'primereact/utils';
 
 
 export const DataLoadsComponent = () => {
