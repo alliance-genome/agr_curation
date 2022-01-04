@@ -151,7 +151,6 @@ export const DataLoadsComponent = () => {
   };
 
   const scheduleActiveTemplate = (rowData) => {
-    console.log(rowData);
     return (
       <>
         {rowData.scheduleActive ? "true" : "false"}
