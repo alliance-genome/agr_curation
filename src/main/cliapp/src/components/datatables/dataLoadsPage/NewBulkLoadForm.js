@@ -7,6 +7,7 @@ import { DataLoadService } from '../../../service/DataLoadService';
 import { InputText } from 'primereact/inputtext';
 import { FMSForm } from './FMSForm';
 import { URLForm } from './URLForm';
+import { ManualForm } from './ManualForm';
 
 
 const dataLoadService = new DataLoadService();
@@ -24,10 +25,10 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
     const loadTypes = dataLoadService.getLoadTypes();
 
     const mutation = useMutation(bulkLoad => {
-        if(bulkLoad.id) {
-          return dataLoadService.updateLoad(bulkLoad);
+        if (bulkLoad.id) {
+            return dataLoadService.updateLoad(bulkLoad);
         } else {
-          return dataLoadService.createLoad(bulkLoad);
+            return dataLoadService.createLoad(bulkLoad);
         }
     });
 
@@ -68,10 +69,10 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                 value: e.value
             });
         } else {
-          bulkLoadDispatch({
-              field: e.target.name,
-              value: e.target.value
-          });
+            bulkLoadDispatch({
+                field: e.target.name,
+                value: e.target.value
+            });
         }
     };
 
@@ -174,6 +175,13 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                     <URLForm
                         hideURL={hideURL}
                         hideOntology={hideOntology}
+                        newBulkLoad={newBulkLoad}
+                        onChange={onChange}
+                    />
+
+
+                    <ManualForm
+                        hideManual={hideManual}
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
                     />
