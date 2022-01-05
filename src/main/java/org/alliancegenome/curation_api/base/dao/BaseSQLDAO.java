@@ -159,11 +159,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 
         log.debug("Search: " + pagination + " Params: " + params);
-        //SearchSourceBuilder sourceBuilder = new SearchSourceBuilder();
-
-        //sourceBuilder.sort(new FieldSortBuilder("id").order(SortOrder.ASC)); 
-
-        //Sort s = new 
 
         SearchQuery<E> query = searchSession.search(myClass)
                 .where( p -> p.bool( b -> {
@@ -186,11 +181,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                         ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
                         if(sortOrders != null){
                             for(HashMap<String, Object> map: sortOrders) {
-                                //log.info("Map: " + map);
                                 String key = (String)map.get("field");
-                                //log.info("Key: " + key);
                                 int value = (int)map.get("order");
-                                //log.info("Value: " + value);
                                 if(value == 1) {
                                     com.add(f.field(key + "_keyword").asc());
                                 }
@@ -205,7 +197,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 })
                 .toQuery();
 
-        log.info(query);
+        log.debug(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
         SearchResponse<E> results = new SearchResponse<E>();
