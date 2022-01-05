@@ -19,7 +19,7 @@ export class DataLoadService {
                 delete newLoad[objectKey];
             }
         }
-        console.log("Creating: " );
+        console.log("Creating: ");
         console.log(newLoad);
         return axios.post(`api/${endpoint}`, newLoad);
     }
@@ -35,7 +35,7 @@ export class DataLoadService {
             }
         }
         delete newLoad["loadFiles"];
-        console.log("Saving: " );
+        console.log("Saving: ");
         console.log(newLoad);
         return axios.put(`api/${endpoint}`, newLoad);
     }
@@ -71,7 +71,13 @@ export class DataLoadService {
 
     getOntologyTypes() {
         return [
-            "ECO","ZFA","DO","MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO"
+            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO"
+        ];
+    }
+
+    getDataTypes() {
+        return [
+            "RGD", "MGI", "SGD", "HUMAN", "ZFIN", "FB", "WB"
         ];
     }
 

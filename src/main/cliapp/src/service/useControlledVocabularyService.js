@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from './SearchService';
 
@@ -24,7 +24,7 @@ export function useControlledVocabularyService(termType) {
                 }
             ]
         }
-    }
+    };
 
 
     useQuery(['terms', termType],
@@ -33,14 +33,14 @@ export function useControlledVocabularyService(termType) {
             if (data.results) {
                 setTerms(data.results);
             } else {
-                if(termData[termType]) {
-                  setTerms(termData[termType]['terms']);
+                if (termData[termType]) {
+                    setTerms(termData[termType]['terms']);
                 }
             }
         },
         refetchOnWindowFocus: false
     }
-    )
+    );
     return terms;
 }
 
