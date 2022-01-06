@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.FileInputStream;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -48,6 +48,7 @@ public class BulkLoadJobExecutor {
     @Inject MpTermService mpTermService;
     @Inject MaTermService maTermService;
 
+    @Inject MoleculeService moleculeService;
 
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
 
@@ -68,7 +69,7 @@ public class BulkLoadJobExecutor {
             bulkLoadFile.setRecordCount(agmData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             processAGMDTOData(bulkLoadFile, agmData);
-            
+
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE) {    
             Gene[] genes = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), Gene[].class);
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
@@ -91,7 +92,7 @@ public class BulkLoadJobExecutor {
                 ph.progressProcess();
             }
             ph.finishProcess();
-            
+
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.AGM) { 
             AffectedGenomicModel[] agms = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModel[].class);
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
@@ -117,12 +118,22 @@ public class BulkLoadJobExecutor {
                     "WB", "NCBITaxon:6239",
                     "HUMAN", "NCBITaxon:9606",
                     "SGD", "NCBITaxon:559292"
-            );
+                    );
             log.info("Running with: " + fms.getDataSubType() + " " + map.get(fms.getDataSubType()));
 
             bulkLoadFile.setRecordCount(diseaseData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             diseaseService.runLoad(map.get(fms.getDataSubType()), diseaseData);
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
+            MoleculeMetaDataDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataDTO.class);
+            BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
+
+            log.info("Running with: " + fms.getDataSubType() + " " + fms.getDataSubType());
+            bulkLoadFile.setRecordCount(moleculeData.getData().size());
+            bulkLoadFileDAO.merge(bulkLoadFile);
+
+            processMoleculeDTOData(bulkLoadFile, moleculeData);
+
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             BaseOntologyTermService service = null;
@@ -181,7 +192,7 @@ public class BulkLoadJobExecutor {
 
         //log.info("Process Finished for: " + bulkLoadFile);
     }
-    
+
     public void processAlleleDTOData(BulkLoadFile bulkLoadFile, AlleleMetaDataDTO alleleData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {
@@ -195,7 +206,21 @@ public class BulkLoadJobExecutor {
         }
         ph.finishProcess();
     }
-    
+
+    public void processMoleculeDTOData(BulkLoadFile bulkLoadFile, MoleculeMetaDataDTO moleculeData) {
+        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+        if(bulkLoadFile == null) {
+            ph.startProcess("Molecule Update", moleculeData.getData().size());
+        } else {
+            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Molecule DTO Update", moleculeData.getData().size());
+        }
+        for(MoleculeDTO molecule: moleculeData.getData()) {
+            moleculeService.processUpdate(molecule);
+            ph.progressProcess();
+        }
+        ph.finishProcess();
+    }
+
     public void processGeneDTOData(BulkLoadFile bulkLoadFile, GeneMetaDataDTO geneData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {
@@ -209,7 +234,7 @@ public class BulkLoadJobExecutor {
         }
         ph.finishProcess();
     }
-    
+
     public void processAGMDTOData(BulkLoadFile bulkLoadFile, AffectedGenomicModelMetaDataDTO agmData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {

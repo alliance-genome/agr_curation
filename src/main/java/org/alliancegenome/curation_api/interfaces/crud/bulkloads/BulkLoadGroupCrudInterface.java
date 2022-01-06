@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.crud.loads;
+package org.alliancegenome.curation_api.interfaces.crud.bulkloads;
 
 
 import javax.ws.rs.*;
