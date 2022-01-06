@@ -8,7 +8,7 @@ services:
     logging:
       driver: gelf
       options:
-        gelf-address: 'udp://logs.alliancegenome.internal:12201'
+        gelf-address: 'udp://logs.alliancegenome.org:12201'
     ports:
       - "8080:8080"
     networks:
