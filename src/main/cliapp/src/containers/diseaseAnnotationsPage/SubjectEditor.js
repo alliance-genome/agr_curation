@@ -1,23 +1,24 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
+import { Tooltip } from 'primereact/tooltip';
 import {AutoComplete} from "primereact/autocomplete";
 import {trimWhitespace } from '../../utils/utils';
 
    export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredSubjects, setFilteredSubjects] = useState([]);
 
+        const op = useRef(null);
+        const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
+
         const searchSubject = (event) => {
-            console.log(event);
+            //console.log(event);
             let subjectFilter = {};
             autocompleteFields.forEach( field => {
                 subjectFilter[field] = event.query;
             });
 
-
-
-
             searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":subjectFilter})
                 .then((data) => {
-                    console.log(data);
+                    //console.log(data);
                     setFilteredSubjects(data.results);
                 });
         };
@@ -33,6 +34,11 @@ import {trimWhitespace } from '../../utils/utils';
                 }
                 setDiseaseAnnotations(updatedAnnotations);
             }
+        };
+
+        const onSelectionOver = (event, item) => {
+          setAutocompleteSelectedItem(item);
+          op.current.show(event);
         };
 
         const subjectItemTemplate = (item) => {
@@ -91,25 +97,58 @@ import {trimWhitespace } from '../../utils/utils';
                 }
             });
             str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
+            str = '';
             if(item.symbol){
-                return <div dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') ' + str.toString()}}/>;
+                return (
+                  <div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') ' + str.toString()}}/>
+                  </div>
+                );
             } else if(item.name){
-                return <div dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') ' + str.toString()}}/>;
+                return (
+                  <div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') ' + str.toString()}}/>
+                  </div>
+                );
             }else {
-                return <div>{item.curie + str.toString()}</div>;
+                return (
+                  <div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie + str.toString()}</div>
+                  </div>
+                );
             }
         };
 
         return (
-
-            <AutoComplete
-                    field="curie"
-                    value={rowProps.rowData.subject.curie}
-                    suggestions={filteredSubjects}
-                    itemTemplate={subjectItemTemplate}
-                    completeMethod={searchSubject}
-                    onChange={(e) => onSubjectEditorValueChange(e)}
-            />
+            <div>
+              <AutoComplete
+                id={rowProps.rowData.subject.curie}
+                //panelStyle={{width: '450px' }}
+                field="curie"
+                value={rowProps.rowData.subject.curie}
+                suggestions={filteredSubjects}
+                itemTemplate={subjectItemTemplate}
+                completeMethod={searchSubject}
+                onHide={(e) => op.current.hide(e)}
+                onChange={(e) => onSubjectEditorValueChange(e)}
+              />
+              <Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}}>
+                Type: {autocompleteSelectedItem.type}<br />
+                Curie: {autocompleteSelectedItem.curie}<br />
+                { autocompleteSelectedItem.name && 
+                  <div>Name: {autocompleteSelectedItem.name}<br /></div>
+                }
+                { autocompleteSelectedItem.symbol && 
+                  <div dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol }} />
+                }
+                {  autocompleteSelectedItem.synonyms && 
+                  autocompleteSelectedItem.synonyms.map((syn) => <div>Synonym: {syn.name}</div>)
+                }
+                {  autocompleteSelectedItem.crossReferences && 
+                  autocompleteSelectedItem.crossReferences.map((syn) => <div>Cross Reference: {syn.curie}</div>)
+                }
+              </Tooltip>
+            </div>
 
         )
     };
