@@ -387,7 +387,7 @@ export const DiseaseAnnotationsTable = () => {
                     field="subject.symbol"//needed for sorting
                     header="Subject"
                     sortable={isEnabled}
-                    filter filterElement={filterComponentTemplate("subject", ["subject.curie"])}
+                    filter filterElement={filterComponentTemplate("subject", ["subject.symbol", "subject.name", "subject.curie"])}
                     editor={(props) => subjectEditorTemplate(props)}
                     body={subjectBodyTemplate}
                     style={{whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word'}}
