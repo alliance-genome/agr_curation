@@ -51,6 +51,10 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "DO", count: results.totalResults }]);
     });
 
+    searchService.search('soterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "SO", count: results.totalResults }]);
+    });
+
     searchService.search('goterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "GO", count: results.totalResults }]);
     });

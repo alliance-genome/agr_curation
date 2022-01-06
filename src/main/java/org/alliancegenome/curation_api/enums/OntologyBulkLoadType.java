@@ -15,7 +15,7 @@ public enum OntologyBulkLoadType {
     WBBT(WBbtTerm.class),
     EMAPA(EMAPATerm.class),
     GO(GOTerm.class),
-    //SO(SOTerm.class),
+    SO(SOTerm.class),
     ;
     
     private Class<? extends OntologyTerm> clazz;
