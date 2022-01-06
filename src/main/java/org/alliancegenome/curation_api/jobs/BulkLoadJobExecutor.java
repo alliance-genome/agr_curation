@@ -37,6 +37,7 @@ public class BulkLoadJobExecutor {
 
     @Inject XcoTermService xcoTermService;
     @Inject GoTermService goTermService;
+    @Inject SoTermService soTermService;
     @Inject EcoTermService ecoTermService;
     @Inject ZecoTermService zecoTermService;
     @Inject EmapaTermService emapaTermService;
@@ -137,6 +138,8 @@ public class BulkLoadJobExecutor {
                 config.getAltNameSpaces().add("molecular_function");
                 config.getAltNameSpaces().add("cellular_component");
                 service = goTermService;
+            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.SO) {
+                service = soTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.XCO) {
                 service = xcoTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ECO) {

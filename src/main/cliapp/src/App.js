@@ -24,6 +24,7 @@ import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyCom
 import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './containers/ontologies/ECOOntologyComponent';
 import { GOOntologyComponent } from './containers/ontologies/GOOntologyComponent';
+import { SOOntologyComponent } from './containers/ontologies/SOOntologyComponent';
 import { MAOntologyComponent } from './containers/ontologies/MAOntologyComponent';
 import { ZFAOntologyComponent } from './containers/ontologies/ZFAOntologyComponent';
 import { MPOntologyComponent } from './containers/ontologies/MPOntologyComponent';
@@ -136,6 +137,7 @@ const App = () => {
                 { label: 'Disease Ontology (DO)', icon: 'pi pi-fw pi-home', to: '/ontology/do' },
                 { label: 'Evidence & Conclusion Ontology (ECO)', icon: 'pi pi-fw pi-home', to: '/ontology/eco' },
                 { label: 'Gene Ontology (GO)', icon: 'pi pi-fw pi-home', to: '/ontology/go' },
+                { label: 'Sequence Ontology (SO)', icon: 'pi pi-fw pi-home', to: '/ontology/so' },
                 { label: 'Mouse adult gross anatomy Ontology (MA)', icon: 'pi pi-fw pi-home', to: '/ontology/ma' },
                 { label: 'The Mammalian Phenotype Ontology (MP)', icon: 'pi pi-fw pi-home', to: '/ontology/mp' },
                 { label: 'Drosophila Anatomy Ontology (DAO)', icon: 'pi pi-fw pi-home', to: '/ontology/dao' },
@@ -222,6 +224,7 @@ const App = () => {
                 <Route path="/ontology/do" component={DiseaseOntologyComponent} />
                 <Route path="/ontology/eco" component={ECOOntologyComponent} />
                 <Route path="/ontology/go" component={GOOntologyComponent} />
+                <Route path="/ontology/so" component={SOOntologyComponent} />
                 <Route path="/ontology/ma" component={MAOntologyComponent} />
                 <Route path="/ontology/zfa" component={ZFAOntologyComponent} />
                 <Route path="/ontology/mp" component={MPOntologyComponent} />

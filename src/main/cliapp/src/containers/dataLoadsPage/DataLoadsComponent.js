@@ -50,14 +50,16 @@ export const DataLoadsComponent = () => {
   useQuery(['bulkloadtable'],
     () => searchService.find('bulkloadgroup', 100, 0, {}), {
     onSuccess: (data) => {
-      for (let group of data.results) {
-        if (group.loads) {
-          for (let load of group.loads) {
-            load.group = group.id;
+      if(data.results) {
+        for (let group of data.results) {
+          if (group.loads) {
+            for (let load of group.loads) {
+              load.group = group.id;
+            }
           }
         }
+        setGroups(data.results);
       }
-      setGroups(data.results);
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
