@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -201,6 +202,17 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
                 dto.getBasicGeneticEntity().getTaxonId() == null) {
             log.debug("Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " missing required fields - skipping");
             return false;
+        }
+        
+        String soTermId = dto.getSoTermId();
+        if ( soTermId != null) {
+            SOTerm soTerm = soTermDAO.find(soTermId);
+            if (soTerm == null) {
+                log.debug("Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " references an unknown SOTerm (" + 
+                        soTermId + " - skipping"
+                        );
+                return false;
+            }
         }
         
         // Check any genome positions have valid start/end/strand
