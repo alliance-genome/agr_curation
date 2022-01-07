@@ -11,6 +11,8 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
@@ -31,6 +33,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     CrossReferenceService crossReferenceService;
     @Inject
     SynonymService synonymService;
+    @Inject
+    SoTermDAO soTermDAO;
 
     @Override
     @PostConstruct
@@ -72,8 +76,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         g.setSymbol(gene.getSymbol());
         g.setName(gene.getName());
         g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
-        g.setType(gene.getSoTermId());
-
+        g.setGeneType(soTermDAO.find(gene.getSoTermId()));
+        
         handleCrossReferences(gene, g);
         handleSecondaryIds(gene, g);
 
