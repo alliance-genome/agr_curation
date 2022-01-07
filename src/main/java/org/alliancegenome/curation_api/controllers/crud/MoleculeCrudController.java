@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.interfaces.crud.MoleculeCrudInterface;
+import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.services.MoleculeService;
@@ -17,6 +18,8 @@ public class MoleculeCrudController extends BaseCrudController<MoleculeService, 
 
     @Inject MoleculeService moleculeService;
     
+    @Inject BulkLoadJobExecutor bulkLoadJobExecutor;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -25,19 +28,7 @@ public class MoleculeCrudController extends BaseCrudController<MoleculeService, 
 
     @Override
     public String updateMolecules(MoleculeMetaDataDTO moleculeData) {
-
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Molecule Update", moleculeData.getData().size());
-
-        for(MoleculeDTO molecule: moleculeData.getData()) {
-           
-            moleculeService.processUpdate(molecule);
-            
-            ph.progressProcess();
-        }
-
-        ph.finishProcess();
-
+        bulkLoadJobExecutor.processMoleculeDTOData(null, moleculeData);
         return "OK";
     }
 
