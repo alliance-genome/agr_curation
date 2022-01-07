@@ -2,7 +2,9 @@ package org.alliancegenome.curation_api.bulkupload;
 
 import java.io.IOException;
 import java.nio.file.*;
+import java.util.Arrays;
 
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
 
@@ -20,6 +22,7 @@ import static org.hamcrest.Matchers.is;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(2)
 public class GeneBulkUploadITCase {
+    private String SOTERMCURIE = "SO:0001217";
 
     @BeforeEach
     public void init() {
@@ -31,6 +34,25 @@ public class GeneBulkUploadITCase {
 
     @Test
     @Order(1)
+    void createSOTerm() {
+        SOTerm soTerm = new SOTerm();
+        soTerm.setObsolete(false);
+        soTerm.setCurie(SOTERMCURIE);
+        soTerm.setDefinition("A gene that codes for an RNA that can be translated into a protein.");
+        soTerm.setName("protein_coding_gene");
+        soTerm.setNamespace("sequence");
+
+        RestAssured.given().
+            contentType("application/json").
+            body(soTerm).
+            when().
+            post("/api/soterm").
+            then().
+            statusCode(200);
+    }
+    
+    @Test
+    @Order(2)
     public void geneBulkUploadMany() throws IOException {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
 
@@ -55,7 +77,7 @@ public class GeneBulkUploadITCase {
     }
     
     @Test
-    @Order(2)
+    @Order(3)
     public void geneBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields.json"));
 
@@ -92,7 +114,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void geneBulkUploadNoCrossReferences() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/02_no_cross_references.json"));
 
@@ -127,7 +149,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void geneBulkUploadNoGenomeLocations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/03_no_genome_locations.json"));
 
@@ -162,7 +184,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(5)
+    @Order(6)
     public void geneBulkUploadNoSecondaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/05_no_secondary_ids.json"));
 
@@ -195,7 +217,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(6)
+    @Order(7)
     public void geneBulkUploadNoSynonyms() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/06_no_synonyms.json"));
 
@@ -230,7 +252,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(7)
+    @Order(8)
     public void geneBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/07_no_taxon_id.json"));
 
@@ -255,7 +277,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(8)
+    @Order(9)
     public void geneBulkUploadNoGeneSynopsis() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/08_no_gene_synopsis.json"));
 
@@ -290,7 +312,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(9)
+    @Order(10)
     public void geneBulkUploadNoGeneSynopsisURL() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/09_no_gene_synopsis_url.json"));
 
@@ -326,7 +348,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(10)
+    @Order(11)
     public void geneBulkUploadNoName() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/10_no_name.json"));
 
@@ -362,7 +384,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(11)
+    @Order(12)
     public void geneBulkUploadNoTermId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/11_no_so_term_id.json"));
 
@@ -398,7 +420,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(12)
+    @Order(13)
     public void geneBulkUploadNoSymbol() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/12_no_symbol.json"));
 
@@ -434,7 +456,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(13)
+    @Order(14)
     public void geneBulkUploadAdditionalField() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/13_additional_field.json"));
 
@@ -449,7 +471,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(14)
+    @Order(15)
     public void geneBulkUploadNoPrimaryId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/04_no_primary_id.json"));
 
@@ -474,7 +496,7 @@ public class GeneBulkUploadITCase {
     // TODO: adapt & enable this test when checking for valid SO Terms in bulk upload is in place
     // NOTE: probably want a 200 response and test that entity count hasn't increased
     // @Test
-    @Order(15)
+    @Order(16)
     public void geneBulkUploadInvalidSoTermId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/14_invalid_so_term_id.json"));
         
@@ -491,7 +513,7 @@ public class GeneBulkUploadITCase {
     // TODO: adapt & enable this test when checking for valid taxon IDs in bulk upload is in place
     // NOTE: probably want a 200 response and test that entity count hasn't increased
     // @Test
-    @Order(16)
+    @Order(17)
     public void geneBulkUploadInvalidTaxon() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/15_invalid_taxon_id.json"));
 
@@ -505,7 +527,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(17)
+    @Order(18)
     public void geneBulkUploadStartAfterEnd() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/16_start_after_end.json"));
 
@@ -528,7 +550,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(18)
+    @Order(19)
     public void geneBulkUploadInvalidStrand() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/17_invalid_strand.json"));
 
@@ -551,7 +573,7 @@ public class GeneBulkUploadITCase {
     }
 
     @Test
-    @Order(19)
+    @Order(20)
     public void geneBulkUploadDuplicatedPrimaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/18_duplicate_primary_ids.json"));
 
