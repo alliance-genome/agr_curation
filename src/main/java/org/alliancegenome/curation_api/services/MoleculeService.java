@@ -45,20 +45,20 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
     
     @Transactional
     public void processUpdate(MoleculeDTO molecule) {
-        log.info("processUpdate Molecule: ");
+        log.debug("processUpdate Molecule: ");
     
         if (molecule.getId() == null) {
-            log.info(molecule.getId() + " has no ID - skipping");
+            log.debug(molecule.getId() + " has no ID - skipping");
             return;
         }
         
         if (molecule.getId().startsWith("CHEBI:")) {
-            log.info("Skipping processing of " + molecule.getId());
+            log.debug("Skipping processing of " + molecule.getId());
             return;
         }
         
         if (molecule.getName() == null || molecule.getName().length() == 0) {
-            log.info(molecule.getId() + " has no name - skipping");
+            log.debug(molecule.getId() + " has no name - skipping");
             return;
         }
         

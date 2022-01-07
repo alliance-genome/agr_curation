@@ -315,7 +315,9 @@ A EB cli configuration file is stored in the `.elasticbeanstalk` repo subdirecto
 
 All EB environment configurations are stored in the [`.ebextensions`](.ebextensions/) repo subdirectory.
 
-Before attempting a deployment, define the `QUARKUS_DATASOURCE_USERNAME` and `QUARKUS_DATASOURCE_PASSWORD` appropriately in your environment to allow access to the RDS database.
+Before attempting a sandbox environment creation, inspect the `eb-create` Makefile target
+and export all variables defined in it with the appropriate values in your local shell environment
+to allow storage of all required configurations in the EB environment configurations.
 
 Then you can run `make eb-create` to create a new environment and `make eb-terminate` to terminate it.
 
