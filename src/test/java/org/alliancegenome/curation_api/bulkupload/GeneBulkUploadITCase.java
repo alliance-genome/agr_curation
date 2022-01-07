@@ -88,7 +88,7 @@ public class GeneBulkUploadITCase {
                body("results[3].symbol", is("Tg1")).
                body("results[3].geneSynopsis", is("Test gene with all fields populated")).
                body("results[3].geneSynopsisURL", is("http://test.org/test_synopsis_1")).
-               body("results[3].type", is("SO:0001217"));
+               body("results[3].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -123,7 +123,7 @@ public class GeneBulkUploadITCase {
                 body("results[4].symbol", is("Tg2")).
                 body("results[4].geneSynopsis", is("Test gene with all fields populated except crossReferences")).
                 body("results[4].geneSynopsisURL", is("http://test.org/test_synopsis_2")).
-                body("results[4].type", is("SO:0001217"));
+                body("results[4].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -158,7 +158,7 @@ public class GeneBulkUploadITCase {
                 body("results[5].symbol", is("Tg3")).
                 body("results[5].geneSynopsis", is("Test gene with all fields populated except genomeLocations")).
                 body("results[5].geneSynopsisURL", is("http://test.org/test_synopsis_3")).
-                body("results[5].type", is("SO:0001217"));
+                body("results[5].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -191,7 +191,7 @@ public class GeneBulkUploadITCase {
                 body("results[6].symbol", is("Tg5")).
                 body("results[6].geneSynopsis", is("Test gene with all fields populated except secondaryIds")).
                 body("results[6].geneSynopsisURL", is("http://test.org/test_synopsis_5")).
-                body("results[6].type", is("SO:0001217"));
+                body("results[6].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -226,7 +226,7 @@ public class GeneBulkUploadITCase {
                 body("results[7].symbol", is("Tg6")).
                 body("results[7].geneSynopsis", is("Test gene with all fields populated except synonyms")).
                 body("results[7].geneSynopsisURL", is("http://test.org/test_synopsis_6")).
-                body("results[7].type", is("SO:0001217"));
+                body("results[7].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -286,7 +286,7 @@ public class GeneBulkUploadITCase {
                 body("results[8].crossReferences[1].curie", is("TEST:xref8a")).
                 body("results[8].symbol", is("Tg8")).
                 body("results[8].geneSynopsisURL", is("http://test.org/test_synopsis_8")).
-                body("results[8].type", is("SO:0001217"));
+                body("results[8].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -322,7 +322,7 @@ public class GeneBulkUploadITCase {
                 body("results[9].crossReferences[1].curie", is("TEST:xref9a")).
                 body("results[9].symbol", is("Tg9")).
                 body("results[9].geneSynopsis", is("Test gene with all fields populated except geneSynopsisUrl")).
-                body("results[9].type", is("SO:0001217"));
+                body("results[9].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -358,7 +358,7 @@ public class GeneBulkUploadITCase {
                 body("results[0].symbol", is("Tg10")).
                 body("results[0].geneSynopsis", is("Test gene with all fields populated except name")).
                 body("results[0].geneSynopsisURL", is("http://test.org/test_synopsis_10")).
-                body("results[0].type", is("SO:0001217"));
+                body("results[0].geneType.curie", is("SO:0001217"));
     }
 
     @Test
@@ -430,7 +430,7 @@ public class GeneBulkUploadITCase {
                 body("results[2].crossReferences[1].curie", is("TEST:xref12b")).
                 body("results[2].geneSynopsis", is("Test gene with all fields populated except symbol")).
                 body("results[2].geneSynopsisURL", is("http://test.org/test_synopsis_12")).
-                body("results[2].type", is("SO:0001217"));
+                body("results[2].geneType.curie", is("SO:0001217"));
     }
 
     @Test
