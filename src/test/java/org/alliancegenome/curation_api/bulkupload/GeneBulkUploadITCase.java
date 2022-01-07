@@ -477,9 +477,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(843)); // no genes added
     }
 
-    // TODO: adapt & enable this test when checking for valid SO Terms in bulk upload is in place
-    // NOTE: probably want a 200 response and test that entity count hasn't increased
-    // @Test
+    @Test
     @Order(15)
     public void geneBulkUploadInvalidSoTermId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/14_invalid_so_term_id.json"));
@@ -490,7 +488,16 @@ public class GeneBulkUploadITCase {
                 when().
                 post("/api/gene/bulk/bgifile").
                 then().
-                statusCode(400);
+                statusCode(200);
+        
+        RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/gene/find?limit=10&page=84").
+                then().
+                statusCode(200).
+                body("totalResults", is(843)); // no genes added
     }
 
     
