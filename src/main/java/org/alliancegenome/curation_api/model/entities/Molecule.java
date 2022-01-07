@@ -32,7 +32,7 @@ public class Molecule extends BaseCurieEntity {
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "inchi_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition="TEXT")
+    @Column(length=750)
     private String inchi;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -43,7 +43,7 @@ public class Molecule extends BaseCurieEntity {
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "iupac_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition="TEXT")
+    @Column(length=500)
     private String iupac;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -54,13 +54,13 @@ public class Molecule extends BaseCurieEntity {
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "smiles_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition="TEXT")
+    @Column(length=500)
     private String smiles;
     
     @ElementCollection
     @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "molecule_curie"))
-    @Column(columnDefinition="TEXT")
+    @Column(length=500)
     private List<String> synonyms;
     
     @ManyToMany
