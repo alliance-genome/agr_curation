@@ -6,39 +6,35 @@ import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 
 export const Dashboard = () => {
-  const [geneCount, setGeneCount] = useState(0);
-  const [alleleCount, setAlleleCount] = useState(0);
-  const [diseaseAnnotationCount, setDiseaseAnnotationCount] = useState(0);
-  const [agmCount, setAgmCount] = useState(0);
-  const [moleculeCount, setMoleculeCount] = useState(0);
 
+  const [entityCounts, setEntityCounts] = useState([]);
   const [termCounts, setTermCounts] = useState([]);
 
   useEffect(() => {
     const searchService = new SearchService();
 
-    searchService.search('gene', 0, 0).then(searchResults => {
-      setGeneCount(searchResults.totalResults);
+    // Entity Counts
+    searchService.search('gene', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Genes", count: results.totalResults }]);
     });
 
-    searchService.search('allele', 0, 0).then(searchResults => {
-      setAlleleCount(searchResults.totalResults);
+    searchService.search('allele', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Alleles", count: results.totalResults }]);
     });
 
-    searchService.search('disease-annotation', 0, 0).then(searchResults => {
-      setDiseaseAnnotationCount(searchResults.totalResults);
+    searchService.search('disease-annotation', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Disease Annotations", count: results.totalResults }]);
     });
 
-    searchService.search('agm', 0, 0).then(searchResults => {
-      setAgmCount(searchResults.totalResults);
+    searchService.search('agm', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Affected Genomic Models", count: results.totalResults }]);
     });
 
-    searchService.search("molecule", 0, 0).then(searchResults => {
-      setMoleculeCount(searchResults.totalResults);
+    searchService.search("molecule", 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Molecules", count: results.totalResults }]);
     });
 
-
-
+    // Term Counts
     searchService.search('chebiterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults }]);
     });
@@ -96,44 +92,11 @@ export const Dashboard = () => {
 
     <div className="p-grid p-nested dashboard">
 
-      <div className="p-col-9">
-        <div className="p-grid">
-          <div className="p-col-12 p-lg-4">
-            <div className="card summary">
-              <span className="title">Genes</span>
-              <span className="detail">Total number of genes</span>
-              <span className="count visitors">{geneCount}</span>
-            </div>
-          </div>
-          <div className="p-col-12 p-lg-4">
-            <div className="card summary">
-              <span className="title">Alleles</span>
-              <span className="detail">Total number of alleles</span>
-              <span className="count purchases">{alleleCount}</span>
-            </div>
-          </div>
-          <div className="p-col-12 p-lg-4">
-            <div className="card summary">
-              <span className="title">Disease Annotations</span>
-              <span className="detail">Total number of disease annotations</span>
-              <span className="count revenue">{diseaseAnnotationCount}</span>
-            </div>
-          </div>
-          <div className="p-col-12 p-lg-4">
-            <div className="card summary">
-              <span className="title">Affected Genomic Models</span>
-              <span className="detail">Total number of Affected Genomic Models</span>
-              <span className="count agm">{agmCount}</span>
-            </div>
-          </div>
-          <div className="p-col-12 p-lg-4">
-            <div className="card summary">
-              <span className="title">Molecules</span>
-              <span className="detail">Total number of Molecules</span>
-              <span className="count agm">{moleculeCount}</span>
-            </div>
-          </div>
-        </div>
+      <div className="p-col-3">
+        <DataTable value={entityCounts}>
+          <Column field="name" header="Entity Name" />
+          <Column field="count" header="Entity Count" />
+        </DataTable>
       </div>
 
       <div className="p-col-3">

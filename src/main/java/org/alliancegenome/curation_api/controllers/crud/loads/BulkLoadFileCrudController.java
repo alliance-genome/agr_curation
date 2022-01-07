@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
-import org.alliancegenome.curation_api.interfaces.crud.loads.BulkLoadFileCrudInterface;
+import org.alliancegenome.curation_api.interfaces.crud.bulkloads.BulkLoadFileCrudInterface;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.loads.BulkLoadFileService;

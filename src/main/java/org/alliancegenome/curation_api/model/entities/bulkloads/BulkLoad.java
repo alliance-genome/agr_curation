@@ -73,7 +73,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     public enum BackendBulkLoadType {
         GENE_DTO, ALLELE_DTO, AGM_DTO, DISEASE_ANNOTATION_DTO,
         GENE, ALLELE, AGM, DISEASE_ANNOTATION,
-        ONTOLOGY
+        ONTOLOGY, MOLECULE
         ;
     }
     
