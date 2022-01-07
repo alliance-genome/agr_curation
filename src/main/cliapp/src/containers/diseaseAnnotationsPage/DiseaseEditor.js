@@ -1,9 +1,10 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
+import {trimWhitespace } from '../../utils/utils';
 
-export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {    
+export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
     const [filteredDiseases, setFilteredDiseases] = useState([]);
-    
+
     const searchDisease = (event) => {
         let diseaseFilter = {};
         autocompleteFields.forEach( field => {
@@ -16,10 +17,10 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
                 setFilteredDiseases(data.results);
             });
     };
-    
+
     const onDiseaseEditorValueChange = (event) => {
         let updatedAnnotations = [...rowProps.value];
-        
+
 
         if(event.target.value || event.target.value === '') {
             updatedAnnotations[rowProps.rowIndex].object = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
@@ -31,9 +32,9 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
             setDiseaseAnnotations(updatedAnnotations);
         }
     };
-    
+
     const diseaseItemTemplate = (item) => {
-        let inputValue = rowProps.rowData.object.curie.toLowerCase();
+        let inputValue = trimWhitespace(rowProps.rowData.object.curie.toLowerCase());
         let str = "";
         let synonymsStr = "";
         let isSynonym = false;
