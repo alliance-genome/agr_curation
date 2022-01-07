@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
+import {trimWhitespace } from '../../utils/utils';
 
-   export const EvidenceEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => { 
+   export const EvidenceEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredEvidenceCodes, setFilteredEvidenceCodes] = useState([]);
 
         const searchEvidenceCodes = (event) => {
@@ -12,7 +13,7 @@ import {AutoComplete} from "primereact/autocomplete";
             });
             let obsoleteFilter = {"obsolete": false};
             let subsetFilter = {"subsets": "agr_eco_terms"};
- 
+
             searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter, "obsoleteFilter:":obsoleteFilter, "subsetFilter":subsetFilter})
                 .then((data) => {
                     //console.log(data)
@@ -29,7 +30,7 @@ import {AutoComplete} from "primereact/autocomplete";
         };
 
         const evidenceItemTemplate = (item) => {
-            let inputValue = rowProps.rowData.object.curie.toLowerCase();
+            let inputValue = trimWhitespace(rowProps.rowData.object.curie.toLowerCase());
             let str = "";
             let synonymsStr = "";
             let isSynonym = false;
@@ -89,7 +90,7 @@ import {AutoComplete} from "primereact/autocomplete";
 
 
         return (
-            
+
             <AutoComplete
                 multiple
                 value={rowProps.rowData.evidenceCodes}
@@ -99,6 +100,6 @@ import {AutoComplete} from "primereact/autocomplete";
                 completeMethod={searchEvidenceCodes}
                 onChange={(e) => onEvidenceEditorValueChange(e)}
             />
-           
+
         )
     };
