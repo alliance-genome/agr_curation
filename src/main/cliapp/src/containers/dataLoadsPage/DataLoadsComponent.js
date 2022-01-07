@@ -50,14 +50,16 @@ export const DataLoadsComponent = () => {
   useQuery(['bulkloadtable'],
     () => searchService.find('bulkloadgroup', 100, 0, {}), {
     onSuccess: (data) => {
-      for (let group of data.results) {
-        if (group.loads) {
-          for (let load of group.loads) {
-            load.group = group.id;
+      if(data.results) {
+        for (let group of data.results) {
+          if (group.loads) {
+            for (let load of group.loads) {
+              load.group = group.id;
+            }
           }
         }
+        setGroups(data.results);
       }
-      setGroups(data.results);
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
@@ -88,6 +90,12 @@ export const DataLoadsComponent = () => {
     setBulkLoadDialog(true);
   };
 
+  const deleteLoadFile = (rowData) => {
+    dataLoadService.deleteLoadFile(rowData.id).then(response => {
+      queryClient.invalidateQueries('bulkloadtable');
+    });
+  };
+
   const deleteLoad = (rowData) => {
     dataLoadService.deleteLoad(rowData.type, rowData.id).then(response => {
       queryClient.invalidateQueries('bulkloadtable');
@@ -101,9 +109,17 @@ export const DataLoadsComponent = () => {
   };
 
   const loadFileActionBodyTemplate = (rowData) => {
-    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      return (<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
+    let ret = [];
+
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
     }
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoadFile(rowData)} />);
+    }
+
+    return ret;
+
   };
 
   const loadActionBodyTemplate = (rowData) => {

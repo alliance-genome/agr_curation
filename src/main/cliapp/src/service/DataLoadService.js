@@ -54,9 +54,14 @@ export class DataLoadService {
         return axios.get(`api/bulkloadfile/restart/${id}`);
     }
 
+    deleteLoadFile(id) {
+      console.log(id);
+      return axios.delete(`api/bulkloadfile/${id}`);
+    }
+
     getBackendBulkLoadTypes(loadType) {
         const bulkLoadTypes = {
-            BulkFMSLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO"],
+            BulkFMSLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "MOLECULE"],
             BulkURLLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
             BulkManualLoad: ["GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"]
         };
@@ -71,7 +76,7 @@ export class DataLoadService {
 
     getOntologyTypes() {
         return [
-            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO"
+            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO"
         ];
     }
 
