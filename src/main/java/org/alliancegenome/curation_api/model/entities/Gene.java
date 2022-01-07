@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -36,9 +37,9 @@ public class Gene extends GenomicEntity {
     @JsonView({View.FieldsOnly.class})
     private String geneSynopsisURL;
 
-    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    private String type;
+    private SOTerm geneType;
     
     @FullTextField
     @Column(columnDefinition="TEXT")
