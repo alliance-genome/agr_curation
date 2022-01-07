@@ -1,7 +1,8 @@
 import React, {useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
+import {trimWhitespace } from '../../utils/utils';
 
-   export const WithEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => { 
+   export const WithEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredWithGenes, setFilteredWithGenes] = useState([]);
         const [query, setQuery] = useState();
 
@@ -32,7 +33,7 @@ import {AutoComplete} from "primereact/autocomplete";
         };
 
         const withItemTemplate = (item) => {
-            let inputValue = query.toLowerCase();
+            let inputValue = trimWhitespace(query.toLowerCase());
             let str = "";
             let synonymsStr = "";
             let isSynonym = false;
@@ -60,7 +61,7 @@ import {AutoComplete} from "primereact/autocomplete";
                                 if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
                                     crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
                                     isCrossReference = true;
-                                }    
+                                }
                             }
                         }
                     }
@@ -100,7 +101,7 @@ import {AutoComplete} from "primereact/autocomplete";
 
 
         return (
-            
+
             <AutoComplete
                 multiple
                 value={rowProps.rowData.with}
@@ -110,6 +111,6 @@ import {AutoComplete} from "primereact/autocomplete";
                 completeMethod={searchWithGenes}
                 onChange={(e) => onWithEditorValueChange(e)}
             />
-           
+
         )
     };
