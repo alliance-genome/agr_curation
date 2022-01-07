@@ -76,7 +76,7 @@ export class DataLoadService {
 
     getOntologyTypes() {
         return [
-            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO"
+            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO"
         ];
     }
 
