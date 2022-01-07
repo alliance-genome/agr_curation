@@ -30,6 +30,7 @@ export const DataLoadsComponent = () => {
   const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
   const [expandedGroupRows, setExpandedGroupRows] = useState(null);
   const [expandedLoadRows, setExpandedLoadRows] = useState(null);
+  const [disableFormFields, setDisableFormFields] = useState(false);
   const errorMessage = useRef(null);
   const searchService = new SearchService();
   const dataLoadService = new DataLoadService();
@@ -88,6 +89,7 @@ export const DataLoadsComponent = () => {
   const editLoad = (rowData) => {
     bulkLoadDispatch({ type: "EDIT", editBulkLoad: rowData });
     setBulkLoadDialog(true);
+    setDisableFormFields(true);
   };
 
   const deleteLoadFile = (rowData) => {
@@ -276,6 +278,8 @@ export const DataLoadsComponent = () => {
         newBulkLoad={newBulkLoad}
         bulkLoadDispatch={bulkLoadDispatch}
         groups={groups}
+        disableFormFields={disableFormFields}
+        setDisableFormFields={setDisableFormFields}
       />
       <NewBulkLoadGroupForm
         bulkLoadGroupDialog={bulkLoadGroupDialog}
