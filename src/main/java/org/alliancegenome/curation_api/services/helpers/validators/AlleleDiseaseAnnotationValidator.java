@@ -53,6 +53,12 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
         List<Gene> genes = validateWith(uiEntity, dbEntity);
         if(genes != null) dbEntity.setWith(genes);
 
+        if(uiEntity.getNegated() != null) {
+            dbEntity.setNegated(uiEntity.getNegated());
+        }else{
+            dbEntity.setNegated(false);
+        }
+
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
