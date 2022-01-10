@@ -6,7 +6,8 @@ export const ECOOntologyComponent = () => {
     { field: "curie", header: "Curie" },
     { field: "name", header: "Name" },
     { field: "definition", header: "Definition" },
-    { field: "abbreviation", header: "Abbreviation" }
+    { field: "abbreviation", header: "Abbreviation" },
+    { field: "obsolete", header: "Obsolete" }
   ]
 
   return(
