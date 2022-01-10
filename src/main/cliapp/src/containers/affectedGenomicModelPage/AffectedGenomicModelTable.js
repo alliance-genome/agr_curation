@@ -144,7 +144,7 @@ export const AffectedGenomicModelTable = () => {
             paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
             currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10,20,50,100,250,1000]}
     >
-          {columnMap}
+            {columnMap}
           </DataTable>
         </div>
       </div>
