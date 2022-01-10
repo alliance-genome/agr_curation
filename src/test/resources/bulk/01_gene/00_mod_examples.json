@@ -2455,7 +2455,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygous and homozygous mutants exhibit small spherical opacities in the central part of the lens. [provided by MGI curators]",
          "name" : "coralliform cataract",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Coc"
       },
       {
@@ -4655,7 +4655,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutations in this gene result in neurological and convulsive behaviors resulting in early death. [provided by MGI curators]",
          "name" : "spontaneous seizure",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "sps"
       },
       {
@@ -4686,7 +4686,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Len2 encodes a 23kDa major lens protein similar to beta-crystallin, synthesized from embryonic day 14 to postnatal day 14. Variation is seen by isolelectric focusing: the a allele in O20/A, M.m. molossinus and in wild mice from California and Peru; the ballele in all other strains tested. [provided by MGI curators]",
          "name" : "eye lens protein 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Len2"
       },
       {
@@ -4717,7 +4717,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygotes exhibit fusions of the digits, more commonly of the hindfeet than of the forefeet. [provided by MGI curators]",
          "name" : "joined toes",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "jt"
       },
       {
@@ -4746,7 +4746,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "tissue specific extinction 2, of L-ADH",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Tse2"
       },
       {
@@ -4806,7 +4806,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "ribosomal protein L7, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rpl7-ps1"
       },
       {
@@ -4873,7 +4873,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for this spontaneous mutation display prenatal and postnatal lethality, a severe loss of myelin, and impaired motor coordination. [provided by MGI curators]",
          "name" : "myelin-less",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "ml"
       },
       {
@@ -4903,7 +4903,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This dominant modifier dilutes coat color of specific genotypes to almost white and reduces growth rate. [provided by MGI curators]",
          "name" : "modifier of chinchilla-mottled 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mchm1"
       },
       {
@@ -4930,7 +4930,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: One of many loci showing variation in liver cytosol polypeptides detected by high resolution 2D electrophoresis. Allele a is present in most strains; allele b is found in strains SWR/J, BUB, PL, and MA/My. [provided by MGI curators]",
          "name" : "liver 20-30 thousand Mol. Wt. protein 6",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Ltw6"
       },
       {
@@ -5013,7 +5013,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "RIKEN cDNA 9430065F17 gene",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "9430065F17Rik"
       },
       {
@@ -5096,7 +5096,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "heat shock protein, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Hspa-ps"
       },
       {
@@ -5124,7 +5124,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "glyceraldehyde-3-phosphate dehydrogenase, pseudogene 11",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gapdh-ps11"
       },
       {
@@ -5152,7 +5152,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "glyceraldehyde-3-phosphate dehydrogenase, pseudogene 3",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gapdh-ps3"
       },
       {
@@ -5189,7 +5189,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygotes for this ENU-induced mutation exhibit dilated cardiomyopathy, increase in left ventricle end diastolic and end systolic diameters and reduced fractional shortening. [provided by MGI curators]",
          "name" : "cardiomyopathy 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "cmy2"
       },
       {
@@ -5223,7 +5223,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygotes for this ENU-induced mutation exhibit dilated cardiomyopathy, increase in left ventricle end diastolic and end systolic diameters, and reduced fractional shortening. [provided by MGI curators]",
          "name" : "cardiomyopathy 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "cmy1"
       },
       {
@@ -5256,7 +5256,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for an ENU-induced allele exhibit perinatal lethality associated with atrioventricular septal defects. [provided by MGI curators]",
          "name" : "lethal, Chr 11, Justice 16",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "l11Jus16"
       },
       {
@@ -5287,7 +5287,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "high mobility group box 1, related sequence 14",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Hmgb1-rs14"
       },
       {
@@ -5321,7 +5321,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "RIKEN cDNA 4930551A22 gene",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "4930551A22Rik"
       },
       {
@@ -5352,7 +5352,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "high mobility group box 1, related sequence 13",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Hmgb1-rs13"
       },
       {
@@ -5382,7 +5382,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygotes for this ENU-induced mutation exhibit a shortened head. [provided by MGI curators]",
          "name" : "shorthead 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Sho2"
       },
       {
@@ -5409,7 +5409,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for an ENU-induced allele exhibit increased circulating calcium level. [provided by MGI curators]",
          "name" : "Martin Hrabe de Angelis serum calcium mutant 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mhdasca1"
       },
       {
@@ -5447,7 +5447,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "microRNA 6389",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mir6389"
       },
       {
@@ -5527,7 +5527,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene 11622",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm11622"
       },
       {
@@ -5553,7 +5553,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "keratin 6, pseudogene 2",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Krt6-ps2"
       },
       {
@@ -5578,7 +5578,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "gene trap 27, Institute of Molecular Embryology and Genetics",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gt(pU21)27Imeg"
       },
       {
@@ -5603,7 +5603,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "gene trap 50, Institute of Molecular Embryology and Genetics",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gt(pU21)50Imeg"
       },
       {
@@ -5636,7 +5636,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygous mutant animals exhibit pigmentation defects affecting the coat, footpads and nails.  Homozygous mutant animals are embryonic lethal. [provided by MGI curators]",
          "name" : "Martin Hrabe de Angelis dark skin 8",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mhdadsk8"
       },
       {
@@ -5666,7 +5666,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous mice exhibit coat, metabolism and lysosomal storage defects. [provided by MGI curators]",
          "name" : "skin/coat color 38",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "skc38"
       },
       {
@@ -5696,7 +5696,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for an ENU-induced mutation exhibit an open neural tube, a curly tail, and defects in early sensory and motor neuron development. Heterozygotes display a white belly spot. [provided by MGI curators]",
          "name" : "mutation 5, Sabine Cordes",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "m5Sapc"
       },
       {
@@ -5724,7 +5724,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene 7051",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm7051"
       },
       {
@@ -5752,7 +5752,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene 13354",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm13354"
       },
       {
@@ -5780,7 +5780,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene 6731",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm6731"
       },
       {
@@ -5804,7 +5804,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutant mice have a tiny head blaze. [provided by MGI curators]",
          "name" : "Martin Hrabe de Angelis spotted coat 6",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mhdasco6"
       },
       {
@@ -5828,7 +5828,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutant mice have a kinked tail. [provided by MGI curators]",
          "name" : "Martin Hrabe de Angelis kinked tail 5",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mhdakta5"
       },
       {
@@ -5852,7 +5852,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutant mice have a darkened coat, white belly spot and/or a kinked tail. [provided by MGI curators]",
          "name" : "Martin Hrabe de Angelis dark coat color 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mhdadcc2"
       },
       {
@@ -5874,7 +5874,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "recessive hypocholesterolemia 1a",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "cholr1a"
       },
       {
@@ -5909,7 +5909,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This locus controls variation in pattern of isoelectric focusing in polyacrylamide gels of a basic protein (pI = 8.0) in heart supernatant. The a allele occurs in the DBA/2J strain; the b allele occurs in Peru mice. [provided by MGI curators]",
          "name" : "heart protein 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Hrt1"
       },
       {
@@ -5979,7 +5979,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This locus controls resistance to leukemogenesis induced by B-tropic radiation leukemia virus A-RadLV in strains with the b allele of Fv1. Strains of H2s haplotype are resistant; strains of H2 haplotypes r, b, k and d are susceptible. H2 recombinant analysis locates Rrv1 in the proximal I region. [provided by MGI curators]",
          "name" : "resistance to RadLV 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rrv1"
       },
       {
@@ -6013,7 +6013,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "t-complex lethal Lub9",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "tclLub9"
       },
       {
@@ -6047,7 +6047,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "phosphoglycerate kinase 1, pseudogene 4",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Pgk1-ps4"
       },
       {
@@ -6129,7 +6129,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutations in this gene result in cataract formation. [provided by MGI curators]",
          "name" : "lens opacity 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "lop2"
       },
       {
@@ -6158,7 +6158,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This locus controls an antigen present on 30-40% of T- and B-cells of lymph nodes. The b allele determines presence of Lna1.2 antigen in C57, C58, GR/A, HRS and I/St; the a allele determines absence of antigen in A, AKR, BALB/c, CBA/J and C3H/An. [provided by MGI curators]",
          "name" : "lymph node antigen 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Lna1"
       },
       {
@@ -6187,7 +6187,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This locus controls levels of liver SDSL (EC 4.1.1.13) and PCK1 (EC 4.1.1.32) induced by high-protein low-carbohydrate diet. BALB/cJ carries the a allele for high induction level of both enzymes; AKR, C57BL/6 and BALB/cBy carry the b allele for low induction level. Heterozygotes are intermediate. [provided by MGI curators]",
          "name" : "serine dehydratase regulator 1",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Sdr1"
       },
       {
@@ -6215,7 +6215,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "7S RNA-X",
-         "soTermId" : "SO:0001269",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rn7sX"
       },
       {
@@ -6243,7 +6243,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "lens opacity 6",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Lop6"
       },
       {
@@ -6271,7 +6271,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "7S RNA 13",
-         "soTermId" : "SO:0001269",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rn7s13"
       },
       {
@@ -6307,7 +6307,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice heterozygous for a deletion caused by transgenic insertional mutagenesis show syndactyly, thymic hyperplasia, and altered thymopoiesis. Homozygotes die by E13.5 showing craniofacial defects, digit anomalies, and abnormal left-right axis formation, brain development, and germ cell proliferation. [provided by MGI curators]",
          "name" : "fused toes",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Fts"
       },
       {
@@ -6339,7 +6339,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "leucine arylaminopeptidase 1, intestinal",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Lap1"
       },
       {
@@ -6365,7 +6365,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This locus controls a serologically detected antigen on erythrocytes. The a allele determines antigen Ea8.1 in strains A, C57BL/10, C3H/He, NZB, some wild mice and Mus poschiavinus. The b allele determines absence of antigen in BALB/c, DBA/2, 129 and LP. [provided by MGI curators]",
          "name" : "erythrocyte antigen 8",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Ea8"
       },
       {
@@ -6391,7 +6391,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: The a allele determines a protein of pI 6.8 or higher; the o allele determines absence of protein. These alleles are randomly distributed among inbred strains. [provided by MGI curators]",
          "name" : "kidney 30-40 thousand Mol. Wt. protein 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Kth2"
       },
       {
@@ -6417,7 +6417,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This locus was detected in B6.C congenic strains. C57BL/6By carries the b allele; and BALB/cBy and the congenic carry the c allele. Antigens are present on tail skin. [provided by MGI curators]",
          "name" : "histocompatibility 26",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "H26"
       },
       {
@@ -6442,7 +6442,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "formamidase 3",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "For3"
       },
       {
@@ -6467,7 +6467,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "formamidase 4",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "For4"
       },
       {
@@ -6570,7 +6570,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "neoplastic progression 2",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "Npn2"
       },
       {
@@ -6603,7 +6603,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "immune response 9",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Ir9"
       },
       {
@@ -6684,7 +6684,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygotes and heterozygotes have lipofuscin (black pigment) in the anterior end of the spleen. [provided by MGI curators]",
          "name" : "black spleen",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Bsp"
       },
       {
@@ -6713,7 +6713,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutant animals exhibit closed eyes and microphthalmia. [provided by MGI curators]",
          "name" : "closed eyes and microphthalmia",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Cle"
       },
       {
@@ -6742,7 +6742,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mutations in this gene produce jaudice in newborn mice, male infertility and abnormal maternal behavior. [provided by MGI curators]",
          "name" : "hyper-unconjugated bilirubinemia",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "hubb"
       },
       {
@@ -6769,7 +6769,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "sperm peptide antigen",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Span"
       },
       {
@@ -6796,7 +6796,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "eukaryotic translation initiation factor 4E binding protein 1, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Eif4ebp1-ps1"
       },
       {
@@ -6826,7 +6826,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "intestinal kinase 76",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Ink76"
       },
       {
@@ -6920,7 +6920,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "microRNA 3061",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mir3061"
       },
       {
@@ -6996,7 +6996,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygotes for an ethylnitrosourea-induced mutation exhibit dilated pupils. [provided by MGI curators]",
          "name" : "dilated pupils 3",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Dilp3"
       },
       {
@@ -7022,7 +7022,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygotes for an ethylnitrosourea-induced mutation exhibit dilated pupils. [provided by MGI curators]",
          "name" : "dilated pupils 4",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Dilp4"
       },
       {
@@ -7048,7 +7048,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous mutation of this gene results in embryonic lethality. Heterozygous mutant animals display cataracts and reduced litter size. Non-Mendelian segregation of this allele suggests semilethality. [provided by MGI curators]",
          "name" : "anterior polar cataract",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Apoca"
       },
       {
@@ -7072,7 +7072,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "olfactory receptor 1210, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Olfr1210-ps1"
       },
       {
@@ -7096,7 +7096,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "Sry interacting protein 2",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Sryip2"
       },
       {
@@ -7149,7 +7149,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygotes for this ENU-induced mutation exhibit high frequency hearing loss. [provided by MGI curators]",
          "name" : "Tennessee Mouse Genome Consortium 53",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "tmgc53"
       },
       {
@@ -7178,7 +7178,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous mice exhibit hypoalgesia to thermal and mechanical pain stimuli. [provided by MGI curators]",
          "name" : "Tennessee Mouse Genome Consortium 38",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "tmgc38"
       },
       {
@@ -7207,7 +7207,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous males are infertile.  Epididymal sperm have abnormal head shape and poor IVF success. In testes a few elongated spermatids are present in some tubules with abnormal spermatid elongation and abnormal cells are present in epididymal lumen. [provided by MGI curators]",
          "name" : "reproductive mutant 16, JAX Reproductive Mutagenesis Program",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "repro16"
       },
       {
@@ -7234,7 +7234,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "serine (or cysteine) peptidase inhibitor, clade B, member 9, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Serpinb9-ps1"
       },
       {
@@ -7264,7 +7264,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "regulator of sex limited protein 2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rsl2"
       },
       {
@@ -7291,7 +7291,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "olfactory receptor 1072, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Olfr1072-ps1"
       },
       {
@@ -7314,7 +7314,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous mice exhibit an unsteady walk. [provided by MGI curators]",
          "name" : "neurological 56",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "nur56"
       },
       {
@@ -7337,7 +7337,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: A mutation in this unidentified gene results in a reduced body size in homozygotes. [provided by MGI curators]",
          "name" : "growth/size 66",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "gro66"
       },
       {
@@ -7360,7 +7360,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: A mutation in this unidentified gene results in a reduced white blood cell count, hematocrit and hemoglobin content in homozygotes. [provided by MGI curators]",
          "name" : "haematopoietic 4",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "hem4"
       },
       {
@@ -7381,7 +7381,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "MAS-related GPR, member C14, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mrgprc14-ps"
       },
       {
@@ -7402,7 +7402,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "MAS-related GPR, member C12, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mrgprc12-ps"
       },
       {
@@ -7423,7 +7423,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "RIKEN Genomic Sciences Center (GSC), 271",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rgsc271"
       },
       {
@@ -7512,7 +7512,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "Harvey rat sarcoma virus oncogene, pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Hras1-ps1"
       },
       {
@@ -7543,7 +7543,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "U3B small nuclear RNA pseudogene 5",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rnu3b-ps5"
       },
       {
@@ -7574,7 +7574,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "U3B small nuclear RNA pseudogene 6",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rnu3b-ps6"
       },
       {
@@ -7781,7 +7781,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "T cell receptor alpha, variable 1.2",
-         "soTermId" : "SO:3000000",
+         "soTermId" : "SO:0001217",
          "symbol" : "Tcra-V1.2"
       },
       {
@@ -7807,7 +7807,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: This mutant has been traced to a maternally transmitted leukemia virus that causes melanocyte dysfunction subsequent to infection at pre-or early postnatal stages. [provided by MGI curators]",
          "name" : "greying with age",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Ga"
       },
       {
@@ -7833,7 +7833,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygotes exhibit opacities of the embryonic lens nucleus and the posterior embryonic suture. Most are also sterile and those that are fertile have reduced litter size. Homozygotes die prenatally. [provided by MGI curators]",
          "name" : "dominant nuclear cataract",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Nuca"
       },
       {
@@ -7859,7 +7859,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: BALB/c sublines are fixed for a hippocampal laminar structure abnormality. [provided by MGI curators]",
          "name" : "hippocampal lamination defect",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Hld"
       },
       {
@@ -7883,7 +7883,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "cardiac myosin autoantibody",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "cma"
       },
       {
@@ -7907,7 +7907,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "small nuclear ribonucleoprotein E, pseudogene 2",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Snrpe-ps2"
       },
       {
@@ -7931,7 +7931,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "minisatellite binding protein 1",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Msbp1"
       },
       {
@@ -7963,7 +7963,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "18S ribosomal RNA",
-         "soTermId" : "SO:0001637",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rn18s"
       },
       {
@@ -7990,7 +7990,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "T cell receptor alpha, variable 8",
-         "soTermId" : "SO:3000000",
+         "soTermId" : "SO:0001217",
          "symbol" : "Tcra-V8"
       },
       {
@@ -8017,7 +8017,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "T cell receptor alpha, variable 2.1",
-         "soTermId" : "SO:3000000",
+         "soTermId" : "SO:0001217",
          "symbol" : "Tcra-V2.1"
       },
       {
@@ -8040,7 +8040,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous mutants have cerebral degeneration with visible hydrocephalus at birth affecting primarily the cerebral hemispheres and olfactory lobes, with later involvement of nose and trachea. Most mutants die before maturity. [provided by MGI curators]",
          "name" : "cerebral degeneration",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "cb"
       },
       {
@@ -8063,7 +8063,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for mutations in this gene show circling behavior and tonic-clonic seizures. [provided by MGI curators]",
          "name" : "circumgyrator",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "cg"
       },
       {
@@ -8086,7 +8086,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Homozygous mice die neonatally displaying a syndrome of anatomical abnormalities including short paddle-shaped limbs, short blunt head, cleft palate, protruding tongue, and distended liver. [provided by MGI curators]",
          "name" : "abnormal",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "abn"
       },
       {
@@ -8107,7 +8107,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "small ear",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Sme"
       },
       {
@@ -8128,7 +8128,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "jaw lethal",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "j"
       },
       {
@@ -8149,7 +8149,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "sphaerozytose",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "sph-(H)"
       },
       {
@@ -8179,7 +8179,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene, 24961",
-         "soTermId" : "SO:0001268",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm24961"
       },
       {
@@ -8212,7 +8212,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene, 38237",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm38237"
       },
       {
@@ -8242,7 +8242,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene, 33379",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm33379"
       },
       {
@@ -8264,7 +8264,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Chlorpromazine impairs performance of mice pre-trained in active avoidance tasks. Two loci control difference in impairment of BALB/cBy and C57BL/By strains. BALB/cBy carries an allele for high chlorpromazine effect and C57BL/6By an allele for low effect. [provided by MGI curators]",
          "name" : "chlorpromazine avoidance",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Cpza"
       },
       {
@@ -8287,7 +8287,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Heterozygotes for a spontaneous mutation exhibit progressive hair loss and become hairless, ulcerative skin lesions, vibrissae abnormalities, excessive scratching, and increased mast cells and IgE levels. [provided by MGI curators]",
          "name" : "Naruto Otsuka atrichia",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Noa"
       },
       {
@@ -8310,7 +8310,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for this ENU-induced mutation display white, non-progressive cataracts and microphthalmia. Heterozygous mutant mice show an early-onset lens clouding which progresses to a white cataract. [provided by MGI curators]",
          "name" : "lens cloudy",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Lcl"
       },
       {
@@ -8331,7 +8331,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "RIKEN cDNA 4921509O09 gene",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "4921509O09Rik"
       },
       {
@@ -8352,7 +8352,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "eukaryotic translation initiation factor 4A, pseudogene 7",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Eif4a-ps7"
       },
       {
@@ -8373,7 +8373,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "gene trap AYU 3",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gtayu3"
       },
       {
@@ -8399,7 +8399,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: The Rsxr<sup>129S1/Sv</sup> allele confers resistance to sex reversal in genetic XY males from consomic line B6.129-Chr Y<sup>POS</sup>. The Rsxr<sup>C57BL/6J</sup> allele confers sex reversal in genetic XY males from consomic line C57BL/6J-Hba<sup>th-J</sup> Chr Y<sup>POS</sup>. [provided by MGI curators]",
          "name" : "resistance to sex reversal",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Rsxr"
       },
       {
@@ -8425,7 +8425,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: A mutation in this unidentified gene results in embryonic lethality in homozygotes. [provided by MGI curators]",
          "name" : "lethal, Chr 11, Justice 28",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "l11Jus28"
       },
       {
@@ -8451,7 +8451,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for the mutation exhibit progressive motor coordination impairement and premature death. [provided by MGI curators]",
          "name" : "fraqueza",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "frqz"
       },
       {
@@ -8499,7 +8499,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "nuclear encoded rRNA 5S 137",
-         "soTermId" : "SO:0001637",
+         "soTermId" : "SO:0001217",
          "symbol" : "n-R5s137"
       },
       {
@@ -8523,7 +8523,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "predicted gene, 53115",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gm53115"
       },
       {
@@ -8543,7 +8543,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice homozygous for a mutation of this gene do not exhibit a distinct time of onset of activity; their activity pattern is dissociated from the circadian cycle. [provided by MGI curators]",
          "name" : "dinner-time",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "dntm"
       },
       {
@@ -8563,7 +8563,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice heterozygous for an ENU-induced allele exhibit abnormal trunk curling and limb grasping when held by tail and some have tail kink, squint jaw. [provided by MGI curators]",
          "name" : "Gena119",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Gena119"
       },
       {
@@ -8583,7 +8583,7 @@
          },
          "geneSynopsis" : "PHENOTYPE: Mice heterozygous for this mutation can be identified by mild head-bobbing or circling behavior. [provided by MGI curators]",
          "name" : "FNOS2",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "Fnos2"
       },
       {
@@ -8601,7 +8601,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "piggyBac transposable element derived 2, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Pgbd2-ps"
       },
       {
@@ -8620,7 +8620,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "Mutant line 386.1 Cecilia Lo",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "b2b386.1Clo"
       },
       {
@@ -8639,7 +8639,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "name" : "Mutant line 191",
-         "soTermId" : "SO:0001500",
+         "soTermId" : "SO:0001217",
          "symbol" : "b2b191Clo"
       },
       {
@@ -11123,7 +11123,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "uncharacterized LOC102554603",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC102554603"
       },
       {
@@ -11157,7 +11157,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "uncharacterized LOC102546975",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC102546975"
       },
       {
@@ -11192,7 +11192,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "transcription initiation factor TFIID subunit 13 pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC103693185"
       },
       {
@@ -11342,7 +11342,7 @@
             ],
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07030946.1"
       },
       {
@@ -11375,7 +11375,7 @@
             ],
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07047809.1"
       },
       {
@@ -11408,7 +11408,7 @@
             ],
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07071864.1"
       },
       {
@@ -11508,7 +11508,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH tetrachloromethane",
          "name" : "microRNA mir-340-2",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mir340-2"
       },
       {
@@ -11789,7 +11789,7 @@
          },
          "geneSynopsis" : "microRNAs (miRNAs) are short (20-24 nt) non-coding RNAs that are involved in post-transcriptional regulation of gene expression in multicellular organisms by affecting both the stability and translation of mRNAs. miRNAs are transcribed by RNA polymerase II as part of capped and polyadenylated primary transcripts (pri-miRNAs) that can be either protein-coding or non-coding. The primary transcript is cleaved by the Drosha ribonuclease III enzyme to produce an approximately 70-nt stem-loop precursor miRNA (pre-miRNA), which is further cleaved by the cytoplasmic Dicer ribonuclease to generate the mature miRNA and antisense miRNA star (miRNA*) products. The mature miRNA is incorporated into a RNA-induced silencing complex (RISC), which recognizes target mRNAs through imperfect base pairing with the miRNA and most commonly results in translational inhibition or destabilization of the target mRNA. The RefSeq represents the predicted microRNA stem-loop. [provided by RefSeq]",
          "name" : "microRNA 3590",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mir3590"
       },
       {
@@ -11855,7 +11855,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "similar to Ornithine decarboxylase (ODC)",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC685142"
       },
       {
@@ -12034,7 +12034,7 @@
             ],
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07018321.2"
       },
       {
@@ -12104,7 +12104,7 @@
             ],
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07017046.1"
       },
       {
@@ -12151,7 +12151,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH ammonium chloride",
          "name" : "Dcm5 protein",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "Dcm5"
       },
       {
@@ -12313,7 +12313,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "uncharacterized LOC102549948",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC102549948"
       },
       {
@@ -12396,7 +12396,7 @@
          },
          "geneSynopsis" : "Predicted to enable phosphoglycerate mutase activity. Predicted to be involved in glycolytic process.",
          "name" : "hypothetical protein LOC691137",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC691137"
       },
       {
@@ -12472,7 +12472,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "uncharacterized LOC102555128",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC102555128"
       },
       {
@@ -12502,7 +12502,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "uncharacterized LOC108351523",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LOC108351523"
       },
       {
@@ -12532,7 +12532,7 @@
             "taxonId" : "NCBITaxon:10116"
          },
          "name" : "Sacm2l-ps5 pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Sacm2l-ps5"
       },
       {
@@ -12669,7 +12669,7 @@
             "primaryId" : "RGD:15009920",
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07048128.1"
       },
       {
@@ -12698,7 +12698,7 @@
             "primaryId" : "RGD:15009533",
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07026441.1"
       },
       {
@@ -12727,7 +12727,7 @@
             "primaryId" : "RGD:15011775",
             "taxonId" : "NCBITaxon:10116"
          },
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "AABR07070198.1"
       },
       {
@@ -14673,7 +14673,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "Proline tRNA (tRNA-Pro), predicted by tRNAscan-SE analysis; target of K. lactis zymocin; can mutate to suppress +1 frameshift mutations in proline codons",
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "SUF8"
       },
       {
@@ -14904,7 +14904,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "Arginine tRNA (tRNA-Arg), predicted by tRNAscan-SE analysis; one of 11 nuclear tRNA genes containing the tDNA-anticodon UCU (converted to mcm5-UCU in the mature tRNA), decodes AGA codons into arginine, one of 19 nuclear tRNAs for arginine",
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "YNCK0006C"
       },
       {
@@ -15126,7 +15126,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "Blocked reading frame; may encode a non-functional member of the conserved, often subtelomerically-encoded Cos protein family",
-         "soTermId" : "SO:0000718",
+         "soTermId" : "SO:0001217",
          "symbol" : "YIR043C"
       },
       {
@@ -15206,7 +15206,7 @@
          },
          "geneSynopsis" : "Non-transcribed region of the rDNA repeat between the 3' ETS and RDN5; required for rDNA repeat expansion",
          "name" : "NonTranscribed Spacer",
-         "soTermId" : "SO:0000183",
+         "soTermId" : "SO:0001217",
          "symbol" : "NTS1-2"
       },
       {
@@ -15241,7 +15241,7 @@
          },
          "geneSynopsis" : "Non-transcribed region of the rDNA repeat; located between RDN5 and the 5' ETS",
          "name" : "NonTranscribed Spacer",
-         "soTermId" : "SO:0000183",
+         "soTermId" : "SO:0001217",
          "symbol" : "NTS2-2"
       },
       {
@@ -15276,7 +15276,7 @@
          },
          "geneSynopsis" : "Antisense lncRNA XUT_2F-154 (TBRT); transcription mediates  repression of BAP2 and TAT1",
          "name" : "TAT1 and BAP2 Regulatory Transcript",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "TBRT"
       },
       {
@@ -15311,7 +15311,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "lncRNA antisense to GAL10 and overlapping GAL1 mRNAs; GAL10-ncRNA transcription recruits Set2p methyltransferase  and histone deacetylation activities in cis, leading to stable changes in chromatin structure; acts to enhance glucose repression of GAL1-10 induction at low environmental sugar concentrations; expression driven by Reb1p; does not appear to control GAL1 induction",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "YNCB0008W"
       },
       {
@@ -15346,7 +15346,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "Antisense to PHO84 and 5'-end of YML122C; represses transcription of PHO84 through histone deacetylation",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "YNCM0001W"
       },
       {
@@ -15380,7 +15380,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "Antisense to GAL4/YPL248C; influences expression of GAL4 mRNA",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "YNCP0002W"
       },
       {
@@ -15794,7 +15794,7 @@
          },
          "geneSynopsis" : "Nontranscribed region of the rDNA repeat; located between RND5 and the 5'ETS; contains RNA polymerase I termination site",
          "name" : "NonTranscribed Spacer",
-         "soTermId" : "SO:0000183",
+         "soTermId" : "SO:0001217",
          "symbol" : "NTS2-1"
       },
       {
@@ -15961,7 +15961,7 @@
             "taxonId" : "NCBITaxon:559292"
          },
          "geneSynopsis" : "Retrotransposon TYA Gag gene co-transcribed with TYB Pol; translated as TYA or TYA-TYB polyprotein; Gag is a nucleocapsid protein that is the structural constituent of virus-like particles (VLPs); similar to retroviral Gag",
-         "soTermId" : "SO:0000111",
+         "soTermId" : "SO:0001217",
          "symbol" : "YMR046C"
       },
       {
@@ -18374,7 +18374,7 @@
          },
          "geneSynopsis" : "mir-48 encodes a microRNA (miRNA); mir-48 was identified in screens for new heterochronic loci required for the proper temporal control of specific postembryonic cell divisions; mutations in mir-48 result in precocious terminal differentiation of hypodermal seam cells and secretion of adult cuticle one stage too early.",
          "name" : "MIcro RNA 48",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir-48"
       },
       {
@@ -18430,7 +18430,7 @@
          },
          "geneSynopsis" : "mir-1 encodes a muscle-specific microRNA (miRNA) conserved in Caenorhabditis briggsae, Drosophila, mice, and humans; miR-1 activity is required for proper pre- and postsynaptic functions at neuromuscular junctions; postsynaptic targets of miR-1 include the UNC-29 and UNC-63 nicotinic acetylcholine receptors and the MEF-2 muscle transcription factor; miR-1 regulation of presynaptic function is mediated by a MEF-2-dependent retrograde signal that requires the RAB-3 synaptic vesicle GTPase; miR-1 is expressed at uniform levels throughout C. elegans development and is also detected in him-8 mutant animals as well as dauer and starved L1 larvae; a mir-1::gfp transcriptional fusion is expressed in pharyngeal and body wall muscle.",
          "name" : "MIcro RNA 1",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir-1"
       },
       {
@@ -18491,7 +18491,7 @@
          },
          "geneSynopsis" : "mir-80 encodes a microRNA, a small non-protein coding RNA and is conserved in C. briggsae; based on RNA sequence the mir-80 family also includes C. elegans miR-81 and miR-82 and human miR-143; mir-80 is strongly expressed at all developmental stages in normal worms and in glp-4(bn2) mutant worms; many of the known microRNAs are involved in post-transcriptional regulation of genes; the precise function of miR-80 is unknown.",
          "name" : "MIcro RNA 80",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir-80"
       },
       {
@@ -18547,7 +18547,7 @@
          },
          "geneSynopsis" : "mir-84 encodes a microRNA, a small non-protein coding RNA that appears to be conserved in Drosophila and humans; mir-84 is similar in sequence to the let-7 stRNA suggesting they may have the same target sites; mir-84 seems to act redundantly with other members of the let-7 family, mir-48 and mir-241 to control the L2 larval to L3 larval stage transition and larval to adult transition; an overexpression of mir-84 results in abnormal vulval and uterine morphologies; a mir-84-gfp fusion construct is expressed temporally in cells that give rise to the vulva and uterus; mir-84 is expressed starting from the L2 larval stage; mir-84 expression is promoted by lin-4.",
          "name" : "MIcro RNA 84",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir-84"
       },
       {
@@ -18595,7 +18595,7 @@
          },
          "geneSynopsis" : "Is used to study Alzheimer's disease.",
          "name" : "21U-RNA 1000",
-         "soTermId" : "SO:0001638",
+         "soTermId" : "SO:0001217",
          "symbol" : "21ur-1000"
       },
       {
@@ -18763,7 +18763,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "Is enriched in OLL; PVD; body wall muscle cell; and head mesodermal cell based on microarray; tiling array; and RNA-seq studies. Is affected by several genes including daf-16; daf-2; and rrf-3 based on microarray and RNA-seq studies. Is affected by six chemicals including allantoin; Sirolimus; and Psoralens based on RNA-seq and microarray studies.",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "F35F10.4"
       },
       {
@@ -18820,7 +18820,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "MIcro RNA 8202",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir-8202"
       },
       {
@@ -18875,7 +18875,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "tranSpliced Leader Sequence 2.6",
-         "soTermId" : "SO:0001268",
+         "soTermId" : "SO:0001217",
          "symbol" : "sls-2.6"
       },
       {
@@ -18926,7 +18926,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "21U-RNA 1798",
-         "soTermId" : "SO:0001638",
+         "soTermId" : "SO:0001217",
          "symbol" : "21ur-1798"
       },
       {
@@ -19137,7 +19137,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "21U-RNA 13541",
-         "soTermId" : "SO:0001638",
+         "soTermId" : "SO:0001217",
          "symbol" : "21ur-13541"
       },
       {
@@ -19184,7 +19184,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "21U-RNA 716",
-         "soTermId" : "SO:0001638",
+         "soTermId" : "SO:0001217",
          "symbol" : "21ur-716"
       },
       {
@@ -19231,7 +19231,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "21U-RNA 2875",
-         "soTermId" : "SO:0001638",
+         "soTermId" : "SO:0001217",
          "symbol" : "21ur-2875"
       },
       {
@@ -19326,7 +19326,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "Is affected by daf-2 based on microarray studies.",
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "Y105C5B.1419"
       },
       {
@@ -19420,7 +19420,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "F52D10.13"
       },
       {
@@ -19466,7 +19466,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "F23B12.12"
       },
       {
@@ -19512,7 +19512,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "C28D4.17"
       },
       {
@@ -19543,7 +19543,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "Y54G11A.24"
       },
       {
@@ -19568,7 +19568,7 @@
          },
          "geneSynopsis" : "Uncloned locus that is required maternally for embryonic viability and affects the distribution of yolk granules in the cytoplasm.",
          "name" : "CyToplasmic Appearance 2",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "cta-2"
       },
       {
@@ -19593,7 +19593,7 @@
          },
          "geneSynopsis" : "ric-1 was identified in screens for mutations that confer resistance to acetylcholinesterase inhibitors; ric-1 mutations confer resistance to aldicarb and result in jerky, uncoordinated movement which phenotypic analyses suggest may be due to defects in acetycholine release; ric-1 is defined by at least 19 alleles.",
          "name" : "Resistance to Inhibitors of Cholinesterase 1",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "ric-1"
       },
       {
@@ -19617,7 +19617,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "LEThal 722",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "let-722"
       },
       {
@@ -19866,7 +19866,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "This gene encodes a protein containing an F-box, a motif predicted to mediate protein-protein interactions either with homologs of yeast Skp-1p or with other proteins.",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "T08A9.6"
       },
       {
@@ -20410,7 +20410,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "F11A1.t2"
       },
       {
@@ -20657,7 +20657,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "C16E9.11"
       },
       {
@@ -20702,7 +20702,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "C39D10.16"
       },
       {
@@ -20777,7 +20777,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "K09C6.13"
       },
       {
@@ -20807,7 +20807,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "C16B8.14"
       },
       {
@@ -20837,7 +20837,7 @@
             ],
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "DY3.13"
       },
       {
@@ -20860,7 +20860,7 @@
          },
          "geneSynopsis" : "Uncloned locus; mutations enhance unc-15 with respect to paralysis and interfere with suppression of unc-15 mutations by sup-3 mutations.",
          "name" : "SUppressor of Suppressor 1",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "sus-1"
       },
       {
@@ -20884,7 +20884,7 @@
          },
          "geneSynopsis" : "dmo-8 was identified in screens for maternal-effect lethal mutations that result in defective embryonic morphogenesis; when homozygous the dmo-9 t1530 mutation results in the complete absence of embryonic morphogenesis; the dmo-8 mutation does not alter expression of a pes-1::lacZ reporter gene in the early AB lineage, suggesting that dmo-8 is not required for fate specification of early AB-derived blastomeres.",
          "name" : "Defective MOrphogenesis (pka mod-) 8",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "dmo-8"
       },
       {
@@ -20907,7 +20907,7 @@
          },
          "geneSynopsis" : "Uncloned locus that affects embryonic morphogenesis.",
          "name" : "Defective MOrphogenesis (pka mod-) 2",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "dmo-2"
       },
       {
@@ -20929,7 +20929,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "Unidentified Trans-Spliced transcript 1",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "uts-1"
       },
       {
@@ -20952,7 +20952,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "Defective MOrphogenesis (pka mod-) 3",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "dmo-3"
       },
       {
@@ -20974,7 +20974,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "Ribosomal RNA 1",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "rrn-1"
       },
       {
@@ -21011,7 +21011,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "Is affected by prg-1 based on RNA-seq studies.",
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "MTCE.20"
       },
       {
@@ -21048,7 +21048,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "Is affected by prg-1 based on RNA-seq studies.",
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "MTCE.2"
       },
       {
@@ -21085,7 +21085,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "Is affected by prg-1 based on RNA-seq studies.",
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "MTCE.24"
       },
       {
@@ -21121,7 +21121,7 @@
             "primaryId" : "WB:WBGene00014467",
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "MTCE.27"
       },
       {
@@ -21157,7 +21157,7 @@
             "primaryId" : "WB:WBGene00014473",
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "MTCE.36"
       },
       {
@@ -21193,7 +21193,7 @@
             "primaryId" : "WB:WBGene00014455",
             "taxonId" : "NCBITaxon:6239"
          },
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "MTCE.8"
       },
       {
@@ -21214,7 +21214,7 @@
          },
          "geneSynopsis" : "msp-41 encodes a protein that belongs to a family of proteins called the Major Sperm Proteins (MSPs) that is conserved in nematodes; this family consists of closely related, small, basic proteins that make up 15% of sperm protein; this multigene family consists of over fifty genes, including many pseudogenes; MSPs are involved in both extracellular signaling and cytoskeletal functions during reproduction-MSP antagonizes Eph/ephrin signaling, in part, by binding VAB-1 Eph receptor tyrosine kinase on oocytes and sheath cells to promote oocyte maturation and MAPK activation; MSPs assemble into fibrous networks that drive movement of the C. elegans sperm; msp genes are expressed only in late primary spermatocytes.",
          "name" : "Major Sperm Protein 41",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "msp-41"
       },
       {
@@ -21235,7 +21235,7 @@
          },
          "geneSynopsis" : "let-600 was identified in screens for ethyl methanesulfonate (EMS)-induced lethal and sterile mutations on the left arm of chromosome I; the let-600 mutation results in late larval lethality.",
          "name" : "LEThal 600",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "let-600"
       },
       {
@@ -21256,7 +21256,7 @@
          },
          "geneSynopsis" : "let-266 was identified in screens for EMS-induced recessive lethal mutations on chromosome II; let-266 mutations result in larval lethality.",
          "name" : "LEThal 266",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "let-266"
       },
       {
@@ -21276,7 +21276,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "ENhancer of Uncoordination 1",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "enu-1"
       },
       {
@@ -21295,7 +21295,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "LEThal 724",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "let-724"
       },
       {
@@ -21315,7 +21315,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "name" : "LEThal 426",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "let-426"
       },
       {
@@ -21334,7 +21334,7 @@
             "taxonId" : "NCBITaxon:6239"
          },
          "geneSynopsis" : "Is affected by several genes including daf-16; eat-2; and sek-1 based on RNA-seq and microarray studies. Is affected by six chemicals including Sodium Chloride; Psoralens; and allantoin based on RNA-seq and microarray studies.",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "ZK250.10"
       },
       {
@@ -24360,7 +24360,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "Lobe",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "L"
       },
       {
@@ -24392,7 +24392,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "vegetable",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "veg"
       },
       {
@@ -24435,7 +24435,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "Lcp65APsi",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Lcp65AΨ"
       },
       {
@@ -24474,7 +24474,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "Male-specific pseudogene 77Y 8",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mst77Y-8Ψ"
       },
       {
@@ -24512,7 +24512,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "Microsomal glutathione S-transferase-like pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR12628"
       },
       {
@@ -24549,7 +24549,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR33294"
       },
       {
@@ -24588,7 +24588,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR44003"
       },
       {
@@ -24624,7 +24624,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR43186"
       },
       {
@@ -24652,7 +24652,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "male sterile (1) 10A",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "ms(1)10A"
       },
       {
@@ -24689,7 +24689,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (2) 41Ae",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(2)41Ae"
       },
       {
@@ -24730,7 +24730,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "parched",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "pch"
       },
       {
@@ -24918,7 +24918,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0001267",
+         "soTermId" : "SO:0001217",
          "symbol" : "snoRNA:Me18S-A1806"
       },
       {
@@ -25163,7 +25163,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "long non-coding RNA:CR42735",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "lncRNA:CR42735"
       },
       {
@@ -25199,7 +25199,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "TweedleU",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "TwdlU"
       },
       {
@@ -25235,7 +25235,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "28S ribosomal RNA pseudogene:CR45851",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "28SrRNA-Ψ:CR45851"
       },
       {
@@ -25271,7 +25271,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "His-Psi:CR31615",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "His-Ψ:CR31615"
       },
       {
@@ -25306,7 +25306,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR43214"
       },
       {
@@ -25341,7 +25341,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR43217"
       },
       {
@@ -25376,7 +25376,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR43215"
       },
       {
@@ -25405,7 +25405,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) 68Be",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)68Be"
       },
       {
@@ -25434,7 +25434,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) SG43",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)SG43"
       },
       {
@@ -25464,7 +25464,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (1) 1Bb",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(1)1Bb"
       },
       {
@@ -25490,7 +25490,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)72-73a"
       },
       {
@@ -25519,7 +25519,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "ms(2)05704"
       },
       {
@@ -25631,7 +25631,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) 87Ad",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)87Ad"
       },
       {
@@ -25656,7 +25656,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) 86Ff",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)86Ff"
       },
       {
@@ -25680,7 +25680,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "Rhythmically expressed gene 11",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Reg-11"
       },
       {
@@ -25749,7 +25749,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "ms(3)Z1190"
       },
       {
@@ -26346,7 +26346,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "Odorant receptor 98a pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "Or98P"
       },
       {
@@ -26381,7 +26381,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR33318"
       },
       {
@@ -26416,7 +26416,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR33319"
       },
       {
@@ -26451,7 +26451,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR43671"
       },
       {
@@ -26478,7 +26478,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "MabF7D6",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "MabF7D6"
       },
       {
@@ -26506,7 +26506,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "bluestreak",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "blue"
       },
       {
@@ -26679,7 +26679,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "long non-coding RNA:CR44498",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "lncRNA:CR44498"
       },
       {
@@ -26720,7 +26720,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "long non-coding RNA:CR43904",
-         "soTermId" : "SO:0002127",
+         "soTermId" : "SO:0001217",
          "symbol" : "lncRNA:CR43904"
       },
       {
@@ -26761,7 +26761,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "antisense RNA:CR46012",
-         "soTermId" : "SO:0002182",
+         "soTermId" : "SO:0001217",
          "symbol" : "asRNA:CR46012"
       },
       {
@@ -27057,7 +27057,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "long non-coding RNA:CR45557",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "lncRNA:CR45557"
       },
       {
@@ -27121,7 +27121,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "long non-coding RNA:CR45460",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "lncRNA:CR45460"
       },
       {
@@ -27156,7 +27156,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "His-Psi:CR33811",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "His-Ψ:CR33811"
       },
       {
@@ -27191,7 +27191,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "5.8S ribosomal RNA pseudogene:CR45857",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "5.8SrRNA-Ψ:CR45857"
       },
       {
@@ -27226,7 +27226,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "2S ribosomal RNA pseudogene:CR45858",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "2SrRNA-Ψ:CR45858"
       },
       {
@@ -27260,7 +27260,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR46181"
       },
       {
@@ -27294,7 +27294,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR32011"
       },
       {
@@ -27328,7 +27328,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR46152"
       },
       {
@@ -27354,7 +27354,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (1) 294-27",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(1)294-27"
       },
       {
@@ -27380,7 +27380,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (1) 296-22",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(1)296-22"
       },
       {
@@ -27406,7 +27406,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (2) 43Cb",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(2)43Cb"
       },
       {
@@ -27431,7 +27431,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "EP1565"
       },
       {
@@ -27480,7 +27480,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) S140901",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)S140901"
       },
       {
@@ -27503,7 +27503,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (2) SH1871",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(2)SH1871"
       },
       {
@@ -27526,7 +27526,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) S044437",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)S044437"
       },
       {
@@ -27548,7 +27548,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "Mod(GMroX1)B"
       },
       {
@@ -27570,7 +27570,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "zaa77f10"
       },
       {
@@ -27592,7 +27592,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)psg19"
       },
       {
@@ -27786,7 +27786,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (1) 10Ea",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(1)10Ea"
       },
       {
@@ -28110,7 +28110,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR45391"
       },
       {
@@ -28141,7 +28141,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR45458"
       },
       {
@@ -28172,7 +28172,7 @@
             ],
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "CR46405"
       },
       {
@@ -28195,7 +28195,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (2) T56j7",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(2)T56j7"
       },
       {
@@ -28218,7 +28218,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (1) Q204",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(1)Q204"
       },
       {
@@ -28241,7 +28241,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "female sterile (2) 43Ei",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "fs(2)43Ei"
       },
       {
@@ -28284,7 +28284,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal (3) 89Da",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)89Da"
       },
       {
@@ -28304,7 +28304,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "lethal Elaine Tasaka 4",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "l(3)ET4"
       },
       {
@@ -28324,7 +28324,7 @@
             "taxonId" : "NCBITaxon:7227"
          },
          "name" : "dwarf unexpanded",
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "dwu"
       },
       {
@@ -28343,7 +28343,7 @@
             "primaryId" : "FB:FBgn0086400",
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "BG02439"
       },
       {
@@ -28362,7 +28362,7 @@
             "primaryId" : "FB:FBgn0260283",
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "GSd322"
       },
       {
@@ -28381,7 +28381,7 @@
             "primaryId" : "FB:FBgn0259613",
             "taxonId" : "NCBITaxon:7227"
          },
-         "soTermId" : "SO:0000704",
+         "soTermId" : "SO:0001217",
          "symbol" : "B0699"
       },
       {
@@ -29875,7 +29875,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 430a-11",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir430a-11"
       },
       {
@@ -30001,7 +30001,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 216a-1",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir216a-1"
       },
       {
@@ -30030,7 +30030,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "mcmdc2 antisense lncRNA",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "mcmdc2as"
       },
       {
@@ -30400,7 +30400,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 724",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir724"
       },
       {
@@ -30430,7 +30430,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 430c-3",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir430c-3"
       },
       {
@@ -30462,7 +30462,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 457a",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir457a"
       },
       {
@@ -30488,7 +30488,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:xx-b51.9, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:xx-b51.9p"
       },
       {
@@ -30514,7 +30514,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:busm1-40g1.28, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:busm1-40g1.28p"
       },
       {
@@ -30566,7 +30566,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 430e",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir430e"
       },
       {
@@ -30592,7 +30592,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 430b-22",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir430b-22"
       },
       {
@@ -30618,7 +30618,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 430b-21",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir430b-21"
       },
       {
@@ -31225,7 +31225,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "linc RNA nlrp12",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "linc-nlrp12"
       },
       {
@@ -31258,7 +31258,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch211-69i3.3",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch211-69i3.3"
       },
       {
@@ -31287,7 +31287,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkey-19n13.5",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkey-19n13.5"
       },
       {
@@ -31340,7 +31340,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkey-3n7.6",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkey-3n7.6"
       },
       {
@@ -31365,7 +31365,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch73-106k19.8",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch73-106k19.8"
       },
       {
@@ -31446,7 +31446,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkey-77p23.1, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkey-77p23.1p"
       },
       {
@@ -31540,7 +31540,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkeyp-116h7.2",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkeyp-116h7.2"
       },
       {
@@ -31593,7 +31593,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch211-241c24.2, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch211-241c24.2p"
       },
       {
@@ -31618,7 +31618,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch211-226l4.7, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch211-226l4.7p"
       },
       {
@@ -32194,7 +32194,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch211-213i16.3",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch211-213i16.3"
       },
       {
@@ -32264,7 +32264,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkey-207j16.4",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkey-207j16.4"
       },
       {
@@ -32289,7 +32289,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch73-384n10.7",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch73-384n10.7"
       },
       {
@@ -32314,7 +32314,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkey-200j6.4",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkey-200j6.4"
       },
       {
@@ -32339,7 +32339,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:ch211-267d1.1",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:ch211-267d1.1"
       },
       {
@@ -32361,7 +32361,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "microRNA 212b",
-         "soTermId" : "SO:0001265",
+         "soTermId" : "SO:0001217",
          "symbol" : "mir212b"
       },
       {
@@ -32447,7 +32447,7 @@
             "taxonId" : "NCBITaxon:7955"
          },
          "name" : "si:dkeyp-80e12.2",
-         "soTermId" : "SO:0001641",
+         "soTermId" : "SO:0001217",
          "symbol" : "si:dkeyp-80e12.2"
       },
       {
@@ -37051,7 +37051,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "adenosylmethionine decarboxylase 1 pseudogene 2",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "AMD1P2"
       },
       {
@@ -37106,7 +37106,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "mediator complex subunit 15 pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "MED15P1"
       },
       {
@@ -37154,7 +37154,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "tRNA-Arg (anticodon ACG) 1-2",
-         "soTermId" : "SO:0001272",
+         "soTermId" : "SO:0001217",
          "symbol" : "TRR-ACG1-2"
       },
       {
@@ -37203,7 +37203,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "ArfGAP with GTPase domain, ankyrin repeat and PH domain 12, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "AGAP12P"
       },
       {
@@ -37251,7 +37251,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "immunoglobulin kappa variable 2/OR22-4 (pseudogene)",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "IGKV2OR22-4"
       },
       {
@@ -37306,7 +37306,7 @@
          },
          "geneSynopsis" : "ASSOCIATED WITH autistic disorder; Schizophrenia; INTERACTS WITH antirheumatic drug; cisplatin",
          "name" : "long intergenic non-protein coding RNA 102",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LINC00102"
       },
       {
@@ -37361,7 +37361,7 @@
          },
          "geneSynopsis" : "This gene is a member of the neuroblastoma breakpoint family (NBPF) which consists of dozens of recently duplicated genes primarily located in segmental duplications on human chromosome 1. This gene family has experienced its greatest expansion within the human lineage and has expanded, to a lesser extent, among primates in general. Members of this gene family are characterized by tandemly repeated copies of DUF1220 protein domains. Gene copy number variations in the human chromosomal region 1q21.1, where most DUF1220 domains are located, have been implicated in a number of developmental and neurogenetic diseases such as microcephaly, macrocephaly, autism, schizophrenia, cognitive disability, congenital heart disease, neuroblastoma, and congenital kidney and urinary tract anomalies. Altered expression of some gene family members is associated with several types of cancer. This gene family contains numerous pseudogenes. [provided by RefSeq, May 2013]",
          "name" : "NBPF member 13, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "NBPF13P"
       },
       {
@@ -37416,7 +37416,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH herbicide",
          "name" : "RNA, 5S ribosomal pseudogene 498",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "RNA5SP498"
       },
       {
@@ -37473,7 +37473,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "immunoglobulin lambda constant/OR22-2 (pseudogene)",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "IGLCOR22-2"
       },
       {
@@ -37527,7 +37527,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "immunoglobulin heavy variable 1/OR15-3 (pseudogene)",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "IGHV1OR15-3"
       },
       {
@@ -37581,7 +37581,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "immunoglobulin kappa variable 2/OR2-10 (pseudogene)",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "IGKV2OR2-10"
       },
       {
@@ -37629,7 +37629,7 @@
          },
          "geneSynopsis" : "ASSOCIATED WITH Phelan-McDermid syndrome",
          "name" : "long intergenic non-protein coding RNA 1644",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LINC01644"
       },
       {
@@ -37677,7 +37677,7 @@
          },
          "geneSynopsis" : "microRNAs (miRNAs) are short (20-24 nt) non-coding RNAs that are involved in post-transcriptional regulation of gene expression in multicellular organisms by affecting both the stability and translation of mRNAs. miRNAs are transcribed by RNA polymerase II as part of capped and polyadenylated primary transcripts (pri-miRNAs) that can be either protein-coding or non-coding. The primary transcript is cleaved by the Drosha ribonuclease III enzyme to produce an approximately 70-nt stem-loop precursor miRNA (pre-miRNA), which is further cleaved by the cytoplasmic Dicer ribonuclease to generate the mature miRNA and antisense miRNA star (miRNA*) products. The mature miRNA is incorporated into a RNA-induced silencing complex (RISC), which recognizes target mRNAs through imperfect base pairing with the miRNA and most commonly results in translational inhibition or destabilization of the target mRNA. The RefSeq represents the predicted microRNA stem-loop. [provided by RefSeq, Sep 2009]",
          "name" : "microRNA 4645",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "MIR4645"
       },
       {
@@ -37725,7 +37725,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH chloropicrin",
          "name" : "ribosomal protein L17 pseudogene 18",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "RPL17P18"
       },
       {
@@ -37772,7 +37772,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "ribosomal protein L7a pseudogene 54",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "RPL7AP54"
       },
       {
@@ -37819,7 +37819,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "MOB kinase activator 1A pseudogene 1",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "MOB1AP1"
       },
       {
@@ -37866,7 +37866,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "GXYLT1 pseudogene 6",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "GXYLT1P6"
       },
       {
@@ -37918,7 +37918,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH aflatoxin B1; benzo[a]pyrene; N-Nitrosopyrrolidine",
          "name" : "dopamine receptor D5 pseudogene 2",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "DRD5P2"
       },
       {
@@ -37973,7 +37973,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH aflatoxin B1; aflatoxin B2; aristolochic acid",
          "name" : "long intergenic non-protein coding RNA 1238",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LINC01238"
       },
       {
@@ -38024,7 +38024,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "RNA, U6 small nuclear 906, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "RNU6-906P"
       },
       {
@@ -38075,7 +38075,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "mediator complex subunit 15 pseudogene 6",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "MED15P6"
       },
       {
@@ -38126,7 +38126,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "keratin 18 pseudogene 53",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "KRT18P53"
       },
       {
@@ -38171,7 +38171,7 @@
          },
          "geneSynopsis" : "ASSOCIATED WITH chromosome 13q14 deletion syndrome; INTERACTS WITH aflatoxin B1; benzo[e]pyrene; methapyrilene",
          "name" : "long intergenic non-protein coding RNA 448",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LINC00448"
       },
       {
@@ -38216,7 +38216,7 @@
          },
          "geneSynopsis" : "INTERACTS WITH aflatoxin B1; benzo[a]pyrene",
          "name" : "long intergenic non-protein coding RNA 1020",
-         "soTermId" : "SO:0001263",
+         "soTermId" : "SO:0001217",
          "symbol" : "LINC01020"
       },
       {
@@ -38261,7 +38261,7 @@
          },
          "geneSynopsis" : "Olfactory receptors interact with odorant molecules in the nose, to initiate a neuronal response that triggers the perception of a smell. The olfactory receptor proteins are members of a large family of G-protein-coupled receptors (GPCR) arising from single coding-exon genes. Olfactory receptors share a 7-transmembrane domain structure with many neurotransmitter and hormone receptors and are responsible for the recognition and G protein-mediated transduction of odorant signals. The olfactory receptor gene family is the largest in the genome. The nomenclature assigned to the olfactory receptor genes and proteins for this organism is independent of other organisms. [provided by RefSeq, Jul 2008]",
          "name" : "olfactory receptor family 4 subfamily A member 9 pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "OR4A9P"
       },
       {
@@ -38302,7 +38302,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "WBP11 pseudogene 2",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "WBP11P2"
       },
       {
@@ -38346,7 +38346,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "RNA, 7SL, cytoplasmic 233, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "RN7SL233P"
       },
       {
@@ -38390,7 +38390,7 @@
             "taxonId" : "NCBITaxon:9606"
          },
          "name" : "RNA, U6 small nuclear 1321, pseudogene",
-         "soTermId" : "SO:0000336",
+         "soTermId" : "SO:0001217",
          "symbol" : "RNU6-1321P"
       }
    ],

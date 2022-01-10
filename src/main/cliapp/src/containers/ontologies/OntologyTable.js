@@ -65,7 +65,25 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columnMap }) => 
         />);
     };
 
+  const obsoleteTemplate = (rowData) => {
+        if(rowData && rowData.obsolete !== null && rowData.obsolete !== undefined){
+            return <div>{JSON.stringify(rowData.obsolete)}</div>
+        }
+    };
+
+
     const columns = columnMap.map((col, i) => {
+    if (col.field === 'obsolete') {
+      return <Column
+              key={col.field}
+              field={col.field}
+              header={col.header}
+              sortable={isEnabled}
+        body={obsoleteTemplate}
+              filter
+              filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
+          />;
+    }
         return <Column
             key={col.field}
             field={col.field}

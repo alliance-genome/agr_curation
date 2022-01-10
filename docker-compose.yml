@@ -3,8 +3,12 @@ version: "3.2"
 services:
 
   curation.app:
-    container_name: agr.curation.api.server
+    container_name: agr.curation.${NET}.api.server
     image: 100225593120.dkr.ecr.us-east-1.amazonaws.com/agr_curation:${AGR_CURATION_RELEASE}
+    logging:
+      driver: gelf
+      options:
+        gelf-address: 'udp://logs.alliancegenome.org:12201'
     ports:
       - "8080:8080"
     networks:
