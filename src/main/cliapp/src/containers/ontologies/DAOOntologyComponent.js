@@ -6,7 +6,8 @@ export const DAOOntologyComponent = () => {
   const columns = [
     { field: "curie", header: "Curie" },
     { field: "name", header: "Name" },
-    { field: "definition", header: "Definition" }
+    { field: "definition", header: "Definition" },
+    { field: "obsolete", header: "Obsolete" }
   ]
 
   return(
