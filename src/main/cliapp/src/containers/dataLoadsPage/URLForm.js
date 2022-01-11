@@ -5,7 +5,7 @@ import { Dropdown } from "primereact/dropdown";
 import { DataLoadService } from '../../service/DataLoadService';
 
 
-export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange }) => {
+export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableFormFields }) => {
     const dataLoadService = new DataLoadService();
 
     const ontologyTypes = dataLoadService.getOntologyTypes();
@@ -24,6 +24,7 @@ export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange }) => {
                                 placeholder={"Select Ontology Type"}
                                 className='p-col-12'
                                 name='ontologyType'
+                                disabled={disableFormFields}
                             />
                         </div>
                     }
