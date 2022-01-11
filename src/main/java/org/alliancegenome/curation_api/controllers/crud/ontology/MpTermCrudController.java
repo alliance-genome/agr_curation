@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermControll
 import org.alliancegenome.curation_api.dao.ontology.MpTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.MpTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
 
 @RequestScoped
@@ -18,7 +19,9 @@ public class MpTermCrudController extends BaseOntologyTermController<MpTermServi
     @Override
     @PostConstruct
     public void init() {
-        setService(mpTermService, MPTerm.class);
+        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+        config.setLoadOnlyIRIPrefix("MP");
+        setService(mpTermService, MPTerm.class, config);
     }
 
 }
