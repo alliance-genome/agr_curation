@@ -163,6 +163,7 @@ public class BulkLoadJobExecutor {
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.DO) {
                 service = doTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.MP) {
+                config.setLoadOnlyIRIPrefix("MP");
                 service = mpTermService;
             } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.MA) {
                 service = maTermService;
