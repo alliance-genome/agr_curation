@@ -473,7 +473,7 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns onColReorder={onColReorder} 
+        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns 
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
