@@ -455,6 +455,7 @@ export const DiseaseAnnotationsTable = () => {
   const columnMap = filteredColumns.map((col) => {
     return <Column
       key={col.field}
+      columnKey={col.field}
       field={col.field}
       header={col.header}
       sortable={isEnabled}
@@ -465,13 +466,14 @@ export const DiseaseAnnotationsTable = () => {
     />;
   });
 
+
   return (
     <div>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header}
+        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns onColReorder={onColReorder} 
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}

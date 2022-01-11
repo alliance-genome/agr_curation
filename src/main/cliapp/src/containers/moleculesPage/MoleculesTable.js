@@ -139,6 +139,7 @@ export const MoleculesTable = () => {
 
   const columnMap = filteredColumns.map((col) => {
     return <Column
+      columnKey={col.field}
       key={col.field}
       field={col.field}
       header={col.header}
@@ -153,7 +154,7 @@ export const MoleculesTable = () => {
         <div className="card">
           <h3>Molecules Table</h3>
             <Messages ref={errorMessage}/>
-          <DataTable value={molecules} className="p-datatable-sm" header={header} 
+          <DataTable value={molecules} className="p-datatable-sm" header={header} reorderableColumns 
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             first={first}
             paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy

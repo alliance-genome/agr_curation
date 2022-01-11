@@ -125,6 +125,7 @@ export const AffectedGenomicModelTable = () => {
 
   const columnMap = filteredColumns.map((col) => {
     return <Column
+      columnKey={col.field}
       key={col.field}
       field={col.field}
       header={col.header}
@@ -137,7 +138,7 @@ export const AffectedGenomicModelTable = () => {
   return (
       <div>
         <div className="card">
-          <DataTable value={agms} className="p-datatable-md" header={header}
+          <DataTable value={agms} className="p-datatable-md" header={header} reorderableColumns 
             sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
             first={first} resizableColumns columnResizeMode="fit" showGridlines
             paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy

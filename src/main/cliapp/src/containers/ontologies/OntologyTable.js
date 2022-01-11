@@ -97,6 +97,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columnMap: colum
   const columnMap = filteredColumns.map((col, i) => {
       if (col.field === 'obsolete') {
         return <Column
+          columnKey={col.field}
           key={col.field}
           field={col.field}
           header={col.header}
@@ -107,6 +108,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columnMap: colum
           />;
       }
       return <Column
+        columnKey={col.field}
         key={col.field}
         field={col.field}
         header={col.header}
@@ -121,7 +123,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columnMap: colum
             <div className="card">
                 <h3>{ontologyAbbreviation} Table</h3>
                 <Messages ref={errorMessage} />
-                <DataTable value={terms} className="p-datatable-sm" header={header} 
+                <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns   
                     sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
                     paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
                     paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

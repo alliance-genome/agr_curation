@@ -128,6 +128,7 @@ export const ControlledVocabularyComponent = () => {
 
   const columnMap = filteredColumns.map((col) => {
     return <Column
+      columnKey={col.field}
       key={col.field}
       field={col.field}
       header={col.header}
@@ -142,7 +143,7 @@ export const ControlledVocabularyComponent = () => {
       <div className="card">
         <h3>Controlled Vocabulary Terms Table</h3>
         <Messages ref={errorMessage} />
-        <DataTable value={terms} className="p-datatable-sm" header={header} 
+        <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns  
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
           first={first} onFilter={onFilter} filters={filters}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy

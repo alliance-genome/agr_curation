@@ -121,6 +121,7 @@ export const GenesTable = () => {
 
   const columnMap = filteredColumns.map((col) => {
     return <Column
+      columnKey={col.field}
       key={col.field}
       field={col.field}
       header={col.header}
@@ -136,7 +137,7 @@ export const GenesTable = () => {
       <div className="card">
         <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
-        <DataTable value={genes} className="p-datatable-sm" header={header} 
+        <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns  
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
           first={first}
           resizableColumns columnResizeMode="fit" showGridlines
