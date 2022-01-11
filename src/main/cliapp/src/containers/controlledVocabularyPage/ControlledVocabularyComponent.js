@@ -5,6 +5,7 @@ import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponent } from '../../components/FilterComponent';
+import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted } from '../../utils/utils';
 
@@ -20,6 +21,9 @@ export const ControlledVocabularyComponent = () => {
   const [isEnabled, setIsEnabled] = useState(true);
   const searchService = new SearchService();
   const errorMessage = useRef(null);
+  const columnNames = ["Id", "Name", "Abbreviation", "Vocabulary", "Definition", "Obsolete"];
+
+  const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
 
   useQuery(['genes', rows, page, multiSortMeta, filters],
     () => searchService.search("vocabularyterm", rows, page, multiSortMeta, filters), {
@@ -62,28 +66,91 @@ export const ControlledVocabularyComponent = () => {
       currentFilters={filters}
       onFilter={onFilter}
     />);
-  };
+  };                                                                                                               
+
+  const columns = [
+    {
+      field:"id",
+      header:"Id"
+    },
+    {
+      field:"name",
+      header:"Name",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("nameFilter", ["name"])
+    },
+    {
+      field:"abbreviation",
+      header:"Abbreviation",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("abbreviationFilter", ["abbreviation"])
+    },
+    {
+      field:"vocabulary.name",
+      header:"Vocabulary",
+      sortable: isEnabled,
+      filter:true,
+      filterElement: filterComponentTemplate("vocabularyNameFilter", ["vocabulary.name"])
+    },
+    {
+      field:"definition",
+      header:"Definition",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("definitionFilter", ["definition"])
+    },
+    {
+      field:"isObsolete",
+      header:"Obsolete",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("isObsoleteFilter", ["isObsolete"])
+    } 
+  ];
+  
+  const header = (
+    <div style={{ textAlign: 'left' }}>
+      <MultiSelect
+        value={selectedColumnNames}
+        options={columnNames}
+        onChange={e => setSelectedColumnNames(e.value)}
+        style={{ width: '20em' }}
+        disabled={!isEnabled}
+      />
+    </div>
+  );
+
+  const filteredColumns = columns.filter((col) => {
+    return selectedColumnNames.includes(col.header);
+  });
+
+  const columnMap = filteredColumns.map((col) => {
+    return <Column
+      key={col.field}
+      field={col.field}
+      header={col.header}
+      sortable={isEnabled}
+      filter={col.filter}
+      filterElement={col.filterElement}
+    />;
+  });                                                              
 
   return (
     <div>
       <div className="card">
         <h3>Controlled Vocabulary Terms Table</h3>
         <Messages ref={errorMessage} />
-        <DataTable value={terms} className="p-datatable-sm"
+        <DataTable value={terms} className="p-datatable-sm" header={header} 
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
           first={first} onFilter={onFilter} filters={filters}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+          resizableColumns columnResizeMode="fit" showGridlines
         >
-
-          <Column field="id" header="Id" />
-          <Column field="name" header="Name" sortable={isEnabled} filter filterElement={filterComponentTemplate("nameFilter", ["name"])}></Column>
-          <Column field="abbreviation" header="Abbreviation" sortable={isEnabled} filter filterElement={filterComponentTemplate("abbreviationFilter", ["abbreviation"])} />
-          <Column field="vocabulary.name" header="Vocabulary" sortable={isEnabled} filter filterElement={filterComponentTemplate("vocabularyNameFilter", ["vocabulary.name"])} />
-          <Column field="definition" header="Definition" sortable={isEnabled} filter filterElement={filterComponentTemplate("definitionFilter", ["definition"])} />
-          <Column field="isObsolete" header="Obsolete" sortable={isEnabled} filter filterElement={filterComponentTemplate("isObsoleteFilter", ["isObsolete"])} />
-
+            {columnMap}
         </DataTable>
 
       </div>
