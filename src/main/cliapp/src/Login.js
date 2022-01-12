@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import OktaSignInWidget from './OktaSignInWidget';
 import { useOktaAuth } from '@okta/okta-react';
 
-const Login = ({ config }) => {
+export const Login = ({ config }) => {
   const { oktaAuth, authState } = useOktaAuth();
 
   const onSuccess = (tokens) => {
@@ -23,4 +23,3 @@ const Login = ({ config }) => {
       onSuccess={onSuccess}
       onError={onError}/>;
 };
-export default Login;
