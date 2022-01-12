@@ -133,12 +133,8 @@ public class FileTransferHelper {
     
     private File generateFilePath() {
         Date d = new Date();
-        try {
-            TimeUnit.MILLISECONDS.sleep((long)(Math.random() * 100));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        String outFileName = "tmp.data_" + d.getTime();
+        UUID uuid = UUID.randomUUID();
+        String outFileName = "tmp_file." + uuid + ".data_" + d.getTime();
         return new File(outFileName);
     }
 
