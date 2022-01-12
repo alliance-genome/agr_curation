@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
+import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
 
 public class DtoConverterHelper {
 
@@ -13,6 +14,17 @@ public class DtoConverterHelper {
         if (gene.getBasicGeneticEntity().getSynonyms() == null)
             return null;
         return gene.getBasicGeneticEntity().getSynonyms().stream()
+                .map(s -> {
+                    Synonym syn = new Synonym();
+                    syn.setName(s);
+                    return syn;
+                }).collect(toList());
+    }
+    
+    public static List<Synonym> getSynonyms(AffectedGenomicModelDTO agm) {
+        if (agm.getSynonyms() == null)
+            return null;
+        return agm.getSynonyms().stream()
                 .map(s -> {
                     Synonym syn = new Synonym();
                     syn.setName(s);
