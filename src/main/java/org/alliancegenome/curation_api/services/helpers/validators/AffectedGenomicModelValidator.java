@@ -12,30 +12,27 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
-public class AffectedGenomicModelValidator {
+public class AffectedGenomicModelValidator extends GenomicEntityValidator {
     
     @Inject
     AffectedGenomicModelDAO affectedGenomicModelDAO;
     
-    protected String invalidMessage = "Not a valid entry";
-    protected String requiredMessage = "Required field is empty";
-
-    protected ObjectResponse<AffectedGenomicModel> response;
-
     public AffectedGenomicModel validateAnnotation(AffectedGenomicModel uiEntity) {
         response = new ObjectResponse<>(uiEntity);
-        String errorTitle = "Could not update AGM [" + uiEntity.getCurie() + "]";
         
-        String curie = uiEntity.getCurie();
+        String curie = validateCurie(uiEntity);
         if (curie == null) {
-            addMessageResponse("No AGM curie provided");
             throw new ApiErrorException(response);
         }
+        
         AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
         if (dbEntity == null) {
             addMessageResponse("Could not find AGM with curie: [" + curie + "]");
             throw new ApiErrorException(response);
         }
+        
+
+        String errorTitle = "Could not update AGM [" + curie + "]";
         
         String name = validateName(uiEntity);
         if (name != null) dbEntity.setName(name);
@@ -66,30 +63,5 @@ public class AffectedGenomicModelValidator {
         
         return dbEntity;
     }
-    
-    private String validateName(AffectedGenomicModel uiEntity) {
-        String name = uiEntity.getName();
-        if (StringUtils.isEmpty(name)) {
-            addMessageResponse("name", requiredMessage);
-            return null;
-        }
-        return name;
-    }
 
-    private String validateTaxon(AffectedGenomicModel uiEntity) {
-        String taxon = uiEntity.getTaxon();
-        if (StringUtils.isEmpty(taxon)) {
-            addMessageResponse("taxon", requiredMessage);
-            return null;
-        }
-        return taxon;
-    }
-    
-    protected void addMessageResponse(String message) {
-        response.setErrorMessage(message);
-    }
-    
-    protected void addMessageResponse(String fieldName, String message) {
-        response.addErrorMessage(fieldName, message);
-    }
 }
