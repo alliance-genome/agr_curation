@@ -116,7 +116,7 @@ public class DiseaseAnnotationITCase {
     @Order(2)
     public void createAgmDiseaseAnnotation() {
 
-        AffectedGenomicModel model = createModel("MODEL:0001", "taxon:0001");
+        AffectedGenomicModel model = createModel("MODEL:0001", "taxon:0001", "TestAGM");
 
         List<EcoTerm> ecoTerms = new ArrayList<>();
         ecoTerms.add(ecoTerm);
@@ -403,10 +403,11 @@ public class DiseaseAnnotationITCase {
         return biologicalEntity;
     }
 
-    private AffectedGenomicModel createModel(String curie, String taxon) {
+    private AffectedGenomicModel createModel(String curie, String taxon, String name) {
         AffectedGenomicModel biologicalEntity = new AffectedGenomicModel();
         biologicalEntity.setCurie(curie);
         biologicalEntity.setTaxon(taxon);
+        biologicalEntity.setName(name);
 
         RestAssured.given().
                 contentType("application/json").

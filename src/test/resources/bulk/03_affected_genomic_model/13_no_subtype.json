@@ -1,0 +1,46 @@
+{
+  "data": [
+    {
+      "affectedGenomicModelComponents": [
+        {
+          "alleleID": "TEST:TestAllele00001",
+          "zygosity": "GENO:0000136"
+        }
+      ],
+      "crossReference": {
+        "id": "TEST:TestAGM00013",
+        "pages": [
+          "genotype"
+        ]
+      },
+      "name": "Test AGM 13",
+      "parentalPopulationIDs": [
+        "TEST:TestComponent00001"
+      ],
+      "primaryID": "TEST:TestAGM00013",
+      "secondaryIds": [
+        "TEST:AGM13"
+      ],
+      "sequenceTargetingReagentIDs": [
+        "TEST:TestSTR00001"
+      ],
+      "synonyms": [
+        "TAGM13"
+      ],
+      "taxonId": "NCBITaxon:10090"
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2022-01-12T10:45:18+01:00",
+    "release": "TEST"
+  }
+}
