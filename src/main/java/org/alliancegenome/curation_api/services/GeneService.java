@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -197,6 +199,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     }
 
     private boolean validateGeneDTO(GeneDTO dto) {
+        // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
+        
         // Check for required fields
         if (dto.getBasicGeneticEntity().getPrimaryId() == null ||
                 dto.getBasicGeneticEntity().getTaxonId() == null) {
@@ -213,6 +217,14 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
                         );
                 return false;
             }
+        }
+        
+        // Validate taxon ID
+        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
+        Matcher taxonIdMatcher = taxonIdPattern.matcher(dto.getBasicGeneticEntity().getTaxonId());
+        if (!taxonIdMatcher.find()) {
+            log.debug("Invalid taxon ID for AGM " + dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
+            return false;
         }
         
         // Check any genome positions have valid start/end/strand
