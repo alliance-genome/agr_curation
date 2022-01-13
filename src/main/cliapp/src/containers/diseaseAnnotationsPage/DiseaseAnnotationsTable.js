@@ -33,7 +33,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
-  const columnNames = ["Curie", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
+  const columnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
 
   const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
   const [errorMessages, setErrorMessages] = useState({});
@@ -367,12 +367,12 @@ export const DiseaseAnnotationsTable = () => {
 
   const columns = [
     {
-      field: "curie",
-      header: "Curie",
+      field: "uniqueId",
+      header: "Unique Id",
       style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("curieFilter", ["curie"])
+      filterElement: filterComponentTemplate("uniqueidFilter", ["uniqueId"])
     },
     {
       field: "subject.symbol",

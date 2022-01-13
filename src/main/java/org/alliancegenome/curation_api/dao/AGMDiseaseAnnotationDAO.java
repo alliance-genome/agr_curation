@@ -16,7 +16,7 @@ public class AGMDiseaseAnnotationDAO extends BaseSQLDAO<AGMDiseaseAnnotation> {
     }
 
     public List<String> findAllAnnotationCuries(String taxonID) {
-        Query jpqlQuery = entityManager.createQuery("SELECT annotation.curie FROM AGMDiseaseAnnotation annotation WHERE annotation.subject.taxon=:taxonId");
+        Query jpqlQuery = entityManager.createQuery("SELECT annotation.uniqueId FROM AGMDiseaseAnnotation annotation WHERE annotation.subject.taxon=:taxonId");
         jpqlQuery.setParameter("taxonId", taxonID);
         return (List<String>) jpqlQuery.getResultList();
     }

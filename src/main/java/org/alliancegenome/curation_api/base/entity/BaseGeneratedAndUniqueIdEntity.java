@@ -15,7 +15,7 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @MappedSuperclass
-public class BaseGeneratedAndCurieEntity extends BaseEntity {
+public class BaseGeneratedAndUniqueIdEntity extends BaseEntity {
 
     @Id @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -24,11 +24,11 @@ public class BaseGeneratedAndCurieEntity extends BaseEntity {
     protected Long id;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @KeywordField(name = "uniqueid_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @Column(unique = true, length = 2000)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
-    private String curie;
+    private String uniqueId;
     
     @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @CreationTimestamp
