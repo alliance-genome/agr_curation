@@ -24,6 +24,8 @@ import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicMode
 import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
+import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -41,12 +43,22 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     SynonymService synonymService;
     @Inject
     AlleleDAO alleleDAO;
+    @Inject
+    AffectedGenomicModelValidator affectedGenomicModelValidator;
     
     @Override
     @PostConstruct
     protected void init() {
         setSQLDao(affectedGenomicModelDAO);
     }
+    
+    @Override
+    @Transactional
+    public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
+        AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
+        return new ObjectResponse<AffectedGenomicModel>(affectedGenomicModelDAO.persist(dbEntity));
+    }
+    
 
     @Transactional
     public void processUpdate(AffectedGenomicModelDTO agm) {
