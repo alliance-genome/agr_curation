@@ -166,9 +166,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
         List<String> annotationsIdsBefore = new ArrayList<String>();
-        annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
-        annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
-        annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
+        annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
+        annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         
         log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
         List<String> annotationsIdsAfter = new ArrayList<>();
