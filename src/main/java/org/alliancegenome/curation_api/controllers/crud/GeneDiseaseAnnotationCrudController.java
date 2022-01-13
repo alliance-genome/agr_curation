@@ -24,8 +24,8 @@ public class GeneDiseaseAnnotationCrudController extends BaseCrudController<Gene
     }
 
     @Override
-    public ObjectResponse<GeneDiseaseAnnotation> get(String curie) {
-        SearchResponse<GeneDiseaseAnnotation> ret = findByField("curie", curie);
+    public ObjectResponse<GeneDiseaseAnnotation> get(String uniqueId) {
+        SearchResponse<GeneDiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
         if(ret != null && ret.getTotalResults() == 1) {
             return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
         } else {

@@ -97,30 +97,30 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         DiseaseAnnotation annotation = null;
         
         if(subjectEntity instanceof Gene) {
-            SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("curie", annotationID);
+            SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationID);
             if (annotationList == null || annotationList.getResults().size() == 0) {
                 GeneDiseaseAnnotation geneAnnotation = new GeneDiseaseAnnotation();
-                geneAnnotation.setCurie(annotationID);
+                geneAnnotation.setUniqueId(annotationID);
                 geneAnnotation.setSubject((Gene)subjectEntity);
                 annotation = geneAnnotation;
             } else {
                 annotation = annotationList.getResults().get(0);
             }
         } else if(subjectEntity instanceof Allele) {
-            SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("curie", annotationID);
+            SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationID);
             if (annotationList == null || annotationList.getResults().size() == 0) {
                 AlleleDiseaseAnnotation alleleAnnotation = new AlleleDiseaseAnnotation();
-                alleleAnnotation.setCurie(annotationID);
+                alleleAnnotation.setUniqueId(annotationID);
                 alleleAnnotation.setSubject((Allele)subjectEntity);
                 annotation = alleleAnnotation;
             } else {
                 annotation = annotationList.getResults().get(0);
             }
         } else if(subjectEntity instanceof AffectedGenomicModel) {
-            SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("curie", annotationID);
+            SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationID);
             if (annotationList == null || annotationList.getResults().size() == 0) {
                 AGMDiseaseAnnotation agmAnnotation = new AGMDiseaseAnnotation();
-                agmAnnotation.setCurie(annotationID);
+                agmAnnotation.setUniqueId(annotationID);
                 agmAnnotation.setSubject((AffectedGenomicModel)subjectEntity);
                 annotation = agmAnnotation;
             } else {
@@ -165,34 +165,34 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     }
 
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
-        List<String> annotationsCuriesBefore = new ArrayList<String>();
-        annotationsCuriesBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
-        annotationsCuriesBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
-        annotationsCuriesBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        List<String> annotationsIdsBefore = new ArrayList<String>();
+        annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
+        annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
+        annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         
-        log.debug("runLoad: Before: " + taxonID + " " + annotationsCuriesBefore.size());
-        List<String> annotationsCuriesAfter = new ArrayList<>();
+        log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
+        List<String> annotationsIdsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
         annotationData.getData().forEach(annotationDTO -> {
             DiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null) {
-                annotationsCuriesAfter.add(annotation.getCurie());
+                annotationsIdsAfter.add(annotation.getUniqueId());
             }
             ph.progressProcess();
         });
         ph.finishProcess();
         
-        log.debug("runLoad: After: " + taxonID + " " + annotationsCuriesAfter.size());
+        log.debug("runLoad: After: " + taxonID + " " + annotationsIdsAfter.size());
         
-        List<String> distinctAfter = annotationsCuriesAfter.stream().distinct().collect(Collectors.toList());
+        List<String> distinctAfter = annotationsIdsAfter.stream().distinct().collect(Collectors.toList());
         log.debug("runLoad: Distinct: " + taxonID + " " + distinctAfter.size());
         
-        List<String> curiesToRemove = ListUtils.subtract(annotationsCuriesBefore, distinctAfter);
+        List<String> curiesToRemove = ListUtils.subtract(annotationsIdsBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonID + " " + curiesToRemove.size());
         
         for (String curie : curiesToRemove) {
-            SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("curie", curie);
+            SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", curie);
             if(da != null && da.getTotalResults() == 1) {
                 delete(da.getResults().get(0).getId());
             } else {
