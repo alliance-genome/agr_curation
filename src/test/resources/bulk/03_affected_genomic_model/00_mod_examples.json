@@ -3,7 +3,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1856293",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -21,7 +21,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1860087",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -39,7 +39,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1857478",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -57,7 +57,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1933757",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -75,7 +75,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1861794",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000604"
             }
          ],
@@ -93,7 +93,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2387106",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -111,7 +111,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1856174",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -129,7 +129,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2148889",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -147,7 +147,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2670227",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -165,7 +165,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2672943",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -183,7 +183,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2182334",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -201,7 +201,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2448634",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -219,7 +219,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3526521",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -237,7 +237,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2136894",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -255,11 +255,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1926493",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             },
             {
-               "alleleID" : "MGI:1926490",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             }
          ],
@@ -277,7 +277,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1856334",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -295,7 +295,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3641232",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -313,7 +313,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3605845",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000604"
             }
          ],
@@ -331,7 +331,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3793279",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -349,7 +349,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3774128",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -367,7 +367,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3807480",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -385,7 +385,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2183630",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -403,7 +403,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3840831",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -421,7 +421,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3847811",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -439,7 +439,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:1857875",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -457,7 +457,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2182395",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -475,7 +475,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:4829538",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -493,7 +493,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2178675",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -511,7 +511,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:5308012",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -529,7 +529,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:5313375",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -547,7 +547,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:5318589",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -565,7 +565,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:4821979",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -583,7 +583,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:5429210",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -601,7 +601,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:5438699",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -619,7 +619,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3528558",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -637,11 +637,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2176057",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "MGI:2450929",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             }
          ],
@@ -659,7 +659,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:5635256",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -677,7 +677,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:6094271",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -695,7 +695,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:6393654",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000604"
             }
          ],
@@ -713,11 +713,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3809821",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "MGI:2176227",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             }
          ],
@@ -735,11 +735,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3576662",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             },
             {
-               "alleleID" : "MGI:6501143",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -757,11 +757,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2383951",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "MGI:2183934",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -779,11 +779,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2450929",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             },
             {
-               "alleleID" : "MGI:6256462",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -801,11 +801,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:4888747",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "MGI:4888711",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -823,11 +823,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:3702084",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "MGI:2448639",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000606"
             }
          ],
@@ -845,11 +845,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2157162",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "MGI:3693208",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -867,11 +867,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "MGI:2449949",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "MGI:3583755",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -889,11 +889,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:621237",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2301",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -930,7 +930,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13432153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1052,11 +1052,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2493",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2071",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1271,7 +1271,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12880380",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1403,7 +1403,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:11532742",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1486,7 +1486,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:620701",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1542,7 +1542,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:11532742",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1605,11 +1605,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13464319",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:621693",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1689,7 +1689,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:730855",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1871,7 +1871,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5131919",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -1963,7 +1963,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13432153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2007,7 +2007,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:124713545",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2031,7 +2031,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:126781692",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -2176,11 +2176,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38599014",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:38599013",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2205,11 +2205,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12910500",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "RGD:620195",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -2235,11 +2235,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5144089",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "RGD:4139868",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -2264,15 +2264,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12902626",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "RGD:12903271",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "RGD:12903268",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -2299,11 +2299,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12791992",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:628890",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2328,11 +2328,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12792970",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:628742",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2358,19 +2358,19 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:621466",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:12910097",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:12910096",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:1308982",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2396,11 +2396,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38599192",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:38599191",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2425,11 +2425,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12910491",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2887",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2455,11 +2455,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12792963",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3000",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2485,11 +2485,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12792967",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2158",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2511,11 +2511,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13432153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3001",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2538,11 +2538,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12792283",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:12880382",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2568,11 +2568,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12802344",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:621503",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2594,23 +2594,23 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:69269",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:620599",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:1311130",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:621048",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:620605",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2632,11 +2632,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12880382",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2244",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2658,11 +2658,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12802351",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3054",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2684,11 +2684,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:620955",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:61834",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2710,7 +2710,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2302643",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2735,7 +2735,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:11568041",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -2761,7 +2761,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2304197",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2786,7 +2786,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5131905",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -2813,7 +2813,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13464339",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2839,7 +2839,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5509986",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -2866,7 +2866,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2311691",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2891,7 +2891,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12798565",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2916,7 +2916,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12798562",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2943,7 +2943,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12910546",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2965,7 +2965,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12792942",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -2988,7 +2988,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:11535943",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3010,7 +3010,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13432153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3032,7 +3032,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2290128",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3056,7 +3056,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:62088",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3269,11 +3269,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12790680",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:11535943",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3297,11 +3297,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12790711",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:10002792",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3325,11 +3325,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13432153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3001",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3353,11 +3353,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2042",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2041",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3378,11 +3378,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:10755424",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2536",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3403,11 +3403,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12802353",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:735109",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3428,11 +3428,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:1347174",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3723",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3453,11 +3453,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12792967",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2158",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3478,11 +3478,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13207345",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:1589755",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3503,11 +3503,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:14696725",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:14696724",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3528,7 +3528,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13628731",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3552,7 +3552,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5143971",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3576,7 +3576,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:12790660",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3600,7 +3600,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:9588549",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3624,7 +3624,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:127285405",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3648,7 +3648,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:149735339",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3672,7 +3672,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38599153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3696,7 +3696,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5508324",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3720,7 +3720,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:1346853",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3741,7 +3741,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:5131969",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3762,7 +3762,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2292447",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3783,7 +3783,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2314337",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3804,7 +3804,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:10413848",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3825,7 +3825,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:1346853",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3846,7 +3846,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:620535",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -3867,7 +3867,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2311689",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4050,11 +4050,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:69244",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3935",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4072,11 +4072,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:621237",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2609",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4094,15 +4094,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2071",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:620732",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2301",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4120,11 +4120,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:621237",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2536",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4142,11 +4142,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:3186",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2301",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4164,11 +4164,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2063",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2062",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4186,91 +4186,91 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:2141",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:728892",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2219",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2401",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2453",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2518",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2532",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2581",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2649",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2846",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3184",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3193",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3194",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3407",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3648",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:3650",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:61853",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:70493",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:621357",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:621736",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:621815",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "RGD:2218",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4288,7 +4288,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:127345128",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -4309,7 +4309,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:14394509",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4330,7 +4330,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13782148",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4351,7 +4351,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:126790465",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4372,7 +4372,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:127284873",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4393,7 +4393,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38501062",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -4414,7 +4414,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:40818255",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4435,7 +4435,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13799351",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4456,7 +4456,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:14394517",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4477,7 +4477,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13782148",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4498,7 +4498,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:126925168",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -4516,7 +4516,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38455991",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -4534,7 +4534,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:61307",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4552,7 +4552,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:126790499",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -4570,7 +4570,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:13432153",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4588,7 +4588,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:735109",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4606,7 +4606,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:3908",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4624,7 +4624,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38455990",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -4642,7 +4642,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "RGD:38455989",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -4930,7 +4930,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00025780",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4947,7 +4947,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00007569",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4964,7 +4964,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00016353",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4981,7 +4981,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00145466",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -4998,7 +4998,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00001970",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5015,7 +5015,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00000658",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5032,7 +5032,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00000415",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5049,11 +5049,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00051562",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00054722",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5070,7 +5070,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00091691",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5087,7 +5087,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00005784",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5104,11 +5104,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00248869",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBTransgene00000410",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5125,7 +5125,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBTransgene00019820",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5571,19 +5571,19 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00089160",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143063",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143389",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00248864",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5600,15 +5600,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00143011",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143150",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00241766",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5625,19 +5625,19 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00142935",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00142948",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143022",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00241709",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5654,11 +5654,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00142936",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00240986",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5675,15 +5675,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00088762",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00089283",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00089516",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5700,11 +5700,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00144039",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBTransgene00000179",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5721,23 +5721,23 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00142941",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143182",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143220",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143398",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00146720",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5754,15 +5754,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "WB:WBVar00142906",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143214",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "WB:WBVar00143776",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -5928,7 +5928,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200715-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -5948,7 +5948,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160428-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -5965,7 +5965,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110429-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -5982,7 +5982,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980413-693",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -5999,11 +5999,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120117-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070118-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6020,15 +6020,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-201109-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-201109-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110214-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6045,7 +6045,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170801-11",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6062,11 +6062,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070806-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110210-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6083,7 +6083,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200204-15",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6100,7 +6100,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170801-9",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6143,11 +6143,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160503-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170607-27",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6164,7 +6164,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980224-16",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6192,7 +6192,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6217,7 +6217,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6242,7 +6242,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6267,7 +6267,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6293,7 +6293,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6318,7 +6318,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6343,7 +6343,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6369,7 +6369,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060831-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6398,7 +6398,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6423,7 +6423,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6448,7 +6448,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980224-16",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6475,7 +6475,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980224-16",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6502,7 +6502,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6526,7 +6526,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6550,7 +6550,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6574,7 +6574,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051018-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6598,7 +6598,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6622,7 +6622,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051018-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6646,7 +6646,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6670,7 +6670,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6694,7 +6694,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051018-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6718,7 +6718,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051018-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6742,7 +6742,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-523",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6766,7 +6766,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110329-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -6790,7 +6790,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-584",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6814,7 +6814,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-365",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6838,7 +6838,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980224-16",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6862,7 +6862,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060915-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6884,7 +6884,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6905,7 +6905,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060216-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -6926,7 +6926,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020426-86",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6947,7 +6947,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051205-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6968,7 +6968,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060830-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -6989,7 +6989,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051018-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7010,7 +7010,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060831-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7033,7 +7033,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7482,7 +7482,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170424-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7505,7 +7505,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980413-591",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7528,7 +7528,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980413-591",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7551,11 +7551,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7578,11 +7578,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7605,11 +7605,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7632,11 +7632,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7659,11 +7659,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7686,15 +7686,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-365",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1613",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-332",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7714,11 +7714,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7738,15 +7738,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-140508-21",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-365",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7766,15 +7766,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-365",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7794,7 +7794,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050809-20",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7818,7 +7818,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050428-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7842,7 +7842,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060627-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7866,7 +7866,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061107-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7891,7 +7891,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7916,7 +7916,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7942,7 +7942,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060627-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -7966,7 +7966,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1047",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -7990,7 +7990,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051025-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8014,7 +8014,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8038,7 +8038,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-391",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8064,7 +8064,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061204-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8087,7 +8087,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060627-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8110,7 +8110,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8133,7 +8133,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050809-20",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8156,7 +8156,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8179,7 +8179,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8202,7 +8202,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8225,7 +8225,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051005-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8248,7 +8248,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050809-20",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8271,7 +8271,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051025-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8294,7 +8294,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-391",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8317,7 +8317,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-384",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8340,7 +8340,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-450",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8363,7 +8363,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050225-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8386,7 +8386,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-970731-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8409,7 +8409,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-427",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8432,7 +8432,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1618",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8455,7 +8455,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060926-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8478,7 +8478,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-531",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8501,7 +8501,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1616",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8524,7 +8524,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061204-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8544,7 +8544,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061107-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8564,7 +8564,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061120-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8584,7 +8584,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-991201-15",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8604,7 +8604,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050811-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8624,7 +8624,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050211-18",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -8644,7 +8644,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1135",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8664,7 +8664,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-031110-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8684,7 +8684,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1341",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -8704,7 +8704,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1347",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9117,11 +9117,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080528-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110315-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9141,11 +9141,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070215-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-180521-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -9165,11 +9165,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110802-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070529-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9193,11 +9193,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070529-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110802-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9221,11 +9221,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1332",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-1296",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -9249,11 +9249,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020918-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020717-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9277,11 +9277,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160915-19",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160915-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9305,11 +9305,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070314-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070420-21",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9333,11 +9333,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060821-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-131217-17939",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9361,11 +9361,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-12",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-100212-32",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9390,15 +9390,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200211-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070316-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-130820-43",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9419,19 +9419,19 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020918-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120113-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080528-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-071017-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9452,11 +9452,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-071109-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-151022-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9477,11 +9477,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060821-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-081212-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9502,11 +9502,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051223-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-011017-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9527,11 +9527,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9552,11 +9552,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150424-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-130624-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9577,11 +9577,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-111115-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170519-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9602,11 +9602,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160930-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110708-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9627,11 +9627,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051223-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-011017-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9652,11 +9652,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-171122-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-171122-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9679,11 +9679,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-180301-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-180301-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9706,11 +9706,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070314-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-130214-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9733,11 +9733,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150529-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150529-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9760,11 +9760,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110525-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110215-7",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9787,11 +9787,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-444",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-990423-22",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9814,11 +9814,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080321-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080321-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9841,11 +9841,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070529-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110802-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9868,11 +9868,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-130214-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070314-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9895,11 +9895,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-190509-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110215-7",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9922,11 +9922,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051223-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9946,11 +9946,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070531-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070124-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -9970,15 +9970,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160413-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070215-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160413-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -9998,11 +9998,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-151124-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-151124-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10022,11 +10022,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020918-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020918-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10046,19 +10046,19 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110504-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-011017-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020918-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-140313-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10078,11 +10078,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051223-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050916-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10102,11 +10102,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-603",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060519-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -10126,11 +10126,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060608-222",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-191211-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10150,11 +10150,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080826-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070531-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10174,11 +10174,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170907-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170907-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10198,11 +10198,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070420-20",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070314-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -10222,19 +10222,19 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-090715-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-090715-9",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-090715-10",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-090715-11",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10254,11 +10254,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070314-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-180717-13",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10278,11 +10278,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-100322-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150624-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10302,11 +10302,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-190816-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150120-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10326,11 +10326,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-131119-25",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-131119-17",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -10350,11 +10350,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-170621-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050428-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10374,15 +10374,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150409-7",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080528-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-190107-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10402,11 +10402,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-151216-28",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070314-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10426,11 +10426,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051223-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110630-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10447,15 +10447,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200302-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200302-10",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-071109-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10472,11 +10472,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-181129-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070814-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10493,11 +10493,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061215-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080706-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -10514,15 +10514,15 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070322-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-040913-6",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-121031-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10539,11 +10539,11 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150213-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             },
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160818-14",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10560,7 +10560,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020715-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10585,7 +10585,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-111024-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10609,7 +10609,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110621-12",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10633,7 +10633,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-100723-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10657,7 +10657,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-030919-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10681,7 +10681,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120927-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10705,7 +10705,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-100712-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10729,7 +10729,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110214-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -10753,7 +10753,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-011017-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10777,7 +10777,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070531-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10801,7 +10801,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-010426-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10822,7 +10822,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-131010-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10843,7 +10843,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060821-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10864,7 +10864,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-061129-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10887,7 +10887,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-130327-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10908,7 +10908,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-011017-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10929,7 +10929,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110127-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10950,7 +10950,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050428-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -10972,7 +10972,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060221-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -10993,7 +10993,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980413-693",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11014,7 +11014,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051025-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11038,7 +11038,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051025-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11062,7 +11062,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-365",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11086,7 +11086,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-131219-18",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11109,7 +11109,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080903-12",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11132,7 +11132,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050428-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11155,7 +11155,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-040924-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11178,7 +11178,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050209-10",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11201,7 +11201,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200501-15",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11224,7 +11224,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-080715-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11247,7 +11247,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-470",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11270,7 +11270,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070531-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11293,7 +11293,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-100616-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11316,7 +11316,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-140430-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11336,7 +11336,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-011017-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11356,7 +11356,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070118-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11376,7 +11376,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020621-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11396,7 +11396,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-050621-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11416,7 +11416,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-070723-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11436,7 +11436,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-110223-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11456,7 +11456,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-000821-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11476,7 +11476,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980413-526",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11496,7 +11496,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-190809-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11516,7 +11516,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150831-7",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11537,7 +11537,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120222-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11558,7 +11558,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150831-8",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11579,7 +11579,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-030117-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11600,7 +11600,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-051025-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11621,7 +11621,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-365",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11642,7 +11642,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-071127-4",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11663,7 +11663,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120209-7",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11684,7 +11684,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-090309-3",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11705,7 +11705,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-040701-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11726,7 +11726,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-020426-56",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11746,7 +11746,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-200707-2",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11766,7 +11766,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-130531-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11786,7 +11786,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-150729-27",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11806,7 +11806,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-060608-344",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11826,7 +11826,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-586",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11846,7 +11846,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-161104-115",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11866,7 +11866,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-140218-1",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11886,7 +11886,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980203-943",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11906,7 +11906,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120424-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
@@ -11923,7 +11923,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-120727-82",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000135"
             }
          ],
@@ -11940,7 +11940,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-160210-5",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000136"
             }
          ],
@@ -11957,7 +11957,7 @@
       {
          "affectedGenomicModelComponents" : [
             {
-               "alleleID" : "ZFIN:ZDB-ALT-980413-685",
+               "alleleID" : "TEST:TestAllele00001",
                "zygosity" : "GENO:0000137"
             }
          ],
