@@ -15,7 +15,7 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
         super(AlleleDiseaseAnnotation.class);
     }
 
-    public List<String> findAllAnnotationCuries(String taxonID) {
+    public List<String> findAllAnnotationIds(String taxonID) {
         Query jpqlQuery = entityManager.createQuery("SELECT annotation.uniqueId FROM AlleleDiseaseAnnotation annotation WHERE annotation.subject.taxon=:taxonId");
         jpqlQuery.setParameter("taxonId", taxonID);
         return (List<String>) jpqlQuery.getResultList();

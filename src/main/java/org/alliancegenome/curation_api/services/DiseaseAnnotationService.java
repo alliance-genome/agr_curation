@@ -165,30 +165,30 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     }
 
     public void runLoad(String taxonID, DiseaseAnnotationMetaDataDTO annotationData) {
-        List<String> annotationsCuriesBefore = new ArrayList<String>();
-        annotationsCuriesBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
-        annotationsCuriesBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
-        annotationsCuriesBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        List<String> annotationsIdsBefore = new ArrayList<String>();
+        annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
+        annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationCuries(taxonID));
         
-        log.debug("runLoad: Before: " + taxonID + " " + annotationsCuriesBefore.size());
-        List<String> annotationsCuriesAfter = new ArrayList<>();
+        log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
+        List<String> annotationsIdsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
         annotationData.getData().forEach(annotationDTO -> {
             DiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null) {
-                annotationsCuriesAfter.add(annotation.getUniqueId());
+                annotationsIdsAfter.add(annotation.getUniqueId());
             }
             ph.progressProcess();
         });
         ph.finishProcess();
         
-        log.debug("runLoad: After: " + taxonID + " " + annotationsCuriesAfter.size());
+        log.debug("runLoad: After: " + taxonID + " " + annotationsIdsAfter.size());
         
-        List<String> distinctAfter = annotationsCuriesAfter.stream().distinct().collect(Collectors.toList());
+        List<String> distinctAfter = annotationsIdsAfter.stream().distinct().collect(Collectors.toList());
         log.debug("runLoad: Distinct: " + taxonID + " " + distinctAfter.size());
         
-        List<String> curiesToRemove = ListUtils.subtract(annotationsCuriesBefore, distinctAfter);
+        List<String> curiesToRemove = ListUtils.subtract(annotationsIdsBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonID + " " + curiesToRemove.size());
         
         for (String curie : curiesToRemove) {
