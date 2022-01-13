@@ -15,17 +15,21 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelComponentDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneDTO;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomicModel, AffectedGenomicModelDAO> {
 
@@ -35,6 +39,8 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     CrossReferenceService crossReferenceService;
     @Inject
     SynonymService synonymService;
+    @Inject
+    AlleleDAO alleleDAO;
     
     @Override
     @PostConstruct
@@ -44,7 +50,14 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 
     @Transactional
     public void processUpdate(AffectedGenomicModelDTO agm) {
+        // TODO: add loading of components
+        // TODO: add loading of sequenceTargetingReagents
+        // TODO: add loading of parentalPopulations
 
+        if (!validateAffectedGenomicModelDTO(agm)) {
+            return;
+        }
+        
         AffectedGenomicModel dbAgm = affectedGenomicModelDAO.find(agm.getPrimaryID());
         
         if(dbAgm == null) {
@@ -171,4 +184,43 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 
     }
     
+    private boolean validateAffectedGenomicModelDTO(AffectedGenomicModelDTO agm) {
+        // TODO: add validation of taxon ID once taxons are loaded
+        
+        // Check for required fields
+        if (agm.getPrimaryID() == null || agm.getName() == null || agm.getTaxonId() == null) {
+            log.debug("Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
+            return false;
+        }
+        
+        // Validate component fields
+        if (CollectionUtils.isNotEmpty(agm.getAffectedGenomicModelComponents())) {
+            for (AffectedGenomicModelComponentDTO component : agm.getAffectedGenomicModelComponents()) {
+                if (component.getAlleleID() == null) {
+                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component with missing allele - skipping");
+                    return false;
+                }
+                Allele componentAllele = alleleDAO.find(component.getAlleleID());
+                if (componentAllele == null) {
+                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") not found in database - skipping");
+                    return false;
+                }
+                if (component.getZygosity() == null) {
+                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with missing zygosity - skipping");
+                    return false;
+                }
+                
+                if (!validZygosityCodes.contains(component.getZygosity())) {
+                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with invalid zygosity - skipping");
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    private static final Set<String> validZygosityCodes = Set.of(
+            "GENO:0000602", "GENO:0000603", "GENO:0000604", "GENO:0000605", "GENO:0000606", "GENO:0000135",
+            "GENO:0000136", "GENO:0000137", "GENO:0000134"
+        );
 }
