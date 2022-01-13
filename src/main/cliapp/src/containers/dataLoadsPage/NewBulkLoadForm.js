@@ -13,7 +13,7 @@ import { ManualForm } from './ManualForm';
 const dataLoadService = new DataLoadService();
 
 
-export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, newBulkLoad, bulkLoadDispatch }) => {
+export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, newBulkLoad, bulkLoadDispatch, disableFormFields, setDisableFormFields }) => {
 
     const queryClient = useQueryClient();
     const hideFMS = useRef(true);
@@ -82,6 +82,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
         hideFMS.current = true;
         hideURL.current = true;
         hideManual.current = true;
+        setDisableFormFields(false);
     };
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -94,6 +95,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                 hideURL.current = true;
                 hideManual.current = true;
                 setBulkLoadDialog(false);
+                setDisableFormFields(false);
             },
             onError: () => {
                 // lookup group and set 
@@ -150,6 +152,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                             placeholder={"Select Load Type"}
                             className='p-col-12'
                             name='type'
+                            disabled={disableFormFields}
                         />
                     </div>
 
@@ -163,6 +166,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                             placeholder={"Select Backend Bulk Load Type"}
                             className='p-col-12'
                             name='backendBulkLoadType'
+                            disabled={disableFormFields}
                         />
                     </div>
 
@@ -170,6 +174,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                         hideFMS={hideFMS}
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
+                        disableFormFields={disableFormFields}
                     />
 
                     <URLForm
@@ -177,6 +182,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                         hideOntology={hideOntology}
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
+                        disableFormFields={disableFormFields}
                     />
 
 
@@ -184,6 +190,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                         hideManual={hideManual}
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
+                        disableFormFields={disableFormFields}
                     />
 
                 </form>

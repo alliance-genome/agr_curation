@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.time.ZonedDateTime;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -33,6 +34,22 @@ public class JobScheduler {
     Boolean schedulingEnabled;
     
     private ZonedDateTime lastCheck = null;
+    
+    @PostConstruct
+    public void init() {
+        // Set any running jobs to failed as the server has restarted
+        SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
+        for(BulkLoadGroup g: groups.getResults()) {
+            if(g.getLoads().size() > 0) {
+                for(BulkLoad b: g.getLoads()) {
+                    if(b.getStatus() == BulkLoadStatus.RUNNING) {
+                        b.setStatus(BulkLoadStatus.FAILED);
+                        bulkLoadDAO.merge(b);
+                    }
+                }
+            }
+        }
+    }
 
     @Scheduled(every = "1s")
     public void scheduleGroupJobs() {
