@@ -24,7 +24,7 @@ public class BaseGeneratedAndUniqueIdEntity extends BaseEntity {
     protected Long id;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "uniqueid_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @Column(unique = true, length = 2000)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
