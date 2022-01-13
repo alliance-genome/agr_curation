@@ -31,13 +31,12 @@ public class AffectedGenomicModelITCase {
     private final String AGM_TAXON = "NCBITaxon:10090";
     private final String AGM_SUBTYPE = "genotype";
     private final String AGM_NAME = "AGM Test 1";
+    private final String INVALID_TAXON = "NCBI:00001";
     private AffectedGenomicModel agm = createModel(AGM_CURIE, AGM_NAME, AGM_TAXON, AGM_SUBTYPE);
     
     @Test
     @Order(1)
     public void createValidAGM() {
-
-        
 
         RestAssured.given().
                 contentType("application/json").
@@ -136,6 +135,20 @@ public class AffectedGenomicModelITCase {
             statusCode(400);
     }
 
+    @Test
+    @Order(7)
+    public void createInvalidTaxonAGM() {
+        AffectedGenomicModel invalidTaxonAgm = createModel(AGM_CURIE, AGM_NAME, INVALID_TAXON, AGM_SUBTYPE);
+    
+
+        RestAssured.given().
+            contentType("application/json").
+            body(invalidTaxonAgm).
+            when().
+            put("/api/agm").
+            then().
+            statusCode(400);
+    }
 
     private AffectedGenomicModel createModel(String curie, String name, String taxon, String subtype) {
         AffectedGenomicModel agm = new AffectedGenomicModel();

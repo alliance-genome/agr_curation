@@ -542,7 +542,7 @@ public class AGMBulkUploadITCase {
             body("totalResults", is(623));
     }
     
-    // TODO: adjust count (and subsequent test counts) once loading and validation of taxons in place
+    // NOTE: validation currently only based on regex, not DB lookup
     @Test
     @Order(21)
     public void agmBulkUploadInvalidTaxonId() throws Exception {
@@ -565,7 +565,7 @@ public class AGMBulkUploadITCase {
             post("/api/agm/find?limit=10&page=62").
             then().
             statusCode(200).
-            body("totalResults", is(624));
+            body("totalResults", is(623));
     }
     
     // NOTE: this test needs to be run last to cleanup dummy allele

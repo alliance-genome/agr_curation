@@ -53,9 +53,8 @@ public class DiseaseAnnotationITCase {
         crossReference = createCrossReference("CROSSREF:0001", "AGRreference");
         doTerm = createDiseaseTerm("DOID:0001", crossReference, false);
         ecoTerm = createEcoTerm("ECO:0001", "Test evidence code", false);
-        biologicalEntity = createBiologicalEntity("BO:0001", "taxon:0001");
-        gene = createGene("GENE:0001", "taxon:0001");
-//        agm = createModel("MODEL:0001", "taxon:0001");
+        biologicalEntity = createBiologicalEntity("BO:0001", "NCBITaxon:0001");
+        gene = createGene("GENE:0001", "NCBITaxon:0001");
 
         GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotationEntity();
         RestAssured.given().
@@ -80,7 +79,7 @@ public class DiseaseAnnotationITCase {
     @Order(2)
     public void createAlleleDiseaseAnnotation() {
 
-        Allele allele = createAllele("ALLELE:0001", "taxon:0001");
+        Allele allele = createAllele("ALLELE:0001", "NCBITaxon:0001");
 
         List<EcoTerm> ecoTerms = new ArrayList<>();
         ecoTerms.add(ecoTerm);
@@ -116,7 +115,7 @@ public class DiseaseAnnotationITCase {
     @Order(2)
     public void createAgmDiseaseAnnotation() {
 
-        AffectedGenomicModel model = createModel("MODEL:0001", "taxon:0001", "TestAGM");
+        AffectedGenomicModel model = createModel("MODEL:0001", "NCBITaxon:0001", "TestAGM");
 
         List<EcoTerm> ecoTerms = new ArrayList<>();
         ecoTerms.add(ecoTerm);
@@ -171,7 +170,7 @@ public class DiseaseAnnotationITCase {
         // change negated
         editedDiseaseAnnotation.setNegated(true);
         // change subject
-        Gene newGene = createGene("GENE:0002", "taxon:0001");
+        Gene newGene = createGene("GENE:0002", "NCBITaxon:0001");
 
         editedDiseaseAnnotation.setSubject(newGene);
 
@@ -212,7 +211,7 @@ public class DiseaseAnnotationITCase {
         // change negated
         editedDiseaseAnnotation.setNegated(true);
         // change subject
-        Allele newAllele = createAllele("ALLELE:0002", "taxon:0001");
+        Allele newAllele = createAllele("ALLELE:0002", "NCBITaxon:0001");
 
         editedDiseaseAnnotation.setSubject(newAllele);
 
