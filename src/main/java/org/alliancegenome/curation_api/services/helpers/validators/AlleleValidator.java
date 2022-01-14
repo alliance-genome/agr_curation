@@ -34,9 +34,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 
         String errorTitle = "Could not update allele [" + curie + "]";
         
-        String name = validateName(uiEntity);
-        if (name != null) dbEntity.setName(name);
-        
         String taxon = validateTaxon(uiEntity);
         if (taxon != null) dbEntity.setTaxon(taxon);
         
