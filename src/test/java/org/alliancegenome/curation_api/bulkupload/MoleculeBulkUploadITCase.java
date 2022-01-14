@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.hasItem;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(3)
+@Order(5)
 public class MoleculeBulkUploadITCase {
 
     @BeforeEach

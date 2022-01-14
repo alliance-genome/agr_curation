@@ -23,7 +23,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(5)
+@Order(9)
 public class DiseaseAnnotationITCase {
 
     private CrossReference crossReference;
