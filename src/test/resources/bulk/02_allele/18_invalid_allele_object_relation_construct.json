@@ -1,0 +1,53 @@
+{
+  "data": [
+    {
+      "alleleObjectRelations": [
+        {
+          "objectRelation": {
+            "associationType": "allele_of",
+            "gene": "TEST:TestGene00001"
+          }
+        },
+        {
+          "objectRelation": {
+            "associationType": "contains",
+            "construct": "TEST:TestConstruct00002"
+          }
+        }
+      ],
+      "crossReferences": [
+        {
+          "id": "TEST:TestAllele00018",
+          "pages": [
+            "allele",
+            "allele/references"
+          ]
+        }
+      ],
+      "description": "Test description of allele",
+      "primaryId": "TEST:TestAllele00018",
+      "symbol": "Test<sup>allele</sup>",
+      "symbolText": "Test<allele>",
+      "taxonId": "NCBITaxon:10090",
+      "synonyms": [
+        "test<sup>+</sup>"
+      ],
+      "secondaryIds": [
+        "TEST:A18"
+      ]
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2022-01-13T23:38:32+01:00",
+    "release": "WS284"
+  }
+}

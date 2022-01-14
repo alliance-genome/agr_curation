@@ -2,7 +2,7 @@ import { InputText } from 'primereact/inputtext';
 import React from 'react';
 import { CronFields } from './CronFields';
 
-export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
+export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) => {
     return (
         <>
             {!hideFMS.current &&
@@ -18,6 +18,7 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
                             value={newBulkLoad.dataType}
                             onChange={onChange}
                             placeholder='Enter Data Type'
+                            disabled={disableFormFields}
                         />
                     </div>
                     <div className="p-field">
@@ -27,6 +28,7 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange }) => {
                             value={newBulkLoad.dataSubType}
                             onChange={onChange}
                             placeholder='Enter Data SubType'
+                            disabled={disableFormFields}
                         />
                     </div>
                 </>

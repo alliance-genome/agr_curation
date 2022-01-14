@@ -1,0 +1,41 @@
+{
+  "data": [
+    {
+      "crossReference": {
+        "id": "TEST:TestAGM00002",
+        "pages": [
+          "genotype"
+        ]
+      },
+      "name": "Test AGM 2",
+      "parentalPopulationIDs": [
+        "TEST:TestComponent00001"
+      ],
+      "primaryID": "TEST:TestAGM00002",
+      "secondaryIds": [
+        "TEST:AGM2"
+      ],
+      "sequenceTargetingReagentIDs": [
+        "TEST:TestSTR00001"
+      ],
+      "subtype": "genotype",
+      "synonyms": [
+        "TAGM2"
+      ],
+      "taxonId": "NCBITaxon:10090"
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2022-01-12T10:45:18+01:00",
+    "release": "TEST"
+  }
+}

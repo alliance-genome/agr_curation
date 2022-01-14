@@ -1,30 +1,30 @@
 import { useState } from "react";
 import { InputText } from 'primereact/inputtext';
 
-export function FilterComponent(props) {
+export function FilterComponent({ isEnabled, fields, filterName, currentFilters, onFilter }) {
     const [filterValue, setFilterValue] = useState('');
     return (
         <InputText
-            disabled={!props.isEnabled}
+            disabled={!isEnabled}
             value={filterValue}
             onChange={(e) => {
                 setFilterValue(e.target.value);
                 let filter = {};
                 if (e.target.value.length !== 0) {
-                    props.fields.forEach((key) => {
+                    fields.forEach((key) => {
                         filter[key] = e.target.value;
                     });
                 } else {
                     filter = null;
                 }
 
-                const filtersCopy = props.currentFilters;
+                const filtersCopy = currentFilters;
                 if (filter === null) {
-                    delete filtersCopy[props.filterName];
+                    delete filtersCopy[filterName];
                 } else {
-                    filtersCopy[props.filterName] = filter;
+                    filtersCopy[filterName] = filter;
                 }
-                props.onFilter(filtersCopy);
+                onFilter(filtersCopy);
             }}
         />
     )

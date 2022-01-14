@@ -16,7 +16,7 @@ export function TrueFalseDropdown({ options, editorChange, props }) {
                 onChange={(e) => onChange(e)}
                 optionLabel="text"
                 optionValue="name"
-                //placeholder={JSON.stringify(props.rowData[props.field])}
+                placeholder={JSON.stringify(props.rowData[props.field])}
                 style={{ width: '100%' }}
             />
         </>

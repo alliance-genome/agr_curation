@@ -99,7 +99,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
     
             if(
                 (termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||
-                (config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix()))
+                (config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_"))
             ) {
                 //System.out.println(termParent);
 
