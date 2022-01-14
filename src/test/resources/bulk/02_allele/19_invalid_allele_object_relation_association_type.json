@@ -4,7 +4,7 @@
       "alleleObjectRelations": [
         {
           "objectRelation": {
-            "associationType": "allele_of",
+            "associationType": "invalid",
             "gene": "TEST:TestGene00001"
           }
         },
