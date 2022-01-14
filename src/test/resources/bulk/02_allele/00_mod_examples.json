@@ -3367,7 +3367,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3394,7 +3394,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3421,7 +3421,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3448,7 +3448,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3475,7 +3475,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3499,7 +3499,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3528,7 +3528,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3552,7 +3552,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3581,7 +3581,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3610,7 +3610,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3638,7 +3638,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3665,7 +3665,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3693,7 +3693,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3720,7 +3720,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3747,7 +3747,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3774,7 +3774,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3801,7 +3801,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3825,7 +3825,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3849,7 +3849,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3873,7 +3873,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3897,7 +3897,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3921,7 +3921,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3945,7 +3945,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3969,7 +3969,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -3997,7 +3997,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -4026,7 +4026,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -4054,7 +4054,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -4084,7 +4084,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -4112,13 +4112,13 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             },
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -4145,7 +4145,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }
@@ -4172,7 +4172,7 @@
          "alleleObjectRelations" : [
             {
                "objectRelation" : {
-                  "association_type" : "allele_of",
+                  "associationType" : "allele_of",
                   "gene" : "TEST:TestGene00001"
                }
             }

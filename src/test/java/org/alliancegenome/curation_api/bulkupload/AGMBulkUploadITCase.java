@@ -40,7 +40,7 @@ public class AGMBulkUploadITCase {
     public void agmBulkUploadMany() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/00_mod_examples.json"));
             
-        Allele allele = createAllele(TESTALLELE, "NCBITaxon:10090");
+        //Allele allele = createAllele(TESTALLELE, "NCBITaxon:10090");
         
         // upload file
         RestAssured.given().
@@ -571,7 +571,7 @@ public class AGMBulkUploadITCase {
     // NOTE: this test needs to be run last to cleanup dummy allele
     @Test
     @Order(22)
-    public void deleteDiseaseAnnotation() throws Exception {
+    public void deleteAllele() throws Exception {
 
         RestAssured.given().
             when().

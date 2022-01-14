@@ -17,7 +17,7 @@
       ],
       "crossReferences": [
         {
-          "id": "TEST:TestAllele00001",
+          "id": "TEST:TestAllele00011",
           "pages": [
             "allele",
             "allele/references"
@@ -32,7 +32,7 @@
         "test<sup>+</sup>"
       ],
       "secondaryIds": [
-        "TEST:A1"
+        "TEST:A11"
       ]
     }
   ],

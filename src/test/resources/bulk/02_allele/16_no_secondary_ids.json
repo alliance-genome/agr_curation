@@ -17,7 +17,7 @@
       ],
       "crossReferences": [
         {
-          "id": "TEST:TestAllele00001",
+          "id": "TEST:TestAllele00016",
           "pages": [
             "allele",
             "allele/references"
@@ -25,7 +25,7 @@
         }
       ],
       "description": "Test description of allele",
-      "primaryId": "TEST:TestAllele00001",
+      "primaryId": "TEST:TestAllele00016",
       "symbol": "Test<sup>allele</sup>",
       "symbolText": "Test<allele>",
       "taxonId": "NCBITaxon:10090",
