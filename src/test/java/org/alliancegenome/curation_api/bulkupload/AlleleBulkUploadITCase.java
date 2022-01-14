@@ -3,10 +3,7 @@ package org.alliancegenome.curation_api.bulkupload;
 import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
 
@@ -22,10 +19,10 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(3)
-public class AGMBulkUploadITCase {
+@Order(2)
+public class AlleleBulkUploadITCase {
     
-    private final String TESTALLELE = "TEST:TestAllele00001";
+    private final String TESTGENE = "TEST:TestGene00001";
     
     @BeforeEach
     public void init() {
@@ -37,17 +34,17 @@ public class AGMBulkUploadITCase {
 
     @Test
     @Order(1)
-    public void agmBulkUploadMany() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/00_mod_examples.json"));
+    public void alleleBulkUploadMany() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/00_mod_examples.json"));
             
-        //Allele allele = createAllele(TESTALLELE, "NCBITaxon:10090");
+        // createGene(TESTGENE, "NCBITaxon:10090");
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
                 
@@ -56,23 +53,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=0").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(613));
+            body("totalResults", is(490));
     }
     
     @Test
     @Order(2)
-    public void agmBulkUploadCheckFields() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/01_all_fields.json"));
+    public void alleleBulkUploadCheckFields() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields.json"));
 
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
 
@@ -82,35 +79,31 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=61").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(614)).
-            body("results", hasSize(4)).
-            body("results[3].curie", is("TEST:TestAGM00001")).
-            body("results[3].taxon", is("NCBITaxon:10090")).
-            body("results[3].name", is( "Test AGM 1")).
-            body("results[3].synonyms[0].name", is("TAGM1")).
-            body("results[3].crossReferences[0].curie", is("TEST:TestAGM00001")).
-            body("results[3].secondaryIdentifiers[0]", is("TEST:AGM1")).
-            // body("results[3].components[0].allele.curie", is(TESTALLELE)).
-            // body("results[3].components[0].zygosity", is("GENO:0000136")).
-            // body("results[3].parentalPopulations[0]", is("TEST:TestComponent00001")).
-            // body("results[3].sequenceTargetingReagents[0].curie", is("TEST:TestSTR00001")).
-            body("results[3].subtype", is("genotype"));
+            body("totalResults", is(491)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00001")).
+            body("results[0].taxon", is("NCBITaxon:10090")).
+            body("results[0].symbol", is("Test<sup>allele</sup>")).
+            body("results[0].synonyms[0].name", is("test<sup>+</sup>")).
+            body("results[0].crossReferences[0].curie", is("TEST:TestAllele00001")).
+            body("results[0].secondaryIdentifiers[0]", is("TEST:A1")).
+            body("results[0].description", is("Test description of allele"));
     }
     
     @Test
     @Order(3)
-    public void agmBulkUploadNoComponents() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/02_no_agm_components.json"));
+    public void alleleBulkUploadNoAlleleObjectRelations() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/02_no_allele_object_relations.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -119,23 +112,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=61").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(615));
+            body("totalResults", is(492));
     }
 
     @Test
     @Order(4)
-    public void agmBulkUploadNoComponentAlleleId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/03_no_agm_components_allele_id.json"));
+    public void alleleBulkUploadNoGeneAlleleObjectRelation() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/03_no_gene_allele_object_relation.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -144,23 +137,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=61").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(615));
+            body("totalResults", is(493));
     }
 
     @Test
     @Order(5)
-    public void agmBulkUploadNoComponentZygosity() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/04_no_agm_components_zygosity.json"));
+    public void alleleBulkUploadNoConstructAlleleObjectRelation() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/04_no_construct_allele_object_relation.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -169,23 +162,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=61").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(615));
+            body("totalResults", is(494));
     }
 
     @Test
     @Order(6)
-    public void agmBulkUploadNoCrossReference() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/05_no_cross_reference.json"));
+    public void alleleBulkUploadNoAlleleObjectRelationAssociationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/05_no_allele_object_relation_association_type.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -194,39 +187,49 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=61").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(616));
+            body("totalResults", is(495));
     }
 
     @Test
     @Order(7)
-    public void agmBulkUploadNoCrossReferenceId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/06_no_cross_reference_id.json"));
+    public void alleleBulkUploadNoAlleleObjectRelationEntity() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/06_no_allele_object_relation_entity.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
-            statusCode(500);
+            statusCode(200);
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/allele/find?limit=10&page=49").
+            then().
+            statusCode(200).
+            body("totalResults", is(495));
     }
 
     // TODO: adjust count (and subsequent test counts) once validation of xref pages in place
     @Test
     @Order(8)
-    public void agmBulkUploadNoCrossReferencePages() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/07_no_cross_reference_pages.json"));
+    public void alleleBulkUploadNoCrossReferences() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/07_no_cross_references.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -235,48 +238,38 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(617));
+            body("totalResults", is(496));
     }
 
     @Test
     @Order(9)
-    public void agmBulkUploadNoName() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/08_no_name.json"));
+    public void alleleBulkUploadNoCrossReferenceId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/08_no_cross_reference_id.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
-            statusCode(200);
-        
-        // check entity count
-        RestAssured.given().
-            when().
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/agm/find?limit=10&page=62").
-            then().
-            statusCode(200).
-            body("totalResults", is(617)); // Name is required field so entity skipped in load
+            statusCode(500);
     }
 
     @Test
     @Order(10)
-    public void agmBulkUploadNoParentalPopulationIds() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/09_no_parental_population_ids.json"));
+    public void alleleBulkUploadNoCrossReferencePages() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/09_no_cross_reference_pages.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -285,23 +278,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(618));
+            body("totalResults", is(497));
     }
 
     @Test
     @Order(11)
-    public void agmBulkUploadNoPrimaryId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/10_no_primary_id.json"));
+    public void alleleBulkUploadNoDescription() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/10_no_description.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -310,23 +303,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=61").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(618)); // PrimaryID is required field so entity skipped in load
+            body("totalResults", is(498)); // PrimaryID is required field so entity skipped in load
     }
 
     @Test
     @Order(12)
-    public void agmBulkUploadNoSecondaryIds() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/11_no_secondary_ids.json"));
+    public void alleleBulkUploadNoPrimaryId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/11_no_primary_id.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -335,23 +328,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(619));
+            body("totalResults", is(498));
     }
 
     @Test
     @Order(13)
-    public void agmBulkUploadNoSequenceTargetingReagentIds() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/12_no_str_ids.json"));
+    public void alleleBulkUploadNoSymbol() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/12_no_symbol.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -360,23 +353,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(620));
+            body("totalResults", is(498));
     }
 
     @Test
     @Order(14)
-    public void agmBulkUploadNoSubtype() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/13_no_subtype.json"));
+    public void alleleBulkUploadNoSymbolText() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/13_no_symbol_text.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -385,23 +378,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(621));
+            body("totalResults", is(498));
     }
 
     @Test
     @Order(15)
-    public void agmBulkUploadNoSynonyms() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/14_no_synonyms.json"));
+    public void alleleBulkUploadNoTaxonId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/14_no_taxon_id.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -410,23 +403,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(622));
+            body("totalResults", is(498));
     }
 
     @Test
     @Order(16)
-    public void agmBulkUploadNoTaxonId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/15_no_taxon_id.json"));
+    public void alleleBulkUploadNoSynonyms() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/15_no_synonyms.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -435,23 +428,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(622)); // taxonId is a required field so entity skipped in load;
+            body("totalResults", is(499)); // taxonId is a required field so entity skipped in load;
     }
 
     @Test
     @Order(17)
-    public void agmBulkUploadInvalidComponentAllele() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/16_invalid_agm_components_allele_id.json"));
+    public void alleleBulkUploadNoSecondaryIds() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/16_no_secondary_ids.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -460,23 +453,23 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=49").
             then().
             statusCode(200).
-            body("totalResults", is(622));
+            body("totalResults", is(500));
     }
 
     @Test
     @Order(18)
-    public void agmBulkUploadInvalidComponentZygosity() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/17_invalid_agm_components_allele_zygosity.json"));
+    public void alleleBulkUploadInvalidAlleleObjectRelationGene() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/17_invalid_allele_object_relation_gene.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -485,24 +478,24 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=50").
             then().
             statusCode(200).
-            body("totalResults", is(622));
+            body("totalResults", is(500));
     }
 
-    // TODO: adjust count (and subsequent test counts) once loading and validation of STRs in place
+    // TODO: adjust count (and subsequent test counts) once loading and validation of components in place
     @Test
     @Order(19)
-    public void agmBulkUploadInvalidSequenceTargetingReagentId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/18_invalid_str_id.json"));
+    public void alleleBulkUploadInvalidAlleleObjectRelationComponent() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/18_invalid_allele_object_relation_construct.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -511,49 +504,49 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=50").
             then().
             statusCode(200).
-            body("totalResults", is(623));
+            body("totalResults", is(501));
     }
 
     @Test
     @Order(20)
-    public void agmBulkUploadInvalidSubtype() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/19_invalid_subtype.json"));
+    public void alleleBulkUploadInvalidAlleleObjectRelationAssociationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/19_invalid_allele_object_relation_association_type.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
-            statusCode(400);
+            statusCode(200);
         
         // check entity count
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=50").
             then().
             statusCode(200).
-            body("totalResults", is(623));
+            body("totalResults", is(501));
     }
     
     // NOTE: validation currently only based on regex, not DB lookup
     @Test
     @Order(21)
-    public void agmBulkUploadInvalidTaxonId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/20_invalid_taxon_id.json"));
+    public void alleleBulkUploadInvalidTaxonId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/20_invalid_taxon_id.json"));
         
         // upload file
         RestAssured.given().
             contentType("application/json").
             body(content).
             when().
-            post("/api/agm/bulk/agmfile").
+            post("/api/allele/bulk/allelefile").
             then().
             statusCode(200);
         
@@ -562,38 +555,35 @@ public class AGMBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/agm/find?limit=10&page=62").
+            post("/api/allele/find?limit=10&page=50").
             then().
             statusCode(200).
-            body("totalResults", is(623));
+            body("totalResults", is(501));
     }
     
-    // NOTE: this test needs to be run last to cleanup dummy allele
-    @Test
-    @Order(22)
-    public void deleteAllele() throws Exception {
+    // NOTE: this test needs to be run last to cleanup dummy gene
+    //@Test
+    //@Order(22)
+    //public void deleteGene() throws Exception {
 
-        RestAssured.given().
-            when().
-            delete("/api/allele/" + TESTALLELE).
-            then().
-            statusCode(200);
-    }
-
-    private Allele createAllele(String curie, String taxon) {
-        Allele biologicalEntity = new Allele();
-        biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(taxon);
+    //  RestAssured.given().
+//          when().
+//          delete("/api/gene/" + TESTGENE).
+//          then().
+//          statusCode(200);
+//  }
+    
+    private void createGene(String curie, String taxon) {
+        Gene gene = new Gene();
+        gene.setCurie(curie);
+        gene.setTaxon(taxon);
 
         RestAssured.given().
                 contentType("application/json").
-                body(biologicalEntity).
+                body(gene).
                 when().
-                post("/api/allele").
+                post("/api/gene").
                 then().
                 statusCode(200);
-        return biologicalEntity;
-    }
-    
-    
+    }   
 }

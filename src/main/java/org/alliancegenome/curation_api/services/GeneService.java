@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -16,7 +18,9 @@ import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
+import org.alliancegenome.curation_api.services.helpers.validators.GeneValidator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -36,11 +40,20 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     SynonymService synonymService;
     @Inject
     SoTermDAO soTermDAO;
+    @Inject
+    GeneValidator geneValidator;
 
     @Override
     @PostConstruct
     protected void init() {
         setSQLDao(geneDAO);
+    }
+    
+    @Override
+    @Transactional
+    public ObjectResponse<Gene> update(Gene uiEntity) {
+        Gene dbEntity = geneValidator.validateAnnotation(uiEntity);
+        return new ObjectResponse<Gene>(geneDAO.persist(dbEntity));
     }
 
     @Transactional
@@ -197,6 +210,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     }
 
     private boolean validateGeneDTO(GeneDTO dto) {
+        // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
+        
         // Check for required fields
         if (dto.getBasicGeneticEntity().getPrimaryId() == null ||
                 dto.getBasicGeneticEntity().getTaxonId() == null) {
@@ -213,6 +228,14 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
                         );
                 return false;
             }
+        }
+        
+        // Validate taxon ID
+        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
+        Matcher taxonIdMatcher = taxonIdPattern.matcher(dto.getBasicGeneticEntity().getTaxonId());
+        if (!taxonIdMatcher.find()) {
+            log.debug("Invalid taxon ID for AGM " + dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
+            return false;
         }
         
         // Check any genome positions have valid start/end/strand
