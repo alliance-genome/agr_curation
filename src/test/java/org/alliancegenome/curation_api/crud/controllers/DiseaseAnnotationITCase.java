@@ -70,7 +70,7 @@ public class DiseaseAnnotationITCase {
                 get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
                 then().
                 statusCode(200).
-                body("entity.curie", is(GENE_DISEASE_ANNOTATION)).
+                body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("GENE:0001")).
                 body("entity.object.curie", is("DOID:0001")).
                 body("entity.evidenceCodes[0].curie", is("ECO:0001"));
@@ -87,7 +87,7 @@ public class DiseaseAnnotationITCase {
 
         AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
         diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        diseaseAnnotation.setCurie(ALLELE_DISEASE_ANNOTATION);
+        diseaseAnnotation.setUniqueId(ALLELE_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
 
@@ -106,7 +106,7 @@ public class DiseaseAnnotationITCase {
                 get("/api/allele-disease-annotation/findBy/" + ALLELE_DISEASE_ANNOTATION).
                 then().
                 statusCode(200).
-                body("entity.curie", is(ALLELE_DISEASE_ANNOTATION)).
+                body("entity.uniqueId", is(ALLELE_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("ALLELE:0001")).
                 body("entity.object.curie", is("DOID:0001")).
                 body("entity.evidenceCodes[0].curie", is("ECO:0001"));
@@ -116,14 +116,14 @@ public class DiseaseAnnotationITCase {
     @Order(2)
     public void createAgmDiseaseAnnotation() {
 
-        AffectedGenomicModel model = createModel("MODEL:0001", "taxon:0001");
+        AffectedGenomicModel model = createModel("MODEL:0001", "taxon:0001", "TestAGM");
 
         List<EcoTerm> ecoTerms = new ArrayList<>();
         ecoTerms.add(ecoTerm);
 
         AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
         diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        diseaseAnnotation.setCurie(AGM_DISEASE_ANNOTATION);
+        diseaseAnnotation.setUniqueId(AGM_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
 
@@ -142,7 +142,7 @@ public class DiseaseAnnotationITCase {
                 get("/api/agm-disease-annotation/findBy/" + AGM_DISEASE_ANNOTATION).
                 then().
                 statusCode(200).
-                body("entity.curie", is(AGM_DISEASE_ANNOTATION)).
+                body("entity.uniqueId", is(AGM_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("MODEL:0001")).
                 body("entity.object.curie", is("DOID:0001")).
                 body("entity.evidenceCodes[0].curie", is("ECO:0001"));
@@ -154,7 +154,7 @@ public class DiseaseAnnotationITCase {
 
         GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
         diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        diseaseAnnotation.setCurie(GENE_DISEASE_ANNOTATION);
+        diseaseAnnotation.setUniqueId(GENE_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
 
@@ -196,7 +196,7 @@ public class DiseaseAnnotationITCase {
                 get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
                 then().
                 statusCode(200).
-                body("entity.curie", is(GENE_DISEASE_ANNOTATION)).
+                body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("GENE:0002")).
                 body("entity.object.curie", is("DOID:0002")).
                 // TODO:  Not working, i.e. the update is not sticking in postgres.
@@ -237,7 +237,7 @@ public class DiseaseAnnotationITCase {
                 get("/api/allele-disease-annotation/findBy/" + ALLELE_DISEASE_ANNOTATION).
                 then().
                 statusCode(200).
-                body("entity.curie", is(ALLELE_DISEASE_ANNOTATION)).
+                body("entity.uniqueId", is(ALLELE_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("ALLELE:0002")).
                 body("entity.object.curie", is("DOID:0003")).
                 // TODO:  Not working, i.e. the update is not sticking in postgres.
@@ -403,10 +403,11 @@ public class DiseaseAnnotationITCase {
         return biologicalEntity;
     }
 
-    private AffectedGenomicModel createModel(String curie, String taxon) {
+    private AffectedGenomicModel createModel(String curie, String taxon, String name) {
         AffectedGenomicModel biologicalEntity = new AffectedGenomicModel();
         biologicalEntity.setCurie(curie);
         biologicalEntity.setTaxon(taxon);
+        biologicalEntity.setName(name);
 
         RestAssured.given().
                 contentType("application/json").

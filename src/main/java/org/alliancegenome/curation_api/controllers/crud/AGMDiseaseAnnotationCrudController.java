@@ -24,8 +24,8 @@ public class AGMDiseaseAnnotationCrudController extends BaseCrudController<AGMDi
     }
 
     @Override
-    public ObjectResponse<AGMDiseaseAnnotation> get(String curie) {
-        SearchResponse<AGMDiseaseAnnotation> ret = findByField("curie", curie);
+    public ObjectResponse<AGMDiseaseAnnotation> get(String uniqueId) {
+        SearchResponse<AGMDiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
         if(ret != null && ret.getTotalResults() == 1) {
             return new ObjectResponse<AGMDiseaseAnnotation>(ret.getResults().get(0));
         } else {

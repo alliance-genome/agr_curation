@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(2)
+@Order(1)
 public class GeneBulkUploadITCase {
     
     private SOTerm soTerm;
@@ -29,8 +29,8 @@ public class GeneBulkUploadITCase {
     public void init() {
         RestAssured.config = RestAssuredConfig.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.socket.timeout", 100000)
-                    .setParam("http.connection.timeout", 100000));
+                    .setParam("http.socket.timeout", 200000)
+                    .setParam("http.connection.timeout", 200000));
     }
 
     @Test

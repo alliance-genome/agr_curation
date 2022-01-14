@@ -84,16 +84,6 @@ public class DiseaseAnnotationBulkUploadITCase {
                 post("/api/agm/bulk/agmfile").
                 then().
                 statusCode(200);
-            
-            // check entity count
-               RestAssured.given().
-                    when().
-                    header("Content-Type", "application/json").
-                    body("{}").
-                    post("/api/agm/find?limit=10&page=0").
-                    then().
-                    statusCode(200).
-                       body("totalResults", is(613));
     }
     
     @Test
