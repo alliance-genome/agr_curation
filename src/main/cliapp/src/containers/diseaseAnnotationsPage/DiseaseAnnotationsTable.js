@@ -380,7 +380,7 @@ export const DiseaseAnnotationsTable = () => {
       sortable: isEnabled,
       style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       filter: true,
-      filterElement: filterComponentTemplate("subject", ["subject.curie"]),
+      filterElement: filterComponentTemplate("subject", ["subject.symbol", "subject.name", "subject.curie"]),
       editor: (props) => subjectEditorTemplate(props),
       body: subjectBodyTemplate,
     },
