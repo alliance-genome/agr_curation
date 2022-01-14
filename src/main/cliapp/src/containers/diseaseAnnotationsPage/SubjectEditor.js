@@ -1,7 +1,8 @@
 import React, {useState, useRef} from 'react';
-import { Tooltip } from 'primereact/tooltip';
 import {AutoComplete} from "primereact/autocomplete";
 import {trimWhitespace } from '../../utils/utils';
+import {SubjectTooltip} from './SubjectTooltip';
+
 
    export const SubjectEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredSubjects, setFilteredSubjects] = useState([]);
@@ -19,7 +20,10 @@ import {trimWhitespace } from '../../utils/utils';
             searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":subjectFilter})
                 .then((data) => {
                     //console.log(data);
-                    setFilteredSubjects(data.results);
+                    if(data.results && data.results.length >0)
+                        setFilteredSubjects(data.results);
+                    else
+                        setFilteredSubjects([]);
                 });
         };
 
@@ -43,77 +47,45 @@ import {trimWhitespace } from '../../utils/utils';
 
         const subjectItemTemplate = (item) => {
             let inputValue = trimWhitespace(rowProps.rowData.subject.curie.toLowerCase());
-            let str = "";
-            let synonymsStr = "";
-            let isSynonym = false;
-            let crossReferencesStr = "";
-            let isCrossReference = false;
-            let secondaryIdentifiersStr = "";
-            let isSecondaryIdentifier = false;
-            autocompleteFields.forEach( field => {
-                if(field === "synonyms.name" && item["synonyms"]){
-                    for(let i=0; i< item["synonyms"].length ; i++ ) {
-                        if(item["synonyms"][i].name) {
-                            if (item["synonyms"][i].name.toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                synonymsStr +=  item["synonyms"][i].name.toString() + ", ";
-                                isSynonym = true;
-                            }
-                        }
-                    }
-                    if(isSynonym){
-                        str += "Synonym: " + synonymsStr;
-                    }
-                }else if(field === "crossReferences.curie" && item["crossReferences"]){
-                    for(let i=0; i< item["crossReferences"].length ; i++ ) {
-                        if(item["crossReferences"][i].curie) {
-                            if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
-                                isCrossReference = true;
-                            }
-                        }
-                    }
-                    if(isCrossReference){
-                        str += "CrossReferences: " + crossReferencesStr;
-                    }
-                }else {
-                    if (item[field]) {
-                        if(field === "secondaryIdentifiers") {
-                            for(var i=0; i< item["secondaryIdentifiers"].length ; i++ ) {
-                                if (item["secondaryIdentifiers"][i].toLowerCase().indexOf(inputValue) >= 0) {
-                                    secondaryIdentifiersStr += item["secondaryIdentifiers"][i] + ", ";
-                                    isSecondaryIdentifier = true;
-                                }
-                            }
-                            if(isSecondaryIdentifier){
-                                str += "SecondaryIdentifiers: " + secondaryIdentifiersStr;
-                            }
-                        }else {
-                            if (item[field].toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                if (field !== "curie" && field !== "symbol")
-                                    str += field + ": " + item[field].toString() + ", ";
-                            }
-                        }
+            if(autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
+                for(let i in autocompleteSelectedItem.synonyms){
+                    if(autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase().indexOf(inputValue)< 0){
+                        autocompleteSelectedItem.synonyms.splice(i,1);
                     }
                 }
-            });
-            str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
-            str = '';
+            }
+            if(autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length>0){
+                for(let i in autocompleteSelectedItem.crossReferences){
+                    if(autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue)< 0){
+                        autocompleteSelectedItem.crossReferences.splice(i,1);
+                    }
+                }
+            }
+
+            if(autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length>0){
+                for(let i in autocompleteSelectedItem.secondaryIdentifiers){
+                    if(autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue)< 0){
+                        autocompleteSelectedItem.secondaryIdentifiers.splice(i,1);
+                    }
+                }
+            }
+
             if(item.symbol){
                 return (
                   <div>
-                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') ' + str.toString()}}/>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') '}}/>
                   </div>
                 );
             } else if(item.name){
                 return (
                   <div>
-                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') ' + str.toString()}}/>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
                   </div>
                 );
             }else {
                 return (
                   <div>
-                    <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie + str.toString()}</div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie}</div>
                   </div>
                 );
             }
@@ -123,7 +95,11 @@ import {trimWhitespace } from '../../utils/utils';
             <div>
               <AutoComplete
                 id={rowProps.rowData.subject.curie}
-                //panelStyle={{width: '450px' }}
+                //panelStyle={{ width: '10%', overflow: 'scroll'}}
+                panelStyle={{ width : "15%", height : "250px"}}
+                scrollable
+                scrollHeight="250px"
+                virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}
                 field="curie"
                 value={rowProps.rowData.subject.curie}
                 suggestions={filteredSubjects}
@@ -132,22 +108,8 @@ import {trimWhitespace } from '../../utils/utils';
                 onHide={(e) => op.current.hide(e)}
                 onChange={(e) => onSubjectEditorValueChange(e)}
               />
-              <Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}}>
-                Type: {autocompleteSelectedItem.type}<br />
-                Curie: {autocompleteSelectedItem.curie}<br />
-                { autocompleteSelectedItem.name && 
-                  <div>Name: {autocompleteSelectedItem.name}<br /></div>
-                }
-                { autocompleteSelectedItem.symbol && 
-                  <div dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol }} />
-                }
-                {  autocompleteSelectedItem.synonyms && 
-                  autocompleteSelectedItem.synonyms.map((syn) => <div>Synonym: {syn.name}</div>)
-                }
-                {  autocompleteSelectedItem.crossReferences && 
-                  autocompleteSelectedItem.crossReferences.map((syn) => <div>Cross Reference: {syn.curie}</div>)
-                }
-              </Tooltip>
+              <SubjectTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(rowProps.rowData.subject.curie.toLowerCase())}
+              />
             </div>
 
         )
