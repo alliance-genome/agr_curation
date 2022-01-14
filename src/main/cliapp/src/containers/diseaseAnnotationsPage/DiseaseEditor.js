@@ -1,9 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
 import {trimWhitespace } from '../../utils/utils';
+import {DiseaseTooltip} from './DiseaseTooltip';
 
 export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
     const [filteredDiseases, setFilteredDiseases] = useState([]);
+
+    const op = useRef(null);
+    const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
 
     const searchDisease = (event) => {
         let diseaseFilter = {};
@@ -14,7 +18,10 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
 
         searchService.search('doterm', 15, 0, [], {"diseaseFilter":diseaseFilter, "obsoleteFilter":obsoleteFilter})
             .then((data) => {
-                setFilteredDiseases(data.results);
+                if(data.results && data.results.length >0)
+                    setFilteredDiseases(data.results);
+                else
+                    setFilteredDiseases([]);
             });
     };
 
@@ -33,77 +40,74 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
         }
     };
 
+    const onSelectionOver = (event, item) => {
+        setAutocompleteSelectedItem(item);
+        op.current.show(event);
+    };
+
     const diseaseItemTemplate = (item) => {
         let inputValue = trimWhitespace(rowProps.rowData.object.curie.toLowerCase());
-        let str = "";
-        let synonymsStr = "";
-        let isSynonym = false;
-        let crossReferencesStr = "";
-        let isCrossReference = false;
-        let secondaryIdentifiersStr = "";
-        let isSecondaryIdentifier = false;
-        autocompleteFields.forEach( field => {
-            if(field === "synonyms" && item["synonyms"]){
-                for(let i=0; i< item["synonyms"].length ; i++ ) {
-                    if(item["synonyms"][i]) {
-                        if (item["synonyms"][i].toLowerCase().indexOf(inputValue) >= 0) {
-                            synonymsStr +=  item["synonyms"][i] + ", ";
-                            isSynonym = true;
-                        }
-                    }
-                }
-                if(isSynonym){
-                    str += "Synonym: " + synonymsStr;
-                }
-            }else if(field === "crossReferences.curie" && item["crossReferences"]){
-                for(let i=0; i< item["crossReferences"].length ; i++ ) {
-                    if(item["crossReferences"][i].curie) {
-                        if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
-                            crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
-                            isCrossReference = true;
-                        }
-                    }
-                }
-                if(isCrossReference){
-                    str += "CrossReferences: " + crossReferencesStr;
-                }
-            }else {
-                if (item[field]) {
-                    if(field === "secondaryIdentifiers") {
-                        for(var i=0; i< item["secondaryIdentifiers"].length ; i++ ) {
-                            if (item["secondaryIdentifiers"][i].toLowerCase().indexOf(inputValue) >= 0) {
-                                secondaryIdentifiersStr += item["secondaryIdentifiers"][i] + ", ";
-                                isSecondaryIdentifier = true;
-                            }
-                        }
-                        if(isSecondaryIdentifier){
-                            str += "SecondaryIdentifiers: " + secondaryIdentifiersStr;
-                        }
-                    }else {
-                        if (item[field].toString().toLowerCase().indexOf(inputValue) >= 0) {
-                            if (field !== "curie" && field !== "name")
-                                str += field + ": " + item[field].toString() + ", ";
-                        }
-                    }
+        if(autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
+            for(let i in autocompleteSelectedItem.synonyms){
+                if(autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue)< 0){
+                    autocompleteSelectedItem.synonyms.splice(i,1);
                 }
             }
-        });
-        str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
-        if(item.name){
-            return <div dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') ' + str.toString()}}/>;
+        }
+        if(autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length>0){
+            for(let i in autocompleteSelectedItem.crossReferences){
+                if(autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue)< 0){
+                    autocompleteSelectedItem.crossReferences.splice(i,1);
+                }
+            }
+        }
+
+        if(autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length>0){
+            for(let i in autocompleteSelectedItem.secondaryIdentifiers){
+                if(autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue)< 0){
+                    autocompleteSelectedItem.secondaryIdentifiers.splice(i,1);
+                }
+            }
+        }
+
+        if(item.symbol){
+            return (
+                <div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') '}}/>
+                </div>
+            );
+        } else if(item.name){
+            return (
+                <div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
+                </div>
+            );
         }else {
-            return <div>{item.curie + str.toString()}</div>;
+            return (
+                <div>
+                    <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie}</div>
+                </div>
+            );
         }
     };
 
     return (
+        <div>
         <AutoComplete
+            id={rowProps.rowData.object.curie}
+            //panelStyle={{ width: '10%', overflow: 'scroll'}}
+            panelStyle={{ width : "15%", height : "350px"}}
+            scrollable scrollHeight="350px" virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}
             field="curie"
             value={rowProps.rowData.object.curie}
             suggestions={filteredDiseases}
             itemTemplate={diseaseItemTemplate}
             completeMethod={searchDisease}
+            onHide={(e) => op.current.hide(e)}
             onChange={(e) => onDiseaseEditorValueChange(e)}
         />
+            <DiseaseTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(rowProps.rowData.object.curie.toLowerCase())}
+            />
+        </div>
     )
 };
