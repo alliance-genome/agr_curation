@@ -95,9 +95,7 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
         <div>
         <AutoComplete
             id={rowProps.rowData.object.curie}
-            //panelStyle={{ width: '10%', overflow: 'scroll'}}
-            panelStyle={{ width : "15%", height : "350px"}}
-            scrollable scrollHeight="350px" virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}
+            panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px'}}
             field="curie"
             value={rowProps.rowData.object.curie}
             suggestions={filteredDiseases}
