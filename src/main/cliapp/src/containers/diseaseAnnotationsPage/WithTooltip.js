@@ -5,7 +5,7 @@ export function WithTooltip({ op, autocompleteSelectedItem, inputValue }) {
 
     return (
         <>
-            <Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack mouseTrackLeft={100}>
+            <Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack mouseTrackLeft={30}>
                 Curie: {autocompleteSelectedItem.curie}<br />
                 { autocompleteSelectedItem.name &&
                 <div dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
