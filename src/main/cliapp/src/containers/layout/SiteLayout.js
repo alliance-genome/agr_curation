@@ -46,7 +46,7 @@ export const SiteLayout = (props) => {
   useEffect(() => {
     if (!authState || !authState.isAuthenticated) {
       setSidebarActive(false);
-    }else{
+    } else {
       setSidebarActive(true);
     }
   }, [authState])
@@ -96,6 +96,12 @@ export const SiteLayout = (props) => {
       ]
     }
   ]
+
+  const onMenuItemClick = (event) => {
+    if (!event.item.items && layoutMode === "overlay") {
+      setSidebarActive(false);
+    }
+  };
 
   const appMenu = authState && authState.isAuthenticated ?
     <AppMenu model={menu} onMenuItemClick={onMenuItemClick} /> :
@@ -158,13 +164,6 @@ export const SiteLayout = (props) => {
   const onSidebarClick = () => {
     menuClick = true;
   };
-
-  const onMenuItemClick = (event) => {
-    if (!event.item.items && layoutMode === "overlay") {
-      setSidebarActive(false);
-    }
-  };
-
 
   const addClass = (element, className) => {
     if (element.classList)
