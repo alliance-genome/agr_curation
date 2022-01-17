@@ -38,7 +38,10 @@ public class GenomicEntityValidator {
             return null;
         }
         NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(taxonCurie);
-        if (taxon == null) return null;
+        if (taxon == null) {
+            addMessageResponse("taxon", invalidMessage);
+            return null;
+        }
         return taxon.getCurie();
     }
     
