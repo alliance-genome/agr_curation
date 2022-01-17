@@ -1,12 +1,16 @@
-import React, {useState} from 'react';
+import React, {useState, useRef} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
 import {trimWhitespace } from '../../utils/utils';
+import {WithTooltip} from './WithTooltip';
 
    export const WithEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
         const [filteredWithGenes, setFilteredWithGenes] = useState([]);
         const [query, setQuery] = useState();
 
-        const searchWithGenes = (event) => {
+       const op = useRef(null);
+       const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
+
+       const searchWithGenes = (event) => {
             setQuery(event.query);
             let withFilter = {};
             autocompleteFields.forEach( field => {
@@ -32,85 +36,76 @@ import {trimWhitespace } from '../../utils/utils';
             setDiseaseAnnotations(updatedAnnotations);
         };
 
+       const onSelectionOver = (event, item) => {
+           setAutocompleteSelectedItem(item);
+           op.current.show(event);
+       };
+
         const withItemTemplate = (item) => {
             let inputValue = trimWhitespace(query.toLowerCase());
-            let str = "";
-            let synonymsStr = "";
-            let isSynonym = false;
-            let crossReferencesStr = "";
-            let isCrossReference = false;
-            let secondaryIdentifiersStr = "";
-            let isSecondaryIdentifier = false;
-            autocompleteFields.forEach( field => {
-                if(field === "synonyms.name" && item["synonyms"]){
-                    for(let i=0; i< item["synonyms"].length ; i++ ) {
-                        if(item["synonyms"][i].name) {
-                            if (item["synonyms"][i].name.toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                synonymsStr +=  item["synonyms"][i].name.toString() + ", ";
-                                isSynonym = true;
-                             }
-                        }
-                    }
-                    if(isSynonym){
-                        str += "Synonym: " + synonymsStr;
-                    }
-                }else if(field === "crossReferences.curie" && item["crossReferences"]){
-                    for(let i=0; i< item["crossReferences"].length ; i++ ) {
-                        if(item["crossReferences"][i].curie) {
-                            if (item["crossReferences"][i].curie.toString() !== item["curie"].toString()){
-                                if (item["crossReferences"][i].curie.toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                    crossReferencesStr += item["crossReferences"][i].curie.toString() + ", ";
-                                    isCrossReference = true;
-                                }
-                            }
-                        }
-                    }
-                    if(isCrossReference){
-                        str += "CrossReferences: " + crossReferencesStr;
-                    }
-                }else {
-                    if (item[field]) {
-                        if(field === "secondaryIdentifiers") {
-                            for(var i=0; i< item["secondaryIdentifiers"].length ; i++ ) {
-                                if (item["secondaryIdentifiers"][i].toLowerCase().indexOf(inputValue) >= 0) {
-                                    secondaryIdentifiersStr += item["secondaryIdentifiers"][i] + ", ";
-                                    isSecondaryIdentifier = true;
-                                }
-                            }
-                            if(isSecondaryIdentifier){
-                                str += "SecondaryIdentifiers: " + secondaryIdentifiersStr;
-                            }
-                        }else {
-                            if (item[field].toString().toLowerCase().indexOf(inputValue) >= 0) {
-                                if (field !== "curie" && field !== "symbol")
-                                    str += field + ": " + item[field].toString() + ", ";
-                            }
-                        }
+            if(autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
+                for(let i in autocompleteSelectedItem.synonyms){
+                    if(autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase().indexOf(inputValue)< 0){
+                        autocompleteSelectedItem.synonyms.splice(i,1);
                     }
                 }
-            });
-            str = str.length > 0 ? str.substring(0 , str.length-2) : " "; //To remove trailing comma
-            if(item.symbol){
-                return <div dangerouslySetInnerHTML={{__html: item.symbol + ' (' +item.curie + ') ' + str.toString()}}/>;
-            }else{
-                return <div>{item.curie + str.toString()}</div>;
+            }
+            if(autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length>0){
+                for(let i in autocompleteSelectedItem.crossReferences){
+                    if(autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue)< 0){
+                        autocompleteSelectedItem.crossReferences.splice(i,1);
+                    }
+                }
             }
 
-            //return <div>{item.curie} ({item.symbol})</div>
+            if(autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length>0){
+                for(let i in autocompleteSelectedItem.secondaryIdentifiers){
+                    if(autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue)< 0){
+                        autocompleteSelectedItem.secondaryIdentifiers.splice(i,1);
+                    }
+                }
+            }
+
+            if(item.symbol){
+                return (
+                    <div>
+                        <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') '}}/>
+                    </div>
+                );
+            } else if(item.name){
+                return (
+                    <div>
+                        <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
+                    </div>
+                );
+            }else {
+                return (
+                    <div>
+                        <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie}</div>
+                    </div>
+                );
+            }
         };
 
 
         return (
-
-            <AutoComplete
-                multiple
-                value={rowProps.rowData.with}
-                field="curie"
-                suggestions={filteredWithGenes}
-                itemTemplate={withItemTemplate}
-                completeMethod={searchWithGenes}
-                onChange={(e) => onWithEditorValueChange(e)}
-            />
-
+            <div>
+                <AutoComplete
+                    multiple
+                    value={rowProps.rowData.with}
+                    field="curie"
+                    panelStyle={{ width : "15%", maxHeight : "250px" , height : "120px" }}
+                    scrollable
+                    scrollHeight="250px"
+                    virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}
+                    suggestions={filteredWithGenes}
+                    itemTemplate={withItemTemplate}
+                    completeMethod={searchWithGenes}
+                    onHide={(e) => op.current.hide(e)}
+                    onChange={(e) => onWithEditorValueChange(e)}
+                />
+                <WithTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(query ? query.toLowerCase() : '')}
+                />
+            </div>
         )
     };

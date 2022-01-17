@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -197,11 +199,19 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     }
     
     private boolean validateAffectedGenomicModelDTO(AffectedGenomicModelDTO agm) {
-        // TODO: add validation of taxon ID once taxons are loaded
+        // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
         
         // Check for required fields
         if (agm.getPrimaryID() == null || agm.getName() == null || agm.getTaxonId() == null) {
             log.debug("Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
+            return false;
+        }
+        
+        // Validate taxon ID
+        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
+        Matcher taxonIdMatcher = taxonIdPattern.matcher(agm.getTaxonId());
+        if (!taxonIdMatcher.find()) {
+            log.debug("Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
             return false;
         }
         

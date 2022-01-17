@@ -12,12 +12,12 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
-public class AffectedGenomicModelValidator extends GenomicEntityValidator {
+public class AlleleValidator extends GenomicEntityValidator {
     
     @Inject
-    AffectedGenomicModelDAO affectedGenomicModelDAO;
+    AlleleDAO alleleDAO;
     
-    public AffectedGenomicModel validateAnnotation(AffectedGenomicModel uiEntity) {
+    public Allele validateAnnotation(Allele uiEntity) {
         response = new ObjectResponse<>(uiEntity);
         
         String curie = validateCurie(uiEntity);
@@ -25,24 +25,20 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
             throw new ApiErrorException(response);
         }
         
-        AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
+        Allele dbEntity = alleleDAO.find(curie);
         if (dbEntity == null) {
-            addMessageResponse("Could not find AGM with curie: [" + curie + "]");
+            addMessageResponse("Could not find allele with curie: [" + curie + "]");
             throw new ApiErrorException(response);
         }
         
 
-        String errorTitle = "Could not update AGM [" + curie + "]";
-        
-        String name = validateName(uiEntity);
-        if (name != null) dbEntity.setName(name);
+        String errorTitle = "Could not update allele [" + curie + "]";
         
         String taxon = validateTaxon(uiEntity);
         if (taxon != null) dbEntity.setTaxon(taxon);
         
-        if (uiEntity.getSubtype() != null) {
-            dbEntity.setSubtype(uiEntity.getSubtype());
-        }
+        String symbol = validateSymbol(uiEntity);
+        if (symbol != null) dbEntity.setSymbol(symbol);
         
         if (uiEntity.getSynonyms() != null) {
             dbEntity.setSynonyms(uiEntity.getSynonyms());
@@ -56,12 +52,29 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
             dbEntity.setCrossReferences(uiEntity.getCrossReferences());
         }
         
+        if (uiEntity.getGenomicLocations() != null) {
+            dbEntity.setGenomicLocations(uiEntity.getGenomicLocations());
+        }
+        
+        if (uiEntity.getDescription() != null) {
+            dbEntity.setDescription(uiEntity.getDescription());
+        }
+        
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
         }
         
         return dbEntity;
+    }
+    
+    private String validateSymbol(Allele uiEntity) {
+        String symbol = uiEntity.getSymbol();
+        if (StringUtils.isEmpty(symbol)) {
+            addMessageResponse("symbol", requiredMessage);
+            return null;
+        }
+        return symbol;
     }
 
 }
