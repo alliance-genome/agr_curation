@@ -2,8 +2,7 @@ package org.alliancegenome.curation_api.model.ingest;
 
 import java.util.HashMap;
 
-import groovy.transform.ToString;
-import lombok.Data;
+import lombok.*;
 
 @Data
 @ToString
