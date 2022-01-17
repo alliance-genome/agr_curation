@@ -22,12 +22,14 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleObjectRelationsDTO;
 import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleValidator;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -42,6 +44,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
     @Inject GeneDAO geneDAO;
     @Inject CrossReferenceService crossReferenceService;
     @Inject SynonymService synonymService;
+    @Inject NcbiTaxonTermService ncbiTaxonTermService;
     
     @Override
     @PostConstruct
@@ -207,9 +210,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         }
         
         // Validate taxon ID
-        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
-        Matcher taxonIdMatcher = taxonIdPattern.matcher(allele.getTaxonId());
-        if (!taxonIdMatcher.find()) {
+        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(allele.getTaxonId());
+        if (taxon == null) {
             log.debug("Invalid taxon ID for allele " + allele.getPrimaryId() + " - skipping");
             return false;
         }
