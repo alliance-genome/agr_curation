@@ -1,4 +1,3 @@
-import { Layout } from "./Layout";
-import { Layout2 } from "./Layout2";
+import { SiteLayout } from "./SiteLayout";
 
-export { Layout, Layout2 };
+export { SiteLayout };
