@@ -94,7 +94,7 @@ import {WithTooltip} from './WithTooltip';
                     multiple
                     value={rowProps.rowData.with}
                     field="curie"
-                    panelStyle={{ width : "15%", maxHeight : "250px" , height : "120px" }}
+                    panelStyle={{ width : "15%", maxHeight : "250px" }}
                     scrollable
                     scrollHeight="250px"
                     virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}

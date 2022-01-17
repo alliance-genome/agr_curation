@@ -96,9 +96,9 @@ import {SubjectTooltip} from './SubjectTooltip';
               <AutoComplete
                 id={rowProps.rowData.subject.curie}
                 //panelStyle={{ width: '10%', overflow: 'scroll'}}
-                panelStyle={{ width : "15%", height : "250px"}}
+                panelStyle={{ width : "15%", height : "350px"}}
                 scrollable
-                scrollHeight="250px"
+                scrollHeight="350px"
                 virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}
                 field="curie"
                 value={rowProps.rowData.subject.curie}
