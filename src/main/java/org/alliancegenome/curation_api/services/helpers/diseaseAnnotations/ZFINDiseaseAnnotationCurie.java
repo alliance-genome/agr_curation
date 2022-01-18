@@ -3,6 +3,8 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.model.entities.Condition;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -37,7 +39,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
     }
 
     @Override
-    public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<String> conditions) {
-        return super.getCurieID(subject, object, reference, null, conditions);
+    public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> conditions, String associationType) {
+        return super.getCurieID(subject, object, reference, null, conditions, associationType);
     }
 }

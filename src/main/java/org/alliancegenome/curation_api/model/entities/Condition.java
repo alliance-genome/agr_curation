@@ -2,8 +2,12 @@ package org.alliancegenome.curation_api.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.Getter;
+import lombok.Setter;
 import org.alliancegenome.curation_api.view.View;
 
+@Setter
+@Getter
 public class Condition {
 
     @JsonView({View.FieldsOnly.class})
@@ -12,7 +16,7 @@ public class Condition {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("condition_quantity")
-    private ExperimentalCondition conditionQuantityl;
+    private ExperimentalCondition conditionQuantity;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("condition_anatomy")

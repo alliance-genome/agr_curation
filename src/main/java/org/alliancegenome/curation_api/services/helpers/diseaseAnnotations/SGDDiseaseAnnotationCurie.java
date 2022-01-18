@@ -1,8 +1,11 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.List;
 
 public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 
@@ -29,5 +32,12 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
         generator.addAll(annotationDTO.getWith());
         return generator.getCurie();
     }
+
+    @Override
+    public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
+        return super.getCurieID(subject, object, reference, null,null, null);
+    }
+
+
 }
 
