@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.model.ingest.json.dto;
+package org.alliancegenome.curation_api.model.ingest.fms.dto;
 
 import java.util.*;
 
@@ -9,13 +9,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class DiseaseModelAnnotationDTO extends BaseDTO {
+public class DiseaseModelAnnotationFmsDTO extends BaseDTO {
 
     private String objectId;
     
     private String objectName;
     
-    private DiseaseObjectRelationDTO objectRelation;
+    private DiseaseObjectRelationFmsDTO objectRelation;
 
     private Negation negation;
     
@@ -24,15 +24,15 @@ public class DiseaseModelAnnotationDTO extends BaseDTO {
     @JsonProperty("DOid")
     private String doId;
 
-    private List<DataProviderDTO> dataProvider;
+    private List<DataProviderFmsDTO> dataProvider;
     
     private List<String> with;
     
-    private EvidenceDTO evidence;
+    private EvidenceFmsDTO evidence;
 
     private Date dateAssigned;
     
-    private List<ConditionRelationDTO> conditionRelations;
+    private List<ConditionRelationFmsDTO> conditionRelations;
     
 
     public enum Negation {

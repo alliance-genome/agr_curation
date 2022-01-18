@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AffectedGenomicModelCrudInterface;
 import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelMetaDataFmsDTO;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 @RequestScoped
@@ -26,7 +26,7 @@ public class AffectedGenomicModelCrudController extends BaseCrudController<Affec
     }
 
     @Override
-    public String updateAGMs(AffectedGenomicModelMetaDataDTO agmData) {
+    public String updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData) {
         bulkLoadJobExecutor.processAGMDTOData(null, agmData);
         return "OK";
     }

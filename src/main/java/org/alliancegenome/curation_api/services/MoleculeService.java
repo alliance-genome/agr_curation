@@ -12,7 +12,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -44,7 +44,7 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
     
     
     @Transactional
-    public void processUpdate(MoleculeDTO molecule) {
+    public void processUpdate(MoleculeFmsDTO molecule) {
         log.debug("processUpdate Molecule: ");
     
         if (molecule.getId() == null) {
@@ -83,7 +83,7 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
     }
     
     
-    private void handleCrossReferences(MoleculeDTO moleculeDTO, Molecule molecule) {
+    private void handleCrossReferences(MoleculeFmsDTO moleculeFmsDTO, Molecule molecule) {
         Map<String, CrossReference> currentIds;
         if(molecule.getCrossReferences() == null) {
             currentIds = new HashedMap<>();
@@ -91,16 +91,16 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
         } else {
             currentIds = molecule.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
         }
-        Map<String, CrossReferenceDTO> newIds;
-        if(moleculeDTO.getCrossReferences() == null) {
+        Map<String, CrossReferenceFmsDTO> newIds;
+        if(moleculeFmsDTO.getCrossReferences() == null) {
             newIds = new HashedMap<>();
         } else {
-            newIds = moleculeDTO.getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceDTO::getId, Function.identity(),
+            newIds = moleculeFmsDTO.getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceFmsDTO::getId, Function.identity(),
                     (cr1, cr2) -> {
                         HashSet<String> pageAreas = new HashSet<>();
                         if(cr1.getPages() != null) pageAreas.addAll(cr1.getPages());
                         if(cr2.getPages() != null) pageAreas.addAll(cr2.getPages());
-                        CrossReferenceDTO newCr = new CrossReferenceDTO();
+                        CrossReferenceFmsDTO newCr = new CrossReferenceFmsDTO();
                         newCr.setId(cr2.getId());
                         newCr.setPages(new ArrayList<>(pageAreas));
                         return newCr;

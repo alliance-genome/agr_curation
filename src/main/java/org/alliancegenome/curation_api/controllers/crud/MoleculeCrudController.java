@@ -9,9 +9,8 @@ import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.interfaces.crud.MoleculeCrudInterface;
 import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.model.entities.Molecule;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.MoleculeService;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 @RequestScoped
 public class MoleculeCrudController extends BaseCrudController<MoleculeService, Molecule, MoleculeDAO> implements MoleculeCrudInterface {
@@ -27,7 +26,7 @@ public class MoleculeCrudController extends BaseCrudController<MoleculeService, 
     }
 
     @Override
-    public String updateMolecules(MoleculeMetaDataDTO moleculeData) {
+    public String updateMolecules(MoleculeMetaDataFmsDTO moleculeData) {
         bulkLoadJobExecutor.processMoleculeDTOData(null, moleculeData);
         return "OK";
     }

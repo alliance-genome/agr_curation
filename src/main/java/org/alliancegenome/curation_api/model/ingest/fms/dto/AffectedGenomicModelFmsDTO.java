@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.model.ingest.json.dto;
+package org.alliancegenome.curation_api.model.ingest.fms.dto;
 
 import java.util.List;
 
@@ -8,16 +8,16 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel.Subty
 import lombok.Data;
 
 @Data
-public class AffectedGenomicModelDTO extends BaseDTO {
+public class AffectedGenomicModelFmsDTO extends BaseDTO {
 
     private String primaryID;
     private String name;
     private Subtype subtype;
     private String taxonId;
-    private CrossReferenceDTO crossReference;
+    private CrossReferenceFmsDTO crossReference;
     private List<String> synonyms;
     private List<String> secondaryIds;
-    private List<AffectedGenomicModelComponentDTO> affectedGenomicModelComponents;
+    private List<AffectedGenomicModelComponentFmsDTO> affectedGenomicModelComponents;
     private List<String> sequenceTargetingReagentIDs;
     private List<String> parentalPopulationIDs;
 

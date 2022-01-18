@@ -1,20 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
@@ -23,17 +9,24 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelComponentDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelDTO;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelComponentFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -57,17 +50,17 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     protected void init() {
         setSQLDao(affectedGenomicModelDAO);
     }
-    
+
     @Override
     @Transactional
     public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
         AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
         return new ObjectResponse<AffectedGenomicModel>(affectedGenomicModelDAO.persist(dbEntity));
     }
-    
+
 
     @Transactional
-    public void processUpdate(AffectedGenomicModelDTO agm) {
+    public void processUpdate(AffectedGenomicModelFmsDTO agm) {
         // TODO: add loading of components
         // TODO: add loading of sequenceTargetingReagents
         // TODO: add loading of parentalPopulations
@@ -75,63 +68,63 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         if (!validateAffectedGenomicModelDTO(agm)) {
             return;
         }
-        
+
         AffectedGenomicModel dbAgm = affectedGenomicModelDAO.find(agm.getPrimaryID());
-        
-        if(dbAgm == null) {
+
+        if (dbAgm == null) {
             dbAgm = new AffectedGenomicModel();
             dbAgm.setCurie(agm.getPrimaryID());
-            
+
             handleNewSynonyms(agm, dbAgm);
-            
+
         } else {
             handleUpdateSynonyms(agm, dbAgm);
         }
-        
+
         dbAgm.setName(agm.getName().substring(0, Math.min(agm.getName().length(), 254)));
         dbAgm.setTaxon(ncbiTaxonTermDAO.find(agm.getTaxonId()));
         dbAgm.setSubtype(agm.getSubtype());
-        
+
         handleCrossReference(agm, dbAgm);
         handleSecondaryIds(agm, dbAgm);
-        
+
         affectedGenomicModelDAO.persist(dbAgm);
     }
-    
-    private void handleCrossReference(AffectedGenomicModelDTO agm, AffectedGenomicModel dbAgm) {
+
+    private void handleCrossReference(AffectedGenomicModelFmsDTO agm, AffectedGenomicModel dbAgm) {
         Map<String, CrossReference> currentIds;
-        if(dbAgm.getCrossReferences() == null) {
+        if (dbAgm.getCrossReferences() == null) {
             currentIds = new HashedMap<>();
             dbAgm.setCrossReferences(new ArrayList<>());
         } else {
             currentIds = dbAgm.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
         }
-        
-        Map<String, CrossReferenceDTO> newIds = new HashedMap<>();
-        if(agm.getCrossReference() != null) {   
-            CrossReferenceDTO newCr = new CrossReferenceDTO();
+
+        Map<String, CrossReferenceFmsDTO> newIds = new HashedMap<>();
+        if (agm.getCrossReference() != null) {
+            CrossReferenceFmsDTO newCr = new CrossReferenceFmsDTO();
             HashSet<String> pageAreas = new HashSet<>();
             newCr.setId(agm.getCrossReference().getId());
             if (agm.getCrossReference().getPages() != null) pageAreas.addAll(agm.getCrossReference().getPages());
             newCr.setPages(new ArrayList<>(pageAreas));
             newIds.put(newCr.getId(), newCr);
         }
-        
+
         newIds.forEach((k, v) -> {
-            if(!currentIds.containsKey(k)) {
+            if (!currentIds.containsKey(k)) {
                 dbAgm.getCrossReferences().add(crossReferenceService.processUpdate(v));
             }
         });
-        
+
         currentIds.forEach((k, v) -> {
-            if(!newIds.containsKey(k)) {
+            if (!newIds.containsKey(k)) {
                 dbAgm.getCrossReferences().remove(v);
             }
         });
 
     }
-    
-    private void handleNewSynonyms(AffectedGenomicModelDTO agm, AffectedGenomicModel dbAgm) {
+
+    private void handleNewSynonyms(AffectedGenomicModelFmsDTO agm, AffectedGenomicModel dbAgm) {
         if (CollectionUtils.isNotEmpty(agm.getSynonyms())) {
             List<Synonym> synonyms = DtoConverterHelper.getSynonyms(agm);
             synonyms.forEach(synonym -> synonymService.create(synonym));
@@ -139,7 +132,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         }
     }
 
-    private void handleUpdateSynonyms(AffectedGenomicModelDTO agm, AffectedGenomicModel dbAgm) {
+    private void handleUpdateSynonyms(AffectedGenomicModelFmsDTO agm, AffectedGenomicModel dbAgm) {
         if (CollectionUtils.isNotEmpty(agm.getSynonyms())) {
             List<Synonym> newSynonyms = DtoConverterHelper.getSynonyms(agm);
 
@@ -171,46 +164,46 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
             dbAgm.setSynonyms(new ArrayList<>());
         }
     }
-    
-    private void handleSecondaryIds(AffectedGenomicModelDTO agm, AffectedGenomicModel dbAgm) {
+
+    private void handleSecondaryIds(AffectedGenomicModelFmsDTO agm, AffectedGenomicModel dbAgm) {
         Set<String> currentIds;
-        if(dbAgm.getSecondaryIdentifiers() == null) {
+        if (dbAgm.getSecondaryIdentifiers() == null) {
             currentIds = new HashSet<>();
             dbAgm.setSecondaryIdentifiers(new ArrayList<>());
         } else {
             currentIds = dbAgm.getSecondaryIdentifiers().stream().collect(Collectors.toSet());
         }
-        
+
         Set<String> newIds;
-        if(agm.getSecondaryIds() == null) {
+        if (agm.getSecondaryIds() == null) {
             newIds = new HashSet<>();
         } else {
             newIds = agm.getSecondaryIds().stream().collect(Collectors.toSet());
         }
-        
+
         newIds.forEach(id -> {
-            if(!currentIds.contains(id)) {
+            if (!currentIds.contains(id)) {
                 dbAgm.getSecondaryIdentifiers().add(id);
             }
         });
-        
+
         currentIds.forEach(id -> {
-            if(!newIds.contains(id)) {
+            if (!newIds.contains(id)) {
                 dbAgm.getSecondaryIdentifiers().remove(id);
             }
         });
 
     }
-    
-    private boolean validateAffectedGenomicModelDTO(AffectedGenomicModelDTO agm) {
+
+    private boolean validateAffectedGenomicModelDTO(AffectedGenomicModelFmsDTO agm) {
         // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
-        
+
         // Check for required fields
         if (agm.getPrimaryID() == null || agm.getName() == null || agm.getTaxonId() == null) {
             log.debug("Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
             return false;
         }
-        
+
         // Validate taxon ID
         Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
         Matcher taxonIdMatcher = taxonIdPattern.matcher(agm.getTaxonId());
@@ -218,10 +211,10 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
             log.debug("Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
             return false;
         }
-        
+
         // Validate component fields
         if (CollectionUtils.isNotEmpty(agm.getAffectedGenomicModelComponents())) {
-            for (AffectedGenomicModelComponentDTO component : agm.getAffectedGenomicModelComponents()) {
+            for (AffectedGenomicModelComponentFmsDTO component : agm.getAffectedGenomicModelComponents()) {
                 if (component.getAlleleID() == null) {
                     log.debug("Entry for AGM " + agm.getPrimaryID() + " has component with missing allele - skipping");
                     return false;
@@ -235,7 +228,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
                     log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with missing zygosity - skipping");
                     return false;
                 }
-                
+
                 if (!validZygosityCodes.contains(component.getZygosity())) {
                     log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with invalid zygosity - skipping");
                     return false;
@@ -244,9 +237,9 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         }
         return true;
     }
-    
+
     private static final Set<String> validZygosityCodes = Set.of(
             "GENO:0000602", "GENO:0000603", "GENO:0000604", "GENO:0000605", "GENO:0000606", "GENO:0000135",
             "GENO:0000136", "GENO:0000137", "GENO:0000134"
-        );
+    );
 }

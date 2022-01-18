@@ -1,25 +1,20 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.GeneFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.GenomeLocationsFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneValidator;
@@ -27,7 +22,13 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -45,7 +46,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     SoTermDAO soTermDAO;
     @Inject
     GeneValidator geneValidator;
-    @Inject 
+    @Inject
     NcbiTaxonTermService ncbiTaxonTermService;
     @Inject 
     NcbiTaxonTermDAO ncbiTaxonTermDAO;
@@ -55,7 +56,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     protected void init() {
         setSQLDao(geneDAO);
     }
-    
+
     @Override
     @Transactional
     public ObjectResponse<Gene> update(Gene uiEntity) {
@@ -74,7 +75,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     }
 
     @Transactional
-    public void processUpdate(GeneDTO gene) {
+    public void processUpdate(GeneFmsDTO gene) {
         //log.info("processUpdate Gene: ");
 
         if (!validateGeneDTO(gene)) {
@@ -99,84 +100,84 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         
         g.setTaxon(ncbiTaxonTermDAO.find(gene.getBasicGeneticEntity().getTaxonId()));
         g.setGeneType(soTermDAO.find(gene.getSoTermId()));
-        
+
         handleCrossReferences(gene, g);
         handleSecondaryIds(gene, g);
 
         geneDAO.persist(g);
 
     }
-    
-    private void handleSecondaryIds(GeneDTO geneDTO, Gene gene) {
+
+    private void handleSecondaryIds(GeneFmsDTO geneFmsDTO, Gene gene) {
         Set<String> currentIds;
-        if(gene.getSecondaryIdentifiers() == null) {
+        if (gene.getSecondaryIdentifiers() == null) {
             currentIds = new HashSet<>();
             gene.setSecondaryIdentifiers(new ArrayList<>());
         } else {
             currentIds = gene.getSecondaryIdentifiers().stream().collect(Collectors.toSet());
         }
-        
+
         Set<String> newIds;
-        if(geneDTO.getBasicGeneticEntity().getSecondaryIds() == null) {
+        if (geneFmsDTO.getBasicGeneticEntity().getSecondaryIds() == null) {
             newIds = new HashSet<>();
         } else {
-            newIds = geneDTO.getBasicGeneticEntity().getSecondaryIds().stream().collect(Collectors.toSet());
+            newIds = geneFmsDTO.getBasicGeneticEntity().getSecondaryIds().stream().collect(Collectors.toSet());
         }
-        
+
         newIds.forEach(id -> {
-            if(!currentIds.contains(id)) {
+            if (!currentIds.contains(id)) {
                 gene.getSecondaryIdentifiers().add(id);
             }
         });
-        
+
         currentIds.forEach(id -> {
-            if(!newIds.contains(id)) {
+            if (!newIds.contains(id)) {
                 gene.getSecondaryIdentifiers().remove(id);
             }
         });
 
     }
-    
-    private void handleCrossReferences(GeneDTO geneDTO, Gene gene) {
+
+    private void handleCrossReferences(GeneFmsDTO geneFmsDTO, Gene gene) {
         Map<String, CrossReference> currentIds;
-        if(gene.getCrossReferences() == null) {
+        if (gene.getCrossReferences() == null) {
             currentIds = new HashedMap<>();
             gene.setCrossReferences(new ArrayList<>());
         } else {
             currentIds = gene.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
         }
-        Map<String, CrossReferenceDTO> newIds;
-        if(geneDTO.getBasicGeneticEntity().getCrossReferences() == null) {
+        Map<String, CrossReferenceFmsDTO> newIds;
+        if (geneFmsDTO.getBasicGeneticEntity().getCrossReferences() == null) {
             newIds = new HashedMap<>();
         } else {
-            newIds = geneDTO.getBasicGeneticEntity().getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceDTO::getId, Function.identity(),
+            newIds = geneFmsDTO.getBasicGeneticEntity().getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceFmsDTO::getId, Function.identity(),
                     (cr1, cr2) -> {
                         HashSet<String> pageAreas = new HashSet<>();
-                        if(cr1.getPages() != null) pageAreas.addAll(cr1.getPages());
-                        if(cr2.getPages() != null) pageAreas.addAll(cr2.getPages());
-                        CrossReferenceDTO newCr = new CrossReferenceDTO();
+                        if (cr1.getPages() != null) pageAreas.addAll(cr1.getPages());
+                        if (cr2.getPages() != null) pageAreas.addAll(cr2.getPages());
+                        CrossReferenceFmsDTO newCr = new CrossReferenceFmsDTO();
                         newCr.setId(cr2.getId());
                         newCr.setPages(new ArrayList<>(pageAreas));
                         return newCr;
                     }
             ));
         }
-        
+
         newIds.forEach((k, v) -> {
-            if(!currentIds.containsKey(k)) {
+            if (!currentIds.containsKey(k)) {
                 gene.getCrossReferences().add(crossReferenceService.processUpdate(v));
             }
         });
-        
+
         currentIds.forEach((k, v) -> {
-            if(!newIds.containsKey(k)) {
+            if (!newIds.containsKey(k)) {
                 gene.getCrossReferences().remove(v);
             }
         });
 
     }
-    
-    private void handleNewSynonyms(GeneDTO gene, Gene g) {
+
+    private void handleNewSynonyms(GeneFmsDTO gene, Gene g) {
         if (CollectionUtils.isNotEmpty(gene.getBasicGeneticEntity().getSynonyms())) {
             List<Synonym> synonyms = DtoConverterHelper.getSynonyms(gene);
             synonyms.forEach(synonym -> synonymService.create(synonym));
@@ -184,9 +185,9 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         }
     }
 
-    private void handleUpdateSynonyms(GeneDTO geneDTO, Gene gene) {
-        if (CollectionUtils.isNotEmpty(geneDTO.getBasicGeneticEntity().getSynonyms())) {
-            List<Synonym> newSynonyms = DtoConverterHelper.getSynonyms(geneDTO);
+    private void handleUpdateSynonyms(GeneFmsDTO geneFmsDTO, Gene gene) {
+        if (CollectionUtils.isNotEmpty(geneFmsDTO.getBasicGeneticEntity().getSynonyms())) {
+            List<Synonym> newSynonyms = DtoConverterHelper.getSynonyms(geneFmsDTO);
 
             List<Synonym> existingSynonyms = gene.getSynonyms();
 
@@ -217,54 +218,54 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         }
     }
 
-    private boolean validateGeneDTO(GeneDTO dto) {
+    private boolean validateGeneDTO(GeneFmsDTO dto) {
         // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
-        
+
         // Check for required fields
         if (dto.getBasicGeneticEntity().getPrimaryId() == null ||
                 dto.getBasicGeneticEntity().getTaxonId() == null) {
             log.debug("Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " missing required fields - skipping");
             return false;
         }
-        
+
         String soTermId = dto.getSoTermId();
-        if ( soTermId != null) {
+        if (soTermId != null) {
             SOTerm soTerm = soTermDAO.find(soTermId);
             if (soTerm == null) {
-                log.debug("Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " references an unknown SOTerm (" + 
+                log.debug("Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " references an unknown SOTerm (" +
                         soTermId + " - skipping"
-                        );
+                );
                 return false;
             }
         }
-        
+
         // Validate taxon ID
         ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(dto.getBasicGeneticEntity().getTaxonId());
         if (taxon.getEntity() == null) {
             log.debug("Invalid taxon ID for gene " + dto.getBasicGeneticEntity() + " - skipping");
             return false;
         }
-        
+
         // Check any genome positions have valid start/end/strand
         if (CollectionUtils.isNotEmpty(dto.getBasicGeneticEntity().getGenomeLocations())) {
-            for (GenomeLocationsDTO location : dto.getBasicGeneticEntity().getGenomeLocations()) {
+            for (GenomeLocationsFmsDTO location : dto.getBasicGeneticEntity().getGenomeLocations()) {
                 if (location.getStartPosition() != null && location.getEndPosition() != null &&
                         location.getStartPosition().intValue() > location.getEndPosition().intValue()
-                        ) {
+                ) {
                     log.debug("Start position is downstream of end position for gene" +
                             dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
                     return false;
                 }
                 if (location.getStrand() != null && !location.getStrand().equals("+") &&
                         !location.getStrand().equals("-") && !location.getStrand().equals(".")
-                        ) {
+                ) {
                     log.debug("Invalid strand specified for " + dto.getBasicGeneticEntity().getPrimaryId() +
                             " - skipping");
                     return false;
                 }
             }
         }
-        
+
         return true;
     }
 
