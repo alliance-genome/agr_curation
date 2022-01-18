@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.*;
 import org.alliancegenome.curation_api.services.helpers.*;
 import org.alliancegenome.curation_api.services.ontology.*;
@@ -33,7 +33,8 @@ public class BulkLoadJobExecutor {
     @Inject AlleleService alleleService;
     @Inject GeneService geneService;
     @Inject AffectedGenomicModelService agmService;
-    @Inject DiseaseAnnotationService diseaseService;
+    @Inject
+    DiseaseAnnotationFmsService diseaseService;
 
     @Inject XcoTermService xcoTermService;
     @Inject GoTermService goTermService;
@@ -56,17 +57,17 @@ public class BulkLoadJobExecutor {
     public void process(BulkLoadFile bulkLoadFile) throws Exception {
         //log.info("Process Starting for: " + bulkLoadFile);
         if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE_DTO) {
-            GeneMetaDataDTO geneData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), GeneMetaDataDTO.class);
+            GeneMetaDataFmsDTO geneData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), GeneMetaDataFmsDTO.class);
             bulkLoadFile.setRecordCount(geneData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             processGeneDTOData(bulkLoadFile, geneData);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ALLELE_DTO) {
-            AlleleMetaDataDTO alleleData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AlleleMetaDataDTO.class);
+            AlleleMetaDataFmsDTO alleleData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AlleleMetaDataFmsDTO.class);
             bulkLoadFile.setRecordCount(alleleData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             processAlleleDTOData(bulkLoadFile, alleleData);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.AGM_DTO) {
-            AffectedGenomicModelMetaDataDTO agmData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModelMetaDataDTO.class);
+            AffectedGenomicModelMetaDataFmsDTO agmData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModelMetaDataFmsDTO.class);
             bulkLoadFile.setRecordCount(agmData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             processAGMDTOData(bulkLoadFile, agmData);
@@ -107,7 +108,7 @@ public class BulkLoadJobExecutor {
             ph.finishProcess();
 
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.DISEASE_ANNOTATION_DTO) {
-            DiseaseAnnotationMetaDataDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataDTO.class);
+            DiseaseAnnotationMetaDataFmsDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataFmsDTO.class);
             // TODO find taxon ID and send it with this load
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
 
@@ -126,7 +127,7 @@ public class BulkLoadJobExecutor {
             bulkLoadFileDAO.merge(bulkLoadFile);
             diseaseService.runLoad(map.get(fms.getDataSubType()), diseaseData);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
-            MoleculeMetaDataDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataDTO.class);
+            MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
 
             log.info("Running with: " + fms.getDataSubType() + " " + fms.getDataSubType());
@@ -197,56 +198,56 @@ public class BulkLoadJobExecutor {
         //log.info("Process Finished for: " + bulkLoadFile);
     }
 
-    public void processAlleleDTOData(BulkLoadFile bulkLoadFile, AlleleMetaDataDTO alleleData) {
+    public void processAlleleDTOData(BulkLoadFile bulkLoadFile, AlleleMetaDataFmsDTO alleleData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {
             ph.startProcess("Allele DTO Update", alleleData.getData().size());
         } else {
             ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Allele DTO Update", alleleData.getData().size());
         }
-        for(AlleleDTO allele: alleleData.getData()) {
+        for(AlleleFmsDTO allele: alleleData.getData()) {
             alleleService.processUpdate(allele);
             ph.progressProcess();
         }
         ph.finishProcess();
     }
 
-    public void processMoleculeDTOData(BulkLoadFile bulkLoadFile, MoleculeMetaDataDTO moleculeData) {
+    public void processMoleculeDTOData(BulkLoadFile bulkLoadFile, MoleculeMetaDataFmsDTO moleculeData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {
             ph.startProcess("Molecule Update", moleculeData.getData().size());
         } else {
             ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Molecule DTO Update", moleculeData.getData().size());
         }
-        for(MoleculeDTO molecule: moleculeData.getData()) {
+        for(MoleculeFmsDTO molecule: moleculeData.getData()) {
             moleculeService.processUpdate(molecule);
             ph.progressProcess();
         }
         ph.finishProcess();
     }
 
-    public void processGeneDTOData(BulkLoadFile bulkLoadFile, GeneMetaDataDTO geneData) {
+    public void processGeneDTOData(BulkLoadFile bulkLoadFile, GeneMetaDataFmsDTO geneData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {
             ph.startProcess("Gene DTO Update", geneData.getData().size());
         } else {
             ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Gene DTO Update", geneData.getData().size());
         }
-        for(GeneDTO gene: geneData.getData()) {
+        for(GeneFmsDTO gene: geneData.getData()) {
             geneService.processUpdate(gene);
             ph.progressProcess();
         }
         ph.finishProcess();
     }
 
-    public void processAGMDTOData(BulkLoadFile bulkLoadFile, AffectedGenomicModelMetaDataDTO agmData) {
+    public void processAGMDTOData(BulkLoadFile bulkLoadFile, AffectedGenomicModelMetaDataFmsDTO agmData) {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         if(bulkLoadFile == null) {
             ph.startProcess("AGM DTO Update", agmData.getData().size());
         } else {
             ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " AGM DTO Update", agmData.getData().size());
         }
-        for(AffectedGenomicModelDTO agm: agmData.getData()) {
+        for(AffectedGenomicModelFmsDTO agm: agmData.getData()) {
             agmService.processUpdate(agm);
             ph.progressProcess();
         }

@@ -1,11 +1,11 @@
-package org.alliancegenome.curation_api.model.ingest.json.dto;
+package org.alliancegenome.curation_api.model.ingest.fms.dto;
 
 import org.alliancegenome.curation_api.base.BaseDTO;
 
 import lombok.Data;
 
 @Data
-public class GenomeLocationsDTO extends BaseDTO {
+public class GenomeLocationsFmsDTO extends BaseDTO {
 
     private String assembly;
     private Number startPosition;

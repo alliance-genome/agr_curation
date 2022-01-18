@@ -1,19 +1,61 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
-import java.util.Comparator;
-
-import org.alliancegenome.curation_api.model.ingest.json.dto.*;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class DiseaseAnnotationCurie {
 
     public static final String DELIMITER = "|";
 
-    public abstract String getCurieID(DiseaseModelAnnotationDTO annotationDTO);
+    public abstract String getCurieID(DiseaseModelAnnotationFmsDTO annotationDTO);
 
-    public String getExperimentalConditionCurie(ExperimentalConditionDTO dto) {
+    /**
+     * @return curie string
+     */
+    public String getCurieID(
+            String subject,
+            String object,
+            String reference,
+            List<String> evidenceCodes,
+            List<ConditionRelation> conditionRelations,
+            String associationType) {
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
+        curie.add(subject);
+        curie.add(object);
+        if (associationType != null)
+            curie.add(associationType);
+        curie.add(getEvidenceCurie(evidenceCodes, reference));
+        if (CollectionUtils.isNotEmpty(conditionRelations)) {
+            curie.add(conditionRelations.stream()
+                    .map(condition -> {
+                        CurieGeneratorHelper gen = new CurieGeneratorHelper();
+                        gen.add(condition.getRelationType());
+                        condition.getConditions().forEach(cond -> {
+                            CurieGeneratorHelper help = new CurieGeneratorHelper();
+                            help.add(cond.getConditionStatement());
+                            help.add(cond.getConditionClass().getCurie());
+                            help.add(cond.getConditionAnatomy().getCurie());
+                            help.add(cond.getConditionChemical().getCurie());
+                            help.add(cond.getConditionGO().getCurie());
+                            help.add(cond.getConditionTaxon().getCurie());
+                            help.add(cond.getConditionQuantity().getCurie());
+                            gen.add(help.getCurie());
+                        });
+                        return gen.getCurie();
+                    }).collect(Collectors.joining(DELIMITER))
+            );
+        }
+        return curie.getCurie();
+    }
+
+    public String getExperimentalConditionCurie(ExperimentalConditionFmsDTO dto) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(dto.getConditionClassId());
         curie.add(dto.getConditionStatement());
@@ -22,12 +64,12 @@ public abstract class DiseaseAnnotationCurie {
         return curie.getCurie();
     }
 
-    public String getEvidenceCurie(EvidenceDTO dto) {
+    public String getEvidenceCurie(EvidenceFmsDTO dto) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
 
-        if(dto.getPublication().getCrossReference() != null){
+        if (dto.getPublication().getCrossReference() != null) {
             curie.add(dto.getPublication().getCrossReference().getCurie());
-        }else{
+        } else {
             curie.add(dto.getPublication().getPublicationId());
         }
 
@@ -38,12 +80,26 @@ public abstract class DiseaseAnnotationCurie {
         return curie.getCurie();
     }
 
-    public String getAssociationType(DiseaseObjectRelationDTO objectRelation) {
+    public String getEvidenceCurie(List<String> codes, String reference) {
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
+
+        if (reference != null) {
+            curie.add(reference);
+        }
+
+        if (CollectionUtils.isNotEmpty(codes)) {
+            codes.sort(Comparator.naturalOrder());
+            curie.add(StringUtils.join(codes, "::"));
+        }
+        return curie.getCurie();
+    }
+
+    public String getAssociationType(DiseaseObjectRelationFmsDTO objectRelation) {
         return objectRelation.getAssociationType();
     }
 
 
-    public String getPublicationCurie(PublicationDTO dto) {
+    public String getPublicationCurie(PublicationFmsDTO dto) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
         // if there is a MOD ID
         if (dto.getCrossReference() != null) {

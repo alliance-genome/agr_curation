@@ -8,8 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.ingest.json.dto.AffectedGenomicModelMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelMetaDataFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -39,5 +38,5 @@ public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterfac
     
     @POST
     @Path("/bulk/agmfile")
-    public String updateAGMs(AffectedGenomicModelMetaDataDTO agmData);
+    public String updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData);
 }

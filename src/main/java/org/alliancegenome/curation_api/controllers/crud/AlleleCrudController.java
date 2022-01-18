@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleCrudInterface;
 import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.ingest.json.dto.AlleleMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleMetaDataFmsDTO;
 import org.alliancegenome.curation_api.services.AlleleService;
 
 @RequestScoped
@@ -26,7 +26,7 @@ public class AlleleCrudController extends BaseCrudController<AlleleService, Alle
     }
 
     @Override
-    public String updateAlleles(AlleleMetaDataDTO alleleData) {
+    public String updateAlleles(AlleleMetaDataFmsDTO alleleData) {
         bulkLoadJobExecutor.processAlleleDTOData(null, alleleData);
         return "OK";
     }
