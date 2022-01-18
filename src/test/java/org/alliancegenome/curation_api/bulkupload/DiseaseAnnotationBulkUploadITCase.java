@@ -4,7 +4,7 @@ import static org.hamcrest.Matchers.*;
 
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
 
@@ -1419,7 +1419,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
     
     private void loadDOTerms(String content) throws Exception {
-        DiseaseAnnotationMetaDataDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataDTO.class);
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
         da.getData().forEach(dat -> {
             RestAssured.given().
             contentType("application/json").

@@ -1,36 +1,32 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
+public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
     @Inject
     GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -62,9 +58,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
 
     @Transactional
-    public DiseaseAnnotation upsert(DiseaseAnnotationDTO annotationDTO) {
+    public DiseaseAnnotation upsert(DiseaseModelAnnotationFmsDTO annotationDTO) {
         
-        String entityId = annotationDTO.getSubject();
+        String entityId = annotationDTO.getObjectId();
 
         BiologicalEntity subjectEntity = biologicalEntityDAO.find(entityId);
 
@@ -74,21 +70,19 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             return null;
         }
 
-/*
         if (!validateAnnotationDTO(annotationDTO)) {
             log("Annotation for " + entityId + " validation failed - skipping annotation");
             return null;
         }
-*/
-
-        String doTermId = annotationDTO.getObject();
+        
+        String doTermId = annotationDTO.getDoId();
         DOTerm disease = doTermDAO.find(doTermId);
         if (disease == null) {
             log("Annotation for " + entityId + " missing DOTerm: " + doTermId + " required fields - skipping annotation");
             return null;
         }
 
-        String publicationId = annotationDTO.getReference();
+        String publicationId = annotationDTO.getEvidence().getPublication().getPublicationId();
         Reference reference = referenceDAO.find(publicationId);
         if (reference == null) {
             reference = new Reference();
@@ -98,11 +92,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             referenceDAO.persist(reference);
         }
 
-        String annotationID = DiseaseAnnotationCurieManager.getDiseaseAnnotationUniqueId(subjectEntity.getTaxon()).getCurieID(annotationDTO.getSubject(),
-                annotationDTO.getObject(),
-                annotationDTO.getReference(),
-                annotationDTO.getEvidenceCodes(),
-                null);
+        String annotationID = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(subjectEntity.getTaxon()).getCurieID(annotationDTO);
         
         DiseaseAnnotation annotation = null;
         
@@ -144,16 +134,16 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         annotation.setObject(disease);
         annotation.setReference(reference);
         
-        if (CollectionUtils.isNotEmpty(annotationDTO.getEvidenceCodes())) {
+        if (CollectionUtils.isNotEmpty(annotationDTO.getEvidence().getEvidenceCodes())) {
             List<EcoTerm> ecoTerms = new ArrayList<>();
-            annotationDTO.getEvidenceCodes()
+            annotationDTO.getEvidence().getEvidenceCodes()
                     .forEach(evidence -> {
                         EcoTerm ecoTerm = ecoTermDAO.find(evidence);
                         ecoTerms.add(ecoTerm);
                     });
             annotation.setEvidenceCodes(ecoTerms);
         }
-////        annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationFmsDTO.Negation.not);
+        annotation.setNegated(annotationDTO.getNegation() == DiseaseModelAnnotationFmsDTO.Negation.not);
 
         if (CollectionUtils.isNotEmpty(annotationDTO.getWith())) {
             List <Gene> withGenes = new ArrayList<>();
@@ -166,26 +156,25 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             annotation.setWith(withGenes);
         }
         
-////        annotation.setCreated(annotationDTO.getDateAssigned().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(annotationDTO.getDiseaseRelation()));
+        annotation.setCreated(annotationDTO.getDateAssigned().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        annotation.setDiseaseRelation(DiseaseRelation.valueOf(annotationDTO.getObjectRelation().getAssociationType()));
 
         diseaseAnnotationDAO.persist(annotation);
         return annotation;
 
     }
 
-    public void runLoad(String taxonID, List<DiseaseAnnotationDTO> annotations) {
-        List<String> annotationsIdsBefore = new ArrayList<>();
+    public void runLoad(String taxonID, DiseaseAnnotationMetaDataFmsDTO annotationData) {
+        List<String> annotationsIdsBefore = new ArrayList<String>();
         annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
-        annotationsIdsBefore.removeIf(Objects::isNull);
-
+        
         log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
         List<String> annotationsIdsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Disease Annotation Update " + taxonID, annotations.size());
-        annotations.forEach(annotationDTO -> {
+        ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
+        annotationData.getData().forEach(annotationDTO -> {
             DiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null) {
                 annotationsIdsAfter.add(annotation.getUniqueId());

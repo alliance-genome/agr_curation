@@ -5,8 +5,11 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.ingest.json.dto.DiseaseAnnotationMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import java.util.List;
 
 @Path("/disease-annotation")
 @Tag(name = "CRUD - Disease Annotations")
@@ -16,34 +19,34 @@ public interface DiseaseAnnotationCrudInterface extends BaseCurieCrudInterface<D
 
     @POST
     @Path("/bulk/{taxonID}/annotationFile")
-    public String updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<DiseaseAnnotationDTO> annotationData);
 
     @POST
     @Path("/bulk/zfinAnnotationFile")
-    public String updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateZFinDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
     @POST
     @Path("/bulk/mgiAnnotationFile")
-    public String updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateMgiDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
     @POST
     @Path("/bulk/rgdAnnotationFile")
-    public String updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateRgdDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
     @POST
     @Path("/bulk/fbAnnotationFile")
-    public String updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateFBDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
     @POST
     @Path("/bulk/wbAnnotationFile")
-    public String updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateWBDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
     @POST
     @Path("/bulk/humanAnnotationFile")
-    public String updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateHUMANDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
     @POST
     @Path("/bulk/sgdAnnotationFile")
-    public String updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataDTO annotationData);
+    public String updateSGDDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
     
 }

@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.model.ingest.json.dto;
+package org.alliancegenome.curation_api.model.ingest.fms.dto;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.base.BaseDTO;
 import lombok.Data;
 
 @Data
-public class AlleleDTO extends BaseDTO {
+public class AlleleFmsDTO extends BaseDTO {
 
     private String primaryId;
     private String symbol;
@@ -17,6 +17,6 @@ public class AlleleDTO extends BaseDTO {
     private String description;
     private String alleleDescription;
     private List<String> secondaryIds;
-    private List<AlleleObjectRelationsDTO> alleleObjectRelations;
-    private List<CrossReferenceDTO> crossReferences;
+    private List<AlleleObjectRelationsFmsDTO> alleleObjectRelations;
+    private List<CrossReferenceFmsDTO> crossReferences;
 }

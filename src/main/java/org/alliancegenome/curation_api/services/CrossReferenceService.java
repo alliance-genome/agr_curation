@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.ingest.json.dto.CrossReferenceDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
 
 @RequestScoped
 public class CrossReferenceService extends BaseCrudService<CrossReference, CrossReferenceDAO>{
@@ -26,22 +26,22 @@ public class CrossReferenceService extends BaseCrudService<CrossReference, Cross
     }
 
     @Transactional
-    public CrossReference processUpdate(CrossReferenceDTO crossReferenceDTO) {
+    public CrossReference processUpdate(CrossReferenceFmsDTO crossReferenceFmsDTO) {
 
-        CrossReference crossReference = crossReferenceDAO.find(crossReferenceDTO.getId());
+        CrossReference crossReference = crossReferenceDAO.find(crossReferenceFmsDTO.getId());
         if(crossReference == null) {
             crossReference = new CrossReference();
-            crossReference.setCurie(crossReferenceDTO.getId());
+            crossReference.setCurie(crossReferenceFmsDTO.getId());
             crossReferenceDAO.persist(crossReference);
         }
 
-        handlePageAreas(crossReferenceDTO, crossReference);
+        handlePageAreas(crossReferenceFmsDTO, crossReference);
 
         return crossReference;
 
     }
 
-    private void handlePageAreas(CrossReferenceDTO crDTO, CrossReference cr) {
+    private void handlePageAreas(CrossReferenceFmsDTO crDTO, CrossReference cr) {
 
         Set<String> currentPages;
         if(cr.getPageAreas() == null) {
