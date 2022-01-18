@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Tooltip} from "primereact/tooltip";
 
-export function WithTooltip({ op, autocompleteSelectedItem, inputValue }) {
+export function WithTooltip({ op, autocompleteSelectedItem }) {
 
     return (
         <>
