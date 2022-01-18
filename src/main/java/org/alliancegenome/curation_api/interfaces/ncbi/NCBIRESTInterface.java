@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.ncbi;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponceDTO;
+import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponseDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 @Path("/entrez/eutils")
@@ -13,7 +13,7 @@ public interface NCBIRESTInterface {
 
     @GET
     @Path("/esummary.fcgi")
-    public NCBITaxonResponceDTO getTaxonFromNCBI(
+    public NCBITaxonResponseDTO getTaxonFromNCBI(
             @QueryParam("db") String db,
             @QueryParam("retmode") String retmode,
             @QueryParam("id") String id

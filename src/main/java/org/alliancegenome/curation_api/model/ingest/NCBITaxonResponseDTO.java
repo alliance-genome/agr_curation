@@ -6,7 +6,7 @@ import lombok.*;
 
 @Data
 @ToString
-public class NCBITaxonResponceDTO {
+public class NCBITaxonResponseDTO {
     private HashMap<String, Object> header;
     private HashMap<String, Object> result;
 }

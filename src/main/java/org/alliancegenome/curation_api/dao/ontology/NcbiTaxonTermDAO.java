@@ -8,7 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import org.alliancegenome.curation_api.base.dao.BaseSQLDAO;
 import org.alliancegenome.curation_api.interfaces.ncbi.NCBIRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponceDTO;
+import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponseDTO;
 
 import si.mazi.rescu.RestProxyFactory;
 
@@ -29,7 +29,7 @@ public class NcbiTaxonTermDAO extends BaseSQLDAO<NCBITaxonTerm> {
             return null;
         }
         
-        NCBITaxonResponceDTO resp = api.getTaxonFromNCBI("taxonomy", "json", taxonIdMatcher.group(1));
+        NCBITaxonResponseDTO resp = api.getTaxonFromNCBI("taxonomy", "json", taxonIdMatcher.group(1));
         HashMap<String, Object> result = resp.getResult();
         HashMap<String, Object> taxonMap = (HashMap<String, Object>)result.get(taxonIdMatcher.group(1));
         
