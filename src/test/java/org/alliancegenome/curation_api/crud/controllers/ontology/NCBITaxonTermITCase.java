@@ -7,14 +7,11 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.*;
-
-import java.util.Arrays;
 
 import static org.hamcrest.Matchers.is;
 
@@ -42,11 +39,9 @@ public class NCBITaxonTermITCase {
                         .setParam("http.connection.timeout", 100000));
     }
 
-    // @Test
+    @Test
     @Order(1)
     void testValidTaxon() {
-        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(VALID_TAXON_CURIE);
-        
         RestAssured.given().
             when().
             get("/api/ncbitaxonterm/" + VALID_TAXON_CURIE).
@@ -56,11 +51,9 @@ public class NCBITaxonTermITCase {
             body("entity.obsolete", is(false));
     }
 
-    // @Test
+    @Test
     @Order(2)
     void testInvalidPrefix() {
-        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(INVALID_TAXON_PREFIX);
-        
         RestAssured.given().
             when().
             get("/api/ncbitaxonterm/" + INVALID_TAXON_PREFIX).
@@ -69,11 +62,9 @@ public class NCBITaxonTermITCase {
             body("isEmpty()", Matchers.is(true));
     }
 
-    // @Test
+    @Test
     @Order(3)
     void testInvalidSuffix() {
-        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(INVALID_TAXON_SUFFIX);
-        
         RestAssured.given().
             when().
             get("/api/ncbitaxonterm/" + INVALID_TAXON_SUFFIX).

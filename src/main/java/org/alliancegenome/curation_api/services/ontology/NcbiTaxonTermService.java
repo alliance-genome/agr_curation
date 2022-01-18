@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -22,7 +23,8 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
         setSQLDao(ncbiTaxonTermDAO);
     }
     
-    public NCBITaxonTerm getTaxonByCurie(String taxonCurie) {
+    @Override
+    public ObjectResponse<NCBITaxonTerm> get(String taxonCurie) {
         NCBITaxonTerm taxon = ncbiTaxonTermDAO.find(taxonCurie);
         if(taxon == null) {
             taxon = ncbiTaxonTermDAO.downloadAndSave(taxonCurie);
@@ -30,7 +32,8 @@ public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm,
                 log.warn("Taxon ID could not be found");
             }
         }
-        return taxon;
+        
+        return new ObjectResponse<NCBITaxonTerm>(taxon);
     }
     
 }

@@ -210,8 +210,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         }
         
         // Validate taxon ID
-        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(allele.getTaxonId());
-        if (taxon == null) {
+        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(allele.getTaxonId());
+        if (taxon.getEntity() == null) {
             log.debug("Invalid taxon ID for allele " + allele.getPrimaryId() + " - skipping");
             return false;
         }

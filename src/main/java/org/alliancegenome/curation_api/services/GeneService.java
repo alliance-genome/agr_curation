@@ -235,8 +235,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         }
         
         // Validate taxon ID
-        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(dto.getBasicGeneticEntity().getTaxonId());
-        if (taxon == null) {
+        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(dto.getBasicGeneticEntity().getTaxonId());
+        if (taxon.getEntity() == null) {
             log.debug("Invalid taxon ID for gene " + dto.getBasicGeneticEntity() + " - skipping");
             return false;
         }

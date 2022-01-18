@@ -37,12 +37,12 @@ public class GenomicEntityValidator {
             addMessageResponse("taxon", requiredMessage);
             return null;
         }
-        NCBITaxonTerm taxon = ncbiTaxonTermService.getTaxonByCurie(taxonCurie);
-        if (taxon == null) {
+        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(taxonCurie);
+        if (taxon.getEntity() == null) {
             addMessageResponse("taxon", invalidMessage);
             return null;
         }
-        return taxon.getCurie();
+        return taxon.getEntity().getCurie();
     }
     
     public String validateName(GenomicEntity uiEntity) {
