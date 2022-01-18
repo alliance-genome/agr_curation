@@ -16,11 +16,13 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.json.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneValidator;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -42,6 +44,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     SoTermDAO soTermDAO;
     @Inject
     GeneValidator geneValidator;
+    @Inject 
+    NcbiTaxonTermService ncbiTaxonTermService;
 
     @Override
     @PostConstruct
@@ -231,10 +235,9 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         }
         
         // Validate taxon ID
-        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
-        Matcher taxonIdMatcher = taxonIdPattern.matcher(dto.getBasicGeneticEntity().getTaxonId());
-        if (!taxonIdMatcher.find()) {
-            log.debug("Invalid taxon ID for AGM " + dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
+        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(dto.getBasicGeneticEntity().getTaxonId());
+        if (taxon.getEntity() == null) {
+            log.debug("Invalid taxon ID for gene " + dto.getBasicGeneticEntity() + " - skipping");
             return false;
         }
         

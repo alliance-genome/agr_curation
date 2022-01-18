@@ -4,13 +4,19 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.*;
 
 public class GenomicEntityValidator {
 
+    @Inject
+    NcbiTaxonTermService ncbiTaxonTermService;
+    
     protected String invalidMessage = "Not a valid entry";
     protected String requiredMessage = "Required field is empty";
 
@@ -26,18 +32,17 @@ public class GenomicEntityValidator {
     }
     
     public String validateTaxon(GenomicEntity uiEntity) {
-        String taxon = uiEntity.getTaxon();
-        if (StringUtils.isEmpty(taxon)) {
+        String taxonCurie = uiEntity.getTaxon();
+        if (StringUtils.isEmpty(taxonCurie)) {
             addMessageResponse("taxon", requiredMessage);
             return null;
         }
-        //TODO: replace regex matching with database lookup once taxons loaded
-        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
-        Matcher taxonIdMatcher = taxonIdPattern.matcher(taxon);
-        if (!taxonIdMatcher.find()) {
+        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(taxonCurie);
+        if (taxon.getEntity() == null) {
+            addMessageResponse("taxon", invalidMessage);
             return null;
         }
-        return taxon;
+        return taxon.getEntity().getCurie();
     }
     
     public String validateName(GenomicEntity uiEntity) {

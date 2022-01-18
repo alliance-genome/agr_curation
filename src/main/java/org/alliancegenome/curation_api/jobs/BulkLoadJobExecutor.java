@@ -173,7 +173,7 @@ public class BulkLoadJobExecutor {
                 config.setLoadOnlyIRIPrefix("FBbt");
                 service = daoTermService;
             } else {
-                log.info("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
+                log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
                 throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
             }
 
