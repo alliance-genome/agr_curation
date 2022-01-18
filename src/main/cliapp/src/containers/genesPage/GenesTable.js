@@ -82,7 +82,7 @@ export const GenesTable = () => {
       field:"name",
       header:"Name",
       sortable: isEnabled,  
-      filter: false,
+      filter: true,
       filterElement: filterComponentTemplate("nameFilter", ["name"])
     }, 
     {
