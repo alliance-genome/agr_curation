@@ -26,8 +26,7 @@ export const SiteLayout = (props) => {
   const { authState, oktaAuth } = useOktaAuth();
   const [userInfo, setUserInfo] = useState(null);
 
-
-  useEffect(() => {
+useEffect(() => {
     if (!authState || !authState.isAuthenticated) {
       setUserInfo(null);
     } else {

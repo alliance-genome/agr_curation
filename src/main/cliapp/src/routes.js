@@ -34,7 +34,6 @@ import { ZECOOntologyComponent } from './containers/ontologies/ZECOOntologyCompo
 
 export default (
   <>
-    <Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
     <SecureRoute path="/" exact component={DashboardPage} />
     <SecureRoute path="/dataloads" component={DataLoadsPage} />
     <SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
@@ -57,5 +56,6 @@ export default (
     <SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
     <SecureRoute path="/fmspage" component={FMSComponent} />
     <SecureRoute path="/agms" component={AffectedGenomicModelPage} />
+    <Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
   </>
 )
