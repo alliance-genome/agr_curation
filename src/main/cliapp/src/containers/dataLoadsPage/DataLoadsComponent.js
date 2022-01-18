@@ -235,7 +235,7 @@ export const DataLoadsComponent = () => {
     if (rowData.status === 'STARTED' || rowData.status === 'RUNNING') { styleClass = "p-button-success"; }
 
     return (
-      <Button label={rowData.status} className={`p-button-rounded ${styleClass}`} />
+      <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
     );
   };
 
