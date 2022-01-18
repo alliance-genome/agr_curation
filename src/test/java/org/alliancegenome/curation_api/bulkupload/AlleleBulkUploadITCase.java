@@ -37,8 +37,6 @@ public class AlleleBulkUploadITCase {
     public void alleleBulkUploadMany() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/00_mod_examples.json"));
             
-        // createGene(TESTGENE, "NCBITaxon:10090");
-        
         // upload file
         RestAssured.given().
             contentType("application/json").
@@ -85,7 +83,7 @@ public class AlleleBulkUploadITCase {
             body("totalResults", is(491)).
             body("results", hasSize(1)).
             body("results[0].curie", is("TEST:TestAllele00001")).
-            body("results[0].taxon", is("NCBITaxon:10090")).
+            body("results[0].taxon.curie", is("NCBITaxon:10090")).
             body("results[0].symbol", is("Test<sup>allele</sup>")).
             body("results[0].synonyms[0].name", is("test<sup>+</sup>")).
             body("results[0].crossReferences[0].curie", is("TEST:TestAllele00001")).
@@ -561,29 +559,4 @@ public class AlleleBulkUploadITCase {
             body("totalResults", is(501));
     }
     
-    // NOTE: this test needs to be run last to cleanup dummy gene
-    //@Test
-    //@Order(22)
-    //public void deleteGene() throws Exception {
-
-    //  RestAssured.given().
-//          when().
-//          delete("/api/gene/" + TESTGENE).
-//          then().
-//          statusCode(200);
-//  }
-    
-    private void createGene(String curie, String taxon) {
-        Gene gene = new Gene();
-        gene.setCurie(curie);
-        gene.setTaxon(taxon);
-
-        RestAssured.given().
-                contentType("application/json").
-                body(gene).
-                when().
-                post("/api/gene").
-                then().
-                statusCode(200);
-    }   
 }

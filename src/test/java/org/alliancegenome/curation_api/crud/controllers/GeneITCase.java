@@ -3,10 +3,13 @@ package org.alliancegenome.curation_api.crud.controllers;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
 
@@ -51,7 +54,7 @@ public class GeneITCase {
                 statusCode(200).
                 body("entity.curie", is(GENE_CURIE)).
                 body("entity.name", is(GENE_NAME)).
-                body("entity.taxon", is(GENE_TAXON)).
+                body("entity.taxon.curie", is(GENE_TAXON)).
                 body("entity.symbol", is(GENE_SYMBOL)).
                 body("entity.geneType.curie", is(GENE_TYPE)).
                 body("entity.automatedGeneDescription", is(GENE_AUTO_DESC));
@@ -64,7 +67,7 @@ public class GeneITCase {
         
         gene.setName("Gene edited");
         gene.setSymbol("GT2");
-        gene.setTaxon("NCBITaxon:9606");
+        gene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
         gene.setGeneType(newSoTerm);
         gene.setAutomatedGeneDescription("Edited auto description");
 
@@ -83,7 +86,7 @@ public class GeneITCase {
                 statusCode(200).
                 body("entity.curie", is(GENE_CURIE)).
                 body("entity.name", is("Gene edited")).
-                body("entity.taxon", is("NCBITaxon:9606")).
+                body("entity.taxon.curie", is("NCBITaxon:9606")).
                 body("entity.symbol", is("GT2")).
                 body("entity.geneType.curie", is("SO:0001000")).
                 body("entity.automatedGeneDescription", is("Edited auto description"));
@@ -191,7 +194,7 @@ public class GeneITCase {
         Gene gene = new Gene();
         gene.setCurie(curie);
         gene.setName(name);
-        gene.setTaxon(taxon);
+        gene.setTaxon(getTaxonFromCurie(taxon));
         gene.setSymbol(symbol);
         gene.setGeneType(type);
         gene.setAutomatedGeneDescription(GENE_AUTO_DESC);
@@ -213,6 +216,21 @@ public class GeneITCase {
                 then().
                 statusCode(200);
         return soTerm;
+    }
+    
+    private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
+        ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
+            when().
+            get("/api/ncbitaxonterm/" + taxonCurie).
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRef());
+        
+        return response.getEntity();
+    }
+
+    private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRef() {
+        return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
 
 }

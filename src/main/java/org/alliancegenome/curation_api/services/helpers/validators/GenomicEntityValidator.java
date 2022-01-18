@@ -31,8 +31,8 @@ public class GenomicEntityValidator {
         return curie;
     }
     
-    public String validateTaxon(GenomicEntity uiEntity) {
-        String taxonCurie = uiEntity.getTaxon();
+    public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
+        String taxonCurie = uiEntity.getTaxon().getCurie();
         if (StringUtils.isEmpty(taxonCurie)) {
             addMessageResponse("taxon", requiredMessage);
             return null;
@@ -42,7 +42,7 @@ public class GenomicEntityValidator {
             addMessageResponse("taxon", invalidMessage);
             return null;
         }
-        return taxon.getEntity().getCurie();
+        return taxon.getEntity();
     }
     
     public String validateName(GenomicEntity uiEntity) {

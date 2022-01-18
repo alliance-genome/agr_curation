@@ -305,7 +305,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             // body("results[4].conditionRelations[0].conditions[0].conditionQuantity", is("some amount")).
             // body("results[4].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("ZFA:0000001")).
             // body("results[4].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("GO:0007569")).
-            // body("results[4].conditionRelations[0].conditions[0].conditionTaxon", is("NCBITaxon:1781")).
+            // body("results[4].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             // body("results[4].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
             body("results[4].negated", is(true)).
             // body("results[4].with", containsInAnyOrder("HGNC:1121", "HGNC:323")).
@@ -382,7 +382,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             // body("results[5].conditionRelations[0].conditions[0].conditionQuantity", is("some amount")).
             // body("results[5].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("ZFA:0000001")).
             // body("results[5].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("GO:0007569")).
-            // body("results[5].conditionRelations[0].conditions[0].conditionTaxon", is("NCBITaxon:1781")).
+            // body("results[5].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             // body("results[5].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
             body("results[5].negated", is(true)).
             // body("results[5].with", containsInAnyOrder("HGNC:1121", "HGNC:323")).
@@ -431,7 +431,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             // body("results[6].conditionRelations[0].conditions[0].conditionQuantity", is("some amount")).
             // body("results[6].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("ZFA:0000001")).
             // body("results[6].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("GO:0007569")).
-            // body("results[6].conditionRelations[0].conditions[0].conditionTaxon", is("NCBITaxon:1781")).
+            // body("results[6].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             // body("results[6].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
             // body("results[6].with", containsInAnyOrder("HGNC:1121", "HGNC:323")).
             // body("results[6].evidenceCodes", hasSize(1)).

@@ -7,6 +7,7 @@ import io.restassured.common.mapper.TypeRef;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
@@ -200,7 +201,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.object.curie", is("DOID:0002")).
                 // TODO:  Not working, i.e. the update is not sticking in postgres.
                 //body("entity.negated", is(true)).
-                        body("entity.evidenceCodes[0].curie", is("ECO:0002"));
+                body("entity.evidenceCodes[0].curie", is("ECO:0002"));
     }
 
     @Test
@@ -241,7 +242,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.object.curie", is("DOID:0003")).
                 // TODO:  Not working, i.e. the update is not sticking in postgres.
                 //body("entity.negated", is(true)).
-                        body("entity.evidenceCodes[0].curie", is("ECO:0003"));
+                body("entity.evidenceCodes[0].curie", is("ECO:0003"));
     }
 
     @Test
@@ -360,7 +361,7 @@ public class DiseaseAnnotationITCase {
     private BiologicalEntity createBiologicalEntity(String curie, String taxon) {
         BiologicalEntity biologicalEntity = new BiologicalEntity();
         biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(taxon);
+        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
 
         RestAssured.given().
                 contentType("application/json").
@@ -375,7 +376,7 @@ public class DiseaseAnnotationITCase {
     private Gene createGene(String curie, String taxon) {
         Gene biologicalEntity = new Gene();
         biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(taxon);
+        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
 
         RestAssured.given().
                 contentType("application/json").
@@ -390,7 +391,7 @@ public class DiseaseAnnotationITCase {
     private Allele createAllele(String curie, String taxon) {
         Allele biologicalEntity = new Allele();
         biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(taxon);
+        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
 
         RestAssured.given().
                 contentType("application/json").
@@ -405,7 +406,7 @@ public class DiseaseAnnotationITCase {
     private AffectedGenomicModel createModel(String curie, String taxon, String name) {
         AffectedGenomicModel biologicalEntity = new AffectedGenomicModel();
         biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(taxon);
+        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
         biologicalEntity.setName(name);
 
         RestAssured.given().
@@ -435,5 +436,20 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200);
         return crossReference;
+    }
+    
+    private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
+        ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
+            when().
+            get("/api/ncbitaxonterm/" + taxonCurie).
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefTaxon());
+        
+        return response.getEntity();
+    }
+
+    private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
+        return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
 }

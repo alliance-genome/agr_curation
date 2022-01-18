@@ -14,6 +14,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -46,6 +47,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     GeneValidator geneValidator;
     @Inject 
     NcbiTaxonTermService ncbiTaxonTermService;
+    @Inject 
+    NcbiTaxonTermDAO ncbiTaxonTermDAO;
 
     @Override
     @PostConstruct
@@ -93,7 +96,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
 
         g.setSymbol(gene.getSymbol());
         g.setName(gene.getName());
-        g.setTaxon(gene.getBasicGeneticEntity().getTaxonId());
+        
+        g.setTaxon(ncbiTaxonTermDAO.find(gene.getBasicGeneticEntity().getTaxonId()));
         g.setGeneType(soTermDAO.find(gene.getSoTermId()));
         
         handleCrossReferences(gene, g);

@@ -92,7 +92,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             referenceDAO.persist(reference);
         }
 
-        String annotationID = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(subjectEntity.getTaxon()).getCurieID(annotationDTO);
+        String annotationID = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(subjectEntity.getTaxon().getCurie()).getCurieID(annotationDTO);
         
         DiseaseAnnotation annotation = null;
         
