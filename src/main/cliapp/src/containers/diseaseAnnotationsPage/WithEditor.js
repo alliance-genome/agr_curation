@@ -94,10 +94,7 @@ import {WithTooltip} from './WithTooltip';
                     multiple
                     value={rowProps.rowData.with}
                     field="curie"
-                    panelStyle={{ width : "15%", maxHeight : "250px" }}
-                    scrollable
-                    scrollHeight="250px"
-                    virtualScrollerOptions={{ itemSize: 10, orientation:'horizontal'}}
+                    panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px'}}
                     suggestions={filteredWithGenes}
                     itemTemplate={withItemTemplate}
                     completeMethod={searchWithGenes}
