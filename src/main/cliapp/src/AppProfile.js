@@ -17,8 +17,8 @@ export const AppProfile = (props) => {
 
   return (
     <div className="layout-profile">
+      <Gravatar email={props.userInfo.email} size={100} /><br />
       <button className="p-link layout-profile-link" onClick={onClick}>
-        <Gravatar email={props.userInfo.email} size={100} /><br />
         <span className="username">{props.userInfo.name}</span>
         <i className="pi pi-fw pi-cog" />
       </button>
