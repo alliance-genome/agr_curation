@@ -15,7 +15,8 @@ import si.mazi.rescu.RestProxyFactory;
 
 @ApplicationScoped
 public class NcbiTaxonTermDAO extends BaseSQLDAO<NCBITaxonTerm> {
-
+    private final int MAX_ATTEMPTS = 5;
+    
     protected NcbiTaxonTermDAO() {
         super(NCBITaxonTerm.class);
     }
@@ -31,8 +32,8 @@ public class NcbiTaxonTermDAO extends BaseSQLDAO<NCBITaxonTerm> {
         }
         
         HashMap<String, Object> taxonMap = null;
-        int attempts = 5;
-        while (attempts-- > 0) {
+        int attemptsRemaining = MAX_ATTEMPTS;
+        while (attemptsRemaining-- > 0) {
             try {
                 NCBITaxonResponseDTO resp = api.getTaxonFromNCBI("taxonomy", "json", taxonIdMatcher.group(1));
                 HashMap<String, Object> result = resp.getResult();
