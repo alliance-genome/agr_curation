@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(7)
+@Order(8)
 public class AlleleITCase {
 
     private final String ALLELE_CURIE = "Allele:0001";
