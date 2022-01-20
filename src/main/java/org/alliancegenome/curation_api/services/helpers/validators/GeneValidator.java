@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
@@ -43,7 +44,7 @@ public class GeneValidator extends GenomicEntityValidator {
         String name = validateName(uiEntity);
         if (name != null) dbEntity.setName(name);
         
-        String taxon = validateTaxon(uiEntity);
+        NCBITaxonTerm taxon = validateTaxon(uiEntity);
         if (taxon != null) dbEntity.setTaxon(taxon);
         
         String symbol = validateSymbol(uiEntity);

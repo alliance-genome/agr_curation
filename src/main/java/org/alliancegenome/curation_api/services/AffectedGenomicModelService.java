@@ -4,6 +4,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
@@ -41,7 +42,9 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     AlleleDAO alleleDAO;
     @Inject
     AffectedGenomicModelValidator affectedGenomicModelValidator;
-
+    @Inject
+    NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -79,7 +82,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         }
 
         dbAgm.setName(agm.getName().substring(0, Math.min(agm.getName().length(), 254)));
-        dbAgm.setTaxon(agm.getTaxonId());
+        dbAgm.setTaxon(ncbiTaxonTermDAO.find(agm.getTaxonId()));
         dbAgm.setSubtype(agm.getSubtype());
 
         handleCrossReference(agm, dbAgm);

@@ -93,11 +93,11 @@ export const GenesTable = () => {
       filterElement: filterComponentTemplate("symbolFilter", ["symbol"])
     },
     {
-      field:"taxon",
+      field:"taxon.curie",
       header:"Taxon",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
 
 

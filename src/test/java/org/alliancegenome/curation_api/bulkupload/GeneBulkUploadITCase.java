@@ -85,7 +85,7 @@ public class GeneBulkUploadITCase {
                body("totalResults", is(834)).
                body("results", hasSize(4)).
                body("results[3].curie", is("TEST:TestGene00001")).
-               body("results[3].taxon", is("NCBITaxon:10090")).
+               body("results[3].taxon.curie", is("NCBITaxon:10090")).
                body("results[3].name", is( "Test gene 1")).
                body("results[3].synonyms[0].name", is("Test1")).
                body("results[3].synonyms[1].name", is("ExampleGene1")).
@@ -122,7 +122,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(835)).
                 body("results", hasSize(5)).
                 body("results[4].curie", is("TEST:TestGene00002")).
-                body("results[4].taxon", is("NCBITaxon:10090")).
+                body("results[4].taxon.curie", is("NCBITaxon:10090")).
                 body("results[4].name", is( "Test gene 2")).
                 body("results[4].synonyms[0].name", is("Test2")).
                 body("results[4].synonyms[1].name", is("ExampleGene2")).
@@ -157,7 +157,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(836)).
                 body("results", hasSize(6)).
                 body("results[5].curie", is("TEST:TestGene00003")).
-                body("results[5].taxon", is("NCBITaxon:10090")).
+                body("results[5].taxon.curie", is("NCBITaxon:10090")).
                 body("results[5].name", is( "Test gene 3")).
                 body("results[5].synonyms[0].name", is("Test3")).
                 body("results[5].synonyms[1].name", is("ExampleGene3")).
@@ -192,7 +192,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(837)).
                 body("results", hasSize(7)).
                 body("results[6].curie", is("TEST:TestGene00005")).
-                body("results[6].taxon", is("NCBITaxon:10090")).
+                body("results[6].taxon.curie", is("NCBITaxon:10090")).
                 body("results[6].name", is( "Test gene 5")).
                 body("results[6].symbol", is("Tg5")).
                 body("results[6].geneSynopsis", is("Test gene with all fields populated except secondaryIds")).
@@ -225,7 +225,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(838)).
                 body("results", hasSize(8)).
                 body("results[7].curie", is("TEST:TestGene00006")).
-                body("results[7].taxon", is("NCBITaxon:10090")).
+                body("results[7].taxon.curie", is("NCBITaxon:10090")).
                 body("results[7].name", is( "Test gene 6")).
                 body("results[7].crossReferences[0].curie", is("TEST:xref6b")).
                 body("results[7].crossReferences[1].curie", is("TEST:xref6a")).
@@ -320,7 +320,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(840)).
                 body("results", hasSize(10)).
                 body("results[9].curie", is("TEST:TestGene00009")).
-                body("results[9].taxon", is("NCBITaxon:10090")).
+                body("results[9].taxon.curie", is("NCBITaxon:10090")).
                 body("results[9].name", is( "Test gene 9")).
                 body("results[9].synonyms[0].name", is("Test9")).
                 body("results[9].synonyms[1].name", is("ExampleGene9")).
@@ -356,7 +356,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(841)).
                 body("results", hasSize(1)).
                 body("results[0].curie", is("TEST:TestGene00010")).
-                body("results[0].taxon", is("NCBITaxon:10090")).
+                body("results[0].taxon.curie", is("NCBITaxon:10090")).
                 body("results[0].synonyms[0].name", is("Test10")).
                 body("results[0].synonyms[1].name", is("ExampleGene10")).
                 body("results[0].crossReferences[0].curie", is("TEST:xref10a")).
@@ -392,7 +392,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(842)).
                 body("results", hasSize(2)).
                 body("results[1].curie", is("TEST:TestGene00011")).
-                body("results[1].taxon", is("NCBITaxon:10090")).
+                body("results[1].taxon.curie", is("NCBITaxon:10090")).
                 body("results[1].name", is( "Test gene 11")).
                 body("results[1].synonyms[0].name", is("Test11")).
                 body("results[1].synonyms[1].name", is("ExampleGene11")).
@@ -428,7 +428,7 @@ public class GeneBulkUploadITCase {
                 body("totalResults", is(843)).
                 body("results", hasSize(3)).
                 body("results[2].curie", is("TEST:TestGene00012")).
-                body("results[2].taxon", is("NCBITaxon:10090")).
+                body("results[2].taxon.curie", is("NCBITaxon:10090")).
                 body("results[2].name", is( "Test gene 12")).
                 body("results[2].synonyms[0].name", is("Test12")).
                 body("results[2].synonyms[1].name", is("ExampleGene12")).

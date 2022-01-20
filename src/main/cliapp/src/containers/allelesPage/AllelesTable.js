@@ -62,6 +62,10 @@ export const AllelesTable = () => {
     return <div dangerouslySetInnerHTML={{__html: rowData.symbol}} />
   }
 
+  const taxonTemplate = (rowData) => {
+	return <div>{rowData.taxon.curie}</div>;
+}
+
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponent 
           isEnabled={isEnabled} 
@@ -95,11 +99,12 @@ export const AllelesTable = () => {
       filterElement: filterComponentTemplate("symbolFilter", ["symbol"])
     },
     {
-      field:"taxon",
+      field:"taxon.curie",
       header:"Taxon",
+	  body: taxonTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     } 
   ];
   

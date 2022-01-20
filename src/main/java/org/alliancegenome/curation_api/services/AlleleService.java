@@ -4,6 +4,7 @@ import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -31,19 +32,14 @@ import java.util.stream.Collectors;
 @RequestScoped
 public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
-    @Inject
-    AlleleDAO alleleDAO;
-    @Inject
-    AlleleValidator alleleValidator;
-    @Inject
-    GeneDAO geneDAO;
-    @Inject
-    CrossReferenceService crossReferenceService;
-    @Inject
-    SynonymService synonymService;
-    @Inject
-    NcbiTaxonTermService ncbiTaxonTermService;
-
+    @Inject AlleleDAO alleleDAO;
+    @Inject AlleleValidator alleleValidator;
+    @Inject GeneDAO geneDAO;
+    @Inject CrossReferenceService crossReferenceService;
+    @Inject SynonymService synonymService;
+    @Inject NcbiTaxonTermService ncbiTaxonTermService;
+    @Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -76,8 +72,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
         dbAllele.setSymbol(allele.getSymbol());
         dbAllele.setDescription(allele.getDescription());
-        dbAllele.setTaxon(allele.getTaxonId());
-
+        dbAllele.setTaxon(ncbiTaxonTermDAO.find(allele.getTaxonId()));
+        
         handleCrossReferences(allele, dbAllele);
         handleSecondaryIds(allele, dbAllele);
 
