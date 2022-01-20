@@ -57,8 +57,9 @@ export const SiteLayout = (props) => {
       items: [
         { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
         { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
-        { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
         { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
+        { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
+        { label: 'ExperimentalConditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
         { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' }
       ]
     },
