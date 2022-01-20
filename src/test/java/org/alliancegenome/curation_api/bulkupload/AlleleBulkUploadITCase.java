@@ -254,7 +254,17 @@ public class AlleleBulkUploadITCase {
             when().
             post("/api/allele/bulk/allelefile").
             then().
-            statusCode(500);
+            statusCode(200);
+        
+        // check entity count
+            RestAssured.given().
+                when().
+                header("Content-Type", "application/json").
+                body("{}").
+                post("/api/allele/find?limit=10&page=49").
+                then().
+                statusCode(200).
+                body("totalResults", is(496)); // no entity added due to missing ID
     }
 
     @Test

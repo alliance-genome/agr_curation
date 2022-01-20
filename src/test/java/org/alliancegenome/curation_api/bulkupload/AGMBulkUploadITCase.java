@@ -205,10 +205,19 @@ public class AGMBulkUploadITCase {
             when().
             post("/api/agm/bulk/agmfile").
             then().
-            statusCode(500);
+            statusCode(200);
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/agm/find?limit=10&page=61").
+            then().
+            statusCode(200).
+            body("totalResults", is(616)); //no entity added due to missing ID
     }
 
-    // TODO: adjust count (and subsequent test counts) once validation of xref pages in place
     @Test
     @Order(8)
     public void agmBulkUploadNoCrossReferencePages() throws Exception {

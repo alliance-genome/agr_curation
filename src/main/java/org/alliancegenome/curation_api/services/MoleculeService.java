@@ -62,6 +62,15 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
             return;
         }
         
+        if (molecule.getCrossReferences() != null) {
+            for (CrossReferenceFmsDTO xrefDTO : molecule.getCrossReferences()) {
+                if (xrefDTO.getId() == null) {
+                    log.debug("Missing xref ID for molecule " + molecule.getId() + " - skipping");
+                    return;
+                }
+            }
+        }
+        
         Molecule m = moleculeDAO.find(molecule.getId());
         
         if (m == null) {

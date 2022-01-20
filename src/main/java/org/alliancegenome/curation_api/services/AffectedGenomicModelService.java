@@ -211,6 +211,12 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
             log.debug("Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
             return false;
         }
+        
+        // Validate xref
+        if (agm.getCrossReference() != null && agm.getCrossReference().getId() == null) {
+            log.debug("Missing xref ID for AGM " + agm.getPrimaryID() + " - skipping");
+            return false;
+        }
 
         // Validate component fields
         if (CollectionUtils.isNotEmpty(agm.getAffectedGenomicModelComponents())) {

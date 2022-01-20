@@ -209,6 +209,16 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
             return false;
         }
 
+        // Validate xrefs
+        if (allele.getCrossReferences() != null) {
+            for (CrossReferenceFmsDTO xrefDTO : allele.getCrossReferences()) {
+                if (xrefDTO.getId() == null) {
+                    log.debug("Missing xref ID for allele " + allele.getPrimaryId() + " - skipping");
+                    return false;
+                }
+            }
+        }
+        
         // Validate allele object relations
         // TODO: validate construct relation once constructs are loaded
         if (CollectionUtils.isNotEmpty(allele.getAlleleObjectRelations())) {
