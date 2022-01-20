@@ -19,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(8)
+@Order(9)
 public class AffectedGenomicModelITCase {
 
     private final String AGM_CURIE = "AGM:0001";

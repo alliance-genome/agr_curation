@@ -20,7 +20,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(6)
+@Order(7)
 public class GeneITCase {
 
     private final String GENE_CURIE = "GENE:0001";

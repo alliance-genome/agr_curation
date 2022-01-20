@@ -242,8 +242,18 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         // Validate taxon ID
         ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(dto.getBasicGeneticEntity().getTaxonId());
         if (taxon.getEntity() == null) {
-            log.debug("Invalid taxon ID for gene " + dto.getBasicGeneticEntity() + " - skipping");
+            log.debug("Invalid taxon ID for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
             return false;
+        }
+        
+        // Validate xrefs
+        if (dto.getBasicGeneticEntity().getCrossReferences() != null) {
+            for (CrossReferenceFmsDTO xrefDTO : dto.getBasicGeneticEntity().getCrossReferences()) {
+                if (xrefDTO.getId() == null) {
+                    log.debug("Missing xref ID for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " - skipping");
+                    return false;
+                }
+            }
         }
 
         // Check any genome positions have valid start/end/strand
