@@ -231,15 +231,15 @@ There are three environments to which code automatically gets deployed at differ
    This environment receives new deployments for every full release created on Github.
 
 All deployments are fully automated through Github actions, for which the configuration files can be found in the [`.github/workflows/` directory](.github/workflows/).
-Deployments to alpha happen automatically as code gets pushed to main (after merging a PR), but for
+Deployments to the alpha environment happen automatically as code gets pushed to the alpha branch (after merging a PR), but for
 deployments to beta and production, a small number of steps needs to be taken in order to create a release and trigger deployment.
 
 ### Release Creation
 To create a new (pre-)release and deploy to beta and/or production, do the following steps:
 
- 1. Ensure you're on the main branch and pull the latest code.
+ 1. Ensure you're on the alpha branch and pull the latest code.
     ```bash
-	git checkout main
+	git checkout alpha
 	git pull
 	```
 
