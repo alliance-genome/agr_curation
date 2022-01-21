@@ -13,7 +13,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class CHEBITerm extends OntologyTerm{
+public class CHEBITerm extends ChemicalTerm{
 
 }
 
