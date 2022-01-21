@@ -1,8 +1,9 @@
-name: Main branch Build and Deployment
+name: Alpha branch Build and Deployment
 on:
   push:
     branches:
       - main
+      - alpha
     paths-ignore:
       - '**.md'
       - .gitignore
