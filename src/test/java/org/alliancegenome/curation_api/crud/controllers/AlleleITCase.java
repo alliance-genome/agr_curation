@@ -21,7 +21,7 @@ public class AlleleITCase {
     private final String ALLELE_TAXON = "NCBITaxon:10090";
     private final String ALLELE_SYMBOL = "Allele<sup>test</sup>";
     private final String ALLELE_DESCRIPTION = "Allele test description";
-    private final String INVALID_TAXON = "NCBI:00001";
+    private final String INVALID_TAXON = "NCBITaxon:0000";
     private Allele allele = createAllele(ALLELE_CURIE, ALLELE_TAXON, ALLELE_SYMBOL, ALLELE_DESCRIPTION);
     
     @Test

@@ -23,4 +23,11 @@ public abstract class DiseaseAnnotationCurieManager {
         return curie;
     }
 
+    public static DiseaseAnnotationCurie getDiseaseAnnotationUniqueId(String taxonID) {
+        DiseaseAnnotationCurie curie = curieTaxonMap.get(taxonID);
+        if (curie == null)
+            throw new RuntimeException("No Disease Annotation Curie definition found for " + taxonID);
+        return curie;
+    }
+
 }

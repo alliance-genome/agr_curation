@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Molecule;
-import org.alliancegenome.curation_api.model.ingest.json.dto.MoleculeMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.MoleculeMetaDataFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -34,6 +34,6 @@ public interface MoleculeCrudInterface extends BaseCurieCrudInterface<Molecule> 
     @POST
     @Path("/bulk/moleculefile")
     public String updateMolecules(
-        MoleculeMetaDataDTO moleculeData);
+        MoleculeMetaDataFmsDTO moleculeData);
     
 }

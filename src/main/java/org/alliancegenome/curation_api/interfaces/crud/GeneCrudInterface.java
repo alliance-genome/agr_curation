@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.ingest.json.dto.GeneMetaDataDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.GeneMetaDataFmsDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -37,6 +37,6 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene> {
 
     @POST
     @Path("/bulk/bgifile")
-    public String updateGenes(GeneMetaDataDTO geneData);
+    public String updateGenes(GeneMetaDataFmsDTO geneData);
     
 }

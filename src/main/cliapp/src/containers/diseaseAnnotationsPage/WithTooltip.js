@@ -1,11 +1,11 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Tooltip} from "primereact/tooltip";
 
-export function WithTooltip({ op, autocompleteSelectedItem, inputValue }) {
+export function WithTooltip({ op, autocompleteSelectedItem }) {
 
     return (
         <>
-            <Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack mouseTrackLeft={100}>
+            <Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack mouseTrackLeft={30}>
                 Curie: {autocompleteSelectedItem.curie}<br />
                 { autocompleteSelectedItem.name &&
                 <div dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
