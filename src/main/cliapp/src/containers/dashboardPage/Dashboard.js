@@ -22,12 +22,16 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Alleles", count: results.totalResults }]);
     });
 
-    searchService.search('disease-annotation', 0, 0).then(results => {
+    searchService.search('agm', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Affected Genomic Models", count: results.totalResults }]);
+    });
+
+	searchService.search('disease-annotation', 0, 0).then(results => {
       setEntityCounts((list) => [...list, { name: "Disease Annotations", count: results.totalResults }]);
     });
 
-    searchService.search('agm', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Affected Genomic Models", count: results.totalResults }]);
+	searchService.search('experimental-condition', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Disease Annotations", count: results.totalResults }]);
     });
 
     searchService.search("molecule", 0, 0).then(results => {

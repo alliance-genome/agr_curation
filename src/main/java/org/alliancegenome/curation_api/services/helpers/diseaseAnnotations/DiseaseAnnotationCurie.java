@@ -36,16 +36,16 @@ public abstract class DiseaseAnnotationCurie {
             curie.add(conditionRelations.stream()
                     .map(condition -> {
                         CurieGeneratorHelper gen = new CurieGeneratorHelper();
-                        gen.add(condition.getRelationType());
+                        gen.add(condition.getConditionRelationType());
                         condition.getConditions().forEach(cond -> {
                             CurieGeneratorHelper help = new CurieGeneratorHelper();
                             help.add(cond.getConditionStatement());
                             help.add(cond.getConditionClass().getCurie());
                             help.add(cond.getConditionAnatomy().getCurie());
                             help.add(cond.getConditionChemical().getCurie());
-                            help.add(cond.getConditionGO().getCurie());
+                            help.add(cond.getConditionGeneOntology().getCurie());
                             help.add(cond.getConditionTaxon().getCurie());
-                            help.add(cond.getConditionQuantity().getCurie());
+                            help.add(cond.getConditionQuantity());
                             gen.add(help.getCurie());
                         });
                         return gen.getCurie();

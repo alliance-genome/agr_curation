@@ -8,24 +8,40 @@ import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntit
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
+
 @Audited
+@Entity
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Schema(name = "Disease_Relation", description = "Condition class ")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
 public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity  {
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "conditionRelationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("condition_relation_type")
-    private String relationType;
+    @EqualsAndHashCode.Include
+    private String conditionRelationType;
 
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToMany
     @JsonView({View.FieldsAndLists.class})
-    private List<Condition> conditions;
-
-    @JsonView({View.FieldsOnly.class})
-    private List<PaperHandle> paperHandles;
+    private List<ExperimentalCondition> conditions;
 
 
 }
