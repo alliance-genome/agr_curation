@@ -59,7 +59,7 @@ export const SiteLayout = (props) => {
         { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
         { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
         { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
-        { label: 'ExperimentalConditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
+        { label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
         { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' }
       ]
     },

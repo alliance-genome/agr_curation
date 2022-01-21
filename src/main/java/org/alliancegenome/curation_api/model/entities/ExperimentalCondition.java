@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;
@@ -18,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalCondi
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.PaperHandle;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -26,12 +28,14 @@ import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 @Audited
 @Entity
+@Indexed
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name="ExperimentalCondition", description="POJO that describes the Experimental Condition")
 public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
@@ -39,7 +43,6 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
-    @Column(nullable = false)
     @JsonView({View.FieldsOnly.class})
     private ZecoTerm conditionClass; 
     
@@ -74,5 +77,9 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @JsonView({View.FieldsOnly.class})private NCBITaxonTerm conditionTaxon;                   
     private ChemicalTerm conditionChemical;                
     
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToMany
+    @JsonView({View.FieldsAndLists.class})
     private List<PaperHandle> paperHandles;
 }
