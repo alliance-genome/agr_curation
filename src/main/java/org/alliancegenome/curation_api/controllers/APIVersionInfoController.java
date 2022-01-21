@@ -23,6 +23,8 @@ public class APIVersionInfoController implements APIVersionInterface {
     @ConfigProperty(name = "linkML.classes")
     List<String> linkMLClasses;
     
+    @ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
+    String es_host;
     
     @Override
     public APIVersionInfo get() {
@@ -31,6 +33,7 @@ public class APIVersionInfoController implements APIVersionInterface {
         info.setName(name);
         info.setLinkMLVersion(linkMLVersion);
         info.setLinkMLClasses(linkMLClasses);
+        info.setEsHost(es_host);
         return info;
     }
 
