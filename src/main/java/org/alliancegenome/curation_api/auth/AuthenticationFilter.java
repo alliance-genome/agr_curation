@@ -37,7 +37,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Inject PersonDAO personDAO;
 
-    @ConfigProperty(name = "okta.authenication")
+    @ConfigProperty(name = "okta.authentication")
     Instance<Boolean> okta_auth;
 
     @ConfigProperty(name = "okta.url")
@@ -141,7 +141,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 throw new Exception("Authentication Unsuccessful: " + token + " failed authentication");
             }
         } else {
-            log.warn("OKTA Authentication Disabled");
+            log.warn("OKTA Authentication Disabled using Test Dev User");
+            Person person = new Person();
+            person.setEmail("test@alliancegenome.org");
+            person.setFirstName("Local");
+            person.setLastName("Dev User");
+            personDAO.persist(person);
+            userAuthenticatedEvent.fire(person);
         }
 
     }
