@@ -5,6 +5,7 @@ import java.util.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -17,12 +18,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BaseIdCrudInterface<E extends BaseEntity> {
 
-    @POST //@Secured
+    @POST @Secured
     @Path("/")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> create(E entity);
 
-    @POST //@Secured
+    @POST @Secured
     @Path("/multiple")
     @JsonView(View.FieldsOnly.class)
     public ObjectListResponse<E> create(List<E> entities);
@@ -32,12 +33,12 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> get(@PathParam("id") Long id);
     
-    @PUT //@Secured
+    @PUT @Secured
     @Path("/")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> update(E entity);
 
-    @DELETE //@Secured
+    @DELETE @Secured
     @Path("/{id}")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> delete(@PathParam("id") Long id);

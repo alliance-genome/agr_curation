@@ -54,6 +54,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     @Override
     @Transactional
     public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
+        log.info(authenticatedPerson);
         AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
         return new ObjectResponse<AffectedGenomicModel>(affectedGenomicModelDAO.persist(dbEntity));
     }
