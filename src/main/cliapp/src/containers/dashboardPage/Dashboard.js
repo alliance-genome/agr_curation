@@ -31,7 +31,7 @@ export const Dashboard = () => {
     });
 
 	searchService.search('experimental-condition', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Disease Annotations", count: results.totalResults }]);
+      setEntityCounts((list) => [...list, { name: "Experimental Conditions", count: results.totalResults }]);
     });
 
     searchService.search("molecule", 0, 0).then(results => {
