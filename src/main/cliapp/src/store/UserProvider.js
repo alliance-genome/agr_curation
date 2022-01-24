@@ -4,15 +4,26 @@ import { UserContext } from './UserContext';
 const defaultSettings = {};
 
 const userSettingsReducer = (state, action) => {
-  if (action.type === 'UPDATE_COLUMNS') {
-    return {
-      ...state,
-      [action.table]: {
-        columns: action.columns
-      }
-    };
-  };
-  return defaultSettings;
+  switch (action.type) {
+    case 'UPDATE_COLUMNS':
+      return {
+        ...state,
+        [action.table]: {
+          ...state[action.table],
+          columns: action.columns
+        }
+      };
+    case 'UPDATE_MULTISORTMETA':
+      return {
+        ...state,
+        [action.table]: {
+          ...state[action.table],
+          multiSortMeta: action.multiSortMeta
+        }
+      };
+    default:
+      return defaultSettings;
+  }
 };
 
 
@@ -28,9 +39,18 @@ export const UserProvider = (props) => {
     });
   }
 
+  const updateMultiSortMetaHandler = (multiSortMeta, table) => {
+    dispatchSettingsAction({
+      type: 'UPDATE_MULTISORTMETA',
+      table: table,
+      multiSortMeta: multiSortMeta
+    });
+  }
+
   const userSettingsContext = {
     ...settingsState,
-    updateColumns: updateColumnsHandler
+    updateColumns: updateColumnsHandler,
+    updateMultiSortMeta: updateMultiSortMetaHandler
   };
 
   return (

@@ -12,22 +12,25 @@ import { useUserContext } from '../../store/UserContext';
 
 export const GenesTable = () => {
 
+  const userContext = useUserContext();
+
   const [genes, setGenes] = useState(null);
-  const [multiSortMeta, setMultiSortMeta] = useState([]);
+  const [multiSortMeta, setMultiSortMeta] = useState(() => {
+    return userContext.geneTable && userContext.geneTable.multiSortMeta ? userContext.geneTable.multiSortMeta : [];
+  });
   const [filters, setFilters] = useState({});
   const [page, setPage] = useState(0);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
-  const userContext = useUserContext();
 
   const searchService = new SearchService();
   const errorMessage = useRef(null);
   const columnNames = ["Curie", "Name", "Symbol", "Taxon"];
 
   const [selectedColumnNames, setSelectedColumnNames] = useState(() => {
-    return userContext.geneTable ? userContext.geneTable.columns : columnNames;
+    return userContext.geneTable && userContext.geneTable.columns ? userContext.geneTable.columns : columnNames;
   });
 
   useQuery(['genes', rows, page, multiSortMeta, filters],
@@ -46,7 +49,6 @@ export const GenesTable = () => {
   });
 
 
-
   const onLazyLoad = (event) => {
     setRows(event.rows);
     setPage(event.page);
@@ -59,19 +61,20 @@ export const GenesTable = () => {
   };
 
   const onSort = (event) => {
-    setMultiSortMeta(
-      returnSorted(event, multiSortMeta)
-    )
+    const sorted = returnSorted(event, multiSortMeta);
+    setMultiSortMeta(sorted);
+    userContext.updateMultiSortMeta(sorted, 'geneTable');
   };
 
   const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
-      isEnabled={isEnabled}
-      fields={fields}
-      filterName={filterName}
-      currentFilters={filters}
-      onFilter={onFilter}
-    />);
+    return (
+      <FilterComponent
+        isEnabled={isEnabled}
+        fields={fields}
+        filterName={filterName}
+        currentFilters={filters}
+        onFilter={onFilter}
+      />);
   };
 
   const columns = [
