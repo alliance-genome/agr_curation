@@ -8,6 +8,7 @@ import { FilterComponent } from '../../components/FilterComponent'
 import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted } from '../../utils/utils';
+import { useUserContext } from '../../store/UserContext';
 
 export const GenesTable = () => {
 
@@ -19,11 +20,15 @@ export const GenesTable = () => {
   const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
+  const userContext = useUserContext();
+
   const searchService = new SearchService();
   const errorMessage = useRef(null);
   const columnNames = ["Curie", "Name", "Symbol", "Taxon"];
 
-  const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
+  const [selectedColumnNames, setSelectedColumnNames] = useState(() => {
+    return userContext.geneTable ? userContext.geneTable.columns : columnNames;
+  });
 
   useQuery(['genes', rows, page, multiSortMeta, filters],
     () => searchService.search('gene', rows, page, multiSortMeta, filters), {
@@ -49,66 +54,71 @@ export const GenesTable = () => {
   }
 
 
-  const onFilter = (filtersCopy) => { 
-      setFilters({...filtersCopy});
+  const onFilter = (filtersCopy) => {
+    setFilters({ ...filtersCopy });
   };
 
   const onSort = (event) => {
-      setMultiSortMeta(
-          returnSorted(event, multiSortMeta)
-      )
+    setMultiSortMeta(
+      returnSorted(event, multiSortMeta)
+    )
   };
-  
+
   const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent 
-          isEnabled={isEnabled} 
-          fields={fields} 
-          filterName={filterName}
-          currentFilters={filters}
-          onFilter={onFilter}
-      />);
-  };                                 
+    return (<FilterComponent
+      isEnabled={isEnabled}
+      fields={fields}
+      filterName={filterName}
+      currentFilters={filters}
+      onFilter={onFilter}
+    />);
+  };
 
   const columns = [
     {
-      field:"curie",
-      header:"Curie",
-      sortable: isEnabled, 
+      field: "curie",
+      header: "Curie",
+      sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("curieFilter", ["curie"]),
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' } 
-    }, 
+      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' }
+    },
     {
-      field:"name",
-      header:"Name",
-      sortable: isEnabled,  
+      field: "name",
+      header: "Name",
+      sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("nameFilter", ["name"])
-    }, 
+    },
     {
-      field:"symbol",
-      header:"Symbol",
-      sortable: isEnabled, 
-      filter : true, 
+      field: "symbol",
+      header: "Symbol",
+      sortable: isEnabled,
+      filter: true,
       filterElement: filterComponentTemplate("symbolFilter", ["symbol"])
     },
     {
-      field:"taxon.curie",
-      header:"Taxon",
+      field: "taxon.curie",
+      header: "Taxon",
       sortable: isEnabled,
-      filter: true, 
+      filter: true,
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
 
 
   ];
-  
+
+  const onSelectChangeHandler = (value) => {
+    setSelectedColumnNames(value);
+    userContext.updateColumns(value, 'geneTable');
+  };
+
   const header = (
     <div style={{ textAlign: 'left' }}>
       <MultiSelect
         value={selectedColumnNames}
         options={columnNames}
-        onChange={e => setSelectedColumnNames(e.value)}
+        onChange={e => onSelectChangeHandler(e.value)}
         style={{ width: '20em' }}
         disabled={!isEnabled}
       />
@@ -130,14 +140,14 @@ export const GenesTable = () => {
       filterElement={col.filterElement}
       style={col.style}
     />;
-  })                       
+  })
 
   return (
     <div>
       <div className="card">
         <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
-        <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns  
+        <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
           first={first}
           resizableColumns columnResizeMode="fit" showGridlines
@@ -145,7 +155,7 @@ export const GenesTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
-            {columnMap}
+          {columnMap}
         </DataTable>
 
       </div>
