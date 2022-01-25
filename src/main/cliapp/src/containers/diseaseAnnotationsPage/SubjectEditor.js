@@ -50,14 +50,14 @@ import {SubjectTooltip} from './SubjectTooltip';
             if(autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
                 for(let i in autocompleteSelectedItem.synonyms){
                     if(autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase().indexOf(inputValue)< 0){
-                        autocompleteSelectedItem.synonyms.splice(i,1);
+                        delete autocompleteSelectedItem.synonyms[i];
                     }
                 }
             }
             if(autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length>0){
                 for(let i in autocompleteSelectedItem.crossReferences){
                     if(autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue)< 0){
-                        autocompleteSelectedItem.crossReferences.splice(i,1);
+                        delete autocompleteSelectedItem.crossReferences[i];
                     }
                 }
             }
@@ -65,7 +65,7 @@ import {SubjectTooltip} from './SubjectTooltip';
             if(autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length>0){
                 for(let i in autocompleteSelectedItem.secondaryIdentifiers){
                     if(autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue)< 0){
-                        autocompleteSelectedItem.secondaryIdentifiers.splice(i,1);
+                        delete autocompleteSelectedItem.secondaryIdentifiers[i];
                     }
                 }
             }
