@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.jobs;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -60,7 +62,8 @@ public class BulkLoadFileProcessor {
             String s3Url = processFMS(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
             String filePath = fileHelper.saveIncomingURLFile(s3Url);
             String localFilePath = fileHelper.compressInputFile(filePath);
-            processFilePath(bulkFMSLoad, localFilePath);
+            String fileType = parseURLFileType(s3Url);
+            processFilePath(bulkFMSLoad, localFilePath, fileType);
             bulkFMSLoad.setErrorMessage(null);
             bulkFMSLoad = bulkFMSLoadDAO.find(bulkFMSLoad.getId());
             bulkFMSLoad.setStatus(BulkLoadStatus.FINISHED);
@@ -82,7 +85,8 @@ public class BulkLoadFileProcessor {
         if(bulkURLLoad.getUrl() != null && bulkURLLoad.getUrl().length() > 0) {
             String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getUrl());
             String localFilePath = fileHelper.compressInputFile(filePath);
-            processFilePath(bulkURLLoad, localFilePath);
+            String fileType = parseURLFileType(bulkURLLoad.getUrl());
+            processFilePath(bulkURLLoad, localFilePath, fileType);
             bulkURLLoad.setErrorMessage(null);
             bulkURLLoad = bulkURLLoadDAO.find(bulkURLLoad.getId());
             bulkURLLoad.setStatus(BulkLoadStatus.FINISHED);
@@ -133,7 +137,9 @@ public class BulkLoadFileProcessor {
         
         String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataType().toString());
         String localFilePath = fileHelper.compressInputFile(filePath);
-        processFilePath(bulkManualLoad, localFilePath);
+        String fileType = "json";
+        if (dataType.name().equals("ONTOLOGY")) fileType = "owl";
+        processFilePath(bulkManualLoad, localFilePath, fileType);
         
         bulkManualLoad.setErrorMessage(null);
         bulkManualLoad = bulkManualLoadDAO.find(bulkManualLoad.getId());
@@ -225,7 +231,7 @@ public class BulkLoadFileProcessor {
         log.info("Syncing with S3 Finished");
     }
 
-    private void processFilePath(BulkLoad bulkLoad, String localFilePath) {
+    private void processFilePath(BulkLoad bulkLoad, String localFilePath, String fileType) {
         String md5Sum = getMD5SumOfGzipFile(localFilePath);
         log.info("MD5 Sum: " + md5Sum);
 
@@ -244,6 +250,7 @@ public class BulkLoadFileProcessor {
             bulkLoadFile.setFileSize(inputFile.length());
             bulkLoadFile.setStatus(BulkLoadStatus.PENDING);
             bulkLoadFile.setLocalFilePath(localFilePath);
+            bulkLoadFile.setFileType(fileType);
             bulkLoadFileDAO.persist(bulkLoadFile);
         } else {
             log.info("Bulk File already exists not creating it");
@@ -296,6 +303,15 @@ public class BulkLoadFileProcessor {
         bulkLoadFile.setErrorMessage(message);
         bulkLoadFile.setStatus(status);
         bulkLoadFileDAO.merge(bulkLoadFile);
+    }
+    
+    private String parseURLFileType(String url) {
+        
+        String[] urlParts = url.split("\\.");
+        int nrParts = urlParts.length;
+        if (urlParts[nrParts - 1].equalsIgnoreCase("gz")) return urlParts[nrParts - 2];
+        
+        return urlParts[nrParts - 1];
     }
 
 }

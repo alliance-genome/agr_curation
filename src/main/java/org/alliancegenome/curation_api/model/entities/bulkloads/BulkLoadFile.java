@@ -41,6 +41,9 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     @Column(columnDefinition="TEXT")
     private String errorMessage;
 
+    @JsonView({View.FieldsOnly.class})
+    private String fileType;
+    
     @ManyToOne
     private BulkLoad bulkLoad;
 
@@ -56,6 +59,6 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     @JsonIgnore
     @JsonView({View.FieldsOnly.class})
     public String generateS3MD5Path() {
-        return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + ".gz";
+        return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + "." + fileType + ".gz";
     }
 }
