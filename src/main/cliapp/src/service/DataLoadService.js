@@ -86,10 +86,5 @@ export class DataLoadService {
         ];
     }
 
-	getFileExtensions() {
-		return [
-			"json", "owl"
-		];
-	}
 
 }

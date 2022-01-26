@@ -54,7 +54,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     private BulkLoadGroup group;
     
     @JsonView({View.FieldsOnly.class})
-    private BulkLoadFileExtension fileExtension;
+    private String fileExtension;
     
     @JsonView({View.FieldsOnly.class})
     @OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
@@ -84,10 +84,6 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         RGD, MGI, SGD, HUMAN, ZFIN, FB, WB
         ;
     }
-    
-    public enum BulkLoadFileExtension {
-        json, owl
-        ;
-    }
+
 
 }
