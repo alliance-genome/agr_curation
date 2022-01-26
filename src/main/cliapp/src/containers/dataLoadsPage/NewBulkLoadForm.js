@@ -23,6 +23,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
 
     const [backendBulkLoadTypes, setBackendLoadTypes] = useState();
     const loadTypes = dataLoadService.getLoadTypes();
+	const fileExtensions = dataLoadService.getFileExtensions();
 
     const mutation = useMutation(bulkLoad => {
         if (bulkLoad.id) {
@@ -170,6 +171,20 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
                         />
                     </div>
 
+					<div className="p-field">
+						<label htmlFor="fileExtension">File Extension</label>
+						<Dropdown
+							id="bulkLoadFileExtension"
+							value={newBulkLoad.fileExtension}
+							options={fileExtensions}
+							onChange={onChange}
+							placeholder={"Select Bulk Load File Extension"}
+							className='p-col-12'
+							name='fileExtension'
+							disabled={disableFormFields}
+						/>
+					</div>
+					
                     <FMSForm
                         hideFMS={hideFMS}
                         newBulkLoad={newBulkLoad}
