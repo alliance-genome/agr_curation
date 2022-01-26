@@ -171,7 +171,7 @@ export const ExperimentalConditionsTable = () => {
   return (
     <div>
       <div className="card">
-        <h3>Genes Table</h3>
+        <h3>Experimental Conditions Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns  
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
