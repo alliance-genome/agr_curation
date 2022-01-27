@@ -317,13 +317,16 @@ Valid values for LoadType, and SubType can be found in the examples below.
 
 ### Curation System
 
-This value can be one of the following list
+This value can be one of the following list.
 
 | Name | Description |
 | --- | --- |
 | alpha-curation | Alpha Curation Site |
 | beta-curation | Beta Curation Site |
 | curation | Production Curation Site |
+
+DQMs can find information regarding the LinkML version and data classes currently supported by the curation at the following link:
+https://${Curation_System}.alliancegenome.org/api/version
 
 ### API Access Token
 
