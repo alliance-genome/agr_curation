@@ -321,9 +321,9 @@ This value can be one of the following list
 
 | Name | Description |
 | --- | --- |
-| alpha-curation    | Alpha Curation Site |
+| alpha-curation | Alpha Curation Site |
 | beta-curation | Beta Curation Site |
-| curation   | Production Curation Site |
+| curation | Production Curation Site |
 
 ### API Access Token
 
@@ -335,10 +335,10 @@ Load type corisponds with the type of file that load needs.
 
 | Name | Description |
 | --- | --- |
-| GENE    | LinkML Gene |
+| GENE | LinkML Gene |
 | ALLELE | LinkML Allele |
-| AGM   | LinkML AGM |
-| DISEASE_ANNOTATION   | LinkML Disease Annotations |
+| AGM | LinkML AGM |
+| DISEASE_ANNOTATION | LinkML Disease Annotations |
 
 ### Sub Type
 
