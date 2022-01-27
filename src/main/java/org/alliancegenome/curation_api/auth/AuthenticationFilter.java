@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.auth;
 import java.io.IOException;
 import java.util.*;
 
-import javax.annotation.*;
+import javax.annotation.Priority;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;

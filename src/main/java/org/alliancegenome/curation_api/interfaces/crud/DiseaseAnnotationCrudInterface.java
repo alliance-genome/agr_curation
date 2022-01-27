@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
+import java.util.List;
+
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
@@ -7,10 +9,7 @@ import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
-
-import java.util.List;
 
 @Path("/disease-annotation")
 @Tag(name = "CRUD - Disease Annotations")

@@ -1,9 +1,6 @@
 package org.alliancegenome.curation_api.auth;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 import javax.inject.Qualifier;
 

@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.*;
+import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
 
 import lombok.Data;
 

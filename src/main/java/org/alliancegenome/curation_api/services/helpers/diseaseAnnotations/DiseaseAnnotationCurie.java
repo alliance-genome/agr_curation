@@ -1,14 +1,13 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class DiseaseAnnotationCurie {
 
