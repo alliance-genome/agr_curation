@@ -81,7 +81,7 @@ export const ExperimentalConditionsTable = () => {
     {
       field:"conditionStatement",
       header:"Statement",
-	  style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,  
       filter: true,
       filterElement: filterComponentTemplate("conditionStatment", ["conditionStatement"])
