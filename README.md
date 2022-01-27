@@ -13,8 +13,7 @@ These instructions will get you a copy of the project and the API up and running
 	* [Postgres](#postgres)
 	* [ElasticSearch](#elastic-search)
 	* [Cerebro](#cerebro)
-	* [ActiveMQ](#activeMQ)
-- [Building](#Building)
+- [Building](#building)
 	* [Building Docker Image](#building-docker-image)
 - [Running](#running)
 	* [Running API](#running-api)
@@ -23,8 +22,7 @@ These instructions will get you a copy of the project and the API up and running
 	* [Deployment environments](#deployment-environments)
 	* [Release Creation](#release-creation)
 - [Loading Data](#loading-data)
-
-
+- [Submitting Data](#submitting-data)
 
 ## Installing
 
@@ -137,7 +135,7 @@ b6ed9006b28e   vromero/activemq-artemis:2.9.0-alpine   "/docker-entrypoint.…" 
 ## Building
 
 Both the UI or API can be run locally without needing a separate build step.
-For instructions on how to do so, see [Running](#Running).
+For instructions on how to do so, see [Running](#running-api).
 
 Building the application uberjar is done as part of the Docker image creation,
 instructions on how to use this process for local image building can be found [below](#building-docker-image).
@@ -302,6 +300,59 @@ Example of loading Allele's
 ```bash
 > curl -vX POST http://localhost:8080/api/allele/bulk/allelefile -d @1.0.1.4_ALLELE_MGI_0.json --header "Content-Type: application/json"
 ```
+
+## Submitting Data
+
+Here is an example using curl:
+
+```
+curl \
+	-H "Authorization: Bearer 2C07D715..." \
+	-X POST "https://{Curation System}.alliancegenome.org/api/data/submit" \
+	-F "LoadType_SubType=@/full/path/to/file1.json" \
+	-F "LoadType_SubType =@/full/path/to/file2.json"
+```
+
+Valid values for LoadType, and SubType can be found in the examples below.
+
+### Curation System
+
+This value can be one of the following list
+
+| Name | Description |
+| --- | --- |
+| alpha-curation    | Alpha Curation Site |
+| beta-curation | Beta Curation Site |
+| curation   | Production Curation Site |
+
+### API Access Token
+
+This will be a key that is generated via logging into the curation website for the DQM's to use for uploading files.
+
+### Load Type
+
+Load type corisponds with the type of file that load needs.
+
+| Name | Description |
+| --- | --- |
+| GENE    | LinkML Gene |
+| ALLELE | LinkML Allele |
+| AGM   | LinkML AGM |
+| DISEASE_ANNOTATION   | LinkML Disease Annotations |
+
+### Sub Type
+
+This is a grouping mechanism to group files together
+
+| Name | Description |
+| --- | --- |
+| FB    | Fly Base |
+| HUMAN | Human Supplied by RGD |
+| MGI   | Mouse Genome Database |
+| RGD   | Rat Genome Database |
+| SGD   | Saccharomyces Genome Database |
+| WB    | Worm Base |
+| ZFIN  | Zebrafish Information Network |
 
 ## EB Deployment (beta)
 This section is WIP.
