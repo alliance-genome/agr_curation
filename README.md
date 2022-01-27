@@ -209,7 +209,7 @@ Additionally, there are two convenience commands that will proxy `/api` requests
 
 ### Running the docker image
 
-To run the complete application as the [locally built docker image](#Building-Docker-Image), execute the following command:
+To run the complete application as the [locally built docker image](#building-docker-image), execute the following command:
 ```bash
 > make docker-run
 ```
