@@ -84,7 +84,7 @@ export const ExperimentalConditionsTable = () => {
     style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,  
       filter: true,
-      filterElement: filterComponentTemplate("conditionStatment", ["conditionStatement"])
+      filterElement: filterComponentTemplate("conditionStatement", ["conditionStatement"])
     }, 
     {
       field:"conditionClass",
@@ -105,35 +105,35 @@ export const ExperimentalConditionsTable = () => {
       header:"Gene Ontology",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionId", ["conditionGeneOntology.curie", "conditionGeneOntology.name"])
+      filterElement: filterComponentTemplate("conditionGeneOntology", ["conditionGeneOntology.curie", "conditionGeneOntology.name"])
     },
     {
       field:"conditionChemical",
       header:"Chemical",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionId", ["conditionChemical.curie", "conditionChemical.name"])
+      filterElement: filterComponentTemplate("conditionChemical", ["conditionChemical.curie", "conditionChemical.name"])
     },
     {
       field:"conditionAnatomy",
       header:"Anatomy",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionId", ["conditionAnatomy.curie", "conditionAnatomy.name"])
+      filterElement: filterComponentTemplate("conditionAnatomy", ["conditionAnatomy.curie", "conditionAnatomy.name"])
     },
     {
       field:"conditionTaxon",
       header:"Condition Taxon",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionId", ["conditionTaxon.curie", "conditionTaxon.name"])
+      filterElement: filterComponentTemplate("conditionTaxon", ["conditionTaxon.curie", "conditionTaxon.name"])
     },
     {
       field:"conditionQuantity",
       header:"Quantity",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionId", ["conditionQuantity"])
+      filterElement: filterComponentTemplate("conditionQuantity", ["conditionQuantity"])
     }
 
 
