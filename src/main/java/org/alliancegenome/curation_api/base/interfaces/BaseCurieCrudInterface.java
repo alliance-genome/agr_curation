@@ -61,7 +61,7 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
     
-    @GET
+    @GET @Secured
     @Path("/reindex")
     @Tag(name = "Reindex Endpoints")
     public void reindex(

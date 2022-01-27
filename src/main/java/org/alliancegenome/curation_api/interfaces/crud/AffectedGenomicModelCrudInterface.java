@@ -6,6 +6,7 @@ import java.util.HashMap;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelMetaDataFmsDTO;
@@ -36,7 +37,7 @@ public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterfac
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
     
-    @POST
+    @POST @Secured
     @Path("/bulk/agmfile")
     public String updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData);
 }

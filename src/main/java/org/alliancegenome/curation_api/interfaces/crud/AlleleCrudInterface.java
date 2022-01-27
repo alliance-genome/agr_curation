@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 
 import com.fasterxml.jackson.annotation.JsonView;
+
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleMetaDataFmsDTO;
@@ -21,7 +23,7 @@ import java.util.HashMap;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele> {
 
-    @POST
+    @POST @Secured
     @Path("/bulk/allelefile")
     public String updateAlleles(AlleleMetaDataFmsDTO alleleData);
 
