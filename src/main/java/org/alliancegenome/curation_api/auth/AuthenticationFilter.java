@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.auth;
 
 import java.io.IOException;
-import java.util.Base64;
+import java.util.*;
 
 import javax.annotation.Priority;
 import javax.enterprise.event.Event;
@@ -127,6 +127,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
                 if(res == null) {
                     Person person = new Person();
+                    person.setApiToken(UUID.randomUUID().toString());
                     person.setEmail(user.getProfile().getEmail());
                     person.setFirstName(user.getProfile().getFirstName());
                     person.setLastName(user.getProfile().getLastName());
@@ -142,12 +143,18 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             }
         } else {
             log.warn("OKTA Authentication Disabled using Test Dev User");
-            Person person = new Person();
-            person.setEmail("test@alliancegenome.org");
-            person.setFirstName("Local");
-            person.setLastName("Dev User");
-            personDAO.persist(person);
-            userAuthenticatedEvent.fire(person);
+            SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
+            if(res == null) {
+                Person person = new Person();
+                person.setApiToken(UUID.randomUUID().toString());
+                person.setEmail("test@alliancegenome.org");
+                person.setFirstName("Local");
+                person.setLastName("Dev User");
+                personDAO.persist(person);
+                userAuthenticatedEvent.fire(person);
+            } else {
+                userAuthenticatedEvent.fire(res.getResults().get(0));
+            }
         }
 
     }

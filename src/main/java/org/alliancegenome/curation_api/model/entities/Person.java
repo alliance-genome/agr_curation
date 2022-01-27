@@ -15,4 +15,10 @@ public class Person extends BaseGeneratedEntity {
     
     @Column(unique = true)
     private String email;
+    
+    private String apiToken;
+    private String modId;
+    private String uniqueId;
+
+
 }
