@@ -57,7 +57,8 @@ test:
 	mvn test
 
 integration-test:
-	mvn -ntp failsafe:integration-test
+	mvn clean package
+	mvn -ntp failsafe:integration-test -Dokta.authentication=false
 	mvn failsafe:verify
 
 verify:

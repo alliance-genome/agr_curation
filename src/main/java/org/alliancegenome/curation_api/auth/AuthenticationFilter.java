@@ -22,7 +22,6 @@ import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.*;
 import com.okta.sdk.resource.user.User;
 
-import io.quarkus.runtime.configuration.ProfileManager;
 import lombok.extern.jbosslog.JBossLog;
 import si.mazi.rescu.RestProxyFactory;
 
@@ -56,41 +55,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     //private static final String REALM = "AGR";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
 
-    @PostConstruct
-    public void init() {
-        log.error("Client: " + client_id.get());
-        log.error("Url: " + okta_url.get());
-        log.error("Auth: " + okta_auth.get());
-        log.error("Secret: " + client_secret.get());
-        log.error("API Token: " + api_token.get());
-    }
-    
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
-
-        log.error("Auth Verify Request: " + requestContext.getUriInfo());
-        log.error("Client: " + client_id.get());
-        log.error("Url: " + okta_url.get());
-        log.error("Auth: " + okta_auth.get());
-        log.error("Secret: " + client_secret.get());
-        log.error("API Token: " + api_token.get());
-        
-        if(!okta_auth.get()) {
-            log.warn("OKTA Authentication Disabled using Test Dev User");
-            SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
-            if(res == null) {
-                Person person = new Person();
-                person.setApiToken(UUID.randomUUID().toString());
-                person.setEmail("test@alliancegenome.org");
-                person.setFirstName("Local");
-                person.setLastName("Dev User");
-                personDAO.persist(person);
-                userAuthenticatedEvent.fire(person);
-            } else {
-                userAuthenticatedEvent.fire(res.getResults().get(0));
-            }
-            return;
-        }
 
         //log.info("AuthenticationFilter: filter: " + requestContext);
 
@@ -99,9 +65,24 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         //log.info("Authorization Header: " + authorizationHeader);
 
-
         if (!isTokenBasedAuthentication(authorizationHeader)) {
-            abortWithUnauthorized(requestContext);
+            if(okta_url.get().equals("\"\"") || client_id.get().equals("\"\"") || client_secret.get().equals("\"\"") || api_token.get().equals("\"\"")) {
+                log.debug("OKTA Authentication Disabled using Test Dev User");
+                SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
+                if(res == null) {
+                    Person person = new Person();
+                    person.setApiToken(UUID.randomUUID().toString());
+                    person.setEmail("test@alliancegenome.org");
+                    person.setFirstName("Local");
+                    person.setLastName("Dev User");
+                    personDAO.persist(person);
+                    userAuthenticatedEvent.fire(person);
+                } else {
+                    userAuthenticatedEvent.fire(res.getResults().get(0));
+                }
+            } else {
+                abortWithUnauthorized(requestContext);
+            }
             return;
         }
 

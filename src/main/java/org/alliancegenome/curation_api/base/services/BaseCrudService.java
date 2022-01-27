@@ -31,7 +31,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
     
     @Transactional
     public ObjectResponse<E> create(E entity) {
-        log.info("Authed Person: " + authenticatedPerson);
+        //log.info("Authed Person: " + authenticatedPerson);
         E object = dao.persist(entity);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
@@ -39,7 +39,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
     
     @Transactional
     public ObjectListResponse<E> create(List<E> entities) {
-        log.info("Authed Person: " + authenticatedPerson);
+        //log.info("Authed Person: " + authenticatedPerson);
         List<E> objects = dao.persist(entities);
         ObjectListResponse<E> ret = new ObjectListResponse<E>(objects);
         return ret;
@@ -59,7 +59,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
 
     @Transactional
     public ObjectResponse<E> update(E entity) {
-        log.info("Authed Person: " + authenticatedPerson);
+        //log.info("Authed Person: " + authenticatedPerson);
         E object = dao.merge(entity);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
@@ -67,7 +67,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
 
     @Transactional
     public ObjectResponse<E> delete(String id) {
-        log.info("Authed Person: " + authenticatedPerson);
+        //log.info("Authed Person: " + authenticatedPerson);
         E object = dao.remove(id);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
