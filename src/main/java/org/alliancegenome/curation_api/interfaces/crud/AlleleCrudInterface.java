@@ -1,19 +1,21 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
+import java.util.HashMap;
+
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleMetaDataFmsDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.HashMap;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/allele")
 @Tag(name = "CRUD - Alleles")
@@ -21,7 +23,7 @@ import java.util.HashMap;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele> {
 
-    @POST
+    @POST @Secured
     @Path("/bulk/allelefile")
     public String updateAlleles(AlleleMetaDataFmsDTO alleleData);
 

@@ -27,8 +27,8 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void init() {
         RestAssured.config = RestAssuredConfig.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
-                    .setParam("http.socket.timeout", 300000)
-                    .setParam("http.connection.timeout", 300000));
+                    .setParam("http.socket.timeout", 60000)
+                    .setParam("http.connection.timeout", 60000));
     }
 
     @Test

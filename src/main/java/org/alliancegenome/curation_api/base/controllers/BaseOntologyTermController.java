@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.base.controllers;
 
 import java.util.Map;
 
-import org.alliancegenome.curation_api.base.*;
 import org.alliancegenome.curation_api.base.dao.BaseDAO;
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;

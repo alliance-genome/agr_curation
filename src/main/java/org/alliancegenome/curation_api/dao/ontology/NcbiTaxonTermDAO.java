@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.base.dao.BaseSQLDAO;
 import org.alliancegenome.curation_api.interfaces.ncbi.NCBIRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponseDTO;
-import org.apache.http.HttpException;
 
 import si.mazi.rescu.RestProxyFactory;
 

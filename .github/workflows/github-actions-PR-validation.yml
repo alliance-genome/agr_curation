@@ -43,7 +43,7 @@ jobs:
           mvn --no-transfer-progress --batch-mode --update-snapshots verify
       - name: Package API
         run: |
-          ./build/package-api.sh
+          mvn clean package -Dquarkus.package.type=uber-jar -ntp
       - name: Run Integration tests
         run: |
           make integration-test

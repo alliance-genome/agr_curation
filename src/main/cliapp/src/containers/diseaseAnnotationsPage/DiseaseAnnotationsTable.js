@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
+import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
 import { returnSorted, trimWhitespace } from '../../utils/utils';
@@ -37,14 +38,16 @@ export const DiseaseAnnotationsTable = () => {
 
   const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
   const [errorMessages, setErrorMessages] = useState({});
+  const { authState } = useOktaAuth();
 
   const rowsInEdit = useRef(0);
 
-  const diseaseAnnotationService = new DiseaseAnnotationService();
   const searchService = new SearchService();
 
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
+
+  let diseaseAnnotationService = null;
 
   const sortMapping = {
     'object.name': ['object.curie', 'object.namespace'],
@@ -71,11 +74,13 @@ export const DiseaseAnnotationsTable = () => {
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
-
   }
   );
 
   const mutation = useMutation(updatedAnnotation => {
+    if (!diseaseAnnotationService) {
+      diseaseAnnotationService = new DiseaseAnnotationService(authState);
+    }
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
 
@@ -473,7 +478,7 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns 
+        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
