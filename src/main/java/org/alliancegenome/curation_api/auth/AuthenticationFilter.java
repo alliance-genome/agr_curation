@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.auth;
 import java.io.IOException;
 import java.util.*;
 
-import javax.annotation.Priority;
+import javax.annotation.*;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
@@ -22,6 +22,7 @@ import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.*;
 import com.okta.sdk.resource.user.User;
 
+import io.quarkus.runtime.configuration.ProfileManager;
 import lombok.extern.jbosslog.JBossLog;
 import si.mazi.rescu.RestProxyFactory;
 
@@ -55,8 +56,41 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     //private static final String REALM = "AGR";
     private static final String AUTHENTICATION_SCHEME = "Bearer";
 
+    @PostConstruct
+    public void init() {
+        log.error("Client: " + client_id.get());
+        log.error("Url: " + okta_url.get());
+        log.error("Auth: " + okta_auth.get());
+        log.error("Secret: " + client_secret.get());
+        log.error("API Token: " + api_token.get());
+    }
+    
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
+
+        log.error("Auth Verify Request: " + requestContext.getUriInfo());
+        log.error("Client: " + client_id.get());
+        log.error("Url: " + okta_url.get());
+        log.error("Auth: " + okta_auth.get());
+        log.error("Secret: " + client_secret.get());
+        log.error("API Token: " + api_token.get());
+        
+        if(!okta_auth.get()) {
+            log.warn("OKTA Authentication Disabled using Test Dev User");
+            SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
+            if(res == null) {
+                Person person = new Person();
+                person.setApiToken(UUID.randomUUID().toString());
+                person.setEmail("test@alliancegenome.org");
+                person.setFirstName("Local");
+                person.setLastName("Dev User");
+                personDAO.persist(person);
+                userAuthenticatedEvent.fire(person);
+            } else {
+                userAuthenticatedEvent.fire(res.getResults().get(0));
+            }
+            return;
+        }
 
         //log.info("AuthenticationFilter: filter: " + requestContext);
 
@@ -64,6 +98,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
         //log.info("Authorization Header: " + authorizationHeader);
+
 
         if (!isTokenBasedAuthentication(authorizationHeader)) {
             abortWithUnauthorized(requestContext);
@@ -107,60 +142,42 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         //log.debug("API Access Token: " + ConfigHelper.getApiAccessToken());
         //log.info("Validating Token: " + token);
 
-        if(okta_auth.get()) {
+        OktaTokenInterface oti = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url.get());
 
-            OktaTokenInterface oti = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url.get());
+        String basic = "Basic " + Base64.getEncoder().encodeToString((client_id.get() + ":" + client_secret.get()).getBytes());
 
-            String basic = "Basic " + Base64.getEncoder().encodeToString((client_id.get() + ":" + client_secret.get()).getBytes());
+        OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
 
-            OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
+        Client client = Clients.builder()
+                .setOrgUrl(okta_url.get())
+                .setClientId(client_id.get())
+                .setClientCredentials(new TokenClientCredentials(api_token.get()))
+                .build();
 
-            Client client = Clients.builder()
-                    .setOrgUrl(okta_url.get())
-                    .setClientId(client_id.get())
-                    .setClientCredentials(new TokenClientCredentials(api_token.get()))
-                    .build();
+        User user = client.getUser(info.getUid());
 
-            User user = client.getUser(info.getUid());
-
-            if(user != null) {
-                SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
-                if(res == null) {
-                    Person person = new Person();
-                    person.setApiToken(UUID.randomUUID().toString());
-                    person.setEmail(user.getProfile().getEmail());
-                    person.setFirstName(user.getProfile().getFirstName());
-                    person.setLastName(user.getProfile().getLastName());
-                    personDAO.persist(person);
-                    userAuthenticatedEvent.fire(person);
-                } else {
-                    userAuthenticatedEvent.fire(res.getResults().get(0));
-                }
-
-            } else {
-                SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
-                if(res != null && res.getResults().size() == 1) {
-                    userAuthenticatedEvent.fire(res.getResults().get(0));
-                } else {
-                    log.warn("Authentication Unsuccessful: " + token);
-                    throw new Exception("Authentication Unsuccessful: " + token + " failed authentication");
-                }
-            }
-        } else {
-            log.warn("OKTA Authentication Disabled using Test Dev User");
-            SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
+        if(user != null) {
+            SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
             if(res == null) {
                 Person person = new Person();
                 person.setApiToken(UUID.randomUUID().toString());
-                person.setEmail("test@alliancegenome.org");
-                person.setFirstName("Local");
-                person.setLastName("Dev User");
+                person.setEmail(user.getProfile().getEmail());
+                person.setFirstName(user.getProfile().getFirstName());
+                person.setLastName(user.getProfile().getLastName());
                 personDAO.persist(person);
                 userAuthenticatedEvent.fire(person);
             } else {
                 userAuthenticatedEvent.fire(res.getResults().get(0));
             }
-        }
 
+        } else {
+            SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
+            if(res != null && res.getResults().size() == 1) {
+                userAuthenticatedEvent.fire(res.getResults().get(0));
+            } else {
+                log.warn("Authentication Unsuccessful: " + token);
+                throw new Exception("Authentication Unsuccessful: " + token + " failed authentication");
+            }
+        }
     }
 }
