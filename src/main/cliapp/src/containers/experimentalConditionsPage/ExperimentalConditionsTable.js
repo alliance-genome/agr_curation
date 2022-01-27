@@ -84,56 +84,56 @@ export const ExperimentalConditionsTable = () => {
     style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,  
       filter: true,
-      filterElement: filterComponentTemplate("conditionStatement", ["conditionStatement"])
+      filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
     }, 
     {
       field:"conditionClass",
       header:"Class",
       sortable: isEnabled, 
       filter : true, 
-      filterElement: filterComponentTemplate("conditionClass", ["conditionClass.curie", "conditionClass.name"])
+      filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"])
     },
     {
       field:"conditionId",
       header:"ID",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionId", ["conditionId.curie", "conditionId.name"])
+      filterElement: filterComponentTemplate("conditionIdFilter", ["conditionId.curie", "conditionId.name"])
     },
     {
       field:"conditionGeneOntology",
       header:"Gene Ontology",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionGeneOntology", ["conditionGeneOntology.curie", "conditionGeneOntology.name"])
+      filterElement: filterComponentTemplate("conditionGeneOntologyFilter", ["conditionGeneOntology.curie", "conditionGeneOntology.name"])
     },
     {
       field:"conditionChemical",
       header:"Chemical",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionChemical", ["conditionChemical.curie", "conditionChemical.name"])
+      filterElement: filterComponentTemplate("conditionChemicalFilter", ["conditionChemical.curie", "conditionChemical.name"])
     },
     {
       field:"conditionAnatomy",
       header:"Anatomy",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionAnatomy", ["conditionAnatomy.curie", "conditionAnatomy.name"])
+      filterElement: filterComponentTemplate("conditionAnatomyFilter", ["conditionAnatomy.curie", "conditionAnatomy.name"])
     },
     {
       field:"conditionTaxon",
       header:"Condition Taxon",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionTaxon", ["conditionTaxon.curie", "conditionTaxon.name"])
+      filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"])
     },
     {
       field:"conditionQuantity",
       header:"Quantity",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionQuantity", ["conditionQuantity"])
+      filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"])
     }
 
 
