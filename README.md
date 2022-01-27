@@ -305,12 +305,12 @@ Example of loading Allele's
 
 Here is an example using curl:
 
-```
+```bash
 curl \
 	-H "Authorization: Bearer 2C07D715..." \
-	-X POST "https://{Curation System}.alliancegenome.org/api/data/submit" \
+	-X POST "https://${Curation_System}.alliancegenome.org/api/data/submit" \
 	-F "LoadType_SubType=@/full/path/to/file1.json" \
-	-F "LoadType_SubType =@/full/path/to/file2.json"
+	-F "LoadType_SubType=@/full/path/to/file2.json"
 ```
 
 Valid values for LoadType, and SubType can be found in the examples below.
