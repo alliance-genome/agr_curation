@@ -63,7 +63,7 @@ export const AllelesTable = () => {
   }
 
   const taxonTemplate = (rowData) => {
-	return <div>{rowData.taxon.curie}</div>;
+  return <div>{rowData.taxon.curie}</div>;
 }
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -101,7 +101,7 @@ export const AllelesTable = () => {
     {
       field:"taxon.curie",
       header:"Taxon",
-	  body: taxonTemplate,
+    body: taxonTemplate,
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
