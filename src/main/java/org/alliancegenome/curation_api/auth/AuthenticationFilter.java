@@ -138,8 +138,13 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 }
 
             } else {
-                log.warn("Authentication Unsuccessful: " + token);
-                throw new Exception("Authentication Unsuccessful: " + token + " failed authentication");
+                SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
+                if(res != null && res.getResults().size() == 1) {
+                    userAuthenticatedEvent.fire(res.getResults().get(0));
+                } else {
+                    log.warn("Authentication Unsuccessful: " + token);
+                    throw new Exception("Authentication Unsuccessful: " + token + " failed authentication");
+                }
             }
         } else {
             log.warn("OKTA Authentication Disabled using Test Dev User");
