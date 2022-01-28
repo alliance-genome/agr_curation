@@ -4,7 +4,7 @@ This repo holds the code for the API and the UI of the AGR curation system.
 
 ## Getting Started
 
-These instructions will get you a copy of the project and the API up and running locally. This includes Postgres, ElasticSearch, Cerebro, and ActiveMQ.
+These instructions will get you a copy of the project and the API up and running locally. This includes Postgres, ElasticSearch and Cerebro.
 
 ## Contents
 
@@ -111,13 +111,6 @@ Connect to this by browsing to `http://localhost:9000`, this is used to connect 
 entering `http://elasticsearch:9200` (the internal docker address) in the Node address field, while elasticsearch is directly
 accessible at `http://localhost:9200` on the local machine.
 
-
-### Active MQ (Message Queue)<a id="activeMQ"/></a>
-
-[Run Active MQ Script](docker/run_activemq) which will launch activeMQ-artemis, from the last vromero activeMQ image.
-
-The Active MQ is used to queue incoming update requests, the locally running interface can be found at: `http://localhost:8161/console`
-
 ### Up and Running Servers
 
 After running all the previous commands issue the docker command: `docker ps -a`
@@ -127,7 +120,6 @@ This will show all the services that are up and running.
 ```
 CONTAINER ID   IMAGE                                   COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                          NAMES
 4ee5641a9481   yannart/cerebro                         "./bin/cerebro"          26 minutes ago   Up 26 minutes   0.0.0.0:9000->9000/tcp, :::9000->9000/tcp                                                                                                                                      cerebro
-b6ed9006b28e   vromero/activemq-artemis:2.9.0-alpine   "/docker-entrypoint.…"   25 hours ago     Up 25 hours     1883/tcp, 0.0.0.0:5672->5672/tcp, :::5672->5672/tcp, 5445/tcp, 9404/tcp, 0.0.0.0:8161->8161/tcp, :::8161->8161/tcp, 61613/tcp, 0.0.0.0:61616->61616/tcp, :::61616->61616/tcp   activemq
 8e063394038e   agrdocker/agr_elasticsearch_env         "/tini -- /usr/local…"   2 days ago       Up 23 hours     0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 0.0.0.0:9300->9300/tcp, :::9300->9300/tcp                                                                                           elasticsearch
 7de3cf028e9c   postgres:13                             "docker-entrypoint.s…"   3 days ago       Up 3 days       0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                                                                                      postgres
 ```
