@@ -1028,32 +1028,9 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
     @Test
-    @Ignore("Adding exp cond, needs to be re-written")
     @Order(36)
     public void diseaseAnnotationBulkUploadNoConditions() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_no_condition_relations_conditions.json"));
-        
-        loadDOTerms(content);
-        
-        // upload file
-        RestAssured.given().
-            contentType("application/json").
-            body(content).
-            when().
-            post("/api/disease-annotation/bulk/fbAnnotationFileFms").
-            then().
-            statusCode(200);
-    
-        
-        // check entity count
-        RestAssured.given().
-            when().
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/disease-annotation/find?limit=10&page=0").
-            then().
-            statusCode(200).
-            body("totalResults", is(5)); // 1 FB annotation replaced with 1
     }
 
     @Test
