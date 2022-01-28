@@ -32,7 +32,12 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
       if(typeof event.target.value === "object"){
         updatedConditions[rowProps.rowIndex].conditionGeneOntology.curie = event.target.value.curie;
       } else {
-        updatedConditions[rowProps.rowIndex].conditionGeneOntology.curie = event.target.value;
+        if (event.target.value === '') {
+          updatedConditions[rowProps.rowIndex].conditionGeneOntology = null;
+        }
+        else {
+          updatedConditions[rowProps.rowIndex].conditionGeneOntology.curie = event.target.value;
+        }
       }
       setExperimentalConditions(updatedConditions);
     }
@@ -45,43 +50,45 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
 
 
   const conditionGeneOntologyItemTemplate = (item) => {
-    let inputValue = trimWhitespace(rowProps.rowData.conditionGeneOntology.curie.toLowerCase());
-    if (autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
-      for(let i in autocompleteSelectedItem.synonyms){
-        if(autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue)<0){
-          delete autocompleteSelectedItem.synonyms[i];
+    if (rowProps.rowData.conditionGeneOntology) {
+      let inputValue = trimWhitespace(rowProps.rowData.conditionGeneOntology.curie.toLowerCase());
+      if (autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
+        for(let i in autocompleteSelectedItem.synonyms){
+          if(autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue)<0){
+            delete autocompleteSelectedItem.synonyms[i];
+          }
         }
       }
-    }
-    if (autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length>0){
-      for(let i in autocompleteSelectedItem.crossReferences){
-        if(autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue)< 0){
-          delete autocompleteSelectedItem.crossReferences[i];
+      if (autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length>0){
+        for(let i in autocompleteSelectedItem.crossReferences){
+          if(autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue)< 0){
+            delete autocompleteSelectedItem.crossReferences[i];
+          }
         }
       }
-    }
       
-    if(autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length>0){
-      for(let i in autocompleteSelectedItem.secondaryIdentifiers){
-        if(autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue)< 0){
-          delete autocompleteSelectedItem.secondaryIdentifiers[i];
+      if(autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length>0){
+        for(let i in autocompleteSelectedItem.secondaryIdentifiers){
+          if(autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue)< 0){
+            delete autocompleteSelectedItem.secondaryIdentifiers[i];
+          }
         }
       }
-    }
       
-    if (item.name){
-      return (
-        <div>
-          <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
-        </div>
-      );
-    }else {
-      return (
-        <div>
-          <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie}</div>
-        </div>
-      );
-    }     
+      if (item.name){
+        return (
+          <div>
+            <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
+          </div>
+        );
+      }else {
+        return (
+          <div>
+            <div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie}</div>
+          </div>
+        );
+      }
+    }       
   };
 
   return (
@@ -89,7 +96,7 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
       <AutoComplete
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px'}}
         field="curie"
-        value={rowProps.rowData.conditionGeneOntology.curie}
+        value={rowProps.rowData.conditionGeneOntology ? rowProps.rowData.conditionGeneOntology.curie : null}
         suggestions={filteredConditionGeneOntologies}
         itemTemplate={conditionGeneOntologyItemTemplate}
         completeMethod={searchConditionGeneOntology}

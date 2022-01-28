@@ -114,8 +114,11 @@ export const ExperimentalConditionsTable = () => {
       if (rowsInEdit.current === 0) {
         setIsEnabled(true);
       }
+      if (event.data.conditionGeneOntology === null) {
+        delete event.data.conditionGeneOntology;
+      }
       let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
-      if (Object.keys(event.data.conditionGeneOntology).length >= 1) {
+      if (event.data.conditionGeneOntology && Object.keys(event.data.conditionGeneOntology).length >= 1) {
           event.data.conditionGeneOntology.curie = trimWhitespace(event.data.conditionGeneOntology.curie);
           updatedRow.conditionGeneOntology = {};
           updatedRow.conditionGeneOntology.curie = event.data.conditionGeneOntology.curie;
