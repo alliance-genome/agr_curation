@@ -1,20 +1,16 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
-import lombok.Getter;
-import lombok.Setter;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import javax.persistence.*;
+
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.view.View;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import java.time.LocalDateTime;
-import java.util.List;
+import com.fasterxml.jackson.annotation.*;
+
+import lombok.*;
 
 @Setter
 @Getter

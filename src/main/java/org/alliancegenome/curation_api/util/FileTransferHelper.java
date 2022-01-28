@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.util;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.zip.*;
 
 import org.apache.commons.io.FileUtils;

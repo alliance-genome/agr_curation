@@ -1,15 +1,15 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.DiseaseAnnotationFmsCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationFmsService;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 
 @RequestScoped
 public class DiseaseAnnotationFmsCrudController extends BaseCrudController<DiseaseAnnotationFmsService, DiseaseAnnotation, DiseaseAnnotationDAO> implements DiseaseAnnotationFmsCrudInterface {

@@ -1,13 +1,11 @@
 package org.alliancegenome.curation_api.services.helpers;
 
-import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.GeneFmsDTO;
+import static java.util.stream.Collectors.toList;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 
 public class DtoConverterHelper {
 
