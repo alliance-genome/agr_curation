@@ -169,7 +169,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                             for(String filterName: searchFilters.keySet()) {
                                 b.must(m -> {
                                     return m.bool(s -> {
-                                        int boost = searchFilters.get(filterName).keySet().size();
+                                        int boost = 5;
                                         for(String field: searchFilters.get(filterName).keySet()) {
                                             s.should(
                                                 p.simpleQueryString()
