@@ -8,6 +8,8 @@ These instructions will get you a copy of the project and the API up and running
 
 ## Contents
 
+- [Developing](#developing)
+	* [Branching](#branching)
 - [Installing](#installing)
 	* [Docker Setup](#docker-setup)
 	* [Postgres](#postgres)
@@ -20,9 +22,81 @@ These instructions will get you a copy of the project and the API up and running
 	* [Running UI](#running-ui)
 - [Releasing and Deploying](#releasing-and-deploying)
 	* [Deployment environments](#deployment-environments)
+   * [Promoting code versions](#promoting-code-versions)
+   * [Release versioning](#release-versioning)
 	* [Release Creation](#release-creation)
 - [Loading Data](#loading-data)
 - [Submitting Data](#submitting-data)
+
+## Developing
+Before starting coding for a new feature or making a bugfix,
+it is important to know the intended goal of your code:
+ * Developing fixes, new features and major changes to be released in some future release (standard)
+   => Must be developed and tested on alpha
+ * Smaller (bug)fixes to a version currently being previewed on beta, in preparation of a release to production
+   => Must be developed and tested on beta
+ * Hotfixes, urgent bugfixes to the current production version which cannot wait on the next full release (bundled with other updates currently under development) to be deployed
+   => Must be developed off the latest production release.
+
+For more details about the intended use of and deployment to each of the environments, see [deployment environments](#deployment-environments).
+
+### Branching
+The three permanent branches in this repository represent the code to be deployed to their respective environments: `alpha`, `beta` and `production`.
+
+ * To create code that must solely go on the alpha environment (most day-to-day development):
+
+   - Create a feature branch to work on that starts off alpha and have the name contain the ticket number and a short description of it.
+	 ```bash
+	 > git checkout alpha
+	 > git pull
+	 > git checkout -b feature/${JIRA-TICKET-NR}_short-description
+	 ```
+
+   - Do your coding and testing, and push the branch to github
+	 ```bash
+	 #Coding and testing here
+	 > git push origin feature/${JIRA-TICKET-NR}_short-description
+	 ```
+
+   - Once coding and testing completed, submit a pull request in github to merge back to alpha.
+	 Deployment to alpha will automatically trigger once the PR is approved and merged.
+
+ * To make fixes to the version currently deployed on the beta environment:
+
+   - Create a betafix branch to work on that starts off beta and have the name contain the ticket number (if applicable) and a short description.
+	 ```bash
+	 > git checkout beta
+	 > git pull
+	 > git checkout -b betafix/${JIRA-TICKET-NR}_short-description
+	 ```
+
+   - Do your coding and testing, and push the branch to github
+	 ```bash
+	 #Coding and testing here
+	 > git push origin betafix/${JIRA-TICKET-NR}_short-description
+	 ```
+
+   - Once coding and testing completed, submit a pull request in github to merge back to beta.
+	 For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#release-creation).
+
+ * To make fixes to the version currently deployed on the production environment:
+
+   - Create a prodfix branch to work on that starts off production and have the name contain the ticket number and a short description.
+	 ```bash
+	 > git checkout production
+	 > git pull
+	 > git checkout -b prodfix/${JIRA-TICKET-NR}_short-description
+	 ```
+
+   - Do your coding and testing, and push the branch to github
+	 ```bash
+	 #Coding and testing here
+	 > git push origin prodfix/${JIRA-TICKET-NR}_short-description
+	 ```
+
+   - Once coding and testing completed, submit a pull request in github to merge back to production.
+	 For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#release-creation).
+
 
 ## Installing
 
@@ -211,64 +285,135 @@ To run the complete application as the [locally built docker image](#building-do
 There are three environments to which code automatically gets deployed at different stages during development:
  * The alpha environment should be regarded as the developers environment, where active code development can be happening
    at any moment, and things are expected to break every now and then.
-   This environment receives new deployments on every push made to the main branch.
- * The beta environment should be regarded as the testers environment, where testers can have a first look at
+   This environment receives new deployments on every push made to the alpha branch.
+ * The beta environment should be regarded as the testers environment, where (external) testers can have a first look at
    newly developed functionality before it is ready to be pushed to production. It is more stable than alpha,
    but is still subject to regular change as feedback is collected and the final kinks are being ironed out.
-   This environment receives new deployments for every pre- and full release created on Github.
+   This environment receives new deployments for every pre-release created on Github.
  * The production environment is the final stage of deployment, where users can rely on full-tested and ready-to-use
    features and functionality at any moment. This is the most stable and reliable environment.
-   This environment receives new deployments for every full release created on Github.
+   This environment receives new deployments for every full (stable) release created on Github.
 
 All deployments are fully automated through Github actions, for which the configuration files can be found in the [`.github/workflows/` directory](.github/workflows/).
 Deployments to the alpha environment happen automatically as code gets pushed to the alpha branch (after merging a PR), but for
-deployments to beta and production, a small number of steps needs to be taken in order to create a release and trigger deployment.
+deployments to beta and production, a small number of steps needs to be taken in order to create a release and trigger deployment,
+which are described below.
+
+### Promoting code versions
+The general flow from coding to a production release goes something like this:
+1. Coding and testing for most tickets happens on alpha (throughout the sprint)
+2. When a stable state of alpha gets reached (usually at sprint review),
+	this stable state gets promoted to beta as a release candidate, available
+	for external user testing.
+3. On approval from the external users, and in agreement with the product manager,
+	this release candidate gets promoted to a new stable release on production.
+
+As the code goes through the different stages, it becomes more and more stable as it gets closer to production.
+
+In order to promote changes from alpha to beta:
+
+1. Decide on a proper release version number to be used for the new prerelease
+	that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
+	Generally speaking, for beta (pre)releases that means either
+    * Incrementing the release candidate version on the latest release candidate
+      when it was decided the previous release candidate will not be promoted to a full release
+      and the latest changes need to be added in order to be able to create a full release.
+    or  
+    * Incrementing the `MAJOR` or `MINOR` release numbers as appropriate when
+      the previous release candidate was (or will be) promoted to a full release
+      and reset to rc1 for the next release.
+2. Create a release/v`x`.`y`.`z`-rc`a` branch from alpha or use a specific commit
+   from history to promote if alpha moved on since that stable state to be promoted.
+   ```bash
+   git pull
+   git checkout -b release/vx.y.z-rca alpha
+   git push origin release/vx.y.z-rca
+   ```
+3. Create a pull request to merge this release branch in beta
+4. After PR approval and merge, continue with [release creation](#release-creation) to trigger deloyment to the beta environment.
+5. After prerelease creation and deployment, merge the beta branch back to alpha and push to github
+   ```bash
+   git pull
+   git checkout alpha
+   git merge beta
+   git push
+   ```
+
+In order to promote changes from beta to production:
+
+1. Decide on a proper release version number to be used for the new release
+	that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
+	Generally speaking, for production (full) releases that means removing the release-candidate extension
+   from the release number used by the latest release candidate, which will be promoted to a full release here.
+2. Create a release/v`x`.`y`.`z` branch from beta or use a specific commit
+   from history to promote if a new release canidate for the next release was already added to beta.
+   ```bash
+   git pull
+   git checkout -b release/vx.y.z beta
+   ```
+3. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file to contain
+   a section describing all (noteworthy) changes made since the last full release,
+   and include JIRA ticket and/or PR references where possible. Commit after update.
+4. Push the release branch to github
+   ```bash
+   git push origin release/vx.y.z
+   ```
+5. Create a pull request to merge this release branch in production
+6. After PR approval and merge, continue with [release creation](#release-creation) to trigger deloyment to the production environment.
+7. After release creation and deployment, merge the production branch back to beta and push to github
+   ```bash
+   git pull
+   git checkout beta
+   git merge production
+   git push
+   ```
+
+### Release versioning
+For our release versioning, we apply [Semantic Versioning](https://semver.org/) whereby
+
+ * `MAJOR`.`MINOR`.`PATCH` is used for full releases
+ * Release-candidate extensions are used for prereleases in the format `MAJOR`.`MINOR`.`PATCH`-rc`x`
+   where x is an increment starting at one.
+ * `PATCH` version upgrades should only be used for hotfixing bugs on the production environment
+   (e.g. a bugfix applied to v0.1.0 becomes v0.1.1).
+
+__Note:__ For the time being, the `MAJOR` release number is kept at 0 to indicate the early development phase,
+until the product is ready for active usage by users external to the development team, in a stable
+production environment.
+
 
 ### Release Creation
-To create a new (pre-)release and deploy to beta and/or production, do the following steps:
+To create a new (pre-)release and deploy to beta or production, do the following steps:
 
- 1. Ensure you're on the alpha branch and pull the latest code.
-    ```bash
-	git checkout alpha
+1. Ensure you're on the branch you intend to create a new release for and pull the latest code.
+	```bash
+	git checkout beta
 	git pull
 	```
 
- 2. Decide on a proper release version number to be used for the release being created.
-    We apply [Semantic Versioning](https://semver.org/) whereby
-		* `MAJOR`.`MINOR`.`PATCH` is used for full releases
-		* Release-candidate extensions are used for prereleases in the format `MAJOR`.`MINOR`.`PATCH`-rc`x`
-		  where x is an increment starting at one.
-	For the time being, the `MAJOR` release number is kept at 0 to indicate the early development phase,
-	until the product is ready for active usage by users external to the development team, in a stable
-	production environment.
+2. Confirm the release number proposed earlier through release candidates or release/* branches
+   is appropriate (see [Release versioning](#release-versioning)).
 
- 3. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file as required and commit the changes.
-    When creating a full release, ensure the release notes contains a section describing
-	(noteworthy) changes made since the last full release, and include PR and JIRA ticket
-	references where possible.
+3. Ensure you have a clean working directory before continuing, you can save any local changes for later using `git stash` if needed.
 
- 4. Ensure you have a clean working directory before continuing, you can save any local changes for later using `git stash` if needed.
+4. Tag the release and push the tag to github. Prefix the release nr with `v` as tagname,
+   and provide a short description for the release. Beta releases should contain a reference to the
+   date they were demoed at sprint review when applicable.
+   ```bash
+   # Tag name should be the release nr to be release, prefixed with v (eg. v0.2.0-rc1)
+   # Tag message for beta releases can be something like 'As sprint review Jan 19th 2022'
+   git tag -a vx.y.z-rca -m 'As sprint review MMM DDth YYYY'
+   git push origin vx.y.z-rca
+   ```
 
- 5. Prepare the release. This step will update the pom.xml, create a git tag and push
-    those changes to github, in accordance to the details you provide during execution.
-	```bash
-	make release
-	```
-	Provide the following details during execution:
-	 * **release version**: the release version to be used for the release being created (as decided in step 2)
-	 * **SCM release tag or label**: accept the default (v`release version`)
-	 * **new development version**: the release version of the next release being worked.
-	   When creating a release candidate, this version should be `MAJOR`.`MINOR`.`PATCH`-SNAPSHOT,
-	   When creating a final release, this version should be `MAJOR`.`MINOR+1`.`PATCH`-SNAPSHOT.
-
- 6. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
-	* In the "Choose a tag" selection box, select the SCM release tag you provided in the previous step
+5. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
+	* In the "Choose a tag" selection box, select the git tag you created in the previous step
 	* Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
 	* **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
 		* **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
-		* Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment as well.
+		* Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment.
 
-7. Confirm all entered details are correct and publish the release.
+6. Confirm all entered details are correct and publish the release.
 
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel.
