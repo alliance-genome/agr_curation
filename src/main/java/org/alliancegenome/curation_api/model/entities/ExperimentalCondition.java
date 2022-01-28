@@ -20,47 +20,59 @@ import lombok.*;
 @Audited
 @Entity
 @Indexed
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name="ExperimentalCondition", description="POJO that describes the Experimental Condition")
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
 public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    private ZecoTerm conditionClass; 
-    
+    private ZecoTerm conditionClass;
+
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "conditionStatement_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
-    private String conditionStatement;               
-    
+    private String conditionStatement;
+
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    private ExperimentalConditionOntologyTerm conditionId;                      
-    
+    private ExperimentalConditionOntologyTerm conditionId;
+
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "conditionQuantity_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
-    private String conditionQuantity;                
-    
+    private String conditionQuantity;
+
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
-    @JsonView({View.FieldsOnly.class})private AnatomicalTerm conditionAnatomy;                 
-    private GOTerm conditionGeneOntology;           
-    
+    @JsonView({View.FieldsOnly.class})
+    private AnatomicalTerm conditionAnatomy;
+
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
-    @JsonView({View.FieldsOnly.class})private NCBITaxonTerm conditionTaxon;                   
-    private ChemicalTerm conditionChemical;                
-    
+    @JsonView({View.FieldsOnly.class})
+    private GOTerm conditionGeneOntology;
+
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
+    private NCBITaxonTerm conditionTaxon;
+
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
+    private ChemicalTerm conditionChemical;
+
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany

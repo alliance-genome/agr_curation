@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.*;
@@ -21,11 +22,10 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
-public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity  {
+public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "conditionRelationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
     private String conditionRelationType;
@@ -37,4 +37,9 @@ public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity  {
     private List<ExperimentalCondition> conditions;
 
 
+    public void addExperimentCondition(ExperimentalCondition experimentalCondition) {
+        if (conditions == null)
+            conditions = new ArrayList<>();
+        conditions.add(experimentalCondition);
+    }
 }
