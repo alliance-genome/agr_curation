@@ -68,13 +68,25 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
-    @JsonView({View.FieldsOnly.class})private AnatomicalTerm conditionAnatomy;                 
+    @JsonView({View.FieldsOnly.class})
+    private AnatomicalTerm conditionAnatomy;                   
+    
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
     private GOTerm conditionGeneOntology;           
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
-    @JsonView({View.FieldsOnly.class})private NCBITaxonTerm conditionTaxon;                   
+    @JsonView({View.FieldsOnly.class})private NCBITaxonTerm conditionTaxon; 
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
     private ChemicalTerm conditionChemical;                
     
     @IndexedEmbedded(includeDepth = 1)
