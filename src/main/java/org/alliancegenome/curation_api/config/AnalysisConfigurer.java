@@ -16,14 +16,17 @@ public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
                 .tokenFilters("asciifolding", "lowercase");
         
         context.analyzer("autocompleteSearchAnalyzer").custom()
-                .tokenizer("ngram_tokenizer")
+                .tokenizer("search_query_tokenizer")
                 .tokenFilters("asciifolding", "lowercase");
         
         context.tokenizer("ngram_tokenizer")
                 .type("ngram")
                 .param("min_gram", 1)
                 .param("max_gram", 10)
-                .param("token_chars", "letter", "digit");
+                .param("token_chars", "punctuation", "letter", "digit");
+        
+        context.tokenizer("search_query_tokenizer")
+            .type("whitespace");
         
         context.tokenFilter( "ngram_filter" )
                 .type( "ngram" )
