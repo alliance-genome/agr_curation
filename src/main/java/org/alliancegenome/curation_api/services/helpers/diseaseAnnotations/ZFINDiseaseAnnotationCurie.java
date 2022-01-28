@@ -28,7 +28,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
                         CurieGeneratorHelper gen = new CurieGeneratorHelper();
                         gen.add(conditionDTO.getConditionRelationType());
                         gen.add(conditionDTO.getConditions().stream()
-                                .map(this::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
+                                .map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
                         );
                         return gen.getCurie();
                     }).collect(Collectors.joining(DELIMITER))

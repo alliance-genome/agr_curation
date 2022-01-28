@@ -63,8 +63,10 @@ export const AllelesTable = () => {
   }
 
   const taxonTemplate = (rowData) => {
-  return <div>{rowData.taxon.curie}</div>;
-}
+    if(rowData.taxon) {
+      return <div>{rowData.taxon.curie}</div>;
+    }
+  }
 
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponent 
