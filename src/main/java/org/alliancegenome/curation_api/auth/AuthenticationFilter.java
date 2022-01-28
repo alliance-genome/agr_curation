@@ -58,70 +58,62 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
 
-        //log.info("AuthenticationFilter: filter: " + requestContext);
+        // Logic:
+        // if okta_auth is off then we are in test mode
+        // if okta_auth is on but no okta_creds we are in Test mode (Integration Testing)
+        // if okta_auth is on and we have okta_creds validate(token), else fail
 
-        // Get the Authorization header from the request
-        String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
+        if(okta_auth.get()) {
+            if(!okta_url.get().equals("\"\"") && !client_id.get().equals("\"\"") && !client_secret.get().equals("\"\"") && !api_token.get().equals("\"\"")) {
 
-        //log.info("Authorization Header: " + authorizationHeader);
+                String authorizationHeader = requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);
 
-        if (!isTokenBasedAuthentication(authorizationHeader)) {
-            if(okta_url.get().equals("\"\"") || client_id.get().equals("\"\"") || client_secret.get().equals("\"\"") || api_token.get().equals("\"\"")) {
-                log.debug("OKTA Authentication Disabled using Test Dev User");
-                SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
-                if(res == null) {
-                    Person person = new Person();
-                    person.setApiToken(UUID.randomUUID().toString());
-                    person.setEmail("test@alliancegenome.org");
-                    person.setFirstName("Local");
-                    person.setLastName("Dev User");
-                    personDAO.persist(person);
+                if (authorizationHeader == null || !authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ")) {
+                    failAuthentication(requestContext);
+                }
+
+                String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
+
+                Person person = validateToken(token);
+                if(person != null) {
                     userAuthenticatedEvent.fire(person);
                 } else {
-                    userAuthenticatedEvent.fire(res.getResults().get(0));
+                    failAuthentication(requestContext);
                 }
+
             } else {
-                abortWithUnauthorized(requestContext);
+                // Test / Dev Mode
+                loginDevUser();
             }
-            return;
-        }
-
-        //      // Extract the token from the Authorization header
-        String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-
-        //log.info("Inbound token: " + token);
-
-        try {
-            validateToken(token);
-        } catch (Exception e) {
-            e.printStackTrace();
-            log.warn(e.getLocalizedMessage());
-            abortWithUnauthorized(requestContext);
+        } else {
+            // Test / Dev Mode
+            loginDevUser();
         }
 
     }
-
-    private boolean isTokenBasedAuthentication(String authorizationHeader) {
-        // Check if the Authorization header is valid
-        // It must not be null and must be prefixed with "Bearer" plus a whitespace
-        // The authentication scheme comparison must be case-insensitive
-        return authorizationHeader != null && authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ");
-    }
-    //
-    private void abortWithUnauthorized(ContainerRequestContext requestContext) {
-
-        // Abort the filter chain with a 401 status code response
-        // The WWW-Authenticate header is sent along with the response
-
+    
+    private void failAuthentication(ContainerRequestContext requestContext) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME).build());
-        //requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME + " realm=\"" + REALM + "\"").build());
     }
 
-    private void validateToken(String token) throws Exception {
-        // Check if the token was issued by the server and if it's not expired
-        // Throw an Exception if the token is invalid
-        //log.debug("API Access Token: " + ConfigHelper.getApiAccessToken());
-        //log.info("Validating Token: " + token);
+    private void loginDevUser() {
+        log.debug("OKTA Authentication Disabled using Test Dev User");
+        SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
+        if(res == null) {
+            Person person = new Person();
+            person.setApiToken(UUID.randomUUID().toString());
+            person.setEmail("test@alliancegenome.org");
+            person.setFirstName("Local");
+            person.setLastName("Dev User");
+            personDAO.persist(person);
+            userAuthenticatedEvent.fire(person);
+        } else {
+            userAuthenticatedEvent.fire(res.getResults().get(0));
+        }
+    }
+
+    // Check Okta(token), Check DB ApiToken(token), else return null
+    private Person validateToken(String token) {
 
         OktaTokenInterface oti = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url.get());
 
@@ -146,19 +138,16 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 person.setFirstName(user.getProfile().getFirstName());
                 person.setLastName(user.getProfile().getLastName());
                 personDAO.persist(person);
-                userAuthenticatedEvent.fire(person);
+                return person;
             } else {
-                userAuthenticatedEvent.fire(res.getResults().get(0));
+                return res.getResults().get(0);
             }
-
         } else {
             SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
             if(res != null && res.getResults().size() == 1) {
-                userAuthenticatedEvent.fire(res.getResults().get(0));
-            } else {
-                log.warn("Authentication Unsuccessful: " + token);
-                throw new Exception("Authentication Unsuccessful: " + token + " failed authentication");
+                return res.getResults().get(0);
             }
         }
+        return null;
     }
 }
