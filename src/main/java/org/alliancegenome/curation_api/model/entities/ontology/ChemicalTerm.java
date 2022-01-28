@@ -18,7 +18,7 @@ import lombok.*;
 @Audited
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public abstract class ChemicalTerm extends OntologyTerm {
+public class ChemicalTerm extends OntologyTerm {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "inchi_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
