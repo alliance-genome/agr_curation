@@ -87,7 +87,6 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
   return (
     <div>
       <AutoComplete
-        id={rowProps.rowData.conditionGeneOntology.curie}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px'}}
         field="curie"
         value={rowProps.rowData.conditionGeneOntology.curie}
@@ -97,8 +96,7 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
         onHide={(e) => op.current.hide(e)}
         onChange={(e) => onConditionGeneOntologyEditorValueChange(e)}
       />
-      <ConditionGeneOntologyTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(rowProps.rowData.conditionGeneOntology.curie.toLowerCase())}
-      />
+      <ConditionGeneOntologyTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem}/>
     </div>
   )
 };
