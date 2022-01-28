@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check branching rules
-      - run: |
+        run: |
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
   verify-test-api:
     if: github.event.action != 'edited' || github.event.changes.base
