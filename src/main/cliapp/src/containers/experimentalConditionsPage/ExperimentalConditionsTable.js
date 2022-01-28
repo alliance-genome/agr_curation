@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
+import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Messages } from 'primereact/messages';
@@ -22,18 +23,20 @@ export const ExperimentalConditionsTable = () => {
   const [page, setPage] = useState(0);
   const [first, setFirst] = useState(0);
   const [rows, setRows] = useState(50);
-    const [originalRows, setOriginalRows] = useState([]);
+  const [originalRows, setOriginalRows] = useState([]);
   const [editingRows, setEditingRows] = useState({});
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
   const searchService = new SearchService();
-  const experimentalConditionService = new ExperimentalConditionService();
   const errorMessage = useRef(null);
+  const { authState } = useOktaAuth();
   const columnNames = ["Unique ID", "Statement", "Class", "ID", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
   const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
   const toast_topleft = useRef(null);
-    const toast_topright = useRef(null);
+  const toast_topright = useRef(null);
   const rowsInEdit = useRef(0);
+  
+  let experimentalConditionService = null;
   
   const sortMapping = {
     'conditionGeneOntology.name' : ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']
@@ -59,6 +62,9 @@ export const ExperimentalConditionsTable = () => {
   });
 
   const mutation = useMutation(updatedCondition => {
+      if (!experimentalConditionService) {
+        experimentalConditionService = new ExperimentalConditionService(authState);
+      }
       return experimentalConditionService.saveExperimentalCondition(updatedCondition);
     });
 
@@ -103,7 +109,7 @@ export const ExperimentalConditionsTable = () => {
     };
 
 
-    const onRowEditSave = (event) => {//possible to shrink?
+    const onRowEditSave = (event) => {
     rowsInEdit.current--;
       if (rowsInEdit.current === 0) {
         setIsEnabled(true);
@@ -150,14 +156,14 @@ export const ExperimentalConditionsTable = () => {
 
             console.log(errorMessagesCopy);
             setErrorMessages({ ...errorMessagesCopy });
-
-        setExperimentalConditions(conditions);
+            
+            setExperimentalConditions(conditions);
             let _editingRows = { ...editingRows, ...{ [`${conditions[event.index].id}`]: true } };
             setEditingRows(_editingRows);
           },
           onSettled: (data, error, variables, context) => {
       
-      },
+        },
       });
     };
 
@@ -346,7 +352,7 @@ export const ExperimentalConditionsTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns  
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-                editingRows={editingRows} onRowEditChange={onRowEditChange}
+          editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
           first={first}
           dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
