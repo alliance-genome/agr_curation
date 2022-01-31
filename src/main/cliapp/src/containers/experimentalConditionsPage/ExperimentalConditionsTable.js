@@ -111,20 +111,22 @@ export const ExperimentalConditionsTable = () => {
 
 
     const onRowEditSave = (event) => {
-    rowsInEdit.current--;
+      rowsInEdit.current--;
       if (rowsInEdit.current === 0) {
         setIsEnabled(true);
       }
+      if (event.data.conditionGeneOntology === null) {
+        delete event.data.conditionGeneOntology;
+      }
       let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
-      if (Object.keys(event.data.conditionGeneOntology).length >= 1) {
+      if (event.data.conditionGeneOntology && Object.keys(event.data.conditionGeneOntology).length >= 1) {
           event.data.conditionGeneOntology.curie = trimWhitespace(event.data.conditionGeneOntology.curie);
           updatedRow.conditionGeneOntology = {};
-          updatedRow.conditionGeneOntology.curie = event.data.conditionGeneOntology.curie;
+          updatedRow.conditionGeneOntology = event.data.conditionGeneOntology;
       }
 
       mutation.mutate(updatedRow, {
           onSuccess: (data, variables, context) => {
-            console.log(data);
             toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
             let conditions = [...experimentalConditions];
@@ -293,10 +295,10 @@ export const ExperimentalConditionsTable = () => {
       field:"conditionGeneOntology.name",
       header:"Gene Ontology",
       sortable: isEnabled,
-      body: conditionGeneOntologyBodyTemplate,
       filter: true, 
       filterElement: filterComponentTemplate("conditionGeneOntologyFilter", ["conditionGeneOntology.curie", "conditionGeneOntology.name"]),
-      editor: (props) => conditionGeneOntologyEditorTemplate(props)
+      editor: (props) => conditionGeneOntologyEditorTemplate(props),
+      body: conditionGeneOntologyBodyTemplate
     },
     {
       field:"conditionChemical.name",
