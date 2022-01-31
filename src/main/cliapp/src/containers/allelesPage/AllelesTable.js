@@ -13,31 +13,26 @@ import { returnSorted, clearSessionStorage } from '../../utils/utils';
 import { Button } from 'primereact/button';
 
 export const AllelesTable = () => {
+  const defaultColumnNames = ["Curie", "Description", "Symbol", "Taxon"];
+  let initialTableState = {
+    page: 0,
+    first: 0,
+    rows: 50,
+    multiSortMeta: [],
+    selectedColumnNames: defaultColumnNames,
+    filters: {}
+  };
 
   const [alleles, setAlleles] = useState(null);
-  const [multiSortMeta, setMultiSortMeta] = useState([]);
-  const [page, setPage] = useState(0);
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
+  const [tableState, setTableState] = useSessionStorage("alleleTableSettings", initialTableState);
   const searchService = new SearchService();
   const errorMessage = useRef(null);
   const dataTable = useRef(null);
-  const stateKeys = {
-    tableKey: "alleleTable.Config",
-    columnsKey: "alleleTable.Columns",
-    filtersKey: "alleleTable.Filters"
-  }
 
-  const defaultColumnNames = ["Curie", "Description", "Symbol", "Taxon"];
-  const [selectedColumnNames, setSelectedColumnNames] = useSessionStorage(stateKeys.columnsKey, defaultColumnNames);
-  const [filters, setFilters] = useSessionStorage(stateKeys.filtersKey, {});
-  const defaultColumnsWidths = 100 / defaultColumnNames.length;
-  const [columnsWidths, setColumnWidths] = useState(defaultColumnsWidths);
-
-  useQuery(['alleles', rows, page, multiSortMeta, filters],
-    () => searchService.search("allele", rows, page, multiSortMeta, filters), {
+  useQuery(['alleles', tableState],
+    () => searchService.search("allele", tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
     onSuccess: (data) => {
       setIsEnabled(true);
       setAlleles(data.results);
@@ -53,19 +48,30 @@ export const AllelesTable = () => {
 
 
   const onLazyLoad = (event) => {
-    setRows(event.rows);
-    setPage(event.page);
-    setFirst(event.first);
+    let _tableState = {
+      ...tableState,
+      rows: event.rows,
+      page: event.page,
+      first: event.first
+    };
+
+    setTableState(_tableState);
   }
 
   const onFilter = (filtersCopy) => {
-    setFilters({ ...filtersCopy });
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
   };
 
   const onSort = (event) => {
-    setMultiSortMeta(
-      returnSorted(event, multiSortMeta)
-    )
+    let _tableState = {
+      ...tableState,
+      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+    }
+    setTableState(_tableState);
   };
 
   const symbolTemplate = (rowData) => {
@@ -81,7 +87,7 @@ export const AllelesTable = () => {
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
-      currentFilters={filters}
+      currentFilters={tableState.filters}
       onFilter={onFilter}
     />);
   }
@@ -118,39 +124,43 @@ export const AllelesTable = () => {
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
   ];
+  
+  const setSelectedColumnNames = (event) => {
+     let _tableState = {
+      ...tableState,
+      selectedColumnNames: event.value 
+    };
+
+    setTableState(_tableState);
+  };
 
   const header = (
     <>
       <div style={{ textAlign: 'left' }}>
         <MultiSelect
-          value={selectedColumnNames}
+          value={tableState.selectedColumnNames}
           options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
+          onChange={setSelectedColumnNames}
           style={{ width: '20em' }}
           disabled={!isEnabled}
         />
       </div>
       <div style={{ textAlign: 'right' }}>
-        <Button onClick={() => clearSessionStorage(stateKeys)}>Clear</Button>
+        <Button onClick={(event) => clearSessionStorage(event)}>Reset Table</Button>
       </div>
     </>
 
   );
 
 
-  const clearSessionStorage = (dataKeys) => {
+  const clearSessionStorage = (event) => {
     console.log(dataTable);
-    dataTable.current.clearState("alleleTableConfig");
-    Object.values(dataKeys).forEach((value) => {
-      sessionStorage.removeItem(value);
-    });
-    setFilters({});
-    setSelectedColumnNames(defaultColumnNames);
-    setColumnWidths(defaultColumnsWidths);
+    setTableState(initialTableState);
+    dataTable.current.reset();
   }
 
   const filteredColumns = columns.filter((col) => {
-    return selectedColumnNames.includes(col.header);
+    return tableState.selectedColumnNames.includes(col.header);
   });
 
   const columnMap = filteredColumns.map((col) => {
@@ -163,7 +173,6 @@ export const AllelesTable = () => {
       filter={col.filter}
       filterElement={col.filterElement}
       body={col.body}
-      style={{ width: `${columnsWidths}%` }}
     />;
   });
 
@@ -173,13 +182,12 @@ export const AllelesTable = () => {
         <h3>Alleles Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={alleles} className="p-datatable-sm" header={header} reorderableColumns
-          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={first}
+          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           ref={dataTable}
-          stateStorage="session" stateKey={stateKeys.tableKey}
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           resizableColumns columnResizeMode="fit" showGridlines
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
           {columnMap}
         </DataTable>
