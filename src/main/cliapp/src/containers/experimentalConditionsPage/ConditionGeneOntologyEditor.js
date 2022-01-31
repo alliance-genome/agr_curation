@@ -10,19 +10,19 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
   const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
   
   const searchConditionGeneOntology = (event) => {
-  let conditionGeneOntologyFilter = {};
-  autocompleteFields.forEach( field => {
-    conditionGeneOntologyFilter[field] = event.query;
-  });
-  let obsoleteFilter = {"obsolete": false};
-
-  searchService.search('goterm', 15, 0, [], {"conditionGeneOntologyFilter":conditionGeneOntologyFilter, "obsoleteFilter":obsoleteFilter})
-    .then((data) => {
-    if(data.results && data.results.length >0)
-      setFilteredConditionGeneOntologies(data.results);
-    else
-      setFilteredConditionGeneOntologies([]);
+    let conditionGeneOntologyFilter = {};
+    autocompleteFields.forEach( field => {
+      conditionGeneOntologyFilter[field] = event.query;
     });
+    let obsoleteFilter = {"obsolete": false};
+
+    searchService.search('goterm', 15, 0, [], {"conditionGeneOntologyFilter":conditionGeneOntologyFilter, "obsoleteFilter":obsoleteFilter})
+      .then((data) => {
+        if(data.results && data.results.length >0)
+          setFilteredConditionGeneOntologies(data.results);
+        else
+          setFilteredConditionGeneOntologies([]);
+      });
   };
 
   const onConditionGeneOntologyEditorValueChange = (event) => {//this should propably be generalized so that all of these editor value changes can use the same method
@@ -30,7 +30,7 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
     if(event.target.value || event.target.value === '') {
       updatedConditions[rowProps.rowIndex].conditionGeneOntology = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       if(typeof event.target.value === "object"){
-        updatedConditions[rowProps.rowIndex].conditionGeneOntology.curie = event.target.value.curie;
+        updatedConditions[rowProps.rowIndex].conditionGeneOntology = event.target.value;
       } else {
         if (event.target.value === '') {
           updatedConditions[rowProps.rowIndex].conditionGeneOntology = null;
@@ -94,6 +94,7 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
   return (
     <div>
       <AutoComplete
+        id = {rowProps.rowData.conditionGeneOntology ? rowProps.rowData.conditionGeneOntology.curie : null}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px'}}
         field="curie"
         value={rowProps.rowData.conditionGeneOntology ? rowProps.rowData.conditionGeneOntology.curie : null}
@@ -103,7 +104,7 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
         onHide={(e) => op.current.hide(e)}
         onChange={(e) => onConditionGeneOntologyEditorValueChange(e)}
       />
-      <ConditionGeneOntologyTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem}/>
+      <ConditionGeneOntologyTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={rowProps.rowData.conditionGeneOntology ? trimWhitespace(rowProps.rowData.conditionGeneOntology.curie.toLowerCase()) : null}/>
     </div>
   )
 };
