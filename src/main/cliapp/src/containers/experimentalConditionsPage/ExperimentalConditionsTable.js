@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { InputText } from 'primereact/inputtext';
+import { InputTextEditor } from '../../components/InputTextEditor';
 import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
@@ -177,10 +177,9 @@ export const ExperimentalConditionsTable = () => {
   const conditionQuantityEditor = (props) => {
     return (
       <>
-        <InputText
-          type="text"
+        <InputTextEditor
           editorChange={onConditionQuantityEditorValueChange}
-          props={props} 
+          props={props}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
       </>
@@ -189,8 +188,8 @@ export const ExperimentalConditionsTable = () => {
   
   const onConditionQuantityEditorValueChange = (props, event) => {
     let updatedConditions = [...props.value];
-    if (event.value || event.value === '') {
-      updatedConditions[props.rowIndex].conditionQuantity = event.value;
+    if (event.target.value || event.target.value === '') {
+      updatedConditions[props.rowIndex].conditionQuantity = event.target.value;
       setExperimentalConditions(updatedConditions);
     }
   }
