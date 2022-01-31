@@ -46,13 +46,6 @@ docker-run:
 debug:
 	java -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5045 -jar target/agr_curation_api-bootable.jar
 
-release:
-	git fetch -p -P                           # Prune local branches and tags (to prevent deprecated branch/tag pushing)
-	mvn release:prepare -DpushChanges=false
-	mvn release:clean
-	git push
-	git push --tags
-
 test:
 	mvn test
 
