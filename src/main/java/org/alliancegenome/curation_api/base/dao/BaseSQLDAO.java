@@ -161,20 +161,30 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         log.debug("Search: " + pagination + " Params: " + params);
 
         SearchQuery<E> query = searchSession.search(myClass)
-                .where( p -> p.bool( b -> {
-
-                    if(params.containsKey("searchFilters")) {
-                        HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
-                        for(String filterName: searchFilters.keySet()) {
-                            b.must(
-                                p.simpleQueryString()
-                                    .fields(searchFilters.get(filterName).keySet().toArray(new String[0]))
-                                    .matching(searchFilters.get(filterName).entrySet().iterator().next().getValue().toString())
-                                    .defaultOperator(BooleanOperator.AND)
-                            );
+                // DON'T TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING!!!!
+                .where( p -> {
+                    return p.bool( b -> {
+                        if(params.containsKey("searchFilters")) {
+                            HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
+                            for(String filterName: searchFilters.keySet()) {
+                                b.must(m -> {
+                                    return m.bool(s -> {
+                                        int boost = 5;
+                                        for(String field: searchFilters.get(filterName).keySet()) {
+                                            s.should(
+                                                p.simpleQueryString()
+                                                    .fields(field)
+                                                    .matching(searchFilters.get(filterName).get(field).toString())
+                                                    .boost(boost)
+                                            );
+                                            boost--;
+                                        }
+                                    });
+                                });
+                            }
                         }
-                    }
-                }))
+                    }); 
+                })
                 .sort(f -> {
                     CompositeSortComponentsStep<?> com = f.composite();
                     if(params.containsKey("sortOrders")) {
