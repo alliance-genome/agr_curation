@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { InputText } from "primereact/inputtext"
 
 export function InputTextEditor({ editorChange, props }) {
-    const [selectedValue, setSelectedValue] = useState();
+    const [selectedValue, setSelectedValue] = useState(props.rowData[props.field]);
     const onChange = (e) => {
         setSelectedValue(e.value)
         editorChange(props, e)
