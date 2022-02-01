@@ -55,7 +55,7 @@ public abstract class DiseaseAnnotationCurie {
         return curie.getCurie();
     }
 
-    private static String getExperimentalConditionCurie(ExperimentalCondition cond) {
+    public static String getExperimentalConditionCurie(ExperimentalCondition cond) {
         CurieGeneratorHelper help = new CurieGeneratorHelper();
         if (cond.getConditionStatement() != null)
             help.add(cond.getConditionStatement());
