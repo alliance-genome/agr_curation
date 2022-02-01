@@ -247,11 +247,11 @@ export const ExperimentalConditionsTable = () => {
       }
     };
 
-  const singleOntologyEditorTemplate = (props, fieldname, endpoint) => {
+  const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
     return (
       <>
         <SingleOntologyEditor
-          autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
+          autocompleteFields={autocomplete}
           rowProps={props}
           searchService={searchService}
           setExperimentalConditions={setExperimentalConditions}
@@ -265,6 +265,8 @@ export const ExperimentalConditionsTable = () => {
       </>
     );
   };
+  
+  const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"];
 
   const columns = [
     {
@@ -290,7 +292,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionClassBodyTemplate,
       filter : true, 
       filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm")
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm", curieAutocompleteFields)
     },
     {
       field:"conditionId.name",
@@ -299,7 +301,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionIdBodyTemplate,
       filter: true, 
       filterElement: filterComponentTemplate("conditionIdFilter", ["conditionId.curie", "conditionId.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm")
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
     },
     {
       field:"conditionGeneOntology.name",
@@ -307,7 +309,7 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       filter: true, 
       filterElement: filterComponentTemplate("conditionGeneOntologyFilter", ["conditionGeneOntology.curie", "conditionGeneOntology.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm"),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
       body: conditionGeneOntologyBodyTemplate
     },
     {
@@ -317,7 +319,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionChemicalBodyTemplate,
       filter: true, 
       filterElement: filterComponentTemplate("conditionChemicalFilter", ["conditionChemical.curie", "conditionChemical.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm")
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
     },
     {
       field:"conditionAnatomy.name",
@@ -326,7 +328,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionAnatomyBodyTemplate,
       filter: true, 
       filterElement: filterComponentTemplate("conditionAnatomyFilter", ["conditionAnatomy.curie", "conditionAnatomy.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm")
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
     },
     {
       field:"conditionTaxon.curie",
@@ -335,7 +337,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionTaxonBodyTemplate,
       filter: true, 
       filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm")
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
     },
     {
       field:"conditionQuantity",
