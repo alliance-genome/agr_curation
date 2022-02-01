@@ -169,15 +169,17 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                             for(String filterName: searchFilters.keySet()) {
                                 b.must(m -> {
                                     return m.bool(s -> {
-                                        int boost = 5;
+                                        int boost = 0;
                                         for(String field: searchFilters.get(filterName).keySet()) {
+                                            float value = (float)(100/Math.pow(10, boost));
                                             s.should(
                                                 p.simpleQueryString()
                                                     .fields(field)
                                                     .matching(searchFilters.get(filterName).get(field).toString())
-                                                    .boost(boost)
+                                                    .boost(value >=1 ? value : 1)
+                                                    //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
                                             );
-                                            boost--;
+                                            boost++;
                                         }
                                     });
                                 });
