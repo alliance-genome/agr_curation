@@ -9,6 +9,6 @@ import lombok.*;
 @Audited
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public abstract class AnatomicalTerm extends OntologyTerm {
+public class AnatomicalTerm extends OntologyTerm {
 
 }
