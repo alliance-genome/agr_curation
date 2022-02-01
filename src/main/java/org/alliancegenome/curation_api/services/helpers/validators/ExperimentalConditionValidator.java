@@ -183,6 +183,9 @@ public class ExperimentalConditionValidator {
         }
         NCBITaxonTerm taxonTerm = ncbiTaxonTermDAO.find(uiEntity.getConditionTaxon().getCurie());
         if (taxonTerm == null) {
+            taxonTerm = ncbiTaxonTermDAO.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
+        }
+        if (taxonTerm == null) {
             addMessageResponse(field, invalidMessage);
             return null;
         }

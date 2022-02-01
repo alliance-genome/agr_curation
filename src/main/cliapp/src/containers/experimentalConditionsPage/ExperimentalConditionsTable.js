@@ -119,18 +119,25 @@ export const ExperimentalConditionsTable = () => {
         delete event.data.conditionGeneOntology;
       }
       let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
-      if (event.data.conditionGeneOntology && Object.keys(event.data.conditionGeneOntology).length >= 1) {
-          event.data.conditionGeneOntology.curie = trimWhitespace(event.data.conditionGeneOntology.curie);
-          updatedRow.conditionGeneOntology = {};
-          updatedRow.conditionGeneOntology = event.data.conditionGeneOntology;
+      
+      const curieFields = ["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntolgy", "conditionChemical"];
+      for (var ix = 0; ix < curieFields.length; ix++) {
+        if (event.data[curieFields[ix]] && Object.keys(event.data[curieFields[ix]]).length >= 1) {
+          event.data[curieFields[ix]].curie = trimWhitespace(event.data[curieFields[ix]].curie);
+          updatedRow[curieFields[ix]] = {};
+          updatedRow[curieFields[ix]] = event.data[curieFields[ix]];
+        }
       }
-
       mutation.mutate(updatedRow, {
           onSuccess: (data, variables, context) => {
             toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
             let conditions = [...experimentalConditions];
-            conditions[event.index].conditionGeneOntology = data.data.entity.conditionGeneOntology;
+            console.log(data);
+            const columns = Object.keys(data.data.entity);
+            columns.forEach(column => {
+              conditions[event.index][column] = data.data.entity[column];
+            });
             setExperimentalConditions(conditions);
             const errorMessagesCopy = errorMessages;
             errorMessagesCopy[event.index] = {};
@@ -327,7 +334,8 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       body: conditionTaxonBodyTemplate,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"])
+      filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm")
     },
     {
       field:"conditionQuantity",
