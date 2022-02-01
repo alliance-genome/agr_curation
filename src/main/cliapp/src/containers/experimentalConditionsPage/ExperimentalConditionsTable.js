@@ -1,6 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { InputTextEditor } from '../../components/InputTextEditor';
 import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
@@ -173,6 +174,25 @@ export const ExperimentalConditionsTable = () => {
       setEditingRows(event.data);
     };
 
+  const conditionQuantityEditor = (props) => {
+    return (
+      <>
+        <InputTextEditor
+          editorChange={onConditionQuantityEditorValueChange}
+          props={props}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
+      </>
+    );
+  };
+  
+  const onConditionQuantityEditorValueChange = (props, event) => {
+    let updatedConditions = [...props.value];
+    if (event.target.value || event.target.value === '') {
+      updatedConditions[props.rowIndex].conditionQuantity = event.target.value;
+      setExperimentalConditions(updatedConditions);
+    }
+  }
   
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponent 
@@ -308,7 +328,8 @@ export const ExperimentalConditionsTable = () => {
       header:"Quantity",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"])
+      filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"]),
+      editor: (props) => conditionQuantityEditor(props)
     }
 
 
