@@ -129,14 +129,13 @@ export const ExperimentalConditionsTable = () => {
         }
       }
       mutation.mutate(updatedRow, {
-          onSuccess: (data, variables, context) => {
+          onSuccess: (response, variables, context) => {
             toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
             let conditions = [...experimentalConditions];
-            console.log(data);
-            const columns = Object.keys(data.data.entity);
+            const columns = Object.keys(response.data.entity);
             columns.forEach(column => {
-              conditions[event.index][column] = data.data.entity[column];
+              conditions[event.index][column] = response.data.entity[column];
             });
             setExperimentalConditions(conditions);
             const errorMessagesCopy = errorMessages;
