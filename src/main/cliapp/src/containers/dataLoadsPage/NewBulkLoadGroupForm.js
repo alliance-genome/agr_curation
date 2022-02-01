@@ -4,18 +4,21 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { DataLoadService } from '../../service/DataLoadService';
+import { useOktaAuth } from '@okta/okta-react';
 
 import { useMutation, useQueryClient } from 'react-query';
 
 export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDialog }) => {
 
+  const { authState } = useOktaAuth();
+
   const [group, setGroup] = useState({});
 
   const [submitted, setSubmitted] = useState(false);
-  const dataLoadService = new DataLoadService();
+  let dataLoadService = null;
 
   const mutation = useMutation(newGroupName => {
-    return dataLoadService.createGroup(newGroupName);
+    return getService().createGroup(newGroupName);
   });
 
   const queryClient = useQueryClient();
@@ -28,6 +31,13 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
     _group[field] = val;
     setGroup(_group);
   };
+
+  const getService = () => {
+    if(!dataLoadService) {
+      dataLoadService = new DataLoadService(authState);
+    }
+    return dataLoadService;
+  }
 
   const hideDialog = () => {
     setBulkLoadGroupDialog(false);

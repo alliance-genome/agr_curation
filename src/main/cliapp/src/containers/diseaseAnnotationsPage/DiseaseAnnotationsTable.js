@@ -283,7 +283,7 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <SubjectEditor
-          autocompleteFields={["curie", "name", "symbol", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
@@ -317,7 +317,7 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <WithEditor
-          autocompleteFields={["curie", "symbol", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
@@ -437,7 +437,7 @@ export const DiseaseAnnotationsTable = () => {
       body: withTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("with", ["with.curie", "with.symbol"]),
+      filterElement: filterComponentTemplate("with", ["with.symbol", "with.name", "with.curie"]),
       editor: (props) => withEditorTemplate(props)
     }
   ];

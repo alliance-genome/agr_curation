@@ -70,15 +70,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
                 if (authorizationHeader == null || !authorizationHeader.toLowerCase().startsWith(AUTHENTICATION_SCHEME.toLowerCase() + " ")) {
                     failAuthentication(requestContext);
-                }
-
-                String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-
-                Person person = validateToken(token);
-                if(person != null) {
-                    userAuthenticatedEvent.fire(person);
                 } else {
-                    failAuthentication(requestContext);
+                    String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
+    
+                    Person person = validateToken(token);
+                    if(person != null) {
+                        userAuthenticatedEvent.fire(person);
+                    } else {
+                        failAuthentication(requestContext);
+                    }
                 }
 
             } else {
