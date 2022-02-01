@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { BaseAuthService } from './BaseAuthService';
 
-export class DataLoadService {
-extends BaseAuthService {
+export class DataLoadService extends BaseAuthService {
     //eslint-disable-next-line
     constructor(authState) {
       super(authState);
@@ -57,11 +56,10 @@ extends BaseAuthService {
     }
 
     restartLoadFile(id) {
-        return axios.get(`api/bulkloadfile/restart/${id}`, this.apiAuthHeader);
+      return axios.get(`api/bulkloadfile/restart/${id}`, this.apiAuthHeader);
     }
 
     deleteLoadFile(id) {
-      console.log(id);
       return axios.delete(`api/bulkloadfile/${id}`, this.apiAuthHeader);
     }
 
