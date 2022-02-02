@@ -49,11 +49,11 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject
     ZecoTermDAO zecoTermDAO;
     @Inject
-    XcoTermDAO xcoTermDAO;
-    @Inject
     AnatomicalTermDAO anatomicalTermDAO;
     @Inject
     NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    @Inject
+    GoTermDAO goTermDAO;
     @Inject
     ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
     @Inject
@@ -122,7 +122,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                         experimentalCondition.setConditionChemical(term);
                     }
                     if (experimentalConditionDTO.getConditionId() != null) {
-                        XcoTerm term = xcoTermDAO.find(experimentalConditionDTO.getConditionId());
+                        ExperimentalConditionOntologyTerm term = experimentalConditionOntologyTermDAO.find(experimentalConditionDTO.getConditionId());
                         experimentalCondition.setConditionId(term);
                     }
                     if (experimentalConditionDTO.getConditionClassId() != null) {
@@ -136,6 +136,10 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                     if (experimentalConditionDTO.getNcbiTaxonId() != null) {
                         NCBITaxonTerm term = ncbiTaxonTermDAO.find(experimentalConditionDTO.getNcbiTaxonId());
                         experimentalCondition.setConditionTaxon(term);
+                    }
+                    if (experimentalConditionDTO.getGeneOntologyId() != null) {
+                        GOTerm term = goTermDAO.find(experimentalConditionDTO.getGeneOntologyId());
+                        experimentalCondition.setConditionGeneOntology(term);
                     }
                     if (experimentalConditionDTO.getConditionStatement() != null) {
                         experimentalCondition.setConditionStatement(experimentalConditionDTO.getConditionStatement());
