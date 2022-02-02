@@ -135,6 +135,9 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                     }
                     if (experimentalConditionDTO.getNcbiTaxonId() != null) {
                         NCBITaxonTerm term = ncbiTaxonTermDAO.find(experimentalConditionDTO.getNcbiTaxonId());
+                        if (term == null) {
+                            term = ncbiTaxonTermDAO.downloadAndSave(experimentalConditionDTO.getNcbiTaxonId());
+                        }
                         experimentalCondition.setConditionTaxon(term);
                     }
                     if (experimentalConditionDTO.getGeneOntologyId() != null) {
