@@ -462,7 +462,7 @@ This value can be one of the following list.
 | beta-curation | Beta Curation Site |
 | curation | Production Curation Site |
 
-DQMs can find information regarding the LinkML version and data classes currently supported by the curation at the following link:
+DQMs can find information regarding the LinkML version and data classes currently supported by the curation system at the following link:
 https://${Curation_System}.alliancegenome.org/api/version
 
 ### API Access Token
@@ -471,7 +471,7 @@ This will be a key that is generated via logging into the curation website for t
 
 ### Load Type
 
-Load type corisponds with the type of file that load needs.
+Load type corresponds with the type of file that load needs.
 
 | Name | Description |
 | --- | --- |

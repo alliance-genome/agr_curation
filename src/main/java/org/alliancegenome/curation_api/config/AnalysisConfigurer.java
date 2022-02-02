@@ -22,7 +22,7 @@ public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
         context.tokenizer("ngram_tokenizer")
                 .type("ngram")
                 .param("min_gram", 1)
-                .param("max_gram", 10)
+                .param("max_gram", 20)
                 .param("token_chars", "punctuation", "letter", "digit");
         
         context.tokenizer("search_query_tokenizer")
@@ -31,7 +31,7 @@ public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
         context.tokenFilter( "ngram_filter" )
                 .type( "ngram" )
                 .param( "min_gram", 1 )
-                .param( "max_gram", 10 );
+                .param( "max_gram", 20 );
 
         context.normalizer("sortNormalizer").custom() 
                 .tokenFilters("asciifolding", "lowercase");
