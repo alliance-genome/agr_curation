@@ -1,42 +1,42 @@
 import React, {useState, useRef} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {trimWhitespace } from '../../utils/utils';
-import {ConditionGeneOntologyTooltip} from './ConditionGeneOntologyTooltip';
+import {trimWhitespace } from '../utils/utils';
+import {SingleOntologyTooltip} from './SingleOntologyTooltip';
 
-export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperimentalConditions, autocompleteFields }) => {
-  const [filteredConditionGeneOntologies, setFilteredConditionGeneOntologies] = useState([]);
+export const SingleOntologyEditor = ({ rowProps, searchService, setExperimentalConditions, autocompleteFields, fieldname, endpoint }) => {
+  const [filteredSingleOntologies, setFilteredSingleOntologies] = useState([]);
 
   const op = useRef(null);
   const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
   
-  const searchConditionGeneOntology = (event) => {
-    let conditionGeneOntologyFilter = {};
+  const searchSingleOntology = (event) => {
+    let singleOntologyFilter = {};
     autocompleteFields.forEach( field => {
-      conditionGeneOntologyFilter[field] = event.query;
+      singleOntologyFilter[field] = event.query;
     });
     let obsoleteFilter = {"obsolete": false};
 
-    searchService.search('goterm', 15, 0, [], {"conditionGeneOntologyFilter":conditionGeneOntologyFilter, "obsoleteFilter":obsoleteFilter})
+    searchService.search(endpoint, 15, 0, [], {"singleOntologyFilter":singleOntologyFilter, "obsoleteFilter":obsoleteFilter})
       .then((data) => {
         if(data.results && data.results.length >0)
-          setFilteredConditionGeneOntologies(data.results);
+          setFilteredSingleOntologies(data.results);
         else
-          setFilteredConditionGeneOntologies([]);
+          setFilteredSingleOntologies([]);
       });
   };
 
-  const onConditionGeneOntologyEditorValueChange = (event) => {//this should propably be generalized so that all of these editor value changes can use the same method
+  const onSingleOntologyEditorValueChange = (event) => {//this should propably be generalized so that all of these editor value changes can use the same method
     let updatedConditions = [...rowProps.value];
     if(event.target.value || event.target.value === '') {
-      updatedConditions[rowProps.rowIndex].conditionGeneOntology = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+      updatedConditions[rowProps.rowIndex][fieldname] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       if(typeof event.target.value === "object"){
-        updatedConditions[rowProps.rowIndex].conditionGeneOntology = event.target.value;
+        updatedConditions[rowProps.rowIndex][fieldname] = event.target.value;
       } else {
         if (event.target.value === '') {
-          updatedConditions[rowProps.rowIndex].conditionGeneOntology = null;
+          updatedConditions[rowProps.rowIndex][fieldname] = null;
         }
         else {
-          updatedConditions[rowProps.rowIndex].conditionGeneOntology.curie = event.target.value;
+          updatedConditions[rowProps.rowIndex][fieldname].curie = event.target.value;
         }
       }
       setExperimentalConditions(updatedConditions);
@@ -49,9 +49,9 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
   };
 
 
-  const conditionGeneOntologyItemTemplate = (item) => {
-    if (rowProps.rowData.conditionGeneOntology) {
-      let inputValue = trimWhitespace(rowProps.rowData.conditionGeneOntology.curie.toLowerCase());
+  const singleOntologyItemTemplate = (item) => {
+    if (rowProps.rowData[fieldname]) {
+      let inputValue = trimWhitespace(rowProps.rowData[fieldname].curie.toLowerCase());
       if (autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length>0){
         for(let i in autocompleteSelectedItem.synonyms){
           if(autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue)<0){
@@ -94,17 +94,17 @@ export const ConditionGeneOntologyEditor = ({ rowProps, searchService, setExperi
   return (
     <div>
       <AutoComplete
-        id = {rowProps.rowData.conditionGeneOntology ? rowProps.rowData.conditionGeneOntology.curie : null}
+        id = {rowProps.rowData[fieldname] ? rowProps.rowData[fieldname].curie : null}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px'}}
         field="curie"
-        value={rowProps.rowData.conditionGeneOntology ? rowProps.rowData.conditionGeneOntology.curie : null}
-        suggestions={filteredConditionGeneOntologies}
-        itemTemplate={conditionGeneOntologyItemTemplate}
-        completeMethod={searchConditionGeneOntology}
+        value={rowProps.rowData[fieldname] ? rowProps.rowData[fieldname].curie : null}
+        suggestions={filteredSingleOntologies}
+        itemTemplate={singleOntologyItemTemplate}
+        completeMethod={searchSingleOntology}
         onHide={(e) => op.current.hide(e)}
-        onChange={(e) => onConditionGeneOntologyEditorValueChange(e)}
+        onChange={(e) => onSingleOntologyEditorValueChange(e)}
       />
-      <ConditionGeneOntologyTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={rowProps.rowData.conditionGeneOntology ? trimWhitespace(rowProps.rowData.conditionGeneOntology.curie.toLowerCase()) : null}/>
+      <SingleOntologyTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={rowProps.rowData[fieldname] ? trimWhitespace(rowProps.rowData[fieldname].curie.toLowerCase()) : null}/>
     </div>
   )
 };
