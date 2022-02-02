@@ -141,6 +141,9 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                         GOTerm term = goTermDAO.find(experimentalConditionDTO.getGeneOntologyId());
                         experimentalCondition.setConditionGeneOntology(term);
                     }
+                    if (experimentalConditionDTO.getConditionQuantity() != null) {
+                        experimentalCondition.setConditionQuantity(experimentalConditionDTO.getConditionQuantity());
+                    }
                     if (experimentalConditionDTO.getConditionStatement() != null) {
                         experimentalCondition.setConditionStatement(experimentalConditionDTO.getConditionStatement());
                     }
