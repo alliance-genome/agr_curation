@@ -51,6 +51,12 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject
     XcoTermDAO xcoTermDAO;
     @Inject
+    AnatomicalTermDAO anatomicalTermDAO;
+    @Inject
+    NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    @Inject
+    ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+    @Inject
     ConditionRelationDAO conditionRelationDAO;
     @Inject
     ExperimentalConditionDAO experimentalConditionDAO;
@@ -122,6 +128,14 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                     if (experimentalConditionDTO.getConditionClassId() != null) {
                         ZecoTerm term = zecoTermDAO.find(experimentalConditionDTO.getConditionClassId());
                         experimentalCondition.setConditionClass(term);
+                    }
+                    if (experimentalConditionDTO.getAnatomicalOntologyId() != null) {
+                        AnatomicalTerm term = anatomicalTermDAO.find(experimentalConditionDTO.getAnatomicalOntologyId());
+                        experimentalCondition.setConditionAnatomy(term);
+                    }
+                    if (experimentalConditionDTO.getNcbiTaxonId() != null) {
+                        NCBITaxonTerm term = ncbiTaxonTermDAO.find(experimentalConditionDTO.getNcbiTaxonId());
+                        experimentalCondition.setConditionTaxon(term);
                     }
                     if (experimentalConditionDTO.getConditionStatement() != null) {
                         experimentalCondition.setConditionStatement(experimentalConditionDTO.getConditionStatement());
