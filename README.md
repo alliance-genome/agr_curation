@@ -515,11 +515,11 @@ Then you can run `make eb-create` to create a new environment and `make eb-termi
 
 Current maintainers:
 
-*  Adam Gibson - [https://github.com/adamgibs](https://github.com/adamgibs)
-*  Andrés Becerra Sandoval - [https://github.com/abecerra](https://github.com/abecerra)
-*  Christian Pich - [https://github.com/cmpich](https://github.com/cmpich)
-*  Jyothi Thota - [https://github.com/jt15](https://github.com/jt15)
-*  Ketaki Thorat - [https://github.com/kthorat-prog](https://github.com/kthorat-prog)
-*  Mark Quinton-Tulloch - [https://github.com/markquintontulloch](https://github.com/markquintontulloch)
-*  Manuel Luypaert - [https://github.com/mluypaert](https://github.com/mluypaert)
-*  Olin Blodgett - [https://github.com/oblodgett](https://github.com/oblodgett)
+*  [Adam Gibson](https://github.com/adamgibs)
+*  [Andrés Becerra Sandoval](https://github.com/abecerra)
+*  [Christian Pich](https://github.com/cmpich)
+*  [Jyothi Thota](https://github.com/jt15)
+*  [Ketaki Thorat](https://github.com/kthorat-prog)
+*  [Mark Quinton-Tulloch](https://github.com/markquintontulloch)
+*  [Manuel Luypaert](https://github.com/mluypaert)
+*  [Olin Blodgett](https://github.com/oblodgett)
