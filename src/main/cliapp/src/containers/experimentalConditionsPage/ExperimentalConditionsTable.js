@@ -11,8 +11,8 @@ import { FilterComponent } from '../../components/FilterComponent'
 import { MultiSelect } from 'primereact/multiselect';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { returnSorted, trimWhitespace } from '../../utils/utils';
-import { ConditionGeneOntologyEditor } from './ConditionGeneOntologyEditor';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
+import { SingleOntologyEditor } from '../../components/SingleOntologyEditor';
 
 export const ExperimentalConditionsTable = () => {
 
@@ -119,18 +119,24 @@ export const ExperimentalConditionsTable = () => {
         delete event.data.conditionGeneOntology;
       }
       let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
-      if (event.data.conditionGeneOntology && Object.keys(event.data.conditionGeneOntology).length >= 1) {
-          event.data.conditionGeneOntology.curie = trimWhitespace(event.data.conditionGeneOntology.curie);
-          updatedRow.conditionGeneOntology = {};
-          updatedRow.conditionGeneOntology = event.data.conditionGeneOntology;
+      
+      const curieFields = ["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntolgy", "conditionChemical"];
+      for (var ix = 0; ix < curieFields.length; ix++) {
+        if (event.data[curieFields[ix]] && Object.keys(event.data[curieFields[ix]]).length >= 1) {
+          event.data[curieFields[ix]].curie = trimWhitespace(event.data[curieFields[ix]].curie);
+          updatedRow[curieFields[ix]] = {};
+          updatedRow[curieFields[ix]] = event.data[curieFields[ix]];
+        }
       }
-
       mutation.mutate(updatedRow, {
-          onSuccess: (data, variables, context) => {
+          onSuccess: (response, variables, context) => {
             toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
             let conditions = [...experimentalConditions];
-            conditions[event.index].conditionGeneOntology = data.data.entity.conditionGeneOntology;
+            const columns = Object.keys(response.data.entity);
+            columns.forEach(column => {
+              conditions[event.index][column] = response.data.entity[column];
+            });
             setExperimentalConditions(conditions);
             const errorMessagesCopy = errorMessages;
             errorMessagesCopy[event.index] = {};
@@ -240,23 +246,27 @@ export const ExperimentalConditionsTable = () => {
       }
     };
 
-  const conditionGeneOntologyEditorTemplate = (props) => {
-      return (
-          <>
-            <ConditionGeneOntologyEditor
-                autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
-                rowProps={props}
-                searchService={searchService}
-                setExperimentalConditions={setExperimentalConditions}
-            />
-              <ErrorMessageComponent
-                errorMessages={errorMessages[props.rowIndex]}
-                errorField={"conditionGeneOntology"}
-            />
-          </>
-      );
+  const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
+    return (
+      <>
+        <SingleOntologyEditor
+          autocompleteFields={autocomplete}
+          rowProps={props}
+          searchService={searchService}
+          setExperimentalConditions={setExperimentalConditions}
+          fieldname={fieldname}
+          endpoint={endpoint}
+        />
+        <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField={fieldname}
+        />
+      </>
+    );
   };
   
+  const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"];
+
   const columns = [
     {
       field: "uniqueId",
@@ -280,7 +290,8 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled, 
       body: conditionClassBodyTemplate,
       filter : true, 
-      filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"])
+      filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm", curieAutocompleteFields)
     },
     {
       field:"conditionId.name",
@@ -288,7 +299,8 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       body: conditionIdBodyTemplate,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionIdFilter", ["conditionId.curie", "conditionId.name"])
+      filterElement: filterComponentTemplate("conditionIdFilter", ["conditionId.curie", "conditionId.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
     },
     {
       field:"conditionGeneOntology.name",
@@ -296,7 +308,7 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       filter: true, 
       filterElement: filterComponentTemplate("conditionGeneOntologyFilter", ["conditionGeneOntology.curie", "conditionGeneOntology.name"]),
-      editor: (props) => conditionGeneOntologyEditorTemplate(props),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
       body: conditionGeneOntologyBodyTemplate
     },
     {
@@ -305,7 +317,8 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       body: conditionChemicalBodyTemplate,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionChemicalFilter", ["conditionChemical.curie", "conditionChemical.name"])
+      filterElement: filterComponentTemplate("conditionChemicalFilter", ["conditionChemical.curie", "conditionChemical.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
     },
     {
       field:"conditionAnatomy.name",
@@ -313,7 +326,8 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       body: conditionAnatomyBodyTemplate,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionAnatomyFilter", ["conditionAnatomy.curie", "conditionAnatomy.name"])
+      filterElement: filterComponentTemplate("conditionAnatomyFilter", ["conditionAnatomy.curie", "conditionAnatomy.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
     },
     {
       field:"conditionTaxon.curie",
@@ -321,7 +335,8 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       body: conditionTaxonBodyTemplate,
       filter: true, 
-      filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"])
+      filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
     },
     {
       field:"conditionQuantity",
