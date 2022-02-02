@@ -1,7 +1,7 @@
 import React from 'react';
 import {Tooltip} from "primereact/tooltip";
 
-export function ConditionGeneOntologyTooltip({ op, autocompleteSelectedItem }) {
+export function SingleOntologyTooltip({ op, autocompleteSelectedItem }) {
 
   return (
     <>
