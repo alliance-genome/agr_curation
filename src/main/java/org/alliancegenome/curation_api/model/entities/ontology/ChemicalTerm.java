@@ -14,6 +14,8 @@ import lombok.*;
 @Audited
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class ChemicalTerm extends OntologyTerm {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
