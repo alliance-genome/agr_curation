@@ -13,6 +13,6 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class DAOTerm extends OntologyTerm {
+public class DAOTerm extends AnatomicalTerm {
 
 }
