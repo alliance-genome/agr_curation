@@ -3,16 +3,10 @@ package org.alliancegenome.curation_api.services;
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -54,6 +48,14 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     ChemicalTermDAO chemicalTermDAO;
     @Inject
     ZecoTermDAO zecoTermDAO;
+    @Inject
+    AnatomicalTermDAO anatomicalTermDAO;
+    @Inject
+    NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    @Inject
+    GoTermDAO goTermDAO;
+    @Inject
+    ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
     @Inject
     ConditionRelationDAO conditionRelationDAO;
     @Inject
@@ -119,9 +121,28 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                         ChemicalTerm term = chemicalTermDAO.find(experimentalConditionDTO.getChemicalOntologyId());
                         experimentalCondition.setConditionChemical(term);
                     }
+                    if (experimentalConditionDTO.getConditionId() != null) {
+                        ExperimentalConditionOntologyTerm term = experimentalConditionOntologyTermDAO.find(experimentalConditionDTO.getConditionId());
+                        experimentalCondition.setConditionId(term);
+                    }
                     if (experimentalConditionDTO.getConditionClassId() != null) {
                         ZecoTerm term = zecoTermDAO.find(experimentalConditionDTO.getConditionClassId());
                         experimentalCondition.setConditionClass(term);
+                    }
+                    if (experimentalConditionDTO.getAnatomicalOntologyId() != null) {
+                        AnatomicalTerm term = anatomicalTermDAO.find(experimentalConditionDTO.getAnatomicalOntologyId());
+                        experimentalCondition.setConditionAnatomy(term);
+                    }
+                    if (experimentalConditionDTO.getNcbiTaxonId() != null) {
+                        NCBITaxonTerm term = ncbiTaxonTermDAO.find(experimentalConditionDTO.getNcbiTaxonId());
+                        experimentalCondition.setConditionTaxon(term);
+                    }
+                    if (experimentalConditionDTO.getGeneOntologyId() != null) {
+                        GOTerm term = goTermDAO.find(experimentalConditionDTO.getGeneOntologyId());
+                        experimentalCondition.setConditionGeneOntology(term);
+                    }
+                    if (experimentalConditionDTO.getConditionQuantity() != null) {
+                        experimentalCondition.setConditionQuantity(experimentalConditionDTO.getConditionQuantity());
                     }
                     if (experimentalConditionDTO.getConditionStatement() != null) {
                         experimentalCondition.setConditionStatement(experimentalConditionDTO.getConditionStatement());
