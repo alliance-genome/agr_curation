@@ -121,33 +121,38 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
         OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
 
-        Client client = Clients.builder()
-                .setOrgUrl(okta_url.get())
-                .setClientId(client_id.get())
-                .setClientCredentials(new TokenClientCredentials(api_token.get()))
-                .build();
-
-        User user = client.getUser(info.getUid());
-
-        if(user != null) {
-            SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
-            if(res == null) {
-                Person person = new Person();
-                person.setApiToken(UUID.randomUUID().toString());
-                person.setEmail(user.getProfile().getEmail());
-                person.setFirstName(user.getProfile().getFirstName());
-                person.setLastName(user.getProfile().getLastName());
-                personDAO.persist(person);
-                return person;
-            } else {
-                return res.getResults().get(0);
-            }
+        if(info.getUid() == null || info.getUid().length() == 0) {
+            return null;
         } else {
-            SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
-            if(res != null && res.getResults().size() == 1) {
-                return res.getResults().get(0);
+            Client client = Clients.builder()
+                    .setOrgUrl(okta_url.get())
+                    .setClientId(client_id.get())
+                    .setClientCredentials(new TokenClientCredentials(api_token.get()))
+                    .build();
+
+            User user = client.getUser(info.getUid());
+
+            if(user != null) {
+                SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
+                if(res == null) {
+                    Person person = new Person();
+                    person.setApiToken(UUID.randomUUID().toString());
+                    person.setEmail(user.getProfile().getEmail());
+                    person.setFirstName(user.getProfile().getFirstName());
+                    person.setLastName(user.getProfile().getLastName());
+                    personDAO.persist(person);
+                    return person;
+                } else {
+                    return res.getResults().get(0);
+                }
+            } else {
+                SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
+                if(res != null && res.getResults().size() == 1) {
+                    return res.getResults().get(0);
+                }
             }
         }
+        
         return null;
     }
 }
