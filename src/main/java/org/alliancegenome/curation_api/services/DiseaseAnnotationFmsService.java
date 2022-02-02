@@ -3,16 +3,10 @@ package org.alliancegenome.curation_api.services;
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -54,6 +48,8 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     ChemicalTermDAO chemicalTermDAO;
     @Inject
     ZecoTermDAO zecoTermDAO;
+    @Inject
+    XcoTermDAO xcoTermDAO;
     @Inject
     ConditionRelationDAO conditionRelationDAO;
     @Inject
@@ -118,6 +114,10 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                     if (experimentalConditionDTO.getChemicalOntologyId() != null) {
                         ChemicalTerm term = chemicalTermDAO.find(experimentalConditionDTO.getChemicalOntologyId());
                         experimentalCondition.setConditionChemical(term);
+                    }
+                    if (experimentalConditionDTO.getConditionId() != null) {
+                        XcoTerm term = xcoTermDAO.find(experimentalConditionDTO.getConditionId());
+                        experimentalCondition.setConditionId(term);
                     }
                     if (experimentalConditionDTO.getConditionClassId() != null) {
                         ZecoTerm term = zecoTermDAO.find(experimentalConditionDTO.getConditionClassId());
