@@ -56,29 +56,29 @@ public class ExperimentalConditionValidator {
         }
         
         ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
-        if (conditionClass != null) dbEntity.setConditionClass(conditionClass);
+        dbEntity.setConditionClass(conditionClass);
         
         ExperimentalConditionOntologyTerm ecOntologyTerm = validateConditionId(uiEntity, dbEntity);
-        if (ecOntologyTerm != null) dbEntity.setConditionId(ecOntologyTerm);
+        dbEntity.setConditionId(ecOntologyTerm);
         
         GOTerm conditionGeneOntology = validateConditionGeneOntology(uiEntity, dbEntity);
-        if (conditionGeneOntology != null) dbEntity.setConditionGeneOntology(conditionGeneOntology);
+        dbEntity.setConditionGeneOntology(conditionGeneOntology);
         
         AnatomicalTerm conditionAnatomy = validateConditionAnatomy(uiEntity, dbEntity);
-        if (conditionAnatomy != null) dbEntity.setConditionAnatomy(conditionAnatomy);
+        dbEntity.setConditionAnatomy(conditionAnatomy);
         
         ChemicalTerm conditionChemical = validateConditionChemical(uiEntity, dbEntity);
-        if (conditionChemical != null) dbEntity.setConditionChemical(conditionChemical);
+        dbEntity.setConditionChemical(conditionChemical);
         
         NCBITaxonTerm conditionTaxon = validateConditionTaxon(uiEntity, dbEntity);
-        if (conditionTaxon != null) dbEntity.setConditionTaxon(conditionTaxon);
+        dbEntity.setConditionTaxon(conditionTaxon);
         
         String conditionStatement = validateConditionStatement(uiEntity, dbEntity);
-        if (conditionStatement != null) dbEntity.setConditionStatement(conditionStatement);
+        dbEntity.setConditionStatement(conditionStatement);
         
-        if (uiEntity.getConditionQuantity() != null) dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
         
-        if (uiEntity.getPaperHandles() != null) dbEntity.setPaperHandles(uiEntity.getPaperHandles());
+        dbEntity.setPaperHandles(uiEntity.getPaperHandles());
         
         dbEntity.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity));
         

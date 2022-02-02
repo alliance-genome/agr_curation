@@ -120,7 +120,7 @@ export const ExperimentalConditionsTable = () => {
       }
       let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
       
-      const curieFields = ["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntolgy", "conditionChemical"];
+      const curieFields = ["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntology", "conditionChemical"];
       for (var ix = 0; ix < curieFields.length; ix++) {
         if (event.data[curieFields[ix]] && Object.keys(event.data[curieFields[ix]]).length >= 1) {
           event.data[curieFields[ix]].curie = trimWhitespace(event.data[curieFields[ix]].curie);
