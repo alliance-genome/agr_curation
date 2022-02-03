@@ -1,5 +1,7 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
+import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
@@ -7,34 +9,33 @@ import { Messages } from 'primereact/messages';
 import { FilterComponent } from '../../components/FilterComponent'
 import { MultiSelect } from 'primereact/multiselect';
 
-import { returnSorted } from '../../utils/utils';
-import { useUserContext } from '../../store/UserContext';
+import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 
 export const GenesTable = () => {
+  const defaultColumnNames = ["Curie", "Name", "Symbol", "Taxon"];
 
-  const userContext = useUserContext();
+  let initialTableState = {
+    page: 0,
+    first: 0,
+    rows: 50,
+    multiSortMeta: [],
+    selectedColumnNames: defaultColumnNames,
+    filters: {},
+  }
 
-  const [genes, setGenes] = useState(null);
-  const [multiSortMeta, setMultiSortMeta] = useState(() => {
-    return userContext.geneTable && userContext.geneTable.multiSortMeta ? userContext.geneTable.multiSortMeta : [];
-  });
-  const [filters, setFilters] = useState({});
-  const [page, setPage] = useState(0);
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(50);
-  const [totalRecords, setTotalRecords] = useState(0);
+  const [tableState, setTableState] = useSessionStorage("geneTableSettings", initialTableState);
+
   const [isEnabled, setIsEnabled] = useState(true);
+  const [genes, setGenes] = useState(null);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [columnMap, setColumnMap] = useState([]);
 
   const searchService = new SearchService();
   const errorMessage = useRef(null);
-  const columnNames = ["Curie", "Name", "Symbol", "Taxon"];
+  const dataTable = useRef(null);
 
-  const [selectedColumnNames, setSelectedColumnNames] = useState(() => {
-    return userContext.geneTable && userContext.geneTable.columns ? userContext.geneTable.columns : columnNames;
-  });
-
-  useQuery(['genes', rows, page, multiSortMeta, filters],
-    () => searchService.search('gene', rows, page, multiSortMeta, filters), {
+  useQuery(['genes', tableState],
+    () => searchService.search('gene', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
     onSuccess: (data) => {
       setIsEnabled(true);
       setGenes(data.results);
@@ -48,23 +49,58 @@ export const GenesTable = () => {
     keepPreviousData: true
   });
 
-
   const onLazyLoad = (event) => {
-    setRows(event.rows);
-    setPage(event.page);
-    setFirst(event.first);
+    let _tableState = {
+      ...tableState,
+      rows: event.rows,
+      page: event.page,
+      first: event.first
+    };
+
+    setTableState(_tableState);
   }
 
+  const onSort = (event) => {
+    let _tableState = {
+      ...tableState,
+      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+    }
+    setTableState(_tableState);
+  };
+
+  const setSelectedColumnNames = (newValue) => {
+    let _tableState = {
+      ...tableState,
+      selectedColumnNames: newValue
+    };
+
+    setTableState(_tableState);
+  };
 
   const onFilter = (filtersCopy) => {
-    setFilters({ ...filtersCopy });
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
   };
 
-  const onSort = (event) => {
-    const sorted = returnSorted(event, multiSortMeta);
-    setMultiSortMeta(sorted);
-    userContext.updateMultiSortMeta(sorted, 'geneTable');
-  };
+  const header = (
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={(event) => setSelectedColumnNames(event.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
+  );
 
   const filterComponentTemplate = (filterName, fields) => {
     return (
@@ -72,7 +108,7 @@ export const GenesTable = () => {
         isEnabled={isEnabled}
         fields={fields}
         filterName={filterName}
-        currentFilters={filters}
+        currentFilters={tableState.filters}
         onFilter={onFilter}
       />);
   };
@@ -107,43 +143,39 @@ export const GenesTable = () => {
       filter: true,
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
-
-
   ];
 
-  const onSelectChangeHandler = (value) => {
-    setSelectedColumnNames(value);
-    userContext.updateColumns(value, 'geneTable');
+  useEffect(() => {
+    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+    setColumnMap(
+      orderedColumns.map((col) => {
+        return <Column
+          columnKey={col.field}
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={isEnabled}
+          filter={col.filter}
+          filterElement={col.filterElement}
+          style={col.style}
+        />;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableState, isEnabled]);
+
+  const resetTableState = () => {
+    setTableState(initialTableState);
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+  }
+
+
+  const colReorderHandler = (event) => {
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
   };
-
-  const header = (
-    <div style={{ textAlign: 'left' }}>
-      <MultiSelect
-        value={selectedColumnNames}
-        options={columnNames}
-        onChange={e => onSelectChangeHandler(e.value)}
-        style={{ width: '20em' }}
-        disabled={!isEnabled}
-      />
-    </div>
-  );
-
-  const filteredColumns = columns.filter((col) => {
-    return selectedColumnNames.includes(col.header);
-  });
-
-  const columnMap = filteredColumns.map((col) => {
-    return <Column
-      columnKey={col.field}
-      key={col.field}
-      field={col.field}
-      header={col.header}
-      sortable={isEnabled}
-      filter={col.filter}
-      filterElement={col.filterElement}
-      style={col.style}
-    />;
-  })
 
   return (
     <div>
@@ -151,12 +183,14 @@ export const GenesTable = () => {
         <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-          first={first}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+          ref={dataTable}
+          onColReorder={colReorderHandler}
+          first={tableState.first}
           resizableColumns columnResizeMode="fit" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
           {columnMap}
         </DataTable>

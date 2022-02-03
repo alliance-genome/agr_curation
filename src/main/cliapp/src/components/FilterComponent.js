@@ -5,7 +5,7 @@ export function FilterComponent({ isEnabled, fields, filterName, currentFilters,
   const [filterValue, setFilterValue] = useState(currentFilters[filterName] ? currentFilters[filterName][fields[0]] : '');
 
   useEffect(() => {
-      setFilterValue(currentFilters[filterName] ? currentFilters[filterName][fields[0]] : '')
+    setFilterValue(currentFilters[filterName] ? currentFilters[filterName][fields[0]] : '')
   }, [filterValue, currentFilters, fields, filterName]);
 
   return (
