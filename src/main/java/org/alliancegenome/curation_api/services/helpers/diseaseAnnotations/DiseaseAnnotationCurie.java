@@ -1,18 +1,26 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-
 public abstract class DiseaseAnnotationCurie {
 
     public static final String DELIMITER = "|";
+
+    public static String getConditionRelationUnique(ConditionRelation relation) {
+        CurieGeneratorHelper curie = new CurieGeneratorHelper();
+        curie.add(relation.getConditionRelationType());
+        if (CollectionUtils.isNotEmpty(relation.getConditions()))
+            relation.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
+        return curie.getCurie();
+    }
 
     public abstract String getCurieID(DiseaseModelAnnotationFmsDTO annotationDTO);
 
@@ -38,15 +46,7 @@ public abstract class DiseaseAnnotationCurie {
                         CurieGeneratorHelper gen = new CurieGeneratorHelper();
                         gen.add(condition.getConditionRelationType());
                         condition.getConditions().forEach(cond -> {
-                            CurieGeneratorHelper help = new CurieGeneratorHelper();
-                            help.add(cond.getConditionStatement());
-                            help.add(cond.getConditionClass().getCurie());
-                            help.add(cond.getConditionAnatomy().getCurie());
-                            help.add(cond.getConditionChemical().getCurie());
-                            help.add(cond.getConditionGeneOntology().getCurie());
-                            help.add(cond.getConditionTaxon().getCurie());
-                            help.add(cond.getConditionQuantity());
-                            gen.add(help.getCurie());
+                            gen.add(getExperimentalConditionCurie(cond));
                         });
                         return gen.getCurie();
                     }).collect(Collectors.joining(DELIMITER))
@@ -55,12 +55,33 @@ public abstract class DiseaseAnnotationCurie {
         return curie.getCurie();
     }
 
-    public String getExperimentalConditionCurie(ExperimentalConditionFmsDTO dto) {
+    public static String getExperimentalConditionCurie(ExperimentalCondition cond) {
+        CurieGeneratorHelper help = new CurieGeneratorHelper();
+        if (cond.getConditionStatement() != null)
+            help.add(cond.getConditionStatement());
+        if (cond.getConditionClass() != null)
+            help.add(cond.getConditionClass().getCurie());
+        if (cond.getConditionAnatomy() != null)
+            help.add(cond.getConditionAnatomy().getCurie());
+        if (cond.getConditionChemical() != null)
+            help.add(cond.getConditionChemical().getCurie());
+        if (cond.getConditionGeneOntology() != null)
+            help.add(cond.getConditionGeneOntology().getCurie());
+        if (cond.getConditionTaxon() != null)
+            help.add(cond.getConditionTaxon().getCurie());
+        if (cond.getConditionQuantity() != null)
+            help.add(cond.getConditionQuantity());
+        return help.getCurie();
+    }
+
+    public static String getExperimentalConditionCurie(ExperimentalConditionFmsDTO dto) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(dto.getConditionClassId());
         curie.add(dto.getConditionStatement());
         curie.add(dto.getConditionId());
         curie.add(dto.getConditionQuantity());
+        curie.add(dto.getNcbiTaxonId());
+        curie.add(dto.getAnatomicalOntologyId());
         return curie.getCurie();
     }
 

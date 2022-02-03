@@ -1,7 +1,7 @@
 import React from 'react';
 import { ExperimentalConditionsTable } from './ExperimentalConditionsTable';
 
-function ExperimentalConditionsPage() {
+export function ExperimentalConditionsPage() {
     return (
         <ExperimentalConditionsTable />
     );

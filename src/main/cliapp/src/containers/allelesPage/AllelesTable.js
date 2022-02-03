@@ -121,7 +121,7 @@ export const AllelesTable = () => {
   const taxonTemplate = (rowData) => {
     return <div>{rowData.taxon.curie}</div>;
   }
- 
+
   const columns = [
     {
       field: "curie",

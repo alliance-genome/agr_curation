@@ -6,10 +6,16 @@ on:
       - alpha
       - beta
       - production
-    paths-ignore:
-      - '**.md'
-      - .gitignore
 jobs:
+  check-branching-rules:
+    if: github.event.action != 'edited' || github.event.changes.base
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Check branching rules
+        run: |
+          bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
   verify-test-api:
     if: github.event.action != 'edited' || github.event.changes.base
     runs-on: ubuntu-20.04
@@ -43,7 +49,7 @@ jobs:
           mvn --no-transfer-progress --batch-mode --update-snapshots verify
       - name: Package API
         run: |
-          ./build/package-api.sh
+          mvn clean package -Dquarkus.package.type=uber-jar -ntp
       - name: Run Integration tests
         run: |
           make integration-test

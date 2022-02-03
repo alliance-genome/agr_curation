@@ -1,14 +1,19 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -17,14 +22,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped

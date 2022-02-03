@@ -56,6 +56,6 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     @JsonIgnore
     @JsonView({View.FieldsOnly.class})
     public String generateS3MD5Path() {
-        return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + ".gz";
+        return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + "." + bulkLoad.getFileExtension() + ".gz";
     }
 }
