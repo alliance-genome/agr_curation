@@ -183,8 +183,8 @@ export const GenesTable = () => {
         <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           ref={dataTable}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
           resizableColumns columnResizeMode="fit" showGridlines

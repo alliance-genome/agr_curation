@@ -156,7 +156,6 @@ export const AllelesTable = () => {
   ];
 
   useEffect(() => {
-    console.log(tableState.selectedColumnNames);
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
@@ -194,8 +193,8 @@ export const AllelesTable = () => {
         <h3>Alleles Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={alleles} className="p-datatable-sm" header={header} reorderableColumns
-          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           ref={dataTable}
+          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           onColReorder={colReorderHandler}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
