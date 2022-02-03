@@ -68,20 +68,20 @@ export const GenesTable = () => {
     setTableState(_tableState);
   };
 
+  const onFilter = (filtersCopy) => {
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
+  };
+
   const setSelectedColumnNames = (newValue) => {
     let _tableState = {
       ...tableState,
       selectedColumnNames: newValue
     };
 
-    setTableState(_tableState);
-  };
-
-  const onFilter = (filtersCopy) => {
-    let _tableState = {
-      ...tableState,
-      filters: { ...filtersCopy }
-    }
     setTableState(_tableState);
   };
 

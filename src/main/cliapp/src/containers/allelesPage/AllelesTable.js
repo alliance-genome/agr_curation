@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
-import { useClearSessionStorage } from '../../service/useClearSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
@@ -9,11 +8,12 @@ import { Messages } from 'primereact/messages';
 import { FilterComponent } from '../../components/FilterComponent';
 import { MultiSelect } from 'primereact/multiselect';
 
-import { returnSorted, clearSessionStorage } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { Button } from 'primereact/button';
 
 export const AllelesTable = () => {
   const defaultColumnNames = ["Curie", "Description", "Symbol", "Taxon"];
+
   let initialTableState = {
     page: 0,
     first: 0,
@@ -23,10 +23,13 @@ export const AllelesTable = () => {
     filters: {}
   };
 
+  const [tableState, setTableState] = useSessionStorage("alleleTableSettings", initialTableState);
+
   const [alleles, setAlleles] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
-  const [tableState, setTableState] = useSessionStorage("alleleTableSettings", initialTableState);
+  const [columnMap, setColumnMap] = useState([]);
+
   const searchService = new SearchService();
   const errorMessage = useRef(null);
   const dataTable = useRef(null);
@@ -74,13 +77,32 @@ export const AllelesTable = () => {
     setTableState(_tableState);
   };
 
-  const symbolTemplate = (rowData) => {
-    return <div dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
-  }
+  const setSelectedColumnNames = (newValue) => {
+    let _tableState = {
+      ...tableState,
+      selectedColumnNames: newValue
+    };
 
-  const taxonTemplate = (rowData) => {
-    return <div>{rowData.taxon.curie}</div>;
-  }
+    setTableState(_tableState);
+  };
+
+  const header = (
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={(event) => setSelectedColumnNames(event.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
+
+  );
 
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponent
@@ -91,7 +113,15 @@ export const AllelesTable = () => {
       onFilter={onFilter}
     />);
   }
+  
+  const symbolTemplate = (rowData) => {
+    return <div dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+  }
 
+  const taxonTemplate = (rowData) => {
+    return <div>{rowData.taxon.curie}</div>;
+  }
+ 
   const columns = [
     {
       field: "curie",
@@ -124,57 +154,39 @@ export const AllelesTable = () => {
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
   ];
-  
-  const setSelectedColumnNames = (event) => {
-     let _tableState = {
-      ...tableState,
-      selectedColumnNames: event.value 
-    };
 
-    setTableState(_tableState);
-  };
-
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={setSelectedColumnNames}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => clearSessionStorage(event)}>Reset Table</Button>
-      </div>
-    </>
-
-  );
+  useEffect(() => {
+    console.log(tableState.selectedColumnNames);
+    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+    setColumnMap(
+      orderedColumns.map((col) => {
+        return <Column
+          columnKey={col.field}
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={isEnabled}
+          filter={col.filter}
+          filterElement={col.filterElement}
+          style={col.style}
+        />;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableState, isEnabled]);
 
 
-  const clearSessionStorage = (event) => {
-    console.log(dataTable);
+  const resetTableState = () => {
     setTableState(initialTableState);
-    dataTable.current.reset();
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
   }
 
-  const filteredColumns = columns.filter((col) => {
-    return tableState.selectedColumnNames.includes(col.header);
-  });
-
-  const columnMap = filteredColumns.map((col) => {
-    return <Column
-      columnKey={col.field}
-      key={col.field}
-      field={col.field}
-      header={col.header}
-      sortable={isEnabled}
-      filter={col.filter}
-      filterElement={col.filterElement}
-      body={col.body}
-    />;
-  });
+  const colReorderHandler = (event) => {
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
+  };
 
   return (
     <div>
@@ -184,6 +196,7 @@ export const AllelesTable = () => {
         <DataTable value={alleles} className="p-datatable-sm" header={header} reorderableColumns
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           ref={dataTable}
+          onColReorder={colReorderHandler}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           resizableColumns columnResizeMode="fit" showGridlines
