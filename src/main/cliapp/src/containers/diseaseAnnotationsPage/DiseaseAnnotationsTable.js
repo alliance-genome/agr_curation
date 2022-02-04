@@ -509,33 +509,17 @@ export const DiseaseAnnotationsTable = () => {
     </>
   );
 
-/*
-  const columnMap = filteredColumns.map((col) => {
-    return <Column
-      key={col.field}
-      columnKey={col.field}
-      field={col.field}
-      header={col.header}
-      sortable={isEnabled}
-      filter={col.filter}
-      filterElement={col.filterElement}
-      editor={col.editor}
-      body={col.body}
-    />;
-  });
- */
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
   }
- 
+
   const colReorderHandler = (event) => {
-    console.log(dataTable.current.state);
     let _columnNames = [...tableState.selectedColumnNames];
     _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
     setSelectedColumnNames(_columnNames);
   };
- 
+
   return (
     <div>
       <div className="card">
