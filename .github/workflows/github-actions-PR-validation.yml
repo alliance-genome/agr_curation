@@ -4,6 +4,9 @@ on:
     types: [synchronize, opened, reopened, edited]
     branches:
       - main
+      - alpha
+      - beta
+      - production
     paths-ignore:
       - '**.md'
       - .gitignore
