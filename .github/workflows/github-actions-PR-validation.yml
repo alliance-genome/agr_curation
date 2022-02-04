@@ -3,9 +3,13 @@ on:
   pull_request:
     types: [synchronize, opened, reopened, edited]
     branches:
+      - main
       - alpha
       - beta
       - production
+    paths-ignore:
+      - '**.md'
+      - .gitignore
 jobs:
   check-branching-rules:
     if: github.event.action != 'edited' || github.event.changes.base
