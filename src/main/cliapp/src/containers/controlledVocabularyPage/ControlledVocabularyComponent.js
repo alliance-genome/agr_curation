@@ -1,32 +1,41 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
+import { useSessionStorage } from '../../service/useSessionStorage';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponent } from '../../components/FilterComponent';
 import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
 
-import { returnSorted } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 
 export const ControlledVocabularyComponent = () => {
+  const defaultColumnNames = ["Id", "Name", "Abbreviation", "Vocabulary", "Definition", "Obsolete"];
+
+  let initialTableState = {
+    page: 0,
+    first: 0,
+    rows: 50,
+    multiSortMeta: [],
+    selectedColumnNames: defaultColumnNames,
+    filters: {}
+  };
+
+  const [tableState, setTableState] = useSessionStorage("ConVocTableSettings", initialTableState);
 
   const [terms, setTerms] = useState(null);
-  const [multiSortMeta, setMultiSortMeta] = useState([]);
-  const [filters, setFilters] = useState({});
-  const [page, setPage] = useState(0);
-  const [first, setFirst] = useState(0);
-  const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
+  const [columnMap, setColumnMap] = useState([]);
+
   const searchService = new SearchService();
   const errorMessage = useRef(null);
-  const columnNames = ["Id", "Name", "Abbreviation", "Vocabulary", "Definition", "Obsolete"];
+  const dataTable = useRef(null);
 
-  const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
-
-  useQuery(['genes', rows, page, multiSortMeta, filters],
-    () => searchService.search("vocabularyterm", rows, page, multiSortMeta, filters), {
+  useQuery(['genes', tableState],
+    () => searchService.search("vocabularyterm", tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
     onSuccess: (data) => {
       setIsEnabled(true);
       setTerms(data.results);
@@ -40,118 +49,157 @@ export const ControlledVocabularyComponent = () => {
     keepPreviousData: true
   });
 
-
-
   const onLazyLoad = (event) => {
-    setRows(event.rows);
-    setPage(event.page);
-    setFirst(event.first);
-  };
+    let _tableState = {
+      ...tableState,
+      rows: event.rows,
+      page: event.page,
+      first: event.first
+    };
+
+    setTableState(_tableState);
+  }
 
   const onFilter = (filtersCopy) => {
-    setFilters({ ...filtersCopy });
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
   };
 
   const onSort = (event) => {
-    setMultiSortMeta(
-      returnSorted(event, multiSortMeta)
-    );
+    let _tableState = {
+      ...tableState,
+      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+    }
+    setTableState(_tableState);
   };
+
+  const setSelectedColumnNames = (newValue) => {
+    let _tableState = {
+      ...tableState,
+      selectedColumnNames: newValue
+    };
+
+    setTableState(_tableState);
+  };
+
+  const header = (
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={e => setSelectedColumnNames(e.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
+  );
 
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponent
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
-      currentFilters={filters}
+      currentFilters={tableState.filters}
       onFilter={onFilter}
     />);
-  };                                                                                                               
+  };
 
   const columns = [
     {
-      field:"id",
-      header:"Id"
+      field: "id",
+      header: "Id"
     },
     {
-      field:"name",
-      header:"Name",
+      field: "name",
+      header: "Name",
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("nameFilter", ["name"])
     },
     {
-      field:"abbreviation",
-      header:"Abbreviation",
+      field: "abbreviation",
+      header: "Abbreviation",
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("abbreviationFilter", ["abbreviation"])
     },
     {
-      field:"vocabulary.name",
-      header:"Vocabulary",
+      field: "vocabulary.name",
+      header: "Vocabulary",
       sortable: isEnabled,
-      filter:true,
+      filter: true,
       filterElement: filterComponentTemplate("vocabularyNameFilter", ["vocabulary.name"])
     },
     {
-      field:"definition",
-      header:"Definition",
+      field: "definition",
+      header: "Definition",
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("definitionFilter", ["definition"])
     },
     {
-      field:"isObsolete",
-      header:"Obsolete",
+      field: "isObsolete",
+      header: "Obsolete",
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("isObsoleteFilter", ["isObsolete"])
-    } 
+    }
   ];
-  
-  const header = (
-    <div style={{ textAlign: 'left' }}>
-      <MultiSelect
-        value={selectedColumnNames}
-        options={columnNames}
-        onChange={e => setSelectedColumnNames(e.value)}
-        style={{ width: '20em' }}
-        disabled={!isEnabled}
-      />
-    </div>
-  );
 
-  const filteredColumns = columns.filter((col) => {
-    return selectedColumnNames.includes(col.header);
-  });
+  useEffect(() => {
+    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+    setColumnMap(
+      orderedColumns.map((col) => {
+        return <Column
+          columnKey={col.field}
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={isEnabled}
+          filter={col.filter}
+          filterElement={col.filterElement}
+        />;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableState, isEnabled]);
 
-  const columnMap = filteredColumns.map((col) => {
-    return <Column
-      columnKey={col.field}
-      key={col.field}
-      field={col.field}
-      header={col.header}
-      sortable={isEnabled}
-      filter={col.filter}
-      filterElement={col.filterElement}
-    />;
-  });                                                              
+  const resetTableState = () => {
+    setTableState(initialTableState);
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+  }
+
+  const colReorderHandler = (event) => {
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
+  };
 
   return (
     <div>
       <div className="card">
         <h3>Controlled Vocabulary Terms Table</h3>
         <Messages ref={errorMessage} />
-        <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns  
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-          first={first} onFilter={onFilter} filters={filters}
+        <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
+          ref={dataTable}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+          onColReorder={colReorderHandler}
+          first={tableState.first} onFilter={onFilter} filters={tableState.filters}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
           resizableColumns columnResizeMode="fit" showGridlines
         >
-            {columnMap}
+          {columnMap}
         </DataTable>
 
       </div>
