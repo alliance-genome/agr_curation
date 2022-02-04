@@ -1,11 +1,12 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted, trimWhitespace } from '../../utils/utils';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
 import { WithEditor } from './WithEditor';
@@ -19,33 +20,42 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
+  let initialTableState = {
+    page: 0,
+    first: 0,
+    rows: 50,
+    multiSortMeta: [],
+    selectedColumnNames: defaultColumnNames,
+    filters: {},
+  }
+
+  const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
 
   let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
 
-  const [page, setPage] = useState(0);
-  const [multiSortMeta, setMultiSortMeta] = useState([]);
-  const [filters, setFilters] = useState({});
-  const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [first, setFirst] = useState(0);
-  const [originalRows, setOriginalRows] = useState([]); const [editingRows, setEditingRows] = useState({});
+  const [originalRows, setOriginalRows] = useState([]);
+  const [editingRows, setEditingRows] = useState({});
+  const [columnMap, setColumnMap] = useState([]);
+  const [isEnabled, setIsEnabled] = useState(true); //needs better name
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
-  const columnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
 
-  const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
   const [errorMessages, setErrorMessages] = useState({});
   const { authState } = useOktaAuth();
 
-  const rowsInEdit = useRef(0);
 
   const searchService = new SearchService();
 
+  const rowsInEdit = useRef(0);
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
+  const dataTable = useRef(null);
 
   let diseaseAnnotationService = null;
 
@@ -57,8 +67,8 @@ export const DiseaseAnnotationsTable = () => {
   };
 
 
-  useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
-    () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters, sortMapping), {
+  useQuery(['diseaseAnnotations', tableState],
+    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping), {
     onSuccess: (data) => {
 
       setDiseaseAnnotations(data.results);
@@ -85,19 +95,39 @@ export const DiseaseAnnotationsTable = () => {
   });
 
   const onLazyLoad = (event) => {
-    setRows(event.rows);
-    setPage(event.page);
-    setFirst(event.first);
-  };
+    let _tableState = {
+      ...tableState,
+      rows: event.rows,
+      page: event.page,
+      first: event.first
+    };
+
+    setTableState(_tableState);
+  }
 
   const onFilter = (filtersCopy) => {
-    setFilters({ ...filtersCopy });
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
   };
 
   const onSort = (event) => {
-    setMultiSortMeta(
-      returnSorted(event, multiSortMeta)
-    );
+    let _tableState = {
+      ...tableState,
+      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+    }
+    setTableState(_tableState);
+  };
+
+  const setSelectedColumnNames = (newValue) => {
+    let _tableState = {
+      ...tableState,
+      selectedColumnNames: newValue
+    };
+
+    setTableState(_tableState);
   };
 
   const withTemplate = (rowData) => {
@@ -135,7 +165,7 @@ export const DiseaseAnnotationsTable = () => {
     setIsEnabled(false);
     originalRows[event.index] = { ...diseaseAnnotations[event.index] };
     setOriginalRows(originalRows);
-    console.log("in onRowEditInit");
+    console.log(dataTable.current.state);
   };
 
   const onRowEditCancel = (event) => {
@@ -359,13 +389,12 @@ export const DiseaseAnnotationsTable = () => {
     }
   };
 
-  const [isEnabled, setIsEnabled] = useState(true); //needs better name
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponent
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
-      currentFilters={filters}
+      currentFilters={tableState.filters}
       onFilter={onFilter}
     />);
   };
@@ -441,22 +470,46 @@ export const DiseaseAnnotationsTable = () => {
       editor: (props) => withEditorTemplate(props)
     }
   ];
+
+  useEffect(() => {
+    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+    setColumnMap(
+      orderedColumns.map((col) => {
+        return <Column
+          key={col.field}
+          columnKey={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={isEnabled}
+          filter={col.filter}
+          filterElement={col.filterElement}
+          editor={col.editor}
+          body={col.body}
+        />;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableState, isEnabled]);
+
   const header = (
-    <div style={{ textAlign: 'left' }}>
-      <MultiSelect
-        value={selectedColumnNames}
-        options={columnNames}
-        onChange={e => setSelectedColumnNames(e.value)}
-        style={{ width: '20em' }}
-        disabled={!isEnabled}
-      />
-    </div>
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={e => setSelectedColumnNames(e.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
   );
 
-  const filteredColumns = columns.filter((col) => {
-    return selectedColumnNames.includes(col.header);
-  });
-
+/*
   const columnMap = filteredColumns.map((col) => {
     return <Column
       key={col.field}
@@ -470,23 +523,36 @@ export const DiseaseAnnotationsTable = () => {
       body={col.body}
     />;
   });
-
-
+ */
+  const resetTableState = () => {
+    setTableState(initialTableState);
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+  }
+ 
+  const colReorderHandler = (event) => {
+    console.log(dataTable.current.state);
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
+  };
+ 
   return (
     <div>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns
+        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
+          ref={dataTable}
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+          onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-          first={first}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+          first={tableState.first}
           dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
 
           {columnMap}
