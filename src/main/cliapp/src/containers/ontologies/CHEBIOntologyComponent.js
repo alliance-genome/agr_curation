@@ -13,7 +13,7 @@ export const CHEBIOntologyComponent = () => {
     < OntologyTable
       endpoint={"chebiterm"}
       ontologyAbbreviation={"ChEBI"}
-      columnMap={columns}
+      columns={columns}
     />
     )
 }

@@ -14,7 +14,7 @@ export const SOOntologyComponent = () => {
     < OntologyTable
       endpoint={"soterm"}
       ontologyAbbreviation={"SO"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 }

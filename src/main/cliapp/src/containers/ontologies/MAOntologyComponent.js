@@ -13,7 +13,7 @@ export const MAOntologyComponent = () => {
     < OntologyTable
       endpoint={"materm"}
       ontologyAbbreviation={"MA"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 }
