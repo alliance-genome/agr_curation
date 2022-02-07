@@ -1406,6 +1406,162 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(4)); // No ZFIN annotations added
     }
     
+    @Test
+    @Order(50)
+    public void diseaseAnnotationBulkUploadInvalidConditionClassId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/40_invalid_condition_class_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/zfinAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No ZFIN annotations added
+    }
+    
+    @Test
+    @Order(51)
+    public void diseaseAnnotationBulkUploadInvalidConditionId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/41_invalid_condition_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/zfinAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No ZFIN annotations added
+    }
+    
+    @Test
+    @Order(52)
+    public void diseaseAnnotationBulkUploadInvalidAnatomicalOntologyId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/42_invalid_anatomical_ontology_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/zfinAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No ZFIN annotations added
+    }
+    
+    @Test
+    @Order(53)
+    public void diseaseAnnotationBulkUploadInvalidGeneOntologyId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/43_invalid_gene_ontology_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/zfinAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No ZFIN annotations added
+    }
+    
+    @Test
+    @Order(54)
+    public void diseaseAnnotationBulkUploadInvalidNcbiTaxonId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/44_invalid_ncbi_taxon_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/zfinAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No ZFIN annotations added
+    }
+    
+    @Test
+    @Order(55)
+    public void diseaseAnnotationBulkUploadInvalidChemicalOntologyId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/45_invalid_chemical_ontology_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/zfinAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(4)); // No ZFIN annotations added
+    }
+    
     private void loadOntologyTerms(String content) throws Exception {
         loadDOTerms(content);
         loadECOTerms(content);
