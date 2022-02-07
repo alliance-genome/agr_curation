@@ -13,7 +13,7 @@ export const EMAPAOntologyComponent = () => {
     < OntologyTable
       endpoint={"emapaterm"}
       ontologyAbbreviation={"EMAPA"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 
