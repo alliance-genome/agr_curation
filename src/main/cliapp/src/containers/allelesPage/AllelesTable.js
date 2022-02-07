@@ -84,7 +84,7 @@ export const AllelesTable = () => {
       header:"Description",
       sortable: isEnabled, 
       filter: true,
-      filterelement: filterComponentTemplate("descriptionFilter", ["description"])
+      filterElement: filterComponentTemplate("descriptionFilter", ["description"])
     }, 
     {
       field:"symbol",

@@ -86,6 +86,10 @@ export const Dashboard = () => {
     searchService.search('zecoterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "ZECO", count: results.totalResults }]);
     });
+
+    searchService.search('ncbitaxonterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "NCBITaxon", count: results.totalResults }]);
+    });
   }, []);
 
   return (
