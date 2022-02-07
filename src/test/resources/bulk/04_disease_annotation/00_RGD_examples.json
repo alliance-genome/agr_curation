@@ -393,11 +393,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000212",
-        "XCO:0000211"
-      ]
+      }
     },
     {
       "DOid": "DOID:576",
@@ -432,13 +428,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000022",
-        "XCO:0000164",
-        "XCO:0000032",
-        "XCO:0000030"
-      ]
+      }
     },
     {
       "DOid": "DOID:7693",
@@ -473,11 +463,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000246",
-        "XCO:0000025"
-      ]
+      }
     },
     {
       "DOid": "DOID:1591",
@@ -512,12 +498,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000212",
-        "XCO:0000211",
-        "XCO:0000662"
-      ]
+      }
     },
     {
       "DOid": "DOID:9970",
@@ -552,11 +533,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000015",
-        "XCO:0000025"
-      ]
+      }
     },
     {
       "DOid": "DOID:9744",
@@ -591,11 +568,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000231",
-        "XCO:0000235"
-      ]
+      }
     },
     {
       "DOid": "DOID:9970",
@@ -630,11 +603,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000015",
-        "XCO:0000025"
-      ]
+      }
     },
     {
       "DOid": "DOID:9744",
@@ -669,11 +638,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000231",
-        "XCO:0000235"
-      ]
+      }
     },
     {
       "DOid": "DOID:11465",
@@ -708,11 +673,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000307",
-        "XCO:0000158"
-      ]
+      }
     },
     {
       "DOid": "DOID:9352",
@@ -747,11 +708,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000212",
-        "XCO:0000211"
-      ]
+      }
     },
     {
       "DOid": "DOID:9744",
@@ -786,11 +743,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000231",
-        "XCO:0000235"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -825,11 +778,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000022",
-        "XCO:0000032"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -864,11 +813,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000164",
-        "XCO:0000025"
-      ]
+      }
     },
     {
       "DOid": "DOID:9744",
@@ -903,11 +848,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000231",
-        "XCO:0000235"
-      ]
+      }
     },
     {
       "DOid": "DOID:2349",
@@ -942,12 +883,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000599",
-        "XCO:0000367",
-        "XCO:0000790"
-      ]
+      }
     },
     {
       "DOid": "DOID:4195",
@@ -982,11 +918,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000212",
-        "XCO:0000211"
-      ]
+      }
     },
     {
       "DOid": "DOID:848",
@@ -1021,11 +953,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000265",
-        "XCO:0000262"
-      ]
+      }
     },
     {
       "DOid": "DOID:4195",
@@ -1060,11 +988,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000212",
-        "XCO:0000211"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -1099,14 +1023,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000280",
-        "XCO:0000263",
-        "XCO:0000266",
-        "XCO:0000281",
-        "XCO:0000265"
-      ]
+      }
     },
     {
       "DOid": "DOID:848",
@@ -1141,12 +1058,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000281",
-        "XCO:0000263",
-        "XCO:0000265"
-      ]
+      }
     },
     {
       "DOid": "DOID:14330",
@@ -1184,11 +1096,7 @@
           "RGD:620029"
         ],
         "objectType": "allele"
-      },
-      "with": [
-        "XCO:0000498",
-        "XCO:0000520"
-      ]
+      }
     },
     {
       "DOid": "DOID:14330",
@@ -1223,11 +1131,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "XCO:0000498",
-        "XCO:0000520"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -1274,10 +1178,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000022"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -1324,10 +1225,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000270"
-      ]
+      }
     },
     {
       "DOid": "DOID:893",
@@ -1374,10 +1272,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000212"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -1424,10 +1319,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000022"
-      ]
+      }
     },
     {
       "DOid": "DOID:3526",
@@ -1474,10 +1366,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000704"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -1524,10 +1413,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000022"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -1574,10 +1460,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:9970",
@@ -1624,10 +1507,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000602"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080916",
@@ -1674,10 +1554,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000437"
-      ]
+      }
     },
     {
       "DOid": "DOID:2548",
@@ -1724,10 +1601,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000048"
-      ]
+      }
     },
     {
       "DOid": "DOID:848",
@@ -1774,10 +1648,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:0050860",
@@ -1824,10 +1695,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000393"
-      ]
+      }
     },
     {
       "DOid": "DOID:576",
@@ -1874,10 +1742,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000112"
-      ]
+      }
     },
     {
       "DOid": "DOID:4195",
@@ -1924,10 +1789,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000275"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -1974,10 +1836,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000280"
-      ]
+      }
     },
     {
       "DOid": "DOID:3829",
@@ -2024,10 +1883,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000295"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -2074,10 +1930,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000281"
-      ]
+      }
     },
     {
       "DOid": "DOID:2697",
@@ -2124,10 +1977,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000206"
-      ]
+      }
     },
     {
       "DOid": "DOID:576",
@@ -2174,10 +2024,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000588"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080916",
@@ -2224,10 +2071,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000437"
-      ]
+      }
     },
     {
       "DOid": "DOID:9351",
@@ -2262,10 +2106,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000014"
-      ]
+      }
     },
     {
       "DOid": "DOID:1826",
@@ -2300,10 +2141,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000259"
-      ]
+      }
     },
     {
       "DOid": "DOID:13724",
@@ -2338,10 +2176,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000691"
-      ]
+      }
     },
     {
       "DOid": "DOID:2921",
@@ -2376,10 +2211,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000255"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080916",
@@ -2414,10 +2246,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000437"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -2452,10 +2281,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:13724",
@@ -2490,10 +2316,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000691"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080886",
@@ -2528,10 +2351,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000545"
-      ]
+      }
     },
     {
       "DOid": "DOID:3459",
@@ -2566,10 +2386,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000090"
-      ]
+      }
     },
     {
       "DOid": "DOID:0050851",
@@ -2604,10 +2421,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000555"
-      ]
+      }
     },
     {
       "DOid": "DOID:3459",
@@ -2642,10 +2456,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000090"
-      ]
+      }
     },
     {
       "DOid": "DOID:576",
@@ -2680,10 +2491,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000112"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -2718,10 +2526,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:10787",
@@ -2756,10 +2561,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000094"
-      ]
+      }
     },
     {
       "DOid": "DOID:576",
@@ -2794,10 +2596,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000555"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080916",
@@ -2832,10 +2631,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000437"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -2870,10 +2666,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:9351",
@@ -2908,10 +2701,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000014"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -2946,10 +2736,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000677"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -2984,10 +2771,7 @@
       "objectRelation": {
         "associationType": "is_model_of",
         "objectType": "strain"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080886",
@@ -3025,10 +2809,7 @@
           "RGD:69192"
         ],
         "objectType": "allele"
-      },
-      "with": [
-        "XCO:0000545"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -3066,10 +2847,7 @@
           "RGD:1598216"
         ],
         "objectType": "allele"
-      },
-      "with": [
-        "XCO:0000795"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080884",
@@ -3107,10 +2885,7 @@
           "RGD:3959"
         ],
         "objectType": "allele"
-      },
-      "with": [
-        "XCO:0000545"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080884",
@@ -3148,10 +2923,7 @@
           "RGD:3959"
         ],
         "objectType": "allele"
-      },
-      "with": [
-        "XCO:0000545"
-      ]
+      }
     },
     {
       "DOid": "DOID:1793",
@@ -3186,10 +2958,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:736378"
-      ]
+      }
     },
     {
       "DOid": "DOID:0060318",
@@ -3224,10 +2993,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1352377"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080886",
@@ -3262,10 +3028,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "XCO:0000545"
-      ]
+      }
     },
     {
       "DOid": "DOID:2841",
@@ -3300,10 +3063,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:2515"
-      ]
+      }
     },
     {
       "DOid": "DOID:6432",
@@ -3338,10 +3098,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:69008"
-      ]
+      }
     },
     {
       "DOid": "DOID:684",
@@ -3376,10 +3133,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:69029"
-      ]
+      }
     },
     {
       "DOid": "DOID:3146",
@@ -3414,10 +3168,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:69123"
-      ]
+      }
     },
     {
       "DOid": "DOID:1485",
@@ -3452,10 +3203,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:737252"
-      ]
+      }
     },
     {
       "DOid": "DOID:3083",
@@ -3490,10 +3238,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:737252"
-      ]
+      }
     },
     {
       "DOid": "DOID:1485",
@@ -3528,10 +3273,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:735987"
-      ]
+      }
     },
     {
       "DOid": "DOID:7148",
@@ -3566,10 +3308,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "XCO:0000263"
-      ]
+      }
     },
     {
       "DOid": "DOID:332",
@@ -3604,10 +3343,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:730855"
-      ]
+      }
     },
     {
       "DOid": "DOID:9352",
@@ -3642,10 +3378,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1347682"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",
@@ -3680,10 +3413,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "XCO:0000795"
-      ]
+      }
     },
     {
       "DOid": "DOID:3083",
@@ -3718,10 +3448,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:735702"
-      ]
+      }
     },
     {
       "DOid": "DOID:5052",
@@ -3756,10 +3483,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1348706"
-      ]
+      }
     },
     {
       "DOid": "DOID:1520",
@@ -3794,10 +3518,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:737288"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080884",
@@ -3832,10 +3553,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "XCO:0000545"
-      ]
+      }
     },
     {
       "DOid": "DOID:10763",

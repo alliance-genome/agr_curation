@@ -3,8 +3,13 @@ package org.alliancegenome.curation_api.bulkupload;
 import static org.hamcrest.Matchers.*;
 
 import java.nio.file.*;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.alliancegenome.curation_api.model.ingest.fms.dto.ConditionRelationFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.ExperimentalConditionFmsDTO;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.Ignore;
 import org.junit.jupiter.api.*;
@@ -23,6 +28,8 @@ import io.restassured.config.*;
 @DisplayName("04 - Disease annotation bulk upload")
 @Order(4)
 public class DiseaseAnnotationBulkUploadITCase {
+    
+    private Set<String> loadedEntities = new HashSet<String>();
 
     @BeforeEach
     public void init() {
@@ -37,14 +44,14 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void geneBulkUpload() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/00_mod_examples.json"));
         
-            // upload file
-            RestAssured.given().
-                contentType("application/json").
-                body(content).
-                when().
-                post("/api/gene/bulk/bgifile").
-                then().
-                statusCode(200);
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene/bulk/bgifile").
+            then().
+            statusCode(200);
     }
 
     @Test
@@ -52,14 +59,14 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void alleleBulkUpload() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/00_mod_examples.json"));
         
-            // upload file
-            RestAssured.given().
-                contentType("application/json").
-                body(content).
-                when().
-                post("/api/allele/bulk/allelefile").
-                then().
-                statusCode(200);
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/allele/bulk/allelefile").
+            then().
+            statusCode(200);
     }
 
     @Test
@@ -67,14 +74,16 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void agmBulkUpload() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/00_mod_examples.json"));
         
-            // upload file
-            RestAssured.given().
-                contentType("application/json").
-                body(content).
-                when().
-                post("/api/agm/bulk/agmfile").
-                then().
-                statusCode(200);
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/agm/bulk/agmfile").
+            then().
+            statusCode(200);
+        
+        
     }
     
     @Test
@@ -83,7 +92,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_FB_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -102,7 +111,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-               body("totalResults", is(40));
+            body("totalResults", is(40));
     }
 
     @Test
@@ -110,7 +119,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadHuman() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_HUMAN_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -137,7 +146,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadMGI() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_MGI_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -164,7 +173,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadRGD() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_RGD_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -191,7 +200,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadSGD() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_SGD_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -218,7 +227,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadWB() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_WB_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -245,7 +254,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadZFIN() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/00_ZFIN_examples.json"));
 
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -272,7 +281,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void geneDiseaseAnnotationBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/01_all_fields_gene_primary_annotation.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -321,7 +330,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void geneDiseaseAnnotationBulkUploadSecondaryAnnotation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/02_all_fields_gene_secondary_annotation.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -349,7 +358,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void agmDiseaseAnnotationBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/03_all_fields_agm_primary_annotation.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -398,7 +407,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void alleleDiseaseAnnotationBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/04_all_fields_allele_primary_annotation.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -472,7 +481,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoDataProvider() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/06_no_data_provider.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -500,7 +509,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoDataProviderXref() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/07_no_data_provider_cross_reference.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -528,7 +537,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoDataProviderType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/08_no_data_provider_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -556,7 +565,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoDateAssigned() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/09_no_date_assigned.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -584,7 +593,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoEvidence() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/10_no_evidence.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -612,7 +621,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoEvidenceCodes() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/11_no_evidence_evidence_codes.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -640,7 +649,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoPublication() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/12_no_evidence_publication.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -668,7 +677,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoPublicationXref() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/13_no_evidence_publication_cross_reference.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -696,7 +705,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoPublicationXrefId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/14_no_evidence_publication_cross_reference_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -724,7 +733,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoPublicationXrefPages() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/15_no_evidence_publication_cross_reference_pages.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -752,7 +761,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoPublicationId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/16_no_evidence_publication_publication_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -780,7 +789,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoNegation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/17_no_negation.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -808,7 +817,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoObjectId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/18_no_object_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -836,7 +845,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoObjectName() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/19_no_object_name.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -864,7 +873,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoObjectRelation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/20_no_object_relation.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -892,7 +901,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoObjectRelationAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/21_no_object_relation_association_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -920,7 +929,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoObjectRelationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/22_no_object_relation_object_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -948,7 +957,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoWith() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/23_no_with.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -976,7 +985,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoConditionRelations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/24_no_condition_relations.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1004,7 +1013,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoConditionRelationsType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/25_no_condition_relations_condition_relation_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1024,7 +1033,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+            body("totalResults", is(4)); // 1 FB annotation replaced with 0
     }
 
     @Test
@@ -1038,7 +1047,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoConditionClassId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/27_no_condition_relations_conditions_condition_class_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1058,7 +1067,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+            body("totalResults", is(4)); // 0 FB annotations added
     }
 
     @Test
@@ -1066,7 +1075,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoConditionId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/28_no_condition_relations_conditions_condition_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1086,7 +1095,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+            body("totalResults", is(5)); // 1 FB annotation added
     }
 
     @Test
@@ -1094,7 +1103,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoConditionStatement() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/29_no_condition_relations_conditions_condition_statement.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1114,7 +1123,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+            body("totalResults", is(4)); // 1 FB annotation replaced with 0
     }
 
     @Test
@@ -1122,7 +1131,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoConditionQuantity() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/30_no_condition_relations_conditions_condition_quantity.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1142,7 +1151,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // 1 FB annotation replaced with 1
+            body("totalResults", is(5)); // 1 FB annotation added
     }
 
     @Test
@@ -1150,7 +1159,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoAnatomicalOntologyId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/31_no_condition_relations_conditions_anatomical_ontology_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1178,7 +1187,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/32_no_condition_relations_conditions_ncbi_taxon_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1206,7 +1215,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoChemicalOntologyId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/33_no_condition_relations_conditions_chemical_ontology_id.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1234,7 +1243,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadNoInferredGeneAssociation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/34_no_object_relation_inferred_gene_association.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1262,7 +1271,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadDuplicateCuries() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/35_duplicate_curies.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1290,7 +1299,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadInvalidGeneAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/36_invalid_gene_association_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1318,7 +1327,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadInvalidAgmAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/37_invalid_agm_association_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1346,7 +1355,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadInvalidAlleleAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/38_invalid_allele_association_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1374,7 +1383,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     public void diseaseAnnotationBulkUploadInvalidObjectType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/39_invalid_object_type.json"));
         
-        loadDOTerms(content);
+        loadOntologyTerms(content);
         
         // upload file
         RestAssured.given().
@@ -1397,16 +1406,224 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(4)); // No ZFIN annotations added
     }
     
+    private void loadOntologyTerms(String content) throws Exception {
+        loadDOTerms(content);
+        loadECOTerms(content);
+        loadGOTerms(content);
+        loadXCOTerms(content);
+        loadZECOTerms(content);
+        loadZFATerms(content);
+        loadCHEBITerms(content);
+        loadNCBITaxonTerms(content);
+        loadWithGenes(content);
+    }
+    
     private void loadDOTerms(String content) throws Exception {
         DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
-        da.getData().forEach(dat -> {
-            RestAssured.given().
-            contentType("application/json").
-            body("{ \"curie\": \"" + dat.getDoId() + "\"}").
-            when().
-            put("/api/doterm").
-            then().
-            statusCode(200);
-        });
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getDoId() != null && !loadedEntities.contains(dat.getDoId())) {
+                RestAssured.given().
+                    contentType("application/json").
+                    body("{ \"curie\": \"" + dat.getDoId() + "\"}").
+                    when().
+                    put("/api/doterm").
+                    then().
+                    statusCode(200);
+
+                loadedEntities.add(dat.getDoId());
+            }
+        }
+    }
+    
+    private void loadECOTerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getEvidence() != null && dat.getEvidence().getEvidenceCodes() != null) {
+                for (String evi : dat.getEvidence().getEvidenceCodes()) {
+                    if (!loadedEntities.contains(evi)) {
+                        RestAssured.given().
+                            contentType("application/json").
+                            body("{ \"curie\": \"" + evi + "\"}").
+                            when().
+                            put("/api/ecoterm").
+                            then().
+                            statusCode(200);
+
+                        loadedEntities.add(evi);
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadZECOTerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getConditionRelations() != null) {
+                for (ConditionRelationFmsDTO cr : dat.getConditionRelations()) {
+                    if (cr.getConditions() != null) {
+                        for (ExperimentalConditionFmsDTO ec : cr.getConditions()) {
+                            if (ec.getConditionClassId() != null && !loadedEntities.contains(ec.getConditionClassId())) {
+                                RestAssured.given().
+                                    contentType("application/json").
+                                    body("{\"curie\": \"" + ec.getConditionClassId() + "\"}").
+                                    when().
+                                    post("/api/zecoterm").
+                                    then().
+                                    statusCode(200);
+
+                                loadedEntities.add(ec.getConditionClassId());
+                            }           
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadXCOTerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getConditionRelations() != null) {
+                for (ConditionRelationFmsDTO cr : dat.getConditionRelations()) {
+                    if (cr.getConditions() != null) {
+                        for (ExperimentalConditionFmsDTO ec : cr.getConditions()) {
+                            if (ec.getConditionId() != null && !loadedEntities.contains(ec.getConditionId())) {
+                                RestAssured.given().
+                                    contentType("application/json").
+                                    body("{\"curie\": \"" + ec.getConditionId() + "\"}").
+                                    when().
+                                    post("/api/xcoterm").
+                                    then().
+                                    statusCode(200);
+
+                                loadedEntities.add(ec.getConditionId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadGOTerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getConditionRelations() != null) {
+                for (ConditionRelationFmsDTO cr : dat.getConditionRelations()) {
+                    if (cr.getConditions() != null) {
+                        for (ExperimentalConditionFmsDTO ec : cr.getConditions()) {
+                            if (ec.getGeneOntologyId() != null && !loadedEntities.contains(ec.getGeneOntologyId())) {
+                                RestAssured.given().
+                                    contentType("application/json").
+                                    body("{\"curie\": \"" + ec.getGeneOntologyId() + "\"}").
+                                    when().
+                                    post("/api/goterm").
+                                    then().
+                                    statusCode(200);
+
+                                loadedEntities.add(ec.getGeneOntologyId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadNCBITaxonTerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getConditionRelations() != null) {
+                for (ConditionRelationFmsDTO cr : dat.getConditionRelations()) {
+                    if (cr.getConditions() != null) {
+                        for (ExperimentalConditionFmsDTO ec : cr.getConditions()) {
+                            if (ec.getNcbiTaxonId() != null && !loadedEntities.contains(ec.getNcbiTaxonId())) {
+                                RestAssured.given().
+                                    contentType("application/json").
+                                    body("{\"curie\": \"" + ec.getNcbiTaxonId() + "\"}").
+                                    when().
+                                    post("/api/ncbitaxonterm").
+                                    then().
+                                    statusCode(200);
+
+                                loadedEntities.add(ec.getNcbiTaxonId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadCHEBITerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getConditionRelations() != null) {
+                for (ConditionRelationFmsDTO cr : dat.getConditionRelations()) {
+                    if (cr.getConditions() != null) {
+                        for (ExperimentalConditionFmsDTO ec : cr.getConditions()) {
+                            if (ec.getChemicalOntologyId() != null && !loadedEntities.contains(ec.getChemicalOntologyId())) {
+                                RestAssured.given().
+                                    contentType("application/json").
+                                    body("{\"curie\": \"" + ec.getChemicalOntologyId() + "\"}").
+                                    when().
+                                    post("/api/chebiterm").
+                                    then().
+                                    statusCode(200);
+
+                                loadedEntities.add(ec.getChemicalOntologyId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadZFATerms(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getConditionRelations() != null) {
+                for (ConditionRelationFmsDTO cr : dat.getConditionRelations()) {
+                    if (cr.getConditions() != null) {
+                        for (ExperimentalConditionFmsDTO ec : cr.getConditions()) {
+                            if (ec.getAnatomicalOntologyId() != null && !loadedEntities.contains(ec.getAnatomicalOntologyId())) {
+                                RestAssured.given().
+                                    contentType("application/json").
+                                    body("{\"curie\": \"" + ec.getAnatomicalOntologyId() + "\"}").
+                                    when().
+                                    post("/api/zfaterm").
+                                    then().
+                                    statusCode(200);
+                                
+                                loadedEntities.add(ec.getAnatomicalOntologyId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private void loadWithGenes(String content) throws Exception {
+        DiseaseAnnotationMetaDataFmsDTO da = new ObjectMapper().readValue(content, DiseaseAnnotationMetaDataFmsDTO.class);
+        for (DiseaseModelAnnotationFmsDTO dat : da.getData()) {
+            if (dat.getWith() != null) {
+                for (String gene : dat.getWith()) {
+                    if (!loadedEntities.contains(gene)) {
+                        RestAssured.given().
+                            contentType("application/json").
+                            body("{\"curie\": \"" + gene + "\"}").
+                            when().
+                            post("/api/gene").
+                            then().
+                            statusCode(200);
+                        
+                        loadedEntities.add(gene);
+                    }
+                }
+            }
+        }
     }
 }

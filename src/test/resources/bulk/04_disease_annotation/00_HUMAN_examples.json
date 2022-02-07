@@ -753,11 +753,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:737381",
-        "RGD:1312823"
-      ]
+      }
     },
     {
       "DOid": "DOID:1935",
@@ -792,13 +788,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1316858",
-        "RGD:732435",
-        "RGD:1319511",
-        "RGD:1603660"
-      ]
+      }
     },
     {
       "DOid": "DOID:684",
@@ -833,10 +823,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:732909"
-      ]
+      }
     },
     {
       "DOid": "DOID:7998",
@@ -871,10 +858,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:619833"
-      ]
+      }
     },
     {
       "DOid": "DOID:9955",
@@ -909,10 +893,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:737147"
-      ]
+      }
     },
     {
       "DOid": "DOID:8552",
@@ -947,10 +928,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1342972"
-      ]
+      }
     },
     {
       "DOid": "DOID:0110414",
@@ -985,10 +963,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1352855"
-      ]
+      }
     },
     {
       "DOid": "DOID:6000",
@@ -1023,10 +998,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:2886"
-      ]
+      }
     },
     {
       "DOid": "DOID:0080600",
@@ -1061,10 +1033,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:620209"
-      ]
+      }
     },
     {
       "DOid": "DOID:2870",
@@ -1099,10 +1068,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:733705"
-      ]
+      }
     },
     {
       "DOid": "DOID:1380",
@@ -1137,10 +1103,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1352691"
-      ]
+      }
     },
     {
       "DOid": "DOID:3429",
@@ -1175,10 +1138,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:732554"
-      ]
+      }
     },
     {
       "DOid": "DOID:1935",
@@ -1213,10 +1173,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1317734"
-      ]
+      }
     },
     {
       "DOid": "DOID:0110414",
@@ -1251,10 +1208,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1352855"
-      ]
+      }
     },
     {
       "DOid": "DOID:1935",
@@ -1289,10 +1243,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1605944"
-      ]
+      }
     },
     {
       "DOid": "DOID:6432",
@@ -1327,10 +1278,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:735373"
-      ]
+      }
     },
     {
       "DOid": "DOID:6432",
@@ -1365,10 +1313,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:14981588"
-      ]
+      }
     },
     {
       "DOid": "DOID:8552",
@@ -1403,10 +1348,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1317506"
-      ]
+      }
     },
     {
       "DOid": "DOID:3070",
@@ -1441,10 +1383,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:620103"
-      ]
+      }
     },
     {
       "DOid": "DOID:684",
@@ -1479,10 +1418,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:2917"
-      ]
+      }
     },
     {
       "DOid": "DOID:2043",
@@ -1517,10 +1453,7 @@
       "objectRelation": {
         "associationType": "is_implicated_in",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:1604061"
-      ]
+      }
     },
     {
       "DOid": "DOID:1824",
@@ -1555,10 +1488,7 @@
       "objectRelation": {
         "associationType": "is_marker_for",
         "objectType": "gene"
-      },
-      "with": [
-        "RGD:2903"
-      ]
+      }
     },
     {
       "DOid": "DOID:2671",
