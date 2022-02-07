@@ -176,7 +176,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                                                 p.simpleQueryString()
                                                     .fields(field)
                                                     .matching(searchFilters.get(filterName).get(field).toString())
-                                                    .boost(value >=1 ? value : 1)
+                                                    .boost(value >=1 ? value : 1).defaultOperator(BooleanOperator.AND)
                                                     //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
                                             );
                                             boost++;
