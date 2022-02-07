@@ -13,7 +13,7 @@ export const ZFAOntologyComponent = () => {
     < OntologyTable
       endpoint={"zfaterm"}
       ontologyAbbreviation={"ZFA"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 

@@ -14,7 +14,7 @@ export const ECOOntologyComponent = () => {
     < OntologyTable
       endpoint={"ecoterm"}
       ontologyAbbreviation={"ECO"}
-      columnMap={columns}
+      columns={columns}
     />
     )
 }
