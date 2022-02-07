@@ -13,7 +13,7 @@ export const XCOOntologyComponent = () => {
     < OntologyTable
       endpoint={"xcoterm"}
       ontologyAbbreviation={"XCO"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 }

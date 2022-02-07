@@ -13,7 +13,7 @@ export const ZECOOntologyComponent = () => {
     < OntologyTable
       endpoint={"zecoterm"}
       ontologyAbbreviation={"ZECO"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 }

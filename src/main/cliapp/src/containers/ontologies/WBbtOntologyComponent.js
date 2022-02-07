@@ -13,7 +13,7 @@ export const WBbtOntologyComponent = () => {
     < OntologyTable
       endpoint={"wbbtterm"}
       ontologyAbbreviation={"WBbt"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 
