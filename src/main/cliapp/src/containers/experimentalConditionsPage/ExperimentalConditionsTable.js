@@ -413,7 +413,7 @@ export const ExperimentalConditionsTable = () => {
         />
       </div>
       <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
+        <Button disabled={!isEnabled}  onClick={(event) => resetTableState(event)}>Reset Table</Button>
       </div>
     </>
   );
