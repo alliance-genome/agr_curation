@@ -130,9 +130,9 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         }
 
 
-        diseaseAnnotationDAO.persist(annotation);
         experimentalConditionsToPersist.forEach(condition -> experimentalConditionDAO.persist(condition));
         conditionRelationsToPersist.forEach(relation -> conditionRelationDAO.persist(relation));
+        diseaseAnnotationDAO.persist(annotation);
         
         return annotation;
 
