@@ -165,18 +165,20 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 .where( p -> {
                     return p.bool( b -> {
                         if(params.containsKey("searchFilters")) {
-                            HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
+                            HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
                             for(String filterName: searchFilters.keySet()) {
                                 b.must(m -> {
                                     return m.bool(s -> {
                                         int boost = 0;
                                         for(String field: searchFilters.get(filterName).keySet()) {
                                             float value = (float)(100/Math.pow(10, boost));
+                                            BooleanOperator op = BooleanOperator.valueOf((String)searchFilters.get(filterName).get(field).get("tokenOperator"));
                                             s.should(
                                                 p.simpleQueryString()
                                                     .fields(field)
-                                                    .matching(searchFilters.get(filterName).get(field).toString())
-                                                    .boost(value >=1 ? value : 1).defaultOperator(BooleanOperator.AND)
+                                                    .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+                                                    .defaultOperator(op != null ? op : BooleanOperator.AND)
+                                                    .boost(value >=1 ? value : 1)
                                                     //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
                                             );
                                             boost++;
