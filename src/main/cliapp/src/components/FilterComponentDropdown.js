@@ -1,0 +1,63 @@
+import {useEffect, useState} from "react";
+import { Dropdown } from "primereact/dropdown";
+
+export function FilterComponentDropDown({ isEnabled, field, tokenOperator ,filterName, currentFilters, onFilter, options, optionField }) {
+    const [filterValue, setFilterValue] = useState(()=> {
+        for(let i=0; i<options.length; i++){
+            if(currentFilters[filterName] && options[i][optionField] == currentFilters[filterName][field].queryString){
+                return options[i];
+            }
+        }
+        return null;
+    });
+
+   useEffect(() => {
+       /*for(let option in options){
+           if(currentFilters[filterName] && option[optionField] == currentFilters[filterName][field].queryString){
+               setFilterValue(option);
+           }
+       }*/
+       if(currentFilters[filterName]){
+           for (let i = 0; i < options.length; i++) {
+               if (currentFilters[filterName] && options[i][optionField] == currentFilters[filterName][field].queryString) {
+                   setFilterValue(options[i]);
+               }
+           }
+       }else {
+           setFilterValue(null);
+       }
+    }, [filterValue, currentFilters, field, filterName]);
+
+    return (
+        <Dropdown
+            disabled={!isEnabled}
+            value={filterValue}
+            options={options}
+            showClear
+            optionLabel={optionField}
+            placeholder="Select"
+            style={{ width: '100%' }}
+            onChange={(e) => {
+                console.log(e.target.value);
+                setFilterValue(e.target.value);
+                let filter = {};
+                if(e.target.value && e.target.value[optionField].length !== 0) {
+                    filter[field] = {
+                        queryString : e.target.value[optionField],
+                        tokenOperator : tokenOperator
+                    };
+                } else {
+                    filter = null;
+                }
+                const filtersCopy = currentFilters;
+                if (filter === null) {
+                    delete filtersCopy[filterName];
+                } else {
+                    filtersCopy[filterName] = filter;
+                }
+                onFilter(filtersCopy);
+            }}
+        />
+    )
+}
+

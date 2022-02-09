@@ -12,6 +12,8 @@ import { DiseaseEditor } from './DiseaseEditor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
 import { FilterComponent } from '../../components/FilterComponent';
+import { FilterComponentInputText } from '../../components/FilterComponentInputText'
+import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 
@@ -399,6 +401,30 @@ export const DiseaseAnnotationsTable = () => {
     />);
   };
 
+  const filterComponentInputTextTemplate = (filterName, fields, tokenOperator="AND") => {
+        return (<FilterComponentInputText
+            isEnabled={isEnabled}
+            fields={fields}
+            filterName={filterName}
+            currentFilters={tableState.filters}
+            onFilter={onFilter}
+            tokenOperator={tokenOperator}
+        />);
+   };
+
+  const FilterComponentDropDownTemplate = (filterName, field, tokenOperator="OR", options, optionField) => {
+      return (<FilterComponentDropDown
+          isEnabled={isEnabled}
+          field={field}
+          filterName={filterName}
+          currentFilters={tableState.filters}
+          onFilter={onFilter}
+          options={options}
+          tokenOperator = {tokenOperator}
+          optionField = {optionField}
+      />);
+  }
+
   const columns = [
     {
       field: "uniqueId",
@@ -406,7 +432,7 @@ export const DiseaseAnnotationsTable = () => {
       style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("uniqueidFilter", ["uniqueId"])
+      filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
     },
     {
       field: "subject.symbol",
@@ -414,7 +440,7 @@ export const DiseaseAnnotationsTable = () => {
       sortable: isEnabled,
       style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       filter: true,
-      filterElement: filterComponentTemplate("subject", ["subject.symbol", "subject.name", "subject.curie"]),
+      filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
       editor: (props) => subjectEditorTemplate(props),
       body: subjectBodyTemplate,
     },
@@ -423,7 +449,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Disease Relation",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("diseaseRelation", ["diseaseRelation"]),
+      filterElement: filterComponentInputTextTemplate("diseaseRelationFilter", ["diseaseRelation"]),
       editor: (props) => diseaseRelationEditor(props)
     },
     {
@@ -431,7 +457,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Negated",
       body: negatedTemplate,
       filter: true,
-      filterElement: filterComponentTemplate("negated", ["negated"]),
+      filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated", "OR", [{text : "true"} , { text : "false"}], "text"),
       sortable: isEnabled,
       editor: (props) => negatedEditor(props)
     },
@@ -440,7 +466,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Disease",
       sortable: { isEnabled },
       filter: true,
-      filterElement: filterComponentTemplate("object", ["object.curie", "object.name"]),
+      filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
       editor: (props) => diseaseEditorTemplate(props),
       body: diseaseBodyTemplate
     },
@@ -449,7 +475,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Reference",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("reference", ["reference.curie"])
+      filterElement: filterComponentInputTextTemplate("referenceFilter", ["reference.curie"])
     },
     {
       field: "evidenceCodes.abbreviation",
@@ -457,7 +483,7 @@ export const DiseaseAnnotationsTable = () => {
       body: evidenceTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
+      filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
       editor: (props) => evidenceEditorTemplate(props)
     },
     {
@@ -466,7 +492,7 @@ export const DiseaseAnnotationsTable = () => {
       body: withTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("with", ["with.symbol", "with.name", "with.curie"]),
+      filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
       editor: (props) => withEditorTemplate(props)
     }
   ];

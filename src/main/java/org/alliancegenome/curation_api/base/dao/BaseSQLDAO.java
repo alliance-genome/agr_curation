@@ -172,12 +172,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                                         int boost = 0;
                                         for(String field: searchFilters.get(filterName).keySet()) {
                                             float value = (float)(100/Math.pow(10, boost));
-                                            BooleanOperator op = BooleanOperator.valueOf((String)searchFilters.get(filterName).get(field).get("tokenOperator"));
+                                            String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
+                                            if(op== null)
+                                                op = "AND";
                                             s.should(
                                                 p.simpleQueryString()
                                                     .fields(field)
                                                     .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-                                                    .defaultOperator(op != null ? op : BooleanOperator.AND)
+                                                    .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
                                                     .boost(value >=1 ? value : 1)
                                                     //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
                                             );
