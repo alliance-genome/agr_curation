@@ -248,7 +248,9 @@ public class BulkLoadFileProcessor {
         } else {
             log.info("Bulk File already exists not creating it");
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
-            bulkLoadFile.setLocalFilePath(localFilePath);
+            log.info("Cleaning up downloaded file: " + localFilePath);
+            new File(localFilePath).delete();
+            bulkLoadFile.setLocalFilePath(null);
         }
 
         if(!load.getLoadFiles().contains(bulkLoadFile)) {
