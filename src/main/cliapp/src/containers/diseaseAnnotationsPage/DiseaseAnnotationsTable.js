@@ -38,6 +38,7 @@ export const DiseaseAnnotationsTable = () => {
   const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
 
   let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
+  let [tableAggregations, setTableAggregations] = useState(null);
 
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
@@ -65,16 +66,19 @@ export const DiseaseAnnotationsTable = () => {
     'object.name': ['object.curie', 'object.namespace'],
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie']
-
   };
 
+  const aggregationFields = [
+    'object.name', 'subject.name', 'with.name'
+  ];
 
   useQuery(['diseaseAnnotations', tableState],
-    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping), {
+    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, aggregationFields), {
     onSuccess: (data) => {
 
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
+      setTableAggregations(data.aggregations);
     },
     onError: (error) => {
       toast_topleft.current.show([
