@@ -5,6 +5,11 @@ import static org.hamcrest.Matchers.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -44,15 +49,23 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredChebiTerm = "CHEBI:46631";
     private String requiredZfaTerm = "ZFA:0000001";
     private String requiredNcbiTaxonTerm = "NCBITaxon:1781";
-    // private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "FB:FBgn0010620", "FB:FBgn0032699", "FB:FBgn0045473", "FB:FBgn0054033", "FB:FBgn0259758", "FB:FBgn0260766",
-    //                                                                      "FB:FBgn0260936", "FB:FBgn0264086", "HGNC:29488", "HGNC:3028", "HGNC:30470", "HGNC:447", "HGNC:460", "HGNC:1121", "HGNC:323",
-    //                                                                      "HGNC:47869", "HGNC:5813", "MGI:105042", "MGI:1098239", "MGI:1346858", "MGI:1347355", "MGI:2139535",
-    //                                                                      "RGD:9222273", "SGD:S000004649", "SGD:S000005882", "SGD:S000007272", "WB:WBGene00001010", "WB:WBGene00010748",
-    //                                                                      "WB:WBGene00018054", "WB:WBGene00022693", "ZFIN:ZDB-GENE-080613-2", "ZFIN:ZDB-GENE-090312-196", "ZFIN:ZDB-GENE-130116-1"));
-    private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "HGNC:1121", "HGNC:323")); // only add 'with' genes for now
+    private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "FB:FBgn0010620", "FB:FBgn0032699", "FB:FBgn0045473", "FB:FBgn0054033", "FB:FBgn0259758", "FB:FBgn0260766",
+                                                                            "FB:FBgn0260936", "FB:FBgn0264086", "HGNC:29488", "HGNC:3028", "HGNC:30470", "HGNC:447", "HGNC:460", "HGNC:1121", "HGNC:323",
+                                                                            "HGNC:47869", "HGNC:5813", "MGI:105042", "MGI:1098239", "MGI:1346858", "MGI:1347355", "MGI:2139535",
+                                                                            "RGD:9222273", "SGD:S000004649", "SGD:S000005882", "SGD:S000007272", "WB:WBGene00001010", "WB:WBGene00010748",
+                                                                            "WB:WBGene00018054", "WB:WBGene00022693", "ZFIN:ZDB-GENE-080613-2", "ZFIN:ZDB-GENE-090312-196", "ZFIN:ZDB-GENE-130116-1"));
     private ArrayList<String> requiredAGMs = new ArrayList<String>(Arrays.asList("WB:WBStrain00005113", "WB:WBStrain00026486", "ZFIN:ZDB-FISH-150901-5755"));
     private ArrayList<String> requiredAlleles = new ArrayList<String>(Arrays.asList("MGI:4879001", "ZFIN:ZDB-ALT-190906-11", "ZFIN:ZDB-ALT-200608-1"));
-
+    private Map<String, String> modTaxons = Map.of(
+            "HGNC", "NCBITaxon:9606",
+            "FB", "NCBITaxon:7227",
+            "MGI", "NCBITaxon:10090",
+            "RGD", "NCBITaxon:10116",
+            "SGD", "NCBITaxon:559292",
+            "WB", "NCBITaxon:6239",
+            "ZFIN", "NCBITaxon:7955"
+);  
+    
     @BeforeEach
     public void init() {
         RestAssured.config = RestAssuredConfig.config()
@@ -160,7 +173,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(2)). // 131 WB annotations replaced with 1
+            body("totalResults", is(2)). 
             body("results", hasSize(2)).
             body("results[1].subject.curie", is("WB:WBStrain00005113")).
             body("results[1].object.curie", is("DOID:4")).
@@ -208,7 +221,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3)). // 20 ZFIN annotation replaced with 1
+            body("totalResults", is(3)). // 
             body("results", hasSize(3)).
             body("results[2].subject.curie", is("ZFIN:ZDB-ALT-200608-1")).
             body("results[2].object.curie", is("DOID:4")).
@@ -1305,11 +1318,10 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadZECOTerm();
         loadZFATerm();
         loadCHEBITerm();
-        loadNCBITaxonTerm();
+        loadNCBITaxonTerms();
         loadGenes();  
-        // Below methods currently loaded by other tests - will change when MOD tests removed
-        // loadAlleles();
-        // loadAGMs();
+        loadAlleles();
+        loadAGMs();
     }
     
     private void loadDOTerm() throws Exception {
@@ -1424,12 +1436,19 @@ public class DiseaseAnnotationBulkUploadITCase {
     }
 
 
-    private void loadNCBITaxonTerm() throws Exception {
+    private void loadNCBITaxonTerms() throws Exception {
+        for (String taxonTerm : modTaxons.values()) {
+            loadNCBITaxonTerm(taxonTerm);
+        }
+        loadNCBITaxonTerm(requiredNcbiTaxonTerm);
+    }
+    
+    private void loadNCBITaxonTerm(String taxonTerm) {
         NCBITaxonTerm ncbiTaxonTerm = new NCBITaxonTerm();
-        ncbiTaxonTerm.setCurie(requiredNcbiTaxonTerm);
-        ncbiTaxonTerm.setName("Test CHEBITerm");
+        ncbiTaxonTerm.setCurie(taxonTerm);
+        ncbiTaxonTerm.setName("Test NCBITaxonTerm");
         ncbiTaxonTerm.setObsolete(false);
-        
+    
         RestAssured.given().
             contentType("application/json").
             body(ncbiTaxonTerm).
@@ -1444,7 +1463,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         for (String geneCurie : requiredGenes) {
             Gene gene = new Gene();
             gene.setCurie(geneCurie);
-            gene.setTaxon(getTaxonFromCurie(requiredNcbiTaxonTerm));
+            gene.setTaxon(getTaxonFromEntityOrTaxonCurie(geneCurie));
 
             RestAssured.given().
                     contentType("application/json").
@@ -1460,7 +1479,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         for (String agmCurie : requiredAGMs) {
             AffectedGenomicModel agm = new AffectedGenomicModel();
             agm.setCurie(agmCurie);
-            agm.setTaxon(getTaxonFromCurie(requiredNcbiTaxonTerm));
+            agm.setTaxon(getTaxonFromEntityOrTaxonCurie(agmCurie));
             agm.setName("Test AGM");
 
             RestAssured.given().
@@ -1477,7 +1496,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         for (String alleleCurie : requiredAlleles) {
             Allele allele = new Allele();
             allele.setCurie(alleleCurie);
-            allele.setTaxon(getTaxonFromCurie(requiredNcbiTaxonTerm));
+            allele.setTaxon(getTaxonFromEntityOrTaxonCurie(alleleCurie));
 
             RestAssured.given().
                     contentType("application/json").
@@ -1489,7 +1508,15 @@ public class DiseaseAnnotationBulkUploadITCase {
         }
     }
     
-    private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
+    private NCBITaxonTerm getTaxonFromEntityOrTaxonCurie(String curie) {
+        Pattern pattern = Pattern.compile("^([^:]+):");
+        Matcher matcher = pattern.matcher(curie);
+        
+        String taxonCurie = curie;
+        if (matcher.find()) {
+            taxonCurie = modTaxons.get(matcher.group(1));
+        }
+        
         ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
             when().
             get("/api/ncbitaxonterm/" + taxonCurie).
