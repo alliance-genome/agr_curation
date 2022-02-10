@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;
@@ -32,7 +31,7 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("data_provider")
-    private String dataProvider;
+    private List<String> dataProvider;
 
     @JsonView({View.FieldsOnly.class})
     private Boolean negated = false;
@@ -54,7 +53,7 @@ public class DiseaseAnnotationDTO {
     private List<String> evidenceCodes;
 
     @JsonView({View.FieldsAndLists.class})
-    private List<ConditionRelation> conditionRelations;
+    private List<ConditionRelationDTO> conditionRelations;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_genetic_modifier")
