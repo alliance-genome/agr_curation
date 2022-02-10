@@ -29,7 +29,7 @@ public class MGIDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(annotationDTO.getSubject());
         curie.add(annotationDTO.getObject());
-        curie.add(annotationDTO.getReference());
+        curie.add(annotationDTO.getSingleReference());
         return curie.getCurie();
     }
 

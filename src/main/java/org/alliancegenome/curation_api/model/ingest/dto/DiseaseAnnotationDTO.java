@@ -68,7 +68,8 @@ public class DiseaseAnnotationDTO {
     private List<String> with;
 
     @JsonView({View.FieldsOnly.class})
-    private String reference;
+    @JsonProperty("single_reference")
+    private String singleReference;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_annotation_summary")

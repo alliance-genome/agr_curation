@@ -265,7 +265,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
         annotation.setObject(disease);
         
-        String publicationId = dto.getReference();
+        String publicationId = dto.getSingleReference();
         Reference reference = referenceDAO.find(publicationId);
         if (reference == null) {
             reference = new Reference();
@@ -274,7 +274,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
         }
-        annotation.setReference(reference);
+        annotation.setSingleReference(reference);
         
         // Check valid disease relation type                                                                                                                                                        
         if (entityType.equals("gene")) {

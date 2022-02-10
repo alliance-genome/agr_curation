@@ -44,7 +44,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(annotationDTO.getSubject());
         curie.add(annotationDTO.getObject());
-        curie.add(annotationDTO.getReference());
+        curie.add(annotationDTO.getSingleReference());
         curie.add(StringUtils.join(annotationDTO.getEvidenceCodes(), "::"));
         
         if(CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {

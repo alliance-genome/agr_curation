@@ -86,7 +86,7 @@ public class DiseaseAnnotation extends Association {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    private Reference reference;
+    private Reference singleReference;
 
 
     public enum DiseaseRelation {

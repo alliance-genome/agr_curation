@@ -134,7 +134,8 @@ public class BulkLoadJobExecutor {
             BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
             log.info("Running with: " + manual.getDataType().name() + " " + modTaxons.get(manual.getDataType().name()));
             bulkLoadFile.setRecordCount(ingestDto.getDiseaseAgmIngestSet().size() + ingestDto.getDiseaseAlleleIngestSet().size() + ingestDto.getDiseaseGeneIngestSet().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);if (ingestDto.getDiseaseAgmIngestSet() != null) {
+            bulkLoadFileDAO.merge(bulkLoadFile);
+            if (ingestDto.getDiseaseAgmIngestSet() != null) {
                 diseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAgmIngestSet(), "agm");
             }
             if (ingestDto.getDiseaseAlleleIngestSet() != null) {
