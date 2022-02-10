@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.*;
 import org.alliancegenome.curation_api.services.helpers.*;
@@ -33,8 +34,8 @@ public class BulkLoadJobExecutor {
     @Inject AlleleService alleleService;
     @Inject GeneService geneService;
     @Inject AffectedGenomicModelService agmService;
-    @Inject
-    DiseaseAnnotationFmsService diseaseService;
+    @Inject DiseaseAnnotationFmsService diseaseFmsService;
+    @Inject DiseaseAnnotationService diseaseService;
 
     @Inject XcoTermService xcoTermService;
     @Inject GoTermService goTermService;
@@ -53,6 +54,18 @@ public class BulkLoadJobExecutor {
     @Inject MoleculeService moleculeService;
 
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
+    
+
+    private Map<String, String> modTaxons = Map.of(
+            "HUMAN", "NCBITaxon:9606",
+            "FB", "NCBITaxon:7227",
+            "MGI", "NCBITaxon:10090",
+            "RGD", "NCBITaxon:10116",
+            "SGD", "NCBITaxon:559292",
+            "WB", "NCBITaxon:6239",
+            "ZFIN", "NCBITaxon:7955"
+            );  
+
 
     public void process(BulkLoadFile bulkLoadFile) throws Exception {
         //log.info("Process Starting for: " + bulkLoadFile);
@@ -111,21 +124,25 @@ public class BulkLoadJobExecutor {
             DiseaseAnnotationMetaDataFmsDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataFmsDTO.class);
             // TODO find taxon ID and send it with this load
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
-
-            Map<String, String> map = Map.of(
-                    "ZFIN", "NCBITaxon:7955",
-                    "MGI", "NCBITaxon:10090",
-                    "RGD", "NCBITaxon:10116",
-                    "FB", "NCBITaxon:7227",
-                    "WB", "NCBITaxon:6239",
-                    "HUMAN", "NCBITaxon:9606",
-                    "SGD", "NCBITaxon:559292"
-                    );
-            log.info("Running with: " + fms.getDataSubType() + " " + map.get(fms.getDataSubType()));
+            log.info("Running with: " + fms.getDataSubType() + " " + modTaxons.get(fms.getDataSubType()));
 
             bulkLoadFile.setRecordCount(diseaseData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            diseaseService.runLoad(map.get(fms.getDataSubType()), diseaseData);
+            diseaseFmsService.runLoad(modTaxons.get(fms.getDataSubType()), diseaseData);
+        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.DISEASE_ANNOTATION) {
+            IngestDTO ingestDto= mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+            BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
+            log.info("Running with: " + manual.getDataType().name() + " " + modTaxons.get(manual.getDataType().name()));
+            bulkLoadFile.setRecordCount(ingestDto.getDiseaseAgmIngestSet().size() + ingestDto.getDiseaseAlleleIngestSet().size() + ingestDto.getDiseaseGeneIngestSet().size());
+            bulkLoadFileDAO.merge(bulkLoadFile);if (ingestDto.getDiseaseAgmIngestSet() != null) {
+                diseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAgmIngestSet(), "agm");
+            }
+            if (ingestDto.getDiseaseAlleleIngestSet() != null) {
+                diseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAlleleIngestSet(), "allele");
+            }
+            if (ingestDto.getDiseaseGeneIngestSet() != null) {
+                diseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseGeneIngestSet(), "gene");
+            }
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
