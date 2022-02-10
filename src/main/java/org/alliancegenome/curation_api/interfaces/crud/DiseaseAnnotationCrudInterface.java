@@ -32,36 +32,4 @@ public interface DiseaseAnnotationCrudInterface extends BaseCurieCrudInterface<D
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
     
-    @POST @Secured
-    @Path("/bulk/{taxonID}/annotationFile")
-    public String updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<DiseaseAnnotationDTO> annotationData);
-
-    @POST @Secured
-    @Path("/bulk/zfinAnnotationFile")
-    public String updateZFinDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
-    @POST @Secured
-    @Path("/bulk/mgiAnnotationFile")
-    public String updateMgiDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
-    @POST @Secured
-    @Path("/bulk/rgdAnnotationFile")
-    public String updateRgdDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
-    @POST @Secured
-    @Path("/bulk/fbAnnotationFile")
-    public String updateFBDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
-    @POST @Secured
-    @Path("/bulk/wbAnnotationFile")
-    public String updateWBDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
-    @POST @Secured
-    @Path("/bulk/humanAnnotationFile")
-    public String updateHUMANDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
-    @POST @Secured
-    @Path("/bulk/sgdAnnotationFile")
-    public String updateSGDDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
-    
 }

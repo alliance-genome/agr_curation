@@ -2,12 +2,15 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -34,4 +37,36 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
+    
+    @POST @Secured
+    @Path("/bulk/{taxonID}/annotationFile")
+    public String updateGeneDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<DiseaseAnnotationDTO> annotationData);
+
+    @POST @Secured
+    @Path("/bulk/zfinAnnotationFile")
+    public String updateZfinGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/mgiAnnotationFile")
+    public String updateMgiGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/rgdAnnotationFile")
+    public String updateRgdGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/fbAnnotationFile")
+    public String updateFbGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/wbAnnotationFile")
+    public String updateWbGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/humanAnnotationFile")
+    public String updateHumanGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/sgdAnnotationFile")
+    public String updateSgdGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotationData);
 }

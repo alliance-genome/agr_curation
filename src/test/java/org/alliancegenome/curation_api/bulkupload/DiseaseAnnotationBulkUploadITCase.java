@@ -64,7 +64,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             "SGD", "NCBITaxon:559292",
             "WB", "NCBITaxon:6239",
             "ZFIN", "NCBITaxon:7955"
-);  
+            );  
     
     @BeforeEach
     public void init() {
