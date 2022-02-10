@@ -40,7 +40,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     ExperimentalConditionDAO experimentalConditionDAO;
     @Inject
     ConditionRelationDAO conditionRelationDAO;
-
     @Inject
     DiseaseAnnotationDAO diseaseAnnotationDAO;
     @Inject
@@ -50,23 +49,13 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     @Inject
     EcoTermDAO ecoTermDAO;
     @Inject
-    ZecoTermDAO zecoTermDAO;
-    @Inject
-    ChemicalTermDAO chemicalTermDAO;
-    @Inject
-    AnatomicalTermDAO anatomicalTermDAO;
-    @Inject
-    NcbiTaxonTermDAO ncbiTaxonTermDAO;
-    @Inject
-    GoTermDAO goTermDAO;
-    @Inject
-    ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
-    @Inject
     AffectedGenomicModelDAO agmDAO;
     @Inject
     AlleleDAO alleleDAO;
     @Inject
     GeneDAO geneDAO;
+    @Inject
+    ExperimentalConditionService experimentalConditionService;
 
     @Override
     @PostConstruct
@@ -107,7 +96,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                     return null;
                 }
                 for (ExperimentalConditionDTO experimentalConditionDTO : conditionRelationDTO.getConditions()) {
-                    ExperimentalCondition experimentalCondition = validateExperimentalConditionDTO(experimentalConditionDTO);
+                    ExperimentalCondition experimentalCondition = experimentalConditionService.validateExperimentalConditionDTO(experimentalConditionDTO);
                     if (experimentalCondition == null) return null;
                     
                     // reuse existing experimental condition
@@ -222,75 +211,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
 
         return annotation;
-    }
-    
-    private ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
-        ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-        
-        if (dto.getConditionChemical() != null) {
-            ChemicalTerm term = chemicalTermDAO.find(dto.getConditionChemical());
-            if (term == null) {
-                log("Invalid ChemicalOntologyId - skipping annotation");
-                return null;
-            }
-            experimentalCondition.setConditionChemical(term);
-        }
-        if (dto.getConditionId() != null) {
-            ExperimentalConditionOntologyTerm term = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
-            if (term == null) {
-                log("Invalid ConditionId - skipping annotation");
-                return null;
-            }
-            experimentalCondition.setConditionId(term);
-        }
-        if (dto.getConditionClass() != null) {
-            ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
-            if (term == null) return null;
-            experimentalCondition.setConditionClass(term);
-        }
-        else {
-            log("ConditionClassId is a required field - skipping annotation");
-            return null;
-        }
-        
-        if (dto.getConditionAnatomy() != null) {
-            AnatomicalTerm term = anatomicalTermDAO.find(dto.getConditionAnatomy());
-            if (term == null) {
-                log("Invalid AnatomicalOntologyId - skipping annotation");
-                return null;
-            }
-            experimentalCondition.setConditionAnatomy(term);
-        }
-        if (dto.getConditionTaxon() != null) {
-            NCBITaxonTerm term = ncbiTaxonTermDAO.find(dto.getConditionTaxon());
-            if (term == null) {
-                term = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
-            }
-            if (term == null) {
-                log("Invalid NCBITaxonId - skipping annotation");
-                return null;
-            }
-            experimentalCondition.setConditionTaxon(term);
-        }
-        if (dto.getConditionTaxon() != null) {
-            GOTerm term = goTermDAO.find(dto.getConditionTaxon());
-            if (term == null) {
-                log("Invalid GeneOntologyId - skipping annotation");
-                return null;
-            }
-            experimentalCondition.setConditionGeneOntology(term);
-        }
-        if (dto.getConditionQuantity() != null)
-            experimentalCondition.setConditionQuantity(dto.getConditionQuantity());
-        if (dto.getConditionStatement() == null) {
-            log("ConditionStatement is a required field - skipping annotation");
-            return null;
-        }
-        experimentalCondition.setConditionStatement(dto.getConditionStatement());
-        
-        experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
-        
-        return experimentalCondition;
     }
 
     private void log(String message) {
