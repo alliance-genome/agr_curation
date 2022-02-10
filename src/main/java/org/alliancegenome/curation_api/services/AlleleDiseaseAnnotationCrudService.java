@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -8,6 +10,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
 
@@ -22,6 +25,9 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
     
     @Inject
     AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
+    
+    @Inject
+    DiseaseAnnotationService diseaseAnnotationService;
 
     @Override
     @PostConstruct
@@ -37,4 +43,7 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    public void runLoad(String taxonId, List<DiseaseAnnotationDTO> annotations) {
+        diseaseAnnotationService.runLoad(taxonId, annotations, "allele");
+    }
 }

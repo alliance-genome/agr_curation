@@ -295,6 +295,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                 EcoTerm ecoTerm = ecoTermDAO.find(ecoCurie);
                 if (ecoTerm == null) {
                     log("Invalid evidence code in " + annotationID + " - skipping annotation");
+                    return null;
                 }
                 ecoTerms.add(ecoTerm);
             }
