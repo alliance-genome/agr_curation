@@ -12,8 +12,9 @@ import { DiseaseEditor } from './DiseaseEditor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
 import { FilterComponent } from '../../components/FilterComponent';
-import { FilterComponentInputText } from '../../components/FilterComponentInputText'
+import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
+import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 
@@ -39,6 +40,7 @@ export const DiseaseAnnotationsTable = () => {
 
   let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
   let [tableAggregations, setTableAggregations] = useState(null);
+  let [diseaseRelationOptions, setDiseaseRelationOptions] = useState(null);
 
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
@@ -69,7 +71,7 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const aggregationFields = [
-    'object.name', 'subject.name', 'with.name'
+    'object.name', 'subject.name', 'with.name', 'diseaseRelation'
   ];
 
   useQuery(['diseaseAnnotations', tableState],
@@ -78,7 +80,22 @@ export const DiseaseAnnotationsTable = () => {
 
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
-      setTableAggregations(data.aggregations);
+      let tmp = {};
+        if(data.aggregations) {
+            for(let field in data.aggregations) {
+                let fieldValues = [];
+                for (let key in data.aggregations[field]) {
+                    fieldValues.push({
+                        label: key,
+                        value: data.aggregations[field][key]
+                    });
+                }
+                tmp[field] = fieldValues;
+            }
+        }
+        console.log(tmp);
+      setTableAggregations(tmp);
+      setDiseaseRelationOptions(tmp['diseaseRelation']);
     },
     onError: (error) => {
       toast_topleft.current.show([
@@ -87,6 +104,7 @@ export const DiseaseAnnotationsTable = () => {
     },
     onSettled: () => {
       setOriginalRows([]);
+
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
@@ -429,8 +447,19 @@ export const DiseaseAnnotationsTable = () => {
       />);
   }
 
-  const columns = [
-    {
+  const FilterMultiSelectComponentTemplate = (filterName, field, tokenOperator="OR") => {
+      return (<FilterMultiSelectComponent
+          isEnabled={isEnabled}
+          field={field}
+          filterName={filterName}
+          currentFilters={tableState.filters}
+          onFilter={onFilter}
+          tokenOperator = {tokenOperator}
+          tableAggregations = {diseaseRelationOptions}
+        />);
+  }
+
+  const columns = [{
       field: "uniqueId",
       header: "Unique Id",
       style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
@@ -453,7 +482,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Disease Relation",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentInputTextTemplate("diseaseRelationFilter", ["diseaseRelation"]),
+      filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", ["diseaseRelation"], "OR"),
       editor: (props) => diseaseRelationEditor(props)
     },
     {

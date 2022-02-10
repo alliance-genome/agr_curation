@@ -1,12 +1,13 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { MultiSelect } from 'primereact/multiselect';
 
-export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator ,filterName, currentFilters, onFilter, options }) {
-    const [filterValue, setFilterValue] = useState(null);
-    const [selectedValues, setSelectedValues] = useState(null);
+export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator ,filterName, currentFilters, onFilter, tableAggregations }) {
+    //const [filterValue, setFilterValue] = useState({});
+    const [selectedOptions, setSelectedOptions] = useState([]);
+    const [selectableOptions, setSelectableOptions]  = useState([]);
+
     const panelFooterTemplate = () => {
-        const selectedItems = selectedValues;
-        const length = selectedItems ? selectedItems.length : 0;
+        const length = selectedOptions ? selectedOptions.length : 0;
         return (
             <div style={{padding:'0.9rem'}}>
                 <b>{length}</b> item{length > 1 ? 's' : ''} selected.
@@ -14,12 +15,26 @@ export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator ,fi
         );
     };
 
+   useEffect(() => {
+        console.log(tableAggregations);
+        if(tableAggregations && tableAggregations[field])
+            setSelectableOptions(tableAggregations[field]);
+      /* if(currentFilters[filterName]){
+            for (let i = 0; i < options.length; i++) {
+                if (currentFilters[filterName] && options[i][optionField] == currentFilters[filterName][field].queryString) {
+                    setFilterValue(options[i]);
+                }
+            }
+        }else {
+            setFilterValue(null);
+        }*/
+    }, [tableAggregations,field]);
+
     return (
         <MultiSelect
             disabled={!isEnabled}
-            value={selectedValues}
-            options={options}
-            optionLabel="text"
+            value={selectedOptions}
+            options={tableAggregations ? tableAggregations : []}
             placeholder="Select"
             display="chip"
             style={{ width: '100%' }}
@@ -27,8 +42,8 @@ export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator ,fi
             panelFooterTemplate={panelFooterTemplate}
             onChange={(e) => {
                 let filter = {};
-                setSelectedValues(e.value);
-                if(e.target.value && e.target.value.length !== 0) {
+                setSelectedOptions(e.value);
+               /* if(e.target.value && e.target.value.length !== 0) {
                     let delim = '';
                     filter[field] = {
                         queryString : '',
@@ -38,11 +53,10 @@ export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator ,fi
                         filter[field]["queryString"] += delim + e.target.value[i].text;
                         delim = ' ';
                     }
-                    //filter[field]["tokenOperator"] = tokenOperator;
                     setFilterValue(filter);
                 } else {
                     filter = null;
-                }
+                }*/
                 const filtersCopy = currentFilters;
                 if (filter === null) {
                     delete filtersCopy[filterName];
