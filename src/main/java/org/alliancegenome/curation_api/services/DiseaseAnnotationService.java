@@ -78,12 +78,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
 
     @Transactional
-    public DiseaseAnnotation upsert(DiseaseAnnotationDTO annotationDTO, String entityType) {
-
-        DiseaseAnnotation annotation = validateAnnotationDTO(annotationDTO, entityType);
-        if (annotation == null) return null;
-
-        
+    public DiseaseAnnotation upsert(DiseaseAnnotation annotation, DiseaseAnnotationDTO annotationDTO) {
         List<ConditionRelation> conditionRelations = new ArrayList<>();
         List<ConditionRelation> conditionRelationsToPersist = new ArrayList<>();
         List<ExperimentalCondition> experimentalConditionsToPersist = new ArrayList<>();
@@ -146,39 +141,14 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
     }
 
-    public void runLoad(String taxonID, List<DiseaseAnnotationDTO> annotations, String entityType) {
-        List<String> annotationsIdsBefore = new ArrayList<>();
-        if (entityType.equals("agm")) {
-            annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
-        } else if (entityType.equals("allele")) {
-            annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
-        } else if (entityType.equals("gene")) {
-            annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
-        } else {
-            log.warn("Unrecognised type " + entityType);
-        }
-        annotationsIdsBefore.removeIf(Objects::isNull);
+    public void removeNonUpdatedAnnotations(String taxonId, List<String> annotationIdsBefore, List<String> annotationIdsAfter) {
+        log.debug("runLoad: After: " + taxonId + " " + annotationIdsAfter.size());
+    
+        List<String> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
+        log.debug("runLoad: Distinct: " + taxonId + " " + distinctAfter.size());
 
-        log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
-        List<String> annotationsIdsAfter = new ArrayList<>();
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Disease Annotation Update " + taxonID, annotations.size());
-        annotations.forEach(annotationDTO -> {
-            DiseaseAnnotation annotation = upsert(annotationDTO, entityType);
-            if (annotation != null) {
-                annotationsIdsAfter.add(annotation.getUniqueId());
-            }
-            ph.progressProcess();
-        });
-        ph.finishProcess();
-
-        log.debug("runLoad: After: " + taxonID + " " + annotationsIdsAfter.size());
-
-        List<String> distinctAfter = annotationsIdsAfter.stream().distinct().collect(Collectors.toList());
-        log.debug("runLoad: Distinct: " + taxonID + " " + distinctAfter.size());
-
-        List<String> idsToRemove = ListUtils.subtract(annotationsIdsBefore, distinctAfter);
-        log.debug("runLoad: Remove: " + taxonID + " " + idsToRemove.size());
+        List<String> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
+        log.debug("runLoad: Remove: " + taxonId + " " + idsToRemove.size());
 
         for (String id : idsToRemove) {
             SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", id);
@@ -190,11 +160,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
     }
 
-    private DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotationDTO dto, String entityType) {
-        DiseaseAnnotation annotation;
+    public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) {
         
         if (dto.getObject() == null ||
-            dto.getSubject() == null ||
             dto.getDiseaseRelation() == null ||
             dto.getDataProvider() == null ||
             CollectionUtils.isEmpty(dto.getEvidenceCodes())
@@ -203,64 +171,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             return null;
         }
         
-        BiologicalEntity subjectEntity;
-        if (entityType.equals("agm")) {
-            subjectEntity = agmDAO.find(dto.getSubject());
-        } else if (entityType.equals("allele")) {
-            subjectEntity = alleleDAO.find(dto.getSubject());
-        }
-        else {
-            subjectEntity = geneDAO.find(dto.getSubject());
-        }
-        if (subjectEntity == null) {
-            log("Subject " + entityType + " " + dto.getSubject() + " not found in database - skipping annotation");
-            return null;
-        }
-        
-        String annotationID = dto.getModId();
-        if (annotationID == null) {
-            DiseaseAnnotationCurie diseaseAnnotationCurie = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(subjectEntity.getTaxon().getCurie());
-            annotationID = diseaseAnnotationCurie.getCurieID(dto);
-        }
-        
-        if (subjectEntity instanceof Gene) {
-            SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationID);
-            if (annotationList == null || annotationList.getResults().size() == 0) {
-                GeneDiseaseAnnotation geneAnnotation = new GeneDiseaseAnnotation();
-                geneAnnotation.setUniqueId(annotationID);
-                geneAnnotation.setSubject((Gene) subjectEntity);
-                annotation = geneAnnotation;
-            } else {
-                annotation = annotationList.getResults().get(0);
-            }
-        } else if (subjectEntity instanceof Allele) {
-            SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationID);
-            if (annotationList == null || annotationList.getResults().size() == 0) {
-                AlleleDiseaseAnnotation alleleAnnotation = new AlleleDiseaseAnnotation();
-                alleleAnnotation.setUniqueId(annotationID);
-                alleleAnnotation.setSubject((Allele) subjectEntity);
-                annotation = alleleAnnotation;
-            } else {
-                annotation = annotationList.getResults().get(0);
-            }
-        } else if (subjectEntity instanceof AffectedGenomicModel) {
-            SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationID);
-            if (annotationList == null || annotationList.getResults().size() == 0) {
-                AGMDiseaseAnnotation agmAnnotation = new AGMDiseaseAnnotation();
-                agmAnnotation.setUniqueId(annotationID);
-                agmAnnotation.setSubject((AffectedGenomicModel) subjectEntity);
-                annotation = agmAnnotation;
-            } else {
-                annotation = annotationList.getResults().get(0);
-            }
-        } else {
-            log("Annotation " + annotationID + " has invalid subject type - skipping annotation");
-            return null;
-        }
-        
         DOTerm disease = doTermDAO.find(dto.getObject());
         if (disease == null) {
-            log("Annotation " + annotationID + " has DOTerm " + disease + " not found in database - skipping");
+            log("Annotation " + annotation.getUniqueId() + " has DOTerm " + disease + " not found in database - skipping");
             return null;
         }
         annotation.setObject(disease);
@@ -276,38 +189,12 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
         annotation.setSingleReference(reference);
         
-        // Check valid disease relation type                                                                                                                                                        
-        if (entityType.equals("gene")) {
-            if (!dto.getDiseaseRelation().equals("is_implicated_in") &&
-                    !dto.getDiseaseRelation().equals("is_marker_for")
-            ) {
-                log("Invalid gene disease relation for " + dto.getSubject() + " - skipping annotation");
-                return null;
-            }
-        } else if (entityType.equals("allele")) {
-            if (!dto.getDiseaseRelation().equals("is_implicated_in")) {
-                log("Invalid allele disease relation for " + dto.getSubject() + " - skipping annotation");
-                return null;
-            }
-        } else if (entityType.equals("agm") ||
-                dto.getDiseaseRelation().equals("strain") ||
-                dto.getDiseaseRelation().equals("fish")
-        ) {
-            if (!dto.getDiseaseRelation().equals("is_model_of")) {
-                log("Invalid AGM disease relation for " + dto.getSubject() + " - skipping annotation");
-                return null;
-            }
-        } else {
-            log("Invalid object type " + entityType + " for " + dto.getSubject() + " - skipping annotation");
-            return null;
-        }
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
                 
         List<EcoTerm> ecoTerms = new ArrayList<>();
         for (String ecoCurie : dto.getEvidenceCodes()) {
             EcoTerm ecoTerm = ecoTermDAO.find(ecoCurie);
             if (ecoTerm == null) {
-                log("Invalid evidence code in " + annotationID + " - skipping annotation");
+                log("Invalid evidence code in " + annotation.getUniqueId() + " - skipping annotation");
                 return null;
             }
             ecoTerms.add(ecoTerm);
@@ -321,12 +208,12 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             List<Gene> withGenes = new ArrayList<>();
             for (String withCurie : dto.getWith()) {
                 if (!withCurie.startsWith("HGNC:")) {
-                    log("Non-HGNC gene (" + withCurie + ") found in 'with' field in " + annotationID + " - skipping annotation");
+                    log("Non-HGNC gene (" + withCurie + ") found in 'with' field in " + annotation.getUniqueId() + " - skipping annotation");
                     return null;
                 }
                 Gene withGene = geneDAO.getByIdOrCurie(withCurie);
                 if (withGene == null) {
-                    log("Invalid gene (" + withCurie + ") in 'with' field in " + annotationID + " - skipping annotation");
+                    log("Invalid gene (" + withCurie + ") in 'with' field in " + annotation.getUniqueId() + " - skipping annotation");
                     return null;
                 }
                 withGenes.add(withGene);

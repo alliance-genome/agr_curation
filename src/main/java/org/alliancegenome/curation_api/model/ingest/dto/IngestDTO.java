@@ -15,14 +15,14 @@ public class IngestDTO {
     
     @JsonView({View.FieldsAndLists.class})
     @JsonProperty("disease_agm_ingest_set")
-    private List<DiseaseAnnotationDTO> diseaseAgmIngestSet;
+    private List<AGMDiseaseAnnotationDTO> diseaseAgmIngestSet;
     
     @JsonView({View.FieldsAndLists.class})
     @JsonProperty("disease_allele_ingest_set")
-    private List<DiseaseAnnotationDTO> diseaseAlleleIngestSet;
+    private List<AlleleDiseaseAnnotationDTO> diseaseAlleleIngestSet;
 
     @JsonView({View.FieldsAndLists.class})
     @JsonProperty("disease_gene_ingest_set")
-    private List<DiseaseAnnotationDTO> diseaseGeneIngestSet;
+    private List<GeneDiseaseAnnotationDTO> diseaseGeneIngestSet;
     
 }

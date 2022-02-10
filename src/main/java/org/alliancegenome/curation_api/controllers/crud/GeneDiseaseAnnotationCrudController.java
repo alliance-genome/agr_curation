@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationCrudService;
 
@@ -37,50 +38,51 @@ public class GeneDiseaseAnnotationCrudController extends BaseCrudController<Gene
     }
 
     @Override
-    public String updateGeneDiseaseAnnotations(String taxonID, List<DiseaseAnnotationDTO> annotations) {
+    public String updateGeneDiseaseAnnotations(String taxonID, List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad(taxonID, annotations);
         return "OK";
     }
 
     @Override
-    public String updateZfinGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateZfinGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:7955", annotations);
         return "OK";
     }
 
     @Override
-    public String updateMgiGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateMgiGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:10090", annotations);
         return "OK";
     }
 
     @Override
-    public String updateRgdGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateRgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:10116", annotations);
         return "OK";
     }
 
     @Override
-    public String updateFbGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateFbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:7227", annotations);
         return "OK";
     }
 
     @Override
-    public String updateWbGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateWbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:6239", annotations);
         return "OK";
     }
 
     @Override
-    public String updateHumanGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateHumanGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:9606", annotations);
         return "OK";
     }
 
     @Override
-    public String updateSgdGeneDiseaseAnnotations(List<DiseaseAnnotationDTO> annotations) {
+    public String updateSgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
         annotationService.runLoad("NCBITaxon:559292", annotations);
         return "OK";
     }
+
 }
