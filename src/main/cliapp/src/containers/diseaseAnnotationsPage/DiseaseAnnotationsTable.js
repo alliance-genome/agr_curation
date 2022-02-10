@@ -445,11 +445,11 @@ export const DiseaseAnnotationsTable = () => {
       body: diseaseBodyTemplate
     },
     {
-      field: "reference.curie",
+      field: "singleReference.curie",
       header: "Reference",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("reference", ["reference.curie"])
+      filterElement: filterComponentTemplate("singleReference", ["singleReference.curie"])
     },
     {
       field: "evidenceCodes.abbreviation",
