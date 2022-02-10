@@ -61,6 +61,8 @@ public abstract class DiseaseAnnotationCurie {
             help.add(cond.getConditionStatement());
         if (cond.getConditionClass() != null)
             help.add(cond.getConditionClass().getCurie());
+        if (cond.getConditionId() != null)
+            help.add(cond.getConditionId().getCurie());
         if (cond.getConditionAnatomy() != null)
             help.add(cond.getConditionAnatomy().getCurie());
         if (cond.getConditionChemical() != null)
