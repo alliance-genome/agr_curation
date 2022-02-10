@@ -14,9 +14,10 @@ public class DQMSubmissionController implements DQMSubmissionInterface {
     @Override
     public String update(MultipartFormDataInput input) {
         for(String key: input.getFormDataMap().keySet()) {
-            String[] array = key.split("_");
-            BackendBulkLoadType loadType = BackendBulkLoadType.valueOf(array[0]);
-            BackendBulkDataType dataType = BackendBulkDataType.valueOf(array[1]);
+            String separator = "_";
+            int sepPos = key.lastIndexOf(separator);
+            BackendBulkLoadType loadType = BackendBulkLoadType.valueOf(key.substring(0,sepPos));
+            BackendBulkDataType dataType = BackendBulkDataType.valueOf(key.substring(sepPos + 1));
             if(loadType == null || dataType == null) {
                 return "FAIL";
             } else {
