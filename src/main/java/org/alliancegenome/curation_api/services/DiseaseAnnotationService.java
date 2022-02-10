@@ -149,11 +149,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     public void runLoad(String taxonID, List<DiseaseAnnotationDTO> annotations, String entityType) {
         List<String> annotationsIdsBefore = new ArrayList<>();
         if (entityType.equals("agm")) {
-            annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
+            annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         } else if (entityType.equals("allele")) {
             annotationsIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         } else if (entityType.equals("gene")) {
-            annotationsIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
+            annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
         } else {
             log.warn("Unrecognised type " + entityType);
         }
