@@ -414,7 +414,7 @@ export const DiseaseAnnotationsTable = () => {
       sortable: isEnabled,
       style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       filter: true,
-      filterElement: filterComponentTemplate("subject", ["subject.symbol", "subject.name", "subject.curie"]),
+      filterElement: filterComponentTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
       editor: (props) => subjectEditorTemplate(props),
       body: subjectBodyTemplate,
     },
@@ -423,7 +423,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Disease Relation",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("diseaseRelation", ["diseaseRelation"]),
+      filterElement: filterComponentTemplate("diseaseRelationFilter", ["diseaseRelation"]),
       editor: (props) => diseaseRelationEditor(props)
     },
     {
@@ -431,7 +431,7 @@ export const DiseaseAnnotationsTable = () => {
       header: "Negated",
       body: negatedTemplate,
       filter: true,
-      filterElement: filterComponentTemplate("negated", ["negated"]),
+      filterElement: filterComponentTemplate("negatedFilter", ["negated"]),
       sortable: isEnabled,
       editor: (props) => negatedEditor(props)
     },
@@ -440,16 +440,16 @@ export const DiseaseAnnotationsTable = () => {
       header: "Disease",
       sortable: { isEnabled },
       filter: true,
-      filterElement: filterComponentTemplate("object", ["object.curie", "object.name"]),
+      filterElement: filterComponentTemplate("objectFilter", ["object.curie", "object.name"]),
       editor: (props) => diseaseEditorTemplate(props),
       body: diseaseBodyTemplate
     },
     {
-      field: "reference.curie",
+      field: "singleReference.curie",
       header: "Reference",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("reference", ["reference.curie"])
+      filterElement: filterComponentTemplate("singleReferenceFilter", ["singleReference.curie"])
     },
     {
       field: "evidenceCodes.abbreviation",
@@ -457,7 +457,7 @@ export const DiseaseAnnotationsTable = () => {
       body: evidenceTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
+      filterElement: filterComponentTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
       editor: (props) => evidenceEditorTemplate(props)
     },
     {
@@ -466,7 +466,7 @@ export const DiseaseAnnotationsTable = () => {
       body: withTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("with", ["with.symbol", "with.name", "with.curie"]),
+      filterElement: filterComponentTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
       editor: (props) => withEditorTemplate(props)
     }
   ];

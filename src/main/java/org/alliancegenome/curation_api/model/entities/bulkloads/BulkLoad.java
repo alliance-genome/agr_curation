@@ -74,14 +74,9 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     }
     
     public enum BackendBulkLoadType {
-        GENE_DTO, ALLELE_DTO, AGM_DTO, DISEASE_ANNOTATION_DTO,
-        GENE, ALLELE, AGM, DISEASE_ANNOTATION,
-        ONTOLOGY, MOLECULE
-        ;
-    }
-    
-    public enum BackendBulkDataType {
-        RGD, MGI, SGD, HUMAN, ZFIN, FB, WB
+        GENE_DTO, ALLELE_DTO, AGM_DTO, DISEASE_ANNOTATION_DTO, DISEASE_ANNOTATION,
+        GENE, ALLELE, AGM, AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION,
+        ONTOLOGY, MOLECULE, FULL_INGEST
         ;
     }
 

@@ -64,7 +64,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             "SGD", "NCBITaxon:559292",
             "WB", "NCBITaxon:6239",
             "ZFIN", "NCBITaxon:7955"
-);  
+            );  
     
     @BeforeEach
     public void init() {
@@ -121,7 +121,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].with[1].curie", is("HGNC:323")).
             body("results[0].evidenceCodes", hasSize(1)).
             body("results[0].evidenceCodes[0].curie", is("ECO:0000033")).
-            body("results[0].reference.curie", is("PMID:25920554"));
+            body("results[0].singleReference.curie", is("PMID:25920554"));
     }
     
     @Test
@@ -195,7 +195,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].with[1].curie", is("HGNC:323")).
             body("results[1].evidenceCodes", hasSize(1)).
             body("results[1].evidenceCodes[0].curie", is("ECO:0000033")).
-            body("results[1].reference.curie", is("PMID:25920554"));
+            body("results[1].singleReference.curie", is("PMID:25920554"));
     }
     
     @Test
@@ -242,7 +242,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].with[1].curie", is("HGNC:323")).
             body("results[2].evidenceCodes", hasSize(1)).
             body("results[2].evidenceCodes[0].curie", is("ECO:0000033")).
-            body("results[2].reference.curie", is("PMID:25920554")).
+            body("results[2].singleReference.curie", is("PMID:25920554")).
             body("results[2].negated", is(true));
     }
     

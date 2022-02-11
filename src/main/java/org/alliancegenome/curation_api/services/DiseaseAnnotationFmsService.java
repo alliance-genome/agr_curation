@@ -260,7 +260,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
             // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
         }
-        annotation.setReference(reference);
+        annotation.setSingleReference(reference);
         
         // Check valid disease relation type                                                                                                                                                        
         if (dto.getObjectRelation().getObjectType().equals("gene")) {
@@ -295,6 +295,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                 EcoTerm ecoTerm = ecoTermDAO.find(ecoCurie);
                 if (ecoTerm == null) {
                     log("Invalid evidence code in " + annotationID + " - skipping annotation");
+                    return null;
                 }
                 ecoTerms.add(ecoTerm);
             }
