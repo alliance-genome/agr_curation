@@ -1,12 +1,7 @@
 package org.alliancegenome.curation_api.bulkupload;
 
-import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
 
@@ -40,8 +35,6 @@ public class AGMBulkUploadITCase {
     public void agmBulkUploadMany() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/00_mod_examples.json"));
             
-        //Allele allele = createAllele(TESTALLELE, "NCBITaxon:10090");
-        
         // upload file
         RestAssured.given().
             contentType("application/json").
@@ -88,7 +81,7 @@ public class AGMBulkUploadITCase {
             body("totalResults", is(614)).
             body("results", hasSize(4)).
             body("results[3].curie", is("TEST:TestAGM00001")).
-            body("results[3].taxon", is("NCBITaxon:10090")).
+            body("results[3].taxon.curie", is("NCBITaxon:10090")).
             body("results[3].name", is( "Test AGM 1")).
             body("results[3].synonyms[0].name", is("TAGM1")).
             body("results[3].crossReferences[0].curie", is("TEST:TestAGM00001")).
@@ -212,10 +205,19 @@ public class AGMBulkUploadITCase {
             when().
             post("/api/agm/bulk/agmfile").
             then().
-            statusCode(500);
+            statusCode(200);
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/agm/find?limit=10&page=61").
+            then().
+            statusCode(200).
+            body("totalResults", is(616)); //no entity added due to missing ID
     }
 
-    // TODO: adjust count (and subsequent test counts) once validation of xref pages in place
     @Test
     @Order(8)
     public void agmBulkUploadNoCrossReferencePages() throws Exception {
@@ -579,21 +581,5 @@ public class AGMBulkUploadITCase {
             then().
             statusCode(200);
     }
-
-    private Allele createAllele(String curie, String taxon) {
-        Allele biologicalEntity = new Allele();
-        biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(taxon);
-
-        RestAssured.given().
-                contentType("application/json").
-                body(biologicalEntity).
-                when().
-                post("/api/allele").
-                then().
-                statusCode(200);
-        return biologicalEntity;
-    }
-    
     
 }

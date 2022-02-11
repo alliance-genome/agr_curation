@@ -1,17 +1,20 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleObjectRelationsFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleValidator;
@@ -19,31 +22,20 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
 public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
-    @Inject
-    AlleleDAO alleleDAO;
-    @Inject
-    AlleleValidator alleleValidator;
-    @Inject
-    GeneDAO geneDAO;
-    @Inject
-    CrossReferenceService crossReferenceService;
-    @Inject
-    SynonymService synonymService;
-    @Inject
-    NcbiTaxonTermService ncbiTaxonTermService;
-
+    @Inject AlleleDAO alleleDAO;
+    @Inject AlleleValidator alleleValidator;
+    @Inject GeneDAO geneDAO;
+    @Inject CrossReferenceService crossReferenceService;
+    @Inject SynonymService synonymService;
+    @Inject NcbiTaxonTermService ncbiTaxonTermService;
+    @Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -76,8 +68,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
         dbAllele.setSymbol(allele.getSymbol());
         dbAllele.setDescription(allele.getDescription());
-        dbAllele.setTaxon(allele.getTaxonId());
-
+        dbAllele.setTaxon(ncbiTaxonTermDAO.find(allele.getTaxonId()));
+        
         handleCrossReferences(allele, dbAllele);
         handleSecondaryIds(allele, dbAllele);
 
@@ -213,6 +205,16 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
             return false;
         }
 
+        // Validate xrefs
+        if (allele.getCrossReferences() != null) {
+            for (CrossReferenceFmsDTO xrefDTO : allele.getCrossReferences()) {
+                if (xrefDTO.getId() == null) {
+                    log.debug("Missing xref ID for allele " + allele.getPrimaryId() + " - skipping");
+                    return false;
+                }
+            }
+        }
+        
         // Validate allele object relations
         // TODO: validate construct relation once constructs are loaded
         if (CollectionUtils.isNotEmpty(allele.getAlleleObjectRelations())) {

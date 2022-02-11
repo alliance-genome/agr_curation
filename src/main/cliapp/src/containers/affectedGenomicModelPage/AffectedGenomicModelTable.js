@@ -97,11 +97,11 @@ export const AffectedGenomicModelTable = () => {
       filterElement: filterComponentTemplate("parental_populationFilter", ["parental_population"])
     }, 
     {
-      field:"taxon",
+      field:"taxon.curie",
       header:"Taxon",
       sortable: isEnabled,
       filter: true, 
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
 
 

@@ -1,10 +1,10 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
-
-import java.util.List;
 
 public class MGIDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 

@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;

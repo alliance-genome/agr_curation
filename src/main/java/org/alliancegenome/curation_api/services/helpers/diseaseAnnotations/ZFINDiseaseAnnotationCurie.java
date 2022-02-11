@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.model.entities.Condition;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
@@ -29,7 +28,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
                         CurieGeneratorHelper gen = new CurieGeneratorHelper();
                         gen.add(conditionDTO.getConditionRelationType());
                         gen.add(conditionDTO.getConditions().stream()
-                                .map(this::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
+                                .map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
                         );
                         return gen.getCurie();
                     }).collect(Collectors.joining(DELIMITER))

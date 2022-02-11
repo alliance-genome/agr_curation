@@ -13,6 +13,6 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class ZecoTerm extends OntologyTerm {
+public class ZecoTerm extends ExperimentalConditionOntologyTerm {
 
 }

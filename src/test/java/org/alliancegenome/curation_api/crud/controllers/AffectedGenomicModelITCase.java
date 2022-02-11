@@ -3,9 +3,13 @@ package org.alliancegenome.curation_api.crud.controllers;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
+
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel.Subtype;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
 
@@ -15,7 +19,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(8)
+@Order(9)
 public class AffectedGenomicModelITCase {
 
     private final String AGM_CURIE = "AGM:0001";
@@ -23,12 +27,13 @@ public class AffectedGenomicModelITCase {
     private final String AGM_SUBTYPE = "genotype";
     private final String AGM_NAME = "AGM Test 1";
     private final String INVALID_TAXON = "NCBI:00001";
-    private AffectedGenomicModel agm = createModel(AGM_CURIE, AGM_NAME, AGM_TAXON, AGM_SUBTYPE);
+    private AffectedGenomicModel agm;
     
     @Test
     @Order(1)
     public void createValidAGM() {
-
+        agm = createModel(AGM_CURIE, AGM_NAME, AGM_TAXON, AGM_SUBTYPE);
+        
         RestAssured.given().
                 contentType("application/json").
                 body(agm).
@@ -43,16 +48,18 @@ public class AffectedGenomicModelITCase {
                 statusCode(200).
                 body("entity.curie", is(AGM_CURIE)).
                 body("entity.name", is(AGM_NAME)).
-                body("entity.taxon", is(AGM_TAXON)).
+                body("entity.taxon.curie", is(AGM_TAXON)).
                 body("entity.subtype", is(AGM_SUBTYPE));
     }
 
     @Test
     @Order(2)
     public void editAGM() {
+        
+        
         agm.setName("AGM edited");
         agm.setSubtype(Subtype.valueOf("strain"));
-        agm.setTaxon("NCBITaxon:9606");
+        agm.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 
         RestAssured.given().
                 contentType("application/json").
@@ -69,7 +76,7 @@ public class AffectedGenomicModelITCase {
                 statusCode(200).
                 body("entity.curie", is(AGM_CURIE)).
                 body("entity.name", is("AGM edited")).
-                body("entity.taxon", is("NCBITaxon:9606")).
+                body("entity.taxon.curie", is("NCBITaxon:9606")).
                 body("entity.subtype", is("strain"));
     }
 
@@ -144,11 +151,25 @@ public class AffectedGenomicModelITCase {
     private AffectedGenomicModel createModel(String curie, String name, String taxon, String subtype) {
         AffectedGenomicModel agm = new AffectedGenomicModel();
         agm.setCurie(curie);
-        agm.setTaxon(taxon);
+        agm.setTaxon(getTaxonFromCurie(taxon));
         agm.setName(name);
         agm.setSubtype(Subtype.valueOf(subtype));
                 
         return agm;
     }
+    
+    private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
+        ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
+            when().
+            get("/api/ncbitaxonterm/" + taxonCurie).
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRef());
+        
+        return response.getEntity();
+    }
 
+    private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRef() {
+        return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+    }
 }

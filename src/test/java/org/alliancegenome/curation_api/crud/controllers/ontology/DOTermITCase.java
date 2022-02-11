@@ -20,9 +20,9 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(1)
+@Order(11)
 public class DOTermITCase {
-    private String DOTERMCURIE = "DOID:0001";
+    private String DOTERMCURIE = "DOID:10001";
 
     private TypeRef<ObjectResponse<DOTerm>> getObjectResponseTypeRef() {
         return new TypeRef<ObjectResponse <DOTerm>>() { };

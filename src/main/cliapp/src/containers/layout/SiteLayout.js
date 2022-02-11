@@ -26,7 +26,7 @@ export const SiteLayout = (props) => {
   const { authState, oktaAuth } = useOktaAuth();
   const [userInfo, setUserInfo] = useState(null);
 
-useEffect(() => {
+  useEffect(() => {
     if (!authState || !authState.isAuthenticated) {
       setUserInfo(null);
     } else {
@@ -39,7 +39,7 @@ useEffect(() => {
   }, [authState, oktaAuth]);
 
   const logout = async () => await oktaAuth.signOut();
-  const appProfile = userInfo ? <AppProfile authState={authState} logout={logout} email={userInfo.email} /> :
+  const appProfile = userInfo ? <AppProfile authState={authState} logout={logout} userInfo={userInfo} /> :
     null;
 
   useEffect(() => {
@@ -57,8 +57,9 @@ useEffect(() => {
       items: [
         { label: 'Genes', icon: 'pi pi-fw pi-home', to: '/genes' },
         { label: 'Alleles', icon: 'pi pi-fw pi-home', to: '/alleles' },
-        { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
         { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
+        { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
+        { label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
         { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' }
       ]
     },
@@ -78,7 +79,7 @@ useEffect(() => {
         { label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
         { label: 'Experimental condition ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
         { label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' },
-		{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' }
+        { label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' }
       ]
     },
     {

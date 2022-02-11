@@ -1,31 +1,27 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelComponentFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
@@ -41,7 +37,9 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     AlleleDAO alleleDAO;
     @Inject
     AffectedGenomicModelValidator affectedGenomicModelValidator;
-
+    @Inject
+    NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -51,6 +49,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     @Override
     @Transactional
     public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
+        log.info(authenticatedPerson);
         AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
         return new ObjectResponse<AffectedGenomicModel>(affectedGenomicModelDAO.persist(dbEntity));
     }
@@ -79,7 +78,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         }
 
         dbAgm.setName(agm.getName().substring(0, Math.min(agm.getName().length(), 254)));
-        dbAgm.setTaxon(agm.getTaxonId());
+        dbAgm.setTaxon(ncbiTaxonTermDAO.find(agm.getTaxonId()));
         dbAgm.setSubtype(agm.getSubtype());
 
         handleCrossReference(agm, dbAgm);
@@ -206,6 +205,12 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         Matcher taxonIdMatcher = taxonIdPattern.matcher(agm.getTaxonId());
         if (!taxonIdMatcher.find()) {
             log.debug("Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
+            return false;
+        }
+        
+        // Validate xref
+        if (agm.getCrossReference() != null && agm.getCrossReference().getId() == null) {
+            log.debug("Missing xref ID for AGM " + agm.getPrimaryID() + " - skipping");
             return false;
         }
 

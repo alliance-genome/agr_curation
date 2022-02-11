@@ -12,6 +12,7 @@ const oktaAuthConfig = {
   issuer: issuer,
   clientId: clientId,
   redirectUri: window.location.origin + '/login/callback',
+  scopes: ['openid', 'profile', 'email'],
   pkce: true,
 };
 
@@ -20,6 +21,7 @@ const oktaSignInConfig = {
   baseUrl: baseUrl,
   clientId: clientId,
   redirectUri: window.location.origin + '/login/callback',
+  scopes: ['openid', 'profile', 'email'],
   authParams: {
     pkce: true
 

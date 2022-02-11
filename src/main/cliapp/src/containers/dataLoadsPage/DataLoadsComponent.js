@@ -3,6 +3,7 @@ import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
+import { useOktaAuth } from '@okta/okta-react';
 import { SearchService } from '../../service/SearchService';
 import { DataLoadService } from '../../service/DataLoadService';
 import { Messages } from 'primereact/messages';
@@ -11,8 +12,9 @@ import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { useQueryClient } from 'react-query';
 
-
 export const DataLoadsComponent = () => {
+
+  const { authState } = useOktaAuth();
 
   const bulkLoadReducer = (state, action) => {
     switch (action.type) {
@@ -33,11 +35,12 @@ export const DataLoadsComponent = () => {
   const [disableFormFields, setDisableFormFields] = useState(false);
   const errorMessage = useRef(null);
   const searchService = new SearchService();
-  const dataLoadService = new DataLoadService();
 
   const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
 
   const queryClient = useQueryClient();
+
+  let dataLoadService = null;
 
   const handleNewBulkLoadGroupOpen = (event) => {
     setBulkLoadGroupDialog(true);
@@ -66,6 +69,13 @@ export const DataLoadsComponent = () => {
     refetchOnWindowFocus: false
   });
 
+  const getService = () => {
+    if(!dataLoadService) {
+      dataLoadService = new DataLoadService(authState);
+    }
+    return dataLoadService;
+  }
+
   const urlTemplate = (rowData) => {
     return <a href={rowData.s3Url}>Download</a>;
   };
@@ -75,13 +85,13 @@ export const DataLoadsComponent = () => {
   };
 
   const runLoad = (rowData) => {
-    dataLoadService.restartLoad(rowData.type, rowData.id).then(response => {
+    getService().restartLoad(rowData.type, rowData.id).then(response => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
 
   const runLoadFile = (rowData) => {
-    dataLoadService.restartLoadFile(rowData.id).then(response => {
+    getService().restartLoadFile(rowData.id).then(response => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
@@ -93,19 +103,19 @@ export const DataLoadsComponent = () => {
   };
 
   const deleteLoadFile = (rowData) => {
-    dataLoadService.deleteLoadFile(rowData.id).then(response => {
+    getService().deleteLoadFile(rowData.id).then(response => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
 
   const deleteLoad = (rowData) => {
-    dataLoadService.deleteLoad(rowData.type, rowData.id).then(response => {
+    getService().deleteLoad(rowData.type, rowData.id).then(response => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
 
   const deleteGroup = (rowData) => {
-    dataLoadService.deleteGroup(rowData.id).then(response => {
+    getService().deleteGroup(rowData.id).then(response => {
       queryClient.invalidateQueries('bulkloadtable');
     });
   };
@@ -280,6 +290,7 @@ export const DataLoadsComponent = () => {
         groups={groups}
         disableFormFields={disableFormFields}
         setDisableFormFields={setDisableFormFields}
+        dataLoadService={dataLoadService}
       />
       <NewBulkLoadGroupForm
         bulkLoadGroupDialog={bulkLoadGroupDialog}

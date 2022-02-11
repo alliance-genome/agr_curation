@@ -70,6 +70,7 @@ jobs:
       with:
         text: "Deployment of release ${{ github.event.release.tag_name }} to production completed! :tada:"
   deploy-to-beta:
+    if: github.event.release.prerelease == true
     needs: [generate-deployment-package]
     runs-on: ubuntu-20.04
     steps:
