@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.*;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.*;
 import org.alliancegenome.curation_api.model.fms.DataFile;

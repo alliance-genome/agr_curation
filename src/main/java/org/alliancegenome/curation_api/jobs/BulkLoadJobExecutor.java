@@ -9,11 +9,10 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
-import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.enums.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkDataType;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
@@ -59,15 +58,7 @@ public class BulkLoadJobExecutor {
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
     
 
-    private Map<String, String> modTaxons = Map.of(
-            "HUMAN", "NCBITaxon:9606",
-            "FB", "NCBITaxon:7227",
-            "MGI", "NCBITaxon:10090",
-            "RGD", "NCBITaxon:10116",
-            "SGD", "NCBITaxon:559292",
-            "WB", "NCBITaxon:6239",
-            "ZFIN", "NCBITaxon:7955"
-            );  
+
 
 
     public void process(BulkLoadFile bulkLoadFile) throws Exception {
@@ -169,11 +160,12 @@ public class BulkLoadJobExecutor {
             DiseaseAnnotationMetaDataFmsDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataFmsDTO.class);
             // TODO find taxon ID and send it with this load
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
-            log.info("Running with: " + fms.getDataSubType() + " " + modTaxons.get(fms.getDataSubType()));
+            log.info("Running with: " + fms.getDataSubType() + " " + BackendBulkDataType.valueOf(fms.getDataSubType()));
 
             bulkLoadFile.setRecordCount(diseaseData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            diseaseFmsService.runLoad(modTaxons.get(fms.getDataSubType()), diseaseData);
+            
+            diseaseFmsService.runLoad(BackendBulkDataType.valueOf(fms.getDataSubType()).getTaxonId(), diseaseData);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
