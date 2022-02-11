@@ -57,6 +57,7 @@ public class AGMDiseaseAnnotationCrudService extends BaseCrudService<AGMDiseaseA
         return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
     }
     
+    @Transactional
     public void runLoad(String taxonId, List<AGMDiseaseAnnotationDTO> annotations) {
         List<String> annotationIdsBefore = new ArrayList<>();
         annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));

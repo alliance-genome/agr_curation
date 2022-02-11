@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkDataType;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
@@ -134,44 +135,45 @@ public class BulkLoadJobExecutor {
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.DISEASE_ANNOTATION) {
             IngestDTO ingestDto= mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
             BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
-            log.info("Running with: " + manual.getDataType().name() + " " + modTaxons.get(manual.getDataType().name()));
+            log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
             bulkLoadFile.setRecordCount(ingestDto.getDiseaseAgmIngestSet().size() + ingestDto.getDiseaseAlleleIngestSet().size() + ingestDto.getDiseaseGeneIngestSet().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             if (ingestDto.getDiseaseAgmIngestSet() != null) {
-                agmDiseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAgmIngestSet());
+                agmDiseaseService.runLoad(manual.getDataType().getTaxonId(), ingestDto.getDiseaseAgmIngestSet());
             }
             if (ingestDto.getDiseaseAlleleIngestSet() != null) {
-                alleleDiseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAlleleIngestSet());
+                alleleDiseaseService.runLoad(manual.getDataType().getTaxonId(), ingestDto.getDiseaseAlleleIngestSet());
             }
             if (ingestDto.getDiseaseGeneIngestSet() != null) {
-                geneDiseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseGeneIngestSet());
+                
+                geneDiseaseService.runLoad(manual.getDataType().getTaxonId(), ingestDto.getDiseaseGeneIngestSet());
             }
         } else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.AGM_DISEASE_ANNOTATION) {
             IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
             BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
-            log.info("Running with: " + manual.getDataType().name() + " " + modTaxons.get(manual.getDataType().name()));
+            log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
             bulkLoadFile.setRecordCount(ingestDto.getDiseaseAgmIngestSet().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             if (ingestDto.getDiseaseAgmIngestSet() != null) {
-                agmDiseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAgmIngestSet());
+                agmDiseaseService.runLoad(manual.getDataType().getTaxonId(), ingestDto.getDiseaseAgmIngestSet());
             }
         } else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION) {
             IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
             BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
-            log.info("Running with: " + manual.getDataType().name() + " " + modTaxons.get(manual.getDataType().name()));
+            log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
             bulkLoadFile.setRecordCount(ingestDto.getDiseaseAlleleIngestSet().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             if (ingestDto.getDiseaseAlleleIngestSet() != null) {
-                alleleDiseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseAlleleIngestSet());
+                alleleDiseaseService.runLoad(manual.getDataType().getTaxonId(), ingestDto.getDiseaseAlleleIngestSet());
             }
         } else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE_DISEASE_ANNOTATION) {
             IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
             BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
-            log.info("Running with: " + manual.getDataType().name() + " " + modTaxons.get(manual.getDataType().name()));
+            log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
             bulkLoadFile.setRecordCount(ingestDto.getDiseaseGeneIngestSet().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             if (ingestDto.getDiseaseGeneIngestSet() != null) {
-                geneDiseaseService.runLoad(modTaxons.get(manual.getDataType().name()), ingestDto.getDiseaseGeneIngestSet());
+                geneDiseaseService.runLoad(manual.getDataType().getTaxonId(), ingestDto.getDiseaseGeneIngestSet());
             }
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);

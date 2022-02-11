@@ -54,6 +54,7 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public void runLoad(String taxonId, List<AlleleDiseaseAnnotationDTO> annotations) {
         List<String> annotationIdsBefore = new ArrayList<>();
         annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));
