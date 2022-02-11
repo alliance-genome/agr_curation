@@ -63,7 +63,7 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
         List<String> annotationIdsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Disease Annotation Update " + taxonId, annotations.size());
+        ph.startProcess("Allele Disease Annotation Update " + taxonId, annotations.size());
         annotations.forEach(annotationDTO -> {
             AlleleDiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null) {

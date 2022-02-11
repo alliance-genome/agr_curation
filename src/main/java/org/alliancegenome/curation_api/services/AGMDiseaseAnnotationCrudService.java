@@ -66,7 +66,7 @@ public class AGMDiseaseAnnotationCrudService extends BaseCrudService<AGMDiseaseA
         log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
         List<String> annotationIdsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Disease Annotation Update " + taxonId, annotations.size());
+        ph.startProcess("AGM Disease Annotation Update " + taxonId, annotations.size());
         annotations.forEach(annotationDTO -> {
             AGMDiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null) {

@@ -64,7 +64,7 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
         log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
         List<String> annotationIdsAfter = new ArrayList<>();
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Disease Annotation Update " + taxonId, annotations.size());
+        ph.startProcess("Gene Disease Annotation Update " + taxonId, annotations.size());
         annotations.forEach(annotationDTO -> {
             GeneDiseaseAnnotation annotation = upsert(annotationDTO);
             if (annotation != null) {
