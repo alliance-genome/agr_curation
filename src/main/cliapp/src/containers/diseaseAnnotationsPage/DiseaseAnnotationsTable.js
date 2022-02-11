@@ -39,8 +39,6 @@ export const DiseaseAnnotationsTable = () => {
   const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
 
   let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
-  let [tableAggregations, setTableAggregations] = useState(null);
-  let [diseaseRelationOptions, setDiseaseRelationOptions] = useState(null);
 
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
@@ -74,28 +72,12 @@ export const DiseaseAnnotationsTable = () => {
     'object.name', 'subject.name', 'with.name', 'diseaseRelation'
   ];
 
-  useQuery(['diseaseAnnotations', tableState],
+   useQuery(['diseaseAnnotations', tableState],
     () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, aggregationFields), {
     onSuccess: (data) => {
 
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
-      let tmp = {};
-        if(data.aggregations) {
-            for(let field in data.aggregations) {
-                let fieldValues = [];
-                for (let key in data.aggregations[field]) {
-                    fieldValues.push({
-                        label: key,
-                        value: data.aggregations[field][key]
-                    });
-                }
-                tmp[field] = fieldValues;
-            }
-        }
-        console.log(tmp);
-      setTableAggregations(tmp);
-      setDiseaseRelationOptions(tmp['diseaseRelation']);
     },
     onError: (error) => {
       toast_topleft.current.show([
@@ -423,111 +405,113 @@ export const DiseaseAnnotationsTable = () => {
     />);
   };
 
-  const filterComponentInputTextTemplate = (filterName, fields, tokenOperator="AND") => {
-        return (<FilterComponentInputText
-            isEnabled={isEnabled}
-            fields={fields}
-            filterName={filterName}
-            currentFilters={tableState.filters}
-            onFilter={onFilter}
-            tokenOperator={tokenOperator}
-        />);
-   };
+  const filterComponentInputTextTemplate = (filterName, fields, tokenOperator = "AND") => {
+    return (<FilterComponentInputText
+      isEnabled={isEnabled}
+      fields={fields}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      tokenOperator={tokenOperator}
+    />);
+  };
 
-  const FilterComponentDropDownTemplate = (filterName, field, tokenOperator="OR", options, optionField) => {
-      return (<FilterComponentDropDown
-          isEnabled={isEnabled}
-          field={field}
-          filterName={filterName}
-          currentFilters={tableState.filters}
-          onFilter={onFilter}
-          options={options}
-          tokenOperator = {tokenOperator}
-          optionField = {optionField}
-      />);
+  const FilterComponentDropDownTemplate = (filterName, field, tokenOperator = "OR", options, optionField) => {
+    return (<FilterComponentDropDown
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      options={options}
+      tokenOperator={tokenOperator}
+      optionField={optionField}
+    />);
   }
 
-  const FilterMultiSelectComponentTemplate = (filterName, field, tokenOperator="OR") => {
-      return (<FilterMultiSelectComponent
-          isEnabled={isEnabled}
-          field={field}
-          filterName={filterName}
-          currentFilters={tableState.filters}
-          onFilter={onFilter}
-          tokenOperator = {tokenOperator}
-          tableAggregations = {diseaseRelationOptions}
-        />);
+  const FilterMultiSelectComponentTemplate = (filterName, field, tokenOperator = "OR") => {
+    return (<FilterMultiSelectComponent
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      tokenOperator={tokenOperator}
+      tableState={tableState}
+      sortMapping={sortMapping}
+      aggregationFields={aggregationFields}
+    />);
   }
 
   const columns = [{
-      field: "uniqueId",
-      header: "Unique Id",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
-    },
-    {
-      field: "subject.symbol",
-      header: "Subject",
-      sortable: isEnabled,
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
-      filter: true,
-      filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
-      editor: (props) => subjectEditorTemplate(props),
-      body: subjectBodyTemplate,
-    },
-    {
-      field: "diseaseRelation",
-      header: "Disease Relation",
-      sortable: isEnabled,
-      filter: true,
-      filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", ["diseaseRelation"], "OR"),
-      editor: (props) => diseaseRelationEditor(props)
-    },
-    {
-      field: "negated",
-      header: "Negated",
-      body: negatedTemplate,
-      filter: true,
-      filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated", "OR", [{text : "true"} , { text : "false"}], "text"),
-      sortable: isEnabled,
-      editor: (props) => negatedEditor(props)
-    },
-    {
-      field: "object.name",
-      header: "Disease",
-      sortable: { isEnabled },
-      filter: true,
-      filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
-      editor: (props) => diseaseEditorTemplate(props),
-      body: diseaseBodyTemplate
-    },
-    {
-      field: "reference.curie",
-      header: "Reference",
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentInputTextTemplate("referenceFilter", ["reference.curie"])
-    },
-    {
-      field: "evidenceCodes.abbreviation",
-      header: "Evidence Code",
-      body: evidenceTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
-      editor: (props) => evidenceEditorTemplate(props)
-    },
-    {
-      field: "with.symbol",
-      header: "With",
-      body: withTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
-      editor: (props) => withEditorTemplate(props)
-    }
+    field: "uniqueId",
+    header: "Unique Id",
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
+  },
+  {
+    field: "subject.symbol",
+    header: "Subject",
+    sortable: isEnabled,
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
+    editor: (props) => subjectEditorTemplate(props),
+    body: subjectBodyTemplate,
+  },
+  {
+    field: "diseaseRelation",
+    header: "Disease Relation",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", ["diseaseRelation"], "OR"),
+    editor: (props) => diseaseRelationEditor(props)
+  },
+  {
+    field: "negated",
+    header: "Negated",
+    body: negatedTemplate,
+    filter: true,
+    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated", "OR", [{ text: "true" }, { text: "false" }], "text"),
+    sortable: isEnabled,
+    editor: (props) => negatedEditor(props)
+  },
+  {
+    field: "object.name",
+    header: "Disease",
+    sortable: { isEnabled },
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
+    editor: (props) => diseaseEditorTemplate(props),
+    body: diseaseBodyTemplate
+  },
+  {
+    field: "reference.curie",
+    header: "Reference",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("referenceFilter", ["reference.curie"])
+  },
+  {
+    field: "evidenceCodes.abbreviation",
+    header: "Evidence Code",
+    body: evidenceTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
+    editor: (props) => evidenceEditorTemplate(props)
+  },
+  {
+    field: "with.symbol",
+    header: "With",
+    body: withTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
+    editor: (props) => withEditorTemplate(props)
+  }
   ];
 
   useEffect(() => {
