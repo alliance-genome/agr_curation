@@ -1,5 +1,14 @@
 # AGR curation release notes
 
+## v0.2.0
+ * Added UI login (authentication) (SCRUM-1034)
+ * Enabled filter for Name in Genes Table (SCRUM-1058)
+ * Added NCBI Taxonomy ontologies, including Id validation and autopopulation (SCRUM-338, SCRUM-1065)
+ * Improved data load error handling display (SCRUM-972)
+ * Enabled bulk submission of LinkML JSON files for disease annotations (SCRUM-984)
+ * Fixed allele description sort & filter bug (SCRUM-1048)
+ * Several UI fixes and improvements (SCRUM-852)
+
 ## v0.1.0
  * Added and enabled update/edit on additional disease annotation properties
     * disease field (SCRUM-492, #110, #111, #112, #113, #114)
@@ -35,6 +44,7 @@
  * LinkML model updates (SCRUM-510)
  * Implemented automatic update loading of input files (#201)
  * Enabled central application logging (SCRUM-547)
+
 ## v0.0.31
  * Setup additional application environments
     * Alpha environment (SCRUM-451, SCRUM-459, #83)
