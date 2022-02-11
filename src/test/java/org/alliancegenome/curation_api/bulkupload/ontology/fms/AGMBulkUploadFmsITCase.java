@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.bulkupload;
+package org.alliancegenome.curation_api.bulkupload.ontology.fms;
 
 import java.nio.file.*;
 
@@ -18,7 +18,7 @@ import static org.hamcrest.Matchers.is;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(3)
-public class AGMBulkUploadITCase {
+public class AGMBulkUploadFmsITCase {
     
     @BeforeEach
     public void init() {
@@ -31,7 +31,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(1)
     public void agmBulkUploadCheckFields() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/01_all_fields.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/01_all_fields.json"));
 
         // upload file
         RestAssured.given().
@@ -69,7 +69,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(2)
     public void agmBulkUploadNoComponents() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/02_no_agm_components.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/02_no_agm_components.json"));
         
         // upload file
         RestAssured.given().
@@ -94,7 +94,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(3)
     public void agmBulkUploadNoComponentAlleleId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/03_no_agm_components_allele_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/03_no_agm_components_allele_id.json"));
         
         // upload file
         RestAssured.given().
@@ -119,7 +119,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(4)
     public void agmBulkUploadNoComponentZygosity() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/04_no_agm_components_zygosity.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/04_no_agm_components_zygosity.json"));
         
         // upload file
         RestAssured.given().
@@ -144,7 +144,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(5)
     public void agmBulkUploadNoCrossReference() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/05_no_cross_reference.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/05_no_cross_reference.json"));
         
         // upload file
         RestAssured.given().
@@ -169,7 +169,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(6)
     public void agmBulkUploadNoCrossReferenceId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/06_no_cross_reference_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/06_no_cross_reference_id.json"));
         
         // upload file
         RestAssured.given().
@@ -194,7 +194,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(7)
     public void agmBulkUploadNoCrossReferencePages() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/07_no_cross_reference_pages.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/07_no_cross_reference_pages.json"));
         
         // upload file
         RestAssured.given().
@@ -219,7 +219,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(8)
     public void agmBulkUploadNoName() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/08_no_name.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/08_no_name.json"));
         
         // upload file
         RestAssured.given().
@@ -244,7 +244,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(9)
     public void agmBulkUploadNoParentalPopulationIds() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/09_no_parental_population_ids.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/09_no_parental_population_ids.json"));
         
         // upload file
         RestAssured.given().
@@ -269,7 +269,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(10)
     public void agmBulkUploadNoPrimaryId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/10_no_primary_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/10_no_primary_id.json"));
         
         // upload file
         RestAssured.given().
@@ -294,7 +294,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(11)
     public void agmBulkUploadNoSecondaryIds() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/11_no_secondary_ids.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/11_no_secondary_ids.json"));
         
         // upload file
         RestAssured.given().
@@ -319,7 +319,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(12)
     public void agmBulkUploadNoSequenceTargetingReagentIds() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/12_no_str_ids.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/12_no_str_ids.json"));
         
         // upload file
         RestAssured.given().
@@ -344,7 +344,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(13)
     public void agmBulkUploadNoSubtype() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/13_no_subtype.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/13_no_subtype.json"));
         
         // upload file
         RestAssured.given().
@@ -369,7 +369,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(14)
     public void agmBulkUploadNoSynonyms() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/14_no_synonyms.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/14_no_synonyms.json"));
         
         // upload file
         RestAssured.given().
@@ -394,7 +394,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(15)
     public void agmBulkUploadNoTaxonId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/15_no_taxon_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/15_no_taxon_id.json"));
         
         // upload file
         RestAssured.given().
@@ -419,7 +419,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(16)
     public void agmBulkUploadInvalidComponentAllele() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/16_invalid_agm_components_allele_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/16_invalid_agm_components_allele_id.json"));
         
         // upload file
         RestAssured.given().
@@ -444,7 +444,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(17)
     public void agmBulkUploadInvalidComponentZygosity() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/17_invalid_agm_components_allele_zygosity.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/17_invalid_agm_components_allele_zygosity.json"));
         
         // upload file
         RestAssured.given().
@@ -470,7 +470,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(18)
     public void agmBulkUploadInvalidSequenceTargetingReagentId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/18_invalid_str_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/18_invalid_str_id.json"));
         
         // upload file
         RestAssured.given().
@@ -495,7 +495,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(19)
     public void agmBulkUploadInvalidSubtype() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/19_invalid_subtype.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/19_invalid_subtype.json"));
         
         // upload file
         RestAssured.given().
@@ -521,7 +521,7 @@ public class AGMBulkUploadITCase {
     @Test
     @Order(20)
     public void agmBulkUploadInvalidTaxonId() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/03_affected_genomic_model/20_invalid_taxon_id.json"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/20_invalid_taxon_id.json"));
         
         // upload file
         RestAssured.given().
