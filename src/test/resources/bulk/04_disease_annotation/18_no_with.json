@@ -11,7 +11,7 @@
     "genetic_sex": "male",
     "modified_by": "DATEST:Person0001",
     "evidence_codes": [
-      "TEST:Evidence0001"
+      "DATEST:Evidence0001"
     ],
     "conditionRelations": [
       {

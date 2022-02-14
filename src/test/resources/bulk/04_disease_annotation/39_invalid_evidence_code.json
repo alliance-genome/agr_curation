@@ -11,7 +11,7 @@
     "genetic_sex": "male",
     "modified_by": "DATEST:Person0001",
     "evidence_codes": [
-      "TEST:Evidence0002"
+      "DATEST:Evidence0002"
     ],
     "conditionRelations": [
       {
@@ -33,7 +33,7 @@
     "disease_genetic_modifier": "DATEST:Gene0002",
     "disease_genetic_modifier_relation": "ameliorated_by",
     "with": [
-      "HGNC:Test0001"
+      "HGNC:0001"
     ],
     "single_reference": "PMID:25920554",
     "disease_annotation_summary": "Test summary",
