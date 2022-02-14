@@ -34,7 +34,7 @@ public class DOTermBulkUploadITCase {
     @Test
     @Order(1)
     public void doTermBulkUpload() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/06_do_term/00_do_agr_slim.owl"));
+        String content = Files.readString(Path.of("src/test/resources/bulk/ontology/01_do_term/00_do_agr_slim.owl"));
         // upload file
         RestAssured.given().
             contentType("application/xml").

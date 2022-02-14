@@ -116,6 +116,9 @@ public class AGMDiseaseAnnotationCrudService extends BaseCrudService<AGMDiseaseA
             annotation = annotationList.getResults().get(0);
         }
         
+        annotation = (AGMDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+        if (annotation == null) return null;
+        
         if (!dto.getDiseaseRelation().equals("is_model_of")) {
             log("Invalid AGM disease relation for " + annotationId + " - skipping");
             return null;
@@ -123,7 +126,7 @@ public class AGMDiseaseAnnotationCrudService extends BaseCrudService<AGMDiseaseA
         annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
         
         
-        return (AGMDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+        return annotation;
     }
     
     private void log(String message) {

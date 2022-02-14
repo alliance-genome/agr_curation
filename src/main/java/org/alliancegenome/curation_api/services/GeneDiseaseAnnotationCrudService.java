@@ -114,6 +114,9 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
             annotation = annotationList.getResults().get(0);
         }
         
+        annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+        if (annotation == null) return null;
+        
         if (!dto.getDiseaseRelation().equals("is_implicated_in") &&
                 !dto.getDiseaseRelation().equals("is_marker_for")) {
             log("Invalid gene disease relation for " + annotationId + " - skipping");
@@ -122,7 +125,7 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
         annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
         
         
-        return (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+        return annotation;
     }
     
     private void log(String message) {
