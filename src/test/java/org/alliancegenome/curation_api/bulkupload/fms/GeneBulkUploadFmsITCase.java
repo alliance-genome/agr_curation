@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.bulkupload.ontology.fms;
+package org.alliancegenome.curation_api.bulkupload.fms;
 
 import java.io.IOException;
 import java.nio.file.*;

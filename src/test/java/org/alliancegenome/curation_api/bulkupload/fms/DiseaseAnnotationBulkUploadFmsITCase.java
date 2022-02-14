@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.bulkupload.ontology.fms;
+package org.alliancegenome.curation_api.bulkupload.fms;
 
 import static org.hamcrest.Matchers.*;
 
