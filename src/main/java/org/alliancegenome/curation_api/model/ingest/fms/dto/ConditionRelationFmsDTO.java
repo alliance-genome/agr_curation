@@ -12,6 +12,7 @@ import lombok.Data;
 public class ConditionRelationFmsDTO extends BaseDTO {
 
     private String conditionRelationType ;
+    
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<ExperimentalConditionFmsDTO> conditions;
 }

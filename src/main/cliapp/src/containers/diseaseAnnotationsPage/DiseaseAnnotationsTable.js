@@ -98,7 +98,6 @@ export const DiseaseAnnotationsTable = () => {
     },
     onSettled: () => {
       setOriginalRows([]);
-
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
@@ -486,11 +485,11 @@ export const DiseaseAnnotationsTable = () => {
     body: diseaseBodyTemplate
   },
   {
-    field: "reference.curie",
+    field: "singleReference.curie",
     header: "Reference",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("referenceFilter", ["reference.curie"])
+    filterElement: filterComponentInputTextTemplate("singleReferenceFilter", ["singleReference.curie"])
   },
   {
     field: "evidenceCodes.abbreviation",

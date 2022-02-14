@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities.bulkloads;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;

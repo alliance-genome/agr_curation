@@ -29,7 +29,7 @@
         }
       },
       "negation": "not",
-      "objectId": "MGI:4879001",
+      "objectId": "MGI:4846848",
       "objectName": "Test allele 37",
       "objectRelation": {
         "associationType": "is_model_of",

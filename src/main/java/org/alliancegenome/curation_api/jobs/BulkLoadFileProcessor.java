@@ -8,6 +8,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.*;
+import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.*;
 import org.alliancegenome.curation_api.model.fms.DataFile;
@@ -248,7 +249,9 @@ public class BulkLoadFileProcessor {
         } else {
             log.info("Bulk File already exists not creating it");
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
-            bulkLoadFile.setLocalFilePath(localFilePath);
+            log.info("Cleaning up downloaded file: " + localFilePath);
+            new File(localFilePath).delete();
+            bulkLoadFile.setLocalFilePath(null);
         }
 
         if(!load.getLoadFiles().contains(bulkLoadFile)) {

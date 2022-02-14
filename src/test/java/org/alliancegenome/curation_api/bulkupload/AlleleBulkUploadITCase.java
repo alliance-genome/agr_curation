@@ -22,8 +22,6 @@ import static org.hamcrest.Matchers.is;
 @Order(2)
 public class AlleleBulkUploadITCase {
     
-    private final String TESTGENE = "TEST:TestGene00001";
-    
     @BeforeEach
     public void init() {
         RestAssured.config = RestAssuredConfig.config()
@@ -34,31 +32,6 @@ public class AlleleBulkUploadITCase {
 
     @Test
     @Order(1)
-    public void alleleBulkUploadMany() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/00_mod_examples.json"));
-            
-        // upload file
-        RestAssured.given().
-            contentType("application/json").
-            body(content).
-            when().
-            post("/api/allele/bulk/allelefile").
-            then().
-            statusCode(200);
-                
-        // check entity count
-        RestAssured.given().
-            when().
-            header("Content-Type", "application/json").
-            body("{}").
-            post("/api/allele/find?limit=10&page=0").
-            then().
-            statusCode(200).
-            body("totalResults", is(490));
-    }
-    
-    @Test
-    @Order(2)
     public void alleleBulkUploadCheckFields() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields.json"));
 
@@ -77,10 +50,10 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(491)).
+            body("totalResults", is(1)).
             body("results", hasSize(1)).
             body("results[0].curie", is("TEST:TestAllele00001")).
             body("results[0].taxon.curie", is("NCBITaxon:10090")).
@@ -92,7 +65,7 @@ public class AlleleBulkUploadITCase {
     }
     
     @Test
-    @Order(3)
+    @Order(2)
     public void alleleBulkUploadNoAlleleObjectRelations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/02_no_allele_object_relations.json"));
         
@@ -110,14 +83,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(492));
+            body("totalResults", is(2));
     }
 
     @Test
-    @Order(4)
+    @Order(3)
     public void alleleBulkUploadNoGeneAlleleObjectRelation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/03_no_gene_allele_object_relation.json"));
         
@@ -135,14 +108,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(493));
+            body("totalResults", is(3));
     }
 
     @Test
-    @Order(5)
+    @Order(4)
     public void alleleBulkUploadNoConstructAlleleObjectRelation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/04_no_construct_allele_object_relation.json"));
         
@@ -160,14 +133,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(494));
+            body("totalResults", is(4));
     }
 
     @Test
-    @Order(6)
+    @Order(5)
     public void alleleBulkUploadNoAlleleObjectRelationAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/05_no_allele_object_relation_association_type.json"));
         
@@ -185,14 +158,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(495));
+            body("totalResults", is(5));
     }
 
     @Test
-    @Order(7)
+    @Order(6)
     public void alleleBulkUploadNoAlleleObjectRelationEntity() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/06_no_allele_object_relation_entity.json"));
         
@@ -210,15 +183,15 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(495));
+            body("totalResults", is(5));
     }
 
     // TODO: adjust count (and subsequent test counts) once validation of xref pages in place
     @Test
-    @Order(8)
+    @Order(7)
     public void alleleBulkUploadNoCrossReferences() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/07_no_cross_references.json"));
         
@@ -236,14 +209,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(496));
+            body("totalResults", is(6));
     }
 
     @Test
-    @Order(9)
+    @Order(8)
     public void alleleBulkUploadNoCrossReferenceId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/08_no_cross_reference_id.json"));
         
@@ -261,14 +234,14 @@ public class AlleleBulkUploadITCase {
                 when().
                 header("Content-Type", "application/json").
                 body("{}").
-                post("/api/allele/find?limit=10&page=49").
+                post("/api/allele/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(496)); // no entity added due to missing ID
+                body("totalResults", is(6)); // no entity added due to missing ID
     }
 
     @Test
-    @Order(10)
+    @Order(9)
     public void alleleBulkUploadNoCrossReferencePages() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/09_no_cross_reference_pages.json"));
         
@@ -286,14 +259,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(497));
+            body("totalResults", is(7));
     }
 
     @Test
-    @Order(11)
+    @Order(10)
     public void alleleBulkUploadNoDescription() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/10_no_description.json"));
         
@@ -311,14 +284,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(498)); // PrimaryID is required field so entity skipped in load
+            body("totalResults", is(8)); // PrimaryID is required field so entity skipped in load
     }
 
     @Test
-    @Order(12)
+    @Order(11)
     public void alleleBulkUploadNoPrimaryId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/11_no_primary_id.json"));
         
@@ -336,14 +309,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(498));
+            body("totalResults", is(8));
     }
 
     @Test
-    @Order(13)
+    @Order(12)
     public void alleleBulkUploadNoSymbol() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/12_no_symbol.json"));
         
@@ -361,14 +334,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(498));
+            body("totalResults", is(8));
     }
 
     @Test
-    @Order(14)
+    @Order(13)
     public void alleleBulkUploadNoSymbolText() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/13_no_symbol_text.json"));
         
@@ -386,14 +359,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(498));
+            body("totalResults", is(8));
     }
 
     @Test
-    @Order(15)
+    @Order(14)
     public void alleleBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/14_no_taxon_id.json"));
         
@@ -411,14 +384,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(498));
+            body("totalResults", is(8));
     }
 
     @Test
-    @Order(16)
+    @Order(15)
     public void alleleBulkUploadNoSynonyms() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/15_no_synonyms.json"));
         
@@ -436,14 +409,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(499)); // taxonId is a required field so entity skipped in load;
+            body("totalResults", is(9)); // taxonId is a required field so entity skipped in load;
     }
 
     @Test
-    @Order(17)
+    @Order(16)
     public void alleleBulkUploadNoSecondaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/16_no_secondary_ids.json"));
         
@@ -461,14 +434,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=49").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(500));
+            body("totalResults", is(10));
     }
 
     @Test
-    @Order(18)
+    @Order(17)
     public void alleleBulkUploadInvalidAlleleObjectRelationGene() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/17_invalid_allele_object_relation_gene.json"));
         
@@ -486,15 +459,15 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=50").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(500));
+            body("totalResults", is(10));
     }
 
     // TODO: adjust count (and subsequent test counts) once loading and validation of components in place
     @Test
-    @Order(19)
+    @Order(18)
     public void alleleBulkUploadInvalidAlleleObjectRelationComponent() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/18_invalid_allele_object_relation_construct.json"));
         
@@ -512,14 +485,14 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=50").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(501));
+            body("totalResults", is(11));
     }
 
     @Test
-    @Order(20)
+    @Order(19)
     public void alleleBulkUploadInvalidAlleleObjectRelationAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/19_invalid_allele_object_relation_association_type.json"));
         
@@ -537,15 +510,15 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=50").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(501));
+            body("totalResults", is(11));
     }
     
     // NOTE: validation currently only based on regex, not DB lookup
     @Test
-    @Order(21)
+    @Order(20)
     public void alleleBulkUploadInvalidTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/20_invalid_taxon_id.json"));
         
@@ -563,10 +536,10 @@ public class AlleleBulkUploadITCase {
             when().
             header("Content-Type", "application/json").
             body("{}").
-            post("/api/allele/find?limit=10&page=50").
+            post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(501));
+            body("totalResults", is(11));
     }
     
 }

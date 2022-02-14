@@ -78,8 +78,6 @@ public class ExperimentalConditionValidator {
         
         dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
         
-        dbEntity.setPaperHandles(uiEntity.getPaperHandles());
-        
         dbEntity.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity));
         
         if (response.hasErrors()) {

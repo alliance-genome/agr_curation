@@ -72,10 +72,4 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private ChemicalTerm conditionChemical;
-
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
-    private List<PaperHandle> paperHandles;
 }

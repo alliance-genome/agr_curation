@@ -29,7 +29,7 @@
         }
       },
       "negation": "not",
-      "objectId": "MGI:96765",
+      "objectId": "MGI:2139535",
       "objectName": "Test gene 23",
       "objectRelation": {
         "associationType": "is_implicated_in",
