@@ -4,13 +4,13 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.interfaces.DQMSubmissionInterface;
-import org.alliancegenome.curation_api.jobs.BulkLoadProcessor;
+import org.alliancegenome.curation_api.jobs.BulkLoadFileProcessor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 public class DQMSubmissionController implements DQMSubmissionInterface {
 
-    @Inject BulkLoadProcessor bulkLoadProcessor;
+    @Inject BulkLoadFileProcessor bulkLoadFileProcessor;
 
     @Override
     public String update(MultipartFormDataInput input) {
@@ -22,7 +22,7 @@ public class DQMSubmissionController implements DQMSubmissionInterface {
             if(loadType == null || dataType == null) {
                 return "FAIL";
             } else {
-                bulkLoadProcessor.processBulkManualLoadFromDQM(input, loadType, dataType);
+                bulkLoadFileProcessor.processBulkManualLoadFromDQM(input, loadType, dataType);
             }
         }
 
