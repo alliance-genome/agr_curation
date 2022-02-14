@@ -27,6 +27,7 @@ import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.mapper.orm.session.impl.DelegatingSearchSession;
+import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -137,16 +138,51 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public void reindex() {
-        reindex(myClass, 4, 0);
+        reindex(myClass, 4, 0, 1000);
     }
 
-    public void reindex(int threads, int indexAmount) {
-        reindex(myClass, threads, indexAmount);
+    public void reindex(int threads, int indexAmount, int batchSize) {
+        reindex(myClass, threads, indexAmount, batchSize);
     }
 
-    public void reindex(Class<E> objectClass, int threads, int indexAmount) {
+    public void reindex(Class<E> objectClass, int threads, int indexAmount, int batchSize) {
         log.debug("Starting Index for: " + objectClass);
-        MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);
+        MassIndexer indexer = 
+            searchSession
+                .massIndexer(objectClass)
+                .batchSizeToLoadObjects(batchSize)
+                .dropAndCreateSchemaOnStart(true)
+                .mergeSegmentsOnFinish(true)
+                .typesToIndexInParallel(threads)
+                .threadsToLoadObjects(threads)
+                .monitor(new MassIndexingMonitor() {
+
+            @Override
+            public void documentsAdded(long increment) {
+                log.info("documentsAdded: " + increment);
+            }
+
+            @Override
+            public void documentsBuilt(long increment) {
+                log.info("documentsBuilt: " + increment);
+            }
+
+            @Override
+            public void entitiesLoaded(long increment) {
+                log.info("entitiesLoaded: " + increment);
+            }
+
+            @Override
+            public void addToTotalCount(long increment) {
+                log.info("addToTotalCount: " + increment);
+            }
+
+            @Override
+            public void indexingCompleted() {
+                log.info("indexingCompleted: ");
+            }
+            
+        });
         //indexer.dropAndCreateSchemaOnStart(true);
         indexer.transactionTimeout(900);
         if(indexAmount > 0){

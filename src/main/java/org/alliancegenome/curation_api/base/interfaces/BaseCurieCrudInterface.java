@@ -66,7 +66,8 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
     @Tag(name = "Reindex Endpoints")
     public void reindex(
         @DefaultValue("4") @QueryParam("threads") Integer threads,
-        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount 
+        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
+        @DefaultValue("1000") @QueryParam("batchSize") Integer batchSize
     );
     
 }
