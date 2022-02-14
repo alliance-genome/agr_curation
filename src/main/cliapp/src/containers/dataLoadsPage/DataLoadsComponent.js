@@ -193,7 +193,7 @@ export const DataLoadsComponent = () => {
       <div className="card">
         <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll">
           <Column field="md5Sum" header="MD5 Sum" />
-          <Column field="fileSize" header="File Size" />
+          <Column field="fileSize" header="Compressed File Size" />
           <Column field="recordCount" header="Record Count" />
           <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
           <Column field="lastUpdated" header="Last Loaded" />
@@ -242,7 +242,9 @@ export const DataLoadsComponent = () => {
   const statusTemplate = (rowData) => {
     let styleClass = 'p-button-text p-button-plain';
     if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status === 'STARTED' || rowData.status === 'RUNNING') { styleClass = "p-button-success"; }
+    if (rowData.status.endsWith('STARTED') || 
+      rowData.status.endsWith('RUNNING') ||
+      rowData.status.endsWith('PENDING')) { styleClass = "p-button-success"; }
 
     return (
       <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />

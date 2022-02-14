@@ -106,10 +106,7 @@ public class BulkLoadJobExecutor {
             
             // Other items to be added here later
 
-        }
-
-
-        if(loadType == BackendBulkLoadType.GENE_DTO) {
+        } else if(loadType == BackendBulkLoadType.GENE_DTO) {
             GeneMetaDataFmsDTO geneData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), GeneMetaDataFmsDTO.class);
             bulkLoadFile.setRecordCount(geneData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);

@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.jobs;
 
+import java.io.File;
 import java.time.ZonedDateTime;
 
 import javax.annotation.PostConstruct;
@@ -12,7 +13,6 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoa
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import com.amazonaws.services.s3.model.BucketAccelerateStatus;
 import com.cronutils.model.*;
 import com.cronutils.model.definition.*;
 import com.cronutils.model.time.ExecutionTime;
@@ -43,7 +43,19 @@ public class JobScheduler {
         for(BulkLoadGroup g: groups.getResults()) {
             if(g.getLoads().size() > 0) {
                 for(BulkLoad b: g.getLoads()) {
-                    if(b.getStatus() == BulkLoadStatus.RUNNING) {
+                    for(BulkLoadFile bf: b.getLoadFiles()) {
+                        if(bf.getStatus().isRunning() || bf.getLocalFilePath() != null) {
+                            new File(bf.getLocalFilePath()).delete();
+                            bf.setLocalFilePath(null);
+                            bf.setStatus(BulkLoadStatus.FAILED);
+                            bulkLoadFileDAO.merge(bf);
+                        }
+                    }
+                    if(b.getStatus() == null) {
+                        b.setStatus(BulkLoadStatus.STOPPED);
+                        bulkLoadDAO.merge(b);
+                    }
+                    if(b.getStatus().isRunning()) {
                         b.setStatus(BulkLoadStatus.FAILED);
                         bulkLoadDAO.merge(b);
                     }
@@ -78,7 +90,7 @@ public class JobScheduler {
                                         if(lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
                                             log.info("Need to run Cron: " + bsl);
                                             bsl.setSchedulingErrorMessage(null);
-                                            bsl.setStatus(BulkLoadStatus.PENDING_START);
+                                            bsl.setStatus(BulkLoadStatus.SCHEDULED_PENDING);
                                             bulkLoadDAO.merge(bsl);
                                         }
                                     }
@@ -102,8 +114,9 @@ public class JobScheduler {
         SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
         for(BulkLoadGroup group: groups.getResults()) {
             for(BulkLoad load: group.getLoads()) {
-                if(load.getStatus() == BulkLoadStatus.PENDING_START) {
-                    load.setStatus(BulkLoadStatus.STARTED);
+                if(load.getStatus() == null) load.setStatus(BulkLoadStatus.FINISHED);
+                if(load.getStatus().isPending()) {
+                    load.setStatus(load.getStatus().getNextStatus());
                     bulkLoadDAO.merge(load);
                     bus.send(load.getClass().getSimpleName(), load);
                 }
@@ -115,14 +128,9 @@ public class JobScheduler {
     public void runFileJobs() {
         SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll(null);
         for(BulkLoadFile file: res.getResults()) {
-            if(file.getStatus() == BulkLoadStatus.PENDING_START) {
-                file.setStatus(BulkLoadStatus.STARTED);
-                file.setErrorMessage(null);
-                bulkLoadFileDAO.merge(file);
-                bus.send("bulkloadfile", file);
-            }
-            if(file.getStatus() == BulkLoadStatus.FORCED_START) {
-                file.setStatus(BulkLoadStatus.FORCED_STARTED);
+            if(file.getStatus() == null) file.setStatus(BulkLoadStatus.FINISHED);
+            if(file.getStatus().isPending()) {
+                file.setStatus(file.getStatus().getNextStatus());
                 file.setErrorMessage(null);
                 bulkLoadFileDAO.merge(file);
                 bus.send("bulkloadfile", file);

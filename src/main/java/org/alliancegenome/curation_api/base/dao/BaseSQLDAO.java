@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.base.dao;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
@@ -13,20 +11,15 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.hibernate.search.engine.search.aggregation.*;
-import org.hibernate.search.engine.search.aggregation.dsl.*;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.*;
-import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.*;
-import org.hibernate.search.engine.search.query.dsl.*;
-import org.hibernate.search.engine.search.query.dsl.impl.DefaultSearchQuerySelectStep;
-import org.hibernate.search.engine.search.query.dsl.spi.AbstractExtendedSearchQueryOptionsStep;
-import org.hibernate.search.engine.search.sort.dsl.*;
-import org.hibernate.search.mapper.orm.common.EntityReference;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
+import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
-import org.hibernate.search.mapper.orm.session.impl.DelegatingSearchSession;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -157,29 +150,31 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 .threadsToLoadObjects(threads)
                 .monitor(new MassIndexingMonitor() {
 
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+                    
             @Override
             public void documentsAdded(long increment) {
-                log.info("documentsAdded: " + increment);
+                //log.info("documentsAdded: " + increment);
             }
 
             @Override
             public void documentsBuilt(long increment) {
-                log.info("documentsBuilt: " + increment);
+                ph.progressProcess();
             }
 
             @Override
             public void entitiesLoaded(long increment) {
-                log.info("entitiesLoaded: " + increment);
+                //log.info("entitiesLoaded: " + increment);
             }
 
             @Override
             public void addToTotalCount(long increment) {
-                log.info("addToTotalCount: " + increment);
+                ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
             }
 
             @Override
             public void indexingCompleted() {
-                log.info("indexingCompleted: ");
+                ph.finishProcess();
             }
             
         });
