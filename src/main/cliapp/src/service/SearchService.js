@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export class SearchService {
 
-  search(endpoint, rows, page, sorts, filters, sortMapping) {
+  search(endpoint, rows, page, sorts, filters, sortMapping, aggregationFields) {
     const searchOptions = {};
     if (!sorts) {
       sorts = [];
@@ -11,6 +11,7 @@ export class SearchService {
 
     searchOptions["searchFilters"] = filters;
     searchOptions["sortOrders"] = includeSecondarySorts(sorts, sortMapping);
+    searchOptions["aggregations"] = aggregationFields;
     // console.log(searchOptions);
     return axios.post(`/api/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
   }

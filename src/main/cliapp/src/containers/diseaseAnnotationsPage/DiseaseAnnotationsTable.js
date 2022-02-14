@@ -11,7 +11,9 @@ import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
-import { FilterComponent } from '../../components/FilterComponent';
+import { FilterComponentInputText } from '../../components/FilterComponentInputText';
+import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
+import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 
@@ -63,14 +65,29 @@ export const DiseaseAnnotationsTable = () => {
     'object.name': ['object.curie', 'object.namespace'],
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie']
-
   };
 
+  const aggregationFields = [
+    'diseaseRelation'
+  ];
 
-  useQuery(['diseaseAnnotations', tableState],
-    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping), {
+    useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
+        () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
+            onSuccess: (data) => {
+            },
+            onError: (error) => {
+                toast_topleft.current.show([
+                    { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
+                ]);
+            },
+            keepPreviousData: true,
+            refetchOnWindowFocus: false
+        }
+    );
+
+   useQuery(['diseaseAnnotations', tableState],
+    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
-
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
     },
@@ -389,8 +406,8 @@ export const DiseaseAnnotationsTable = () => {
     }
   };
 
-  const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
+  const filterComponentInputTextTemplate = (filterName, fields) => {
+    return (<FilterComponentInputText
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
@@ -399,76 +416,99 @@ export const DiseaseAnnotationsTable = () => {
     />);
   };
 
-  const columns = [
-    {
-      field: "uniqueId",
-      header: "Unique Id",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("uniqueidFilter", ["uniqueId"])
-    },
-    {
-      field: "subject.symbol",
-      header: "Subject",
-      sortable: isEnabled,
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
-      filter: true,
-      filterElement: filterComponentTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
-      editor: (props) => subjectEditorTemplate(props),
-      body: subjectBodyTemplate,
-    },
-    {
-      field: "diseaseRelation",
-      header: "Disease Relation",
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("diseaseRelationFilter", ["diseaseRelation"]),
-      editor: (props) => diseaseRelationEditor(props)
-    },
-    {
-      field: "negated",
-      header: "Negated",
-      body: negatedTemplate,
-      filter: true,
-      filterElement: filterComponentTemplate("negatedFilter", ["negated"]),
-      sortable: isEnabled,
-      editor: (props) => negatedEditor(props)
-    },
-    {
-      field: "object.name",
-      header: "Disease",
-      sortable: { isEnabled },
-      filter: true,
-      filterElement: filterComponentTemplate("objectFilter", ["object.curie", "object.name"]),
-      editor: (props) => diseaseEditorTemplate(props),
-      body: diseaseBodyTemplate
-    },
-    {
-      field: "singleReference.curie",
-      header: "Reference",
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("singleReferenceFilter", ["singleReference.curie"])
-    },
-    {
-      field: "evidenceCodes.abbreviation",
-      header: "Evidence Code",
-      body: evidenceTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
-      editor: (props) => evidenceEditorTemplate(props)
-    },
-    {
-      field: "with.symbol",
-      header: "With",
-      body: withTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
-      editor: (props) => withEditorTemplate(props)
-    }
+  const FilterComponentDropDownTemplate = (filterName, field, options, optionField) => {
+    return (<FilterComponentDropDown
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      options={options}
+      optionField={optionField}
+    />);
+  }
+
+  const FilterMultiSelectComponentTemplate = (filterName, field) => {
+    return (<FilterMultiSelectComponent
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      aggregationFields={aggregationFields}
+      tableState={tableState}
+    />);
+  }
+
+  const columns = [{
+    field: "uniqueId",
+    header: "Unique Id",
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
+  },
+  {
+    field: "subject.symbol",
+    header: "Subject",
+    sortable: isEnabled,
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
+    editor: (props) => subjectEditorTemplate(props),
+    body: subjectBodyTemplate,
+  },
+  {
+    field: "diseaseRelation",
+    header: "Disease Relation",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation"),
+    editor: (props) => diseaseRelationEditor(props)
+  },
+  {
+    field: "negated",
+    header: "Negated",
+    body: negatedTemplate,
+    filter: true,
+    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated",[{ text: "true" }, { text: "false" }], "text"),
+    sortable: isEnabled,
+    editor: (props) => negatedEditor(props)
+  },
+  {
+    field: "object.name",
+    header: "Disease",
+    sortable: { isEnabled },
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
+    editor: (props) => diseaseEditorTemplate(props),
+    body: diseaseBodyTemplate
+  },
+  {
+    field: "singleReference.curie",
+    header: "Reference",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("singleReferenceFilter", ["singleReference.curie"])
+  },
+  {
+    field: "evidenceCodes.abbreviation",
+    header: "Evidence Code",
+    body: evidenceTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
+    editor: (props) => evidenceEditorTemplate(props)
+  },
+  {
+    field: "with.symbol",
+    header: "With",
+    body: withTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
+    editor: (props) => withEditorTemplate(props)
+  }
   ];
 
   useEffect(() => {

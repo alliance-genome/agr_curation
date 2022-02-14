@@ -6,7 +6,7 @@ import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
-import { FilterComponent } from '../../components/FilterComponent'
+import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
@@ -104,7 +104,7 @@ export const MoleculesTable = () => {
   );
 
   const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
+    return (<FilterComponentInputText
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
