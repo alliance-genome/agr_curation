@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 
-export function FilterComponentInputText({ isEnabled, fields,tokenOperator, filterName, currentFilters, onFilter }) {
+export function FilterComponentInputText({ isEnabled, fields, filterName, currentFilters, onFilter, tokenOperator="AND" }) {
     const [filterValue, setFilterValue] = useState(currentFilters[filterName] ? currentFilters[filterName][fields[0]].queryString : '');
 
     useEffect(() => {

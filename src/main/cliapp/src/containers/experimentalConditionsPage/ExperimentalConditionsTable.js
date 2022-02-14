@@ -8,7 +8,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
 import { Messages } from 'primereact/messages';
-import { FilterComponent } from '../../components/FilterComponent'
+import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
@@ -230,7 +230,7 @@ export const ExperimentalConditionsTable = () => {
   }
 
   const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
+    return (<FilterComponentInputText
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}

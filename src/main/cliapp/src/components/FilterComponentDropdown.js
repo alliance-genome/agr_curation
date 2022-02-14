@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import { Dropdown } from "primereact/dropdown";
 
-export function FilterComponentDropDown({ isEnabled, field, tokenOperator ,filterName, currentFilters, onFilter, options, optionField }) {
+export function FilterComponentDropDown({ isEnabled, field, tokenOperator= "OR" ,filterName, currentFilters, onFilter, options, optionField }) {
     const [filterValue, setFilterValue] = useState(()=> {
         for(let i=0; i<options.length; i++){
             if(currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString){
@@ -12,8 +12,6 @@ export function FilterComponentDropDown({ isEnabled, field, tokenOperator ,filte
     });
 
    useEffect(() => {
-       console.log("in dropdown");
-       console.log(currentFilters);
        if(currentFilters[filterName]){
            for (let i = 0; i < options.length; i++) {
                if (currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString) {

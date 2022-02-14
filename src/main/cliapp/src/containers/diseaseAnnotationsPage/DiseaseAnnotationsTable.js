@@ -11,7 +11,6 @@ import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
-import { FilterComponent } from '../../components/FilterComponent';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
@@ -72,7 +71,7 @@ export const DiseaseAnnotationsTable = () => {
     'diseaseRelation'
   ];
 
-    useQuery(['diseaseAnnotationsAggregations', aggregationFields],
+    useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
         () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
             onSuccess: (data) => {
             },
@@ -87,9 +86,8 @@ export const DiseaseAnnotationsTable = () => {
     );
 
    useQuery(['diseaseAnnotations', tableState],
-    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, aggregationFields), {
+    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
-
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
     },
@@ -409,28 +407,17 @@ export const DiseaseAnnotationsTable = () => {
     }
   };
 
-  const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
-      isEnabled={isEnabled}
-      fields={fields}
-      filterName={filterName}
-      currentFilters={tableState.filters}
-      onFilter={onFilter}
-    />);
-  };
-
-  const filterComponentInputTextTemplate = (filterName, fields, tokenOperator = "AND") => {
+  const filterComponentInputTextTemplate = (filterName, fields) => {
     return (<FilterComponentInputText
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
       currentFilters={tableState.filters}
       onFilter={onFilter}
-      tokenOperator={tokenOperator}
     />);
   };
 
-  const FilterComponentDropDownTemplate = (filterName, field, tokenOperator = "OR", options, optionField) => {
+  const FilterComponentDropDownTemplate = (filterName, field, options, optionField) => {
     return (<FilterComponentDropDown
       isEnabled={isEnabled}
       field={field}
@@ -438,20 +425,19 @@ export const DiseaseAnnotationsTable = () => {
       currentFilters={tableState.filters}
       onFilter={onFilter}
       options={options}
-      tokenOperator={tokenOperator}
       optionField={optionField}
     />);
   }
 
-  const FilterMultiSelectComponentTemplate = (filterName, field, tokenOperator = "OR") => {
+  const FilterMultiSelectComponentTemplate = (filterName, field) => {
     return (<FilterMultiSelectComponent
       isEnabled={isEnabled}
       field={field}
       filterName={filterName}
       currentFilters={tableState.filters}
       onFilter={onFilter}
-      tokenOperator={tokenOperator}
       aggregationFields={aggregationFields}
+      tableState={tableState}
     />);
   }
 
@@ -478,7 +464,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Disease Relation",
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation", "OR"),
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation"),
     editor: (props) => diseaseRelationEditor(props)
   },
   {
@@ -486,7 +472,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Negated",
     body: negatedTemplate,
     filter: true,
-    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated", "OR", [{ text: "true" }, { text: "false" }], "text"),
+    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated",[{ text: "true" }, { text: "false" }], "text"),
     sortable: isEnabled,
     editor: (props) => negatedEditor(props)
   },

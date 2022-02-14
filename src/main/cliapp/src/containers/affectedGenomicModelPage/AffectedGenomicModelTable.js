@@ -4,7 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
-import { FilterComponent } from '../../components/FilterComponent'
+import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
@@ -92,7 +92,7 @@ export const AffectedGenomicModelTable = () => {
   );
 
   const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
+    return (<FilterComponentInputText
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
