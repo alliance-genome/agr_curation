@@ -129,7 +129,7 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
     }
     
     private void log(String message) {
-        // log.debug(message);
-        log.info(message);
+        log.debug(message);
+        // log.info(message);
     }
 }
