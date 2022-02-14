@@ -37,7 +37,7 @@ import io.restassured.config.*;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@DisplayName("04 - Disease annotation bulk upload")
+@DisplayName("04 - Disease annotation bulk upload - FMS")
 @Order(4)
 public class DiseaseAnnotationBulkUploadFmsITCase {
     

@@ -20,6 +20,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("01 - Gene bulk upload - FMS")
 @Order(1)
 public class GeneBulkUploadFmsITCase {
     

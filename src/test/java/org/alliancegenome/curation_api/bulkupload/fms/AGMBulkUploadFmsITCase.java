@@ -17,6 +17,7 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DisplayName("03 - AGM bulk upload - FMS")
 @Order(3)
 public class AGMBulkUploadFmsITCase {
     
