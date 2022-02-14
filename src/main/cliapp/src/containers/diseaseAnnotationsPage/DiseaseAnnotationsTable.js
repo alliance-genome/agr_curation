@@ -69,8 +69,22 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const aggregationFields = [
-    'object.name', 'subject.name', 'with.name', 'diseaseRelation'
+    'diseaseRelation'
   ];
+
+    useQuery(['diseaseAnnotationsAggregations', aggregationFields],
+        () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
+            onSuccess: (data) => {
+            },
+            onError: (error) => {
+                toast_topleft.current.show([
+                    { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
+                ]);
+            },
+            keepPreviousData: true,
+            refetchOnWindowFocus: false
+        }
+    );
 
    useQuery(['diseaseAnnotations', tableState],
     () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, aggregationFields), {
@@ -437,8 +451,6 @@ export const DiseaseAnnotationsTable = () => {
       currentFilters={tableState.filters}
       onFilter={onFilter}
       tokenOperator={tokenOperator}
-      tableState={tableState}
-      sortMapping={sortMapping}
       aggregationFields={aggregationFields}
     />);
   }
@@ -466,7 +478,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Disease Relation",
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", ["diseaseRelation"], "OR"),
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation", "OR"),
     editor: (props) => diseaseRelationEditor(props)
   },
   {
