@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoa
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.amazonaws.services.s3.model.BucketAccelerateStatus;
 import com.cronutils.model.*;
 import com.cronutils.model.definition.*;
 import com.cronutils.model.time.ExecutionTime;
@@ -77,7 +78,7 @@ public class JobScheduler {
                                         if(lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
                                             log.info("Need to run Cron: " + bsl);
                                             bsl.setSchedulingErrorMessage(null);
-                                            bsl.setStatus(BulkLoadStatus.PENDING);
+                                            bsl.setStatus(BulkLoadStatus.PENDING_START);
                                             bulkLoadDAO.merge(bsl);
                                         }
                                     }
@@ -101,7 +102,7 @@ public class JobScheduler {
         SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
         for(BulkLoadGroup group: groups.getResults()) {
             for(BulkLoad load: group.getLoads()) {
-                if(load.getStatus() == BulkLoadStatus.PENDING) {
+                if(load.getStatus() == BulkLoadStatus.PENDING_START) {
                     load.setStatus(BulkLoadStatus.STARTED);
                     bulkLoadDAO.merge(load);
                     bus.send(load.getClass().getSimpleName(), load);
@@ -114,8 +115,14 @@ public class JobScheduler {
     public void runFileJobs() {
         SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll(null);
         for(BulkLoadFile file: res.getResults()) {
-            if(file.getStatus() == BulkLoadStatus.PENDING) {
+            if(file.getStatus() == BulkLoadStatus.PENDING_START) {
                 file.setStatus(BulkLoadStatus.STARTED);
+                file.setErrorMessage(null);
+                bulkLoadFileDAO.merge(file);
+                bus.send("bulkloadfile", file);
+            }
+            if(file.getStatus() == BulkLoadStatus.FORCED_START) {
+                file.setStatus(BulkLoadStatus.FORCED_STARTED);
                 file.setErrorMessage(null);
                 bulkLoadFileDAO.merge(file);
                 bus.send("bulkloadfile", file);

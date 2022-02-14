@@ -62,10 +62,14 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     
     public enum BulkLoadStatus {
         STARTED,
+        FORCED_STARTED,
         RUNNING,
         STOPPED,
         FINISHED,
-        PENDING,
+        
+        PENDING_START,
+        FORCED_START,
+        
         FAILED,
         DOWNLOADING,
         NOT_RESPONDING,

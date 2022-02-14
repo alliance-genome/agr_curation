@@ -143,10 +143,10 @@ public class BulkLoadFileProcessor {
     }
     
 
-    @ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler
+    @ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
     public void bulkLoadFile(Message<BulkLoadFile> file) {
         BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
-        if(bulkLoadFile.getStatus() != BulkLoadStatus.STARTED) {
+        if(bulkLoadFile.getStatus() != BulkLoadStatus.STARTED && bulkLoadFile.getStatus() != BulkLoadStatus.FORCED_STARTED) {
             log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getStatus());
             endLoad(bulkLoadFile, bulkLoadFile.getStatus(), "Finished ended due to status: " + bulkLoadFile.getStatus());
             return;
@@ -197,8 +197,10 @@ public class BulkLoadFileProcessor {
     
     public void syncWithS3(BulkLoadFile bulkLoadFile) {
         log.info("Syncing with S3");
+        log.info("Local: " + bulkLoadFile.getLocalFilePath());
+        log.info("S3: " + bulkLoadFile.getS3Path());
         
-        if(bulkLoadFile.getS3Path() != null && bulkLoadFile.getLocalFilePath() == null) {
+        if((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path() != null) && bulkLoadFile.getLocalFilePath() == null) {
             File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path());
             if(outfile != null) {
                 //log.info(outfile + " is of size: " + outfile.length());
@@ -219,6 +221,7 @@ public class BulkLoadFileProcessor {
             }
             bulkLoadFileDAO.merge(bulkLoadFile);
         }
+        
         if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
             bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
             bulkLoadFile.setStatus(BulkLoadStatus.FAILED);
@@ -243,7 +246,7 @@ public class BulkLoadFileProcessor {
             bulkLoadFile.setBulkLoad(load);
             bulkLoadFile.setMd5Sum(md5Sum);
             bulkLoadFile.setFileSize(inputFile.length());
-            bulkLoadFile.setStatus(BulkLoadStatus.PENDING);
+            bulkLoadFile.setStatus(BulkLoadStatus.PENDING_START);
             bulkLoadFile.setLocalFilePath(localFilePath);
             bulkLoadFileDAO.persist(bulkLoadFile);
         } else {
