@@ -1,0 +1,44 @@
+[
+  {
+    "mod_id": "DATEST:Annot0013",
+    "subject": "DATEST:Gene0001",
+    "object": "DATEST:Disease0001",
+    "data_provider": [
+      "TEST"
+    ],
+    "negated": true,
+    "predicate": "is_implicated_in",
+    "genetic_sex": "male",
+    "modified_by": "DATEST:Person0001",
+    "evidence_codes": [
+      "TEST:Evidence0001"
+    ],
+    "conditionRelations": [
+      {
+        "condition_relation_type": "exacerbated_by",
+        "conditions": [
+          {
+            "condition_class": "DATEST:ExpCondTerm0001",
+            "condition_statement": "Condition statement",
+            "condition_id": "DATEST:ExpCondTerm0002",
+            "condition_quantity": "Some amount",
+            "condition_gene_ontology": "DATEST:GOTerm0001",
+            "condition_anatomy": "DATEST:AnatomyTerm0001",
+            "condition_taxon": "NCBITaxon:6239",
+            "condition_chemical": "DATEST:ChemicalTerm0001"
+          }
+        ]
+      }
+    ],
+    "disease_genetic_modifier": "DATEST:Gene0002",
+    "disease_genetic_modifier_relation": "ameliorated_by",
+    "with": [
+      "HGNC:Test0001"
+    ],
+    "single_reference": "PMID:25920554",
+    "disease_annotation_summary": "Test summary",
+    "disease_annotation_note": "Test note",
+    "creation_date": "2022-02-14",
+    "date_last_modified": "2022-02-14"
+  }
+]
