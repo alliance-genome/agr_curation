@@ -51,7 +51,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator= "O
   };
 
   const itemTemplate = (option) => {
-    return (<div>{option.optionLabel} ({option.optionValue})</div>);
+    return (<div>{option.optionLabel}</div>);
   };
 
   return (
