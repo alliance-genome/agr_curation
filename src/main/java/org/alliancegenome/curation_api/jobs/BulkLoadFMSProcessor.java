@@ -22,27 +22,25 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
         startLoad(bulkFMSLoad);
 
         if(bulkFMSLoad.getDataType() != null && bulkFMSLoad.getDataSubType() != null) {
-            String s3Url = processFMS(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
-            String filePath = fileHelper.saveIncomingURLFile(s3Url);
-            String localFilePath = fileHelper.compressInputFile(filePath);
-            processFilePath(bulkFMSLoad, localFilePath);
-            endLoad(bulkFMSLoad, null, BulkLoadStatus.FINISHED);
+            List<DataFile> files = fmsDataFileService.getDataFiles(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
+
+            if(files.size() == 1) {
+                DataFile df = files.get(0);
+                String s3Url = df.getS3Url();
+                String filePath = fileHelper.saveIncomingURLFile(s3Url);
+                String localFilePath = fileHelper.compressInputFile(filePath);
+                processFilePath(bulkFMSLoad, localFilePath);
+                endLoad(bulkFMSLoad, null, BulkLoadStatus.FINISHED);
+            } else {
+                log.warn("Files: " + files);
+                log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType());
+                endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType(), BulkLoadStatus.FAILED);
+            }
+            
         } else {
             log.error("Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing");
             endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", BulkLoadStatus.FAILED);
         }
     }
-    
-    private String processFMS(String dataType, String dataSubType) {
-        List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
 
-        if(files.size() == 1) {
-            DataFile df = files.get(0);
-            return df.getS3Url();
-        } else {
-            log.warn("Files: " + files);
-            log.warn("Issue pulling files from the FMS: " + dataType + " " + dataSubType);
-        }
-        return null;
-    }
 }

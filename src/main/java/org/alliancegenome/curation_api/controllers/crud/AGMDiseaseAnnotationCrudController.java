@@ -9,17 +9,18 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AGMDiseaseAnnotationCrudInterface;
+import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
-import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationCrudService;
+import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 
 @RequestScoped
-public class AGMDiseaseAnnotationCrudController extends BaseCrudController<AGMDiseaseAnnotationCrudService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> implements AGMDiseaseAnnotationCrudInterface {
+public class AGMDiseaseAnnotationCrudController extends BaseCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> implements AGMDiseaseAnnotationCrudInterface {
 
-    @Inject
-    AGMDiseaseAnnotationCrudService annotationService;
+    @Inject AGMDiseaseAnnotationService annotationService;
+    
+    @Inject AgmDiseaseAnnotationExecutor agmDiseaseAnnotationExecutor;
 
     @Override
     @PostConstruct
@@ -38,51 +39,43 @@ public class AGMDiseaseAnnotationCrudController extends BaseCrudController<AGMDi
     }
 
     @Override
-    public String updateAgmDiseaseAnnotations(String taxonID, List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad(taxonID, annotations);
-        return "OK";
+    public APIResponse updateAgmDiseaseAnnotations(String taxonID, List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad(taxonID, annotations);
     }
 
     @Override
-    public String updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:7955", annotations);
-        return "OK";
+    public APIResponse updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
     }
 
     @Override
-    public String updateMgiAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:10090", annotations);
-        return "OK";
+    public APIResponse updateMgiAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:10090", annotations);
     }
 
     @Override
-    public String updateRgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:10116", annotations);
-        return "OK";
+    public APIResponse updateRgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:10116", annotations);
     }
 
     @Override
-    public String updateFbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:7227", annotations);
-        return "OK";
+    public APIResponse updateFbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:7227", annotations);
     }
 
     @Override
-    public String updateWbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:6239", annotations);
-        return "OK";
+    public APIResponse updateWbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:6239", annotations);
     }
 
     @Override
-    public String updateHumanAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:9606", annotations);
-        return "OK";
+    public APIResponse updateHumanAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:9606", annotations);
     }
 
     @Override
-    public String updateSgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-        annotationService.runLoad("NCBITaxon:559292", annotations);
-        return "OK";
+    public APIResponse updateSgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
+        return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:559292", annotations);
     }
 
 }

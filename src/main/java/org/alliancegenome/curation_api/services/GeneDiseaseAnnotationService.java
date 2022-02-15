@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
@@ -28,7 +29,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDAO> {
+public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDAO> {
 
     @Inject
     GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -55,32 +56,9 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
         return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
     }
 
-    @Transactional
-    public void runLoad(String taxonId, List<GeneDiseaseAnnotationDTO> annotations) {
-        List<String> annotationIdsBefore = new ArrayList<>();
-        annotationIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));
-        annotationIdsBefore.removeIf(Objects::isNull);
-        
-        log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
-        List<String> annotationIdsAfter = new ArrayList<>();
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Gene Disease Annotation Update " + taxonId, annotations.size());
-        annotations.forEach(annotationDTO -> {
-            GeneDiseaseAnnotation annotation = upsert(annotationDTO);
-            if (annotation != null) {
-                annotationIdsAfter.add(annotation.getUniqueId());
-            }
-            ph.progressProcess();
-        });
-        ph.finishProcess();
-        
-        diseaseAnnotationService.removeNonUpdatedAnnotations(taxonId, annotationIdsBefore, annotationIdsAfter);
-    }
-
-    private GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) {
+    public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         GeneDiseaseAnnotation annotation = validateGeneDiseaseAnnotationDTO(dto);
-        if (annotation == null) return null;
-        
+
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.upsert(annotation, dto);
         if (annotation != null) {
             geneDiseaseAnnotationDAO.persist(annotation);
@@ -88,17 +66,15 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
         return annotation;
     }
     
-    private GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) {
+    private GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) throws ObjectValidationException {
         GeneDiseaseAnnotation annotation;
         if (dto.getSubject() == null) {
-            log("Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
-            return null;
+            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
         }
         
         Gene gene = geneDAO.find(dto.getSubject());
         if (gene == null) {
-            log("Allele " + dto.getSubject() + " not found in database - skipping annotation");
-            return null;
+            throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
         String annotationId = dto.getModId();
@@ -117,19 +93,12 @@ public class GeneDiseaseAnnotationCrudService extends BaseCrudService<GeneDiseas
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         if (annotation == null) return null;
         
-        if (!dto.getDiseaseRelation().equals("is_implicated_in") &&
-                !dto.getDiseaseRelation().equals("is_marker_for")) {
-            log("Invalid gene disease relation for " + annotationId + " - skipping");
-            return null;
+        if (!dto.getDiseaseRelation().equals("is_implicated_in") && !dto.getDiseaseRelation().equals("is_marker_for")) {
+            throw new ObjectValidationException(dto, "Invalid gene disease relation for " + annotationId + " - skipping");
         }
         annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
         
-        
         return annotation;
     }
-    
-    private void log(String message) {
-        log.debug(message);
-        // log.info(message);
-    }
+
 }

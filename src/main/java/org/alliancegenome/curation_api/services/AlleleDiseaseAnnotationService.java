@@ -1,32 +1,25 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
+public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
 
     @Inject
     AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
@@ -54,29 +47,7 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
-    @Transactional
-    public void runLoad(String taxonId, List<AlleleDiseaseAnnotationDTO> annotations) {
-        List<String> annotationIdsBefore = new ArrayList<>();
-        annotationIdsBefore.addAll(alleleDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));
-        annotationIdsBefore.removeIf(Objects::isNull);
-        
-        log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
-        List<String> annotationIdsAfter = new ArrayList<>();
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Allele Disease Annotation Update " + taxonId, annotations.size());
-        annotations.forEach(annotationDTO -> {
-            AlleleDiseaseAnnotation annotation = upsert(annotationDTO);
-            if (annotation != null) {
-                annotationIdsAfter.add(annotation.getUniqueId());
-            }
-            ph.progressProcess();
-        });
-        ph.finishProcess();
-        
-        diseaseAnnotationService.removeNonUpdatedAnnotations(taxonId, annotationIdsBefore, annotationIdsAfter);
-    }
-
-    private AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) {
+    public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         AlleleDiseaseAnnotation annotation = validateAlleleDiseaseAnnotationDTO(dto);
         if (annotation == null) return null;
         
@@ -87,17 +58,15 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         return annotation;
     }
     
-    private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) {
+    private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
         AlleleDiseaseAnnotation annotation;
         if (dto.getSubject() == null) {
-            log("Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
-            return null;
+            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
         }
         
         Allele allele = alleleDAO.find(dto.getSubject());
         if (allele == null) {
-            log("Allele " + dto.getSubject() + " not found in database - skipping annotation");
-            return null;
+            throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
         String annotationId = dto.getModId();
@@ -114,20 +83,14 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         }
         
         annotation = (AlleleDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
-        if (annotation == null) return null;
         
         if (!dto.getDiseaseRelation().equals("is_implicated_in")) {
-            log("Invalid allele disease relation for " + annotationId + " - skipping");
-            return null;
+            throw new ObjectValidationException(dto, "Invalid allele disease relation for " + annotationId + " - skipping");
         }
         annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
         
         
         return annotation;
     }
-    
-    private void log(String message) {
-        log.debug(message);
-        // log.info(message);
-    }
+
 }

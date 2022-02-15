@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.*;
@@ -13,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,44 +27,35 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("curie") String curie);
     
-    @POST
-    @Path("/find")
-    @JsonView(View.FieldsAndLists.class)
-    @Tag(name = "Database Search Endpoints")
-    public SearchResponse<AlleleDiseaseAnnotation> find(
-            @DefaultValue("0") @QueryParam("page") Integer page,
-            @DefaultValue("10") @QueryParam("limit") Integer limit,
-            @RequestBody HashMap<String, Object> params);
-    
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")
-    public String updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
 
     @POST @Secured
     @Path("/bulk/zfinAnnotationFile")
-    public String updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/mgiAnnotationFile")
-    public String updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/rgdAnnotationFile")
-    public String updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/fbAnnotationFile")
-    public String updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/wbAnnotationFile")
-    public String updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/humanAnnotationFile")
-    public String updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/sgdAnnotationFile")
-    public String updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
 }

@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 
-import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.*;
@@ -13,7 +12,6 @@ import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,45 +27,35 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("curie") String curie);
     
-    @POST
-    @Path("/find")
-    @Tag(name = "Database Search Endpoints")
-    @JsonView(View.FieldsAndLists.class)
-    public SearchResponse<AGMDiseaseAnnotation> find(
-            @DefaultValue("0") @QueryParam("page") Integer page,
-            @DefaultValue("10") @QueryParam("limit") Integer limit,
-            @RequestBody HashMap<String, Object> params);
-    
-    
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")
-    public String updateAgmDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateAgmDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AGMDiseaseAnnotationDTO> annotationData);
 
     @POST @Secured
     @Path("/bulk/zfinAnnotationFile")
-    public String updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/mgiAnnotationFile")
-    public String updateMgiAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateMgiAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/rgdAnnotationFile")
-    public String updateRgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateRgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/fbAnnotationFile")
-    public String updateFbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateFbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/wbAnnotationFile")
-    public String updateWbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateWbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/humanAnnotationFile")
-    public String updateHumanAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateHumanAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/sgdAnnotationFile")
-    public String updateSgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
+    public APIResponse updateSgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
 }

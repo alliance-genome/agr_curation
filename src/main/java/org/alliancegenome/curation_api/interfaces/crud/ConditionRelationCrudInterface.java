@@ -21,14 +21,4 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConditionRelationCrudInterface extends BaseCurieCrudInterface<ConditionRelation> {
 
-    @POST
-    @Path("/find")
-    @Tag(name = "Database Search Endpoints")
-    @JsonView(View.FieldsAndLists.class)
-    public SearchResponse<ConditionRelation> find(
-            @DefaultValue("0") @QueryParam("page") Integer page,
-            @DefaultValue("10") @QueryParam("limit") Integer limit,
-            @RequestBody HashMap<String, Object> params);
-
-
 }
