@@ -18,7 +18,7 @@ import lombok.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"})
+@ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"}, callSuper = true)
 public class GenomicEntity extends BiologicalEntity {
 
     //@Analyzer(definition = "caseInsensitiveAnalyzer")

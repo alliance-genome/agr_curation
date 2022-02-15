@@ -6,6 +6,7 @@ import java.util.zip.GZIPInputStream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
@@ -21,6 +22,8 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
 
     @Inject AlleleService alleleService;
     
+    @Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
+    
     public void runLoad(BulkLoadFile bulkLoadFile) {
         
         try {
@@ -28,7 +31,18 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
             bulkLoadFile.setRecordCount(alleleData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             
-            runLoad(alleleData);
+            LoadHistoryResponce res = (LoadHistoryResponce)runLoad(alleleData);
+            
+            BulkLoadFileHistory hisotry = res.getHistory();
+            
+            
+            bulkLoadFileHistoryDAO.persist(hisotry);
+            
+            bulkLoadFile.getHistory().add(res.getHistory());
+            bulkLoadFileDAO.merge(bulkLoadFile);
+            
+            log.info(res.getHistory());
+            
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -37,7 +51,7 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
     // Gets called from the API directly
     public APIResponse runLoad(AlleleMetaDataFmsDTO alleleData) {
         
-        BulkLoadHistory history = new BulkLoadHistory(alleleData.getData().size());
+        BulkLoadFileHistory history = new BulkLoadFileHistory(alleleData.getData().size());
         
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Allele FMS DTO Update", alleleData.getData().size());

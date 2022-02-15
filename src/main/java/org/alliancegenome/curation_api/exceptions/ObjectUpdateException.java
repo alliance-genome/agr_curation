@@ -1,18 +1,21 @@
 package org.alliancegenome.curation_api.exceptions;
 
-import javax.inject.Inject;
+import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import io.quarkus.logging.Log;
+import lombok.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
+@ToString
 public class ObjectUpdateException extends Exception {
 
-    @Inject ObjectMapper mapper;
+    private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
+    @Getter
     private String message = null;
+    @Getter
     private String jsonObject = null;
     
     public ObjectUpdateException(Object updateObject, String message) {

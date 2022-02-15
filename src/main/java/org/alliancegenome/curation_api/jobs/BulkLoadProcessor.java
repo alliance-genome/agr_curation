@@ -48,9 +48,6 @@ public class BulkLoadProcessor {
 
     protected FileTransferHelper fileHelper = new FileTransferHelper();
 
-
-    
-
     @ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
     public void bulkLoadFile(Message<BulkLoadFile> file) {
         BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
@@ -68,7 +65,6 @@ public class BulkLoadProcessor {
             }
             bulkLoadJobExecutor.process(bulkLoadFile);
             endLoadFile(bulkLoadFile, "", BulkLoadStatus.FINISHED);
-            log.info("Load File: " + bulkLoadFile + " is finished");
             
         } catch (Exception e) {
             endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), BulkLoadStatus.FAILED);
@@ -77,18 +73,6 @@ public class BulkLoadProcessor {
         }
         
     }
-    
-    
-    
-    
-    
-    
-
-
-
-
-
-
 
     private String processFMS(String dataType, String dataSubType) {
         List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
@@ -141,9 +125,7 @@ public class BulkLoadProcessor {
         File inputFile = new File(localFilePath);
 
         BulkLoad load = bulkLoadDAO.find(bulkLoad.getId());
-        
-        log.info(load);
-        
+
         SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
         BulkLoadFile bulkLoadFile;
 

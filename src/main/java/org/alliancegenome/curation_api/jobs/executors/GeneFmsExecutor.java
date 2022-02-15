@@ -38,7 +38,7 @@ public class GeneFmsExecutor extends LoadFileExecutor {
     // Gets called from the API directly
     public APIResponse runLoad(GeneMetaDataFmsDTO geneData) {
         
-        BulkLoadHistory history = new BulkLoadHistory(geneData.getData().size());
+        BulkLoadFileHistory history = new BulkLoadFileHistory(geneData.getData().size());
         
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 

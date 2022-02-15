@@ -16,6 +16,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = false)
 @MappedSuperclass
+@ToString(callSuper = true)
 public class BaseCurieEntity extends BaseEntity {
 
     @Id @DocumentId

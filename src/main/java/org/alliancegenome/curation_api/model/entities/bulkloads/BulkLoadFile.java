@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.entities.bulkloads;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
@@ -43,6 +45,9 @@ public class BulkLoadFile extends BaseGeneratedEntity {
 
     @ManyToOne
     private BulkLoad bulkLoad;
+    
+    @OneToMany(mappedBy = "bulkLoadFile", fetch = FetchType.EAGER)
+    private List<BulkLoadFileHistory> history;
 
     @Transient
     @JsonView({View.FieldsOnly.class})

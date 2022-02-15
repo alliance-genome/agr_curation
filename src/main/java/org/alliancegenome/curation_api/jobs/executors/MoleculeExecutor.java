@@ -39,7 +39,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Molecule DTO Update", moleculeData.getData().size());
 
-        BulkLoadHistory history = new BulkLoadHistory(moleculeData.getData().size());
+        BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
         for(MoleculeFmsDTO molecule: moleculeData.getData()) {
             try {
                 moleculeService.processUpdate(molecule);

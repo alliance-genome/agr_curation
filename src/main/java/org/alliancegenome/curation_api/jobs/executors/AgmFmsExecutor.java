@@ -36,7 +36,7 @@ public class AgmFmsExecutor extends LoadFileExecutor {
     // Gets called from the API directly
     public APIResponse runLoad(AffectedGenomicModelMetaDataFmsDTO agmData) {
         
-        BulkLoadHistory history = new BulkLoadHistory(agmData.getData().size());
+        BulkLoadFileHistory history = new BulkLoadFileHistory(agmData.getData().size());
         
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("AGM FMS DTO Update", agmData.getData().size());

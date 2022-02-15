@@ -57,7 +57,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
         log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
         List<String> annotationIdsAfter = new ArrayList<>();
         
-        BulkLoadHistory history = new BulkLoadHistory(annotations.size());
+        BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
         
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Allele Disease Annotation Update " + taxonId, annotations.size());

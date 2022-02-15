@@ -17,6 +17,7 @@ import lombok.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
 public class BiologicalEntity extends BaseCurieEntity {
 
     @IndexedEmbedded(includeDepth = 1)

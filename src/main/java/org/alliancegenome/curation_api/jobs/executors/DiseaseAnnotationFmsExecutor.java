@@ -56,7 +56,7 @@ public class DiseaseAnnotationFmsExecutor extends LoadFileExecutor {
         log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
         List<String> annotationsIdsAfter = new ArrayList<>();
         
-        BulkLoadHistory history = new BulkLoadHistory(annotationData.getData().size());
+        BulkLoadFileHistory history = new BulkLoadFileHistory(annotationData.getData().size());
         
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("Disease Annotation Update " + taxonID, annotationData.getData().size());
@@ -69,6 +69,7 @@ public class DiseaseAnnotationFmsExecutor extends LoadFileExecutor {
                 history.getExceptions().add(e);
                 history.incrementFailed();
             } catch (Exception e) {
+                e.printStackTrace();
                 history.getExceptions().add(new ObjectUpdateException(annotationDTO, e.getMessage()));
                 history.incrementFailed();
             }
