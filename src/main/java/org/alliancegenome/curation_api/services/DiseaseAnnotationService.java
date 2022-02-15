@@ -77,6 +77,10 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 ConditionRelation relation = new ConditionRelation();
                 
                 String conditionRelationType = conditionRelationDTO.getConditionRelationType();
+                if (conditionRelationType == null) {
+                    log ("Annoation " + annotation.getUniqueId() + " has condition without relation type - skipping");
+                    return null;
+                }
                 if (conditionRelationType.equals("ameliorated_by") || 
                         conditionRelationType.equals("exacerbated_by") ||
                         conditionRelationType.equals("has_condition") ||
@@ -138,7 +142,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
         List<String> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonId + " " + idsToRemove.size());
-
+        
         for (String id : idsToRemove) {
             SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", id);
             if (da != null && da.getTotalResults() == 1) {
@@ -154,6 +158,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (dto.getObject() == null ||
             dto.getDiseaseRelation() == null ||
             dto.getDataProvider() == null ||
+            dto.getSingleReference() == null ||
             CollectionUtils.isEmpty(dto.getEvidenceCodes())
                 ) {
             log("Annotation for " + dto.getObject() + " missing required fields - skipping");

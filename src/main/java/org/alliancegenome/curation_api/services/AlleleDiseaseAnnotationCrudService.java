@@ -113,6 +113,9 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
             annotation = annotationList.getResults().get(0);
         }
         
+        annotation = (AlleleDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+        if (annotation == null) return null;
+        
         if (!dto.getDiseaseRelation().equals("is_implicated_in")) {
             log("Invalid allele disease relation for " + annotationId + " - skipping");
             return null;
@@ -120,7 +123,7 @@ public class AlleleDiseaseAnnotationCrudService extends BaseCrudService<AlleleDi
         annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
         
         
-        return (AlleleDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+        return annotation;
     }
     
     private void log(String message) {

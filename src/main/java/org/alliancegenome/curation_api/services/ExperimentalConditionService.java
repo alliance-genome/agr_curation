@@ -82,7 +82,10 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         if (dto.getConditionClass() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
-            if (term == null) return null;
+            if (term == null) {
+                log("Invalid ConditionClass - skipping annotation");
+                return null;
+            }
             experimentalCondition.setConditionClass(term);
         }
         else {
@@ -109,8 +112,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
             }
             experimentalCondition.setConditionTaxon(term);
         }
-        if (dto.getConditionTaxon() != null) {
-            GOTerm term = goTermDAO.find(dto.getConditionTaxon());
+        if (dto.getConditionGeneOntology() != null) {
+            GOTerm term = goTermDAO.find(dto.getConditionGeneOntology());
             if (term == null) {
                 log("Invalid GeneOntologyId - skipping annotation");
                 return null;
