@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 

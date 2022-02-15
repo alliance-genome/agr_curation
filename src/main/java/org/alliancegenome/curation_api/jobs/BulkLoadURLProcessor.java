@@ -2,8 +2,8 @@ package org.alliancegenome.curation_api.jobs;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 
 import io.quarkus.vertx.ConsumeEvent;
 import io.vertx.core.eventbus.Message;

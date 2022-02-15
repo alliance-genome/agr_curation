@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
-import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.apache.commons.collections4.map.HashedMap;

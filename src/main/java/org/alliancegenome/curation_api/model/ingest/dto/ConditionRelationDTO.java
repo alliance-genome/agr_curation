@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.*;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class ConditionRelationDTO {

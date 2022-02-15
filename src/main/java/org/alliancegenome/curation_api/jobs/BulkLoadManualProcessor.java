@@ -5,8 +5,8 @@ import java.util.*;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.enums.BackendBulkDataType;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.*;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.jboss.resteasy.plugins.providers.multipart.*;
 
