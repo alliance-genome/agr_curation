@@ -444,6 +444,7 @@ To create a new (pre-)release and deploy to beta or production, do the following
 5. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
    *  In the "Choose a tag" selection box, select the git tag you created in the previous step
    *  Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
+   * let GitHub autogenerate a summary of all changes made in this release by clicking the "Auto-generate rease notes" button.
    *  **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
       *  **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
       *  Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment.
