@@ -6,9 +6,6 @@ on:
       - alpha
       - beta
       - production
-    paths-ignore:
-      - '**.md'
-      - .gitignore
 jobs:
   check-branching-rules:
     if: github.event.action != 'edited' || github.event.changes.base
