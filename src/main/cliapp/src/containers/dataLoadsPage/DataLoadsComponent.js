@@ -10,6 +10,7 @@ import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
+import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from 'react-query';
 
 export const DataLoadsComponent = () => {
@@ -28,10 +29,13 @@ export const DataLoadsComponent = () => {
   };
 
   const [groups, setGroups] = useState({});
+  const [history, setHistory] = useState({});
   const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
+  const [historyDialog, setHistoryDialog] = useState(false);
   const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
   const [expandedGroupRows, setExpandedGroupRows] = useState(null);
   const [expandedLoadRows, setExpandedLoadRows] = useState(null);
+  const [expandedFileRows, setExpandedFileRows] = useState(null);
   const [disableFormFields, setDisableFormFields] = useState(false);
   const errorMessage = useRef(null);
   const searchService = new SearchService();
@@ -120,6 +124,16 @@ export const DataLoadsComponent = () => {
     });
   };
 
+  const showHistory = (rowData) => {
+    setHistory(rowData);
+    setHistoryDialog(true);
+  };
+
+
+  const historyActionBodyTemplate = (rowData) => {
+    return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info p-mr-2" onClick={() => showHistory(rowData)} />
+  };
+
   const loadFileActionBodyTemplate = (rowData) => {
     let ret = [];
 
@@ -188,21 +202,7 @@ export const DataLoadsComponent = () => {
 
 
 
-  const fileTable = (load) => {
-    return (
-      <div className="card">
-        <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll">
-          <Column field="md5Sum" header="MD5 Sum" />
-          <Column field="fileSize" header="Compressed File Size" />
-          <Column field="recordCount" header="Record Count" />
-          <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
-          <Column field="lastUpdated" header="Last Loaded" />
-          <Column field="status" body={statusTemplate} header="Status" />
-          <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-        </DataTable>
-      </div>
-    );
-  };
+
 
   const dynamicColumns = (loads) => {
 
@@ -248,6 +248,41 @@ export const DataLoadsComponent = () => {
 
     return (
       <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
+    );
+  };
+
+  const hisotryTable = (file) => {
+    return (
+      <div className="card">
+        <DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
+          
+          <Column field="loadStarted" header="Load Started" />
+          <Column field="loadFinished" header="Load Finished" />
+          <Column field="completedRecords" header="Records Completed" />
+          <Column field="failedRecords" header="Records Failed" />
+          <Column field="totalRecords" header="Total Records" />
+          <Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+        </DataTable>
+      </div>
+    );
+  };
+
+  const fileTable = (load) => {
+    return (
+      <div className="card">
+        <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll"
+          expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
+          rowExpansionTemplate={hisotryTable} dataKey="id">
+          <Column expander style={{ width: '3em' }} />
+          <Column field="md5Sum" header="MD5 Sum" />
+          <Column field="fileSize" header="Compressed File Size" />
+          <Column field="recordCount" header="Record Count" />
+          <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
+          <Column field="lastUpdated" header="Last Loaded" />
+          <Column field="status" body={statusTemplate} header="Status" />
+          <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+        </DataTable>
+      </div>
     );
   };
 
@@ -297,6 +332,11 @@ export const DataLoadsComponent = () => {
       <NewBulkLoadGroupForm
         bulkLoadGroupDialog={bulkLoadGroupDialog}
         setBulkLoadGroupDialog={setBulkLoadGroupDialog}
+      />
+      <HistoryDialog
+        historyDialog={historyDialog}
+        setHistoryDialog={setHistoryDialog}
+        history={history}
       />
     </div>
   );

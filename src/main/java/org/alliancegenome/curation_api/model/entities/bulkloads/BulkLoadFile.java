@@ -46,6 +46,7 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     @ManyToOne
     private BulkLoad bulkLoad;
     
+    @JsonView({View.FieldsOnly.class})
     @OneToMany(mappedBy = "bulkLoadFile", fetch = FetchType.EAGER)
     private List<BulkLoadFileHistory> history;
 

@@ -218,26 +218,22 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
                 if (objectRelations.getObjectRelation().containsKey("gene")) {
                     Gene gene = geneDAO.find(objectRelations.getObjectRelation().get("gene"));
                     if (gene == null) {
-                        throw new ObjectValidationException(allele, "Related gene not found in database for " + allele.getPrimaryId() + " - skipping");
+                        throw new ObjectValidationException(allele, "Related gene not found in database for " + objectRelations.getObjectRelation().get("gene") + " - skipping");
                     }
-                    if (objectRelations.getObjectRelation().containsKey("associationType") &&
-                            !objectRelations.getObjectRelation().get("associationType").equals("allele_of")) {
+                    if (objectRelations.getObjectRelation().containsKey("associationType") && !objectRelations.getObjectRelation().get("associationType").equals("allele_of")) {
                         throw new ObjectValidationException(allele, "Invalid association type for related gene of " + allele.getPrimaryId() + " - skipping");
                     }
                 }
                 if (objectRelations.getObjectRelation().containsKey("construct")) {
-                    if (objectRelations.getObjectRelation().containsKey("associationType") &&
-                            !objectRelations.getObjectRelation().get("associationType").equals("contains")) {
+                    if (objectRelations.getObjectRelation().containsKey("associationType") && !objectRelations.getObjectRelation().get("associationType").equals("contains")) {
                         throw new ObjectValidationException(allele, "Invalid association type for related construct of " + allele.getPrimaryId() + " - skipping");
                     }
                 }
-                if (!objectRelations.getObjectRelation().containsKey("gene") &&
-                        !objectRelations.getObjectRelation().containsKey("construct")) {
+                if (!objectRelations.getObjectRelation().containsKey("gene") && !objectRelations.getObjectRelation().containsKey("construct")) {
                     throw new ObjectValidationException(allele, "No valid related entity type found in " + allele.getPrimaryId() + " objectRelation - skipping");
                 }
                 for (String orKey : objectRelations.getObjectRelation().keySet()) {
-                    if (!orKey.equals("gene") && !orKey.equals("construct") &&
-                            !orKey.equals("associationType")) {
+                    if (!orKey.equals("gene") && !orKey.equals("construct") && !orKey.equals("associationType")) {
                         throw new ObjectValidationException(allele, "Invalid key (" + orKey + ") found in " + allele.getPrimaryId() + " objectRelation - skipping");
                     }
                 }

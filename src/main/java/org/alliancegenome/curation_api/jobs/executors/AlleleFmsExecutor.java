@@ -33,16 +33,13 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
             
             LoadHistoryResponce res = (LoadHistoryResponce)runLoad(alleleData);
             
-            BulkLoadFileHistory hisotry = res.getHistory();
-            
-            
-            bulkLoadFileHistoryDAO.persist(hisotry);
+            BulkLoadFileHistory history = res.getHistory();
+            history.setBulkLoadFile(bulkLoadFile);
+            bulkLoadFileHistoryDAO.persist(history);
             
             bulkLoadFile.getHistory().add(res.getHistory());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            
-            log.info(res.getHistory());
-            
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -72,6 +69,7 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
         }
         ph.finishProcess();
         
+        history.finishLoad();
         return new LoadHistoryResponce(history);
     }
 
