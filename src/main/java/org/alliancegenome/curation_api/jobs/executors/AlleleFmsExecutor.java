@@ -60,7 +60,6 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
         }
         ph.finishProcess();
         
-        history.finishLoad();
         return new LoadHistoryResponce(history);
     }
 

@@ -10,6 +10,7 @@ public class LoadHistoryResponce extends APIResponse {
     private BulkLoadFileHistory history;
     
     public LoadHistoryResponce(BulkLoadFileHistory history) {
+        history.finishLoad();
         this.history = history;
     }
 

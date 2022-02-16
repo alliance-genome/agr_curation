@@ -29,7 +29,7 @@ export const DataLoadsComponent = () => {
   };
 
   const [groups, setGroups] = useState({});
-  const [history, setHistory] = useState({});
+  const [history, setHistory] = useState({id: 0});
   const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
   const [historyDialog, setHistoryDialog] = useState(false);
   const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
@@ -336,6 +336,7 @@ export const DataLoadsComponent = () => {
       <HistoryDialog
         historyDialog={historyDialog}
         setHistoryDialog={setHistoryDialog}
+        dataLoadService={getService()}
         history={history}
       />
     </div>

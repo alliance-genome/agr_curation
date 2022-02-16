@@ -47,7 +47,7 @@ public class BulkLoadFileHistory extends BaseGeneratedEntity {
     private BulkLoadFile bulkLoadFile;
     
     @Type(type = JsonTypes.JSON_BIN)
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.BulkLoadFileHistory.class})
     @Column(columnDefinition = JsonTypes.JSON_BIN)
     private List<ObjectUpdateExceptionData> exceptions = new ArrayList<>();
     

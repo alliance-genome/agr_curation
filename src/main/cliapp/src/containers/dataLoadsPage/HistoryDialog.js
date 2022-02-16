@@ -1,26 +1,35 @@
 import React, { useState } from 'react';
+import { useQuery } from 'react-query';
 import Moment from 'react-moment';
 import moment from 'moment';
-import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
-import { InputText } from 'primereact/inputtext';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ScrollPanel } from 'primereact/scrollpanel';
-import { classNames } from 'primereact/utils';
-import { DataLoadService } from '../../service/DataLoadService';
-import { useOktaAuth } from '@okta/okta-react';
 
-
-import { useMutation, useQueryClient } from 'react-query';
-
-
-export const HistoryDialog = ({ historyDialog, setHistoryDialog, history }) => {
+export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLoadService }) => {
 
   const [expandedRows, setExpandedRows] = useState(null);
+  const [fullHistory, setFullHistory] = useState({});
+
+  useQuery(['bulkLoadFullHistory', history],
+      () => dataLoadService.getFileHistoryFile(history.id), {
+      onSuccess: (res) => {
+        if(res.data.entity) {
+          setFullHistory(res.data.entity);
+        }
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      keepPreviousData: true,
+      refetchOnWindowFocus: false
+    }
+  );
 
   const hideDialog = () => {
     setHistoryDialog(false);
+    setFullHistory({});
   };
 
   const jsonObjectTemplate = (rowData) => {
@@ -45,31 +54,31 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history }) => {
               <div className="card summary">
                 <span className="title">Duration</span>
                 <span className="detail">How long the load took</span>
-                <span className="count visitors"><Moment format="HH:mm:ss" duration={history.loadStarted} date={history.loadFinished} /></span>
+                <span className="count visitors"><Moment format="HH:mm:ss" duration={fullHistory.loadStarted} date={fullHistory.loadFinished} /></span>
               </div>
             </div>
             <div className="p-col-12 p-lg-4">
               <div className="card summary">
                 <span className="title">Rate</span>
                 <span className="detail">How many records per second to the database</span>
-                <span className="count purchases">{Math.round(history.completedRecords / (moment(history.loadFinished) - moment(history.loadStarted)) * 10000) / 10} r/s</span>
+                <span className="count purchases">{Math.round(fullHistory.completedRecords / (moment(fullHistory.loadFinished) - moment(fullHistory.loadStarted)) * 10000) / 10} r/s</span>
               </div>
             </div>
             <div className="p-col-12 p-lg-4">
               <div className="card summary">
                 <span className="title">Completed</span>
                 <span className="detail">How much of the load was successful</span>
-                <span className="count revenue">{history.completedRecords} of {history.totalRecords} = {Math.round(history.completedRecords / history.totalRecords * 1000) / 10}%</span>
+                <span className="count revenue">{fullHistory.completedRecords} of {fullHistory.totalRecords} = {Math.round(fullHistory.completedRecords / fullHistory.totalRecords * 1000) / 10}%</span>
               </div>
             </div>
             
           </div>
 
           <div className="card">
-            <DataTable key="exceptionTable" value={history.exceptions} responsiveLayout="scroll"
+            <DataTable key="exceptionTable" value={fullHistory.exceptions} responsiveLayout="scroll"
               expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)} rowExpansionTemplate={jsonObjectTemplate} dataKey="message">
               <Column expander style={{ width: '3em' }} />
-              <Column field="message" header="Exception Message" />
+              <Column field="message" header={`Exception Messages (${fullHistory.exceptions ? fullHistory.exceptions.length : 0})`} />
             </DataTable>
           </div>
 

@@ -59,6 +59,10 @@ export class DataLoadService extends BaseAuthService {
       return axios.get(`api/bulkloadfile/restart/${id}`, this.apiAuthHeader);
     }
 
+    getFileHistoryFile(id) {
+      return axios.get(`api/bulkloadfilehistory/${id}`);
+    }
+
     deleteLoadFile(id) {
       return axios.delete(`api/bulkloadfile/${id}`, this.apiAuthHeader);
     }
