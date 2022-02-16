@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.enums.BackendBulkDataType;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
@@ -40,13 +41,14 @@ public class DiseaseAnnotationFmsExecutor extends LoadFileExecutor {
             BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
             String taxonId = BackendBulkDataType.valueOf(fms.getDataSubType()).getTaxonId();
             
-            runLoad(taxonId, diseaseData);
+            trackHistory(runLoad(taxonId, diseaseData), bulkLoadFile);
+
         } catch (Exception e) {
             e.printStackTrace();
         }
         
     }
-    
+
     public APIResponse runLoad(String taxonID, DiseaseAnnotationMetaDataFmsDTO annotationData) {
         List<String> annotationsIdsBefore = new ArrayList<String>();
         annotationsIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonID));
@@ -66,11 +68,11 @@ public class DiseaseAnnotationFmsExecutor extends LoadFileExecutor {
                 history.incrementCompleted();
                 annotationsIdsAfter.add(annotation.getUniqueId());
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e);
+                history.getExceptions().add(e.getData());
                 history.incrementFailed();
             } catch (Exception e) {
                 e.printStackTrace();
-                history.getExceptions().add(new ObjectUpdateException(annotationDTO, e.getMessage()));
+                history.getExceptions().add(new ObjectUpdateExceptionData(annotationDTO, e.getMessage()));
                 history.incrementFailed();
             }
             ph.progressProcess();

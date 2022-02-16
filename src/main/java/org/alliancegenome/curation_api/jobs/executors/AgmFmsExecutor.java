@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.*;
@@ -26,7 +27,9 @@ public class AgmFmsExecutor extends LoadFileExecutor {
             AffectedGenomicModelMetaDataFmsDTO agmData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModelMetaDataFmsDTO.class);
             bulkLoadFile.setRecordCount(agmData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            runLoad(agmData);
+            
+            trackHistory(runLoad(agmData), bulkLoadFile);
+            
         } catch(Exception e) {
             e.printStackTrace();
         }
@@ -45,10 +48,10 @@ public class AgmFmsExecutor extends LoadFileExecutor {
                 affectedGenomicModelService.processUpdate(agm);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e);
+                history.getExceptions().add(e.getData());
                 history.incrementFailed();
             } catch (Exception e) {
-                history.getExceptions().add(new ObjectUpdateException(agm, e.getMessage()));
+                history.getExceptions().add(new ObjectUpdateExceptionData(agm, e.getMessage()));
                 history.incrementFailed();
             }
             

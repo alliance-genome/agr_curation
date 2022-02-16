@@ -10,6 +10,7 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.ingest.dto.*;
@@ -26,8 +27,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
     @Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
     @Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
     @Inject DiseaseAnnotationService diseaseAnnotationService;
-    
-    
+
     @Transactional
     public void runLoad(BulkLoadFile bulkLoadFile) {
         
@@ -42,7 +42,9 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
             if (annotations != null) {
                 bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
                 bulkLoadFileDAO.merge(bulkLoadFile);
-                runLoad(taxonId, annotations);
+                
+                trackHistory(runLoad(taxonId, annotations), bulkLoadFile);
+
             }
 
         } catch (Exception e) {
@@ -71,10 +73,10 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
                 history.incrementCompleted();
                 annotationIdsAfter.add(annotation.getUniqueId());
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e);
+                history.getExceptions().add(e.getData());
                 history.incrementFailed();
             } catch (Exception e) {
-                history.getExceptions().add(new ObjectUpdateException(annotationDTO, e.getMessage()));
+                history.getExceptions().add(new ObjectUpdateExceptionData(annotationDTO, e.getMessage()));
                 history.incrementFailed();
             }
 

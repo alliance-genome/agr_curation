@@ -27,7 +27,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
             bulkLoadFile.setRecordCount(moleculeData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             
-            LoadHistoryResponce res = (LoadHistoryResponce)runLoad(moleculeData);
+            trackHistory(runLoad(moleculeData), bulkLoadFile);
             
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +45,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
                 moleculeService.processUpdate(molecule);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e);
+                history.getExceptions().add(e.getData());
                 history.incrementFailed();
             }
             ph.progressProcess();

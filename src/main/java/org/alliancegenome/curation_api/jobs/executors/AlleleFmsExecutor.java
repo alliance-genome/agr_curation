@@ -6,8 +6,8 @@ import java.util.zip.GZIPInputStream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.*;
@@ -22,8 +22,6 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
 
     @Inject AlleleService alleleService;
     
-    @Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-    
     public void runLoad(BulkLoadFile bulkLoadFile) {
         
         try {
@@ -31,14 +29,7 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
             bulkLoadFile.setRecordCount(alleleData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             
-            LoadHistoryResponce res = (LoadHistoryResponce)runLoad(alleleData);
-            
-            BulkLoadFileHistory history = res.getHistory();
-            history.setBulkLoadFile(bulkLoadFile);
-            bulkLoadFileHistoryDAO.persist(history);
-            
-            bulkLoadFile.getHistory().add(res.getHistory());
-            bulkLoadFileDAO.merge(bulkLoadFile);
+            trackHistory(runLoad(alleleData), bulkLoadFile);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,10 +49,10 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
                 alleleService.processUpdate(allele);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e);
+                history.getExceptions().add(e.getData());
                 history.incrementFailed();
             } catch (Exception e) {
-                history.getExceptions().add(new ObjectUpdateException(allele, e.getMessage()));
+                history.getExceptions().add(new ObjectUpdateExceptionData(allele, e.getMessage()));
                 history.incrementFailed();
             }
 

@@ -7,6 +7,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.*;
@@ -29,7 +30,8 @@ public class GeneFmsExecutor extends LoadFileExecutor {
             bulkLoadFile.setRecordCount(geneData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
             
-            runLoad(geneData);
+            trackHistory(runLoad(geneData), bulkLoadFile);
+        
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -50,10 +52,10 @@ public class GeneFmsExecutor extends LoadFileExecutor {
                 geneService.processUpdate(gene);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e);
+                history.getExceptions().add(e.getData());
                 history.incrementFailed();
             } catch (Exception e) {
-                history.getExceptions().add(new ObjectUpdateException(gene, e.getMessage()));
+                history.getExceptions().add(new ObjectUpdateExceptionData(gene, e.getMessage()));
                 history.incrementFailed();
             }
 

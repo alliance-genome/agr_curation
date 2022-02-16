@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
@@ -48,7 +49,7 @@ public class BulkLoadFileHistory extends BaseGeneratedEntity {
     @Type(type = JsonTypes.JSON_BIN)
     @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition = JsonTypes.JSON_BIN)
-    private List<ObjectUpdateException> exceptions = new ArrayList<>();
+    private List<ObjectUpdateExceptionData> exceptions = new ArrayList<>();
     
     public BulkLoadFileHistory(long totalRecords) {
         this.totalRecords = totalRecords;

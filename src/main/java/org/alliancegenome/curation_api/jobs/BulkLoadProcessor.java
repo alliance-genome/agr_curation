@@ -126,6 +126,8 @@ public class BulkLoadProcessor {
 
         BulkLoad load = bulkLoadDAO.find(bulkLoad.getId());
 
+        log.info(load);
+        
         SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
         BulkLoadFile bulkLoadFile;
 
@@ -135,10 +137,10 @@ public class BulkLoadProcessor {
             bulkLoadFile.setBulkLoad(load);
             bulkLoadFile.setMd5Sum(md5Sum);
             bulkLoadFile.setFileSize(inputFile.length());
-            if(bulkLoad.getStatus() == BulkLoadStatus.FORCED_RUNNING) {
+            if(load.getStatus() == BulkLoadStatus.FORCED_RUNNING) {
                 bulkLoadFile.setStatus(BulkLoadStatus.FORCED_PENDING);
             }
-            if(bulkLoad.getStatus() == BulkLoadStatus.SCHEDULED_RUNNING) {
+            if(load.getStatus() == BulkLoadStatus.SCHEDULED_RUNNING) {
                 bulkLoadFile.setStatus(BulkLoadStatus.SCHEDULED_PENDING);
             }
             
