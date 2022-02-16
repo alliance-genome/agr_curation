@@ -108,6 +108,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return entity;
     }
 
+    @Transactional
     public E remove(String id) {
         log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
@@ -115,6 +116,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return entity;
     }
 
+    @Transactional
     public E remove(Long id) {
         log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
