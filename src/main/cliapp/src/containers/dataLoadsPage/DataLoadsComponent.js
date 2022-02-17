@@ -138,10 +138,10 @@ export const DataLoadsComponent = () => {
     let ret = [];
 
     if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
+      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
     }
     if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoadFile(rowData)} />);
+      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoadFile(rowData)} />);
     }
 
     return ret;
@@ -151,14 +151,14 @@ export const DataLoadsComponent = () => {
   const loadActionBodyTemplate = (rowData) => {
     let ret = [];
 
-    ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
+    ret.push(<Button key="edit" con="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
 
     if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
+      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
     }
 
     if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
-      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
+      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
     }
 
     return ret;
@@ -194,12 +194,11 @@ export const DataLoadsComponent = () => {
 
   const scheduleActiveTemplate = (rowData) => {
     return (
-      <>
+      <div>
         {rowData.scheduleActive ? "true" : "false"}
-      </>
+      </div>
     );
   };
-
 
 
 
@@ -233,7 +232,7 @@ export const DataLoadsComponent = () => {
       }
     }
     if (showManualLoad) {
-      ret.push(<Column key="dataType" field="dataType" header="Load Data Type" />);
+      ret.push(<Column key="dataType2" field="dataType" header="Load Data Type" />);
     }
 
     return ret;
