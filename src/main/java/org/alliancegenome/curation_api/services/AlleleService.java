@@ -12,6 +12,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
@@ -50,10 +51,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
     }
 
     @Transactional
-    public void processUpdate(AlleleFmsDTO allele) {
-        if (!validateAlleleDTO(allele)) {
-            return;
-        }
+    public void processUpdate(AlleleFmsDTO allele) throws ObjectUpdateException {
+        validateAlleleDTO(allele);
 
         Allele dbAllele = alleleDAO.find(allele.getPrimaryId());
         //log.info("Allele: " + allele + " : " + alleleDTO.getPrimaryId());
@@ -188,29 +187,26 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
     }
 
-    private boolean validateAlleleDTO(AlleleFmsDTO allele) {
+    private void validateAlleleDTO(AlleleFmsDTO allele) throws ObjectValidationException {
         // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
 
         // Check for required fields
         if (allele.getPrimaryId() == null || allele.getSymbol() == null
                 || allele.getSymbolText() == null || allele.getTaxonId() == null) {
-            log.debug("Entry for allele " + allele.getPrimaryId() + " missing required fields - skipping");
-            return false;
+            throw new ObjectValidationException(allele, "Entry for allele " + allele.getPrimaryId() + " missing required fields - skipping");
         }
 
         // Validate taxon ID
         ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(allele.getTaxonId());
         if (taxon.getEntity() == null) {
-            log.debug("Invalid taxon ID for allele " + allele.getPrimaryId() + " - skipping");
-            return false;
+            throw new ObjectValidationException(allele, "Invalid taxon ID for allele " + allele.getPrimaryId() + " - skipping");
         }
 
         // Validate xrefs
         if (allele.getCrossReferences() != null) {
             for (CrossReferenceFmsDTO xrefDTO : allele.getCrossReferences()) {
                 if (xrefDTO.getId() == null) {
-                    log.debug("Missing xref ID for allele " + allele.getPrimaryId() + " - skipping");
-                    return false;
+                    throw new ObjectValidationException(allele, "Missing xref ID for allele " + allele.getPrimaryId() + " - skipping");
                 }
             }
         }
@@ -222,38 +218,27 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
                 if (objectRelations.getObjectRelation().containsKey("gene")) {
                     Gene gene = geneDAO.find(objectRelations.getObjectRelation().get("gene"));
                     if (gene == null) {
-                        log.debug("Related gene not found in database for " + allele.getPrimaryId() + " - skipping");
-                        return false;
+                        throw new ObjectValidationException(allele, "Related gene not found in database for " + objectRelations.getObjectRelation().get("gene") + " - skipping");
                     }
-                    if (objectRelations.getObjectRelation().containsKey("associationType") &&
-                            !objectRelations.getObjectRelation().get("associationType").equals("allele_of")) {
-                        log.debug("Invalid association type for related gene of " + allele.getPrimaryId() + " - skipping");
-                        return false;
+                    if (objectRelations.getObjectRelation().containsKey("associationType") && !objectRelations.getObjectRelation().get("associationType").equals("allele_of")) {
+                        throw new ObjectValidationException(allele, "Invalid association type for related gene of " + allele.getPrimaryId() + " - skipping");
                     }
                 }
                 if (objectRelations.getObjectRelation().containsKey("construct")) {
-                    if (objectRelations.getObjectRelation().containsKey("associationType") &&
-                            !objectRelations.getObjectRelation().get("associationType").equals("contains")) {
-                        log.debug("Invalid association type for related construct of " + allele.getPrimaryId() + " - skipping");
-                        return false;
+                    if (objectRelations.getObjectRelation().containsKey("associationType") && !objectRelations.getObjectRelation().get("associationType").equals("contains")) {
+                        throw new ObjectValidationException(allele, "Invalid association type for related construct of " + allele.getPrimaryId() + " - skipping");
                     }
                 }
-                if (!objectRelations.getObjectRelation().containsKey("gene") &&
-                        !objectRelations.getObjectRelation().containsKey("construct")) {
-                    log.debug("No valid related entity type found in " + allele.getPrimaryId() + " objectRelation - skipping");
-                    return false;
+                if (!objectRelations.getObjectRelation().containsKey("gene") && !objectRelations.getObjectRelation().containsKey("construct")) {
+                    throw new ObjectValidationException(allele, "No valid related entity type found in " + allele.getPrimaryId() + " objectRelation - skipping");
                 }
                 for (String orKey : objectRelations.getObjectRelation().keySet()) {
-                    if (!orKey.equals("gene") && !orKey.equals("construct") &&
-                            !orKey.equals("associationType")) {
-                        log.debug("Invalid key (" + orKey + ") found in " + allele.getPrimaryId() + " objectRelation - skipping");
-                        return false;
+                    if (!orKey.equals("gene") && !orKey.equals("construct") && !orKey.equals("associationType")) {
+                        throw new ObjectValidationException(allele, "Invalid key (" + orKey + ") found in " + allele.getPrimaryId() + " objectRelation - skipping");
                     }
                 }
             }
         }
-
-        return true;
     }
 
 }

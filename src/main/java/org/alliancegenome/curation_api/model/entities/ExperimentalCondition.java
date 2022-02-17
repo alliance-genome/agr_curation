@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;

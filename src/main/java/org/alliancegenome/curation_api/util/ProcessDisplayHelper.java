@@ -35,7 +35,7 @@ public class ProcessDisplayHelper {
         startProcess(message, 0);
     }
     
-    public void startProcess(String message, int totalSize) {
+    public void startProcess(String message, long totalSize) {
         this.message = message + ": ";
         this.totalSize = totalSize;
         lastSizeCounter = 0;

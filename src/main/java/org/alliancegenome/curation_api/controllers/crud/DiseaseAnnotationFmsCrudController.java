@@ -7,15 +7,17 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.DiseaseAnnotationFmsCrudInterface;
+import org.alliancegenome.curation_api.jobs.executors.DiseaseAnnotationFmsExecutor;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.DiseaseAnnotationFmsService;
 
 @RequestScoped
 public class DiseaseAnnotationFmsCrudController extends BaseCrudController<DiseaseAnnotationFmsService, DiseaseAnnotation, DiseaseAnnotationDAO> implements DiseaseAnnotationFmsCrudInterface {
 
-    @Inject
-    DiseaseAnnotationFmsService diseaseAnnotationService;
+    @Inject DiseaseAnnotationFmsService diseaseAnnotationService;
+    @Inject DiseaseAnnotationFmsExecutor diseaseAnnotationFmsExecutor;
 
     @Override
     @PostConstruct
@@ -24,51 +26,43 @@ public class DiseaseAnnotationFmsCrudController extends BaseCrudController<Disea
     }
 
     @Override
-    public String updateDiseaseAnnotations(String taxonID, DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad(taxonID, annotations);
-        return "OK";
+    public APIResponse updateDiseaseAnnotations(String taxonID, DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad(taxonID, annotations);
     }
 
     @Override
-    public String updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:7955", annotations);
-        return "OK";
+    public APIResponse updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:7955", annotations);
     }
 
     @Override
-    public String updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:10090", annotations);
-        return "OK";
+    public APIResponse updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:10090", annotations);
     }
 
     @Override
-    public String updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:10116", annotations);
-        return "OK";
+    public APIResponse updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:10116", annotations);
     }
 
     @Override
-    public String updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:7227", annotations);
-        return "OK";
+    public APIResponse updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:7227", annotations);
     }
 
     @Override
-    public String updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:6239", annotations);
-        return "OK";
+    public APIResponse updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:6239", annotations);
     }
 
     @Override
-    public String updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:9606", annotations);
-        return "OK";
+    public APIResponse updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:9606", annotations);
     }
 
     @Override
-    public String updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
-        diseaseAnnotationService.runLoad("NCBITaxon:559292", annotations);
-        return "OK";
+    public APIResponse updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotations) {
+        return diseaseAnnotationFmsExecutor.runLoad("NCBITaxon:559292", annotations);
     }
 
 }

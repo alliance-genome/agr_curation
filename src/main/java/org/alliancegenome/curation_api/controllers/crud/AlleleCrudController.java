@@ -7,9 +7,10 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleCrudInterface;
-import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
+import org.alliancegenome.curation_api.jobs.executors.AlleleFmsExecutor;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleMetaDataFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 
 @RequestScoped
@@ -17,7 +18,7 @@ public class AlleleCrudController extends BaseCrudController<AlleleService, Alle
 
     @Inject AlleleService alleleService;
     
-    @Inject BulkLoadJobExecutor bulkLoadJobExecutor;
+    @Inject AlleleFmsExecutor alleleFmsExecutor;
 
     @Override
     @PostConstruct
@@ -26,9 +27,8 @@ public class AlleleCrudController extends BaseCrudController<AlleleService, Alle
     }
 
     @Override
-    public String updateAlleles(AlleleMetaDataFmsDTO alleleData) {
-        bulkLoadJobExecutor.processAlleleDTOData(null, alleleData);
-        return "OK";
+    public APIResponse updateAlleles(AlleleMetaDataFmsDTO alleleData) {
+        return alleleFmsExecutor.runLoad(alleleData);
     }
 
 }

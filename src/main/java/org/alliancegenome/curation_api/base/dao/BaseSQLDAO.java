@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.base.dao;
 
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.json.JsonObject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
@@ -13,20 +11,16 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.hibernate.search.engine.search.aggregation.*;
-import org.hibernate.search.engine.search.aggregation.dsl.*;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.*;
-import org.hibernate.search.engine.search.predicate.dsl.SearchPredicateFactory;
 import org.hibernate.search.engine.search.query.*;
-import org.hibernate.search.engine.search.query.dsl.*;
-import org.hibernate.search.engine.search.query.dsl.impl.DefaultSearchQuerySelectStep;
-import org.hibernate.search.engine.search.query.dsl.spi.AbstractExtendedSearchQueryOptionsStep;
-import org.hibernate.search.engine.search.sort.dsl.*;
-import org.hibernate.search.mapper.orm.common.EntityReference;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
+import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
-import org.hibernate.search.mapper.orm.session.impl.DelegatingSearchSession;
+import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -114,6 +108,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return entity;
     }
 
+    @Transactional
     public E remove(String id) {
         log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
@@ -121,6 +116,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return entity;
     }
 
+    @Transactional
     public E remove(Long id) {
         log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
@@ -137,16 +133,53 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public void reindex() {
-        reindex(myClass, 4, 0);
+        reindex(myClass, 4, 0, 1000);
     }
 
-    public void reindex(int threads, int indexAmount) {
-        reindex(myClass, threads, indexAmount);
+    public void reindex(int threads, int indexAmount, int batchSize) {
+        reindex(myClass, threads, indexAmount, batchSize);
     }
 
-    public void reindex(Class<E> objectClass, int threads, int indexAmount) {
+    public void reindex(Class<E> objectClass, int threads, int indexAmount, int batchSize) {
         log.debug("Starting Index for: " + objectClass);
-        MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);
+        MassIndexer indexer = 
+            searchSession
+                .massIndexer(objectClass)
+                .batchSizeToLoadObjects(batchSize)
+                .dropAndCreateSchemaOnStart(true)
+                .mergeSegmentsOnFinish(true)
+                .typesToIndexInParallel(threads)
+                .threadsToLoadObjects(threads)
+                .monitor(new MassIndexingMonitor() {
+
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+                    
+            @Override
+            public void documentsAdded(long increment) {
+                //log.info("documentsAdded: " + increment);
+            }
+
+            @Override
+            public void documentsBuilt(long increment) {
+                ph.progressProcess();
+            }
+
+            @Override
+            public void entitiesLoaded(long increment) {
+                //log.info("entitiesLoaded: " + increment);
+            }
+
+            @Override
+            public void addToTotalCount(long increment) {
+                ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
+            }
+
+            @Override
+            public void indexingCompleted() {
+                ph.finishProcess();
+            }
+            
+        });
         //indexer.dropAndCreateSchemaOnStart(true);
         indexer.transactionTimeout(900);
         if(indexAmount > 0){

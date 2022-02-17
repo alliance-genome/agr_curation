@@ -46,7 +46,7 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
     @POST
     @Path("/find")
     @Tag(name = "Database Search Endpoints")
-    @JsonView(View.FieldsOnly.class)
+    @JsonView(View.FieldsAndLists.class)
     public SearchResponse<E> find(
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
@@ -66,7 +66,8 @@ public interface BaseIdCrudInterface<E extends BaseEntity> {
     @Tag(name = "Reindex Endpoints")
     public void reindex(
         @DefaultValue("4") @QueryParam("threads") Integer threads,
-        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount 
+        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
+        @DefaultValue("1000") @QueryParam("batchSize") Integer batchSize
     );
     
 }

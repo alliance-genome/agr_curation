@@ -28,7 +28,7 @@ import lombok.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"group"})
+@ToString(exclude = {"group"}, callSuper = true)
 public abstract class BulkLoad extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
@@ -61,16 +61,48 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
     private List<BulkLoadFile> loadFiles;
     
     public enum BulkLoadStatus {
-        STARTED,
-        RUNNING,
+
+        SCHEDULED_PENDING,
+        SCHEDULED_STARTED,
+        SCHEDULED_RUNNING,
+        
+        FORCED_PENDING,
+        FORCED_STARTED,
+        FORCED_RUNNING,
+        
+        
+
+        FAILED,
         STOPPED,
         FINISHED,
-        PENDING,
-        FAILED,
-        DOWNLOADING,
-        NOT_RESPONDING,
-        ADMINISTRATIVELY_STOPPED,
-        PAUSED;
+        
+        ;
+
+        public boolean isRunning() {
+            return this == SCHEDULED_RUNNING || this == FORCED_RUNNING;
+        }
+
+        public boolean isPending() {
+            return this == FORCED_PENDING || this == SCHEDULED_PENDING;
+        }
+
+        public boolean isStarted() {
+            return this == FORCED_STARTED || this == SCHEDULED_STARTED;
+        }
+        
+        public BulkLoadStatus getNextStatus() {
+            if(this == BulkLoadStatus.FORCED_PENDING) return BulkLoadStatus.FORCED_STARTED;
+            if(this == BulkLoadStatus.FORCED_STARTED) return BulkLoadStatus.FORCED_RUNNING;
+            
+            if(this == BulkLoadStatus.SCHEDULED_PENDING) return BulkLoadStatus.SCHEDULED_STARTED;
+            if(this == BulkLoadStatus.SCHEDULED_STARTED) return BulkLoadStatus.SCHEDULED_RUNNING;
+
+            return FAILED;
+        }
+
+        public boolean isForced() {
+            return this == FORCED_PENDING || this == FORCED_STARTED || this == FORCED_RUNNING;
+        }
     }
     
     public enum BackendBulkLoadType {
@@ -79,6 +111,8 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         ONTOLOGY, MOLECULE, FULL_INGEST
         ;
     }
+
+
 
 
 }

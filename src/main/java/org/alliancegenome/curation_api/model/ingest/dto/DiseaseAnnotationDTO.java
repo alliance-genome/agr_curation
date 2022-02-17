@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.*;

@@ -7,19 +7,10 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
@@ -61,43 +52,38 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         return new ObjectResponse<ExperimentalCondition>(experimentalConditionDAO.persist(dbEntity));
     }
     
-    public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
+    public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {
         ExperimentalCondition experimentalCondition = new ExperimentalCondition();
         
         if (dto.getConditionChemical() != null) {
             ChemicalTerm term = chemicalTermDAO.find(dto.getConditionChemical());
             if (term == null) {
-                log("Invalid ChemicalOntologyId - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid ChemicalOntologyId - skipping annotation");
             }
             experimentalCondition.setConditionChemical(term);
         }
         if (dto.getConditionId() != null) {
             ExperimentalConditionOntologyTerm term = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
             if (term == null) {
-                log("Invalid ConditionId - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid ConditionId - skipping annotation");
             }
             experimentalCondition.setConditionId(term);
         }
         if (dto.getConditionClass() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
             if (term == null) {
-                log("Invalid ConditionClass - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
             }
             experimentalCondition.setConditionClass(term);
         }
         else {
-            log("ConditionClassId is a required field - skipping annotation");
-            return null;
+            throw new ObjectValidationException(dto, "ConditionClassId is a required field - skipping annotation");
         }
         
         if (dto.getConditionAnatomy() != null) {
             AnatomicalTerm term = anatomicalTermDAO.find(dto.getConditionAnatomy());
             if (term == null) {
-                log("Invalid AnatomicalOntologyId - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid AnatomicalOntologyId - skipping annotation");
             }
             experimentalCondition.setConditionAnatomy(term);
         }
@@ -107,35 +93,27 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
                 term = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
             }
             if (term == null) {
-                log("Invalid NCBITaxonId - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid NCBITaxonId - skipping annotation");
             }
             experimentalCondition.setConditionTaxon(term);
         }
         if (dto.getConditionGeneOntology() != null) {
             GOTerm term = goTermDAO.find(dto.getConditionGeneOntology());
             if (term == null) {
-                log("Invalid GeneOntologyId - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid GeneOntologyId - skipping annotation");
             }
             experimentalCondition.setConditionGeneOntology(term);
         }
         if (dto.getConditionQuantity() != null)
             experimentalCondition.setConditionQuantity(dto.getConditionQuantity());
         if (dto.getConditionStatement() == null) {
-            log("ConditionStatement is a required field - skipping annotation");
-            return null;
+            throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
         
         experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
         
         return experimentalCondition;
-    }
-    
-    private void log(String message) {
-        log.debug(message);
-        // log.info(message);
     }
     
 }

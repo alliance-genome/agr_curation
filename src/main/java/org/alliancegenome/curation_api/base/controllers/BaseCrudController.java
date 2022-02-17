@@ -67,7 +67,7 @@ public abstract class BaseCrudController<S extends BaseCrudService<E, D>, E exte
         return service.searchByParams(pagination, params);
     }
     
-    public void reindex(Integer threads, Integer indexAmount) {
-        service.reindex(threads, indexAmount);
+    public void reindex(Integer threads, Integer indexAmount, Integer batchSize) {
+        service.reindex(threads, indexAmount, batchSize);
     }
 }

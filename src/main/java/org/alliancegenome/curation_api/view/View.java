@@ -8,4 +8,6 @@ public class View {
     public static class VocabularyTermView extends FieldsOnly { }
     public static class VocabularyView extends FieldsOnly { }
     
+    public static class BulkLoadFileHistory extends FieldsOnly { }
+    
 }

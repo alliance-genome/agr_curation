@@ -11,16 +11,12 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
-import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
@@ -67,7 +63,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
 
     @Transactional
-    public DiseaseAnnotation upsert(DiseaseAnnotation annotation, DiseaseAnnotationDTO annotationDTO) {
+    public DiseaseAnnotation upsert(DiseaseAnnotation annotation, DiseaseAnnotationDTO annotationDTO) throws ObjectUpdateException {
         List<ConditionRelation> conditionRelations = new ArrayList<>();
         List<ConditionRelation> conditionRelationsToPersist = new ArrayList<>();
         List<ExperimentalCondition> experimentalConditionsToPersist = new ArrayList<>();
@@ -78,8 +74,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 
                 String conditionRelationType = conditionRelationDTO.getConditionRelationType();
                 if (conditionRelationType == null) {
-                    log ("Annoation " + annotation.getUniqueId() + " has condition without relation type - skipping");
-                    return null;
+                    throw new ObjectUpdateException(annotationDTO, "Annoation " + annotation.getUniqueId() + " has condition without relation type - skipping");
                 }
                 if (conditionRelationType.equals("ameliorated_by") || 
                         conditionRelationType.equals("exacerbated_by") ||
@@ -91,13 +86,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                         ) {
                     relation.setConditionRelationType(conditionRelationType);
                 } else {
-                    log("Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
-                    return null;
+                    throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
                 } 
                 
                 if (CollectionUtils.isEmpty(conditionRelationDTO.getConditions())) {
-                    log("Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
-                    return null;
+                    throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
                 }
                 for (ExperimentalConditionDTO experimentalConditionDTO : conditionRelationDTO.getConditions()) {
                     ExperimentalCondition experimentalCondition = experimentalConditionService.validateExperimentalConditionDTO(experimentalConditionDTO);
@@ -153,22 +146,15 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
     }
 
-    public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) {
+    public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
         
-        if (dto.getObject() == null ||
-            dto.getDiseaseRelation() == null ||
-            dto.getDataProvider() == null ||
-            dto.getSingleReference() == null ||
-            CollectionUtils.isEmpty(dto.getEvidenceCodes())
-                ) {
-            log("Annotation for " + dto.getObject() + " missing required fields - skipping");
-            return null;
+        if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null || CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
+            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
         
         DOTerm disease = doTermDAO.find(dto.getObject());
         if (disease == null) {
-            log("Annotation " + annotation.getUniqueId() + " has DOTerm " + disease + " not found in database - skipping");
-            return null;
+            throw new ObjectValidationException(dto, "Annotation " + annotation.getUniqueId() + " has DOTerm " + disease + " not found in database - skipping");
         }
         annotation.setObject(disease);
         
@@ -177,7 +163,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (reference == null) {
             reference = new Reference();
             reference.setCurie(publicationId);
-            log("Reference: " + reference.toString());
+            //log("Reference: " + reference.toString());
             // ToDo: need this until references are loaded separately
             // raise an error when reference cannot be found?
             referenceDAO.persist(reference);
@@ -189,8 +175,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         for (String ecoCurie : dto.getEvidenceCodes()) {
             EcoTerm ecoTerm = ecoTermDAO.find(ecoCurie);
             if (ecoTerm == null) {
-                log("Invalid evidence code in " + annotation.getUniqueId() + " - skipping annotation");
-                return null;
+                throw new ObjectValidationException(dto, "Invalid evidence code in " + annotation.getUniqueId() + " - skipping annotation");
             }
             ecoTerms.add(ecoTerm);
         }
@@ -203,13 +188,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             List<Gene> withGenes = new ArrayList<>();
             for (String withCurie : dto.getWith()) {
                 if (!withCurie.startsWith("HGNC:")) {
-                    log("Non-HGNC gene (" + withCurie + ") found in 'with' field in " + annotation.getUniqueId() + " - skipping annotation");
-                    return null;
+                    throw new ObjectValidationException(dto, "Non-HGNC gene (" + withCurie + ") found in 'with' field in " + annotation.getUniqueId() + " - skipping annotation");
                 }
                 Gene withGene = geneDAO.getByIdOrCurie(withCurie);
                 if (withGene == null) {
-                    log("Invalid gene (" + withCurie + ") in 'with' field in " + annotation.getUniqueId() + " - skipping annotation");
-                    return null;
+                    throw new ObjectValidationException(dto, "Invalid gene (" + withCurie + ") in 'with' field in " + annotation.getUniqueId() + " - skipping annotation");
                 }
                 withGenes.add(withGene);
             }
@@ -217,11 +200,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
 
         return annotation;
-    }
-
-    private void log(String message) {
-        log.debug(message);
-        // log.info(message);
     }
 
 }

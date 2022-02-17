@@ -6,7 +6,6 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
-import org.apache.commons.lang3.StringUtils;
 
 public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 

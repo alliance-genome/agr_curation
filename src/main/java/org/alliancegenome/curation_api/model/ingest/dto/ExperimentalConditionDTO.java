@@ -4,7 +4,7 @@ import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;
 
-import lombok.*;
+import lombok.Data;
 
 @Data
 public class ExperimentalConditionDTO {
