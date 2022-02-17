@@ -13,11 +13,14 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
         let diseaseFilter = {};
         autocompleteFields.forEach( field => {
             diseaseFilter[field] = {
-              queryString : event.query,
-              tokenOperator : "AND"
+              queryString : event.query
             }
         });
-        let obsoleteFilter = {"obsolete": false};
+        let obsoleteFilter = {
+          "obsolete": {
+            queryString : false
+          }
+        };
 
         searchService.search('doterm', 15, 0, [], {"diseaseFilter":diseaseFilter, "obsoleteFilter":obsoleteFilter})
             .then((data) => {
