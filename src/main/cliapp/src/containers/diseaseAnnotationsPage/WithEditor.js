@@ -14,7 +14,10 @@ import {WithTooltip} from './WithTooltip';
             setQuery(event.query);
             let withFilter = {};
             autocompleteFields.forEach( field => {
-                withFilter[field] = event.query;
+              withFilter[field] = {
+                queryString : event.query,
+                tokenOperator : "AND"
+              }
             });
 
             searchService.search("gene", 15, 0, null, {"withFilter":withFilter})
