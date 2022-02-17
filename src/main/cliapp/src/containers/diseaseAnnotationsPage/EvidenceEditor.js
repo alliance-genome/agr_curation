@@ -10,12 +10,19 @@ import {trimWhitespace } from '../../utils/utils';
             let evidenceFilter = {};
             autocompleteFields.forEach( field => {
               evidenceFilter[field] = {
-                queryString : event.query,
-                tokenOperator : "AND"
+                queryString : event.query
               }
             });
-            let obsoleteFilter = {"obsolete": false};
-            let subsetFilter = {"subsets": "agr_eco_terms"};
+            let obsoleteFilter = {
+              "obsolete": {
+                queryString : false
+              }
+            };
+            let subsetFilter = {
+              "subsets": {
+                queryString : "agr_eco_terms"
+              }
+            };
 
             searchService.search("ecoterm", 15, 0, null, {"evidenceFilter":evidenceFilter, "obsoleteFilter:":obsoleteFilter, "subsetFilter":subsetFilter})
                 .then((data) => {
