@@ -1,50 +1,51 @@
 {
-    "name": "sigma-react",
-    "version": "6.0.0-SNAPSHOT",
+    "name": "sakai-react",
+    "version": "7.0.2",
     "homepage": ".",
     "private": false,
     "repository": {
         "type": "git",
-        "url": "https://github.com/primefaces/sigma-react.git"
+        "url": "https://github.com/primefaces/sakai-react.git"
     },
     "license": "MIT",
     "dependencies": {
-        "@fullcalendar/core": "4.0.2",
-        "@fullcalendar/daygrid": "4.0.1",
-        "@fullcalendar/interaction": "4.0.2",
-        "@fullcalendar/timegrid": "4.0.1",
-        "@okta/okta-auth-js": "^5.10.0",
-        "@okta/okta-react": "^6.4.1",
-        "@okta/okta-signin-widget": "^5.16.0",
+        "@fullcalendar/core": "^5.7.2",
+        "@fullcalendar/daygrid": "^5.7.2",
+        "@fullcalendar/interaction": "^5.7.2",
+        "@fullcalendar/react": "^5.7.0",
+        "@fullcalendar/timegrid": "^5.7.2",
+        "@okta/okta-auth-js": "^6.1.0",
+        "@okta/okta-react": "^6.4.2",
+        "@okta/okta-signin-widget": "^6.0.1",
         "axios": "^0.19.0",
-        "chart.js": "2.7.3",
+        "chart.js": "3.3.2",
         "classnames": "^2.2.6",
         "http-proxy-middleware": "^2.0.1",
         "moment": "^2.29.1",
-        "node-sass": "^4.12.0",
-        "primeflex": "2.0.0",
-        "primeicons": "4.1.0",
-        "primereact": "6.6.0",
+        "primeflex": "3.1.0",
+        "primeicons": "^5.0.0",
+        "primereact": "7.2.0",
         "prismjs": "1.9.0",
         "react": "^17.0.1",
-        "react-app-polyfill": "^2.0.0",
+        "react-app-polyfill": "^1.0.6",
         "react-dom": "^17.0.1",
-        "react-gravatar": "^2.6.3",
         "react-moment": "^1.1.1",
-        "react-query": "^3.19.6",
+        "react-query": "^3.34.15",
         "react-router-dom": "^5.2.0",
-        "react-scripts": "4.0.0",
-        "react-transition-group": "^4.4.1"
+        "react-scripts": "3.4.1",
+        "react-transition-group": "^4.4.1",
+        "sass": "^1.32.8"
     },
     "scripts": {
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",
-        "eject": "react-scripts eject",
-        "check-env": "node -e 'console.log(process.env)' | grep npm"
+        "eject": "react-scripts eject"
     },
     "eslintConfig": {
-        "extends": "react-app"
+        "extends": [
+            "react-app"
+        ]
     },
     "browserslist": [
         ">0.2%",
