@@ -235,7 +235,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 
         SearchQuery<E> query = step.toQuery();
 
-        log.info(query);
+        log.debug(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
         SearchResponse<E> results = new SearchResponse<E>();

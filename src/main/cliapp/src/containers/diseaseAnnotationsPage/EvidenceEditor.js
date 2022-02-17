@@ -9,7 +9,10 @@ import {trimWhitespace } from '../../utils/utils';
             //console.log(event);
             let evidenceFilter = {};
             autocompleteFields.forEach( field => {
-                evidenceFilter[field] = event.query;
+              evidenceFilter[field] = {
+                queryString : event.query,
+                tokenOperator : "AND"
+              }
             });
             let obsoleteFilter = {"obsolete": false};
             let subsetFilter = {"subsets": "agr_eco_terms"};

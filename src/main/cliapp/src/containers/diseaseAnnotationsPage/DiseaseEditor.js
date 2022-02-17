@@ -12,7 +12,10 @@ export const DiseaseEditor = ({ rowProps, searchService, setDiseaseAnnotations, 
     const searchDisease = (event) => {
         let diseaseFilter = {};
         autocompleteFields.forEach( field => {
-            diseaseFilter[field] = event.query;
+            diseaseFilter[field] = {
+              queryString : event.query,
+              tokenOperator : "AND"
+            }
         });
         let obsoleteFilter = {"obsolete": false};
 
