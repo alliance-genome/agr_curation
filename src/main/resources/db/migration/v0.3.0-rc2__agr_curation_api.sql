@@ -350,6 +350,46 @@ CREATE TABLE public.bulkloadfile_aud (
 ALTER TABLE public.bulkloadfile_aud OWNER TO postgres;
 
 --
+-- Name: bulkloadfilehistory; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bulkloadfilehistory (
+    id bigint NOT NULL,
+    created timestamp without time zone,
+    lastupdated timestamp without time zone,
+    completedrecords bigint,
+    exceptions jsonb,
+    failedrecords bigint,
+    loadfinished timestamp without time zone,
+    loadstarted timestamp without time zone,
+    totalrecords bigint,
+    bulkloadfile_id bigint
+);
+
+
+ALTER TABLE public.bulkloadfilehistory OWNER TO postgres;
+
+--
+-- Name: bulkloadfilehistory_aud; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.bulkloadfilehistory_aud (
+    id bigint NOT NULL,
+    rev integer NOT NULL,
+    revtype smallint,
+    completedrecords bigint,
+    exceptions jsonb,
+    failedrecords bigint,
+    loadfinished timestamp without time zone,
+    loadstarted timestamp without time zone,
+    totalrecords bigint,
+    bulkloadfile_id bigint
+);
+
+
+ALTER TABLE public.bulkloadfilehistory_aud OWNER TO postgres;
+
+--
 -- Name: bulkloadgroup; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -1955,6 +1995,22 @@ ALTER TABLE ONLY public.bulkloadfile
 
 
 --
+-- Name: bulkloadfilehistory_aud bulkloadfilehistory_aud_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bulkloadfilehistory_aud
+    ADD CONSTRAINT bulkloadfilehistory_aud_pkey PRIMARY KEY (id, rev);
+
+
+--
+-- Name: bulkloadfilehistory bulkloadfilehistory_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bulkloadfilehistory
+    ADD CONSTRAINT bulkloadfilehistory_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: bulkloadgroup_aud bulkloadgroup_aud_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3525,6 +3581,14 @@ ALTER TABLE ONLY public.diseaseannotation
 
 
 --
+-- Name: bulkloadfilehistory fkk9bvfu4248kgyyrupeii7t6m0; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bulkloadfilehistory
+    ADD CONSTRAINT fkk9bvfu4248kgyyrupeii7t6m0 FOREIGN KEY (bulkloadfile_id) REFERENCES public.bulkloadfile(id);
+
+
+--
 -- Name: bulkloadfile fkkakppk407vfefvttp4a5p6npg; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -3810,6 +3874,14 @@ ALTER TABLE ONLY public.diseaseannotation
 
 ALTER TABLE ONLY public.ontologyterm_secondaryidentifiers
     ADD CONSTRAINT fkpkg5jfw6wypf4v43bpb4ergu7 FOREIGN KEY (ontologyterm_curie) REFERENCES public.ontologyterm(curie);
+
+
+--
+-- Name: bulkloadfilehistory_aud fkppa5tcqtwv560svqkq6b958hc; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.bulkloadfilehistory_aud
+    ADD CONSTRAINT fkppa5tcqtwv560svqkq6b958hc FOREIGN KEY (rev) REFERENCES public.revinfo(rev);
 
 
 --
