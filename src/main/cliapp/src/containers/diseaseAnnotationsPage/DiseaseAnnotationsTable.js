@@ -522,6 +522,7 @@ export const DiseaseAnnotationsTable = () => {
           field={col.field}
           header={col.header}
           sortable={isEnabled}
+          showFilterMenu={false}
           filter={col.filter}
           filterElement={col.filterElement}
           editor={col.editor}
@@ -573,6 +574,7 @@ export const DiseaseAnnotationsTable = () => {
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
+          filterDisplay="row"
           dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

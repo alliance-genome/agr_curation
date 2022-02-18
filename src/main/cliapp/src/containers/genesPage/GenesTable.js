@@ -151,17 +151,19 @@ export const GenesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
-          columnKey={col.field}
-          key={col.field}
           field={col.field}
           header={col.header}
-          sortable={isEnabled}
           filter={col.filter}
+          columnKey={col.field}
+          key={col.field}
+          sortable={isEnabled}
           filterElement={col.filterElement}
           style={col.style}
         />;
       })
     );
+
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
@@ -184,6 +186,7 @@ export const GenesTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
           ref={dataTable}
+          filterDisplay="row"
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
