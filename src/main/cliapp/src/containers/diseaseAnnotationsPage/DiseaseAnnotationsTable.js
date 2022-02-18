@@ -25,7 +25,6 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
-  const queryClient = useQueryClient();
   const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
   let initialTableState = {
     page: 0,
@@ -205,6 +204,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onRowEditSave = (event) => {//possible to shrink?
+    console.log(event);
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
@@ -225,7 +225,10 @@ export const DiseaseAnnotationsTable = () => {
     mutation.mutate(updatedRow, {
       onSuccess: (data, variables, context) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
-        queryClient.invalidateQueries('diseaseAnnotations');
+        let annotations = [...diseaseAnnotations];
+        annotations[event.index].subject = data.data.entity.subject;
+        annotations[event.index].object = data.data.entity.object;
+        setDiseaseAnnotations(annotations);
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
         setErrorMessages({ ...errorMessagesCopy });
@@ -344,6 +347,7 @@ export const DiseaseAnnotationsTable = () => {
           autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
           rowProps={props}
           searchService={searchService}
+          setDiseaseAnnotations={setDiseaseAnnotations}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
