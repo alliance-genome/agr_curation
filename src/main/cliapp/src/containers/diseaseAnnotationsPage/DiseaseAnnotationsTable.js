@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
@@ -25,6 +25,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
+  const queryClient = useQueryClient();
   const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
   let initialTableState = {
     page: 0,
@@ -71,21 +72,21 @@ export const DiseaseAnnotationsTable = () => {
     'diseaseRelation'
   ];
 
-    useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
-        () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
-            onSuccess: (data) => {
-            },
-            onError: (error) => {
-                toast_topleft.current.show([
-                    { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
-                ]);
-            },
-            keepPreviousData: true,
-            refetchOnWindowFocus: false
-        }
-    );
+  useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
+    () => searchService.search('disease-annotation', 0, 0, null, {}, {}, aggregationFields), {
+    onSuccess: (data) => {
+    },
+    onError: (error) => {
+      toast_topleft.current.show([
+        { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
+      ]);
+    },
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
+  }
+  );
 
-   useQuery(['diseaseAnnotations', tableState],
+  useQuery(['diseaseAnnotations', tableState],
     () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
       setDiseaseAnnotations(data.results);
@@ -223,13 +224,8 @@ export const DiseaseAnnotationsTable = () => {
 
     mutation.mutate(updatedRow, {
       onSuccess: (data, variables, context) => {
-        console.log(data);
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
-
-        let annotations = [...diseaseAnnotations];
-        annotations[event.index].subject = data.data.entity.subject;
-        annotations[event.index].object = data.data.entity.object;
-        setDiseaseAnnotations(annotations);
+        queryClient.invalidateQueries('diseaseAnnotations');
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
         setErrorMessages({ ...errorMessagesCopy });
@@ -257,8 +253,6 @@ export const DiseaseAnnotationsTable = () => {
 
         console.log(errorMessagesCopy);
         setErrorMessages({ ...errorMessagesCopy });
-
-
 
         setDiseaseAnnotations(annotations);
         let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
@@ -350,7 +344,6 @@ export const DiseaseAnnotationsTable = () => {
           autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -471,7 +464,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Negated",
     body: negatedTemplate,
     filter: true,
-    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated",[{ text: "true" }, { text: "false" }], "text"),
+    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated", [{ text: "true" }, { text: "false" }], "text"),
     sortable: isEnabled,
     editor: (props) => negatedEditor(props)
   },
