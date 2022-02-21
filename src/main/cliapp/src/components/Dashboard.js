@@ -2,8 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Menu } from 'primereact/menu';
 import { Button } from 'primereact/button';
 import { Chart } from 'primereact/chart';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 
 const lineData = {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
@@ -28,7 +26,6 @@ const lineData = {
 };
 
 const Dashboard = (props) => {
-    const [products, setProducts] = useState(null);
     const menu1 = useRef(null);
     const menu2 = useRef(null);
     const [lineOptions, setLineOptions] = useState(null)
@@ -105,10 +102,6 @@ const Dashboard = (props) => {
         }
     }, [props.colorMode]);
 
-    const formatCurrency = (value) => {
-        return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-    };
-
     return (
         <div className="grid">
             <div className="col-12 lg:col-6 xl:col-3">
@@ -173,19 +166,6 @@ const Dashboard = (props) => {
             </div>
 
             <div className="col-12 xl:col-6">
-                <div className="card">
-                    <h5>Recent Sales</h5>
-                    <DataTable value={products} rows={5} paginator responsiveLayout="scroll">
-                        <Column header="Image" body={(data) => <img className="shadow-2" src={`assets/demo/images/product/${data.image}`} alt={data.image} width="50"/>}/>
-                        <Column field="name" header="Name" sortable style={{width: '35%'}}/>
-                        <Column field="price" header="Price" sortable style={{width: '35%'}} body={(data) => formatCurrency(data.price)}/>
-                        <Column header="View" style={{width:'15%'}} body={() => (
-                            <>
-                                <Button icon="pi pi-search" type="button" className="p-button-text"/>
-                            </>
-                        )}/>
-                    </DataTable>
-                </div>
                 <div className="card">
                     <div className="flex justify-content-between align-items-center mb-5">
                         <h5>Best Selling Products</h5>

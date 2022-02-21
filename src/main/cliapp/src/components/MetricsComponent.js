@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useQuery } from 'react-query';
 import { TreeTable } from 'primereact/treetable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
@@ -11,18 +12,25 @@ export const MetricsComponent = () => {
   
   const metricService = new MetricService();
 
-  useEffect(() => {
-    metricService.getMetrics().then(results => {
-      console.log(results);
-      setMetrics(results)
-    });
-  }, [refresh]);
+  useQuery(['getMetrics', refresh],
+    () => metricService.getMetrics(), {
+      onSuccess: (results) => {
+        //console.log(data);
+        setMetrics(results);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+      keepPreviousData: true,
+      refetchOnWindowFocus: false
+    }
+  );
 
   return (
       <div className="grid nested">
         <div className="col-12">
-          <div class="card">
-            <div class="flex justify-content-between">
+          <div className="card">
+            <div className="flex justify-content-between">
               <h2>System Stats</h2>
               <Button onClick={() => setRefresh(!refresh)} label="Refresh Table" />
             </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useQuery } from 'react-query';
 import classNames from 'classnames';
 import { Route, useLocation, useHistory } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -73,6 +74,7 @@ const App = () => {
   const location = useLocation();
 
   const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
+  const apiService = new ApiVersionService();
 
   const oktaAuth = new OktaAuth(oktaAuthConfig);
   const history = useHistory();
@@ -85,6 +87,20 @@ const App = () => {
     // console.log(window.location);
     //history.replace(toRelativeUrl(originalUri, window.location.origin));
    };
+
+      useQuery(['getApiVersion', apiVersion],
+        () => apiService.getApiVersion(), {
+          onSuccess: (data) => {
+            //console.log(data);
+            setApiVersion(data);
+          },
+          onError: (error) => {
+            console.log(error);
+          },
+          keepPreviousData: true,
+          refetchOnWindowFocus: false
+        }
+      );
 
 
   PrimeReact.ripple = true;

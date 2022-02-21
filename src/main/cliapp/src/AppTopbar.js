@@ -1,14 +1,33 @@
-import React  from 'react';
+import React, { useState } from 'react';
+import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import classNames from 'classnames';
+import { ApiVersionService } from './service/ApiVersionService';
 
 export const AppTopbar = (props) => {
+
+    const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
+
+    const apiService = new ApiVersionService();
+
+    useQuery(['getApiVersion', apiVersion],
+      () => apiService.getApiVersion(), {
+        onSuccess: (data) => {
+          //console.log(data);
+          setApiVersion(data);
+        },
+        onError: (error) => {
+          console.log(error);
+        },
+        keepPreviousData: true,
+        refetchOnWindowFocus: false
+      }
+    );
 
     return (
         <div className="layout-topbar">
             <Link to="/" className="layout-topbar-logo">
-                <img src={props.layoutColorMode === 'light' ? 'assets/layout/images/logo-dark.svg' : 'assets/layout/images/logo-white.svg'} alt="logo"/>
-                <span>SAKAI</span>
+              AGR Curation: {apiVersion.version}
             </Link>
 
             <button type="button" className="p-link  layout-menu-button layout-topbar-button" onClick={props.onToggleMenuClick}>
