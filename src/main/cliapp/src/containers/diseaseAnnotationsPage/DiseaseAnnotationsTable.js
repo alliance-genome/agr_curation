@@ -68,7 +68,7 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const aggregationFields = [
-    'diseaseRelation', 'evidenceCodes.abbreviation'
+    'diseaseRelation'
   ];
 
     useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
@@ -497,7 +497,7 @@ export const DiseaseAnnotationsTable = () => {
     body: evidenceTemplate,
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("evidenceCodesFilter", "evidenceCodes.abbreviation"),
+    filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"],
     editor: (props) => evidenceEditorTemplate(props)
   },
   {
