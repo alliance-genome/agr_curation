@@ -32,7 +32,6 @@ const App = () => {
     //history.replace(toRelativeUrl(originalUri, window.location.origin));
   };
 
-
   return (
     <Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
         <SiteLayout>

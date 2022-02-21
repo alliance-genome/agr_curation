@@ -8,4 +8,11 @@ module.exports = function(app) {
             changeOrigin: true,
         })
     );
+    app.use(
+        '/metrics.json',
+        createProxyMiddleware({
+            target:  process.env.API_URL || 'http://localhost:8080',
+            changeOrigin: true,
+        })
+    );
 };
