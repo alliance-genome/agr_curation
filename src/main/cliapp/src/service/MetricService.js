@@ -54,7 +54,7 @@ export class MetricService {
         }
 
         if(typeof results[key] === 'object') {
-          console.log(results[key]);
+          //console.log(results[key]);
           for(let vkey in results[key]) {
             let map = {};
             map[vkey] = results[key][vkey];
