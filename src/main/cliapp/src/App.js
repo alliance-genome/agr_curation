@@ -27,6 +27,7 @@ import { ControlledVocabularyPage } from './containers/controlledVocabularyPage'
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 
 import { FMSComponent } from './components/FMSComponent';
+import { MetricsComponent } from './components/MetricsComponent';
 import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
 import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
 import { ECOOntologyComponent } from './containers/ontologies/ECOOntologyComponent';
@@ -230,6 +231,7 @@ const App = () => {
           label: 'Other Links', icon: 'pi pi-fw pi-sitemap',
           items: [
             { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
+            { label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
             { label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
             { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui' },
             { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://${window.location.hostname}:9000/#/overview?host=https://${apiVersion.esHost}` },
@@ -303,6 +305,7 @@ const App = () => {
             <SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
             <SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
             <SecureRoute path="/fmspage" component={FMSComponent} />
+            <SecureRoute path="/metricspage" component={MetricsComponent} />
             <SecureRoute path="/agms" component={AffectedGenomicModelPage} />
 
             <Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
