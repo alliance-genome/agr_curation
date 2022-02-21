@@ -201,6 +201,10 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 
 ## Building
 
+Before building make sure and create a copy of the application.properties file
+`cp src/main/resources/application.properties.defaults src/main/resources/application.properties`
+this way custom configuration changes can be used without having to commit them into the repo.
+
 Both the UI or API can be run locally without needing a separate build step.
 For instructions on how to do so, see [Running](#running-api).
 
