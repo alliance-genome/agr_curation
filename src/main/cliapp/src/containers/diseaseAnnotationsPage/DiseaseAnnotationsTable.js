@@ -497,7 +497,7 @@ export const DiseaseAnnotationsTable = () => {
     body: evidenceTemplate,
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"],
+    filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
     editor: (props) => evidenceEditorTemplate(props)
   },
   {
