@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useQuery } from 'react-query';
+import { Link } from 'react-router-dom';
 import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
 import { ApiVersionService } from './service/ApiVersionService';
@@ -38,11 +39,13 @@ export const AppTopbar = (props) => {
   return (
     <div className="layout-topbar">
 
+
       {
         props.authState?.isAuthenticated &&
         <>
-          <div> AGR Curation: {apiVersion.version}</div>
-          <button type="button" className="p-link  layout-menu-button layout-topbar-button" onClick={props.onToggleMenuClick}>
+          <Link to="/" className="layout-topbar-logo">
+            AGR Curation: {apiVersion.version}
+          </Link>    <button type="button" className="p-link  layout-menu-button layout-topbar-button" onClick={props.onToggleMenuClick}>
             <i className="pi pi-bars" />
           </button>
         </>

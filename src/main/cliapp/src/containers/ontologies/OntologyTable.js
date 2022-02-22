@@ -145,6 +145,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
           header={col.header}
           sortable={isEnabled}
           filter
+          showFilterMenu={false}
           filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
         />;
       })
@@ -171,6 +172,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
           ref={dataTable}
+          filterDisplay="row"
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}

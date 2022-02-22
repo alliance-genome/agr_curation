@@ -391,6 +391,7 @@ export const ExperimentalConditionsTable = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
           editor={col.editor}
           style={col.style}
@@ -438,6 +439,7 @@ export const ExperimentalConditionsTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns={isEnabled}
           ref={dataTable}
+          filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           onColReorder={colReorderHandler}

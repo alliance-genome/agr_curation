@@ -178,6 +178,7 @@ export const MoleculesTable = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
           style={col.style}
         />;
@@ -205,6 +206,7 @@ export const MoleculesTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={molecules} className="p-datatable-sm" header={header} reorderableColumns
           ref={dataTable}
+          filterDisplay="row"
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
