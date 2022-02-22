@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
