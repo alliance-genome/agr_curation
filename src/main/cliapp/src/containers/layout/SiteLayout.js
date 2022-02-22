@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useQuery } from 'react-query';
 import classNames from 'classnames';
 import { useLocation, useHistory } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -42,6 +43,21 @@ export const SiteLayout = (props) => {
 
   const history = useHistory();
   const { children } = props;
+  const apiService = new ApiVersionService();
+
+  useQuery(['getApiVersion', apiVersion],
+    () => apiService.getApiVersion(), {
+    onSuccess: (data) => {
+      //console.log(data);
+      setApiVersion(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
+  }
+  );
 
   useEffect(() => {
     if (!authState || !authState.isAuthenticated) {

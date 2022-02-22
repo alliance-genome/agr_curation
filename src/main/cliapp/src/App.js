@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+
 import { Security } from '@okta/okta-react';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { oktaAuthConfig } from './oktaAuthConfig';
@@ -32,12 +33,12 @@ const App = () => {
     //history.replace(toRelativeUrl(originalUri, window.location.origin));
   };
 
-
   return (
     <Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
         <SiteLayout>
           {routes}
         </SiteLayout>
+
     </Security>
   );
 };
