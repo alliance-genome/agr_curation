@@ -23,9 +23,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation> {
 
     @GET
-    @Path("/findBy/{curie}")
+    @Path("/findBy/{uniqueId}")
     @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("curie") String curie);
+    public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
     
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")
