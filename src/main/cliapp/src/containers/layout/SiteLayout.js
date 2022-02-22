@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
 
 import { useOktaAuth } from '@okta/okta-react';
@@ -40,7 +40,6 @@ export const SiteLayout = (props) => {
   const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
   const { authState, oktaAuth } = useOktaAuth();
 
-  const history = useHistory();
   const { children } = props;
 
   useEffect(() => {
@@ -169,7 +168,6 @@ export const SiteLayout = (props) => {
       items: [
 
         { label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' },
-        { label: 'Dashboard2', icon: 'pi pi-fw pi-home', to: '/old' },
         {
           label: 'Data Tables', icon: 'pi pi-fw pi-sitemap',
           items: [

@@ -157,6 +157,7 @@ export const GenesTable = () => {
           columnKey={col.field}
           key={col.field}
           sortable={isEnabled}
+          showFilterMenu={false}
           filterElement={col.filterElement}
           style={col.style}
         />;

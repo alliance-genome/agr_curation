@@ -167,6 +167,7 @@ export const AllelesTable = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
           style={col.style}
         />;
@@ -194,6 +195,7 @@ export const AllelesTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={alleles} className="p-datatable-sm" header={header} reorderableColumns
           ref={dataTable}
+          filterDisplay="row"
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           onColReorder={colReorderHandler}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
