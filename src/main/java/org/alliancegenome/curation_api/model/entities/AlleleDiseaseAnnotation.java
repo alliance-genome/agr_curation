@@ -27,8 +27,6 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
     @JsonView({View.FieldsOnly.class})
     private Allele subject;
     
-    private String predicate;
-    
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
