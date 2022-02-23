@@ -13,7 +13,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-@Schema(name="Reference", description="POJO that represents the Cross Reference")
+@Schema(name="Reference", description="POJO that represents the Reference")
 public class Reference extends BaseCurieEntity {
 
 }
