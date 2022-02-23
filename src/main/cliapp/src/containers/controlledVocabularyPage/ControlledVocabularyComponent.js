@@ -168,6 +168,7 @@ export const ControlledVocabularyComponent = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
+          style={{whiteSpace: 'normal'}}
         />;
       })
     );

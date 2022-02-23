@@ -168,8 +168,8 @@ export const AllelesTable = () => {
           sortable={isEnabled}
           filter={col.filter}
           showFilterMenu={false}
+          style={{whiteSpace: 'normal'}}
           filterElement={col.filterElement}
-          style={col.style}
         />;
       })
     );

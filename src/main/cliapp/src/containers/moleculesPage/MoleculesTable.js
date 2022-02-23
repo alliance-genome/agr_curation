@@ -180,7 +180,7 @@ export const MoleculesTable = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={col.style}
+          style={{whiteSpace: 'normal'}}
         />;
       })
     );
