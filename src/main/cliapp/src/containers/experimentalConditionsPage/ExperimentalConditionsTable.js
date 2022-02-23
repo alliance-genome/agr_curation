@@ -299,7 +299,6 @@ export const ExperimentalConditionsTable = () => {
     {
       field: "uniqueId",
       header: "Unique ID",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
@@ -307,7 +306,6 @@ export const ExperimentalConditionsTable = () => {
     {
       field: "conditionStatement",
       header: "Statement",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
@@ -393,7 +391,7 @@ export const ExperimentalConditionsTable = () => {
           showFilterMenu={false}
           filterElement={col.filterElement}
           editor={col.editor}
-          style={col.style}
+          style={{whiteSpace: 'normal'}}
           body={col.body}
         />;
       })
