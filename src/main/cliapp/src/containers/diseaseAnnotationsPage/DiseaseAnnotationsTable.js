@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { useMutation, useQuery, useQueryClient } from 'react-query';
+import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
@@ -440,7 +440,6 @@ export const DiseaseAnnotationsTable = () => {
   const columns = [{
     field: "uniqueId",
     header: "Unique Id",
-    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
@@ -449,7 +448,6 @@ export const DiseaseAnnotationsTable = () => {
     field: "subject.symbol",
     header: "Subject",
     sortable: isEnabled,
-    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
     filter: true,
     filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
     editor: (props) => subjectEditorTemplate(props),
@@ -524,65 +522,66 @@ export const DiseaseAnnotationsTable = () => {
           filterElement={col.filterElement}
           editor={col.editor}
           body={col.body}
+          style={{whiteSpace: 'normal'}}
         />;
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
-  );
-
-  const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
-  }
-
-  const colReorderHandler = (event) => {
-    let _columnNames = [...tableState.selectedColumnNames];
-    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
-    setSelectedColumnNames(_columnNames);
-  };
-
-  return (
-    <div>
-      <div className="card">
-        <Toast ref={toast_topleft} position="top-left" />
-        <Toast ref={toast_topright} position="top-right" />
-        <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
-          ref={dataTable}
-          editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-          onColReorder={colReorderHandler}
-          editingRows={editingRows} onRowEditChange={onRowEditChange}
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-          first={tableState.first}
-          filterDisplay="row"
-          dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
-          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
-          paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
-        >
-
-          {columnMap}
-
-          <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
-        </DataTable>
-      </div>
+const header = (
+  <>
+    <div style={{ textAlign: 'left' }}>
+      <MultiSelect
+        value={tableState.selectedColumnNames}
+        options={defaultColumnNames}
+        onChange={e => setSelectedColumnNames(e.value)}
+        style={{ width: '20em' }}
+        disabled={!isEnabled}
+      />
     </div>
-  );
+    <div style={{ textAlign: 'right' }}>
+      <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
+    </div>
+  </>
+);
+
+const resetTableState = () => {
+  setTableState(initialTableState);
+  dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+}
+
+const colReorderHandler = (event) => {
+  let _columnNames = [...tableState.selectedColumnNames];
+  _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+  setSelectedColumnNames(_columnNames);
+};
+
+return (
+  <div>
+    <div className="card">
+      <Toast ref={toast_topleft} position="top-left" />
+      <Toast ref={toast_topright} position="top-right" />
+      <h3>Disease Annotations Table</h3>
+      <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
+        ref={dataTable}
+        editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+        onColReorder={colReorderHandler}
+        editingRows={editingRows} onRowEditChange={onRowEditChange}
+        sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+        first={tableState.first}
+        filterDisplay="row"
+        dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
+        paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
+        paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
+      >
+
+        {columnMap}
+
+        <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+      </DataTable>
+    </div>
+  </div>
+);
 };

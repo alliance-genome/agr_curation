@@ -1,63 +1,67 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
+import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
 import { ApiVersionService } from './service/ApiVersionService';
 
 export const AppTopbar = (props) => {
+  const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
 
-    const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
+  const apiService = new ApiVersionService();
 
-    const apiService = new ApiVersionService();
+  useQuery(['getApiVersion', apiVersion],
+    () => apiService.getApiVersion(), {
+    onSuccess: (data) => {
+      //console.log(data);
+      setApiVersion(data);
+    },
+    onError: (error) => {
+      console.log(error);
+    },
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
+  }
+  );
+  const menu = useRef(null);
+  const items = [
+    {
+      items: [
+        {
+          label: 'Logout',
+          icon: 'pi pi-sign-out',
+          command: props.logout
+        }
+      ]
+    }
+  ];
 
-    useQuery(['getApiVersion', apiVersion],
-      () => apiService.getApiVersion(), {
-        onSuccess: (data) => {
-          //console.log(data);
-          setApiVersion(data);
-        },
-        onError: (error) => {
-          console.log(error);
-        },
-        keepPreviousData: true,
-        refetchOnWindowFocus: false
+  return (
+    <div className="layout-topbar">
+
+
+      {
+        props.authState?.isAuthenticated &&
+        <>
+          <Link to="/" className="layout-topbar-logo">
+            AGR Curation: {apiVersion.version}
+          </Link>    <button type="button" className="p-link  layout-menu-button layout-topbar-button" onClick={props.onToggleMenuClick}>
+            <i className="pi pi-bars" />
+          </button>
+        </>
       }
-    );
-
-    return (
-        <div className="layout-topbar">
-            <Link to="/" className="layout-topbar-logo">
-              AGR Curation: {apiVersion.version}
-            </Link>
-
-            <button type="button" className="p-link  layout-menu-button layout-topbar-button" onClick={props.onToggleMenuClick}>
-                <i className="pi pi-bars"/>
-            </button>
-
-            <button type="button" className="p-link layout-topbar-menu-button layout-topbar-button" onClick={props.onMobileTopbarMenuClick}>
-                <i className="pi pi-ellipsis-v" />
-            </button>
-
-                <ul className={classNames("layout-topbar-menu lg:flex origin-top", {'layout-topbar-menu-mobile-active': props.mobileTopbarMenuActive })}>
-                    <li>
-                        <button className="p-link layout-topbar-button" onClick={props.onMobileSubTopbarMenuClick}>
-                            <i className="pi pi-calendar"/>
-                            <span>Events</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button className="p-link layout-topbar-button" onClick={props.onMobileSubTopbarMenuClick}>
-                            <i className="pi pi-cog"/>
-                            <span>Settings</span>
-                        </button>
-                    </li>
-                    <li>
-                        <button className="p-link layout-topbar-button" onClick={props.onMobileSubTopbarMenuClick}>
-                            <i className="pi pi-user"/>
-                            <span>Profile</span>
-                        </button>
-                    </li>
-                </ul>
-        </div>
-    );
+      <button type="button" className="p-link layout-topbar-menu-button layout-topbar-button" onClick={props.onMobileTopbarMenuClick}>
+        <i className="pi pi-ellipsis-v" />
+      </button>
+      {
+        props.authState?.isAuthenticated &&
+        <ul className={classNames("layout-topbar-menu lg:flex origin-top", { 'layout-topbar-menu-mobile-active': props.mobileTopbarMenuActive })}>
+          <li>
+            <Menu model={items} popup ref={menu} id="popup_menu" />
+            <i className="pi pi-user" onClick={(event) => menu.current.toggle(event)} aria-controls="popup_menu" aria-haspopup />
+          </li>
+        </ul>
+      }
+    </div>
+  );
 }

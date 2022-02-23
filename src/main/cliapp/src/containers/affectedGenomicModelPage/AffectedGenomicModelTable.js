@@ -158,8 +158,9 @@ export const AffectedGenomicModelTable = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
+          style={{whiteSpace: 'normal'}}
           filterElement={col.filterElement}
-          style={col.style}
         />;
       })
     );
@@ -182,6 +183,7 @@ export const AffectedGenomicModelTable = () => {
       <div className="card">
         <DataTable value={agms} className="p-datatable-md" header={header} reorderableColumns
           ref={dataTable}
+          filterDisplay="row"
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first} resizableColumns columnResizeMode="fit" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
