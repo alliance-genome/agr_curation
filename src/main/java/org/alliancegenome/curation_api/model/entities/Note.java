@@ -7,10 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
-import org.alliancegenome.curation_api.base.entity.BaseCurieEntity;
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.BooleanValueBridge;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
