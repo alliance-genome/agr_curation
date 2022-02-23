@@ -282,7 +282,6 @@ export const ExperimentalConditionsTable = () => {
           autocompleteFields={autocomplete}
           rowProps={props}
           searchService={searchService}
-          setExperimentalConditions={setExperimentalConditions}
           fieldname={fieldname}
           endpoint={endpoint}
         />
