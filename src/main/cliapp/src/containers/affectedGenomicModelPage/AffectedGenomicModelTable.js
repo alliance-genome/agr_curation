@@ -148,7 +148,6 @@ export const AffectedGenomicModelTable = () => {
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    console.log(orderedColumns);
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
