@@ -74,7 +74,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 
                 String conditionRelationType = conditionRelationDTO.getConditionRelationType();
                 if (conditionRelationType == null) {
-                    throw new ObjectUpdateException(annotationDTO, "Annoation " + annotation.getUniqueId() + " has condition without relation type - skipping");
+                    throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
                 }
                 if (conditionRelationType.equals("ameliorated_by") || 
                         conditionRelationType.equals("exacerbated_by") ||

@@ -43,7 +43,7 @@ public class DiseaseAnnotation extends Association {
     @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
-    private String modId;
+    private String modEntityId;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

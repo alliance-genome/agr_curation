@@ -67,7 +67,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
             throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
-        String annotationId = dto.getModId();
+        String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto);
         }
