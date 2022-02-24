@@ -65,11 +65,11 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_genetic_modifier")
-    private String geneticModifier;
+    private String diseaseGeneticModifier;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_genetic_modifier_relation")
-    private String geneticModifierRelation;
+    private String diseaseGeneticModifierRelation;
 
     @JsonView({View.FieldsAndLists.class})
     private List<String> with;
