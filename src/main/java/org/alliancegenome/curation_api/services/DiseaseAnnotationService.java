@@ -13,6 +13,10 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseQualifier;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.GeneticModifierRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.GeneticSex;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -52,6 +56,12 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     GeneDAO geneDAO;
     @Inject
     ExperimentalConditionService experimentalConditionService;
+    @Inject
+    NoteService noteService;
+    @Inject
+    AffectedGenomicModelDAO affectedGenomicModelDAO;
+    @Inject
+    BiologicalEntityDAO biologicalEntityDAO;
 
     @Override
     @PostConstruct
@@ -67,6 +77,16 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         List<ConditionRelation> conditionRelations = new ArrayList<>();
         List<ConditionRelation> conditionRelationsToPersist = new ArrayList<>();
         List<ExperimentalCondition> experimentalConditionsToPersist = new ArrayList<>();
+        
+        if (CollectionUtils.isNotEmpty(annotationDTO.getRelatedNotes())) {
+            List<Note> notesToPersist = new ArrayList<>();
+            for (NoteDTO noteDTO : annotationDTO.getRelatedNotes()) {
+                Note relatedNote = noteService.validateNoteDTO(noteDTO);
+                if (relatedNote == null) return null;
+                notesToPersist.add(relatedNote);
+            }
+        }
+        
         // create Experimental Conditions
         if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
             for (ConditionRelationDTO conditionRelationDTO : annotationDTO.getConditionRelations()) {
@@ -82,7 +102,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                         conditionRelationType.equals("induced_by") ||
                         conditionRelationType.equals("not_induced_by") ||
                         conditionRelationType.equals("not_ameliorated_by") ||
-                        conditionRelationType.equals("not_exacterbated_by")
+                        conditionRelationType.equals("not_exacerbated_by")
                         ) {
                     relation.setConditionRelationType(conditionRelationType);
                 } else {
@@ -151,6 +171,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null || CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
             throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
+        annotation.setDataProvider(dto.getDataProvider());
         
         DOTerm disease = doTermDAO.find(dto.getObject());
         if (disease == null) {
@@ -198,6 +219,81 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             }
             annotation.setWith(withGenes);
         }
+        
+        if (dto.getSecondaryDataProvider() != null)
+            annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
+        
+        if (dto.getSgdStrainBackground() != null) {
+            AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+            if (sgdStrainBackground == null) {
+                throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setSgdStrainBackground(sgdStrainBackground);
+        }
+        
+        if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
+            List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+            for (String qualifier : dto.getDiseaseQualifiers()) {
+                if (!qualifier.equals("susceptibility") &&
+                        !qualifier.equals("disease_progression") &&
+                        !qualifier.equals("severity") &&
+                        !qualifier.equals("onset") &&
+                        !qualifier.equals("sexual_dimorphism") &&
+                        !qualifier.equals("resistance") &&
+                        !qualifier.equals("penetrance")
+                        ) {
+                    throw new ObjectValidationException(dto, "Invalid disease qualifier (" + qualifier + ") for " + annotation.getUniqueId() + " - skipping annotation");
+                }
+                diseaseQualifiers.add(DiseaseQualifier.valueOf(qualifier));
+            }
+            annotation.setDiseaseQualifiers(diseaseQualifiers);
+        }
+        
+        if (dto.getDiseaseGeneticModifier() != null || dto.getDiseaseGeneticModifierRelation() != null) {
+            if (dto.getDiseaseGeneticModifier() == null || dto.getDiseaseGeneticModifierRelation() == null) {
+                throw new ObjectValidationException(dto, "Genetic modifier specified without genetic modifier relation (or vice versa) for " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            if (!dto.getDiseaseGeneticModifierRelation().equals("ameliorated_by") &&
+                    !dto.getDiseaseGeneticModifierRelation().equals("not_ameliorated_by") &&
+                    !dto.getDiseaseGeneticModifierRelation().equals("exacerbated_by") &&
+                    !dto.getDiseaseGeneticModifierRelation().equals("not_exacerbated_by")
+                    ) {
+                throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setDiseaseGeneticModifierRelation(GeneticModifierRelation.valueOf(dto.getDiseaseGeneticModifierRelation()));
+            BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getSgdStrainBackground());
+            if (diseaseGeneticModifier == null) {
+                throw new ObjectValidationException(dto, "Invalid biological entity (" + dto.getDiseaseGeneticModifier() + ") in 'disease_genetic_modifier' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
+        }
+        
+        if (dto.getAnnotationType() != null) {
+            if (!dto.getAnnotationType().equals("manually_curated") &&
+                    !dto.getAnnotationType().equals("high-throughput") &&
+                    !dto.getAnnotationType().equals("computational")
+                    ) {
+                throw new ObjectValidationException(dto, "Invalid annotation type (" + dto.getAnnotationType() + ") in " + annotation.getUniqueId() + " - skipping annotation");
+            }   
+            if (dto.getAnnotationType().equals("high-throughput")) {
+                annotation.setAnnotationType(AnnotationType.high_throughput);
+            }
+            else {
+                annotation.setAnnotationType(AnnotationType.valueOf(dto.getAnnotationType()));
+            }
+        }
+        
+        if (dto.getGeneticSex() != null) {
+            if (!dto.getGeneticSex().equals("male") &&
+                    !dto.getGeneticSex().equals("female") &&
+                    !dto.getGeneticSex().equals("hermaphrodite")
+                    ) {
+                throw new ObjectValidationException(dto, "Invalid genetic sex (" + dto.getGeneticSex() + ") in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setGeneticSex(GeneticSex.valueOf(dto.getGeneticSex()));
+        }
+        
+        
 
         return annotation;
     }
