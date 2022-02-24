@@ -133,6 +133,11 @@ public class DiseaseAnnotation extends Association {
     @Enumerated(EnumType.STRING)
     private GeneticModifierRelation diseaseGeneticModifierRelation;
     
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "sgdStrainBackground_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private AffectedGenomicModel sgdStrainBackground;
+    
     public enum DiseaseRelation {
         is_model_of,
         is_implicated_in,
