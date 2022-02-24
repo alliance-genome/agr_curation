@@ -281,7 +281,8 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onDiseaseRelationEditorValueChange = (props, event) => {
-    let updatedAnnotations = [...props.value];
+    let updatedAnnotations = [...props.props.value];
+      console.log(updatedAnnotations);
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       setDiseaseAnnotations(updatedAnnotations);
@@ -303,7 +304,7 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const onNegatedEditorValueChange = (props, event) => {
-    let updatedAnnotations = [...props.value];
+    let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
       setDiseaseAnnotations(updatedAnnotations);
