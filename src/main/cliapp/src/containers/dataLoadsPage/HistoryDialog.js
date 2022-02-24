@@ -48,23 +48,23 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
   return (
     <div>
       <Dialog visible={historyDialog} style={{ width: '70vw' }} header="History Information" modal className="p-fluid" onHide={hideDialog}>
-        <div className="p-field">
-          <div className="p-grid p-fluid dashboard">
-            <div className="p-col-12 p-lg-3">
+        <div className="field">
+          <div className="grid p-fluid dashboard">
+            <div className="col-12 lg-3">
               <div className="card summary">
                 <span className="title">Duration</span>
                 <span className="detail">How long the load took</span>
                 <span className="count visitors"><Moment format="HH:mm:ss" duration={fullHistory.loadStarted} date={fullHistory.loadFinished} /></span>
               </div>
             </div>
-            <div className="p-col-12 p-lg-4">
+            <div className="col-12 lg-4">
               <div className="card summary">
                 <span className="title">Rate</span>
                 <span className="detail">How many records per second to the database</span>
                 <span className="count purchases">{Math.round(fullHistory.completedRecords / (moment(fullHistory.loadFinished) - moment(fullHistory.loadStarted)) * 10000) / 10} r/s</span>
               </div>
             </div>
-            <div className="p-col-12 p-lg-4">
+            <div className="col-12 lg-4">
               <div className="card summary">
                 <span className="title">Completed</span>
                 <span className="detail">How much of the load was successful</span>

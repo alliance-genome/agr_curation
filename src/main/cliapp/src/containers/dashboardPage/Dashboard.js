@@ -98,16 +98,16 @@ export const Dashboard = () => {
 
   return (
 
-    <div className="grid p-nested dashboard">
+    <div className="grid nested dashboard">
 
-      <div className="p-col-3">
+      <div className="col-3">
         <DataTable value={entityCounts}>
           <Column field="name" header="Entity Name" />
           <Column field="count" header="Entity Count" />
         </DataTable>
       </div>
 
-      <div className="p-col-3">
+      <div className="col-3">
         <DataTable value={termCounts}>
           <Column field="name" header="Ontology Name" />
           <Column field="count" header="Term Count" />

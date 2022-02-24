@@ -75,7 +75,7 @@ export const NewBulkLoadGroupForm = ({ bulkLoadGroupDialog, setBulkLoadGroupDial
   return (
     <div>
       <Dialog visible={bulkLoadGroupDialog} style={{ width: '450px' }} header="Group Details" modal className="p-fluid" footer={groupDialogFooter} onHide={hideDialog}>
-        <div className="p-field">
+        <div className="field">
           <label htmlFor="name">Group Name</label>
 
           <InputText id="name" value={group.name} onChange={(e) => onChange(e, 'name')} required autoFocus className={classNames({ 'p-invalid': submitted && !group.name })} />
