@@ -98,7 +98,7 @@ export const Dashboard = () => {
 
   return (
 
-    <div className="p-grid p-nested dashboard">
+    <div className="grid p-nested dashboard">
 
       <div className="p-col-3">
         <DataTable value={entityCounts}>
