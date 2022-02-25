@@ -14,7 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "CRUD - Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface DiseaseAnnotationFmsCrudInterface extends BaseCurieCrudInterface<DiseaseAnnotation> {
+public interface DiseaseAnnotationFmsCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
     
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFileFms")
