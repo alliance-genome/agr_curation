@@ -4,7 +4,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.auth.Secured;
-import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
