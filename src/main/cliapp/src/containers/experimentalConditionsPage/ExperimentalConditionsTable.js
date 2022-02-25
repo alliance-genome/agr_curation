@@ -17,7 +17,7 @@ import { SingleOntologyEditor } from '../../components/SingleOntologyEditor';
 import { Button } from 'primereact/button';
 
 export const ExperimentalConditionsTable = () => {
-  const defaultColumnNames = ["Unique ID", "Statement", "Class", "ID", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
+  const defaultColumnNames = ["Unique ID", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -321,7 +321,7 @@ export const ExperimentalConditionsTable = () => {
     },
     {
       field: "conditionId.name",
-      header: "ID",
+      header: "Condition Term",
       sortable: isEnabled,
       body: conditionIdBodyTemplate,
       filter: true,
