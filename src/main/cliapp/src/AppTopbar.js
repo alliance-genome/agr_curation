@@ -58,7 +58,7 @@ export const AppTopbar = (props) => {
         <ul className={classNames("layout-topbar-menu lg:flex origin-top", { 'layout-topbar-menu-mobile-active': props.mobileTopbarMenuActive })}>
           <li>
             <Menu model={items} popup ref={menu} id="popup_menu" />
-            <i className="pi pi-user" onClick={(event) => menu.current.toggle(event)} aria-controls="popup_menu" aria-haspopup />
+            <i className="pi pi-user" style={{'fontSize': '1.5em'}} onClick={(event) => menu.current.toggle(event)} aria-controls="popup_menu" aria-haspopup />
           </li>
         </ul>
       }
