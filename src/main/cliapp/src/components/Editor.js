@@ -1,47 +1,66 @@
 import React, { useState, useRef } from 'react';
 import { AutoComplete } from "primereact/autocomplete";
-import { trimWhitespace } from '../../utils/utils';
-import { SubjectTooltip } from './SubjectTooltip';
+import { trimWhitespace } from '../utils/utils';
+import { DiseaseTooltip } from './../containers/diseaseAnnotationsPage/DiseaseTooltip';
 
-
-export const SubjectEditor = ({ rowProps, searchService, autocompleteFields }) => {
-  const [filteredSubjects, setFilteredSubjects] = useState([]);
-  const [fieldValue, setFieldValue] = useState(rowProps.rowData.subject.curie);
+export const Editor = (
+  {
+    rowProps,
+    searchService,
+    autocompleteFields,
+    isObsolete,
+    endpoint,
+    filterName,
+    fieldName,
+  }
+) => {
+  const [filtered, setFiltered] = useState([]);
+  const [fieldValue, setFieldValue] = useState(rowProps.rowData[fieldName].curie);
 
   const op = useRef(null);
   const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
 
-  const searchSubject = (event) => {
-    //console.log(event);
-    let subjectFilter = {};
+  const search = (event) => {
+    let filter = {};
     autocompleteFields.forEach(field => {
-      subjectFilter[field] = {
-        queryString: event.query,
-        tokenOperator: "AND"
+      filter[field] = {
+        queryString: event.query
       }
     });
 
-    searchService.search("biologicalentity", 15, 0, null, { "subjectFilter": subjectFilter })
+    let obsoleteFilter;
+
+    if (isObsolete) {
+      obsoleteFilter = {
+        "obsolete": {
+          queryString: false
+        }
+      };
+    };
+
+
+    searchService.search(endpoint, 15, 0, [], { filterName: filter, ...(isObsolete && { "obsoleteFilter": obsoleteFilter }) })
       .then((data) => {
-        //console.log(data);
         if (data.results && data.results.length > 0)
-          setFilteredSubjects(data.results);
+          setFiltered(data.results);
         else
-          setFilteredSubjects([]);
+          setFiltered([]);
       });
   };
 
-  const onSubjectEditorValueChange = (event) => {//this should propably be generalized so that all of these editor value changes can use the same method
+  const onValueChange = (event) => {
     let updatedAnnotations = [...rowProps.props.value];
 
+
     if (event.target.value || event.target.value === '') {
-      updatedAnnotations[rowProps.rowIndex].subject = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+      console.log(rowProps);
+      updatedAnnotations[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       if (typeof event.target.value === "object") {
-        updatedAnnotations[rowProps.rowIndex].subject.curie = event.target.value.curie;
+        updatedAnnotations[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
       } else {
-        updatedAnnotations[rowProps.rowIndex].subject.curie = event.target.value;
+        updatedAnnotations[rowProps.rowIndex][fieldName].curie = event.target.value;
       }
-      setFieldValue(updatedAnnotations[rowProps.rowIndex].subject.curie);
+      setFieldValue(updatedAnnotations[rowProps.rowIndex][fieldName].curie);
     }
   };
 
@@ -50,11 +69,11 @@ export const SubjectEditor = ({ rowProps, searchService, autocompleteFields }) =
     op.current.show(event);
   };
 
-  const subjectItemTemplate = (item) => {
-    let inputValue = trimWhitespace(rowProps.rowData.subject.curie.toLowerCase());
+  const itemTemplate = (item) => {
+    let inputValue = trimWhitespace(rowProps.rowData[fieldName].curie.toLowerCase());
     if (autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length > 0) {
       for (let i in autocompleteSelectedItem.synonyms) {
-        if (autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase().indexOf(inputValue) < 0) {
+        if (autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue) < 0) {
           delete autocompleteSelectedItem.synonyms[i];
         }
       }
@@ -99,19 +118,18 @@ export const SubjectEditor = ({ rowProps, searchService, autocompleteFields }) =
   return (
     <div>
       <AutoComplete
-        id={rowProps.rowData.subject.curie}
+        id={rowProps.rowData[fieldName].curie}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
         field="curie"
         value={fieldValue}
-        suggestions={filteredSubjects}
-        itemTemplate={subjectItemTemplate}
-        completeMethod={searchSubject}
+        suggestions={filtered}
+        itemTemplate={itemTemplate}
+        completeMethod={search}
         onHide={(e) => op.current.hide(e)}
-        onChange={(e) => onSubjectEditorValueChange(e)}
+        onChange={(e) => onValueChange(e)}
       />
-      <SubjectTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(rowProps.rowData.subject.curie.toLowerCase())}
+      <DiseaseTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(rowProps.rowData.object.curie.toLowerCase())}
       />
     </div>
-
   )
-};
+}

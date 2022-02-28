@@ -8,7 +8,7 @@ import { Toast } from 'primereact/toast';
 
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { SubjectEditor } from './SubjectEditor';
-import { DiseaseEditor } from './DiseaseEditor';
+import { Editor } from '../../components/Editor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
@@ -282,7 +282,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const onDiseaseRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-      console.log(updatedAnnotations);
+    console.log(updatedAnnotations);
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       setDiseaseAnnotations(updatedAnnotations);
@@ -327,11 +327,13 @@ export const DiseaseAnnotationsTable = () => {
   const subjectEditorTemplate = (props) => {
     return (
       <>
-        <SubjectEditor
+        <Editor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
+          endpoint='biologicalentity'
+          filterName='subjectFilter'
+          fieldName='subject'
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -344,11 +346,13 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseEditorTemplate = (props) => {
     return (
       <>
-        <DiseaseEditor
+        <Editor
           autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
+          endpoint='doterm'
+          filterName='diseaseFilter'
+          fieldName='object'
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -522,66 +526,66 @@ export const DiseaseAnnotationsTable = () => {
           filterElement={col.filterElement}
           editor={col.editor}
           body={col.body}
-          style={{whiteSpace: 'normal'}}
+          style={{ whiteSpace: 'normal' }}
         />;
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-const header = (
-  <>
-    <div style={{ textAlign: 'left' }}>
-      <MultiSelect
-        value={tableState.selectedColumnNames}
-        options={defaultColumnNames}
-        onChange={e => setSelectedColumnNames(e.value)}
-        style={{ width: '20em' }}
-        disabled={!isEnabled}
-      />
+  const header = (
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={e => setSelectedColumnNames(e.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
+  );
+
+  const resetTableState = () => {
+    setTableState(initialTableState);
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+  }
+
+  const colReorderHandler = (event) => {
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
+  };
+
+  return (
+    <div>
+      <div className="card">
+        <Toast ref={toast_topleft} position="top-left" />
+        <Toast ref={toast_topright} position="top-right" />
+        <h3>Disease Annotations Table</h3>
+        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
+          ref={dataTable}
+          editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+          onColReorder={colReorderHandler}
+          editingRows={editingRows} onRowEditChange={onRowEditChange}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+          first={tableState.first}
+          filterDisplay="row"
+          dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
+          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
+          paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
+        >
+
+          {columnMap}
+
+          <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+        </DataTable>
+      </div>
     </div>
-    <div style={{ textAlign: 'right' }}>
-      <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-    </div>
-  </>
-);
-
-const resetTableState = () => {
-  setTableState(initialTableState);
-  dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
-}
-
-const colReorderHandler = (event) => {
-  let _columnNames = [...tableState.selectedColumnNames];
-  _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
-  setSelectedColumnNames(_columnNames);
-};
-
-return (
-  <div>
-    <div className="card">
-      <Toast ref={toast_topleft} position="top-left" />
-      <Toast ref={toast_topright} position="top-right" />
-      <h3>Disease Annotations Table</h3>
-      <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
-        ref={dataTable}
-        editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-        onColReorder={colReorderHandler}
-        editingRows={editingRows} onRowEditChange={onRowEditChange}
-        sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-        first={tableState.first}
-        filterDisplay="row"
-        dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
-        paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
-        paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-        currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
-      >
-
-        {columnMap}
-
-        <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
-      </DataTable>
-    </div>
-  </div>
-);
+  );
 };
