@@ -7,10 +7,13 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
+
 
 public class DiseaseAnnotationValidator {
 
@@ -22,10 +25,13 @@ public class DiseaseAnnotationValidator {
     DoTermDAO doTermDAO;
     @Inject
     GeneDAO geneDAO;
+    @Inject
+    BiologicalEntityDAO biologicalEntityDAO;
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
     protected String requiredMessage = "Required field is empty";
+    protected String dependencyMessagePrefix = "Invalid without value for ";
     
     protected ObjectResponse<DiseaseAnnotation > response;
     
@@ -73,7 +79,7 @@ public class DiseaseAnnotationValidator {
     }
     
     
-    public List<Gene> validateWith(DiseaseAnnotation  uiEntity, DiseaseAnnotation  dbEntity) {
+    public List<Gene> validateWith(DiseaseAnnotation  uiEntity) {
         List<Gene> validWithGenes = new ArrayList<Gene>();
         
         if (CollectionUtils.isNotEmpty(uiEntity.getWith())) {
@@ -90,6 +96,48 @@ public class DiseaseAnnotationValidator {
         }
         
         return validWithGenes;
+    }
+    
+    public String validateDataProvider(DiseaseAnnotation uiEntity) {
+        String dataProvider = uiEntity.getDataProvider();
+        if (dataProvider == null) {
+            addMessageResponse("dataProvider", requiredMessage);
+            return null;
+        }
+        
+        return dataProvider;
+    }
+    
+    public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity) {
+        if (uiEntity.getDiseaseGeneticModifier() == null) {
+            return null;
+        }
+
+        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+            addMessageResponse("diseaseGeneticModifer", dependencyMessagePrefix + "diseaseGeneticModifierRelation");
+            return null;
+        }
+        
+        BiologicalEntity modifier = biologicalEntityDAO.find(uiEntity.getDiseaseGeneticModifier().getCurie());
+        if (modifier == null) {
+            addMessageResponse("diseaseGeneticModifier", invalidMessage);
+            return null;
+        }
+        
+        return modifier;
+    }
+    
+    public DiseaseGeneticModifierRelation validateDiseaseGeneticModifierRelation(DiseaseAnnotation uiEntity) {
+        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+            return null;
+        }
+        
+        if (uiEntity.getDiseaseGeneticModifier() == null) {
+            addMessageResponse("diseaseGeneticModifierRelation", dependencyMessagePrefix + "diseaseGeneticModifier");
+            return null;
+        }
+        
+        return uiEntity.getDiseaseGeneticModifierRelation();
     }
     
     protected void addMessageResponse(String message) {

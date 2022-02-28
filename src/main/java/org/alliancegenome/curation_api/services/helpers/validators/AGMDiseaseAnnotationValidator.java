@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -50,7 +51,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
-        List<Gene> genes = validateWith(uiEntity, dbEntity);
+        List<Gene> genes = validateWith(uiEntity);
         if(genes != null) dbEntity.setWith(genes);
 
         if(uiEntity.getNegated() != null) {
@@ -58,6 +59,21 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         }else{
             dbEntity.setNegated(false);
         }
+        
+        if (uiEntity.getAnnotationType() != null)
+            dbEntity.setAnnotationType(uiEntity.getAnnotationType());
+
+        String dataProvider = validateDataProvider(uiEntity);
+        if (dataProvider != null) dbEntity.setDataProvider(uiEntity.getDataProvider());
+    
+        if (uiEntity.getSecondaryDataProvider() != null)
+            dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
+    
+        BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
+        if (diseaseGeneticModifier != null) dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
+    
+        DiseaseGeneticModifierRelation dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
+        if (dgmRelation != null) dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
 
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);

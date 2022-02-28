@@ -131,7 +131,7 @@ public class DiseaseAnnotation extends Association {
     @KeywordField(name = "diseaseGeneticModifierRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
-    private GeneticModifierRelation diseaseGeneticModifierRelation;
+    private DiseaseGeneticModifierRelation diseaseGeneticModifierRelation;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "sgdStrainBackground_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -166,7 +166,7 @@ public class DiseaseAnnotation extends Association {
         hermaphrodite
     }
     
-    public enum GeneticModifierRelation {
+    public enum DiseaseGeneticModifierRelation {
         ameliorated_by,
         not_ameliorated_by,
         exacerbated_by,

@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseQualifier;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.GeneticModifierRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.GeneticSex;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.*;
@@ -77,15 +77,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         List<ConditionRelation> conditionRelations = new ArrayList<>();
         List<ConditionRelation> conditionRelationsToPersist = new ArrayList<>();
         List<ExperimentalCondition> experimentalConditionsToPersist = new ArrayList<>();
-        
-        if (CollectionUtils.isNotEmpty(annotationDTO.getRelatedNotes())) {
-            List<Note> notesToPersist = new ArrayList<>();
-            for (NoteDTO noteDTO : annotationDTO.getRelatedNotes()) {
-                Note relatedNote = noteService.validateNoteDTO(noteDTO);
-                if (relatedNote == null) return null;
-                notesToPersist.add(relatedNote);
-            }
-        }
         
         // create Experimental Conditions
         if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
@@ -260,7 +251,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                     ) {
                 throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
             }
-            annotation.setDiseaseGeneticModifierRelation(GeneticModifierRelation.valueOf(dto.getDiseaseGeneticModifierRelation()));
+            annotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.valueOf(dto.getDiseaseGeneticModifierRelation()));
             BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getSgdStrainBackground());
             if (diseaseGeneticModifier == null) {
                 throw new ObjectValidationException(dto, "Invalid biological entity (" + dto.getDiseaseGeneticModifier() + ") in 'disease_genetic_modifier' field in " + annotation.getUniqueId() + " - skipping annotation");
@@ -291,6 +282,15 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 throw new ObjectValidationException(dto, "Invalid genetic sex (" + dto.getGeneticSex() + ") in " + annotation.getUniqueId() + " - skipping annotation");
             }
             annotation.setGeneticSex(GeneticSex.valueOf(dto.getGeneticSex()));
+        }
+        
+        if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
+            List<Note> notesToPersist = new ArrayList<>();
+            for (NoteDTO noteDTO : dto.getRelatedNotes()) {
+                Note relatedNote = noteService.validateNoteDTO(noteDTO);
+                if (relatedNote == null) return null;
+                notesToPersist.add(relatedNote);
+            }
         }
         
         
