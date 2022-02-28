@@ -93,7 +93,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(1)).
             body("results", hasSize(1)).
-            //body("results[0].modId", is("DATEST:Annot0001")).
+            //body("results[0].modEntityId", is("DATEST:Annot0001")).
             body("results[0].uniqueId", is("DATEST:Annot0001")).
             body("results[0].subject.curie", is("DATEST:Gene0001")).
             body("results[0].object.curie", is("DATEST:Disease0001")).
@@ -151,7 +151,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(2)).
             body("results", hasSize(2)).
-            //body("results[1].modId", is("DATEST:Annot0002")).
+            //body("results[1].modEntityId", is("DATEST:Annot0002")).
             body("results[1].uniqueId", is("DATEST:Annot0002")).
             body("results[1].subject.curie", is("DATEST:Allele0001")).
             body("results[1].object.curie", is("DATEST:Disease0001")).
@@ -209,7 +209,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(3)).
             body("results", hasSize(3)).
-            //body("results[2].modId", is("DATEST:Annot0003")).
+            //body("results[2].modEntityId", is("DATEST:Annot0003")).
             body("results[2].uniqueId", is("DATEST:Annot0003")).
             body("results[2].subject.curie", is("DATEST:AGM0001")).
             body("results[2].object.curie", is("DATEST:Disease0001")).
@@ -244,7 +244,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(4)
-    public void diseaseAnnotationBulkUploadNoModId() throws Exception {
+    public void diseaseAnnotationBulkUploadNoModEntityId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/04_no_mod_id.json"));
         
         RestAssured.given().
