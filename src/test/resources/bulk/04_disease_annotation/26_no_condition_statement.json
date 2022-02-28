@@ -1,11 +1,10 @@
 [
   {
-    "mod_id": "DATEST:Annot0026",
+    "mod_entity_id": "DATEST:Annot0026",
     "subject": "DATEST:Gene0001",
     "object": "DATEST:Disease0001",
-    "data_provider": [
-      "TEST"
-    ],
+    "data_provider": "TEST",
+    "secondary_data_provider": "TEST2",
     "negated": true,
     "predicate": "is_implicated_in",
     "genetic_sex": "male",
@@ -35,10 +34,23 @@
       "HGNC:0001"
     ],
     "single_reference": "PMID:25920554",
-    "disease_annotation_summary": "Test summary",
-    "disease_annotation_note": "Test note",
+    "related_notes": [
+      {
+        "free_text": "Test note",
+        "note_type": "Disease summary",
+        "internal": false,
+        "references": [
+          "PMID:25920554"
+        ]
+      }
+    ],
     "created_by": "DATEST:Person0001",
     "creation_date": "2022-02-14",
-    "date_last_modified": "2022-02-14"
+    "date_last_modified": "2022-02-14",
+    "sgd_strain_background": "DATEST:AGM0001",
+    "annotation_type": "manually_curated",
+    "disease_qualifiers": [
+      "susceptibility"
+    ]
   }
 ]
