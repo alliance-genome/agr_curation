@@ -163,6 +163,10 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
         annotation.setDataProvider(dto.getDataProvider());
+
+        if (dto.getModEntityId() != null) {
+            annotation.setModEntityId(dto.getModEntityId());
+        }
         
         DOTerm disease = doTermDAO.find(dto.getObject());
         if (disease == null) {

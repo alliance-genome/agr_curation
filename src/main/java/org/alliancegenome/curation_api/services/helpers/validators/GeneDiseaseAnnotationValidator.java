@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseG
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -64,6 +65,9 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         if (uiEntity.getAnnotationType() != null)
             dbEntity.setAnnotationType(uiEntity.getAnnotationType());
 
+        if (uiEntity.getGeneticSex() != null)
+            dbEntity.setGeneticSex(uiEntity.getGeneticSex());
+
         String dataProvider = validateDataProvider(uiEntity);
         if (dataProvider != null) dbEntity.setDataProvider(uiEntity.getDataProvider());
     
@@ -78,6 +82,10 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
         AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
         if (sgdStrainBackground != null) dbEntity.setSgdStrainBackground(uiEntity.getSgdStrainBackground());
+        
+        if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
+            dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
+        
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
