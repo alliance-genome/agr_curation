@@ -90,7 +90,7 @@ public class DiseaseAnnotationITCase {
         diseaseAnnotation.setUniqueId(ALLELE_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
-
+        diseaseAnnotation.setDataProvider("TEST");
         diseaseAnnotation.setSubject(allele);
         diseaseAnnotation.setEvidenceCodes(ecoTerms);
 
@@ -126,7 +126,7 @@ public class DiseaseAnnotationITCase {
         diseaseAnnotation.setUniqueId(AGM_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
-
+        diseaseAnnotation.setDataProvider("TEST");
         diseaseAnnotation.setSubject(model);
         diseaseAnnotation.setEvidenceCodes(ecoTerms);
 
@@ -157,7 +157,7 @@ public class DiseaseAnnotationITCase {
         diseaseAnnotation.setUniqueId(GENE_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
         diseaseAnnotation.setObject(doTerm);
-
+        diseaseAnnotation.setDataProvider("TEST");
         diseaseAnnotation.setSubject(gene);
         diseaseAnnotation.setEvidenceCodes(ecoTerms);
         return diseaseAnnotation;

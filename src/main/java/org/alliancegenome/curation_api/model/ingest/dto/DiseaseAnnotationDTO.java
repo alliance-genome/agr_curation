@@ -111,6 +111,6 @@ public class DiseaseAnnotationDTO {
     private String sgdStrainBackground;
     
     @JsonView({View.FieldsAndLists.class})
-    @JsonProperty("condition_relations")
+    @JsonProperty("related_notes")
     private List<NoteDTO> relatedNotes;
 }

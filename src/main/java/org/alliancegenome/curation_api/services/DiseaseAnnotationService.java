@@ -49,17 +49,15 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     @Inject
     EcoTermDAO ecoTermDAO;
     @Inject
-    AffectedGenomicModelDAO agmDAO;
-    @Inject
     AlleleDAO alleleDAO;
     @Inject
     GeneDAO geneDAO;
     @Inject
+    NoteDAO noteDAO;
+    @Inject
     ExperimentalConditionService experimentalConditionService;
     @Inject
     NoteService noteService;
-    @Inject
-    AffectedGenomicModelDAO affectedGenomicModelDAO;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
 
@@ -218,14 +216,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (dto.getSecondaryDataProvider() != null)
             annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
         
-        if (dto.getSgdStrainBackground() != null) {
-            AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
-            if (sgdStrainBackground == null) {
-                throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
-            }
-            annotation.setSgdStrainBackground(sgdStrainBackground);
-        }
-        
         if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
             List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
             for (String qualifier : dto.getDiseaseQualifiers()) {
@@ -256,7 +246,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
             }
             annotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.valueOf(dto.getDiseaseGeneticModifierRelation()));
-            BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getSgdStrainBackground());
+            BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifier());
             if (diseaseGeneticModifier == null) {
                 throw new ObjectValidationException(dto, "Invalid biological entity (" + dto.getDiseaseGeneticModifier() + ") in 'disease_genetic_modifier' field in " + annotation.getUniqueId() + " - skipping annotation");
             }
@@ -295,6 +285,8 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 if (relatedNote == null) return null;
                 notesToPersist.add(relatedNote);
             }
+            notesToPersist.forEach(note -> noteDAO.persist(note));
+            annotation.setRelatedNotes(notesToPersist);
         }
         
         

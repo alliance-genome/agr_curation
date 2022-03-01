@@ -33,6 +33,9 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     @Inject
     DiseaseAnnotationService diseaseAnnotationService;
     
+    @Inject
+    AffectedGenomicModelDAO affectedGenomicModelDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -78,6 +81,14 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
             annotation.setSubject(gene);
         } else {
             annotation = annotationList.getResults().get(0);
+        }
+        
+        if (dto.getSgdStrainBackground() != null) {
+            AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+            if (sgdStrainBackground == null) {
+                throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setSgdStrainBackground(sgdStrainBackground);
         }
         
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
