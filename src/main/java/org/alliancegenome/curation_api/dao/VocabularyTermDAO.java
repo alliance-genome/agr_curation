@@ -10,6 +10,9 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @ApplicationScoped
 public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
 
@@ -31,13 +34,10 @@ public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
         } 
         vocabulary = vocabularySearchResponse.getSingleResult();
         
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("name", termName);
-        params.put("vocabulary_id", vocabulary.getId());
-        SearchResponse<VocabularyTerm> vocabularyTermSearchResponse = vocabularyTermDAO.findByParams(null, params);
-        if (vocabularyTermSearchResponse == null || vocabularyTermSearchResponse.getSingleResult() == null) {
-            return null;
-        }
-        return vocabularyTermSearchResponse.getSingleResult();
+        VocabularyTerm term = vocabulary.getMemberTerms().stream().filter(
+                vocabularyTerm -> termName.equals(vocabularyTerm.getName())
+            ).findAny().orElse(null);
+        
+        return term;
     }
 }
