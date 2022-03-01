@@ -41,50 +41,13 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
             // do not continue validation for update if Disease Annotation ID has not been found
         }       
         
-        if (uiEntity.getModEntityId() != null)
-            dbEntity.setModEntityId(uiEntity.getModEntityId());
-
         Allele subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
-
-        DOTerm term = validateObject(uiEntity, dbEntity);
-        if(term != null) dbEntity.setObject(term);
-
-        List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
-        if(terms != null) dbEntity.setEvidenceCodes(terms);
 
         DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
-        List<Gene> genes = validateWith(uiEntity);
-        if(genes != null) dbEntity.setWith(genes);
-
-        if(uiEntity.getNegated() != null) {
-            dbEntity.setNegated(uiEntity.getNegated());
-        }else{
-            dbEntity.setNegated(false);
-        }
-
-        if (uiEntity.getAnnotationType() != null)
-            dbEntity.setAnnotationType(uiEntity.getAnnotationType());
-
-        if (uiEntity.getGeneticSex() != null)
-            dbEntity.setGeneticSex(uiEntity.getGeneticSex());
-
-        String dataProvider = validateDataProvider(uiEntity);
-        if (dataProvider != null) dbEntity.setDataProvider(uiEntity.getDataProvider());
-        
-        if (uiEntity.getSecondaryDataProvider() != null)
-            dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
-        
-        BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
-        if (diseaseGeneticModifier != null) dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
-        
-        DiseaseGeneticModifierRelation dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
-        if (dgmRelation != null) dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
-        
-        if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
-            dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
+        dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
         
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
