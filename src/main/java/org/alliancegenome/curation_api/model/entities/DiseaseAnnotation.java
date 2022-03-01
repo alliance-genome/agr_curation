@@ -94,10 +94,11 @@ public class DiseaseAnnotation extends Association {
     @Enumerated(EnumType.STRING)
     private AnnotationType annotationType;
     
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "diseaseQualifier_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsAndLists.class})
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = DiseaseQualifier.class)
     private List<DiseaseQualifier> diseaseQualifiers;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -122,9 +123,10 @@ public class DiseaseAnnotation extends Association {
     @JsonView(View.FieldsOnly.class)
     private String secondaryDataProvider;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseGeneticModifier_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView(View.FieldsOnly.class)
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
     private BiologicalEntity diseaseGeneticModifier;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -132,11 +134,7 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
     private DiseaseGeneticModifierRelation diseaseGeneticModifierRelation;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "sgdStrainBackground_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView(View.FieldsOnly.class)
-    private AffectedGenomicModel sgdStrainBackground;
+
     
     public enum DiseaseRelation {
         is_model_of,
