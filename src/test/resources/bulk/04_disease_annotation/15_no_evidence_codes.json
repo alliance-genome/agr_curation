@@ -9,7 +9,7 @@
     "predicate": "is_implicated_in",
     "genetic_sex": "male",
     "modified_by": "DATEST:Person0001",
-    "conditionRelations": [
+    "condition_relations": [
       {
         "condition_relation_type": "exacerbated_by",
         "conditions": [

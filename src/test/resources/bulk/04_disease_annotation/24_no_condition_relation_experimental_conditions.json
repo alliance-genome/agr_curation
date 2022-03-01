@@ -12,7 +12,7 @@
     "evidence_codes": [
       "DATEST:Evidence0001"
     ],
-    "conditionRelations": [
+    "condition_relations": [
       {
         "condition_relation_type": "exacerbated_by"
       }
