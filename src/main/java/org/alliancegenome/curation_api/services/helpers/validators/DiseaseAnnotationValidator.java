@@ -14,13 +14,13 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
+import lombok.extern.jbosslog.JBossLog;
 
+@JBossLog
 public class DiseaseAnnotationValidator {
 
     @Inject
     EcoTermDAO ecoTermDAO;
-    @Inject
-    ReferenceDAO referenceDAO;
     @Inject
     DoTermDAO doTermDAO;
     @Inject
@@ -173,13 +173,18 @@ public class DiseaseAnnotationValidator {
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
     
         BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
-        if (diseaseGeneticModifier != null) dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
-    
         DiseaseGeneticModifierRelation dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
-        if (dgmRelation != null) dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
+        if (diseaseGeneticModifier != null && dgmRelation != null) {
+            dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
+            dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
+        }
         
         if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
             dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
+        
+        // TODO: Add validation of reference
+        if (uiEntity.getSingleReference() != null)
+            dbEntity.setSingleReference(uiEntity.getSingleReference());
         
         return dbEntity;
     }
