@@ -365,7 +365,6 @@ export const DiseaseAnnotationsTable = () => {
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
