@@ -7,8 +7,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
-import { SubjectEditor } from './SubjectEditor';
-import { Editor } from '../../components/Editor';
+import { InputEditor } from '../../components/Editor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
@@ -223,7 +222,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
     mutation.mutate(updatedRow, {
-      onSuccess: (data, variables, context) => {
+      onSuccess: (data) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
         let annotations = [...diseaseAnnotations];
         annotations[event.index].subject = data.data.entity.subject;
@@ -327,13 +326,14 @@ export const DiseaseAnnotationsTable = () => {
   const subjectEditorTemplate = (props) => {
     return (
       <>
-        <Editor
+        <InputEditor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
           endpoint='biologicalentity'
           filterName='subjectFilter'
           fieldName='subject'
+          isGene={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -346,7 +346,7 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseEditorTemplate = (props) => {
     return (
       <>
-        <Editor
+        <InputEditor
           autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
           rowProps={props}
           searchService={searchService}
@@ -365,10 +365,17 @@ export const DiseaseAnnotationsTable = () => {
   const withEditorTemplate = (props) => {
     return (
       <>
-        <WithEditor
+        <InputEditor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
+          setDiseaseAnnotations={setDiseaseAnnotations}
+          endpoint='gene'
+          filterName='withFilter'
+          fieldName='with'
+          isWith={true}
+          isGene={true}
+          isMultiple={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}

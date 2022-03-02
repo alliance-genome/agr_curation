@@ -1,9 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { AutoComplete } from "primereact/autocomplete";
 import { trimWhitespace } from '../utils/utils';
-import { DiseaseTooltip } from './../containers/diseaseAnnotationsPage/DiseaseTooltip';
+import { Tooltip } from "primereact/tooltip";
 
-export const Editor = (
+export const InputEditor = (
   {
     rowProps,
     searchService,
@@ -12,19 +12,30 @@ export const Editor = (
     endpoint,
     filterName,
     fieldName,
+    isGene = false,
+    isWith = false,
+    isMultiple = false
   }
 ) => {
   const [filtered, setFiltered] = useState([]);
-  const [fieldValue, setFieldValue] = useState(rowProps.rowData[fieldName].curie);
+  const [query, setQuery] = useState();
+  const [fieldValue, setFieldValue] = useState(() => {
+    return isMultiple ?
+      rowProps.rowData[fieldName] :
+      rowProps.rowData[fieldName].curie
+  }
+  );
 
   const op = useRef(null);
   const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
 
   const search = (event) => {
+    setQuery(event.query);
     let filter = {};
     autocompleteFields.forEach(field => {
       filter[field] = {
-        queryString: event.query
+        queryString: event.query,
+        ...(isGene && { tokenOperator: "AND" })
       }
     });
 
@@ -39,21 +50,30 @@ export const Editor = (
     };
 
 
-    searchService.search(endpoint, 15, 0, [], { filterName: filter, ...(isObsolete && { "obsoleteFilter": obsoleteFilter }) })
+    searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...(isObsolete && { "obsoleteFilter": obsoleteFilter }) })
       .then((data) => {
-        if (data.results && data.results.length > 0)
-          setFiltered(data.results);
-        else
+        if (data.results?.length > 0) {
+          if (isWith) {
+            setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
+          } else {
+            setFiltered(data.results);
+          };
+        } else {
           setFiltered([]);
+        }
       });
   };
 
   const onValueChange = (event) => {
     let updatedAnnotations = [...rowProps.props.value];
 
+    if (isMultiple && event.target.value) {
+      updatedAnnotations[rowProps.rowIndex][fieldName] = event.target.value;
+      setFieldValue(updatedAnnotations[rowProps.rowIndex][fieldName]);
+      return;
+    }
 
     if (event.target.value || event.target.value === '') {
-      console.log(rowProps);
       updatedAnnotations[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       if (typeof event.target.value === "object") {
         updatedAnnotations[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
@@ -70,15 +90,15 @@ export const Editor = (
   };
 
   const itemTemplate = (item) => {
-    let inputValue = trimWhitespace(rowProps.rowData[fieldName].curie.toLowerCase());
-    if (autocompleteSelectedItem.synonyms && autocompleteSelectedItem.synonyms.length > 0) {
+    let inputValue = trimWhitespace(query.toLowerCase());
+    if (autocompleteSelectedItem.synonyms?.length > 0) {
       for (let i in autocompleteSelectedItem.synonyms) {
         if (autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue) < 0) {
           delete autocompleteSelectedItem.synonyms[i];
         }
       }
     }
-    if (autocompleteSelectedItem.crossReferences && autocompleteSelectedItem.crossReferences.length > 0) {
+    if (autocompleteSelectedItem.crossReferences?.length > 0) {
       for (let i in autocompleteSelectedItem.crossReferences) {
         if (autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
           delete autocompleteSelectedItem.crossReferences[i];
@@ -86,7 +106,7 @@ export const Editor = (
       }
     }
 
-    if (autocompleteSelectedItem.secondaryIdentifiers && autocompleteSelectedItem.secondaryIdentifiers.length > 0) {
+    if (autocompleteSelectedItem.secondaryIdentifiers?.length > 0) {
       for (let i in autocompleteSelectedItem.secondaryIdentifiers) {
         if (autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue) < 0) {
           delete autocompleteSelectedItem.secondaryIdentifiers[i];
@@ -118,7 +138,8 @@ export const Editor = (
   return (
     <div>
       <AutoComplete
-        id={rowProps.rowData[fieldName].curie}
+        multiple={isMultiple}
+        // id={fieldValue}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
         field="curie"
         value={fieldValue}
@@ -128,8 +149,35 @@ export const Editor = (
         onHide={(e) => op.current.hide(e)}
         onChange={(e) => onValueChange(e)}
       />
-      <DiseaseTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} inputValue={trimWhitespace(rowProps.rowData.object.curie.toLowerCase())}
-      />
+      <EditorTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} />
     </div>
   )
 }
+
+const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
+  return (
+    <>
+      <Tooltip ref={op} style={{ width: '450px', maxWidth: '450px' }} position={'right'} mouseTrack mouseTrackLeft={30}>
+        Curie: {autocompleteSelectedItem.curie}<br />
+        {autocompleteSelectedItem.name &&
+          <div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{ __html: 'Name: ' + autocompleteSelectedItem.name }} />
+        }
+        {autocompleteSelectedItem.symbol &&
+          <div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{ __html: 'Symbol: ' + autocompleteSelectedItem.symbol }} />
+        }
+        {autocompleteSelectedItem.synonyms &&
+          autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn}`}>Synonym: {syn}</div>)
+        }
+        {autocompleteSelectedItem.crossReferences &&
+          autocompleteSelectedItem.crossReferences.map((cr) => <div key={`crossReferences${cr.curie}`}>Cross Reference: {cr.curie}</div>)
+        }
+        {autocompleteSelectedItem.secondaryIdentifiers &&
+          autocompleteSelectedItem.secondaryIdentifiers.map((si) => <div key={`secondaryIdentifiers${si}`}>Secondary Identifiers: {si}</div>)
+        }
+      </Tooltip>
+    </>
+  )
+};
+
+
+
