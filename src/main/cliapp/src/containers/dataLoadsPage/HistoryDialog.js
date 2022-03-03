@@ -29,16 +29,16 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 
   const hideDialog = () => {
     setHistoryDialog(false);
-    setFullHistory({});
+    //setFullHistory({});
   };
 
   const jsonObjectTemplate = (rowData) => {
-    if (rowData.jsonObject) {
+    if (rowData.exception.jsonObject) {
       return (
-        <div class="card">
+        <div className="card">
           <h2>JSON Object</h2>
           <ScrollPanel style={{width: '100%'}}>
-            <pre>{JSON.stringify(JSON.parse(rowData.jsonObject), null, 2) }</pre>
+            <pre>{JSON.stringify(JSON.parse(rowData.exception.jsonObject), null, 2) }</pre>
           </ScrollPanel>
         </div>
       );
@@ -76,9 +76,9 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
 
           <div className="card">
             <DataTable key="exceptionTable" value={fullHistory.exceptions} responsiveLayout="scroll"
-              expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)} rowExpansionTemplate={jsonObjectTemplate} dataKey="message">
+              expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)} rowExpansionTemplate={jsonObjectTemplate} dataKey="id">
               <Column expander style={{ width: '3em' }} />
-              <Column field="message" header={`Exception Messages (${fullHistory.exceptions ? fullHistory.exceptions.length : 0})`} />
+              <Column field="exception.message" header={`Exception Messages (${fullHistory.exceptions ? fullHistory.exceptions.length : 0})`} />
             </DataTable>
           </div>
 
