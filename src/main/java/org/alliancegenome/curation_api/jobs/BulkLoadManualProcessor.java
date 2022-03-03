@@ -18,7 +18,7 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
-    @ConsumeEvent(value = "BulkManualLoad", blocking = true) // Triggered by the Scheduler
+    @ConsumeEvent(value = "BulkManualLoad", blocking = true) // Triggered by the Scheduler or API
     public void processBulkManualLoadFromAPI(Message<BulkManualLoad> load) {
         //BulkManualLoad bulkManualLoad = load.body();
         //bulkManualLoad = bulkManualLoadDAO.find(bulkManualLoad.getId());
