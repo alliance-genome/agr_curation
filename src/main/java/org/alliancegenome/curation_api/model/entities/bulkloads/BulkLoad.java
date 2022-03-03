@@ -90,6 +90,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
             return this == FORCED_STARTED || this == SCHEDULED_STARTED;
         }
         
+        public boolean isNotRunning() {
+            return this == FAILED || this == STOPPED || this == FINISHED;
+        }
+        
         public BulkLoadStatus getNextStatus() {
             if(this == BulkLoadStatus.FORCED_PENDING) return BulkLoadStatus.FORCED_STARTED;
             if(this == BulkLoadStatus.FORCED_STARTED) return BulkLoadStatus.FORCED_RUNNING;
