@@ -19,7 +19,7 @@ import lombok.*;
 @Entity
 @Indexed
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
 public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
 
@@ -32,7 +32,6 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "conditionStatement_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
     private String conditionStatement;
 
     @IndexedEmbedded(includeDepth = 1)
@@ -44,7 +43,6 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "conditionQuantity_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
     private String conditionQuantity;
 
     @IndexedEmbedded(includeDepth = 1)
