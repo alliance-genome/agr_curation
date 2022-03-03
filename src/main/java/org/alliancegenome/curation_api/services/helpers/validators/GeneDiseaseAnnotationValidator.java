@@ -10,6 +10,8 @@ import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseR
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
@@ -71,7 +73,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     private DiseaseRelation validateDiseaseRelation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
         String field = "diseaseRelation";
-        if (StringUtils.isEmpty(uiEntity.getDiseaseRelation().toString())) {
+        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
