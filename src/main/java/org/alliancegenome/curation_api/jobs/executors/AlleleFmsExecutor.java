@@ -49,11 +49,9 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
                 alleleService.processUpdate(allele);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e.getData());
-                history.incrementFailed();
+                addException(history, e.getData());
             } catch (Exception e) {
-                history.getExceptions().add(new ObjectUpdateExceptionData(allele, e.getMessage()));
-                history.incrementFailed();
+                addException(history, new ObjectUpdateExceptionData(allele, e.getMessage()));
             }
 
             ph.progressProcess();

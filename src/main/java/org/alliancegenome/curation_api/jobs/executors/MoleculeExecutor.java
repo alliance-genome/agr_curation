@@ -45,8 +45,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
                 moleculeService.processUpdate(molecule);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e.getData());
-                history.incrementFailed();
+                addException(history, e.getData());
             }
             ph.progressProcess();
         }
