@@ -71,7 +71,6 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         FORCED_RUNNING,
         
         
-        RUNNING,
         FAILED,
         STOPPED,
         FINISHED,
