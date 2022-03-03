@@ -20,7 +20,7 @@ quarkus.hibernate-search-orm.automatic-indexing.synchronization.strategy=write-s
 
 quarkus.micrometer.binder.vertx.enabled=true
 quarkus.micrometer.export.json.enabled=true
-quarkus.micrometer.export.json.path=metrics.json
+quarkus.micrometer.export.json.path=api/metrics.json
 
 quarkus.hibernate-search-orm.elasticsearch.analysis.configurer=bean:ApplicationAnalysisConfig
 quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/custom-index-settings.json

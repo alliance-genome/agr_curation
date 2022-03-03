@@ -6,7 +6,7 @@ export class MetricService {
 
     getMetrics() {
       //return axios.get('assets/metrics.json').then(res => this.parseMetrics(res.data));
-      return axios.get('/metrics.json').then(res => this.parseMetrics(res.data));
+      return axios.get('/api/metrics.json').then(res => this.parseMetrics(res.data));
       //return axios.get('assets/testTree.json').then(res => res.data).then(d => d.root);
     }
 

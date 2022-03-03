@@ -16,7 +16,7 @@ import { MoleculesPage } from './containers/moleculesPage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 
 import { FMSComponent } from './components/FMSComponent';
-
+import { MetricsComponent } from './components/MetricsComponent';
 
 import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
 import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
@@ -59,6 +59,7 @@ export default (
     <SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
     <SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
     <SecureRoute path="/fmspage" component={FMSComponent} />
+    <SecureRoute path="/metricspage" component={MetricsComponent} />
     <SecureRoute path="/agms" component={AffectedGenomicModelPage} />
     <Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
   </>
