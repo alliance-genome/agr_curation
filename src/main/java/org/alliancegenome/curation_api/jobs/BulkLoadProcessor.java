@@ -126,8 +126,6 @@ public class BulkLoadProcessor {
 
         BulkLoad load = bulkLoadDAO.find(bulkLoad.getId());
 
-        log.info(load);
-        
         SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
         BulkLoadFile bulkLoadFile;
 
@@ -148,8 +146,14 @@ public class BulkLoadProcessor {
             bulkLoadFileDAO.persist(bulkLoadFile);
         } else if(load.getStatus().isForced()) {
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
-            bulkLoadFile.setLocalFilePath(localFilePath);
-            bulkLoadFile.setStatus(BulkLoadStatus.FORCED_PENDING);
+            if(bulkLoadFile.getStatus().isNotRunning()) {
+                bulkLoadFile.setLocalFilePath(localFilePath);
+                bulkLoadFile.setStatus(BulkLoadStatus.FORCED_PENDING);
+            } else {
+                log.warn("Bulk File is already running: " + bulkLoadFile.getMd5Sum());
+                log.info("Cleaning up downloaded file: " + localFilePath);
+                new File(localFilePath).delete();
+            }
         } else {
             log.info("Bulk File already exists not creating it");
             bulkLoadFile = bulkLoadFiles.getResults().get(0);

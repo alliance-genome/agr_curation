@@ -68,12 +68,9 @@ public class DiseaseAnnotationFmsExecutor extends LoadFileExecutor {
                 history.incrementCompleted();
                 annotationsIdsAfter.add(annotation.getUniqueId());
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e.getData());
-                history.incrementFailed();
+                addException(history, e.getData());
             } catch (Exception e) {
-                e.printStackTrace();
-                history.getExceptions().add(new ObjectUpdateExceptionData(annotationDTO, e.getMessage()));
-                history.incrementFailed();
+                addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage()));
             }
             ph.progressProcess();
         });
