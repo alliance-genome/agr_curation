@@ -8,11 +8,11 @@ export const InputEditor = (
     rowProps,
     searchService,
     autocompleteFields,
-    isObsolete,
+    otherFilters=[],
     endpoint,
     filterName,
     fieldName,
-    isGene = false,
+    isSubject = false,
     isWith = false,
     isMultiple = false
   }
@@ -35,22 +35,11 @@ export const InputEditor = (
     autocompleteFields.forEach(field => {
       filter[field] = {
         queryString: event.query,
-        ...(isGene && { tokenOperator: "AND" })
+        ...((isSubject || isWith) && { tokenOperator: "AND" })
       }
     });
 
-    let obsoleteFilter;
-
-    if (isObsolete) {
-      obsoleteFilter = {
-        "obsolete": {
-          queryString: false
-        }
-      };
-    };
-
-
-    searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...(isObsolete && { "obsoleteFilter": obsoleteFilter }) })
+    searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters })
       .then((data) => {
         if (data.results?.length > 0) {
           if (isWith) {

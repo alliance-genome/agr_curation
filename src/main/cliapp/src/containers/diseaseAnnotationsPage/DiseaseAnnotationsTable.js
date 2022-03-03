@@ -7,7 +7,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
-import { InputEditor } from '../../components/Editor';
+import { InputEditor } from '../../components/InputEditor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
@@ -353,6 +353,13 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='doterm'
           filterName='diseaseFilter'
           fieldName='object'
+          otherFilters={{
+            obsoleteFilter: {
+              "obsolete": {
+                queryString: false
+              }
+            }
+          }}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -388,12 +395,27 @@ export const DiseaseAnnotationsTable = () => {
   const evidenceEditorTemplate = (props) => {
     return (
       <>
-        <EvidenceEditor
+        <InputEditor
           autocompleteFields={["curie", "name", "abbreviation"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
-        />
+          endpoint='ecoterm'
+          filterName='evidenceFilter'
+          fieldName='evidenceCodes'
+          isMultiple={true}
+          otherFilters={{
+            obsoleteFilter: {
+              "obsolete": {
+                queryString: false
+              }
+            },
+            subsetFilter: {
+              "subsets": {
+                queryString: "agr_eco_terms"
+              }
+            }
+          }} />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
           errorField="evidence"

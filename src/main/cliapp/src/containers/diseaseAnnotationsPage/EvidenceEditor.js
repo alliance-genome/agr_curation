@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { AutoComplete } from "primereact/autocomplete";
 import { trimWhitespace } from '../../utils/utils';
 
-export const EvidenceEditor = ({ rowProps, searchService, setDiseaseAnnotations, autocompleteFields }) => {
+export const EvidenceEditor = ({ rowProps, searchService, autocompleteFields }) => {
     const [filteredEvidenceCodes, setFilteredEvidenceCodes] = useState([]);
     const [fieldValue, setFieldValue] = useState(rowProps.rowData.evidenceCodes);
 
