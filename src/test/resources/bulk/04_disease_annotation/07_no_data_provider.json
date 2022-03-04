@@ -31,7 +31,7 @@
     "related_notes": [
       {
         "free_text": "Test note",
-        "note_type": "Disease summary",
+        "note_type": "disease_summary",
         "internal": false,
         "references": [
           "PMID:25920554"

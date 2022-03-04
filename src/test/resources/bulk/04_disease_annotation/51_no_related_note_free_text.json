@@ -37,7 +37,7 @@
     "single_reference": "PMID:25920554",
     "related_notes": [
       {
-        "note_type": "Disease summary",
+        "note_type": "disease_summary",
         "internal": false,
         "references": [
           "PMID:25920554"

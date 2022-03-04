@@ -37,9 +37,8 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
         setSQLDao(noteDAO);
     }
     
-    private String NOTE_TYPE_VOCABULARY = "Note types";
     
-    public Note validateNoteDTO(NoteDTO dto) throws ObjectValidationException {
+    public Note validateNoteDTO(NoteDTO dto, String note_type_vocabulary) throws ObjectValidationException {
         Note note = new Note();
         
         if (dto.getFreeText() == null || dto.getNoteType() == null || dto.getInternal() == null) {
@@ -48,9 +47,9 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
         note.setFreeText(dto.getFreeText());
         note.setInternal(dto.getInternal());
         
-        VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), NOTE_TYPE_VOCABULARY);
+        VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
         if (noteType == null) {
-            throw new ObjectValidationException(dto, "Note type '" + dto.getNoteType() + "' not found in vocabulary '" + NOTE_TYPE_VOCABULARY + "'");
+            throw new ObjectValidationException(dto, "Note type '" + dto.getNoteType() + "' not found in vocabulary '" + note_type_vocabulary + "'");
         }
         note.setNoteType(noteType);
         

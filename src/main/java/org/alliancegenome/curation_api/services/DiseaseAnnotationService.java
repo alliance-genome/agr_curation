@@ -281,7 +281,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
             List<Note> notesToPersist = new ArrayList<>();
             for (NoteDTO noteDTO : dto.getRelatedNotes()) {
-                Note relatedNote = noteService.validateNoteDTO(noteDTO);
+                Note relatedNote = noteService.validateNoteDTO(noteDTO, "Disease annotation note types");
                 if (relatedNote == null) return null;
                 notesToPersist.add(relatedNote);
             }

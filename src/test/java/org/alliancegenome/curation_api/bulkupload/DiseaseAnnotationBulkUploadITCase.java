@@ -47,8 +47,8 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredAgm = "DATEST:AGM0001";
     private String requiredZecoTerm = "DATEST:ExpCondTerm0001";
     private String requiredExpCondTerm = "DATEST:ExpCondTerm0002";
-    private String requiredVocabulary = "Note types";
-    private String requiredVocabularyTerm = "Disease summary";
+    private String requiredVocabulary = "Disease annotation note types";
+    private String requiredVocabularyTerm = "disease_summary";
     private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "DATEST:Gene0001", "DATEST:Gene0002", "HGNC:0001"));
     
 
@@ -117,7 +117,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].with[0].curie", is("HGNC:0001")).
             body("results[0].singleReference.curie", is("PMID:25920554")).
             body("results[0].relatedNotes[0].freeText", is("Test note")).
-            body("results[0].relatedNotes[0].noteType.name", is("Disease summary")).
+            body("results[0].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[0].relatedNotes[0].internal", is(false)).
             body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
             body("results[0].annotationType", is("manually_curated")).
@@ -180,7 +180,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].with[0].curie", is("HGNC:0001")).
             body("results[1].singleReference.curie", is("PMID:25920554")).
             body("results[1].relatedNotes[0].freeText", is("Test note")).
-            body("results[1].relatedNotes[0].noteType.name", is("Disease summary")).
+            body("results[1].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[1].relatedNotes[0].internal", is(false)).
             body("results[1].relatedNotes[0].references[0].curie", is("PMID:25920554")).
             body("results[0].annotationType", is("manually_curated")).
@@ -242,7 +242,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].with[0].curie", is("HGNC:0001")).
             body("results[2].singleReference.curie", is("PMID:25920554")).
             body("results[2].relatedNotes[0].freeText", is("Test note")).
-            body("results[2].relatedNotes[0].noteType.name", is("Disease summary")).
+            body("results[2].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[2].relatedNotes[0].internal", is(false)).
             body("results[2].relatedNotes[0].references[0].curie", is("PMID:25920554")).
             body("results[0].annotationType", is("manually_curated")).
