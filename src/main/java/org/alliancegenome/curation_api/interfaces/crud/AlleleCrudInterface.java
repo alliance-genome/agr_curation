@@ -22,6 +22,7 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele> {
 
     @POST @Secured
     @Path("/bulk/allelefile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateAlleles(AlleleMetaDataFmsDTO alleleData);
 
     @Override

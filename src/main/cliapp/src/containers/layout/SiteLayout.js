@@ -208,7 +208,7 @@ export const SiteLayout = (props) => {
       <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
         <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
           <div style={{ cursor: 'pointer' }} onClick={() => history.push('/')}>
-            <div class="card">AGR Curation: {apiVersion.version}<br /></div>
+            <div className="card">AGR Curation: {apiVersion.version}<br /></div>
           </div>
           {appProfile}
           {appMenu}

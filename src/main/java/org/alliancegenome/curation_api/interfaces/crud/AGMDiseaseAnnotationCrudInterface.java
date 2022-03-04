@@ -29,33 +29,41 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
     
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateAgmDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AGMDiseaseAnnotationDTO> annotationData);
 
     @POST @Secured
     @Path("/bulk/zfinAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/mgiAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateMgiAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/rgdAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateRgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/fbAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateFbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/wbAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateWbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/humanAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateHumanAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
     
     @POST @Secured
     @Path("/bulk/sgdAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateSgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotationData);
 }

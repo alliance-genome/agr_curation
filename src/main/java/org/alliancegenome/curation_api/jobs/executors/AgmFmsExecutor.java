@@ -48,11 +48,9 @@ public class AgmFmsExecutor extends LoadFileExecutor {
                 affectedGenomicModelService.processUpdate(agm);
                 history.incrementCompleted();
             } catch (ObjectUpdateException e) {
-                history.getExceptions().add(e.getData());
-                history.incrementFailed();
+                addException(history, e.getData());
             } catch (Exception e) {
-                history.getExceptions().add(new ObjectUpdateExceptionData(agm, e.getMessage()));
-                history.incrementFailed();
+                addException(history, new ObjectUpdateExceptionData(agm, e.getMessage()));
             }
             
             ph.progressProcess();

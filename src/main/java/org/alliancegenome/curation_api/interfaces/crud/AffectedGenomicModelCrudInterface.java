@@ -26,5 +26,6 @@ public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterfac
     
     @POST @Secured
     @Path("/bulk/agmfile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData);
 }

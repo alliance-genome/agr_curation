@@ -26,6 +26,7 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene> {
 
     @POST @Secured
     @Path("/bulk/bgifile")
+    @JsonView(View.FieldsAndLists.class)
     public APIResponse updateGenes(GeneMetaDataFmsDTO geneData);
     
 }
