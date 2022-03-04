@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { AutoComplete } from "primereact/autocomplete";
 import { trimWhitespace } from '../utils/utils';
 import { Tooltip } from "primereact/tooltip";
@@ -8,7 +8,7 @@ export const InputEditor = (
     rowProps,
     searchService,
     autocompleteFields,
-    otherFilters=[],
+    otherFilters = [],
     endpoint,
     filterName,
     fieldName,
@@ -25,6 +25,10 @@ export const InputEditor = (
       rowProps.rowData[fieldName].curie
   }
   );
+
+  useEffect(() => {
+    console.log(fieldValue);
+  }, [fieldValue]);
 
   const op = useRef(null);
   const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
@@ -79,6 +83,7 @@ export const InputEditor = (
   };
 
   const itemTemplate = (item) => {
+    console.log(item);
     let inputValue = trimWhitespace(query.toLowerCase());
     if (autocompleteSelectedItem.synonyms?.length > 0) {
       for (let i in autocompleteSelectedItem.synonyms) {
@@ -128,7 +133,6 @@ export const InputEditor = (
     <div>
       <AutoComplete
         multiple={isMultiple}
-        // id={fieldValue}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
         field="curie"
         value={fieldValue}

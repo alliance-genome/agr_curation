@@ -213,21 +213,13 @@ export const ExperimentalConditionsTable = () => {
     return (
       <>
         <InputTextEditor
-          editorChange={onConditionQuantityEditorValueChange}
-          props={props}
+          rowProps={props}
+          fieldName={'conditionQuantity'}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
       </>
     );
   };
-
-  const onConditionQuantityEditorValueChange = (props, event) => {
-    let updatedConditions = [...props.value];
-    if (event.target.value || event.target.value === '') {
-      updatedConditions[props.rowIndex].conditionQuantity = event.target.value;
-      setExperimentalConditions(updatedConditions);
-    }
-  }
 
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponentInputText
@@ -391,7 +383,7 @@ export const ExperimentalConditionsTable = () => {
           showFilterMenu={false}
           filterElement={col.filterElement}
           editor={col.editor}
-          style={{whiteSpace: 'normal'}}
+          style={{ whiteSpace: 'normal' }}
           body={col.body}
         />;
       })
@@ -411,7 +403,7 @@ export const ExperimentalConditionsTable = () => {
         />
       </div>
       <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled}  onClick={(event) => resetTableState(event)}>Reset Table</Button>
+        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
       </div>
     </>
   );
