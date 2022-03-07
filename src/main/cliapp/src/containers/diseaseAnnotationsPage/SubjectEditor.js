@@ -101,8 +101,6 @@ export const SubjectEditor = ({ rowProps, searchService, autocompleteFields }) =
       <AutoComplete
         id={rowProps.rowData.subject.curie}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
-        //panelStyle={{ width : "15%", height : "350px"}}
-        //scrollable scrollHeight="350px" virtualScrollerOptions={{ itemSize: 15, orientation:'horizontal'}}
         field="curie"
         value={fieldValue}
         suggestions={filteredSubjects}
