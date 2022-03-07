@@ -3,7 +3,7 @@ import { AutoComplete } from "primereact/autocomplete";
 import { trimWhitespace } from '../utils/utils';
 import { Tooltip } from "primereact/tooltip";
 
-export const InputEditor = (
+export const AutocompleteEditor = (
   {
     rowProps,
     searchService,

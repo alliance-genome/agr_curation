@@ -3,7 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { Column } from 'primereact/column';
 import { InputTextEditor } from '../../components/InputTextEditor';
-import { InputEditor } from '../../components/InputEditor';
+import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
@@ -270,7 +270,7 @@ export const ExperimentalConditionsTable = () => {
   const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
     return (
       <>
-        <InputEditor
+        <AutocompleteEditor
           autocompleteFields={autocomplete}
           rowProps={props}
           searchService={searchService}

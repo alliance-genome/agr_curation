@@ -7,7 +7,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
-import { InputEditor } from '../../components/InputEditor';
+import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
@@ -324,7 +324,7 @@ export const DiseaseAnnotationsTable = () => {
   const subjectEditorTemplate = (props) => {
     return (
       <>
-        <InputEditor
+        <AutocompleteEditor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
@@ -344,7 +344,7 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseEditorTemplate = (props) => {
     return (
       <>
-        <InputEditor
+        <AutocompleteEditor
           autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
           rowProps={props}
           searchService={searchService}
@@ -370,7 +370,7 @@ export const DiseaseAnnotationsTable = () => {
   const withEditorTemplate = (props) => {
     return (
       <>
-        <InputEditor
+        <AutocompleteEditor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
@@ -393,7 +393,7 @@ export const DiseaseAnnotationsTable = () => {
   const evidenceEditorTemplate = (props) => {
     return (
       <>
-        <InputEditor
+        <AutocompleteEditor
           autocompleteFields={["curie", "name", "abbreviation"]}
           rowProps={props}
           searchService={searchService}
