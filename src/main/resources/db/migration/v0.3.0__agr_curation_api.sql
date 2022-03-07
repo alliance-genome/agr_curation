@@ -196,6 +196,50 @@ create sequence hibernate_sequence start 1 increment 1;
         primary key (id, REV)
     );
 
+    create table BulkLoadFileException (
+       id int8 not null,
+        created timestamp,
+        lastUpdated timestamp,
+        exception jsonb,
+        bulkLoadFileHistory_id int8,
+        primary key (id)
+    );
+
+    create table BulkLoadFileException_AUD (
+       id int8 not null,
+        REV int4 not null,
+        REVTYPE int2,
+        exception jsonb,
+        bulkLoadFileHistory_id int8,
+        primary key (id, REV)
+    );
+
+    create table BulkLoadFileHistory (
+       id int8 not null,
+        created timestamp,
+        lastUpdated timestamp,
+        completedRecords int8,
+        failedRecords int8,
+        loadFinished timestamp,
+        loadStarted timestamp,
+        totalRecords int8,
+        bulkLoadFile_id int8,
+        primary key (id)
+    );
+
+    create table BulkLoadFileHistory_AUD (
+       id int8 not null,
+        REV int4 not null,
+        REVTYPE int2,
+        completedRecords int8,
+        failedRecords int8,
+        loadFinished timestamp,
+        loadStarted timestamp,
+        totalRecords int8,
+        bulkLoadFile_id int8,
+        primary key (id, REV)
+    );
+
     create table BulkLoadGroup (
        id int8 not null,
         created timestamp,
@@ -365,7 +409,7 @@ create sequence hibernate_sequence start 1 increment 1;
         negated boolean default false not null,
         id int8 not null,
         object_curie varchar(255),
-        reference_curie varchar(255),
+        singleReference_curie varchar(255),
         primary key (id)
     );
 
@@ -376,7 +420,7 @@ create sequence hibernate_sequence start 1 increment 1;
         modId varchar(255),
         negated boolean default false,
         object_curie varchar(255),
-        reference_curie varchar(255),
+        singleReference_curie varchar(255),
         primary key (id, REV)
     );
 
@@ -483,19 +527,6 @@ create sequence hibernate_sequence start 1 increment 1;
         conditionId_curie varchar(255),
         conditionTaxon_curie varchar(255),
         primary key (id, REV)
-    );
-
-    create table ExperimentalCondition_PaperHandle (
-       ExperimentalCondition_id int8 not null,
-        paperHandles_handle varchar(255) not null
-    );
-
-    create table ExperimentalCondition_PaperHandle_AUD (
-       REV int4 not null,
-        ExperimentalCondition_id int8 not null,
-        paperHandles_handle varchar(255) not null,
-        REVTYPE int2,
-        primary key (REV, ExperimentalCondition_id, paperHandles_handle)
     );
 
     create table ExperimentalConditionOntologyTerm (
@@ -774,20 +805,6 @@ create sequence hibernate_sequence start 1 increment 1;
         synonyms TEXT not null,
         REVTYPE int2,
         primary key (REV, OntologyTerm_curie, synonyms)
-    );
-
-    create table PaperHandle (
-       handle varchar(255) not null,
-        reference_curie varchar(255),
-        primary key (handle)
-    );
-
-    create table PaperHandle_AUD (
-       handle varchar(255) not null,
-        REV int4 not null,
-        REVTYPE int2,
-        reference_curie varchar(255),
-        primary key (handle, REV)
     );
 
     create table Person (
@@ -1134,6 +1151,26 @@ create index IDXknjhcn64qms05eq8c8s2hhmxc on VocabularyTerm_textSynonyms (Vocabu
        foreign key (REV) 
        references REVINFO;
 
+    alter table if exists BulkLoadFileException 
+       add constraint FKgt2k1ohdyuodwu71mofkyplhy 
+       foreign key (bulkLoadFileHistory_id) 
+       references BulkLoadFileHistory;
+
+    alter table if exists BulkLoadFileException_AUD 
+       add constraint FKm7op2ir0vi9pwcctl39kqbo70 
+       foreign key (REV) 
+       references REVINFO;
+
+    alter table if exists BulkLoadFileHistory 
+       add constraint FKk9bvfu4248kgyyrupeii7t6m0 
+       foreign key (bulkLoadFile_id) 
+       references BulkLoadFile;
+
+    alter table if exists BulkLoadFileHistory_AUD 
+       add constraint FKppa5tcqtwv560svqkq6b958hc 
+       foreign key (REV) 
+       references REVINFO;
+
     alter table if exists BulkLoadGroup_AUD 
        add constraint FK722g0iotb8v01pq0cej3w7gke 
        foreign key (REV) 
@@ -1240,8 +1277,8 @@ create index IDXknjhcn64qms05eq8c8s2hhmxc on VocabularyTerm_textSynonyms (Vocabu
        references DOTerm;
 
     alter table if exists DiseaseAnnotation 
-       add constraint FK77fmab327prjh1sb7gk6na6ak 
-       foreign key (reference_curie) 
+       add constraint FKk6hg8sfqhqhlsdjmyex63bvo7 
+       foreign key (singleReference_curie) 
        references Reference;
 
     alter table if exists DiseaseAnnotation 
@@ -1361,21 +1398,6 @@ create index IDXknjhcn64qms05eq8c8s2hhmxc on VocabularyTerm_textSynonyms (Vocabu
 
     alter table if exists ExperimentalCondition_AUD 
        add constraint FKos799amubpywlufc5ttysjp5h 
-       foreign key (REV) 
-       references REVINFO;
-
-    alter table if exists ExperimentalCondition_PaperHandle 
-       add constraint FKr26iemfq6lymbmntj55n3ln33 
-       foreign key (paperHandles_handle) 
-       references PaperHandle;
-
-    alter table if exists ExperimentalCondition_PaperHandle 
-       add constraint FKgyta8a57cq00n4trlt5rtgick 
-       foreign key (ExperimentalCondition_id) 
-       references ExperimentalCondition;
-
-    alter table if exists ExperimentalCondition_PaperHandle_AUD 
-       add constraint FK8lrpj619ga1aq4w6e28cxol4p 
        foreign key (REV) 
        references REVINFO;
 
@@ -1601,16 +1623,6 @@ create index IDXknjhcn64qms05eq8c8s2hhmxc on VocabularyTerm_textSynonyms (Vocabu
 
     alter table if exists OntologyTerm_synonyms_AUD 
        add constraint FKl2ra6s3aosf68bgss49loflot 
-       foreign key (REV) 
-       references REVINFO;
-
-    alter table if exists PaperHandle 
-       add constraint FKb11h1yvb7lchgw07wxspntpsc 
-       foreign key (reference_curie) 
-       references Reference;
-
-    alter table if exists PaperHandle_AUD 
-       add constraint FKkvs5vkh768djlf41pf2t9qlho 
        foreign key (REV) 
        references REVINFO;
 
