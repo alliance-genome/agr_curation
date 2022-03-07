@@ -3,6 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { Column } from 'primereact/column';
 import { InputTextEditor } from '../../components/InputTextEditor';
+import { InputEditor } from '../../components/InputEditor';
 import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
@@ -13,7 +14,6 @@ import { MultiSelect } from 'primereact/multiselect';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
-import { SingleOntologyEditor } from '../../components/SingleOntologyEditor';
 import { Button } from 'primereact/button';
 
 export const ExperimentalConditionsTable = () => {
@@ -270,12 +270,21 @@ export const ExperimentalConditionsTable = () => {
   const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
     return (
       <>
-        <SingleOntologyEditor
+        <InputEditor
           autocompleteFields={autocomplete}
           rowProps={props}
           searchService={searchService}
           fieldname={fieldname}
           endpoint={endpoint}
+          filterName='singleOntologyFilter'
+          fieldName={fieldname}
+          otherFilters={{
+            obsoleteFilter: {
+              "obsolete": {
+                queryString: false
+              }
+            }
+          }}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
