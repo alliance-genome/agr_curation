@@ -282,7 +282,6 @@ export const ExperimentalConditionsTable = () => {
           autocompleteFields={autocomplete}
           rowProps={props}
           searchService={searchService}
-          setExperimentalConditions={setExperimentalConditions}
           fieldname={fieldname}
           endpoint={endpoint}
         />
@@ -300,7 +299,6 @@ export const ExperimentalConditionsTable = () => {
     {
       field: "uniqueId",
       header: "Unique ID",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
@@ -308,7 +306,6 @@ export const ExperimentalConditionsTable = () => {
     {
       field: "conditionStatement",
       header: "Statement",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
@@ -391,9 +388,10 @@ export const ExperimentalConditionsTable = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
           editor={col.editor}
-          style={col.style}
+          style={{whiteSpace: 'normal'}}
           body={col.body}
         />;
       })
@@ -438,6 +436,7 @@ export const ExperimentalConditionsTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns={isEnabled}
           ref={dataTable}
+          filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           onColReorder={colReorderHandler}

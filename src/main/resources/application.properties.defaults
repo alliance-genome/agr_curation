@@ -27,6 +27,9 @@ quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
 quarkus.hibernate-search-orm.automatic-indexing.synchronization.strategy=write-sync
 
+quarkus.micrometer.binder.vertx.enabled=true
+quarkus.micrometer.export.json.enabled=true
+quarkus.micrometer.export.json.path=api/metrics.json
 
 quarkus.hibernate-search-orm.elasticsearch.analysis.configurer=bean:ApplicationAnalysisConfig
 quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/custom-index-settings.json

@@ -9,7 +9,7 @@ export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
   return (
     <>
       {!hideManual.current && (
-        <div className="p-field">
+        <div className="field">
           <label htmlFor="dataType">Data Type</label>
           <Dropdown
             id="dataType"
