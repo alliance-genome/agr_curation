@@ -36,7 +36,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)
-    private BulkLoadStatus status;
+    private BulkLoadStatus status = BulkLoadStatus.STOPPED;
 
     @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition="TEXT")
@@ -69,6 +69,10 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         FORCED_PENDING,
         FORCED_STARTED,
         FORCED_RUNNING,
+        
+        MANUAL_PENDING,
+        MANUAL_STARTED,
+        MANUAL_RUNNING,
 
         FAILED,
         STOPPED,
@@ -77,15 +81,15 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
         ;
 
         public boolean isRunning() {
-            return this == SCHEDULED_RUNNING || this == FORCED_RUNNING;
+            return this == SCHEDULED_RUNNING || this == FORCED_RUNNING || this == MANUAL_RUNNING;
         }
 
         public boolean isPending() {
-            return this == FORCED_PENDING || this == SCHEDULED_PENDING;
+            return this == FORCED_PENDING || this == SCHEDULED_PENDING || this == MANUAL_PENDING;
         }
 
         public boolean isStarted() {
-            return this == FORCED_STARTED || this == SCHEDULED_STARTED;
+            return this == FORCED_STARTED || this == SCHEDULED_STARTED || this == MANUAL_STARTED;
         }
         
         public boolean isNotRunning() {
@@ -99,6 +103,9 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
             if(this == BulkLoadStatus.SCHEDULED_PENDING) return BulkLoadStatus.SCHEDULED_STARTED;
             if(this == BulkLoadStatus.SCHEDULED_STARTED) return BulkLoadStatus.SCHEDULED_RUNNING;
 
+            if(this == BulkLoadStatus.MANUAL_PENDING) return BulkLoadStatus.MANUAL_STARTED;
+            if(this == BulkLoadStatus.MANUAL_STARTED) return BulkLoadStatus.MANUAL_RUNNING;
+            
             return FAILED;
         }
 
