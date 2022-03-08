@@ -12,6 +12,7 @@ import { ExperimentalConditionsPage } from './containers/experimentalConditionsP
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
+import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 
@@ -37,6 +38,7 @@ import { NCBITaxonOntologyComponent } from './containers/ontologies/NCBITaxonOnt
 export default (
   <>
     <SecureRoute path="/" exact component={DashboardPage} />
+    <SecureRoute path="/profile" component={ProfilePage} />
     <SecureRoute path="/dataloads" component={DataLoadsPage} />
     <SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
     <SecureRoute path="/experimentalConditions" component={ExperimentalConditionsPage} />
