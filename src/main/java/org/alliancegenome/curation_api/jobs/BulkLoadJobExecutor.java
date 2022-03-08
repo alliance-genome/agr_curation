@@ -45,6 +45,10 @@ public class BulkLoadJobExecutor {
     @Inject WbbtTermService wbbtTermService;
     @Inject MpTermService mpTermService;
     @Inject MaTermService maTermService;
+    @Inject WblsTermService wblsTermService;
+    @Inject FbdvTermService fbdvTermService;
+    @Inject MmusdvTermService mmusdvTermService;
+    @Inject ZfsTermService zfsTermService;
 
     @Inject MoleculeService moleculeService;
 
@@ -136,6 +140,15 @@ public class BulkLoadJobExecutor {
             } else if(ontologyType == OntologyBulkLoadType.DAO) {
                 config.setLoadOnlyIRIPrefix("FBbt");
                 service = daoTermService;
+            } else if(ontologyType == OntologyBulkLoadType.WBLS) {
+                service = wblsTermService;
+            } else if(ontologyType == OntologyBulkLoadType.FBDV) {
+                service = fbdvTermService;
+            } else if(ontologyType == OntologyBulkLoadType.MMUSDV) {
+                config.getAltNameSpaces().add("mouse_developmental_stage");
+                service = mmusdvTermService;
+            } else if(ontologyType == OntologyBulkLoadType.ZFS) {
+                service = zfsTermService;
             } else {
                 log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
                 throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
