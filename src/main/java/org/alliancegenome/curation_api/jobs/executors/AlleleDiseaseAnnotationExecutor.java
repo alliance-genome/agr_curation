@@ -6,6 +6,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -51,6 +52,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
     }
 
     // Gets called from the API directly
+    @Transactional
     public APIResponse runLoad(String taxonId, List<AlleleDiseaseAnnotationDTO> annotations) {
 
         List<String> annotationIdsBefore = new ArrayList<>();
