@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermControll
 import org.alliancegenome.curation_api.dao.ontology.MmusdvTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.MmusdvTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.MmusDvTerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
 
 @RequestScoped
@@ -18,7 +19,9 @@ public class MmusdvTermCrudController extends BaseOntologyTermController<MmusdvT
     @Override
     @PostConstruct
     public void init() {
-        setService(mmusdvTermService, MmusDvTerm.class);
+        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+        config.getAltNameSpaces().add("mouse_developmental_stage");
+        setService(mmusdvTermService, MmusDvTerm.class, config);
     }
 
 }
