@@ -52,7 +52,6 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
     }
 
     // Gets called from the API directly
-    @Transactional
     public APIResponse runLoad(String taxonId, List<AlleleDiseaseAnnotationDTO> annotations) {
 
         List<String> annotationIdsBefore = new ArrayList<>();

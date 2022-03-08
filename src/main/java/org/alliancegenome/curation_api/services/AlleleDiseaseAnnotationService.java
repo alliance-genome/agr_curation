@@ -47,6 +47,7 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         AlleleDiseaseAnnotation annotation = validateAlleleDiseaseAnnotationDTO(dto);
         if (annotation == null) return null;

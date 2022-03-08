@@ -53,7 +53,6 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
     }
 
     // Gets called from the API directly
-    @Transactional
     public APIResponse runLoad(String taxonId, List<AGMDiseaseAnnotationDTO> annotations) {
         List<String> annotationIdsBefore = new ArrayList<>();
         annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));

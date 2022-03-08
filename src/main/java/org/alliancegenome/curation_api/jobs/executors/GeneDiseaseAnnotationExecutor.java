@@ -28,7 +28,6 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
     @Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
     @Inject DiseaseAnnotationService diseaseAnnotationService;
 
-    @Transactional
     public void runLoad(BulkLoadFile bulkLoadFile) {
         
         try {
@@ -54,7 +53,6 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
     }
 
     // Gets called from the API directly
-    @Transactional
     public APIResponse runLoad(String taxonId, List<GeneDiseaseAnnotationDTO> annotations) {
         
         List<String> annotationIdsBefore = new ArrayList<>();

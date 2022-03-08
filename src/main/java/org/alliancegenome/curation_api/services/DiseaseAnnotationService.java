@@ -281,11 +281,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
             List<Note> notesToPersist = new ArrayList<>();
             for (NoteDTO noteDTO : dto.getRelatedNotes()) {
-                // might want to catch the ObjectValidationException here
-                // and rethrow it with the dto object and errors
-                // as the full dto object will not be available for viewing in the UI
                 Note relatedNote = noteService.validateNoteDTO(noteDTO, "Disease annotation note types");
-                if (relatedNote == null) return null;
+                if (relatedNote == null)
+                    throw new ObjectValidationException(dto, "Invalid note attached to disease annotation " + annotation.getUniqueId() + " - skipping annotation");
                 notesToPersist.add(relatedNote);
             }
             notesToPersist.forEach(note -> noteDAO.persist(note));

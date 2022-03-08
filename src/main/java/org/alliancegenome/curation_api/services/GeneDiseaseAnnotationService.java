@@ -49,6 +49,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         GeneDiseaseAnnotation annotation = validateGeneDiseaseAnnotationDTO(dto);
 
