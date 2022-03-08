@@ -166,7 +166,9 @@ export const ControlledVocabularyComponent = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
+          style={{whiteSpace: 'normal'}}
         />;
       })
     );
@@ -191,6 +193,7 @@ export const ControlledVocabularyComponent = () => {
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
           ref={dataTable}
+          filterDisplay="row"
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first} onFilter={onFilter} filters={tableState.filters}

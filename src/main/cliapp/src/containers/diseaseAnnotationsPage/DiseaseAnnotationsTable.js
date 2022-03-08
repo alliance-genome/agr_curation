@@ -7,10 +7,7 @@ import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
-import { SubjectEditor } from './SubjectEditor';
-import { DiseaseEditor } from './DiseaseEditor';
-import { WithEditor } from './WithEditor';
-import { EvidenceEditor } from './EvidenceEditor';
+import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
@@ -71,21 +68,21 @@ export const DiseaseAnnotationsTable = () => {
     'diseaseRelation'
   ];
 
-    useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
-        () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
-            onSuccess: (data) => {
-            },
-            onError: (error) => {
-                toast_topleft.current.show([
-                    { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
-                ]);
-            },
-            keepPreviousData: true,
-            refetchOnWindowFocus: false
-        }
-    );
+  useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
+    () => searchService.search('disease-annotation', 0, 0, null, {}, {}, aggregationFields), {
+    onSuccess: (data) => {
+    },
+    onError: (error) => {
+      toast_topleft.current.show([
+        { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
+      ]);
+    },
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
+  }
+  );
 
-   useQuery(['diseaseAnnotations', tableState],
+  useQuery(['diseaseAnnotations', tableState],
     () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
       setDiseaseAnnotations(data.results);
@@ -204,6 +201,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onRowEditSave = (event) => {//possible to shrink?
+    console.log(event);
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
@@ -222,10 +220,8 @@ export const DiseaseAnnotationsTable = () => {
 
 
     mutation.mutate(updatedRow, {
-      onSuccess: (data, variables, context) => {
-        console.log(data);
+      onSuccess: (data) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
-
         let annotations = [...diseaseAnnotations];
         annotations[event.index].subject = data.data.entity.subject;
         annotations[event.index].object = data.data.entity.object;
@@ -258,8 +254,6 @@ export const DiseaseAnnotationsTable = () => {
         console.log(errorMessagesCopy);
         setErrorMessages({ ...errorMessagesCopy });
 
-
-
         setDiseaseAnnotations(annotations);
         let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
         setEditingRows(_editingRows);
@@ -284,7 +278,8 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onDiseaseRelationEditorValueChange = (props, event) => {
-    let updatedAnnotations = [...props.value];
+    let updatedAnnotations = [...props.props.value];
+    console.log(updatedAnnotations);
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       setDiseaseAnnotations(updatedAnnotations);
@@ -306,7 +301,7 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const onNegatedEditorValueChange = (props, event) => {
-    let updatedAnnotations = [...props.value];
+    let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
       setDiseaseAnnotations(updatedAnnotations);
@@ -329,11 +324,14 @@ export const DiseaseAnnotationsTable = () => {
   const subjectEditorTemplate = (props) => {
     return (
       <>
-        <SubjectEditor
+        <AutocompleteEditor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
+          endpoint='biologicalentity'
+          filterName='subjectFilter'
+          fieldName='subject'
+          isGene={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -346,11 +344,20 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseEditorTemplate = (props) => {
     return (
       <>
-        <DiseaseEditor
+        <AutocompleteEditor
           autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
+          endpoint='doterm'
+          filterName='diseaseFilter'
+          fieldName='object'
+          otherFilters={{
+            obsoleteFilter: {
+              "obsolete": {
+                queryString: false
+              }
+            }
+          }}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -363,11 +370,17 @@ export const DiseaseAnnotationsTable = () => {
   const withEditorTemplate = (props) => {
     return (
       <>
-        <WithEditor
+        <AutocompleteEditor
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
+          endpoint='gene'
+          filterName='withFilter'
+          fieldName='with'
+          isWith={true}
+          isGene={true}
+          isMultiple={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -380,12 +393,27 @@ export const DiseaseAnnotationsTable = () => {
   const evidenceEditorTemplate = (props) => {
     return (
       <>
-        <EvidenceEditor
+        <AutocompleteEditor
           autocompleteFields={["curie", "name", "abbreviation"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
-        />
+          endpoint='ecoterm'
+          filterName='evidenceFilter'
+          fieldName='evidenceCodes'
+          isMultiple={true}
+          otherFilters={{
+            obsoleteFilter: {
+              "obsolete": {
+                queryString: false
+              }
+            },
+            subsetFilter: {
+              "subsets": {
+                queryString: "agr_eco_terms"
+              }
+            }
+          }} />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
           errorField="evidence"
@@ -443,7 +471,6 @@ export const DiseaseAnnotationsTable = () => {
   const columns = [{
     field: "uniqueId",
     header: "Unique Id",
-    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
@@ -452,7 +479,6 @@ export const DiseaseAnnotationsTable = () => {
     field: "subject.symbol",
     header: "Subject",
     sortable: isEnabled,
-    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
     filter: true,
     filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
     editor: (props) => subjectEditorTemplate(props),
@@ -471,7 +497,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Negated",
     body: negatedTemplate,
     filter: true,
-    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated",[{ text: "true" }, { text: "false" }], "text"),
+    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated", [{ text: "true" }, { text: "false" }], "text"),
     sortable: isEnabled,
     editor: (props) => negatedEditor(props)
   },
@@ -522,10 +548,12 @@ export const DiseaseAnnotationsTable = () => {
           field={col.field}
           header={col.header}
           sortable={isEnabled}
+          showFilterMenu={false}
           filter={col.filter}
           filterElement={col.filterElement}
           editor={col.editor}
           body={col.body}
+          style={{ whiteSpace: 'normal' }}
         />;
       })
     );
@@ -573,6 +601,7 @@ export const DiseaseAnnotationsTable = () => {
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
+          filterDisplay="row"
           dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"

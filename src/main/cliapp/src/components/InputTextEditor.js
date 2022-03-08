@@ -1,20 +1,28 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { InputText } from "primereact/inputtext"
 
-export function InputTextEditor({ editorChange, props }) {
-    const [selectedValue, setSelectedValue] = useState(props.rowData[props.field]);
-    const onChange = (e) => {
-        setSelectedValue(e.value)
-        editorChange(props, e)
-    }
+export function InputTextEditor({ rowProps, fieldName }) {
+  const [fieldValue, setFieldValue] = useState(rowProps.rowData[fieldName] ? rowProps.rowData[fieldName] : '');
 
-    return (
-        <>
-            <InputText
-                value={selectedValue}
-                onChange={(e) => onChange(e)}
-                style={{ width: '100%' }}
-            />
-        </>
-    )
+  const editorChange = (event) => {
+    let updatedConditions = [...rowProps.props.value];
+    if (event.target.value || event.target.value === '') {
+      updatedConditions[rowProps.rowIndex][fieldName] = event.target.value;
+      setFieldValue(updatedConditions[rowProps.rowIndex][fieldName]);
+    }
+  }
+  const onChange = (e) => {
+    // setSelectedValue(e.value)
+    editorChange(e)
+  }
+
+  return (
+    <>
+      <InputText
+        value={fieldValue}
+        onChange={(e) => onChange(e)}
+        style={{ width: '100%' }}
+      />
+    </>
+  )
 }

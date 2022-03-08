@@ -12,7 +12,7 @@ export const CronFields = ({ newBulkLoad, onChange }) => {
   return (
     <div>
       <>
-        <div className="p-field">
+        <div className="field">
           <label htmlFor="scheduled">Scheduled</label>
           <Dropdown
             id="scheduled"
@@ -26,7 +26,7 @@ export const CronFields = ({ newBulkLoad, onChange }) => {
             optionValue='name'
           />
         </div>
-        <div className="p-field">
+        <div className="field">
           <label htmlFor="cronSchedule">Cron Schedule</label>
           <i
             id="cronInfo"

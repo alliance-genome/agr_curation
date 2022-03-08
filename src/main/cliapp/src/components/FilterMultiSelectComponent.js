@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../service/SearchService';

@@ -3,6 +3,7 @@ import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { Column } from 'primereact/column';
 import { InputTextEditor } from '../../components/InputTextEditor';
+import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
@@ -13,7 +14,6 @@ import { MultiSelect } from 'primereact/multiselect';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
-import { SingleOntologyEditor } from '../../components/SingleOntologyEditor';
 import { Button } from 'primereact/button';
 
 export const ExperimentalConditionsTable = () => {
@@ -213,21 +213,13 @@ export const ExperimentalConditionsTable = () => {
     return (
       <>
         <InputTextEditor
-          editorChange={onConditionQuantityEditorValueChange}
-          props={props}
+          rowProps={props}
+          fieldName={'conditionQuantity'}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
       </>
     );
   };
-
-  const onConditionQuantityEditorValueChange = (props, event) => {
-    let updatedConditions = [...props.value];
-    if (event.target.value || event.target.value === '') {
-      updatedConditions[props.rowIndex].conditionQuantity = event.target.value;
-      setExperimentalConditions(updatedConditions);
-    }
-  }
 
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponentInputText
@@ -278,13 +270,21 @@ export const ExperimentalConditionsTable = () => {
   const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
     return (
       <>
-        <SingleOntologyEditor
+        <AutocompleteEditor
           autocompleteFields={autocomplete}
           rowProps={props}
           searchService={searchService}
-          setExperimentalConditions={setExperimentalConditions}
           fieldname={fieldname}
           endpoint={endpoint}
+          filterName='singleOntologyFilter'
+          fieldName={fieldname}
+          otherFilters={{
+            obsoleteFilter: {
+              "obsolete": {
+                queryString: false
+              }
+            }
+          }}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -300,7 +300,6 @@ export const ExperimentalConditionsTable = () => {
     {
       field: "uniqueId",
       header: "Unique ID",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
@@ -308,7 +307,6 @@ export const ExperimentalConditionsTable = () => {
     {
       field: "conditionStatement",
       header: "Statement",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
@@ -391,9 +389,10 @@ export const ExperimentalConditionsTable = () => {
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
           editor={col.editor}
-          style={col.style}
+          style={{ whiteSpace: 'normal' }}
           body={col.body}
         />;
       })
@@ -413,7 +412,7 @@ export const ExperimentalConditionsTable = () => {
         />
       </div>
       <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled}  onClick={(event) => resetTableState(event)}>Reset Table</Button>
+        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
       </div>
     </>
   );
@@ -438,6 +437,7 @@ export const ExperimentalConditionsTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns={isEnabled}
           ref={dataTable}
+          filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           onColReorder={colReorderHandler}
