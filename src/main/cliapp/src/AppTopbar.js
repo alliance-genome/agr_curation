@@ -7,9 +7,16 @@ import { ApiVersionService } from './service/ApiVersionService';
 
 export const AppTopbar = (props) => {
   const menu = useRef(null);
-  const items = [
+  const menuItems = [
     {
       items: [
+        {
+          label: 'Profile',
+          icon: 'pi pi-profile',
+          command:(e) => {
+                  window.location.hash = "/profile"
+               }
+        },
         {
           label: 'Logout',
           icon: 'pi pi-sign-out',
@@ -57,7 +64,7 @@ export const AppTopbar = (props) => {
             props.authState?.isAuthenticated &&
             <ul className={classNames("layout-topbar-menu lg:flex origin-top", { 'layout-topbar-menu-mobile-active': props.mobileTopbarMenuActive })}>
                <li>
-                  <Menu model={items} popup ref={menu} id="popup_menu" />
+                  <Menu model={menuItems} popup ref={menu} id="popup_menu" />
                   <i className="pi pi-user" style={{'fontSize': '1.5em'}} onClick={(event) => menu.current.toggle(event)} aria-controls="popup_menu" aria-haspopup />
                </li>
             </ul>
