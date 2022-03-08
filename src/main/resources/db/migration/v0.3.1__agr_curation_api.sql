@@ -1,2 +1,1 @@
-UPDATE diseaseannotation SET modentityid = modid;
-ALTER TABLE diseaseannotation DROP COLUMN modid;
+ALTER TABLE diseaseannotation RENAME COLUMN modid TO modentityid;
