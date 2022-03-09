@@ -43,6 +43,10 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults, link: '/#/ontology/chebi' }]);
     });
 
+    searchService.search('xsmoterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XSMO", count: results.totalResults, link: '/#/ontology/xsmo' }]);
+    });
+
     searchService.search('ecoterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "ECO", count: results.totalResults, link: '/#/ontology/eco' }]);
     });
@@ -83,6 +87,10 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "WBbt", count: results.totalResults, link: '/#/ontology/wbbt' }]);
     });
 
+    searchService.search('xaoterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XAO", count: results.totalResults, link: '/#/ontology/xao' }]);
+    });
+    
     searchService.search('xcoterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XCO", count: results.totalResults, link: '/#/ontology/xco' }]);
     });
@@ -109,6 +117,14 @@ export const Dashboard = () => {
     
     searchService.search('zfsterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "ZFS", count: results.totalResults, link: '/#/ontology/zfs' }]);
+    });
+
+    searchService.search('xpoterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XPO", count: results.totalResults, link: '/#/ontology/xpo' }]);
+    });
+
+    searchService.search('xbedterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XBED", count: results.totalResults, link: '/#/ontology/xbed' }]);
     });
   }, []);
 

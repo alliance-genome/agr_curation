@@ -234,6 +234,10 @@ export const SiteLayout = (props) => {
                         { label: 'FlyBase Developmental Ontology (FBdv)', icon: 'pi pi-fw pi-home', to: '/ontology/fbdv' },
                         { label: 'Mouse Developmental Stages (MmusDv)', icon: 'pi pi-fw pi-home', to: '/ontology/mmusdv' },
                         { label: 'Zebrafish Developmental Stages Ontology (ZFS)', icon: 'pi pi-fw pi-home', to: '/ontology/zfs' },
+                        { label: 'Xenopus Anatomy Ontology (XAO)', icon: 'pi pi-fw pi-home', to: '/ontology/xao' },
+                        { label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' },
+                        { label: 'Xenbase Experimantal Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' },
+                        { label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' },
                         { label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' }
                     ]
                 },
