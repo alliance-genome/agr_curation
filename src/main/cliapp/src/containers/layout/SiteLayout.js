@@ -35,21 +35,39 @@ export const SiteLayout = (props) => {
     const [overlayMenuActive, setOverlayMenuActive] = useState(false);
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
     const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
-    const [userInfo, setUserInfo] = useState(null);
+
+    const [userInfo, setUserInfo] = useSessionStorage('userInfo', {});
+    const [localUserInfo, setLocalUserInfo] = useSessionStorage('localUserInfo', {});
+
     const copyTooltipRef = useRef();
     const location = useLocation();
 
     const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
+    
     const { authState, oktaAuth } = useOktaAuth();
 
     const { children } = props;
-    const apiService = new ApiVersionService();
+    const apiService = new ApiVersionService(authState);
 
     useQuery(['getApiVersion', apiVersion],
         () => apiService.getApiVersion(), {
         onSuccess: (data) => {
             //console.log(data);
             setApiVersion(data);
+        },
+        onError: (error) => {
+            console.log(error);
+        },
+        keepPreviousData: true,
+        refetchOnWindowFocus: false
+    }
+    );
+
+    useQuery(['getLocalUserInfo', localUserInfo],
+        () => apiService.getUserInfo(), {
+        onSuccess: (data) => {
+            //console.log(data);
+            setLocalUserInfo(data);
         },
         onError: (error) => {
             console.log(error);
@@ -69,7 +87,7 @@ export const SiteLayout = (props) => {
                 console.error(err);
             });
         }
-    }, [authState, oktaAuth]);
+    }, [authState, oktaAuth, setUserInfo]);
 
     const logout = async () => await oktaAuth.signOut();
 

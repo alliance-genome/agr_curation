@@ -33,6 +33,9 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     @Inject
     DiseaseAnnotationService diseaseAnnotationService;
     
+    @Inject
+    AffectedGenomicModelDAO affectedGenomicModelDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -46,6 +49,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         GeneDiseaseAnnotation annotation = validateGeneDiseaseAnnotationDTO(dto);
 
@@ -67,7 +71,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
             throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
-        String annotationId = dto.getModId();
+        String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto);
         }
@@ -78,6 +82,14 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
             annotation.setSubject(gene);
         } else {
             annotation = annotationList.getResults().get(0);
+        }
+        
+        if (dto.getSgdStrainBackground() != null) {
+            AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+            if (sgdStrainBackground == null) {
+                throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setSgdStrainBackground(sgdStrainBackground);
         }
         
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);

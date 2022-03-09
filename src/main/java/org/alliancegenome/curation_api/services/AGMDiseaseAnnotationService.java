@@ -40,6 +40,7 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
         return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         AGMDiseaseAnnotation annotation = validateAGMDiseaseAnnotationDTO(dto);
         if (annotation == null) throw new ObjectUpdateException(dto, "Validation Failed");
@@ -62,7 +63,7 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
             throw new ObjectUpdateException(dto, "AGM " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
-        String annotationId = dto.getModId();
+        String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(agm.getTaxon().getCurie()).getCurieID(dto);
         }

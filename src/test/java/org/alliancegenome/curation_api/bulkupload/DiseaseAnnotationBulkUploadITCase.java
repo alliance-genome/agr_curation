@@ -5,26 +5,20 @@ import static org.hamcrest.Matchers.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.XcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZfaTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
@@ -53,6 +47,8 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredAgm = "DATEST:AGM0001";
     private String requiredZecoTerm = "DATEST:ExpCondTerm0001";
     private String requiredExpCondTerm = "DATEST:ExpCondTerm0002";
+    private String requiredVocabulary = "Disease annotation note types";
+    private String requiredVocabularyTerm = "disease_summary";
     private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "DATEST:Gene0001", "DATEST:Gene0002", "HGNC:0001"));
     
 
@@ -93,12 +89,12 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(1)).
             body("results", hasSize(1)).
-            //body("results[0].modId", is("DATEST:Annot0001")).
+            body("results[0].modEntityId", is("DATEST:Annot0001")).
             body("results[0].uniqueId", is("DATEST:Annot0001")).
             body("results[0].subject.curie", is("DATEST:Gene0001")).
             body("results[0].object.curie", is("DATEST:Disease0001")).
             body("results[0].diseaseRelation", is("is_implicated_in")).
-            //body("results[0].geneticSex", is("hermaphrodite")).
+            body("results[0].geneticSex", is("male")).
             //body("results[0].modifiedBy", is("DATEST:Person0001")).
             //body("results[0].dateLastModified", is("2022-02-14")).
             //body("results[0].createdBy", is("DATEST:Person0001")).
@@ -115,13 +111,18 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[0].negated", is(true)).
-            //body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-            //body("results[0].diseaseGeneticModifierRelation", is("ameliorated_by")).
+            body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
+            body("results[0].diseaseGeneticModifierRelation", is("ameliorated_by")).
             body("results[0].with", hasSize(1)).
             body("results[0].with[0].curie", is("HGNC:0001")).
             body("results[0].singleReference.curie", is("PMID:25920554")).
-            //body("results[0].diseaseAnnotationSummary", is("Test summary")).
-            //body("results[0].diseaseAnnotationNote", is("Test note")).
+            body("results[0].relatedNotes[0].freeText", is("Test note")).
+            body("results[0].relatedNotes[0].noteType.name", is("disease_summary")).
+            body("results[0].relatedNotes[0].internal", is(false)).
+            body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
+            body("results[0].annotationType", is("manually_curated")).
+            body("results[0].diseaseQualifiers[0]", is("susceptibility")).
+            body("results[0].sgdStrainBackground.curie", is("DATEST:AGM0001")).
             body("results[0].evidenceCodes", hasSize(1)).
             body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -151,12 +152,12 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(2)).
             body("results", hasSize(2)).
-            //body("results[1].modId", is("DATEST:Annot0002")).
+            body("results[1].modEntityId", is("DATEST:Annot0002")).
             body("results[1].uniqueId", is("DATEST:Annot0002")).
             body("results[1].subject.curie", is("DATEST:Allele0001")).
             body("results[1].object.curie", is("DATEST:Disease0001")).
             body("results[1].diseaseRelation", is("is_implicated_in")).
-            //body("results[1].geneticSex", is("hermaphrodite")).
+            body("results[1].geneticSex", is("male")).
             //body("results[1].modifiedBy", is("DATEST:Person0001")).
             //body("results[1].dateLastModified", is("2022-02-14")).
             //body("results[1].createdBy", is("DATEST:Person0001")).
@@ -173,13 +174,17 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[1].negated", is(true)).
-            //body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-            //body("results[1].diseaseGeneticModifierRelation", is("ameliorated_by")).
+            body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
+            body("results[1].diseaseGeneticModifierRelation", is("ameliorated_by")).
             body("results[1].with", hasSize(1)).
             body("results[1].with[0].curie", is("HGNC:0001")).
             body("results[1].singleReference.curie", is("PMID:25920554")).
-            //body("results[1].diseaseAnnotationSummary", is("Test summary")).
-            //body("results[1].diseaseAnnotationNote", is("Test note")).
+            body("results[1].relatedNotes[0].freeText", is("Test note")).
+            body("results[1].relatedNotes[0].noteType.name", is("disease_summary")).
+            body("results[1].relatedNotes[0].internal", is(false)).
+            body("results[1].relatedNotes[0].references[0].curie", is("PMID:25920554")).
+            body("results[0].annotationType", is("manually_curated")).
+            body("results[0].diseaseQualifiers[0]", is("susceptibility")).
             body("results[1].evidenceCodes", hasSize(1)).
             body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -209,12 +214,12 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(3)).
             body("results", hasSize(3)).
-            //body("results[2].modId", is("DATEST:Annot0003")).
+            body("results[2].modEntityId", is("DATEST:Annot0003")).
             body("results[2].uniqueId", is("DATEST:Annot0003")).
             body("results[2].subject.curie", is("DATEST:AGM0001")).
             body("results[2].object.curie", is("DATEST:Disease0001")).
             body("results[2].diseaseRelation", is("is_model_of")).
-            //body("results[2].geneticSex", is("hermaphrodite")).
+            body("results[2].geneticSex", is("male")).
             //body("results[2].modifiedBy", is("DATEST:Person0001")).
             //body("results[2].dateLastModified", is("2022-02-14")).
             //body("results[2].createdBy", is("DATEST:Person0001")).
@@ -231,20 +236,24 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[2].negated", is(true)).
-            //body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-            //body("results[2].diseaseGeneticModifierRelation", is("ameliorated_by")).
+            body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
+            body("results[2].diseaseGeneticModifierRelation", is("ameliorated_by")).
             body("results[2].with", hasSize(1)).
             body("results[2].with[0].curie", is("HGNC:0001")).
             body("results[2].singleReference.curie", is("PMID:25920554")).
-            //body("results[2].diseaseAnnotationSummary", is("Test summary")).
-            //body("results[2].diseaseAnnotationNote", is("Test note")).
+            body("results[2].relatedNotes[0].freeText", is("Test note")).
+            body("results[2].relatedNotes[0].noteType.name", is("disease_summary")).
+            body("results[2].relatedNotes[0].internal", is(false)).
+            body("results[2].relatedNotes[0].references[0].curie", is("PMID:25920554")).
+            body("results[0].annotationType", is("manually_curated")).
+            body("results[0].diseaseQualifiers[0]", is("susceptibility")).
             body("results[2].evidenceCodes", hasSize(1)).
             body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
     
     @Test
     @Order(4)
-    public void diseaseAnnotationBulkUploadNoModId() throws Exception {
+    public void diseaseAnnotationBulkUploadNoModEntityId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/04_no_mod_id.json"));
         
         RestAssured.given().
@@ -357,7 +366,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             then().
             statusCode(200).
             body("totalResults", is(3)).
-            body("results[2].uniqueId", is("DATEST:Annot0008")); 
+            body("results[2].uniqueId", is("DATEST:Annot0008")).
+            body("results[2].negated", is(false)); 
     }
     
     @Test
@@ -528,7 +538,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(2)); 
     }
     
-    // TODO: Update count and once validation for field in place
     @Test
     @Order(16)
     public void diseaseAnnotationBulkUploadNoDiseaseGeneticModifier() throws Exception {
@@ -549,11 +558,9 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3)).
-            body("results[2].uniqueId", is("DATEST:Annot0016"));  
+            body("totalResults", is(2));  
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(17)
     public void diseaseAnnotationBulkUploadNoDiseaseGeneticModifierRelation() throws Exception {
@@ -574,8 +581,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3)).
-            body("results[2].uniqueId", is("DATEST:Annot0017")); 
+            body("totalResults", is(2)); 
     }
     
     @Test
@@ -627,8 +633,8 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(20)
-    public void diseaseAnnotationBulkUploadNoDiseaseAnnotationSummary() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/20_no_disease_annotation_summary.json"));
+    public void diseaseAnnotationBulkUploadNoRelatedNotes() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/20_no_related_notes.json"));
         
         RestAssured.given().
             contentType("application/json").
@@ -651,8 +657,8 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(21)
-    public void diseaseAnnotationBulkUploadNoDiseaseAnnotationNote() throws Exception {
-        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/21_no_disease_annotation_note.json"));
+    public void diseaseAnnotationBulkUploadNoSgdStrainBackground() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/21_no_sgd_strain_background.json"));
         
         RestAssured.given().
             contentType("application/json").
@@ -1048,7 +1054,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(0)); // Replace 1 WB AGM disease annotation with 0 
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(38)
     public void diseaseAnnotationBulkUploadInvalidGeneticSex() throws Exception {
@@ -1069,7 +1074,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)); 
+            body("totalResults", is(0)); 
     }
     
     @Test
@@ -1095,7 +1100,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(0)); 
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(40)
     public void diseaseAnnotationBulkUploadInvalidGeneticModifier() throws Exception {
@@ -1116,10 +1120,9 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1));
+            body("totalResults", is(0));
     }
     
-    // TODO: Update statusCode, count, and curie once moved from enum to controlled vocabulary
     @Test
     @Order(41)
     public void diseaseAnnotationBulkUploadInvalidGeneticModifierRelation() throws Exception {
@@ -1131,7 +1134,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             when().
             post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
             then().
-            statusCode(400);
+            statusCode(200);
         
         RestAssured.given().
             when().
@@ -1140,8 +1143,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)).
-            body("results[0].uniqueId", is("DATEST:Annot0040")); 
+            body("totalResults", is(0)); 
     }
     
     // TODO: Update count once validation for field in place
@@ -1306,6 +1308,309 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(0)); 
     }
     
+    @Test
+    @Order(49)
+    public void diseaseAnnotationBulkUploadNoAnnotationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/49_no_annotation_type.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)); 
+    }
+    
+    @Test
+    @Order(50)
+    public void diseaseAnnotationBulkUploadNoDiseaseQualifiers() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/50_no_disease_qualifiers.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)); 
+    }
+    
+    @Test
+    @Order(51)
+    public void diseaseAnnotationBulkUploadNoRelatedNoteFreeText() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/51_no_related_note_free_text.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(52)
+    public void diseaseAnnotationBulkUploadNoRelatedNoteType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/52_no_related_note_type.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(53)
+    public void diseaseAnnotationBulkUploadNoRelatedNoteInternal() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/53_no_related_note_internal.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(54)
+    public void diseaseAnnotationBulkUploadNoRelatedNoteReferences() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/54_no_related_note_references.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)); 
+    }
+    
+    @Test
+    @Order(55)
+    public void diseaseAnnotationBulkUploadInvalidSgdStrainBackground() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/55_invalid_sgd_strain_background.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    // TODO: Replace status code when enum changed to vocabulary term
+    @Test
+    @Order(56)
+    public void diseaseAnnotationBulkUploadInvalidAnnotationType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/56_invalid_annotation_type.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(57)
+    public void diseaseAnnotationBulkUploadInvalidDiseaseQualifier() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/57_invalid_disease_qualifier.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(58)
+    public void diseaseAnnotationBulkUploadInvalidRelatedNoteType() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/58_invalid_related_note_type.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    // TODO: update count once validation for references is in place
+    @Test
+    @Order(59)
+    public void diseaseAnnotationBulkUploadInvalidRelatedNoteReference() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/59_invalid_related_note_reference.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)); 
+    }
+    
+    @Test
+    @Order(60)
+    public void diseaseAnnotationBulkUploadNoSecondaryDataProvider() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/60_no_secondary_data_provider.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)).
+            body("results[0].uniqueId", is("DATEST:Annot0060")); 
+    }
+    
+    @Test
+    @Order(61)
+    public void diseaseAnnotationBulkUploadNoDiseaseGeneticModifierAndRelation() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/61_no_disease_genetic_modifier_and_relation.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)).
+            body("results[0].uniqueId", is("DATEST:Annot0061")); 
+    }
+    
     private void loadRequiredEntities() throws Exception {
         loadDOTerm();
         loadECOTerm();
@@ -1317,6 +1622,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadGenes();  
         loadAllele();
         loadAGM();
+        loadVocabularyAndTerm();
     }
     
     private void loadDOTerm() throws Exception {
@@ -1471,6 +1777,40 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200);
     }
     
+    private void loadVocabularyAndTerm() throws Exception {
+        
+        Vocabulary vocabulary = new Vocabulary();
+        vocabulary.setName(requiredVocabulary);
+        
+        ObjectResponse<Vocabulary> response = RestAssured.given().
+            contentType("application/json").
+            body(vocabulary).
+            when().
+            post("/api/vocabulary").
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefVocabulary());
+    
+        vocabulary = response.getEntity();
+        
+        loadVocabularyTerm(vocabulary);
+    }
+    
+    private void loadVocabularyTerm(Vocabulary vocabulary) throws Exception {
+        
+        VocabularyTerm vocabularyTerm = new VocabularyTerm();
+        vocabularyTerm.setName(requiredVocabularyTerm);
+        vocabularyTerm.setVocabulary(vocabulary);
+
+        RestAssured.given().
+            contentType("application/json").
+            body(vocabularyTerm).
+            when().
+            post("/api/vocabularyterm").
+            then().
+            statusCode(200);
+    }
+    
     private NCBITaxonTerm getTaxon(String taxonCurie) {
         ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
             when().
@@ -1484,6 +1824,10 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+    }
+    
+    private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
+        return new TypeRef<ObjectResponse <Vocabulary>>() { };
     }
     
     private void clearExistingDiseaseAnnotations() throws Exception {

@@ -47,6 +47,7 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         AlleleDiseaseAnnotation annotation = validateAlleleDiseaseAnnotationDTO(dto);
         if (annotation == null) return null;
@@ -69,7 +70,7 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
             throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
-        String annotationId = dto.getModId();
+        String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto);
         }

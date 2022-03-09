@@ -48,33 +48,37 @@ export const HistoryDialog = ({ historyDialog, setHistoryDialog, history, dataLo
   return (
     <div>
       <Dialog visible={historyDialog} style={{ width: '70vw' }} header="History Information" modal className="p-fluid" onHide={hideDialog}>
-        <div className="field">
-          <div className="grid p-fluid dashboard">
-            <div className="col-12 lg-3">
-              <div className="card summary">
-                <span className="title">Duration</span>
-                <span className="detail">How long the load took</span>
-                <span className="count visitors"><Moment format="HH:mm:ss" duration={fullHistory.loadStarted} date={fullHistory.loadFinished} /></span>
+        <div className="grid">
+          
+          <div className="col-12 lg:col-6 xl:col-4">
+            <div className="card mb-0">
+              <div>
+                <span className="block text-500 font-medium mb-3">Duration</span>
+                <div className="text-900 font-medium text-xl"><Moment format="HH:mm:ss" duration={fullHistory.loadStarted} date={fullHistory.loadFinished} /></div>
               </div>
+              <span className="text-500">How long the load took</span>
             </div>
-            <div className="col-12 lg-4">
-              <div className="card summary">
-                <span className="title">Rate</span>
-                <span className="detail">How many records per second to the database</span>
-                <span className="count purchases">{Math.round(fullHistory.completedRecords / (moment(fullHistory.loadFinished) - moment(fullHistory.loadStarted)) * 10000) / 10} r/s</span>
-              </div>
-            </div>
-            <div className="col-12 lg-4">
-              <div className="card summary">
-                <span className="title">Completed</span>
-                <span className="detail">How much of the load was successful</span>
-                <span className="count revenue">{fullHistory.completedRecords} of {fullHistory.totalRecords} = {Math.round(fullHistory.completedRecords / fullHistory.totalRecords * 1000) / 10}%</span>
-              </div>
-            </div>
-            
           </div>
-
-          <div className="card">
+          <div className="col-12 lg:col-6 xl:col-4">
+            <div className="card mb-0">
+              <div>
+                <span className="block text-500 font-medium mb-3">Rate</span>
+                <div className="text-900 font-medium text-xl">{Math.round(fullHistory.completedRecords / (moment(fullHistory.loadFinished) - moment(fullHistory.loadStarted)) * 10000) / 10} r/s</div>
+              </div>
+              <span className="text-500">How many records per second to the database</span>
+            </div>
+          </div>
+          <div className="col-12 lg:col-6 xl:col-4">
+            <div className="card mb-0">
+              <div>
+                <span className="block text-500 font-medium mb-3">Completed</span>
+                <div className="text-900 font-medium text-xl">{fullHistory.completedRecords} of {fullHistory.totalRecords} = {Math.round(fullHistory.completedRecords / fullHistory.totalRecords * 1000) / 10}%</div>
+              </div>
+              <span className="text-500">How much of the load was successful</span>
+            </div>
+          </div>
+            
+          <div className="card col-12">
             <DataTable key="exceptionTable" value={fullHistory.exceptions} responsiveLayout="scroll"
               expandedRows={expandedRows} onRowToggle={(e) => setExpandedRows(e.data)} rowExpansionTemplate={jsonObjectTemplate} dataKey="id">
               <Column expander style={{ width: '3em' }} />
