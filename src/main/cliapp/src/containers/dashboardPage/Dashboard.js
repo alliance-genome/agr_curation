@@ -94,6 +94,22 @@ export const Dashboard = () => {
     searchService.search('ncbitaxonterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "NCBITaxon", count: results.totalResults, link: '/#/ontology/ncbitaxon' }]);
     });
+    
+    searchService.search('wblsterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "WBls", count: results.totalResults, link: '/#/ontology/wbls' }]);
+    });
+    
+    searchService.search('fbdvterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "FBdv", count: results.totalResults, link: '/#/ontology/fbdv' }]);
+    });
+    
+    searchService.search('mmusdvterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "MmusDv", count: results.totalResults, link: '/#/ontology/mmusdv' }]);
+    });
+    
+    searchService.search('zfsterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "ZFS", count: results.totalResults, link: '/#/ontology/zfs' }]);
+    });
   }, []);
 
   const nameHyperlinkTemplate = (rowData) => {

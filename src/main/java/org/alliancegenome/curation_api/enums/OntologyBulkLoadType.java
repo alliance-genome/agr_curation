@@ -16,6 +16,10 @@ public enum OntologyBulkLoadType {
     EMAPA(EMAPATerm.class),
     GO(GOTerm.class),
     SO(SOTerm.class),
+    WBLS(WBlsTerm.class),
+    FBDV(FBdvTerm.class),
+    MMUSDV(MmusDvTerm.class),
+    ZFS(ZFSTerm.class)
     ;
     
     private Class<? extends OntologyTerm> clazz;
