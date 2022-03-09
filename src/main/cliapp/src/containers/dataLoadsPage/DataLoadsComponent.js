@@ -151,7 +151,7 @@ export const DataLoadsComponent = () => {
   const loadActionBodyTemplate = (rowData) => {
     let ret = [];
 
-    ret.push(<Button key="edit" con="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
+    ret.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
 
     if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
       ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
@@ -241,9 +241,9 @@ export const DataLoadsComponent = () => {
   const statusTemplate = (rowData) => {
     let styleClass = 'p-button-text p-button-plain';
     if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status.endsWith('STARTED') || 
+    if (rowData.status && (rowData.status.endsWith('STARTED') || 
       rowData.status.endsWith('RUNNING') ||
-      rowData.status.endsWith('PENDING')) { styleClass = "p-button-success"; }
+      rowData.status.endsWith('PENDING'))) { styleClass = "p-button-success"; }
 
     return (
       <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />

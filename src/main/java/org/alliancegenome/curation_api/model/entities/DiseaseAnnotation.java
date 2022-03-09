@@ -43,7 +43,7 @@ public class DiseaseAnnotation extends Association {
     @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
-    private String modId;
+    private String modEntityId;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -88,12 +88,87 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsOnly.class})
     private Reference singleReference;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "annotationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
+    private AnnotationType annotationType;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "diseaseQualifier_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsAndLists.class})
+    @Enumerated(EnumType.STRING)
+    @ElementCollection(targetClass = DiseaseQualifier.class)
+    private List<DiseaseQualifier> diseaseQualifiers;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "geneticSex_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
+    private GeneticSex geneticSex;
+    
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @OneToMany
+    @JsonView({View.FieldsAndLists.class})
+    private List<Note> relatedNotes;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "dataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private String dataProvider;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "secondaryDataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private String secondaryDataProvider;
+
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
+    private BiologicalEntity diseaseGeneticModifier;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "diseaseGeneticModifierRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
+    private DiseaseGeneticModifierRelation diseaseGeneticModifierRelation;
+
+    
     public enum DiseaseRelation {
         is_model_of,
         is_implicated_in,
         is_marker_for;
     }
+    
+    public enum AnnotationType {
+        manually_curated,
+        high_throughput,
+        computational
+    }
+    
+    public enum DiseaseQualifier {
+        susceptibility,
+        disease_progression,
+        severity,
+        onset,
+        sexual_dimorphism,
+        resistance,
+        penetrance
+    }
 
+    public enum GeneticSex {
+        male,
+        female,
+        hermaphrodite
+    }
+    
+    public enum DiseaseGeneticModifierRelation {
+        ameliorated_by,
+        not_ameliorated_by,
+        exacerbated_by,
+        not_exacerbated_by
+    }
 }
 

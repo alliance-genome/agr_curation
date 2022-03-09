@@ -5,6 +5,11 @@ import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseQualifier;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.GeneticSex;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -12,10 +17,7 @@ import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -27,37 +29,65 @@ import static org.hamcrest.Matchers.is;
 @Order(10)
 public class DiseaseAnnotationITCase {
 
-    private CrossReference crossReference;
-    private DOTerm doTerm;
-    private EcoTerm ecoTerm;
-    private BiologicalEntity biologicalEntity;
-    private Gene gene;
-    private AffectedGenomicModel agm;
     private final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";
     private final String ALLELE_DISEASE_ANNOTATION = "AlleleDisease:0001";
     private final String AGM_DISEASE_ANNOTATION = "AgmDisease:0001";
+    
+    private DOTerm testDoTerm;
+    private DOTerm testDoTerm2;
+    private DOTerm testObsoleteDoTerm;
+    private EcoTerm testEcoTerm;
+    private EcoTerm testEcoTerm2;
+    private EcoTerm testObsoleteEcoTerm;
+    private Gene testGene;
+    private Gene testGene2;
+    private Gene testWithGene;
+    private Allele testAllele;
+    private Allele testAllele2;
+    private AffectedGenomicModel testAgm;
+    private AffectedGenomicModel testAgm2;
+    private BiologicalEntity testBiologicalEntity;
 
     private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
         return new TypeRef<>() {
         };
     }
 
-    private TypeRef<ObjectResponse<AlleleDiseaseAnnotation>> getObjectResponseTypeRefAllele() {
-        return new TypeRef<>() {
-        };
+    
+    private void createRequiredObjects() {
+        testDoTerm = createDiseaseTerm("DOID:da0001", false);
+        testDoTerm2 = createDiseaseTerm("DOID:da0002", false);
+        testObsoleteDoTerm = createDiseaseTerm("DOID:da0003", true);
+        testEcoTerm = createEcoTerm("ECO:da0001", "Test evidence code", false);
+        testEcoTerm2 = createEcoTerm("ECO:da0002", "Test evidence code2", false);
+        testObsoleteEcoTerm = createEcoTerm("ECO:da0003", "Test obsolete evidence code", true);
+        testGene = createGene("GENE:da0001", "NCBITaxon:9606");
+        testGene2 = createGene("GENE:da0002","NCBITaxon:9606");
+        testWithGene = createGene("HGNC:1", "NCBITaxon:9606");
+        testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606");
+        testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606");
+        testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
+        testAgm2 = createModel("MODEL:da0002", "NCBITaxon:9606", "TestAGM2");
+        testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
     }
 
     @Test
     @Order(1)
     public void createGeneDiseaseAnnotation() {
+        createRequiredObjects();
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm);
+        
+        GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
+        diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
+        diseaseAnnotation.setUniqueId(GENE_DISEASE_ANNOTATION);
+        diseaseAnnotation.setNegated(false);
+        diseaseAnnotation.setObject(testDoTerm);
+        diseaseAnnotation.setDataProvider("TEST");
+        diseaseAnnotation.setSubject(testGene);
+        diseaseAnnotation.setEvidenceCodes(ecoTerms);
 
-        crossReference = createCrossReference("CROSSREF:0001", "AGRreference");
-        doTerm = createDiseaseTerm("DOID:0001", crossReference, false);
-        ecoTerm = createEcoTerm("ECO:0001", "Test evidence code", false);
-        biologicalEntity = createBiologicalEntity("BO:0001", "NCBITaxon:9606");
-        gene = createGene("GENE:0001", "NCBITaxon:9606");
-
-        GeneDiseaseAnnotation diseaseAnnotation = getGeneDiseaseAnnotationEntity();
         RestAssured.given().
                 contentType("application/json").
                 body(diseaseAnnotation).
@@ -71,27 +101,28 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200).
                 body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
-                body("entity.subject.curie", is("GENE:0001")).
-                body("entity.object.curie", is("DOID:0001")).
-                body("entity.evidenceCodes[0].curie", is("ECO:0001"));
+                body("entity.subject.curie", is("GENE:da0001")).
+                body("entity.object.curie", is("DOID:da0001")).
+                body("entity.diseaseRelation", is("is_implicated_in")).
+                body("entity.negated", is(false)).
+                body("entity.dataProvider", is("TEST")).
+                body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
     }
 
     @Test
     @Order(2)
     public void createAlleleDiseaseAnnotation() {
 
-        Allele allele = createAllele("ALLELE:0001", "NCBITaxon:9606");
-
         List<EcoTerm> ecoTerms = new ArrayList<>();
-        ecoTerms.add(ecoTerm);
+        ecoTerms.add(testEcoTerm);
 
         AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
         diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
         diseaseAnnotation.setUniqueId(ALLELE_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
-        diseaseAnnotation.setObject(doTerm);
-
-        diseaseAnnotation.setSubject(allele);
+        diseaseAnnotation.setObject(testDoTerm);
+        diseaseAnnotation.setDataProvider("TEST");
+        diseaseAnnotation.setSubject(testAllele);
         diseaseAnnotation.setEvidenceCodes(ecoTerms);
 
         RestAssured.given().
@@ -107,27 +138,28 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200).
                 body("entity.uniqueId", is(ALLELE_DISEASE_ANNOTATION)).
-                body("entity.subject.curie", is("ALLELE:0001")).
-                body("entity.object.curie", is("DOID:0001")).
-                body("entity.evidenceCodes[0].curie", is("ECO:0001"));
+                body("entity.subject.curie", is("ALLELE:da0001")).
+                body("entity.object.curie", is("DOID:da0001")).
+                body("entity.diseaseRelation", is("is_implicated_in")).
+                body("entity.negated", is(false)).
+                body("entity.dataProvider", is("TEST")).
+                body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
     }
 
     @Test
-    @Order(2)
+    @Order(3)
     public void createAgmDiseaseAnnotation() {
 
-        AffectedGenomicModel model = createModel("MODEL:0001", "NCBITaxon:9606", "TestAGM");
-
         List<EcoTerm> ecoTerms = new ArrayList<>();
-        ecoTerms.add(ecoTerm);
+        ecoTerms.add(testEcoTerm);
 
         AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
-        diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
+        diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_model_of);
         diseaseAnnotation.setUniqueId(AGM_DISEASE_ANNOTATION);
         diseaseAnnotation.setNegated(false);
-        diseaseAnnotation.setObject(doTerm);
-
-        diseaseAnnotation.setSubject(model);
+        diseaseAnnotation.setObject(testDoTerm);
+        diseaseAnnotation.setDataProvider("TEST");
+        diseaseAnnotation.setSubject(testAgm);
         diseaseAnnotation.setEvidenceCodes(ecoTerms);
 
         RestAssured.given().
@@ -143,46 +175,42 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200).
                 body("entity.uniqueId", is(AGM_DISEASE_ANNOTATION)).
-                body("entity.subject.curie", is("MODEL:0001")).
-                body("entity.object.curie", is("DOID:0001")).
-                body("entity.evidenceCodes[0].curie", is("ECO:0001"));
-    }
-
-    private GeneDiseaseAnnotation getGeneDiseaseAnnotationEntity() {
-        List<EcoTerm> ecoTerms = new ArrayList<>();
-        ecoTerms.add(ecoTerm);
-
-        GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
-        diseaseAnnotation.setDiseaseRelation(DiseaseAnnotation.DiseaseRelation.is_implicated_in);
-        diseaseAnnotation.setUniqueId(GENE_DISEASE_ANNOTATION);
-        diseaseAnnotation.setNegated(false);
-        diseaseAnnotation.setObject(doTerm);
-
-        diseaseAnnotation.setSubject(gene);
-        diseaseAnnotation.setEvidenceCodes(ecoTerms);
-        return diseaseAnnotation;
+                body("entity.subject.curie", is("MODEL:da0001")).
+                body("entity.object.curie", is("DOID:da0001")).
+                body("entity.diseaseRelation", is("is_model_of")).
+                body("entity.negated", is(false)).
+                body("entity.dataProvider", is("TEST")).
+                body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
     }
 
     @Test
-    @Order(3)
+    @Order(4)
     public void editGeneDiseaseAnnotation() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-
-        // change negated
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
         editedDiseaseAnnotation.setNegated(true);
-        // change subject
-        Gene newGene = createGene("GENE:0002", "NCBITaxon:9606");
-
-        editedDiseaseAnnotation.setSubject(newGene);
-
-        // change DOTerm
-        editedDiseaseAnnotation.setObject(createDiseaseTerm("DOID:0002", null, false));
-        // change ECOTerm
-        List<EcoTerm> editedEcoTerms = new ArrayList<EcoTerm>();
-        editedEcoTerms.add(createEcoTerm("ECO:0002", "Update test", false));
-        editedDiseaseAnnotation.setEvidenceCodes(editedEcoTerms);
-
-
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
         RestAssured.given().
                 contentType("application/json").
                 body(editedDiseaseAnnotation).
@@ -197,33 +225,50 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200).
                 body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
-                body("entity.subject.curie", is("GENE:0002")).
-                body("entity.object.curie", is("DOID:0002")).
-                // TODO:  Not working, i.e. the update is not sticking in postgres.
-                //body("entity.negated", is(true)).
-                body("entity.evidenceCodes[0].curie", is("ECO:0002"));
+                body("entity.modEntityId", is("TEST:Mod0001")).
+                body("entity.subject.curie", is("GENE:da0002")).
+                body("entity.object.curie", is("DOID:da0002")).
+                body("entity.negated", is(true)).
+                body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
+                body("entity.diseaseRelation", is("is_marker_for")).
+                body("entity.dataProvider", is("TEST2")).
+                body("entity.secondaryDataProvider", is("TEST3")).
+                body("entity.geneticSex", is("hermaphrodite")).
+                body("entity.diseaseGeneticModifierRelation", is("ameliorated_by")).
+                body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
+                body("entity.annotationType", is("computational")).
+                body("entity.diseaseQualifiers[0]", is("severity")).
+                body("entity.with[0].curie", is("HGNC:1")).
+                body("entity.sgdStrainBackground.curie", is("MODEL:da0002"));
     }
 
     @Test
-    @Order(4)
+    @Order(5)
     public void editAlleleDiseaseAnnotation() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
         AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-
-        // change negated
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_implicated_in);
         editedDiseaseAnnotation.setNegated(true);
-        // change subject
-        Allele newAllele = createAllele("ALLELE:0002", "NCBITaxon:9606");
-
-        editedDiseaseAnnotation.setSubject(newAllele);
-
-        // change DOTerm
-        editedDiseaseAnnotation.setObject(createDiseaseTerm("DOID:0003", null, false));
-        // change ECOTerm
-        List<EcoTerm> editedEcoTerms = new ArrayList<>();
-        editedEcoTerms.add(createEcoTerm("ECO:0003", "Update test", false));
-        editedDiseaseAnnotation.setEvidenceCodes(editedEcoTerms);
-
-
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testAllele2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0002");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        
         RestAssured.given().
                 contentType("application/json").
                 body(editedDiseaseAnnotation).
@@ -238,21 +283,181 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200).
                 body("entity.uniqueId", is(ALLELE_DISEASE_ANNOTATION)).
-                body("entity.subject.curie", is("ALLELE:0002")).
-                body("entity.object.curie", is("DOID:0003")).
-                // TODO:  Not working, i.e. the update is not sticking in postgres.
-                //body("entity.negated", is(true)).
-                body("entity.evidenceCodes[0].curie", is("ECO:0003"));
+                body("entity.modEntityId", is("TEST:Mod0002")).
+                body("entity.subject.curie", is("ALLELE:da0002")).
+                body("entity.object.curie", is("DOID:da0002")).
+                body("entity.negated", is(true)).
+                body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
+                body("entity.diseaseRelation", is("is_implicated_in")).
+                body("entity.dataProvider", is("TEST2")).
+                body("entity.secondaryDataProvider", is("TEST3")).
+                body("entity.geneticSex", is("hermaphrodite")).
+                body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
+                body("entity.diseaseGeneticModifierRelation", is("ameliorated_by")).
+                body("entity.annotationType", is("computational")).
+                body("entity.diseaseQualifiers[0]", is("severity")).
+                body("entity.with[0].curie", is("HGNC:1"));
+
+    }
+    
+    @Test
+    @Order(6)
+    public void editAgmDiseaseAnnotation() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_model_of);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testAgm2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0003");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/agm-disease-annotation").
+                then().
+                statusCode(200);
+
+        RestAssured.given().
+                when().
+                get("/api/agm-disease-annotation/findBy/" + AGM_DISEASE_ANNOTATION).
+                then().
+                statusCode(200).
+                body("entity.uniqueId", is(AGM_DISEASE_ANNOTATION)).
+                body("entity.modEntityId", is("TEST:Mod0003")).
+                body("entity.subject.curie", is("MODEL:da0002")).
+                body("entity.object.curie", is("DOID:da0002")).
+                body("entity.negated", is(true)).
+                body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
+                body("entity.diseaseRelation", is("is_model_of")).
+                body("entity.dataProvider", is("TEST2")).
+                body("entity.secondaryDataProvider", is("TEST3")).
+                body("entity.geneticSex", is("hermaphrodite")).
+                body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
+                body("entity.diseaseGeneticModifierRelation", is("ameliorated_by")).
+                body("entity.annotationType", is("computational")).
+                body("entity.diseaseQualifiers[0]", is("severity")).
+                body("entity.with[0].curie", is("HGNC:1"));
+
     }
 
     @Test
-    @Order(5)
+    @Order(7)
     public void editWithObsoleteEcoTerm() {
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testObsoleteEcoTerm);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-        List<EcoTerm> editedEcoTerms = new ArrayList<>();
-        editedEcoTerms.add(createEcoTerm("ECO:0005", "ECO update test", true));
-        editedDiseaseAnnotation.setEvidenceCodes(editedEcoTerms);
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
 
+        RestAssured.given().
+            contentType("application/json").
+            body(editedDiseaseAnnotation).
+            when().
+            put("/api/gene-disease-annotation").
+            then().
+            statusCode(400);
+    }
+
+    @Test
+    @Order(8)
+    public void editWithObsoleteDoTerm() {
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testObsoleteDoTerm);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(editedDiseaseAnnotation).
+            when().
+            put("/api/gene-disease-annotation").
+            then().
+            statusCode(400);
+    }
+    
+    @Test
+    @Order(9)
+    public void editWithMissingSubject() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(null);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
         RestAssured.given().
                 contentType("application/json").
                 body(editedDiseaseAnnotation).
@@ -261,13 +466,388 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(400);
     }
-
+    
     @Test
-    @Order(6)
-    public void editWithObsoleteDoTerm() {
+    @Order(10)
+    public void editWithMissingObject() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-        editedDiseaseAnnotation.setObject(createDiseaseTerm("DO:0005", null, true));
-
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(null);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(11)
+    public void editWithMissingDiseaseRelation() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(null);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(12)
+    public void editWithMissingDataProvider() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider(null);
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(13)
+    public void editWithInvalidSubject() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        Gene nonPersistedGene = new Gene();
+        nonPersistedGene.setCurie("NPGene:0001");
+        nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(nonPersistedGene);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(14)
+    public void editWithInvalidObject() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        DOTerm nonPersistedDoTerm = new DOTerm();
+        nonPersistedDoTerm.setCurie("NPDO:0001");
+        nonPersistedDoTerm.setObsolete(false);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(nonPersistedDoTerm);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(15)
+    public void editWithInvalidDiseaseRelation() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_model_of);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider(null);
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(16)
+    public void editWithInvalidEvidenceCode() {
+        
+        EcoTerm nonPersistedEcoTerm = new EcoTerm();
+        nonPersistedEcoTerm.setCurie("NPECO:0001");
+        nonPersistedEcoTerm.setObsolete(false);
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(nonPersistedEcoTerm);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(17)
+    public void editWithInvalidDiseaseGeneticModifier() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        BiologicalEntity nonPersistedBiologicalEntity = new BiologicalEntity();
+        nonPersistedBiologicalEntity.setCurie("NPBE:0001");
+        nonPersistedBiologicalEntity.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(nonPersistedBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(18)
+    public void editWithInvalidWithGene() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testGene2);
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(19)
+    public void editWithInvalidSgdStrainBackground() {
+        
+        List<EcoTerm> ecoTerms = new ArrayList<>();
+        ecoTerms.add(testEcoTerm2);
+        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+        diseaseQualifiers.add(DiseaseQualifier.severity);
+        List<Gene> withGenes = new ArrayList<>();
+        withGenes.add(testWithGene);
+        
+        AffectedGenomicModel nonPersistedModel = new AffectedGenomicModel();
+        nonPersistedModel.setCurie("NPModel:0001");
+        nonPersistedModel.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
+        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(nonPersistedModel);
+        
         RestAssured.given().
                 contentType("application/json").
                 body(editedDiseaseAnnotation).
@@ -311,24 +891,27 @@ public class DiseaseAnnotationITCase {
 
         return res.getEntity();
     }
-
-    //    @Test
-    @Order(7)
-    public void deleteDiseaseAnnotation() {
-
-        GeneDiseaseAnnotation geneDiseaseAnnotation = getGeneDiseaseAnnotation();
-
+    
+    private BiologicalEntity createBiologicalEntity(String curie, String taxon) {
+        BiologicalEntity bioEntity = new BiologicalEntity();
+        bioEntity.setCurie(curie);
+        bioEntity.setTaxon(getTaxonFromCurie(taxon));
+        
         RestAssured.given().
+                contentType("application/json").
+                body(bioEntity).
                 when().
-                delete("/api/gene-disease-annotation/" + geneDiseaseAnnotation.getId()).
+                post("/api/biologicalentity").
                 then().
                 statusCode(200);
+        
+        return bioEntity;
     }
 
-    private DOTerm createDiseaseTerm(String curie, CrossReference crossReference, Boolean obsolete) {
+
+    private DOTerm createDiseaseTerm(String curie, Boolean obsolete) {
         DOTerm doTerm = new DOTerm();
         doTerm.setCurie(curie);
-        doTerm.setCrossReferences(Collections.singletonList(crossReference));
         doTerm.setObsolete(obsolete);
 
         RestAssured.given().
@@ -358,86 +941,54 @@ public class DiseaseAnnotationITCase {
         return ecoTerm;
     }
 
-    private BiologicalEntity createBiologicalEntity(String curie, String taxon) {
-        BiologicalEntity biologicalEntity = new BiologicalEntity();
-        biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
-
-        RestAssured.given().
-                contentType("application/json").
-                body(biologicalEntity).
-                when().
-                post("/api/biologicalentity").
-                then().
-                statusCode(200);
-        return biologicalEntity;
-    }
 
     private Gene createGene(String curie, String taxon) {
-        Gene biologicalEntity = new Gene();
-        biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
+        Gene gene = new Gene();
+        gene.setCurie(curie);
+        gene.setTaxon(getTaxonFromCurie(taxon));
 
         RestAssured.given().
                 contentType("application/json").
-                body(biologicalEntity).
+                body(gene).
                 when().
                 post("/api/gene").
                 then().
                 statusCode(200);
-        return biologicalEntity;
+        return gene;
     }
 
     private Allele createAllele(String curie, String taxon) {
-        Allele biologicalEntity = new Allele();
-        biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
+        Allele allele = new Allele();
+        allele.setCurie(curie);
+        allele.setTaxon(getTaxonFromCurie(taxon));
 
         RestAssured.given().
                 contentType("application/json").
-                body(biologicalEntity).
+                body(allele).
                 when().
                 post("/api/allele").
                 then().
                 statusCode(200);
-        return biologicalEntity;
+        return allele;
     }
 
     private AffectedGenomicModel createModel(String curie, String taxon, String name) {
-        AffectedGenomicModel biologicalEntity = new AffectedGenomicModel();
-        biologicalEntity.setCurie(curie);
-        biologicalEntity.setTaxon(getTaxonFromCurie(taxon));
-        biologicalEntity.setName(name);
+        AffectedGenomicModel model = new AffectedGenomicModel();
+        model.setCurie(curie);
+        model.setTaxon(getTaxonFromCurie(taxon));
+        model.setName(name);
 
         RestAssured.given().
                 contentType("application/json").
-                body(biologicalEntity).
+                body(model).
                 when().
                 post("/api/agm").
                 then().
                 statusCode(200);
-        return biologicalEntity;
-    }
-
-    private CrossReference createCrossReference(String curie, String name) {
-        CrossReference crossReference = new CrossReference();
-        crossReference.setCurie(curie);
-        crossReference.setDisplayName(name);
-        crossReference.setPrefix("agr");
-        crossReference.setPageAreas(Arrays.asList("reference"));
-        crossReference.setCreated(LocalDateTime.now());
-        crossReference.setLastUpdated(LocalDateTime.now());
-
-        RestAssured.given().
-                body(crossReference).
-                contentType("application/json").
-                when().
-                post("/api/cross-reference").
-                then().
-                statusCode(200);
-        return crossReference;
+        return model;
     }
     
+
     private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
         ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
             when().

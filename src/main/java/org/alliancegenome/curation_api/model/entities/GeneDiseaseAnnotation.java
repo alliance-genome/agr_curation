@@ -18,7 +18,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
-@JsonTypeName
+@JsonTypeName("GeneDiseaseAnnotation")
 public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 
     @IndexedEmbedded(includeDepth = 1)
@@ -26,8 +26,6 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private Gene subject;
-    
-    private String predicate;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

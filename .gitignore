@@ -15,3 +15,4 @@ src/main/webapp/static
 src/main/resources/application.properties
 search_index
 .DS_Store
+/bin/

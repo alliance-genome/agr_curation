@@ -8,9 +8,12 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -37,28 +40,15 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
             throw new ApiErrorException(response);
             // do not continue validation for update if Disease Annotation ID has not been found
         }       
-
+        
         Allele subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
-
-        DOTerm term = validateObject(uiEntity, dbEntity);
-        if(term != null) dbEntity.setObject(term);
-
-        List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
-        if(terms != null) dbEntity.setEvidenceCodes(terms);
 
         DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
-        List<Gene> genes = validateWith(uiEntity, dbEntity);
-        if(genes != null) dbEntity.setWith(genes);
-
-        if(uiEntity.getNegated() != null) {
-            dbEntity.setNegated(uiEntity.getNegated());
-        }else{
-            dbEntity.setNegated(false);
-        }
-
+        dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
+        
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
             throw new ApiErrorException(response);
@@ -83,7 +73,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
     
     private DiseaseRelation validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
         String field = "diseaseRelation";
-        if (StringUtils.isEmpty(uiEntity.getDiseaseRelation().toString())) {
+        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
@@ -96,11 +86,5 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
             addMessageResponse(field, invalidMessage);
             return null;
         }
-
-//      if (dbEntity.getSubject() instanceof AffectedGenomicModel) {
-//          correctTypeAndSubject = (relation == DiseaseAnnotation.DiseaseRelation.is_model_of);
-//      }
-
-        
     }
 }
