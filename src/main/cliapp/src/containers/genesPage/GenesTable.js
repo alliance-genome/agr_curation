@@ -120,7 +120,6 @@ export const GenesTable = () => {
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("curieFilter", ["curie"]),
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' }
     },
     {
       field: "name",
@@ -161,7 +160,6 @@ export const GenesTable = () => {
           sortable={isEnabled}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={col.style}
         />;
       })
     );
