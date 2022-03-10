@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -157,10 +159,33 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
     public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
         
-        if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null || CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
+        if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null ||
+                CollectionUtils.isEmpty(dto.getEvidenceCodes()) || dto.getCreatedBy() == null || dto.getModifiedBy() == null) {
             throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
         annotation.setDataProvider(dto.getDataProvider());
+        annotation.setCreatedBy(dto.getCreatedBy());
+        annotation.setModifiedBy(dto.getModifiedBy());
+
+        if (dto.getDateLastModified() != null) {
+            OffsetDateTime dateLastModified;
+            try {
+                dateLastModified = OffsetDateTime.parse(dto.getDateLastModified());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_last_modified in annotation " + annotation.getUniqueId() + " - skipping");
+            }
+            annotation.setDateLastModified(dateLastModified);
+        }
+        
+        if (dto.getCreationDate() != null) {
+            OffsetDateTime creationDate;
+            try {
+                creationDate = OffsetDateTime.parse(dto.getCreationDate());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse creation_date in annotation " + annotation.getUniqueId() + " - skipping");
+            }
+            annotation.setCreationDate(creationDate);
+        }
 
         if (dto.getModEntityId() != null) {
             annotation.setModEntityId(dto.getModEntityId());
