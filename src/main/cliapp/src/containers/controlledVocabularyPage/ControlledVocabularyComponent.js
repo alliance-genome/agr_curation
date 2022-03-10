@@ -207,7 +207,8 @@ export const ControlledVocabularyComponent = () => {
           <>
               <InputTextEditor
                   editorChange={onNameEditorValueChange}
-                  props={props}
+                  rowProps={props}
+                  fieldName={'name'}
               />
               <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"name"} />
           </>
@@ -227,7 +228,8 @@ export const ControlledVocabularyComponent = () => {
           <>
               <InputTextEditor
                   editorChange={onAbbreviationEditorValueChange}
-                  props={props}
+                  rowProps={props}
+                  fieldName={'abbreviation'}
               />
               <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"abbreviation"} />
           </>
@@ -271,7 +273,8 @@ export const ControlledVocabularyComponent = () => {
           <>
               <InputTextEditor
                   editorChange={onDefinitionEditorValueChange}
-                  props={props}
+                  rowProps={props}
+                  fieldName={'definition'}
               />
               <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"definition"} />
           </>
@@ -281,7 +284,7 @@ export const ControlledVocabularyComponent = () => {
   const onObsoleteEditorValueChange = (props, event) => {
       let updatedTerms = [...props.props.value];
       if (event.value || event.value === '') {
-          updatedTerms[props.rowIndex].isObsolete = JSON.parse(event.value.name);
+          updatedTerms[props.rowIndex].obsolete = JSON.parse(event.value.name);
           setTerms(updatedTerms);
       }
   };
@@ -294,7 +297,7 @@ export const ControlledVocabularyComponent = () => {
                   editorChange={onObsoleteEditorValueChange}
                   props={props}
               />
-              <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"isObsolete"} />
+              <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
           </>
       );
   };
@@ -324,8 +327,8 @@ export const ControlledVocabularyComponent = () => {
   };
 
   const obsoleteBodyTemplate = (rowData) => {
-      if (rowData && rowData.isObsolete !== null && rowData.isObsolete !== undefined) {
-          return <div>{JSON.stringify(rowData.isObsolete)}</div>;
+      if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
+          return <div>{JSON.stringify(rowData.obsolete)}</div>;
       }
   };
 
@@ -371,11 +374,11 @@ export const ControlledVocabularyComponent = () => {
       body: definitionBodyTemplate
     },
     {
-      field: "isObsolete",
+      field: "obsolete",
       header: "Obsolete",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("isObsoleteFilter", ["isObsolete"]),
+      filterElement: filterComponentTemplate("isObsoleteFilter", ["obsolete"]),
       editor: (props) => obsoleteEditorTemplate(props),
       body: obsoleteBodyTemplate
     }

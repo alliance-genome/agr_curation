@@ -104,14 +104,14 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
                             />
                         </div>
                         <div className="field">
-                            <label htmlFor="isObsolete">Obsolete</label>
+                            <label htmlFor="obsolete">Obsolete</label>
                             <Dropdown
-                                id="isObsolete"
+                                id="obsolete"
                                 options={obsoleteTerms}
-                                value={newTerm.isObsolete}
+                                value={newTerm.obsolete}
                                 placeholder={"Select Obsolete"}
                                 className='p-col-12'
-                                name='isObsolete'
+                                name='obsolete'
                                 optionLabel='text'
                                 optionValue='id'
                                 onChange={onChange}
