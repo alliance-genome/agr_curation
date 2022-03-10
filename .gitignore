@@ -9,6 +9,7 @@ target
 .settings
 .idea
 *.iml
+*.swp
 src/main/webapp/index.html
 src/main/webapp/assets
 src/main/webapp/static
