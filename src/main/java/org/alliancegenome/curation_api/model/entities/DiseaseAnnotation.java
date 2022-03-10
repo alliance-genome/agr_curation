@@ -57,11 +57,11 @@ public class DiseaseAnnotation extends Association {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean negated = false;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private DiseaseRelation diseaseRelation;
+    private VocabularyTerm diseaseRelation;
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -88,24 +88,23 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsOnly.class})
     private Reference singleReference;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "annotationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private AnnotationType annotationType;
+    private VocabularyTerm annotationType;
     
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseQualifier_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToMany
     @JsonView({View.FieldsAndLists.class})
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = DiseaseQualifier.class)
-    private List<DiseaseQualifier> diseaseQualifiers;
+    private List<VocabularyTerm> diseaseQualifiers;
     
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "geneticSex_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private GeneticSex geneticSex;
+    private VocabularyTerm geneticSex;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -129,46 +128,10 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsOnly.class})
     private BiologicalEntity diseaseGeneticModifier;
     
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseGeneticModifierRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private DiseaseGeneticModifierRelation diseaseGeneticModifierRelation;
-
-    
-    public enum DiseaseRelation {
-        is_model_of,
-        is_implicated_in,
-        is_marker_for;
-    }
-    
-    public enum AnnotationType {
-        manually_curated,
-        high_throughput,
-        computational
-    }
-    
-    public enum DiseaseQualifier {
-        susceptibility,
-        disease_progression,
-        severity,
-        onset,
-        sexual_dimorphism,
-        resistance,
-        penetrance
-    }
-
-    public enum GeneticSex {
-        male,
-        female,
-        hermaphrodite
-    }
-    
-    public enum DiseaseGeneticModifierRelation {
-        ameliorated_by,
-        not_ameliorated_by,
-        exacerbated_by,
-        not_exacerbated_by
-    }
+    private VocabularyTerm diseaseGeneticModifierRelation;
 }
 
