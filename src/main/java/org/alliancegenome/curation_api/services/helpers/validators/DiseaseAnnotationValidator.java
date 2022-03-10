@@ -108,6 +108,26 @@ public class DiseaseAnnotationValidator {
         return dataProvider;
     }
     
+    public String validateCreatedBy(DiseaseAnnotation uiEntity) {
+        String createdBy = uiEntity.getCreatedBy();
+        if (createdBy == null) {
+            addMessageResponse("createdBy", requiredMessage);
+            return null;
+        }
+        
+        return createdBy;
+    }
+    
+    public String validateModifiedBy(DiseaseAnnotation uiEntity) {
+        String modifiedBy = uiEntity.getModifiedBy();
+        if (modifiedBy == null) {
+            addMessageResponse("modifiedBy", requiredMessage);
+            return null;
+        }
+        
+        return modifiedBy;
+    }
+    
     public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity) {
         if (uiEntity.getDiseaseGeneticModifier() == null) {
             return null;
@@ -167,8 +187,20 @@ public class DiseaseAnnotationValidator {
             dbEntity.setGeneticSex(uiEntity.getGeneticSex());
 
         String dataProvider = validateDataProvider(uiEntity);
-        if (dataProvider != null) dbEntity.setDataProvider(uiEntity.getDataProvider());
+        if (dataProvider != null) dbEntity.setDataProvider(dataProvider);
+
+        String createdBy = validateCreatedBy(uiEntity);
+        if (createdBy != null) dbEntity.setCreatedBy(createdBy);
+
+        String modifiedBy = validateModifiedBy(uiEntity);
+        if (modifiedBy != null) dbEntity.setModifiedBy(modifiedBy);
     
+        if (uiEntity.getCreationDate() != null)
+            dbEntity.setCreationDate(uiEntity.getCreationDate());
+        
+        if (uiEntity.getDateLastModified() != null)
+            dbEntity.setDateLastModified(uiEntity.getDateLastModified());
+        
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
     

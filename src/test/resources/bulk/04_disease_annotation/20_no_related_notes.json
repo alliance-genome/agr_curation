@@ -35,8 +35,9 @@
       "HGNC:0001"
     ],
     "single_reference": "PMID:25920554",
-    "creation_date": "2022-02-14",
-    "date_last_modified": "2022-02-14",
+    "created_by": "DATEST:Person0001",
+    "creation_date": "2022-03-09T22:10:12+00:00",
+    "date_last_modified": "2022-03-09T22:10:12+00:00",
     "sgd_strain_background": "DATEST:AGM0001",
     "annotation_type": "manually_curated",
     "disease_qualifiers": [

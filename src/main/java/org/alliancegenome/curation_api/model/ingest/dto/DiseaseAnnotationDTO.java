@@ -96,7 +96,7 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("date_last_modified")
-    private String lastUpdated;
+    private String dateLastModified;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("annotation_type")

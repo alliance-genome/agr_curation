@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.persistence.*;
@@ -135,6 +136,23 @@ public class DiseaseAnnotation extends Association {
     @Enumerated(EnumType.STRING)
     private DiseaseGeneticModifierRelation diseaseGeneticModifierRelation;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "createdBy_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private String createdBy;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "modifiedBy_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private String modifiedBy;
+    
+    @Basic
+    @JsonView(View.FieldsOnly.class)
+    private OffsetDateTime creationDate;
+    
+    @Basic
+    @JsonView(View.FieldsOnly.class)
+    private OffsetDateTime dateLastModified;
     
     public enum DiseaseRelation {
         is_model_of,
