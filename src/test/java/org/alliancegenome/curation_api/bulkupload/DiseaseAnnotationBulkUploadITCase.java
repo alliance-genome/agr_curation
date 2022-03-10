@@ -95,10 +95,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].object.curie", is("DATEST:Disease0001")).
             body("results[0].diseaseRelation", is("is_implicated_in")).
             body("results[0].geneticSex", is("male")).
-            //body("results[0].modifiedBy", is("DATEST:Person0001")).
-            //body("results[0].dateLastModified", is("2022-02-14")).
-            //body("results[0].createdBy", is("DATEST:Person0001")).
-            //body("results[0].creationDate", is("2022-02-14")).
+            body("results[0].modifiedBy", is("DATEST:Person0001")).
+            body("results[0].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[0].createdBy", is("DATEST:Person0001")).
+            body("results[0].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[0].conditionRelations", hasSize(1)).
             body("results[0].conditionRelations[0].conditionRelationType", is("exacerbated_by")).
             body("results[0].conditionRelations[0].conditions", hasSize(1)).
@@ -158,10 +158,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].object.curie", is("DATEST:Disease0001")).
             body("results[1].diseaseRelation", is("is_implicated_in")).
             body("results[1].geneticSex", is("male")).
-            //body("results[1].modifiedBy", is("DATEST:Person0001")).
-            //body("results[1].dateLastModified", is("2022-02-14")).
-            //body("results[1].createdBy", is("DATEST:Person0001")).
-            //body("results[1].creationDate", is("2022-02-14")).
+            body("results[1].modifiedBy", is("DATEST:Person0001")).
+            body("results[1].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[1].createdBy", is("DATEST:Person0001")).
+            body("results[1].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[1].conditionRelations", hasSize(1)).
             body("results[1].conditionRelations[0].conditionRelationType", is("exacerbated_by")).
             body("results[1].conditionRelations[0].conditions", hasSize(1)).
@@ -220,10 +220,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].object.curie", is("DATEST:Disease0001")).
             body("results[2].diseaseRelation", is("is_model_of")).
             body("results[2].geneticSex", is("male")).
-            //body("results[2].modifiedBy", is("DATEST:Person0001")).
-            //body("results[2].dateLastModified", is("2022-02-14")).
-            //body("results[2].createdBy", is("DATEST:Person0001")).
-            //body("results[2].creationDate", is("2022-02-14")).
+            body("results[2].modifiedBy", is("DATEST:Person0001")).
+            body("results[2].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[2].createdBy", is("DATEST:Person0001")).
+            body("results[2].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[2].conditionRelations", hasSize(1)).
             body("results[2].conditionRelations[0].conditionRelationType", is("exacerbated_by")).
             body("results[2].conditionRelations[0].conditions", hasSize(1)).
@@ -417,7 +417,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].uniqueId", is("DATEST:Annot0010"));  
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(11)
     public void diseaseAnnotationBulkUploadNoModifiedBy() throws Exception {
@@ -438,8 +437,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3)).
-            body("results[2].uniqueId", is("DATEST:Annot0011")); 
+            body("totalResults", is(2)); 
     }
     
     @Test
@@ -466,7 +464,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].uniqueId", is("DATEST:Annot0012")); 
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(13)
     public void diseaseAnnotationBulkUploadNoCreatedBy() throws Exception {
@@ -487,8 +484,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3)).
-            body("results[2].uniqueId", is("DATEST:Annot0013")); 
+            body("totalResults", is(2)); 
     }
     
     @Test
@@ -1609,6 +1605,52 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200).
             body("totalResults", is(1)).
             body("results[0].uniqueId", is("DATEST:Annot0061")); 
+    }
+    
+    @Test
+    @Order(62)
+    public void diseaseAnnotationBulkUploadInvalidCreationDate() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/62_invalid_creation_date.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(63)
+    public void diseaseAnnotationBulkUploadInvalidDateLastModified() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/63_invalid_date_last_modified.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
     }
     
     private void loadRequiredEntities() throws Exception {

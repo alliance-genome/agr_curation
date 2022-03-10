@@ -124,6 +124,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         if(info.getUid() == null || info.getUid().length() == 0) {
             SearchResponse<Person> res = personDAO.findByField("apiToken", token);
             if(res != null && res.getResults().size() == 1) {
+                log.info("User Found in local DB via: " + token);
                 return res.getResults().get(0);
             }
             return null;
