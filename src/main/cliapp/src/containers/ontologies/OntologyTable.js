@@ -135,6 +135,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
             sortable={isEnabled}
             body={obsoleteTemplate}
             filter
+            showFilterMenu={false}
             style={{ whiteSpace: 'normal' }}
             filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
           />;
