@@ -39,10 +39,17 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
     };
 
     const onChange = (e) => {
+      if (e.target.name === "vocabulary") {
         newTermDispatch({
-            field: e.target.name,
-            value: e.target.value
+          field: e.target.name,
+          value: e.value
         });
+      } else {
+        newTermDispatch({
+          field: e.target.name,
+          value: e.target.value
+        });
+      }
     };
 
     const newTermDialogFooter = (
@@ -82,14 +89,13 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
                         <div className="field">
                             <label htmlFor="vocabulary">Vocabulary</label>
                             <Dropdown
-                                id="vocabulary.name"
+                                id="vocabulary"
                                 options={vocabularies}
-                                value={newTerm.vocab}
+                                value={newTerm.vocabulary}
                                 placeholder={"Select Vocabulary"}
                                 className='p-col-12'
-                                name='vocabulary.name'
+                                name='vocabulary'
                                 optionLabel='name'
-                                optionValue='id'
                                 onChange={onChange}
                             />
                         </div>
@@ -113,7 +119,7 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
                                 className='p-col-12'
                                 name='obsolete'
                                 optionLabel='text'
-                                optionValue='id'
+                                optionValue='name'
                                 onChange={onChange}
                             />
                         </div>

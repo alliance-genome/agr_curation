@@ -239,10 +239,8 @@ export const ControlledVocabularyComponent = () => {
     const onVocabularyNameEditorValueChange = (props, event) => {
         let updatedTerms = [...props.props.value];
         if (event.value || event.value === '') {
-            if (event.value.name || event.value.name === '') {
-                updatedTerms[props.rowIndex].vocabulary.name = event.value.name;
-                setTerms(updatedTerms);
-            }
+          updatedTerms[props.rowIndex].vocabulary = event.value;
+          setTerms(updatedTerms);
         }
     };
 
