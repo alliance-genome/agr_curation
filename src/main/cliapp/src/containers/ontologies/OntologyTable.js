@@ -6,6 +6,7 @@ import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from "primereact/messages";
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 
@@ -117,7 +118,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
 
   const obsoleteTemplate = (rowData) => {
     if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-      return <div>{JSON.stringify(rowData.obsolete)}</div>
+      return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
     }
   };
 
@@ -128,6 +129,8 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
       orderedColumns.map((col) => {
         if (col.field === 'obsolete') {
           return <Column
+            style={{ width: `${100 / orderedColumns.length}%` }}
+            className='overflow-hidden text-overflow-ellipsis'
             columnKey={col.field}
             key={col.field}
             field={col.field}
@@ -136,18 +139,18 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
             body={obsoleteTemplate}
             filter
             showFilterMenu={false}
-            style={{ whiteSpace: 'normal' }}
             filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
           />;
         }
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           columnKey={col.field}
           key={col.field}
           field={col.field}
           header={col.header}
           sortable={isEnabled}
           filter
-          style={{ whiteSpace: 'normal' }}
           showFilterMenu={false}
           filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
         />;
@@ -174,14 +177,14 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
         <h3>{ontologyAbbreviation} Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
-          filterDisplay="row"
+          ref={dataTable} filterDisplay="row"
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
         >
           {columnMap}
 
