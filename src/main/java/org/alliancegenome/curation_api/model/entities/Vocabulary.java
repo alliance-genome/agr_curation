@@ -5,11 +5,13 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.model.entities.ontology.BooleanValueBridge;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -35,10 +37,10 @@ public class Vocabulary extends BaseGeneratedEntity {
     @JsonView({View.FieldsOnly.class})
     private String vocabularyDescription;
     
-    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-    @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition = "boolean default false", nullable = false)
-    private Boolean isObsolete = false;
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+    @KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+    @JsonView(View.FieldsOnly.class)
+    private Boolean obsolete;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
