@@ -122,6 +122,10 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
 
         if(info.getUid() == null || info.getUid().length() == 0) {
+            SearchResponse<Person> res = personDAO.findByField("apiToken", token);
+            if(res != null && res.getResults().size() == 1) {
+                return res.getResults().get(0);
+            }
             return null;
         } else {
             Client client = Clients.builder()
@@ -146,7 +150,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     return res.getResults().get(0);
                 }
             } else {
-                SearchResponse<Person> res = personDAO.findByField("apiToken", api_token.get());
+                SearchResponse<Person> res = personDAO.findByField("apiToken", token);
                 if(res != null && res.getResults().size() == 1) {
                     return res.getResults().get(0);
                 }

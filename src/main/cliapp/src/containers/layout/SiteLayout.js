@@ -36,8 +36,7 @@ export const SiteLayout = (props) => {
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
     const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
-    const [userInfo, setUserInfo] = useSessionStorage('userInfo', {});
-    const [localUserInfo, setLocalUserInfo] = useSessionStorage('localUserInfo', {});
+    const [userInfo, setUserInfo] = useState(null);
 
     const copyTooltipRef = useRef();
     const location = useLocation();
@@ -47,27 +46,13 @@ export const SiteLayout = (props) => {
     const { authState, oktaAuth } = useOktaAuth();
 
     const { children } = props;
-    const apiService = new ApiVersionService(authState);
+    const apiService = new ApiVersionService();
 
     useQuery(['getApiVersion', apiVersion],
         () => apiService.getApiVersion(), {
         onSuccess: (data) => {
             //console.log(data);
             setApiVersion(data);
-        },
-        onError: (error) => {
-            console.log(error);
-        },
-        keepPreviousData: true,
-        refetchOnWindowFocus: false
-    }
-    );
-
-    useQuery(['getLocalUserInfo', localUserInfo],
-        () => apiService.getUserInfo(), {
-        onSuccess: (data) => {
-            //console.log(data);
-            setLocalUserInfo(data);
         },
         onError: (error) => {
             console.log(error);
