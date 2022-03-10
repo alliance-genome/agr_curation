@@ -29,6 +29,9 @@ public class APIVersionInfoController implements APIVersionInterface {
     @ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
     String es_host;
     
+    @ConfigProperty(name = "NET")
+    String env;
+    
     @Inject
     @AuthenticatedUser
     protected Person authenticatedPerson;
@@ -41,6 +44,7 @@ public class APIVersionInfoController implements APIVersionInterface {
         info.setLinkMLVersion(linkMLVersion);
         info.setLinkMLClasses(linkMLClasses);
         info.setEsHost(es_host);
+        info.setEnv(env);
         return info;
     }
 
