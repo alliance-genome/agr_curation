@@ -14,6 +14,7 @@ import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectCo
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
+import { RelatedNotesDialog } from './RelatedNotesDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
@@ -23,7 +24,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
-  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -42,6 +43,8 @@ export const DiseaseAnnotationsTable = () => {
   const [editingRows, setEditingRows] = useState({});
   const [columnMap, setColumnMap] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
+  const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
+  const [relatedNotes, setRelatedNotes] = useState(false);
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -86,8 +89,23 @@ export const DiseaseAnnotationsTable = () => {
   useQuery(['diseaseAnnotations', tableState],
     () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
+      data.results.forEach((res) => {
+        res.relatedNotes = [
+      {
+        noteType: "disease_note",
+        internal: "false",
+        text: "Some text here"
+      },
+      {
+        noteType: "disease_summary",
+        internal: "true",
+        text: "Some text here"
+      }
+    ]               
+      });
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
+      console.log(diseaseAnnotations);
     },
     onError: (error) => {
       toast_topleft.current.show([
@@ -101,6 +119,7 @@ export const DiseaseAnnotationsTable = () => {
     refetchOnWindowFocus: false
   }
   );
+
 
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
@@ -145,6 +164,11 @@ export const DiseaseAnnotationsTable = () => {
     setTableState(_tableState);
   };
 
+  const handleRelatedNotesOpen = (event, rowData) => {
+    setRelatedNotes(rowData.relatedNotes);
+    setRelatedNotesDialog(true);
+  };
+
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
@@ -182,6 +206,19 @@ export const DiseaseAnnotationsTable = () => {
   const negatedTemplate = (rowData) => {
     if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
       return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
+    }
+  };
+
+  const relatedNotesTemplate = (rowData) => {
+    if (rowData.relatedNotes) {
+      return <EllipsisTableCell><button 
+      style={{
+        color:'blue',
+        background:'none',
+        border: 'none',
+        cursor: 'pointer',
+      }}
+      onClick={(event) => {handleRelatedNotesOpen(event, rowData)}} ><span style={{textDecoration: 'underline'}}>{`Notes(${rowData.relatedNotes.length})`}</span></button></EllipsisTableCell>;
     }
   };
 
@@ -563,6 +600,11 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
     editor: (props) => withEditorTemplate(props)
+  },
+  {
+    field: "relatedNotes.noteType",
+    header: "Related Notes",
+    body: relatedNotesTemplate,
   }
   ];
 
@@ -643,6 +685,11 @@ export const DiseaseAnnotationsTable = () => {
           <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
+      <RelatedNotesDialog
+        relatedNotes={relatedNotes}
+        relatedNotesDialog={relatedNotesDialog}
+        setRelatedNotesDialog={setRelatedNotesDialog}
+      />
     </div>
   );
 };
