@@ -568,7 +568,8 @@ public class DiseaseAnnotationITCase {
                 statusCode(400);
     }
     
-    @Test
+    // TODO: re-enable test response once field can be added in UI
+    // @Test
     @Order(12)
     public void editWithMissingDataProvider() {
         
@@ -866,7 +867,8 @@ public class DiseaseAnnotationITCase {
                 statusCode(400);
     }
     
-    @Test
+    // TODO: re-enable test once field can be added in UI
+    // @Test
     @Order(20)
     public void editWithMissingCreatedBy() {
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
@@ -899,7 +901,8 @@ public class DiseaseAnnotationITCase {
             statusCode(400);
     }
     
-    @Test
+    // TODO: re-enable test once field can be added in UI
+    // @Test
     @Order(21)
     public void editWithMissingModifiedBy() {
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();

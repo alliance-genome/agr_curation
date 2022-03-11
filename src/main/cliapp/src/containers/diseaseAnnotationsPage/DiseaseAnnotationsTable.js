@@ -292,13 +292,12 @@ export const DiseaseAnnotationsTable = () => {
     let updatedAnnotations = [...props.props.value];
     console.log(updatedAnnotations);
     if (event.value || event.value === '') {
-      updatedAnnotations[props.rowIndex].diseaseRelation.name = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+      updatedAnnotations[props.rowIndex].diseaseRelation = event.value;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       setDiseaseAnnotations(updatedAnnotations);
     }
   };
 
   const diseaseRelationEditor = (props) => {
-
     return (
       <>
         <ControlledVocabularyDropdown
