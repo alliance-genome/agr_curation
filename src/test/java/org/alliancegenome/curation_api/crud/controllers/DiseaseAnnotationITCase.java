@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
@@ -88,17 +89,20 @@ public class DiseaseAnnotationITCase {
         testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
         testAgm2 = createModel("MODEL:da0002", "NCBITaxon:9606", "TestAGM2");
         testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
-        geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
-        alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
-        agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
+        // geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
+        // alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
+        // agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
+        geneDiseaseRelationVocabulary = getVocabulary("Gene disease relations");
+        alleleDiseaseRelationVocabulary = getVocabulary("Allele disease relations");
+        agmDiseaseRelationVocabulary = getVocabulary("AGM disease relations");
         geneticSexVocabulary = createVocabulary("Genetic sexes");
         diseaseGeneticModifierRelationVocabulary = createVocabulary("Disease genetic modifier relations");
         diseaseQualifierVocabulary = createVocabulary("Disease qualifiers");
         annotationTypeVocabulary = createVocabulary("Annotation types");
-        geneDiseaseRelation = createVocabularyTerm(geneDiseaseRelationVocabulary, "is_implicated_in");
+        geneDiseaseRelation = getVocabularyTerm(geneDiseaseRelationVocabulary, "is_implicated_in");
         geneDiseaseRelation2 = createVocabularyTerm(geneDiseaseRelationVocabulary, "is_marker_for");
-        alleleDiseaseRelation = createVocabularyTerm(alleleDiseaseRelationVocabulary, "is_implicated_in");
-        agmDiseaseRelation = createVocabularyTerm(agmDiseaseRelationVocabulary, "is_model_of");
+        alleleDiseaseRelation = getVocabularyTerm(alleleDiseaseRelationVocabulary, "is_implicated_in");
+        agmDiseaseRelation = getVocabularyTerm(agmDiseaseRelationVocabulary, "is_model_of");
         diseaseQualifier.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity"));
         geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite");
         diseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by");
@@ -1078,6 +1082,19 @@ public class DiseaseAnnotationITCase {
         return vocabulary;
     }
 
+    private Vocabulary getVocabulary(String name) {
+        ObjectResponse<Vocabulary> response = 
+            RestAssured.given().
+                when().
+                get("/api/vocabulary/findBy/" + name).
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabulary());
+        
+        Vocabulary vocabulary = response.getEntity();
+        
+        return vocabulary;
+    }
 
     private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name) {
         VocabularyTerm vocabularyTerm = new VocabularyTerm();
@@ -1097,6 +1114,25 @@ public class DiseaseAnnotationITCase {
         vocabularyTerm = response.getEntity();
         
         return vocabularyTerm;
+    }
+    
+    private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
+        ObjectListResponse<VocabularyTerm> response = 
+            RestAssured.given().
+                when().
+                get("/api/vocabulary/" + vocabulary.getId() + "/terms").
+                then().
+                statusCode(200).
+                extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
+        
+        List<VocabularyTerm> vocabularyTerms = response.getEntities();
+        for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
+            if (vocabularyTerm.getName().equals(name)) {
+                return vocabularyTerm;
+            }
+        }
+        
+        return null;
     }
     
     private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
@@ -1120,5 +1156,9 @@ public class DiseaseAnnotationITCase {
     
     private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
         return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
+    }
+    
+    private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
+        return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
     }
 }

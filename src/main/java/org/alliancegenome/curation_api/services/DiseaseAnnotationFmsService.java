@@ -75,6 +75,8 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                 if (conditionRelationType == null) {
                     throw new ObjectUpdateException(annotationFmsDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
                 }
+                conditionRelationType = convertConditionRelationTypeVocabulary(conditionRelationType);
+                
                 VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, CONDITION_RELATION_TYPE_VOCABULARY);
                 if (conditionRelationTypeTerm == null) {
                     throw new ObjectUpdateException(annotationFmsDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
@@ -260,11 +262,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         return annotation;
     }
     
-    private String validateConditionRelationFmsDTO(ConditionRelationFmsDTO dto) {
-        if (dto.getConditionRelationType() == null || dto.getConditions() == null) {
-            return null;
-        }
-        String conditionRelationType = dto.getConditionRelationType();
+    private String convertConditionRelationTypeVocabulary(String conditionRelationType) {
         if (conditionRelationType.equals("ameliorates")) {
             return "ameliorated_by";
         }
