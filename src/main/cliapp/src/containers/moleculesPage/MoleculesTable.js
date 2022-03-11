@@ -172,6 +172,8 @@ export const MoleculesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           columnKey={col.field}
           key={col.field}
           field={col.field}
@@ -180,7 +182,6 @@ export const MoleculesTable = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={{whiteSpace: 'normal'}}
         />;
       })
     );
@@ -205,15 +206,15 @@ export const MoleculesTable = () => {
         <h3>Molecules Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={molecules} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
-          filterDisplay="row"
+          ref={dataTable} filterDisplay="row"
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
         >
           {columnMap}
         </DataTable>

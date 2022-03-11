@@ -11,6 +11,7 @@ import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 
@@ -147,11 +148,17 @@ export const DiseaseAnnotationsTable = () => {
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
-      return <div>
+      return <>
         <ul style={{ listStyleType: 'none' }}>
-          {sortedWithGenes.map((a, index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
+          {sortedWithGenes.map((a, index) =>
+            <li key={index}>
+              <EllipsisTableCell>
+                {a.symbol + ' (' + a.curie + ')'}
+              </EllipsisTableCell>
+            </li>
+          )}
         </ul>
-      </div>;
+      </>;
     }
   };
 
@@ -161,7 +168,11 @@ export const DiseaseAnnotationsTable = () => {
       return (<div>
         <ul style={{ listStyleType: 'none' }}>
           {sortedEvidenceCodes.map((a, index) =>
-            <li key={index}>{a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}</li>
+            <li key={index}>
+              <EllipsisTableCell>
+                {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
+              </EllipsisTableCell>
+            </li>
           )}
         </ul>
       </div>);
@@ -170,7 +181,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const negatedTemplate = (rowData) => {
     if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
-      return <div>{JSON.stringify(rowData.negated)}</div>;
+      return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
     }
   };
 
@@ -271,7 +282,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const diseaseBodyTemplate = (rowData) => {
     if (rowData.object) {
-      return <div>{rowData.object.name} ({rowData.object.curie})</div>;
+      return <EllipsisTableCell>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>;
     }
   };
 
@@ -426,13 +437,29 @@ export const DiseaseAnnotationsTable = () => {
   const subjectBodyTemplate = (rowData) => {
     if (rowData.subject) {
       if (rowData.subject.symbol) {
-        return <div dangerouslySetInnerHTML={{ __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')' }} />;
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+          }}
+        />;
       } else if (rowData.subject.name) {
-        return <div dangerouslySetInnerHTML={{ __html: rowData.subject.name + ' (' + rowData.subject.curie + ')' }} />;
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
+          }}
+        />;
       } else {
-        return <div>{rowData.subject.curie}</div>;
+        return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.subject.curie}</div>;
       }
     }
+  };
+
+  const uniqueIdBodyTemplate = (rowData) => {
+    return (
+      <EllipsisTableCell>
+        {rowData.uniqueId}
+      </EllipsisTableCell>
+    )
   };
 
   const filterComponentInputTextTemplate = (filterName, fields) => {
@@ -474,6 +501,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Unique Id",
     sortable: isEnabled,
     filter: true,
+    body: uniqueIdBodyTemplate,
     filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
   },
   {
@@ -544,6 +572,8 @@ export const DiseaseAnnotationsTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           key={col.field}
           columnKey={col.field}
           field={col.field}
@@ -554,7 +584,6 @@ export const DiseaseAnnotationsTable = () => {
           filterElement={col.filterElement}
           editor={col.editor}
           body={col.body}
-          style={{ whiteSpace: 'normal' }}
         />;
       })
     );
@@ -568,7 +597,7 @@ export const DiseaseAnnotationsTable = () => {
           value={tableState.selectedColumnNames}
           options={defaultColumnNames}
           onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
+          style={{ width: '20%' }}
           disabled={!isEnabled}
         />
       </div>
@@ -595,15 +624,15 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
-          ref={dataTable}
+        <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
+          tableClassName='w-12 p-datatable-md'
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
           filterDisplay="row"
-          dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
+          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
