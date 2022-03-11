@@ -20,7 +20,7 @@ export class VocabularyService extends BaseAuthService {
     }
 
     getVocabularies(){ //get all dropdown list of Vocabs
-        return axios.post(`api/vocabulary/find`, {});
+        return axios.post(`api/vocabulary/find?limit=100`, {});
     }
 }
 
