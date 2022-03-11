@@ -67,7 +67,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     private DiseaseRelation validateDiseaseRelation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
