@@ -66,7 +66,7 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const aggregationFields = [
-    'diseaseRelation'
+    'diseaseRelation.name'
   ];
 
   useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
@@ -292,7 +292,7 @@ export const DiseaseAnnotationsTable = () => {
     let updatedAnnotations = [...props.props.value];
     console.log(updatedAnnotations);
     if (event.value || event.value === '') {
-      updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+      updatedAnnotations[props.rowIndex].diseaseRelation.name = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
       setDiseaseAnnotations(updatedAnnotations);
     }
   };
@@ -514,11 +514,11 @@ export const DiseaseAnnotationsTable = () => {
     body: subjectBodyTemplate,
   },
   {
-    field: "diseaseRelation",
+    field: "diseaseRelation.name",
     header: "Disease Relation",
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation"),
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation.name"),
     editor: (props) => diseaseRelationEditor(props)
   },
   {
