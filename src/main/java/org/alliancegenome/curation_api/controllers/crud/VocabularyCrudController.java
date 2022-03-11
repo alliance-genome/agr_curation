@@ -27,8 +27,7 @@ public class VocabularyCrudController extends BaseCrudController<VocabularyServi
         return vocabularyService.get(id);
     }
     
-    @Override
-    public ObjectResponse<Vocabulary> get(String name) {
+    public ObjectResponse<Vocabulary> findByName(String name) {
         SearchResponse<Vocabulary> ret = findByField("name", name);
         if(ret != null && ret.getTotalResults() == 1) {
             return new ObjectResponse<>(ret.getResults().get(0));
@@ -38,7 +37,7 @@ public class VocabularyCrudController extends BaseCrudController<VocabularyServi
     }
 
     @Override
-    public ObjectListResponse<VocabularyTerm> getTerm(Long id) {
+    public ObjectListResponse<VocabularyTerm> getTerms(Long id) {
         ObjectResponse<Vocabulary> vocab = vocabularyService.get(id);
         ObjectListResponse<VocabularyTerm> terms = new ObjectListResponse<VocabularyTerm>();
         terms.setEntities(vocab.getEntity().getMemberTerms());
