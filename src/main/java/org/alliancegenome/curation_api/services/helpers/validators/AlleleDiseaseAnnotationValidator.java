@@ -1,19 +1,12 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.util.List;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -24,6 +17,11 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
     
     @Inject
     AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+    
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
+    private String ALLELE_DISEASE_RELATION_VOCABULARY = "Allele disease relations";
 
     public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity) {
         response = new ObjectResponse<>(uiEntity);
@@ -44,7 +42,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
         Allele subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
 
-        DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
+        VocabularyTerm relation = validateDiseaseRelation(uiEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
         dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
@@ -71,20 +69,20 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 
     }
     
-    private DiseaseRelation validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
+    private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
         if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
         
-        DiseaseRelation relation = uiEntity.getDiseaseRelation();
+        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), ALLELE_DISEASE_RELATION_VOCABULARY);
 
-        if(relation == DiseaseRelation.is_implicated_in) {
-            return relation;
-        } else {
+        if(relation == null) {
             addMessageResponse(field, invalidMessage);
             return null;
         }
+        
+        return relation;
     }
 }

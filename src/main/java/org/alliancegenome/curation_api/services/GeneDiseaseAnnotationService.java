@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
@@ -28,6 +27,9 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     GeneDAO geneDAO;
     
     @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
+    @Inject
     GeneDiseaseAnnotationValidator geneDiseaseValidator;
 
     @Inject
@@ -35,6 +37,8 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     
     @Inject
     AffectedGenomicModelDAO affectedGenomicModelDAO;
+    
+    private String GENE_DISEASE_RELATION_VOCABULARY = "Gene disease relations";
     
     @Override
     @PostConstruct
@@ -95,10 +99,11 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         if (annotation == null) return null;
         
-        if (!dto.getDiseaseRelation().equals("is_implicated_in") && !dto.getDiseaseRelation().equals("is_marker_for")) {
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), GENE_DISEASE_RELATION_VOCABULARY);
+        if (diseaseRelation == null) {
             throw new ObjectValidationException(dto, "Invalid gene disease relation for " + annotationId + " - skipping");
         }
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
+        annotation.setDiseaseRelation(diseaseRelation);
         
         return annotation;
     }
