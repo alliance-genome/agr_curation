@@ -305,6 +305,7 @@ export const DiseaseAnnotationsTable = () => {
           options={diseaseRelationsTerms}
           editorChange={onDiseaseRelationEditorValueChange}
           props={props}
+          placeholderText={props.rowData[props.field]}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
       </>
