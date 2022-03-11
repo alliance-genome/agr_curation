@@ -103,7 +103,7 @@ export const AffectedGenomicModelTable = () => {
 
 
   const nameTemplate = (rowData) => {
-    return <div dangerouslySetInnerHTML={{ __html: rowData.name }} />
+    return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.name }} />
   }
 
   const columns = [
@@ -151,6 +151,8 @@ export const AffectedGenomicModelTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          className='overflow-hidden text-overflow-ellipsis'
+          style={{ width: `${100 / orderedColumns.length}%` }}
           columnKey={col.field}
           key={col.field}
           field={col.field}
@@ -158,7 +160,6 @@ export const AffectedGenomicModelTable = () => {
           sortable={isEnabled}
           filter={col.filter}
           showFilterMenu={false}
-          style={{whiteSpace: 'normal'}}
           filterElement={col.filterElement}
         />;
       })
@@ -181,10 +182,10 @@ export const AffectedGenomicModelTable = () => {
     <div>
       <div className="card">
         <DataTable value={agms} className="p-datatable-md" header={header} reorderableColumns
-          ref={dataTable}
-          filterDisplay="row"
+          ref={dataTable} filterDisplay="row"
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-          first={tableState.first} resizableColumns columnResizeMode="fit" showGridlines
+          first={tableState.first} resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           onColReorder={colReorderHandler}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
