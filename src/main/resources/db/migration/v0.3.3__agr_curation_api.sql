@@ -1,10 +1,14 @@
 ALTER TABLE diseaseannotation
+  ADD COLUMN IF NOT EXISTS diseasegeneticmodifierrelation VARCHAR (255),
+  ADD COLUMN IF NOT EXISTS annotationtype VARCHAR (255),
+  ADD COLUMN IF NOT EXISTS geneticsex VARCHAR (255),
   ADD COLUMN diseaserelation_id BIGINT,
   ADD COLUMN diseasegeneticmodifierrelation_id BIGINT,
   ADD COLUMN annotationtype_id BIGINT,
   ADD COLUMN geneticsex_id BIGINT;
 
 ALTER TABLE conditionRelation
+  ADD COLUMN IF NOT EXISTS conditionrelationtype VARCHAR (255),
   ADD COLUMN conditionrelationtype_id BIGINT;
 
 UPDATE diseaseannotation
