@@ -151,10 +151,10 @@ export const ControlledVocabularyComponent = () => {
   const header = (
       <div className="card">
           <Splitter style={{border:'none', height:'10%'}} gutterSize="0">
-              <SplitterPanel size={52}>
+              <SplitterPanel size={50} style={{textAlign: 'left'}}>
                   <h2>Controlled Vocabulary Terms Table</h2>
               </SplitterPanel>
-              <SplitterPanel size={48}>
+              <SplitterPanel size={50} style={{textAlign: 'right'}}>
                   <MultiSelect
                       value={tableState.selectedColumnNames}
                       options={defaultColumnNames}
