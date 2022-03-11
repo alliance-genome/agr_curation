@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -44,11 +45,6 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject GeneDAO geneDAO;
     @Inject VocabularyTermDAO vocabularyTermDAO;
     
-    private String CONDITION_RELATION_TYPE_VOCABULARY = "Condition relation types";
-    private String GENE_DISEASE_RELATION_VOCABULARY = "Gene disease relations";
-    private String ALLELE_DISEASE_RELATION_VOCABULARY = "Allele disease relations";
-    private String AGM_DISEASE_RELATION_VOCABULARY = "AGM disease relations";
-
     @Override
     @PostConstruct
     protected void init() {
@@ -77,7 +73,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                 }
                 conditionRelationType = convertConditionRelationTypeVocabulary(conditionRelationType);
                 
-                VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, CONDITION_RELATION_TYPE_VOCABULARY);
+                VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
                 if (conditionRelationTypeTerm == null) {
                     throw new ObjectUpdateException(annotationFmsDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
                 } else {
@@ -208,12 +204,12 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         // Check valid disease relation type            
         VocabularyTerm diseaseRelation;
         if (dto.getObjectRelation().getObjectType().equals("gene")) {
-            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), GENE_DISEASE_RELATION_VOCABULARY);
+            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
             if (diseaseRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid gene disease relation for " + dto.getObjectId() + " - skipping annotation");
             }
         } else if (dto.getObjectRelation().getObjectType().equals("allele")) {
-            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), ALLELE_DISEASE_RELATION_VOCABULARY);
+            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
             if (diseaseRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid allele disease relation for " + dto.getObjectId() + " - skipping annotation");
             }
@@ -221,7 +217,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
                 dto.getObjectRelation().getObjectType().equals("strain") ||
                 dto.getObjectRelation().getObjectType().equals("fish")
         ) {
-            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), AGM_DISEASE_RELATION_VOCABULARY);
+            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
             if (diseaseRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid AGM disease relation for " + dto.getObjectId() + " - skipping annotation");
             }

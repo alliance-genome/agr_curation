@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.apache.commons.collections.CollectionUtils;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -60,12 +61,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     BiologicalEntityDAO biologicalEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
-    
-    private String ANNOTATION_TYPE_VOCABULARY = "Annotation types";
-    private String DISEASE_QUALIFIER_VOCABULARY = "Disease qualifiers";
-    private String DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY = "Disease genetic modifier relations";
-    private String GENETIC_SEX_VOCABULARY = "Genetic sexes";
-    private String CONDITION_RELATION_TYPE_VOCABULARY = "Condition relation types";
 
     @Override
     @PostConstruct
@@ -91,7 +86,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                 if (conditionRelationType == null) {
                     throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
                 }
-                VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, CONDITION_RELATION_TYPE_VOCABULARY);
+                VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
                 if (conditionRelationTypeTerm == null) {
                     throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
                 } else {
@@ -242,7 +237,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
             List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
             for (String qualifier : dto.getDiseaseQualifiers()) {
-                VocabularyTerm diseaseQualifier = vocabularyTermDAO.getTermInVocabulary(qualifier, DISEASE_QUALIFIER_VOCABULARY);
+                VocabularyTerm diseaseQualifier = vocabularyTermDAO.getTermInVocabulary(qualifier, VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
                 if (diseaseQualifier == null) {
                     throw new ObjectValidationException(dto, "Invalid disease qualifier (" + qualifier + ") for " + annotation.getUniqueId() + " - skipping annotation");
                 }
@@ -255,7 +250,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             if (dto.getDiseaseGeneticModifier() == null || dto.getDiseaseGeneticModifierRelation() == null) {
                 throw new ObjectValidationException(dto, "Genetic modifier specified without genetic modifier relation (or vice versa) for " + annotation.getUniqueId() + " - skipping annotation");
             }
-            VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+            VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
             if (diseaseGeneticModifierRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
             }
@@ -269,7 +264,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
         
         if (dto.getAnnotationType() != null) {
-            VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), ANNOTATION_TYPE_VOCABULARY);
+            VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
             if (annotationType == null) {
                 throw new ObjectValidationException(dto, "Invalid annotation type (" + dto.getAnnotationType() + ") in " + annotation.getUniqueId() + " - skipping annotation");
             }   
@@ -278,7 +273,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
         
         if (dto.getGeneticSex() != null) {
-            VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), GENETIC_SEX_VOCABULARY);
+            VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
             if (geneticSex == null) {
                 throw new ObjectValidationException(dto, "Invalid genetic sex (" + dto.getGeneticSex() + ") in " + annotation.getUniqueId() + " - skipping annotation");
             }
