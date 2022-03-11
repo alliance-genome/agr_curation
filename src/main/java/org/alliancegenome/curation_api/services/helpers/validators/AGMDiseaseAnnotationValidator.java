@@ -21,7 +21,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
     
-    private String AGM_DISEASE_RELATION_VOCABULARY;
+    private String AGM_DISEASE_RELATION_VOCABULARY = "AGM disease relations";
 
     public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity) {
         response = new ObjectResponse<>(uiEntity);
@@ -71,7 +71,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     private VocabularyTerm validateDiseaseRelation(AGMDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }

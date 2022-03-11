@@ -76,7 +76,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }

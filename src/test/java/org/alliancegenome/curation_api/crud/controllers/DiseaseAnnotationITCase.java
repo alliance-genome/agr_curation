@@ -138,7 +138,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("GENE:da0001")).
                 body("entity.object.curie", is("DOID:da0001")).
-                body("entity.diseaseRelation", is("is_implicated_in")).
+                body("entity.diseaseRelation.name", is("is_implicated_in")).
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
@@ -174,7 +174,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.uniqueId", is(ALLELE_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("ALLELE:da0001")).
                 body("entity.object.curie", is("DOID:da0001")).
-                body("entity.diseaseRelation", is("is_implicated_in")).
+                body("entity.diseaseRelation.name", is("is_implicated_in")).
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
@@ -210,7 +210,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.uniqueId", is(AGM_DISEASE_ANNOTATION)).
                 body("entity.subject.curie", is("MODEL:da0001")).
                 body("entity.object.curie", is("DOID:da0001")).
-                body("entity.diseaseRelation", is("is_model_of")).
+                body("entity.diseaseRelation.name", is("is_model_of")).
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
@@ -260,14 +260,14 @@ public class DiseaseAnnotationITCase {
                 body("entity.object.curie", is("DOID:da0002")).
                 body("entity.negated", is(true)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
-                body("entity.diseaseRelation", is("is_marker_for")).
+                body("entity.diseaseRelation.name", is("is_marker_for")).
                 body("entity.dataProvider", is("TEST2")).
                 body("entity.secondaryDataProvider", is("TEST3")).
-                body("entity.geneticSex", is("hermaphrodite")).
-                body("entity.diseaseGeneticModifierRelation", is("ameliorated_by")).
+                body("entity.geneticSex.name", is("hermaphrodite")).
+                body("entity.diseaseGeneticModifierRelation.name", is("ameliorated_by")).
                 body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
-                body("entity.annotationType", is("computational")).
-                body("entity.diseaseQualifiers[0]", is("severity")).
+                body("entity.annotationType.name", is("computational")).
+                body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.sgdStrainBackground.curie", is("MODEL:da0002")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
@@ -319,14 +319,14 @@ public class DiseaseAnnotationITCase {
                 body("entity.object.curie", is("DOID:da0002")).
                 body("entity.negated", is(true)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
-                body("entity.diseaseRelation", is("is_implicated_in")).
+                body("entity.diseaseRelation.name", is("is_implicated_in")).
                 body("entity.dataProvider", is("TEST2")).
                 body("entity.secondaryDataProvider", is("TEST3")).
-                body("entity.geneticSex", is("hermaphrodite")).
+                body("entity.geneticSex.name", is("hermaphrodite")).
                 body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
-                body("entity.diseaseGeneticModifierRelation", is("ameliorated_by")).
-                body("entity.annotationType", is("computational")).
-                body("entity.diseaseQualifiers[0]", is("severity")).
+                body("entity.diseaseGeneticModifierRelation.name", is("ameliorated_by")).
+                body("entity.annotationType.name", is("computational")).
+                body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
                 body("entity.createdBy", is("TEST:Person0001")).
@@ -378,14 +378,14 @@ public class DiseaseAnnotationITCase {
                 body("entity.object.curie", is("DOID:da0002")).
                 body("entity.negated", is(true)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
-                body("entity.diseaseRelation", is("is_model_of")).
+                body("entity.diseaseRelation.name", is("is_model_of")).
                 body("entity.dataProvider", is("TEST2")).
                 body("entity.secondaryDataProvider", is("TEST3")).
-                body("entity.geneticSex", is("hermaphrodite")).
+                body("entity.geneticSex.name", is("hermaphrodite")).
                 body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
-                body("entity.diseaseGeneticModifierRelation", is("ameliorated_by")).
-                body("entity.annotationType", is("computational")).
-                body("entity.diseaseQualifiers[0]", is("severity")).
+                body("entity.diseaseGeneticModifierRelation.name", is("ameliorated_by")).
+                body("entity.annotationType.name", is("computational")).
+                body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
                 body("entity.createdBy", is("TEST:Person0001")).
@@ -865,28 +865,21 @@ public class DiseaseAnnotationITCase {
     @Test
     @Order(20)
     public void editWithMissingCreatedBy() {
-        List<EcoTerm> ecoTerms = new ArrayList<>();
-        ecoTerms.add(testEcoTerm2);
-        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
-        diseaseQualifiers.add(DiseaseQualifier.severity);
-        List<Gene> withGenes = new ArrayList<>();
-        withGenes.add(testWithGene);
-        
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
         editedDiseaseAnnotation.setNegated(true);
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
-        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
-        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
-        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
-        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+        editedDiseaseAnnotation.setAnnotationType(annotationType);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
+        editedDiseaseAnnotation.setWith(testWithGene);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(null);
@@ -905,28 +898,21 @@ public class DiseaseAnnotationITCase {
     @Test
     @Order(21)
     public void editWithMissingModifiedBy() {
-        List<EcoTerm> ecoTerms = new ArrayList<>();
-        ecoTerms.add(testEcoTerm2);
-        List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
-        diseaseQualifiers.add(DiseaseQualifier.severity);
-        List<Gene> withGenes = new ArrayList<>();
-        withGenes.add(testWithGene);
-        
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-        editedDiseaseAnnotation.setDiseaseRelation(DiseaseRelation.is_marker_for);
+        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
         editedDiseaseAnnotation.setNegated(true);
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(ecoTerms);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
-        editedDiseaseAnnotation.setGeneticSex(GeneticSex.hermaphrodite);
+        editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
-        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.ameliorated_by);
-        editedDiseaseAnnotation.setAnnotationType(AnnotationType.computational);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
-        editedDiseaseAnnotation.setWith(withGenes);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+        editedDiseaseAnnotation.setAnnotationType(annotationType);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
+        editedDiseaseAnnotation.setWith(testWithGene);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(null);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
@@ -1077,13 +1063,18 @@ public class DiseaseAnnotationITCase {
         Vocabulary vocabulary = new Vocabulary();
         vocabulary.setName(name);
         
-        RestAssured.given().
+        ObjectResponse<Vocabulary> response = 
+            RestAssured.given().
                 contentType("application/json").
                 body(vocabulary).
                 when().
                 post("/api/vocabulary").
                 then().
-                statusCode(200);
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabulary());
+        
+        vocabulary = response.getEntity();
+        
         return vocabulary;
     }
 
@@ -1093,13 +1084,18 @@ public class DiseaseAnnotationITCase {
         vocabularyTerm.setName(name);
         vocabularyTerm.setVocabulary(vocabulary);
         
-        RestAssured.given().
+        ObjectResponse<VocabularyTerm> response = 
+            RestAssured.given().
                 contentType("application/json").
-                body(vocabulary).
+                body(vocabularyTerm).
                 when().
                 post("/api/vocabularyterm").
                 then().
-                statusCode(200);
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabularyTerm());
+        
+        vocabularyTerm = response.getEntity();
+        
         return vocabularyTerm;
     }
     
@@ -1116,5 +1112,13 @@ public class DiseaseAnnotationITCase {
 
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+    }
+
+    private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
+        return new TypeRef<ObjectResponse <Vocabulary>>() { };
+    }
+    
+    private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
+        return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
     }
 }

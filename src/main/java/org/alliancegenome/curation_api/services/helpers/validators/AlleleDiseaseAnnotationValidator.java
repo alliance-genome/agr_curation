@@ -1,16 +1,12 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.util.List;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -75,7 +71,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
     
     private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }

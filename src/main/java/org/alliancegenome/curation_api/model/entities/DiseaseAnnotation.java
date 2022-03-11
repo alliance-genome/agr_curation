@@ -133,6 +133,7 @@ public class DiseaseAnnotation extends Association {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
+    private VocabularyTerm diseaseGeneticModifierRelation;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "createdBy_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

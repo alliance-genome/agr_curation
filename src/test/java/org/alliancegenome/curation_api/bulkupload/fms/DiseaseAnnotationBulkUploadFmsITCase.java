@@ -14,6 +14,8 @@ import java.util.regex.Pattern;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
@@ -49,6 +51,12 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     private String requiredChebiTerm = "CHEBI:46631";
     private String requiredZfaTerm = "ZFA:0000001";
     private String requiredNcbiTaxonTerm = "NCBITaxon:1781";
+    private String requiredGeneDiseaseRelation = "is_implicated_in";
+    private String requiredAlleleDiseaseRelation = "is_implicated_in";
+    private String requiredAgmDiseaseRelation = "is_model_of";
+    private String requiredConditionRelationType = "induced_by";
+    private String requiredConditionRelationType2 = "has_condition";
+    
     private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "FB:FBgn0010620", "FB:FBgn0032699", "FB:FBgn0045473", "FB:FBgn0054033", "FB:FBgn0259758", "FB:FBgn0260766",
                                                                             "FB:FBgn0260936", "FB:FBgn0264086", "HGNC:29488", "HGNC:3028", "HGNC:30470", "HGNC:447", "HGNC:460", "HGNC:1121", "HGNC:323",
                                                                             "HGNC:47869", "HGNC:5813", "MGI:105042", "MGI:1098239", "MGI:1346858", "MGI:1347355", "MGI:2139535",
@@ -1322,6 +1330,48 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
         loadGenes();  
         loadAlleles();
         loadAGMs();
+        Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
+        Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
+        Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
+        Vocabulary conditionRelationTypeVocabulary = createVocabulary("Condition relation types");
+        createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
+        createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
+        createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
+        createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
+        createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType2);
+    }
+    
+    private Vocabulary createVocabulary(String name) {
+        Vocabulary vocabulary = new Vocabulary();
+        vocabulary.setName(name);
+        
+        ObjectResponse<Vocabulary> response = 
+            RestAssured.given().
+                contentType("application/json").
+                body(vocabulary).
+                when().
+                post("/api/vocabulary").
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabulary());
+        
+        vocabulary = response.getEntity();
+        
+        return vocabulary;
+    }
+    
+    private void createVocabularyTerm(Vocabulary vocabulary, String name) {
+        VocabularyTerm vocabularyTerm = new VocabularyTerm();
+        vocabularyTerm.setName(name);
+        vocabularyTerm.setVocabulary(vocabulary);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(vocabularyTerm).
+                when().
+                post("/api/vocabularyterm").
+                then().
+                statusCode(200);
     }
     
     private void loadDOTerm() throws Exception {
@@ -1529,5 +1579,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+    }
+    
+    private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
+        return new TypeRef<ObjectResponse <Vocabulary>>() { };
     }
 }
