@@ -73,7 +73,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     private DiseaseRelation validateDiseaseRelation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
