@@ -276,7 +276,6 @@ public class DiseaseAnnotationITCase {
                 body("entity.sgdStrainBackground.curie", is("MODEL:da0002")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
                 body("entity.createdBy", is("TEST:Person0001")).
-                body("entity.dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
     }
 
@@ -334,7 +333,6 @@ public class DiseaseAnnotationITCase {
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
                 body("entity.createdBy", is("TEST:Person0001")).
-                body("entity.dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
     }
@@ -393,7 +391,6 @@ public class DiseaseAnnotationITCase {
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
                 body("entity.createdBy", is("TEST:Person0001")).
-                body("entity.dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
     }
