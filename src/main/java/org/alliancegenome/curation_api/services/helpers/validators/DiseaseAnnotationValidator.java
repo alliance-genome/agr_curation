@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import javax.inject.Inject;
@@ -203,8 +204,7 @@ public class DiseaseAnnotationValidator {
         if (uiEntity.getCreationDate() != null)
             dbEntity.setCreationDate(uiEntity.getCreationDate());
         
-        if (uiEntity.getDateLastModified() != null)
-            dbEntity.setDateLastModified(uiEntity.getDateLastModified());
+        dbEntity.setDateLastModified(OffsetDateTime.now());
         
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
