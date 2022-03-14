@@ -719,7 +719,7 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
     editor: (props) => subjectEditorTemplate(props),
-    body: subjectBodyTemplate("subject"),
+    body: subjectBodyTemplate,
   },
   {
     field: "diseaseRelation.name",
