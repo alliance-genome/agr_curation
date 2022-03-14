@@ -21,6 +21,7 @@ public class MmusdvTermCrudController extends BaseOntologyTermController<MmusdvT
     public void init() {
         GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
         config.getAltNameSpaces().add("mouse_developmental_stage");
+        config.getAltNameSpaces().add("mouse_stages_ontology");
         setService(mmusdvTermService, MmusDvTerm.class, config);
     }
 
