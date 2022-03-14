@@ -496,7 +496,7 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='agm'
           filterName='sgdStrainBackgroundFilter'
           fieldName='sgdStrainBackground'
-          isGene={true}
+          isSgdStrainBackground={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -516,7 +516,6 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='biologicalentity'
           filterName='geneticModifierFilter'
           fieldName='diseaseGeneticModifier'
-          isGene={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
