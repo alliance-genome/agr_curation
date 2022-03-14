@@ -89,6 +89,9 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         }
         
         if (dto.getSgdStrainBackground() != null) {
+            if (!dto.getSgdStrainBackground().startsWith("SGD:")) {
+                throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
             AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
             if (sgdStrainBackground == null) {
                 throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
