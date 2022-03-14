@@ -7,9 +7,10 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AffectedGenomicModelCrudInterface;
-import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
+import org.alliancegenome.curation_api.jobs.executors.AgmFmsExecutor;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelMetaDataFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 @RequestScoped
@@ -17,7 +18,7 @@ public class AffectedGenomicModelCrudController extends BaseCrudController<Affec
 
     @Inject AffectedGenomicModelService affectedGenomicModelService;
 
-    @Inject BulkLoadJobExecutor bulkLoadJobExecutor;
+    @Inject AgmFmsExecutor agmFmsExecutor;
     
     @Override
     @PostConstruct
@@ -26,9 +27,8 @@ public class AffectedGenomicModelCrudController extends BaseCrudController<Affec
     }
 
     @Override
-    public String updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData) {
-        bulkLoadJobExecutor.processAGMDTOData(null, agmData);
-        return "OK";
+    public APIResponse updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData) {
+        return agmFmsExecutor.runLoad(agmData);
     }
 
 }

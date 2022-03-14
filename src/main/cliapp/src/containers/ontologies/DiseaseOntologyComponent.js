@@ -13,7 +13,7 @@ export const DiseaseOntologyComponent = () => {
     < OntologyTable
       endpoint={"doterm"}
       ontologyAbbreviation={"Diseases"}
-      columnMap={columns}
+      columns={columns}
     />
   )
   

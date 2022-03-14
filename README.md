@@ -23,6 +23,7 @@ These instructions will get you a copy of the project and the API up and running
 -  [Releasing and Deploying](#releasing-and-deploying)
    *  [Deployment environments](#deployment-environments)
    *  [Promoting code versions](#promoting-code-versions)
+   *  [Deploying to beta or production](#deploying-to-beta-or-production)
    *  [Release versioning](#release-versioning)
    *  [Release Creation](#release-creation)
 -  [Loading Data](#loading-data)
@@ -77,7 +78,7 @@ The three permanent branches in this repository represent the code to be deploye
       ```
 
    -  Once coding and testing completed, submit a pull request in github to merge back to beta.
-      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#release-creation).
+      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
 
 *  To make fixes to the version currently deployed on the production environment:
 
@@ -95,7 +96,7 @@ The three permanent branches in this repository represent the code to be deploye
       ```
 
    -  Once coding and testing completed, submit a pull request in github to merge back to production.
-      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#release-creation).
+      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
 
 
 ## Installing
@@ -199,6 +200,14 @@ CONTAINER ID   IMAGE                                   COMMAND                  
 ```
 
 ## Building
+
+Before building make sure and create a copy of the application.properties file
+
+```bash
+> cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+```
+
+this way custom configuration changes can be used without having to commit them into the repo.
 
 Both the UI or API can be run locally without needing a separate build step.
 For instructions on how to do so, see [Running](#running-api).
@@ -330,7 +339,8 @@ In order to promote changes from alpha to beta:
    git push origin release/vx.y.z-rca
    ```
 3. Create a pull request to merge this release branch in beta
-4. After PR approval and merge, continue with [release creation](#release-creation) to trigger deloyment to the beta environment.
+4. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+   to deploy this code successfully to the beta environment.
 5. After prerelease creation and deployment, merge the beta branch back to alpha and push to github
    ```bash
    git pull
@@ -359,7 +369,8 @@ In order to promote changes from beta to production:
    git push origin release/vx.y.z
    ```
 5. Create a pull request to merge this release branch in production
-6. After PR approval and merge, continue with [release creation](#release-creation) to trigger deloyment to the production environment.
+6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+   to deploy this code successfully to the beta environment.
 7. After release creation and deployment, merge the production branch back to beta and push to github
    ```bash
    git pull
@@ -367,6 +378,38 @@ In order to promote changes from beta to production:
    git merge production
    git push
    ```
+
+### Deploying to beta or production
+In order to successfully deploy to the beta or production environment, as few additional steps need to be taken
+to ensure the new version of the application can function in a consistent state upon and after deployment.
+
+1. Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
+   *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
+   *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
+   *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
+   *  Removed variables should be cleaned up **after** successfull deployment
+2. Connect to the Environment's Elastic search domain by entering its domain endpoint in Cerebro, and delete all indexes.
+   The domain endpoint URL can be found through the [Amazon OpenSearch console](https://console.aws.amazon.com/esv3/home?region=us-east-1#opensearch/domains), the cerebro UI is available on the application server through HTTP at port 9000.
+3. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
+4. Compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
+   data if needed where schema changes were not automatically propagated correctly upon application launch.  
+   The DB schema can be obtained through the CLI by using pg_dump like so:
+   ```bash
+   pg_dump -s -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER | tee curation_DB_schema.sql
+   ```
+5. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
+   This can be achieved by terminating the environment's running EC2 instance or (more quickly)
+   by connecting into the server as admin through ssh, and restarting the docker container:
+   ```bash
+   sudo docker restart agr.curation.${NET}.api.server
+   ```
+6. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
+   and follow-up through log server to ensure reindexing completed successfully before executing the next.
+7. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
+   and if no new file (with a new md5sum) got loaded then click the play button at file level for the most recently loaded file,
+   to ensure all data gets reloaded, including any new features that may have been implemented in the release just deployed
+   (new code does not automatically trigger old files to get reloaded).
+
 
 ### Release versioning
 For our release versioning, we apply [Semantic Versioning](https://semver.org/) whereby
@@ -409,6 +452,7 @@ To create a new (pre-)release and deploy to beta or production, do the following
 5. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
    *  In the "Choose a tag" selection box, select the git tag you created in the previous step
    *  Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
+   * let GitHub autogenerate a summary of all changes made in this release by clicking the "Auto-generate rease notes" button.
    *  **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
       *  **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
       *  Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment.
@@ -416,7 +460,8 @@ To create a new (pre-)release and deploy to beta or production, do the following
 6. Confirm all entered details are correct and publish the release.
 
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
-Completion of these deployments is reported in the #a-team-code slack channel.
+Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
+continue the remaining steps described in the [deployment section](#Deploying-to-beta-or-production).
 
 ## Loading Data
 

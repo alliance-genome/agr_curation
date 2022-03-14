@@ -11,6 +11,7 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.apache.commons.collections4.map.HashedMap;
@@ -44,51 +45,57 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
     
     
     @Transactional
-    public void processUpdate(MoleculeFmsDTO molecule) {
+    public void processUpdate(MoleculeFmsDTO molecule) throws ObjectUpdateException {
         log.debug("processUpdate Molecule: ");
     
         if (molecule.getId() == null) {
             log.debug(molecule.getId() + " has no ID - skipping");
-            return;
+            throw new ObjectUpdateException(molecule, molecule.getId() + " has no ID - skipping");
         }
         
         if (molecule.getId().startsWith("CHEBI:")) {
             log.debug("Skipping processing of " + molecule.getId());
-            return;
+            throw new ObjectUpdateException(molecule, "Skipping processing of " + molecule.getId());
         }
         
         if (molecule.getName() == null || molecule.getName().length() == 0) {
             log.debug(molecule.getId() + " has no name - skipping");
-            return;
+            throw new ObjectUpdateException(molecule, molecule.getId() + " has no name - skipping");
         }
         
         if (molecule.getCrossReferences() != null) {
             for (CrossReferenceFmsDTO xrefDTO : molecule.getCrossReferences()) {
                 if (xrefDTO.getId() == null) {
                     log.debug("Missing xref ID for molecule " + molecule.getId() + " - skipping");
-                    return;
+                    throw new ObjectUpdateException(molecule, "Missing xref ID for molecule " + molecule.getId() + " - skipping");
                 }
             }
         }
         
-        Molecule m = moleculeDAO.find(molecule.getId());
-        
-        if (m == null) {
-            m = new Molecule();
-            m.setCurie(molecule.getId());
-        }
-        
-        m.setName(molecule.getName());
-        m.setInchi(molecule.getInchi());
-        m.setInchiKey(molecule.getInchikey());
-        m.setIupac(molecule.getIupac());
-        m.setFormula(molecule.getFormula());
-        m.setSmiles(molecule.getSmiles());
-        m.setSynonyms(molecule.getSynonyms());
+        try {
+            Molecule m = moleculeDAO.find(molecule.getId());
             
-        moleculeDAO.persist(m); 
-    
-        handleCrossReferences(molecule, m);
+            if (m == null) {
+                m = new Molecule();
+                m.setCurie(molecule.getId());
+            }
+            
+            m.setName(molecule.getName());
+            m.setInchi(molecule.getInchi());
+            m.setInchiKey(molecule.getInchikey());
+            m.setIupac(molecule.getIupac());
+            m.setFormula(molecule.getFormula());
+            m.setSmiles(molecule.getSmiles());
+            m.setSynonyms(molecule.getSynonyms());
+                
+            moleculeDAO.persist(m); 
+        
+            handleCrossReferences(molecule, m);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ObjectUpdateException(molecule, e.getMessage());
+        }
+
     }
     
     

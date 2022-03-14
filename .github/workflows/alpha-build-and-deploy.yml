@@ -15,6 +15,7 @@ jobs:
     - name: Check out repository code
       uses: actions/checkout@v2
     - run: git fetch --prune --unshallow
+    - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Declare some variables
       id: vars
       shell: bash
@@ -70,6 +71,7 @@ jobs:
       with:
         submodules: 'recursive'
     - run: git fetch --prune --unshallow
+    - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Declare some variables
       id: vars
       shell: bash

@@ -4,47 +4,59 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.auth.Secured;
-import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/disease-annotation")
 @Tag(name = "CRUD - Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface DiseaseAnnotationFmsCrudInterface extends BaseCurieCrudInterface<DiseaseAnnotation> {
-
+public interface DiseaseAnnotationFmsCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
+    
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFileFms")
-    public String updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/zfinAnnotationFileFms")
-    public String updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/mgiAnnotationFileFms")
-    public String updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/rgdAnnotationFileFms")
-    public String updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/fbAnnotationFileFms")
-    public String updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/wbAnnotationFileFms")
-    public String updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/humanAnnotationFileFms")
-    public String updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
     @POST @Secured
     @Path("/bulk/sgdAnnotationFileFms")
-    public String updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
+    @JsonView({View.FieldsAndLists.class})
+    public APIResponse updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
 }

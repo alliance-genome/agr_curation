@@ -10,6 +10,7 @@ import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
+import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from 'react-query';
 
 export const DataLoadsComponent = () => {
@@ -28,10 +29,13 @@ export const DataLoadsComponent = () => {
   };
 
   const [groups, setGroups] = useState({});
+  const [history, setHistory] = useState({id: 0});
   const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
+  const [historyDialog, setHistoryDialog] = useState(false);
   const [bulkLoadDialog, setBulkLoadDialog] = useState(false);
   const [expandedGroupRows, setExpandedGroupRows] = useState(null);
   const [expandedLoadRows, setExpandedLoadRows] = useState(null);
+  const [expandedFileRows, setExpandedFileRows] = useState(null);
   const [disableFormFields, setDisableFormFields] = useState(false);
   const errorMessage = useRef(null);
   const searchService = new SearchService();
@@ -120,14 +124,24 @@ export const DataLoadsComponent = () => {
     });
   };
 
+  const showHistory = (rowData) => {
+    setHistory(rowData);
+    setHistoryDialog(true);
+  };
+
+
+  const historyActionBodyTemplate = (rowData) => {
+    return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info p-mr-2" onClick={() => showHistory(rowData)} />
+  };
+
   const loadFileActionBodyTemplate = (rowData) => {
     let ret = [];
 
     if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
+      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
     }
     if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoadFile(rowData)} />);
+      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoadFile(rowData)} />);
     }
 
     return ret;
@@ -137,14 +151,14 @@ export const DataLoadsComponent = () => {
   const loadActionBodyTemplate = (rowData) => {
     let ret = [];
 
-    ret.push(<Button icon="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
+    ret.push(<Button key="edit" con="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
 
     if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
+      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
     }
 
     if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
-      ret.push(<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
+      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
     }
 
     return ret;
@@ -180,29 +194,14 @@ export const DataLoadsComponent = () => {
 
   const scheduleActiveTemplate = (rowData) => {
     return (
-      <>
+      <div>
         {rowData.scheduleActive ? "true" : "false"}
-      </>
-    );
-  };
-
-
-
-  const fileTable = (load) => {
-    return (
-      <div className="card">
-        <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll">
-          <Column field="md5Sum" header="MD5 Sum" />
-          <Column field="fileSize" header="File Size" />
-          <Column field="recordCount" header="Record Count" />
-          <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
-          <Column field="lastUpdated" header="Last Loaded" />
-          <Column field="status" body={statusTemplate} header="Status" />
-          <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-        </DataTable>
       </div>
     );
   };
+
+
+
 
   const dynamicColumns = (loads) => {
 
@@ -233,7 +232,7 @@ export const DataLoadsComponent = () => {
       }
     }
     if (showManualLoad) {
-      ret.push(<Column key="dataType" field="dataType" header="Load Data Type" />);
+      ret.push(<Column key="dataType2" field="dataType" header="Load Data Type" />);
     }
 
     return ret;
@@ -242,10 +241,47 @@ export const DataLoadsComponent = () => {
   const statusTemplate = (rowData) => {
     let styleClass = 'p-button-text p-button-plain';
     if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status === 'STARTED' || rowData.status === 'RUNNING') { styleClass = "p-button-success"; }
+    if (rowData.status.endsWith('STARTED') || 
+      rowData.status.endsWith('RUNNING') ||
+      rowData.status.endsWith('PENDING')) { styleClass = "p-button-success"; }
 
     return (
       <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
+    );
+  };
+
+  const hisotryTable = (file) => {
+    return (
+      <div className="card">
+        <DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
+          
+          <Column field="loadStarted" header="Load Started" />
+          <Column field="loadFinished" header="Load Finished" />
+          <Column field="completedRecords" header="Records Completed" />
+          <Column field="failedRecords" header="Records Failed" />
+          <Column field="totalRecords" header="Total Records" />
+          <Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+        </DataTable>
+      </div>
+    );
+  };
+
+  const fileTable = (load) => {
+    return (
+      <div className="card">
+        <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll"
+          expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
+          rowExpansionTemplate={hisotryTable} dataKey="id">
+          <Column expander style={{ width: '3em' }} />
+          <Column field="md5Sum" header="MD5 Sum" />
+          <Column field="fileSize" header="Compressed File Size" />
+          <Column field="recordCount" header="Record Count" />
+          <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
+          <Column field="lastUpdated" header="Last Loaded" />
+          <Column field="status" body={statusTemplate} header="Status" />
+          <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+        </DataTable>
+      </div>
     );
   };
 
@@ -295,6 +331,12 @@ export const DataLoadsComponent = () => {
       <NewBulkLoadGroupForm
         bulkLoadGroupDialog={bulkLoadGroupDialog}
         setBulkLoadGroupDialog={setBulkLoadGroupDialog}
+      />
+      <HistoryDialog
+        historyDialog={historyDialog}
+        setHistoryDialog={setHistoryDialog}
+        dataLoadService={getService()}
+        history={history}
       />
     </div>
   );

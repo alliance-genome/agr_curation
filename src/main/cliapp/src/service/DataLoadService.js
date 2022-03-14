@@ -59,6 +59,10 @@ export class DataLoadService extends BaseAuthService {
       return axios.get(`api/bulkloadfile/restart/${id}`, this.apiAuthHeader);
     }
 
+    getFileHistoryFile(id) {
+      return axios.get(`api/bulkloadfilehistory/${id}`);
+    }
+
     deleteLoadFile(id) {
       return axios.delete(`api/bulkloadfile/${id}`, this.apiAuthHeader);
     }
@@ -67,7 +71,7 @@ export class DataLoadService extends BaseAuthService {
         const bulkLoadTypes = {
             BulkFMSLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "MOLECULE"],
             BulkURLLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
-            BulkManualLoad: ["GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"]
+            BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
         };
         return bulkLoadTypes[loadType];
     }

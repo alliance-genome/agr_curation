@@ -28,7 +28,7 @@ export function useControlledVocabularyService(termType) {
 
   useQuery(['terms', termType],
     () => {
-      return searchService.search("vocabularyterm", 15, 0, null, { "vocabFilter": { "vocabulary.name": termType } })
+      return searchService.search("vocabularyterm", 15, 0, null, { "vocabFilter": { "vocabulary.name": { "queryString": termType } } })
     }, {
       onSuccess: (data) => {
         if (data.results) {

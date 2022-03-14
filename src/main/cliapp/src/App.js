@@ -38,9 +38,9 @@ const App = () => {
 
   return (
     <Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
-      <SiteLayout>
-        {routes}
-      </SiteLayout>
+        <SiteLayout>
+          {routes}
+        </SiteLayout>
     </Security>
   );
 };

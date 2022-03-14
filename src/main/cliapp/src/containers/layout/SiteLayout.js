@@ -94,6 +94,7 @@ export const SiteLayout = (props) => {
         { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
         { label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
         { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui' },
+        { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://${window.location.hostname}:9000/#/overview?host=https://${apiVersion.esHost}` },
       ]
     }
   ]
@@ -207,7 +208,7 @@ export const SiteLayout = (props) => {
       <CSSTransition classNames="layout-sidebar" timeout={{ enter: 200, exit: 200 }} in={isSidebarVisible()} unmountOnExit>
         <div ref={sidebar} className={sidebarClassName} onClick={onSidebarClick}>
           <div style={{ cursor: 'pointer' }} onClick={() => history.push('/')}>
-            <div class="card">AGR Curation: {apiVersion.version}<br /></div>
+            <div className="card">AGR Curation: {apiVersion.version}<br /></div>
           </div>
           {appProfile}
           {appMenu}

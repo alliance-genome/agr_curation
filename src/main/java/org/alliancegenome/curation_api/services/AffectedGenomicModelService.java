@@ -13,6 +13,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -56,14 +57,12 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 
 
     @Transactional
-    public void processUpdate(AffectedGenomicModelFmsDTO agm) {
+    public void processUpdate(AffectedGenomicModelFmsDTO agm) throws ObjectUpdateException {
         // TODO: add loading of components
         // TODO: add loading of sequenceTargetingReagents
         // TODO: add loading of parentalPopulations
 
-        if (!validateAffectedGenomicModelDTO(agm)) {
-            return;
-        }
+        validateAffectedGenomicModelDTO(agm);
 
         AffectedGenomicModel dbAgm = affectedGenomicModelDAO.find(agm.getPrimaryID());
 
@@ -191,53 +190,45 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 
     }
 
-    private boolean validateAffectedGenomicModelDTO(AffectedGenomicModelFmsDTO agm) {
+    private void validateAffectedGenomicModelDTO(AffectedGenomicModelFmsDTO agm) throws ObjectValidationException {
         // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
 
         // Check for required fields
         if (agm.getPrimaryID() == null || agm.getName() == null || agm.getTaxonId() == null) {
-            log.debug("Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
-            return false;
+            throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
         }
 
         // Validate taxon ID
         Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
         Matcher taxonIdMatcher = taxonIdPattern.matcher(agm.getTaxonId());
         if (!taxonIdMatcher.find()) {
-            log.debug("Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
-            return false;
+            throw new ObjectValidationException(agm, "Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
         }
         
         // Validate xref
         if (agm.getCrossReference() != null && agm.getCrossReference().getId() == null) {
-            log.debug("Missing xref ID for AGM " + agm.getPrimaryID() + " - skipping");
-            return false;
+            throw new ObjectValidationException(agm, "Missing xref ID for AGM " + agm.getPrimaryID() + " - skipping");
         }
 
         // Validate component fields
         if (CollectionUtils.isNotEmpty(agm.getAffectedGenomicModelComponents())) {
             for (AffectedGenomicModelComponentFmsDTO component : agm.getAffectedGenomicModelComponents()) {
                 if (component.getAlleleID() == null) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component with missing allele - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component with missing allele - skipping");
                 }
                 Allele componentAllele = alleleDAO.find(component.getAlleleID());
                 if (componentAllele == null) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") not found in database - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") not found in database - skipping");
                 }
                 if (component.getZygosity() == null) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with missing zygosity - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with missing zygosity - skipping");
                 }
 
                 if (!validZygosityCodes.contains(component.getZygosity())) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with invalid zygosity - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with invalid zygosity - skipping");
                 }
             }
         }
-        return true;
     }
 
     private static final Set<String> validZygosityCodes = Set.of(

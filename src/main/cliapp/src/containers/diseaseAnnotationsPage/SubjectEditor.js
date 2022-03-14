@@ -14,7 +14,10 @@ import {SubjectTooltip} from './SubjectTooltip';
             //console.log(event);
             let subjectFilter = {};
             autocompleteFields.forEach( field => {
-                subjectFilter[field] = event.query;
+                subjectFilter[field] = {
+                  queryString : event.query,
+                  tokenOperator : "AND"
+                }
             });
 
             searchService.search("biologicalentity", 15, 0, null, {"subjectFilter":subjectFilter})

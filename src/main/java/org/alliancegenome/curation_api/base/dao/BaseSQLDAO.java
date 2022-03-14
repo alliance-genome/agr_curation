@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.base.dao;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.persistence.*;
@@ -10,11 +11,16 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.hibernate.search.engine.search.common.BooleanOperator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.hibernate.search.engine.search.aggregation.AggregationKey;
+import org.hibernate.search.engine.search.common.*;
 import org.hibernate.search.engine.search.query.*;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
+import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -102,6 +108,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return entity;
     }
 
+    @Transactional
     public E remove(String id) {
         log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
@@ -109,6 +116,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
         return entity;
     }
 
+    @Transactional
     public E remove(Long id) {
         log.debug("SqlDAO: remove: " + id);
         E entity = find(id);
@@ -125,16 +133,53 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
     }
 
     public void reindex() {
-        reindex(myClass, 4, 0);
+        reindex(myClass, 4, 0, 1000);
     }
 
-    public void reindex(int threads, int indexAmount) {
-        reindex(myClass, threads, indexAmount);
+    public void reindex(int threads, int indexAmount, int batchSize) {
+        reindex(myClass, threads, indexAmount, batchSize);
     }
 
-    public void reindex(Class<E> objectClass, int threads, int indexAmount) {
+    public void reindex(Class<E> objectClass, int threads, int indexAmount, int batchSize) {
         log.debug("Starting Index for: " + objectClass);
-        MassIndexer indexer = searchSession.massIndexer(objectClass).threadsToLoadObjects(threads);
+        MassIndexer indexer = 
+            searchSession
+                .massIndexer(objectClass)
+                .batchSizeToLoadObjects(batchSize)
+                .dropAndCreateSchemaOnStart(true)
+                .mergeSegmentsOnFinish(true)
+                .typesToIndexInParallel(threads)
+                .threadsToLoadObjects(threads)
+                .monitor(new MassIndexingMonitor() {
+
+            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+                    
+            @Override
+            public void documentsAdded(long increment) {
+                //log.info("documentsAdded: " + increment);
+            }
+
+            @Override
+            public void documentsBuilt(long increment) {
+                ph.progressProcess();
+            }
+
+            @Override
+            public void entitiesLoaded(long increment) {
+                //log.info("entitiesLoaded: " + increment);
+            }
+
+            @Override
+            public void addToTotalCount(long increment) {
+                ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
+            }
+
+            @Override
+            public void indexingCompleted() {
+                ph.finishProcess();
+            }
+            
+        });
         //indexer.dropAndCreateSchemaOnStart(true);
         indexer.transactionTimeout(900);
         if(indexAmount > 0){
@@ -157,62 +202,82 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
 
 
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-
         log.debug("Search: " + pagination + " Params: " + params);
 
-        SearchQuery<E> query = searchSession.search(myClass)
-                // DON'T TOUCH UNLESS YOU KNOW WHAT YOU ARE DOING!!!!
-                .where( p -> {
-                    return p.bool( b -> {
-                        if(params.containsKey("searchFilters")) {
-                            HashMap<String, HashMap<String, Object>> searchFilters = (HashMap<String, HashMap<String, Object>>)params.get("searchFilters");
-                            for(String filterName: searchFilters.keySet()) {
-                                b.must(m -> {
-                                    return m.bool(s -> {
-                                        int boost = 0;
-                                        for(String field: searchFilters.get(filterName).keySet()) {
-                                            float value = (float)(100/Math.pow(10, boost));
-                                            s.should(
-                                                p.simpleQueryString()
-                                                    .fields(field)
-                                                    .matching(searchFilters.get(filterName).get(field).toString())
-                                                    .boost(value >=1 ? value : 1)
-                                                    //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
-                                            );
-                                            boost++;
-                                        }
-                                    });
+        SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = 
+            searchSession.search(myClass).where( p -> {
+                return p.bool( b -> {
+                    if(params.containsKey("searchFilters")) {
+                        HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
+                        for(String filterName: searchFilters.keySet()) {
+                            b.must(m -> {
+                                return m.bool(s -> {
+                                    int boost = 0;
+                                    for(String field: searchFilters.get(filterName).keySet()) {
+                                        float value = (float)(100/Math.pow(10, boost));
+                                        String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
+                                        if(op== null)
+                                            op = "AND";
+                                        s.should(
+                                            p.simpleQueryString()
+                                                .fields(field)
+                                                .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+                                                .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
+                                                .boost(value >=1 ? value : 1)
+                                                //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
+                                        );
+                                        boost++;
+                                    }
                                 });
-                            }
+                            });
                         }
-                    }); 
-                })
-                .sort(f -> {
-                    CompositeSortComponentsStep<?> com = f.composite();
-                    if(params.containsKey("sortOrders")) {
-                        ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
-                        if(sortOrders != null){
-                            for(HashMap<String, Object> map: sortOrders) {
-                                String key = (String)map.get("field");
-                                int value = (int)map.get("order");
-                                if(value == 1) {
-                                    com.add(f.field(key + "_keyword").asc());
-                                }
-                                if(value == -1) {
-                                    com.add(f.field(key + "_keyword").desc());
-                                }
-                            }
-                        }
-
                     }
-                    return com;
-                })
-                .toQuery();
+                }); 
+            });
+        
+        if(params.containsKey("sortOrders")) {
+            step = step.sort(f -> {
+                CompositeSortComponentsStep<?> com = f.composite();
+                ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
+                if(sortOrders != null){
+                    for(HashMap<String, Object> map: sortOrders) {
+                        String key = (String)map.get("field");
+                        int value = (int)map.get("order");
+                        if(value == 1) {
+                            com.add(f.field(key + "_keyword").asc());
+                        }
+                        if(value == -1) {
+                            com.add(f.field(key + "_keyword").desc());
+                        }
+                    }
+                }
+                return com;
+            });
+        }
+        
+        List<AggregationKey<Map<String, Long>>> aggKeys = new ArrayList<>();
+        
+        if(params.containsKey("aggregations")) {
+            ArrayList<String> aggList = (ArrayList<String>)params.get("aggregations");
+            for(String aggField: aggList) {
+                AggregationKey<Map<String, Long>> aggKey = AggregationKey.of(aggField);
+                aggKeys.add(aggKey);
+                step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(10));
+            }
+        }
+                
+        SearchQuery<E> query = step.toQuery();
 
         log.debug(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
         SearchResponse<E> results = new SearchResponse<E>();
+        
+        if(aggKeys.size() > 0) {
+            Map<String, Map<String, Long>> aggregations = aggKeys.stream().collect(Collectors.toMap(AggregationKey::name, result::aggregation));
+            results.setAggregations(aggregations);
+        }
+
         results.setResults(result.hits());
         results.setTotalResults(result.total().hitCount());
 

@@ -12,7 +12,7 @@ export const NCBITaxonOntologyComponent = () => {
     < OntologyTable
       endpoint={"ncbitaxonterm"}
       ontologyAbbreviation={"NCBITaxon"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 

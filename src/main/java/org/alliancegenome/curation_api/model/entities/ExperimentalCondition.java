@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.util.List;
-
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;
@@ -72,10 +70,4 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private ChemicalTerm conditionChemical;
-
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
-    private List<PaperHandle> paperHandles;
 }

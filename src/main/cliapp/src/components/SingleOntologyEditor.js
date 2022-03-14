@@ -12,9 +12,15 @@ export const SingleOntologyEditor = ({ rowProps, searchService, setExperimentalC
   const searchSingleOntology = (event) => {
     let singleOntologyFilter = {};
     autocompleteFields.forEach( field => {
-      singleOntologyFilter[field] = event.query;
+      singleOntologyFilter[field] = {
+        queryString: event.query
+      }
     });
-    let obsoleteFilter = {"obsolete": false};
+    let obsoleteFilter = {
+      "obsolete": {
+        queryString: false
+      }
+    };
 
     searchService.search(endpoint, 15, 0, [], {"singleOntologyFilter":singleOntologyFilter, "obsoleteFilter":obsoleteFilter})
       .then((data) => {

@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;
@@ -21,7 +19,7 @@ public class DiseaseAnnotationDTO {
     private String modId;
 
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("unqiue_id")
+    @JsonProperty("unique_id")
     private String uniqueID;
 
     @JsonView({View.FieldsOnly.class})
@@ -32,7 +30,7 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("data_provider")
-    private String dataProvider;
+    private List<String> dataProvider;
 
     @JsonView({View.FieldsOnly.class})
     private Boolean negated = false;
@@ -49,12 +47,16 @@ public class DiseaseAnnotationDTO {
     @JsonProperty("modified_by")
     private String modifiedBy;
 
+    @JsonView({View.FieldsOnly.class})
+    @JsonProperty("created_by")
+    private String createdBy;
+    
     @JsonView({View.FieldsAndLists.class})
     @JsonProperty("evidence_codes")
     private List<String> evidenceCodes;
 
     @JsonView({View.FieldsAndLists.class})
-    private List<ConditionRelation> conditionRelations;
+    private List<ConditionRelationDTO> conditionRelations;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_genetic_modifier")
@@ -69,17 +71,24 @@ public class DiseaseAnnotationDTO {
     private List<String> with;
 
     @JsonView({View.FieldsOnly.class})
-    private String reference;
+    @JsonProperty("single_reference")
+    private String singleReference;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_annotation_summary")
     private String diseaseAnnotationSummary;
+    
+    @JsonView({View.FieldsOnly.class})
+    @JsonProperty("disease_annotation_note")
+    private String diseaseAnnotationNote;
 
     @JsonView({View.FieldsOnly.class})
-    protected Long id;
+    @JsonProperty("table_id")
+    protected Long tableId;
 
     @JsonView({View.FieldsOnly.class})
-    private LocalDateTime created;
+    @JsonProperty("creation_date")
+    private String creationDate;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("date_last_modified")
