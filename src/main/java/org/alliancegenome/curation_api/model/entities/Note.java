@@ -35,7 +35,7 @@ import lombok.*;
 public class Note extends BaseGeneratedEntity {
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "smiles_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     @Column(columnDefinition="TEXT")
     private String freeText;
