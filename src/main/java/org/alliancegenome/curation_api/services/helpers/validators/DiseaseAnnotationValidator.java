@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import javax.inject.Inject;
@@ -101,9 +102,10 @@ public class DiseaseAnnotationValidator {
     }
     
     public String validateDataProvider(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
         String dataProvider = uiEntity.getDataProvider();
         if (dataProvider == null) {
-            addMessageResponse("dataProvider", requiredMessage);
+            // addMessageResponse("dataProvider", requiredMessage);
             return null;
         }
         
@@ -111,9 +113,10 @@ public class DiseaseAnnotationValidator {
     }
     
     public String validateCreatedBy(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
         String createdBy = uiEntity.getCreatedBy();
         if (createdBy == null) {
-            addMessageResponse("createdBy", requiredMessage);
+            // addMessageResponse("createdBy", requiredMessage);
             return null;
         }
         
@@ -121,9 +124,10 @@ public class DiseaseAnnotationValidator {
     }
     
     public String validateModifiedBy(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
         String modifiedBy = uiEntity.getModifiedBy();
         if (modifiedBy == null) {
-            addMessageResponse("modifiedBy", requiredMessage);
+            // addMessageResponse("modifiedBy", requiredMessage);
             return null;
         }
         
@@ -200,8 +204,7 @@ public class DiseaseAnnotationValidator {
         if (uiEntity.getCreationDate() != null)
             dbEntity.setCreationDate(uiEntity.getCreationDate());
         
-        if (uiEntity.getDateLastModified() != null)
-            dbEntity.setDateLastModified(uiEntity.getDateLastModified());
+        dbEntity.setDateLastModified(OffsetDateTime.now());
         
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
