@@ -795,9 +795,10 @@ export const DiseaseAnnotationsTable = () => {
     editor: (props) => withEditorTemplate(props)
   },
   {
-    field: "relatedNotes.freeText",
+    field: "relatedNotes.smiles",
     header: "Related Notes",
     body: relatedNotesTemplate,
+    sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
