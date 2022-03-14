@@ -97,23 +97,8 @@ export const DiseaseAnnotationsTable = () => {
   useQuery(['diseaseAnnotations', tableState],
     () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
-      data.results.forEach((res) => {
-        res.relatedNotes = [
-          {
-            noteType: "disease_note",
-            internal: "false",
-            text: "Some text here"
-          },
-          {
-            noteType: "disease_summary",
-            internal: "true",
-            text: "Some text here"
-          }
-        ]
-      });
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
-      console.log(diseaseAnnotations);
     },
     onError: (error) => {
       toast_topleft.current.show([
@@ -810,9 +795,11 @@ export const DiseaseAnnotationsTable = () => {
     editor: (props) => withEditorTemplate(props)
   },
   {
-    field: "relatedNotes.noteType",
+    field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
   {
     field: "geneticSex.name",
