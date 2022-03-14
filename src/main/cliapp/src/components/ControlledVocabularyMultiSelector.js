@@ -1,22 +1,22 @@
 import React, {useState} from 'react';
-import { Dropdown } from "primereact/dropdown"
+import { MultiSelect } from "primereact/multiselect"
 
-export function ControlledVocabularyDropdown({ options, editorChange, props, placeholderText, showClear}) {
-    const [selectedValue, setSelectedValue] = useState();
+export function ControlledVocabularyMultiSelectDropdown({ options, editorChange, props, placeholderText }) {
+    const [selectedValues, setSelectedValues] = useState();
     const onChange = (e) => {
-        setSelectedValue(e.value)
+        setSelectedValues(e.value)
         editorChange(props, e)
     }
-    
+
     return (
         <>
-            <Dropdown
-                value={selectedValue}
+            <MultiSelect
+                value={selectedValues}
                 options={options}
+                onShow={selectedValues}
                 onChange={(e) => onChange(e)}
                 optionLabel="name"
                 placeholder={placeholderText}
-                showClear={showClear}
                 style={{ width: '100%' }}
             />
         </>
