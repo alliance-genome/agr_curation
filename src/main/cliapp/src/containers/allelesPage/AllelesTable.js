@@ -6,6 +6,7 @@ import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
@@ -115,11 +116,11 @@ export const AllelesTable = () => {
   }
 
   const symbolTemplate = (rowData) => {
-    return <div dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+    return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
   }
 
   const taxonTemplate = (rowData) => {
-    return <div>{rowData.taxon.curie}</div>;
+    return <EllipsisTableCell>{rowData.taxon.curie}</EllipsisTableCell>;
   }
 
   const columns = [
@@ -161,6 +162,8 @@ export const AllelesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           columnKey={col.field}
           key={col.field}
           field={col.field}
@@ -168,7 +171,6 @@ export const AllelesTable = () => {
           sortable={isEnabled}
           filter={col.filter}
           showFilterMenu={false}
-          style={{whiteSpace: 'normal'}}
           filterElement={col.filterElement}
         />;
       })
@@ -195,12 +197,13 @@ export const AllelesTable = () => {
         <Messages ref={errorMessage} />
         <DataTable value={alleles} className="p-datatable-sm" header={header} reorderableColumns
           ref={dataTable}
+          tableClassName='w-12 p-datatable-md'
           filterDisplay="row"
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           onColReorder={colReorderHandler}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
           {columnMap}

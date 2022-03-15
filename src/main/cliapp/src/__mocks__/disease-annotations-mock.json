@@ -1,0 +1,360 @@
+{
+  "data":[{
+    "type": "AGMDiseaseAnnotation",
+    "id": 6527066,
+    "uniqueId": "RGD:2293012|DOID:9744|RGD:2293011|ECO:0007191",
+    "created": "2020-01-28T06:00:00",
+    "lastUpdated": "2022-02-28T17:42:58.47883",
+    "object": {
+        "curie": "DOID:9744",
+        "created": "2022-02-08T16:05:24.233473",
+        "lastUpdated": "2022-02-08T16:05:24.233474",
+        "name": "type 1 diabetes mellitus",
+        "obsolete": false,
+        "namespace": "disease_ontology",
+        "definition": "A diabetes mellitus that is characterized by destruction of pancreatic beta cells resulting in absent or extremely low insulin production.",
+        "definitionUrls": [
+            "url:http://en.wikipedia.org/wiki/Diabetes",
+            "url:http://en.wikipedia.org/wiki/Diabetes_mellitus_type_1"
+        ],
+        "subsets": [
+            "NCIthesaurus"
+        ],
+        "synonyms": [
+            "type I diabetes mellitus",
+            "insulin-dependent diabetes mellitus",
+            "IDDM"
+        ],
+        "crossReferences": [
+            {
+                "curie": "EFO:0001359",
+                "created": "2021-12-14T14:33:56.313642",
+                "lastUpdated": "2021-12-14T14:33:56.313643"
+            },
+            {
+                "curie": "SNOMEDCT_US_2021_09_01:46635009",
+                "created": "2022-01-04T20:09:58.547909",
+                "lastUpdated": "2022-01-04T20:09:58.547911"
+            },
+            {
+                "curie": "NCI:C2986",
+                "created": "2021-12-14T14:33:56.314014",
+                "lastUpdated": "2021-12-14T14:33:56.314014"
+            },
+            {
+                "curie": "ICD10CM:E10",
+                "created": "2021-12-14T14:33:56.314328",
+                "lastUpdated": "2021-12-14T14:33:56.314328"
+            },
+            {
+                "curie": "KEGG:04940",
+                "created": "2021-12-14T14:33:56.314647",
+                "lastUpdated": "2021-12-14T14:33:56.314647"
+            },
+            {
+                "curie": "UMLS_CUI:C0011854",
+                "created": "2021-12-14T14:33:56.314963",
+                "lastUpdated": "2021-12-14T14:33:56.314963"
+            },
+            {
+                "curie": "OMIM:222100",
+                "created": "2021-12-14T14:33:56.315509",
+                "lastUpdated": "2021-12-14T14:33:56.315509"
+            },
+            {
+                "curie": "GARD:10268",
+                "created": "2021-12-14T14:33:56.316417",
+                "lastUpdated": "2021-12-14T14:33:56.316418"
+            },
+            {
+                "curie": "MESH:D003922",
+                "created": "2021-12-14T14:33:56.316121",
+                "lastUpdated": "2021-12-14T14:33:56.316121"
+            }
+        ]
+    },
+    "negated": false,
+    "diseaseRelation": "is_model_of",
+    "evidenceCodes": [
+        {
+            "curie": "ECO:0007191",
+            "created": "2022-02-08T15:56:34.328046",
+            "lastUpdated": "2022-02-08T15:58:09.030914",
+            "name": "inference by association of genotype from phenotype used in manual assertion",
+            "obsolete": false,
+            "namespace": "eco",
+            "definition": "A type of inference by association of genotype from phenotype that is used in a manual assertion.",
+            "definitionUrls": [
+                "ECO:RCT"
+            ],
+            "subsets": [
+                "agr_eco_terms"
+            ],
+            "abbreviation": "IAGP"
+        }
+    ],
+    "singleReference": {
+        "curie": "PMID:1446803",
+        "created": "2021-10-07T22:46:26.113443",
+        "lastUpdated": "2021-10-07T22:46:26.113445"
+    },
+    "subject": {
+        "curie": "RGD:2293012",
+        "created": "2022-02-08T17:38:46.507702",
+        "lastUpdated": "2022-02-08T17:38:46.507703",
+        "taxon": {
+            "curie": "NCBITaxon:10116",
+            "created": "2022-02-08T17:36:15.406486",
+            "lastUpdated": "2022-02-08T17:36:15.406487",
+            "name": "Rattus norvegicus",
+            "obsolete": false
+        },
+        "name": "ACI.BBDP-(<i>RT1<sup>u</sup></i>)(<i>Gimap5</i>)/Sunn",
+        "synonyms": [
+            {
+                "id": 4712689,
+                "created": "2022-02-08T17:38:46.504934",
+                "lastUpdated": "2022-02-08T17:38:46.504934",
+                "name": "ACI.BBDP-(RT1u),(Gimap5)/Sunn"
+            },
+            {
+                "id": 4712690,
+                "created": "2022-02-08T17:38:46.505346",
+                "lastUpdated": "2022-02-08T17:38:46.505346",
+                "name": "ACI.BBDP-RT1u.GIMAP5/Sunn"
+            },
+            {
+                "id": 4712691,
+                "created": "2022-02-08T17:38:46.505753",
+                "lastUpdated": "2022-02-08T17:38:46.505755",
+                "name": "ACI.BB(1u.lyp)"
+            },
+            {
+                "id": 4712692,
+                "created": "2022-02-08T17:38:46.506192",
+                "lastUpdated": "2022-02-08T17:38:46.506194",
+                "name": "ACI.BBDP-RT1u,GIMAP5"
+            },
+            {
+                "id": 4712693,
+                "created": "2022-02-08T17:38:46.506591",
+                "lastUpdated": "2022-02-08T17:38:46.506591",
+                "name": "ACI.1u.lyp"
+            },
+            {
+                "id": 4712694,
+                "created": "2022-02-08T17:38:46.506976",
+                "lastUpdated": "2022-02-08T17:38:46.506976",
+                "name": "ACI.BBDP-(RT1u)(Gimap5)/Sunn"
+            },
+            {
+                "id": 4712696,
+                "created": "2022-02-08T17:38:46.507336",
+                "lastUpdated": "2022-02-08T17:38:46.507337",
+                "name": "RRRC:00788"
+            }
+        ],
+        "crossReferences": [
+            {
+                "curie": "RGD:2293012",
+                "created": "2022-01-23T00:05:14.932475",
+                "lastUpdated": "2022-01-23T00:05:14.932476",
+                "pageAreas": [
+                    "strain"
+                ]
+            }
+        ],
+        "subtype": "strain"
+    },
+    "relatedNotes": [
+      {
+        "noteType": "disease_note",
+        "internal": "false",
+        "text": "Some text here"
+      },
+      {
+        "noteType": "disease_summary",
+        "internal": "true",
+        "text": "Some text here"
+      }
+    ]              
+}, {
+    "type": "AGMDiseaseAnnotation",
+    "id": 6527061,
+    "uniqueId": "RGD:2293012|DOID:9744|RGD:10043114|ECO:0007191",
+    "created": "2020-03-02T06:00:00",
+    "lastUpdated": "2022-02-19T18:32:18.371796",
+    "object": {
+        "curie": "DOID:9744",
+        "created": "2022-02-08T16:05:24.233473",
+        "lastUpdated": "2022-02-08T16:05:24.233474",
+        "name": "type 1 diabetes mellitus",
+        "obsolete": false,
+        "namespace": "disease_ontology",
+        "definition": "A diabetes mellitus that is characterized by destruction of pancreatic beta cells resulting in absent or extremely low insulin production.",
+        "definitionUrls": [
+            "url:http://en.wikipedia.org/wiki/Diabetes",
+            "url:http://en.wikipedia.org/wiki/Diabetes_mellitus_type_1"
+        ],
+        "subsets": [
+            "NCIthesaurus"
+        ],
+        "synonyms": [
+            "type I diabetes mellitus",
+            "insulin-dependent diabetes mellitus",
+            "IDDM"
+        ],
+        "crossReferences": [
+            {
+                "curie": "EFO:0001359",
+                "created": "2021-12-14T14:33:56.313642",
+                "lastUpdated": "2021-12-14T14:33:56.313643"
+            },
+            {
+                "curie": "SNOMEDCT_US_2021_09_01:46635009",
+                "created": "2022-01-04T20:09:58.547909",
+                "lastUpdated": "2022-01-04T20:09:58.547911"
+            },
+            {
+                "curie": "NCI:C2986",
+                "created": "2021-12-14T14:33:56.314014",
+                "lastUpdated": "2021-12-14T14:33:56.314014"
+            },
+            {
+                "curie": "ICD10CM:E10",
+                "created": "2021-12-14T14:33:56.314328",
+                "lastUpdated": "2021-12-14T14:33:56.314328"
+            },
+            {
+                "curie": "KEGG:04940",
+                "created": "2021-12-14T14:33:56.314647",
+                "lastUpdated": "2021-12-14T14:33:56.314647"
+            },
+            {
+                "curie": "UMLS_CUI:C0011854",
+                "created": "2021-12-14T14:33:56.314963",
+                "lastUpdated": "2021-12-14T14:33:56.314963"
+            },
+            {
+                "curie": "OMIM:222100",
+                "created": "2021-12-14T14:33:56.315509",
+                "lastUpdated": "2021-12-14T14:33:56.315509"
+            },
+            {
+                "curie": "GARD:10268",
+                "created": "2021-12-14T14:33:56.316417",
+                "lastUpdated": "2021-12-14T14:33:56.316418"
+            },
+            {
+                "curie": "MESH:D003922",
+                "created": "2021-12-14T14:33:56.316121",
+                "lastUpdated": "2021-12-14T14:33:56.316121"
+            }
+        ]
+    },
+    "negated": true,
+    "diseaseRelation": "is_model_of",
+    "evidenceCodes": [
+        {
+            "curie": "ECO:0007191",
+            "created": "2022-02-08T15:56:34.328046",
+            "lastUpdated": "2022-02-08T15:58:09.030914",
+            "name": "inference by association of genotype from phenotype used in manual assertion",
+            "obsolete": false,
+            "namespace": "eco",
+            "definition": "A type of inference by association of genotype from phenotype that is used in a manual assertion.",
+            "definitionUrls": [
+                "ECO:RCT"
+            ],
+            "subsets": [
+                "agr_eco_terms"
+            ],
+            "abbreviation": "IAGP"
+        }
+    ],
+    "singleReference": {
+        "curie": "PMID:24920533",
+        "created": "2021-10-07T22:46:26.522572",
+        "lastUpdated": "2021-10-07T22:46:26.522574"
+    },
+    "subject": {
+        "curie": "RGD:2293012",
+        "created": "2022-02-08T17:38:46.507702",
+        "lastUpdated": "2022-02-08T17:38:46.507703",
+        "taxon": {
+            "curie": "NCBITaxon:10116",
+            "created": "2022-02-08T17:36:15.406486",
+            "lastUpdated": "2022-02-08T17:36:15.406487",
+            "name": "Rattus norvegicus",
+            "obsolete": false
+        },
+        "name": "ACI.BBDP-(<i>RT1<sup>u</sup></i>)(<i>Gimap5</i>)/Sunn",
+        "synonyms": [
+            {
+                "id": 4712689,
+                "created": "2022-02-08T17:38:46.504934",
+                "lastUpdated": "2022-02-08T17:38:46.504934",
+                "name": "ACI.BBDP-(RT1u),(Gimap5)/Sunn"
+            },
+            {
+                "id": 4712690,
+                "created": "2022-02-08T17:38:46.505346",
+                "lastUpdated": "2022-02-08T17:38:46.505346",
+                "name": "ACI.BBDP-RT1u.GIMAP5/Sunn"
+            },
+            {
+                "id": 4712691,
+                "created": "2022-02-08T17:38:46.505753",
+                "lastUpdated": "2022-02-08T17:38:46.505755",
+                "name": "ACI.BB(1u.lyp)"
+            },
+            {
+                "id": 4712692,
+                "created": "2022-02-08T17:38:46.506192",
+                "lastUpdated": "2022-02-08T17:38:46.506194",
+                "name": "ACI.BBDP-RT1u,GIMAP5"
+            },
+            {
+                "id": 4712693,
+                "created": "2022-02-08T17:38:46.506591",
+                "lastUpdated": "2022-02-08T17:38:46.506591",
+                "name": "ACI.1u.lyp"
+            },
+            {
+                "id": 4712694,
+                "created": "2022-02-08T17:38:46.506976",
+                "lastUpdated": "2022-02-08T17:38:46.506976",
+                "name": "ACI.BBDP-(RT1u)(Gimap5)/Sunn"
+            },
+            {
+                "id": 4712696,
+                "created": "2022-02-08T17:38:46.507336",
+                "lastUpdated": "2022-02-08T17:38:46.507337",
+                "name": "RRRC:00788"
+            }
+        ],
+        "crossReferences": [
+            {
+                "curie": "RGD:2293012",
+                "created": "2022-01-23T00:05:14.932475",
+                "lastUpdated": "2022-01-23T00:05:14.932476",
+                "pageAreas": [
+                    "strain"
+                ]
+            }
+        ],
+        "subtype": "strain"
+    },
+   "relatedNotes": [
+    {
+      "noteType": "disease_note",
+      "internal": "false",
+      "text": "Some text here"
+    },
+    {
+      "noteType": "disease_summary",
+      "internal": "true",
+      "text": "Some text here"
+    }
+  ]  
+}]}

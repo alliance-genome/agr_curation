@@ -120,7 +120,6 @@ export const GenesTable = () => {
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("curieFilter", ["curie"]),
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' }
     },
     {
       field: "name",
@@ -151,6 +150,8 @@ export const GenesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           field={col.field}
           header={col.header}
           filter={col.filter}
@@ -159,7 +160,6 @@ export const GenesTable = () => {
           sortable={isEnabled}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={col.style}
         />;
       })
     );
@@ -186,12 +186,12 @@ export const GenesTable = () => {
         <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
-          filterDisplay="row"
+          ref={dataTable} filterDisplay="row"
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}

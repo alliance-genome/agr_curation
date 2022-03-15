@@ -23,11 +23,11 @@ import lombok.*;
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
 public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "conditionRelationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    private String conditionRelationType;
+    private VocabularyTerm conditionRelationType;
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
