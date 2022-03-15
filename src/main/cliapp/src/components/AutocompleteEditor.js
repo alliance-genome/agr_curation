@@ -158,7 +158,7 @@ export const AutocompleteEditor = (
   )
 }
 
-const EditorTooltip = ({ op, autocompleteSelectedItem, dataType }) => {
+const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
   return (
     <>
       <Tooltip ref={op} style={{ width: '450px', maxWidth: '450px' }} position={'right'} mouseTrack mouseTrackLeft={30}>
