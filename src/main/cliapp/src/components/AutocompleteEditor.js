@@ -36,8 +36,6 @@ export const AutocompleteEditor = (
         queryString: event.query,
         ...((isSubject || isWith) && { tokenOperator: "AND" })
       }
-      console.log(field);
-      console.log(filter);
     });
 
     searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters })
