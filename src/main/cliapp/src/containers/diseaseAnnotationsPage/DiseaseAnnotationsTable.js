@@ -14,9 +14,10 @@ import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectCo
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
+import { RelatedNotesDialog } from './RelatedNotesDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { ControlledVocabularyMultiSelectDropdown }from '../../components/ControlledVocabularyMultiSelector';
+import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
@@ -25,7 +26,7 @@ import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
   const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date"];
+    "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -44,6 +45,8 @@ export const DiseaseAnnotationsTable = () => {
   const [editingRows, setEditingRows] = useState({});
   const [columnMap, setColumnMap] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
+  const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
+  const [relatedNotes, setRelatedNotes] = useState(false);
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
@@ -110,6 +113,7 @@ export const DiseaseAnnotationsTable = () => {
   }
   );
 
+
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
       diseaseAnnotationService = new DiseaseAnnotationService(authState);
@@ -153,6 +157,11 @@ export const DiseaseAnnotationsTable = () => {
     setTableState(_tableState);
   };
 
+  const handleRelatedNotesOpen = (event, rowData) => {
+    setRelatedNotes(rowData.relatedNotes);
+    setRelatedNotesDialog(true);
+  };
+
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
@@ -186,10 +195,10 @@ export const DiseaseAnnotationsTable = () => {
       </div>);
     }
   };
-  
+
   const diseaseQualifiersBodyTemplate = (rowData) => {
     if (rowData && rowData.diseaseQualifiers) {
-      const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a,b) => (a.name > b.name) ? 1 : -1);
+      const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
       return (<div>
         <ul stype={{ listStypeType: 'none' }}>
           {sortedDiseaseQualifiers.map((a, index) =>
@@ -207,6 +216,19 @@ export const DiseaseAnnotationsTable = () => {
   const negatedTemplate = (rowData) => {
     if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
       return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
+    }
+  };
+
+  const relatedNotesTemplate = (rowData) => {
+    if (rowData.relatedNotes) {
+      return <EllipsisTableCell><button
+        style={{
+          color: 'blue',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+        }}
+        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></button></EllipsisTableCell>;
     }
   };
 
@@ -336,7 +358,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const onGeneticSexEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     console.log(updatedAnnotations);
@@ -362,7 +384,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const onAnnotationTypeEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     console.log(updatedAnnotations);
@@ -388,7 +410,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const onGeneticModifierRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     console.log(updatedAnnotations);
@@ -414,7 +436,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const onDiseaseQualifiersEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
@@ -427,10 +449,10 @@ export const DiseaseAnnotationsTable = () => {
     let placeholderText = '';
     if (props.rowData.diseaseQualifiers) {
       let placeholderTextElements = [];
-      props.rowData.diseaseQualifiers.forEach((x,i) => 
+      props.rowData.diseaseQualifiers.forEach((x, i) =>
         placeholderTextElements.push(x.name));
       placeholderText = placeholderTextElements.join();
-    
+
     }
     return (
       <>
@@ -485,7 +507,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const sgdStrainBackgroundEditorTemplate = (props) => {
     return (
       <>
@@ -505,7 +527,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const geneticModifierEditorTemplate = (props) => {
     return (
       <>
@@ -626,7 +648,7 @@ export const DiseaseAnnotationsTable = () => {
       }
     }
   };
-  
+
   const sgdStrainBackgroundBodyTemplate = (rowData) => {
     if (rowData.sgdStrainBackground) {
       if (rowData.sgdStrainBackground.name) {
@@ -640,7 +662,7 @@ export const DiseaseAnnotationsTable = () => {
       }
     }
   };
-  
+
   const geneticModifierBodyTemplate = (rowData) => {
     if (rowData.diseaseGeneticModifier) {
       if (rowData.diseaseGeneticModifier.symbol) {
@@ -660,7 +682,7 @@ export const DiseaseAnnotationsTable = () => {
       }
     }
   };
-  
+
 
   const uniqueIdBodyTemplate = (rowData) => {
     return (
@@ -771,6 +793,14 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
     editor: (props) => withEditorTemplate(props)
+  },
+  {
+    field: "relatedNotes.freeText",
+    header: "Related Notes",
+    body: relatedNotesTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
   {
     field: "geneticSex.name",
@@ -940,6 +970,11 @@ export const DiseaseAnnotationsTable = () => {
           <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
+      <RelatedNotesDialog
+        relatedNotes={relatedNotes}
+        relatedNotesDialog={relatedNotesDialog}
+        setRelatedNotesDialog={setRelatedNotesDialog}
+      />
     </div>
   );
 };
