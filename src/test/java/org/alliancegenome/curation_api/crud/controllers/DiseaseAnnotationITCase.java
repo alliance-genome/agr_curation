@@ -87,7 +87,7 @@ public class DiseaseAnnotationITCase {
         testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606");
         testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606");
         testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
-        testAgm2 = createModel("MODEL:da0002", "NCBITaxon:9606", "TestAGM2");
+        testAgm2 = createModel("SGD:da0002", "NCBITaxon:9606", "TestAGM2");
         testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
         // geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
         // alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
@@ -273,7 +273,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
-                body("entity.sgdStrainBackground.curie", is("MODEL:da0002")).
+                body("entity.sgdStrainBackground.curie", is("SGD:da0002")).
                 body("entity.modifiedBy", is("TEST:Person0001")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
@@ -376,7 +376,7 @@ public class DiseaseAnnotationITCase {
                 statusCode(200).
                 body("entity.uniqueId", is(AGM_DISEASE_ANNOTATION)).
                 body("entity.modEntityId", is("TEST:Mod0003")).
-                body("entity.subject.curie", is("MODEL:da0002")).
+                body("entity.subject.curie", is("SGD:da0002")).
                 body("entity.object.curie", is("DOID:da0002")).
                 body("entity.negated", is(true)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0002")).

@@ -46,6 +46,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredChemicalTerm = "DATEST:ChemicalTerm0001";
     private String requiredAllele = "DATEST:Allele0001";
     private String requiredAgm = "DATEST:AGM0001";
+    private String requiredSgdBackgroundStrain = "SGD:AGM0001";
     private String requiredZecoTerm = "DATEST:ExpCondTerm0001";
     private String requiredExpCondTerm = "DATEST:ExpCondTerm0002";
     private String requiredGeneDiseaseRelation = "is_implicated_in";
@@ -129,7 +130,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
             body("results[0].annotationType.name", is("manually_curated")).
             body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
-            body("results[0].sgdStrainBackground.curie", is("DATEST:AGM0001")).
+            body("results[0].sgdStrainBackground.curie", is("SGD:AGM0001")).
             body("results[0].evidenceCodes", hasSize(1)).
             body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -1670,7 +1671,8 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadAnatomyTerm();
         loadGenes();  
         loadAllele();
-        loadAGM();
+        loadAGM(requiredAgm);
+        loadAGM(requiredSgdBackgroundStrain);
         Vocabulary noteTypeVocabulary = createVocabulary("Disease annotation note types");
         // Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
         // Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
@@ -1814,9 +1816,9 @@ public class DiseaseAnnotationBulkUploadITCase {
         }
     }
 
-    private void loadAGM() throws Exception {
+    private void loadAGM(String agmCurie) throws Exception {
         AffectedGenomicModel agm = new AffectedGenomicModel();
-        agm.setCurie(requiredAgm);
+        agm.setCurie(agmCurie);
         agm.setTaxon(getTaxon("NCBITaxon:6239"));
         agm.setName("Test AGM");
 

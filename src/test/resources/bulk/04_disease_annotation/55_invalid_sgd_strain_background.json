@@ -48,7 +48,7 @@
     "created_by": "DATEST:Person0001",
     "creation_date": "2022-03-09T22:10:12+00:00",
     "date_last_modified": "2022-03-09T22:10:12+00:00",
-    "sgd_strain_background": "DATEST:AGM0000",
+    "sgd_strain_background": "SGD:AGM0002",
     "annotation_type": "manually_curated",
     "disease_qualifiers": [
       "susceptibility"
