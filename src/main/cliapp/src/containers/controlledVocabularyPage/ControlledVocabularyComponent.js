@@ -393,7 +393,7 @@ export const ControlledVocabularyComponent = () => {
           key={col.field}
           field={col.field}
           header={col.header}
-          sortable={(col.field == "id")? false : isEnabled}
+          sortable={col.sortable}
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
