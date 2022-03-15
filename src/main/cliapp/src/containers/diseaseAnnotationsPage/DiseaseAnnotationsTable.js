@@ -277,7 +277,7 @@ export const DiseaseAnnotationsTable = () => {
       updatedRow.object = {};
       updatedRow.object.curie = event.data.object.curie;
     }
-    if (Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
+    if (event.data.diseaseGeneticModifier && Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
       event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
       updatedRow.diseaseGeneticModifier = {};
       updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
