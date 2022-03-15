@@ -11,10 +11,13 @@ import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
+import { RelatedNotesDialog } from './RelatedNotesDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
@@ -22,7 +25,8 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
-  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
+    "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -41,9 +45,15 @@ export const DiseaseAnnotationsTable = () => {
   const [editingRows, setEditingRows] = useState({});
   const [columnMap, setColumnMap] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
+  const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
+  const [relatedNotes, setRelatedNotes] = useState(false);
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
+  const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
+  const annotationTypeTerms = useControlledVocabularyService('Annotation types')
   const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
+  const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
+  const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
   const [errorMessages, setErrorMessages] = useState({});
   const { authState } = useOktaAuth();
@@ -61,11 +71,13 @@ export const DiseaseAnnotationsTable = () => {
   const sortMapping = {
     'object.name': ['object.curie', 'object.namespace'],
     'subject.symbol': ['subject.name', 'subject.curie'],
-    'with.symbol': ['with.name', 'with.curie']
+    'with.symbol': ['with.name', 'with.curie'],
+    'sgdStrainBackground.name': ['sgdStrainBackground.curie'],
+    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifer.name', 'diseaseGeneticModifier.curie']
   };
 
   const aggregationFields = [
-    'diseaseRelation'
+    'diseaseRelation.name', 'geneticSex.name', 'annotationType.name', 'diseaseGeneticModifierRelation.name', 'diseaseQualifiers.name'
   ];
 
   useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
@@ -100,6 +112,7 @@ export const DiseaseAnnotationsTable = () => {
     refetchOnWindowFocus: false
   }
   );
+
 
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
@@ -144,14 +157,25 @@ export const DiseaseAnnotationsTable = () => {
     setTableState(_tableState);
   };
 
+  const handleRelatedNotesOpen = (event, rowData) => {
+    setRelatedNotes(rowData.relatedNotes);
+    setRelatedNotesDialog(true);
+  };
+
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
-      return <div>
+      return <>
         <ul style={{ listStyleType: 'none' }}>
-          {sortedWithGenes.map((a, index) => <li key={index}>{a.symbol + ' (' + a.curie + ')'}</li>)}
+          {sortedWithGenes.map((a, index) =>
+            <li key={index}>
+              <EllipsisTableCell>
+                {a.symbol + ' (' + a.curie + ')'}
+              </EllipsisTableCell>
+            </li>
+          )}
         </ul>
-      </div>;
+      </>;
     }
   };
 
@@ -161,7 +185,28 @@ export const DiseaseAnnotationsTable = () => {
       return (<div>
         <ul style={{ listStyleType: 'none' }}>
           {sortedEvidenceCodes.map((a, index) =>
-            <li key={index}>{a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}</li>
+            <li key={index}>
+              <EllipsisTableCell>
+                {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
+              </EllipsisTableCell>
+            </li>
+          )}
+        </ul>
+      </div>);
+    }
+  };
+
+  const diseaseQualifiersBodyTemplate = (rowData) => {
+    if (rowData && rowData.diseaseQualifiers) {
+      const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
+      return (<div>
+        <ul stype={{ listStypeType: 'none' }}>
+          {sortedDiseaseQualifiers.map((a, index) =>
+            <li key={index}>
+              <EllipsisTableCell>
+                {a.name}
+              </EllipsisTableCell>
+            </li>
           )}
         </ul>
       </div>);
@@ -170,7 +215,20 @@ export const DiseaseAnnotationsTable = () => {
 
   const negatedTemplate = (rowData) => {
     if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
-      return <div>{JSON.stringify(rowData.negated)}</div>;
+      return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
+    }
+  };
+
+  const relatedNotesTemplate = (rowData) => {
+    if (rowData.relatedNotes) {
+      return <EllipsisTableCell><button
+        style={{
+          color: 'blue',
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+        }}
+        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></button></EllipsisTableCell>;
     }
   };
 
@@ -271,7 +329,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const diseaseBodyTemplate = (rowData) => {
     if (rowData.object) {
-      return <div>{rowData.object.name} ({rowData.object.curie})</div>;
+      return <EllipsisTableCell>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>;
     }
   };
 
@@ -281,22 +339,130 @@ export const DiseaseAnnotationsTable = () => {
     let updatedAnnotations = [...props.props.value];
     console.log(updatedAnnotations);
     if (event.value || event.value === '') {
-      updatedAnnotations[props.rowIndex].diseaseRelation = event.value.name;//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+      updatedAnnotations[props.rowIndex].diseaseRelation = event.value;
       setDiseaseAnnotations(updatedAnnotations);
     }
   };
 
   const diseaseRelationEditor = (props) => {
-
     return (
       <>
         <ControlledVocabularyDropdown
           options={diseaseRelationsTerms}
           editorChange={onDiseaseRelationEditorValueChange}
           props={props}
-          placeholderText={props.rowData[props.field]}
+          placeholderText={props.rowData.diseaseRelation.name}
+          showClear={false}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
+      </>
+    );
+  };
+
+  const onGeneticSexEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    console.log(updatedAnnotations);
+    updatedAnnotations[props.rowIndex].geneticSex = event.value;
+    setDiseaseAnnotations(updatedAnnotations);
+  };
+
+  const geneticSexEditor = (props) => {
+    let placeholderText = '';
+    if (props.rowData.geneticSex) {
+      placeholderText = props.rowData.geneticSex.name;
+    }
+    return (
+      <>
+        <ControlledVocabularyDropdown
+          options={geneticSexTerms}
+          editorChange={onGeneticSexEditorValueChange}
+          props={props}
+          placeholderText={placeholderText}
+          showClear={true}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"geneticSex"} />
+      </>
+    );
+  };
+
+  const onAnnotationTypeEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    console.log(updatedAnnotations);
+    updatedAnnotations[props.rowIndex].annotationType = event.value;
+    setDiseaseAnnotations(updatedAnnotations);
+  };
+
+  const annotationTypeEditor = (props) => {
+    let placeholderText = '';
+    if (props.rowData.annotationType) {
+      placeholderText = props.rowData.annotationType.name;
+    }
+    return (
+      <>
+        <ControlledVocabularyDropdown
+          options={annotationTypeTerms}
+          editorChange={onAnnotationTypeEditorValueChange}
+          props={props}
+          placeholderText={placeholderText}
+          showClear={true}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"annotationType"} />
+      </>
+    );
+  };
+
+  const onGeneticModifierRelationEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    console.log(updatedAnnotations);
+    updatedAnnotations[props.rowIndex].diseaseGeneticModifierRelation = event.value;
+    setDiseaseAnnotations(updatedAnnotations);
+  };
+
+  const geneticModifierRelationEditor = (props) => {
+    let placeholderText = '';
+    if (props.rowData.diseaseGeneticModifierRelation) {
+      placeholderText = props.rowData.diseaseGeneticModifierRelation.name;
+    }
+    return (
+      <>
+        <ControlledVocabularyDropdown
+          options={geneticModifierRelationTerms}
+          editorChange={onGeneticModifierRelationEditorValueChange}
+          props={props}
+          placeholderText={placeholderText}
+          showClear={true}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
+      </>
+    );
+  };
+
+  const onDiseaseQualifiersEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    if (event.value || event.value === '') {
+      updatedAnnotations[props.rowIndex].diseaseQualifiers = event.value;
+      setDiseaseAnnotations(updatedAnnotations);
+    }
+  };
+
+  const diseaseQualifiersEditor = (props) => {
+    let placeholderText = '';
+    if (props.rowData.diseaseQualifiers) {
+      let placeholderTextElements = [];
+      props.rowData.diseaseQualifiers.forEach((x, i) =>
+        placeholderTextElements.push(x.name));
+      placeholderText = placeholderTextElements.join();
+
+    }
+    return (
+      <>
+        <ControlledVocabularyMultiSelectDropdown
+          options={diseaseQualifiersTerms}
+          editorChange={onDiseaseQualifiersEditorValueChange}
+          props={props}
+          placeholderText={placeholderText}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseQualifiers"} />
       </>
     );
   };
@@ -337,6 +503,46 @@ export const DiseaseAnnotationsTable = () => {
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
           errorField={"subject"}
+        />
+      </>
+    );
+  };
+
+  const sgdStrainBackgroundEditorTemplate = (props) => {
+    return (
+      <>
+        <AutocompleteEditor
+          autocompleteFields={["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          rowProps={props}
+          searchService={searchService}
+          endpoint='agm'
+          filterName='sgdStrainBackgroundFilter'
+          fieldName='sgdStrainBackground'
+          isGene={true}
+        />
+        <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField={"sgdStrainBackground"}
+        />
+      </>
+    );
+  };
+
+  const geneticModifierEditorTemplate = (props) => {
+    return (
+      <>
+        <AutocompleteEditor
+          autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          rowProps={props}
+          searchService={searchService}
+          endpoint='biologicalentity'
+          filterName='geneticModifierFilter'
+          fieldName='diseaseGeneticModifier'
+          isGene={true}
+        />
+        <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField={"diseaseGeneticModifier"}
         />
       </>
     );
@@ -426,13 +632,64 @@ export const DiseaseAnnotationsTable = () => {
   const subjectBodyTemplate = (rowData) => {
     if (rowData.subject) {
       if (rowData.subject.symbol) {
-        return <div dangerouslySetInnerHTML={{ __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')' }} />;
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+          }}
+        />;
       } else if (rowData.subject.name) {
-        return <div dangerouslySetInnerHTML={{ __html: rowData.subject.name + ' (' + rowData.subject.curie + ')' }} />;
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
+          }}
+        />;
       } else {
-        return <div>{rowData.subject.curie}</div>;
+        return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.subject.curie}</div>;
       }
     }
+  };
+
+  const sgdStrainBackgroundBodyTemplate = (rowData) => {
+    if (rowData.sgdStrainBackground) {
+      if (rowData.sgdStrainBackground.name) {
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.sgdStrainBackground.name + ' (' + rowData.sgdStrainBackground.curie + ')'
+          }}
+        />;
+      } else {
+        return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.sgdStrainBackground.curie}</div>;
+      }
+    }
+  };
+
+  const geneticModifierBodyTemplate = (rowData) => {
+    if (rowData.diseaseGeneticModifier) {
+      if (rowData.diseaseGeneticModifier.symbol) {
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.diseaseGeneticModifier.symbol + ' (' + rowData.diseaseGeneticModifier.curie + ')'
+          }}
+        />;
+      } else if (rowData.diseaseGeneticModifier.name) {
+        return <div className='overflow-hidden text-overflow-ellipsis'
+          dangerouslySetInnerHTML={{
+            __html: rowData.diseaseGeneticModifier.name + ' (' + rowData.diseaseGeneticModifier.curie + ')'
+          }}
+        />;
+      } else {
+        return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.diseaseGeneticModifier.curie}</div>;
+      }
+    }
+  };
+
+
+  const uniqueIdBodyTemplate = (rowData) => {
+    return (
+      <EllipsisTableCell>
+        {rowData.uniqueId}
+      </EllipsisTableCell>
+    )
   };
 
   const filterComponentInputTextTemplate = (filterName, fields) => {
@@ -474,6 +731,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Unique Id",
     sortable: isEnabled,
     filter: true,
+    body: uniqueIdBodyTemplate,
     filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
   },
   {
@@ -486,11 +744,11 @@ export const DiseaseAnnotationsTable = () => {
     body: subjectBodyTemplate,
   },
   {
-    field: "diseaseRelation",
+    field: "diseaseRelation.name",
     header: "Disease Relation",
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation"),
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation.name"),
     editor: (props) => diseaseRelationEditor(props)
   },
   {
@@ -535,6 +793,103 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
     editor: (props) => withEditorTemplate(props)
+  },
+  {
+    field: "relatedNotes.freeText",
+    header: "Related Notes",
+    body: relatedNotesTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
+  },
+  {
+    field: "geneticSex.name",
+    header: "Genetic Sex",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("geneticSexFilter", "geneticSex.name"),
+    editor: (props) => geneticSexEditor(props)
+  },
+  {
+    field: "diseaseQualifiers.name",
+    header: "Disease Qualifiers",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("diseaseQualifiersFilter", "diseaseQualifiers.name"),
+    editor: (props) => diseaseQualifiersEditor(props),
+    body: diseaseQualifiersBodyTemplate
+  },
+  {
+    field: "sgdStrainBackground.name",
+    header: "SGD Strain Background",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("sgdStrainBackgroundFilter", ["sgdStrainBackground.name", "sgdStrainBackground.curie"]),
+    editor: (props) => sgdStrainBackgroundEditorTemplate(props),
+    body: sgdStrainBackgroundBodyTemplate
+  },
+  {
+    field: "annotationType.name",
+    header: "Annotation Type",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("annotationTypeFilter", "annotationType.name"),
+    editor: (props) => annotationTypeEditor(props)
+  },
+  {
+    field: "diseaseGeneticModifierRelation.name",
+    header: "Genetic Modifier Relation",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("geneticModifierRelationFilter", "diseaseGeneticModifierRelation.name"),
+    editor: (props) => geneticModifierRelationEditor(props)
+  },
+  {
+    field: "diseaseGeneticModifier.symbol",
+    header: "Genetic Modifier",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("geneticModifierFilter", ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]),
+    editor: (props) => geneticModifierEditorTemplate(props),
+    body: geneticModifierBodyTemplate
+  },
+  {
+    field: "dataProvider",
+    header: "Data Provider",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("dataProviderFilter", ["dataProvider"])
+  },
+  {
+    field: "secondaryDataProvider",
+    header: "Secondary Data Provider",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("secondaryDataProviderFilter", ["secondaryDataProvider"])
+  },
+  {
+    field: "modifiedBy",
+    header: "Modified By",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy"])
+  },
+  {
+    field: "dateLastModified",
+    header: "Date Last Modified",
+    filter: false
+  },
+  {
+    field: "createdBy",
+    header: "Created By",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy"])
+  },
+  {
+    field: "creationDate",
+    header: "Creation Date",
+    filter: false
   }
   ];
 
@@ -544,6 +899,8 @@ export const DiseaseAnnotationsTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           key={col.field}
           columnKey={col.field}
           field={col.field}
@@ -554,7 +911,6 @@ export const DiseaseAnnotationsTable = () => {
           filterElement={col.filterElement}
           editor={col.editor}
           body={col.body}
-          style={{ whiteSpace: 'normal' }}
         />;
       })
     );
@@ -568,7 +924,7 @@ export const DiseaseAnnotationsTable = () => {
           value={tableState.selectedColumnNames}
           options={defaultColumnNames}
           onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
+          style={{ width: '20%' }}
           disabled={!isEnabled}
         />
       </div>
@@ -595,15 +951,15 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
-          ref={dataTable}
+        <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
+          tableClassName='w-12 p-datatable-md'
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
           filterDisplay="row"
-          dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
+          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
@@ -614,6 +970,11 @@ export const DiseaseAnnotationsTable = () => {
           <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
+      <RelatedNotesDialog
+        relatedNotes={relatedNotes}
+        relatedNotesDialog={relatedNotesDialog}
+        setRelatedNotesDialog={setRelatedNotesDialog}
+      />
     </div>
   );
 };

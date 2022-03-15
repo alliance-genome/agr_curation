@@ -12,11 +12,11 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -43,7 +43,8 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject ExperimentalConditionDAO experimentalConditionDAO;
     @Inject BiologicalEntityDAO biologicalEntityDAO;
     @Inject GeneDAO geneDAO;
-
+    @Inject VocabularyTermDAO vocabularyTermDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -65,11 +66,18 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
             for (ConditionRelationFmsDTO conditionRelationFmsDTO : annotationFmsDTO.getConditionRelations()) {
                 ConditionRelation relation = new ConditionRelation();
                 
-                String conditionRelationType = validateConditionRelationFmsDTO(conditionRelationFmsDTO);
+                
+                String conditionRelationType = conditionRelationFmsDTO.getConditionRelationType();
                 if (conditionRelationType == null) {
-                    throw new ObjectUpdateException(annotationFmsDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelation - skipping annotation");
+                    throw new ObjectUpdateException(annotationFmsDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
+                }
+                conditionRelationType = convertConditionRelationTypeVocabulary(conditionRelationType);
+                
+                VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+                if (conditionRelationTypeTerm == null) {
+                    throw new ObjectUpdateException(annotationFmsDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
                 } else {
-                    relation.setConditionRelationType(conditionRelationType);
+                    relation.setConditionRelationType(conditionRelationTypeTerm);
                 }
                 
                 if (conditionRelationFmsDTO.getConditions() == null) {
@@ -193,28 +201,30 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         }
         annotation.setSingleReference(reference);
         
-        // Check valid disease relation type                                                                                                                                                        
+        // Check valid disease relation type            
+        VocabularyTerm diseaseRelation;
         if (dto.getObjectRelation().getObjectType().equals("gene")) {
-            if (!dto.getObjectRelation().getAssociationType().equals("is_implicated_in") &&
-                    !dto.getObjectRelation().getAssociationType().equals("is_marker_for")
-            ) {
+            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
+            if (diseaseRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid gene disease relation for " + dto.getObjectId() + " - skipping annotation");
             }
         } else if (dto.getObjectRelation().getObjectType().equals("allele")) {
-            if (!dto.getObjectRelation().getAssociationType().equals("is_implicated_in")) {
+            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+            if (diseaseRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid allele disease relation for " + dto.getObjectId() + " - skipping annotation");
             }
         } else if (dto.getObjectRelation().getObjectType().equals("genotype") ||
                 dto.getObjectRelation().getObjectType().equals("strain") ||
                 dto.getObjectRelation().getObjectType().equals("fish")
         ) {
-            if (!dto.getObjectRelation().getAssociationType().equals("is_model_of")) {
+            diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getObjectRelation().getAssociationType(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+            if (diseaseRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid AGM disease relation for " + dto.getObjectId() + " - skipping annotation");
             }
         } else {
             throw new ObjectValidationException(dto, "Invalid object type for " + dto.getObjectId() + " - skipping annotation");
         }
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getObjectRelation().getAssociationType()));
+        annotation.setDiseaseRelation(diseaseRelation);
         
         if (CollectionUtils.isNotEmpty(dto.getEvidence().getEvidenceCodes())) {
             List<EcoTerm> ecoTerms = new ArrayList<>();
@@ -248,11 +258,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         return annotation;
     }
     
-    private String validateConditionRelationFmsDTO(ConditionRelationFmsDTO dto) {
-        if (dto.getConditionRelationType() == null || dto.getConditions() == null) {
-            return null;
-        }
-        String conditionRelationType = dto.getConditionRelationType();
+    private String convertConditionRelationTypeVocabulary(String conditionRelationType) {
         if (conditionRelationType.equals("ameliorates")) {
             return "ameliorated_by";
         }

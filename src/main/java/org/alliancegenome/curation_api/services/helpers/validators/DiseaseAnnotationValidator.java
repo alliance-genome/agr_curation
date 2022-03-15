@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import javax.inject.Inject;
@@ -7,8 +8,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,6 +26,10 @@ public class DiseaseAnnotationValidator {
     GeneDAO geneDAO;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
+    private String DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY = "Disease genetic modifier relations";
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
@@ -99,9 +102,10 @@ public class DiseaseAnnotationValidator {
     }
     
     public String validateDataProvider(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
         String dataProvider = uiEntity.getDataProvider();
         if (dataProvider == null) {
-            addMessageResponse("dataProvider", requiredMessage);
+            // addMessageResponse("dataProvider", requiredMessage);
             return null;
         }
         
@@ -109,9 +113,10 @@ public class DiseaseAnnotationValidator {
     }
     
     public String validateCreatedBy(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
         String createdBy = uiEntity.getCreatedBy();
         if (createdBy == null) {
-            addMessageResponse("createdBy", requiredMessage);
+            // addMessageResponse("createdBy", requiredMessage);
             return null;
         }
         
@@ -119,9 +124,10 @@ public class DiseaseAnnotationValidator {
     }
     
     public String validateModifiedBy(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
         String modifiedBy = uiEntity.getModifiedBy();
         if (modifiedBy == null) {
-            addMessageResponse("modifiedBy", requiredMessage);
+            // addMessageResponse("modifiedBy", requiredMessage);
             return null;
         }
         
@@ -147,7 +153,7 @@ public class DiseaseAnnotationValidator {
         return modifier;
     }
     
-    public DiseaseGeneticModifierRelation validateDiseaseGeneticModifierRelation(DiseaseAnnotation uiEntity) {
+    public VocabularyTerm validateDiseaseGeneticModifierRelation(DiseaseAnnotation uiEntity) {
         if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
             return null;
         }
@@ -198,14 +204,13 @@ public class DiseaseAnnotationValidator {
         if (uiEntity.getCreationDate() != null)
             dbEntity.setCreationDate(uiEntity.getCreationDate());
         
-        if (uiEntity.getDateLastModified() != null)
-            dbEntity.setDateLastModified(uiEntity.getDateLastModified());
+        dbEntity.setDateLastModified(OffsetDateTime.now());
         
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
     
         BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
-        DiseaseGeneticModifierRelation dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
+        VocabularyTerm dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
         if (diseaseGeneticModifier != null && dgmRelation != null) {
             dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
             dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);

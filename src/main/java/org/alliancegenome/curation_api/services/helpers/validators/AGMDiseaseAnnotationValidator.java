@@ -6,7 +6,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
 
@@ -18,6 +17,11 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     @Inject
     AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+    
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
+    private String AGM_DISEASE_RELATION_VOCABULARY = "AGM disease relations";
 
     public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity) {
         response = new ObjectResponse<>(uiEntity);
@@ -38,7 +42,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         AffectedGenomicModel subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
 
-        DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
+        VocabularyTerm relation = validateDiseaseRelation(uiEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
         dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
@@ -65,21 +69,20 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
     }
     
-    private DiseaseRelation validateDiseaseRelation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
+    private VocabularyTerm validateDiseaseRelation(AGMDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
         
-        DiseaseRelation relation = uiEntity.getDiseaseRelation();
+        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), AGM_DISEASE_RELATION_VOCABULARY);
 
-        if(relation == DiseaseRelation.is_model_of) {
-            return relation;
-        } else {
+        if(relation == null) {
             addMessageResponse(field, invalidMessage);
             return null;
         }
         
+        return relation;
     }
 }
