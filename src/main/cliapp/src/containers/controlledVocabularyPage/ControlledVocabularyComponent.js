@@ -81,7 +81,7 @@ export const ControlledVocabularyComponent = () => {
       }
   });
 
-  useQuery(['genes', tableState],
+  useQuery(['vocabterms', tableState],
     () => searchService.search("vocabularyterm", tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
     onSuccess: (data) => {
       setIsEnabled(true);
@@ -333,7 +333,8 @@ export const ControlledVocabularyComponent = () => {
   const columns = [
     {
       field: "id",
-      header: "Id"
+      header: "Id",
+      sortable: false
     },
     {
       field: "name",
@@ -392,7 +393,7 @@ export const ControlledVocabularyComponent = () => {
           key={col.field}
           field={col.field}
           header={col.header}
-          sortable={isEnabled}
+          sortable={col.sortable}
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
