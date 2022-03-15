@@ -58,7 +58,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     @Inject
     NoteService noteService;
     @Inject
-    BiologicalEntityDAO biologicalEntityDAO;
+    GenomicEntityDAO genomicEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
 
@@ -256,7 +256,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             }
             annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
             
-            BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifier());
+            GenomicEntity diseaseGeneticModifier = genomicEntityDAO.find(dto.getDiseaseGeneticModifier());
             if (diseaseGeneticModifier == null) {
                 throw new ObjectValidationException(dto, "Invalid biological entity (" + dto.getDiseaseGeneticModifier() + ") in 'disease_genetic_modifier' field in " + annotation.getUniqueId() + " - skipping annotation");
             }

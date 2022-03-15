@@ -127,7 +127,7 @@ public class DiseaseAnnotation extends Association {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    private BiologicalEntity diseaseGeneticModifier;
+    private GenomicEntity diseaseGeneticModifier;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

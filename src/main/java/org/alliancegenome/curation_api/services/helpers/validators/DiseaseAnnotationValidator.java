@@ -25,7 +25,7 @@ public class DiseaseAnnotationValidator {
     @Inject
     GeneDAO geneDAO;
     @Inject
-    BiologicalEntityDAO biologicalEntityDAO;
+    GenomicEntityDAO genomicEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
     
@@ -134,7 +134,7 @@ public class DiseaseAnnotationValidator {
         return modifiedBy;
     }
     
-    public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity) {
+    public GenomicEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity) {
         if (uiEntity.getDiseaseGeneticModifier() == null) {
             return null;
         }
@@ -144,7 +144,7 @@ public class DiseaseAnnotationValidator {
             return null;
         }
         
-        BiologicalEntity modifier = biologicalEntityDAO.find(uiEntity.getDiseaseGeneticModifier().getCurie());
+        GenomicEntity modifier = genomicEntityDAO.find(uiEntity.getDiseaseGeneticModifier().getCurie());
         if (modifier == null) {
             addMessageResponse("diseaseGeneticModifier", invalidMessage);
             return null;
@@ -209,7 +209,7 @@ public class DiseaseAnnotationValidator {
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
     
-        BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
+        GenomicEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
         VocabularyTerm dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
         if (diseaseGeneticModifier != null && dgmRelation != null) {
             dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);

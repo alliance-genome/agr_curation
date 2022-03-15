@@ -70,7 +70,7 @@ export const DiseaseAnnotationsTable = () => {
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie'],
     'sgdStrainBackground.name': ['sgdStrainBackground.curie'],
-    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifer.name', 'diseaseGeneticModifier.curie']
+    'diseaseGeneticModifier.name': ['diseaseGeneticModifier.curie']
   };
 
   const aggregationFields = [
@@ -473,7 +473,7 @@ export const DiseaseAnnotationsTable = () => {
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
-          endpoint='biologicalentity'
+          endpoint='genomicentity'
           filterName='subjectFilter'
           fieldName='subject'
           isGene={true}
@@ -510,10 +510,10 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <AutocompleteEditor
-          autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          autocompleteFields={["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
-          endpoint='biologicalentity'
+          endpoint='genomicentity'
           filterName='geneticModifierFilter'
           fieldName='diseaseGeneticModifier'
           isGene={true}
@@ -643,13 +643,7 @@ export const DiseaseAnnotationsTable = () => {
   
   const geneticModifierBodyTemplate = (rowData) => {
     if (rowData.diseaseGeneticModifier) {
-      if (rowData.diseaseGeneticModifier.symbol) {
-        return <div className='overflow-hidden text-overflow-ellipsis'
-          dangerouslySetInnerHTML={{
-            __html: rowData.diseaseGeneticModifier.symbol + ' (' + rowData.diseaseGeneticModifier.curie + ')'
-          }}
-        />;
-      } else if (rowData.diseaseGeneticModifier.name) {
+      if (rowData.diseaseGeneticModifier.name) {
         return <div className='overflow-hidden text-overflow-ellipsis'
           dangerouslySetInnerHTML={{
             __html: rowData.diseaseGeneticModifier.name + ' (' + rowData.diseaseGeneticModifier.curie + ')'
@@ -815,11 +809,11 @@ export const DiseaseAnnotationsTable = () => {
     editor: (props) => geneticModifierRelationEditor(props)
   },
   {
-    field: "diseaseGeneticModifier.symbol",
+    field: "diseaseGeneticModifier.name",
     header: "Genetic Modifier",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("geneticModifierFilter", ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]),
+    filterElement: filterComponentInputTextTemplate("geneticModifierFilter", ["diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]),
     editor: (props) => geneticModifierEditorTemplate(props),
     body: geneticModifierBodyTemplate
   },

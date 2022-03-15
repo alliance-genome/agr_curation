@@ -43,7 +43,7 @@ public class DiseaseAnnotationITCase {
     private Allele testAllele2;
     private AffectedGenomicModel testAgm;
     private AffectedGenomicModel testAgm2;
-    private BiologicalEntity testBiologicalEntity;
+    private GenomicEntity testGenomicEntity;
     private Vocabulary geneDiseaseRelationVocabulary;
     private Vocabulary alleleDiseaseRelationVocabulary;
     private Vocabulary agmDiseaseRelationVocabulary;
@@ -88,7 +88,7 @@ public class DiseaseAnnotationITCase {
         testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606");
         testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
         testAgm2 = createModel("MODEL:da0002", "NCBITaxon:9606", "TestAGM2");
-        testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
+        testGenomicEntity = createGenomicEntity("BE:da0001", "NCBITaxon:9606");
         // geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
         // alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
         // agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
@@ -234,7 +234,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -293,7 +293,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0002");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -351,7 +351,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0003");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -409,7 +409,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -443,7 +443,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -477,7 +477,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -511,7 +511,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -545,7 +545,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -580,7 +580,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -618,7 +618,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -656,7 +656,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -690,7 +690,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -731,7 +731,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -755,9 +755,9 @@ public class DiseaseAnnotationITCase {
     @Order(17)
     public void editWithInvalidDiseaseGeneticModifier() {
         
-        BiologicalEntity nonPersistedBiologicalEntity = new BiologicalEntity();
-        nonPersistedBiologicalEntity.setCurie("NPBE:0001");
-        nonPersistedBiologicalEntity.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+        GenomicEntity nonPersistedGenomicEntity = new GenomicEntity();
+        nonPersistedGenomicEntity.setCurie("NPBE:0001");
+        nonPersistedGenomicEntity.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
         
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
         editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
@@ -769,7 +769,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(nonPersistedBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(nonPersistedGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -806,7 +806,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -844,7 +844,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -878,7 +878,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -912,7 +912,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testGenomicEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
@@ -967,20 +967,20 @@ public class DiseaseAnnotationITCase {
         return res.getEntity();
     }
     
-    private BiologicalEntity createBiologicalEntity(String curie, String taxon) {
-        BiologicalEntity bioEntity = new BiologicalEntity();
-        bioEntity.setCurie(curie);
-        bioEntity.setTaxon(getTaxonFromCurie(taxon));
+    private GenomicEntity createGenomicEntity(String curie, String taxon) {
+        GenomicEntity genomicEntity = new GenomicEntity();
+        genomicEntity.setCurie(curie);
+        genomicEntity.setTaxon(getTaxonFromCurie(taxon));
         
         RestAssured.given().
                 contentType("application/json").
-                body(bioEntity).
+                body(genomicEntity).
                 when().
-                post("/api/biologicalentity").
+                post("/api/genomicentity").
                 then().
                 statusCode(200);
         
-        return bioEntity;
+        return genomicEntity;
     }
 
 
