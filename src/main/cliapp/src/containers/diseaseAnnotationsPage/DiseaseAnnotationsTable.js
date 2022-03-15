@@ -27,7 +27,7 @@ import { Button } from 'primereact/button';
 export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
-  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex",
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
     "SGD Strain Background", "Annotation Type", "Data Provider", "Modified By", "Created By", "Related Notes"];
   let initialTableState = {
     page: 0,
@@ -277,7 +277,7 @@ export const DiseaseAnnotationsTable = () => {
       updatedRow.object = {};
       updatedRow.object.curie = event.data.object.curie;
     }
-    if (Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
+    if (event.data.diseaseGeneticModifier && Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
       event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
       updatedRow.diseaseGeneticModifier = {};
       updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
@@ -816,7 +816,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("geneticSexFilter", "geneticSex.name"),
     editor: (props) => geneticSexEditor(props)
   },
-  /*{
+  {
     field: "diseaseQualifiers.name",
     header: "Disease Qualifiers",
     sortable: isEnabled,
@@ -824,7 +824,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("diseaseQualifiersFilter", "diseaseQualifiers.name"),
     editor: (props) => diseaseQualifiersEditor(props),
     body: diseaseQualifiersBodyTemplate
-  },*/
+  },
   {
     field: "sgdStrainBackground.name",
     header: "SGD Strain Background",

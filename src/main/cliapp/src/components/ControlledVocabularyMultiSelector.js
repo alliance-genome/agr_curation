@@ -13,8 +13,8 @@ export function ControlledVocabularyMultiSelectDropdown({ options, editorChange,
             <MultiSelect
                 value={selectedValues}
                 options={options}
-                onShow={selectedValues}
                 onChange={(e) => onChange(e)}
+                display="chip"
                 optionLabel="name"
                 placeholder={placeholderText}
                 style={{ width: '100%' }}
