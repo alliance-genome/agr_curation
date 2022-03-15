@@ -836,7 +836,7 @@ export const DiseaseAnnotationsTable = () => {
     field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
-    // sortable: isEnabled,
+    sortable: false,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
@@ -943,7 +943,7 @@ export const DiseaseAnnotationsTable = () => {
           columnKey={col.field}
           field={col.field}
           header={col.header}
-          sortable={isEnabled}
+          sortable={col.sortable}
           showFilterMenu={false}
           filter={col.filter}
           filterElement={col.filterElement}

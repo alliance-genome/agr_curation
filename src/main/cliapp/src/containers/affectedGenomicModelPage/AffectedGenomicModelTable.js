@@ -6,6 +6,7 @@ import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
+import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 
@@ -101,9 +102,13 @@ export const AffectedGenomicModelTable = () => {
     />);
   };
 
-
   const nameTemplate = (rowData) => {
-    return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.name }} />
+    return (
+      <>
+        <div className={`overflow-hidden text-overflow-ellipsis ${rowData.curie.replace(':', '')}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
+        <Tooltip target={`.${rowData.curie.replace(':', '')}`} content={rowData.name} />
+      </>
+    )
   }
 
   const columns = [
@@ -161,6 +166,7 @@ export const AffectedGenomicModelTable = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
+          body={col.body}
         />;
       })
     );
@@ -181,6 +187,7 @@ export const AffectedGenomicModelTable = () => {
   return (
     <div>
       <div className="card">
+        <h3>AGM</h3>
         <DataTable value={agms} className="p-datatable-md" header={header} reorderableColumns
           ref={dataTable} filterDisplay="row"
           tableClassName='w-12 p-datatable-md'
