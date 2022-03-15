@@ -81,7 +81,7 @@ export const ControlledVocabularyComponent = () => {
       }
   });
 
-  useQuery(['genes', tableState],
+  useQuery(['vocabterms', tableState],
     () => searchService.search("vocabularyterm", tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
     onSuccess: (data) => {
       setIsEnabled(true);
