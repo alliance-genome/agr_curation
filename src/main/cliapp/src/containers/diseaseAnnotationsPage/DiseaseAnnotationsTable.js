@@ -26,8 +26,10 @@ import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 
 export const DiseaseAnnotationsTable = () => {
-  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-    "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
+  // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
+  //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex",
+    "SGD Strain Background", "Annotation Type", "Data Provider", "Modified By", "Created By", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -73,8 +75,8 @@ export const DiseaseAnnotationsTable = () => {
     'object.name': ['object.curie', 'object.namespace'],
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie'],
-    'sgdStrainBackground.name': ['sgdStrainBackground.curie'],
-    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifer.name', 'diseaseGeneticModifier.curie']
+    'sgdStrainBackground.name': ['sgdStrainBackground.curie']/*,
+    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifer.name', 'diseaseGeneticModifier.curie']*/
   };
 
   const aggregationFields = [
@@ -293,6 +295,11 @@ export const DiseaseAnnotationsTable = () => {
       event.data.object.curie = trimWhitespace(event.data.object.curie);
       updatedRow.object = {};
       updatedRow.object.curie = event.data.object.curie;
+    }
+    if (event.data.diseaseGeneticModifier && Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
+      event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
+      updatedRow.diseaseGeneticModifier = {};
+      updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
     }
 
 
@@ -542,7 +549,7 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='agm'
           filterName='sgdStrainBackgroundFilter'
           fieldName='sgdStrainBackground'
-          isGene={true}
+          isSgdStrainBackground={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -562,7 +569,6 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='biologicalentity'
           filterName='geneticModifierFilter'
           fieldName='diseaseGeneticModifier'
-          isGene={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -848,7 +854,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("geneticSexFilter", "geneticSex.name"),
     editor: (props) => geneticSexEditor(props)
   },
-  {
+  /*{
     field: "diseaseQualifiers.name",
     header: "Disease Qualifiers",
     sortable: isEnabled,
@@ -856,7 +862,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("diseaseQualifiersFilter", "diseaseQualifiers.name"),
     editor: (props) => diseaseQualifiersEditor(props),
     body: diseaseQualifiersBodyTemplate
-  },
+  },*/
   {
     field: "sgdStrainBackground.name",
     header: "SGD Strain Background",
@@ -874,7 +880,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("annotationTypeFilter", "annotationType.name"),
     editor: (props) => annotationTypeEditor(props)
   },
-  {
+  /*{
     field: "diseaseGeneticModifierRelation.name",
     header: "Genetic Modifier Relation",
     sortable: isEnabled,
@@ -890,7 +896,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("geneticModifierFilter", ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]),
     editor: (props) => geneticModifierEditorTemplate(props),
     body: geneticModifierBodyTemplate
-  },
+  },*/
   {
     field: "dataProvider",
     header: "Data Provider",
@@ -898,13 +904,13 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("dataProviderFilter", ["dataProvider"])
   },
-  {
+  /*{
     field: "secondaryDataProvider",
     header: "Secondary Data Provider",
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("secondaryDataProviderFilter", ["secondaryDataProvider"])
-  },
+  },*/
   {
     field: "modifiedBy",
     header: "Modified By",
@@ -912,23 +918,23 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy"])
   },
-  {
+  /*{
     field: "dateLastModified",
     header: "Date Last Modified",
     filter: false
-  },
+  },*/
   {
     field: "createdBy",
     header: "Created By",
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy"])
-  },
+  }/*,
   {
     field: "creationDate",
     header: "Creation Date",
     filter: false
-  }
+  }*/
   ];
 
   useEffect(() => {

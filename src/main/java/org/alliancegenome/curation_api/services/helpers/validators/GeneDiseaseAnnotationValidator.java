@@ -97,7 +97,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         }
         
         AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
-        if (sgdStrainBackground == null) {
+        if (sgdStrainBackground == null || !sgdStrainBackground.getCurie().startsWith("SGD:")) {
             addMessageResponse("sgdStrainBackground", invalidMessage);
             return null;
         }

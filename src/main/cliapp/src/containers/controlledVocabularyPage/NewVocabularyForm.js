@@ -4,12 +4,13 @@ import {Dialog} from "primereact/dialog";
 import {InputText} from "primereact/inputtext";
 import {classNames} from "primereact/utils";
 import {Button} from "primereact/button";
-import {useMutation} from "react-query";
+import {useMutation,useQueryClient} from "react-query";
 import { Toast } from 'primereact/toast';
 import {VocabularyService} from "../../service/VocabularyService";
 
 export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog }) => {
     const { authState } = useOktaAuth();
+    const queryClient = useQueryClient();
     const [vocabulary, setVocabulary] = useState({});
     const [submitted, setSubmitted] = useState(false);
     const toast_success = useRef(null);
@@ -17,7 +18,6 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
 
     let emptyVocabulary = {};
     let vocabularyService = null;
-    //const queryClient = useQueryClient();
 
     const mutation = useMutation(newVocabularyName => {
         return getService().createVocabulary(newVocabularyName);
@@ -51,7 +51,7 @@ export const NewVocabularyForm = ({ newVocabularyDialog, setNewVocabularyDialog 
             mutation.mutate(vocabulary, {
                 onSuccess: () => {
                     toast_success.current.show({ severity: 'success', summary: 'Successful', detail: 'New Vocabulary Added' });
-                    //queryClient.invalidateQueries('bulkloadtable');
+                    queryClient.invalidateQueries('vocabularies');
                     setSubmitted(false);
                     setNewVocabularyDialog(false);
                     setVocabulary(emptyVocabulary);
