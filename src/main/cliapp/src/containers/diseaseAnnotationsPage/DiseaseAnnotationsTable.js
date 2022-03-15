@@ -23,6 +23,7 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
+import { Tooltip } from 'primereact/tooltip';
 
 export const DiseaseAnnotationsTable = () => {
   const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
@@ -179,20 +180,38 @@ export const DiseaseAnnotationsTable = () => {
     }
   };
 
+
   const evidenceTemplate = (rowData) => {
     if (rowData && rowData.evidenceCodes) {
       const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
-      return (<div>
-        <ul style={{ listStyleType: 'none' }}>
-          {sortedEvidenceCodes.map((a, index) =>
-            <li key={index}>
-              <EllipsisTableCell>
-                {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-              </EllipsisTableCell>
-            </li>
-          )}
-        </ul>
-      </div>);
+      return (
+        <>
+          <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
+            <ul style={{ listStyleType: 'none' }}>
+              {sortedEvidenceCodes.map((a, index) =>
+                <li key={index}>
+                  <EllipsisTableCell>
+                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
+                  </EllipsisTableCell>
+                </li>
+              )}
+            </ul>
+          </div>
+          <Tooltip target={`.a${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }}>
+            <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
+              <ul style={{ listStyleType: 'none' }}>
+                {sortedEvidenceCodes.map((a, index) =>
+                  <li key={index}>
+                    <EllipsisTableCell>
+                      {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
+                    </EllipsisTableCell>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </Tooltip>
+        </>
+      );
     }
   };
 
@@ -329,7 +348,12 @@ export const DiseaseAnnotationsTable = () => {
 
   const diseaseBodyTemplate = (rowData) => {
     if (rowData.object) {
-      return <EllipsisTableCell>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>;
+      return (
+        <>
+          <EllipsisTableCell otherClasses={`a${rowData.object.curie.replace(':', '')}`}>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>
+          <Tooltip target={`.a${rowData.object.curie.replace(':', '')}`} content={`${rowData.object.name} (${rowData.object.curie})`} />
+        </>
+      )
     }
   };
 
@@ -632,17 +656,27 @@ export const DiseaseAnnotationsTable = () => {
   const subjectBodyTemplate = (rowData) => {
     if (rowData.subject) {
       if (rowData.subject.symbol) {
-        return <div className='overflow-hidden text-overflow-ellipsis'
-          dangerouslySetInnerHTML={{
-            __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
-          }}
-        />;
+        return (
+          <>
+            <div className={`overflow-hidden text-overflow-ellipsis a${rowData.subject.curie.replace(':', '')}`}
+              dangerouslySetInnerHTML={{
+                __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+              }}
+            />
+            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`} content={`${rowData.subject.symbol} (${rowData.subject.curie})`} />
+          </>
+        )
       } else if (rowData.subject.name) {
-        return <div className='overflow-hidden text-overflow-ellipsis'
-          dangerouslySetInnerHTML={{
-            __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
-          }}
-        />;
+        return (
+          <>
+            <div className={`overflow-hidden text-overflow-ellipsis a${rowData.subject.curie.replace(':', '')}`}
+              dangerouslySetInnerHTML={{
+                __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
+              }}
+            />
+            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`} content={`${rowData.subject.name} (${rowData.subject.curie})`} />
+          </>
+        )
       } else {
         return <div className='overflow-hidden text-overflow-ellipsis' >{rowData.subject.curie}</div>;
       }
@@ -686,9 +720,13 @@ export const DiseaseAnnotationsTable = () => {
 
   const uniqueIdBodyTemplate = (rowData) => {
     return (
-      <EllipsisTableCell>
-        {rowData.uniqueId}
-      </EllipsisTableCell>
+      //the 'a' at the start is a hack since css selectors can't start with a number
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.id}`}>
+          {rowData.uniqueId}
+        </EllipsisTableCell>
+        <Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
+      </>
     )
   };
 
@@ -798,7 +836,7 @@ export const DiseaseAnnotationsTable = () => {
     field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
-    sortable: isEnabled,
+    // sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
@@ -952,7 +990,7 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='w-12 p-datatable-md'
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '300%' }}
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
