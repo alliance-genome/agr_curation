@@ -333,7 +333,8 @@ export const ControlledVocabularyComponent = () => {
   const columns = [
     {
       field: "id",
-      header: "Id"
+      header: "Id",
+      sortable: false
     },
     {
       field: "name",
@@ -392,7 +393,7 @@ export const ControlledVocabularyComponent = () => {
           key={col.field}
           field={col.field}
           header={col.header}
-          sortable={isEnabled}
+          sortable={(col.field == "id")? false : isEnabled}
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
