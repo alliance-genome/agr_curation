@@ -16,6 +16,8 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Button } from 'primereact/button';
+import { Tooltip } from 'primereact/tooltip';
+
 
 export const ExperimentalConditionsTable = () => {
   const defaultColumnNames = ["Unique ID", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
@@ -222,6 +224,7 @@ export const ExperimentalConditionsTable = () => {
     );
   };
 
+
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponentInputText
       isEnabled={isEnabled}
@@ -232,15 +235,43 @@ export const ExperimentalConditionsTable = () => {
     />);
   };
 
+  const uniqueIdBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
+        <Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
+      </>
+    )
+  };
+
+  const statementBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
+        <Tooltip target={`.b${rowData.id}`} content={rowData.conditionStatement} />
+      </>
+    )
+  };
+
   const conditionClassBodyTemplate = (rowData) => {
     if (rowData.conditionClass) {
-      return <EllipsisTableCell>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>;
+      return (
+        <>
+          <EllipsisTableCell otherClasses={rowData.conditionClass.curie.replace(':', '')}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
+          <Tooltip target={`.${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
+        </>
+      )
     }
   };
 
   const conditionIdBodyTemplate = (rowData) => {
     if (rowData.conditionId) {
-      return <EllipsisTableCell>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>;
+      return (
+        <>
+          <EllipsisTableCell otherClasses={rowData.conditionId.curie.replace(':', '')}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
+          <Tooltip target={`.${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
+        </>
+      )
     }
   };
 
@@ -303,6 +334,7 @@ export const ExperimentalConditionsTable = () => {
       header: "Unique ID",
       sortable: isEnabled,
       filter: true,
+      body: uniqueIdBodyTemplate,
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
     },
     {
@@ -310,6 +342,7 @@ export const ExperimentalConditionsTable = () => {
       header: "Statement",
       sortable: isEnabled,
       filter: true,
+      body: statementBodyTemplate,
       filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
     },
     {
@@ -438,7 +471,7 @@ export const ExperimentalConditionsTable = () => {
         <h3>Experimental Conditions Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} header={header} reorderableColumns={isEnabled}
-          tableClassName='w-12 p-datatable-md'
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '200%' }}
           ref={dataTable}
           filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}

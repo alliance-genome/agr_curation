@@ -149,6 +149,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
           key={col.field}
           field={col.field}
           header={col.header}
+          body={col.body}
           sortable={isEnabled}
           filter
           showFilterMenu={false}
