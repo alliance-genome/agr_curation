@@ -242,14 +242,8 @@ export const DiseaseAnnotationsTable = () => {
 
   const relatedNotesTemplate = (rowData) => {
     if (rowData.relatedNotes) {
-      return <EllipsisTableCell><button
-        style={{
-          color: 'blue',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></button></EllipsisTableCell>;
+      return <EllipsisTableCell><Button className="p-button-raised p-button-text"
+        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></Button></EllipsisTableCell>;
     }
   };
 
