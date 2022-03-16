@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react'
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -508,7 +508,7 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='biologicalentity'
           filterName='subjectFilter'
           fieldName='subject'
-          isGene={true}
+          isSubject={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -595,7 +595,6 @@ export const DiseaseAnnotationsTable = () => {
           filterName='withFilter'
           fieldName='with'
           isWith={true}
-          isGene={true}
           isMultiple={true}
         />
         <ErrorMessageComponent
