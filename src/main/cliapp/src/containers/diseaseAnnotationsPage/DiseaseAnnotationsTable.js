@@ -770,6 +770,15 @@ export const DiseaseAnnotationsTable = () => {
     />);
   }
 
+  const sgdStrainBackgroundEditorSelector = (props) => {
+    if (props.rowData.type === "GeneDiseaseAnnotation") {
+      return sgdStrainBackgroundEditorTemplate(props);
+    }
+    else {
+      return null;
+    }
+  }
+
   const columns = [{
     field: "uniqueId",
     header: "Unique Id",
@@ -869,7 +878,7 @@ export const DiseaseAnnotationsTable = () => {
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("sgdStrainBackgroundFilter", ["sgdStrainBackground.name", "sgdStrainBackground.curie"]),
-    editor: (props) => sgdStrainBackgroundEditorTemplate(props),
+    editor: (props) => sgdStrainBackgroundEditorSelector(props),
     body: sgdStrainBackgroundBodyTemplate
   },
   {
