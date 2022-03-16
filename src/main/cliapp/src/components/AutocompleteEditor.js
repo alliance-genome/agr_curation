@@ -14,7 +14,8 @@ export const AutocompleteEditor = (
     otherFilters = [],
     isSubject = false,
     isWith = false,
-    isMultiple = false
+    isMultiple = false,
+    isSgdStrainBackground = false
   }
 ) => {
   const [filtered, setFiltered] = useState([]);
@@ -43,7 +44,11 @@ export const AutocompleteEditor = (
         if (data.results?.length > 0) {
           if (isWith) {
             setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-          } else {
+          }
+          else if (isSgdStrainBackground) {
+            setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
+          }
+          else {
             setFiltered(data.results);
           };
         } else {
@@ -153,7 +158,7 @@ export const AutocompleteEditor = (
   )
 }
 
-const EditorTooltip = ({ op, autocompleteSelectedItem, dataType }) => {
+const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
   return (
     <>
       <Tooltip ref={op} style={{ width: '450px', maxWidth: '450px' }} position={'right'} mouseTrack mouseTrackLeft={30}>

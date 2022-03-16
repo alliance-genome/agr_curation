@@ -1,11 +1,13 @@
 import React from 'react'
 import { OntologyTable } from './OntologyTable';
+import { NameTemplate } from './NameTemplate';
+import { DefinitionTemplate } from './DefinitionTemplate';
 
 export const DiseaseOntologyComponent = () => {
   const columns = [
     { field: "curie", header: "Curie" },
-    { field: "name", header: "Name" },
-    { field: "definition", header: "Definition" },
+    { field: "name", header: "Name", body: (rowData) => <NameTemplate rowData={rowData}/> },
+    { field: "definition", header: "Definition", body: (rowData) => <DefinitionTemplate rowData={rowData} />},
     { field: "obsolete", header: "Obsolete" }
   ]
 

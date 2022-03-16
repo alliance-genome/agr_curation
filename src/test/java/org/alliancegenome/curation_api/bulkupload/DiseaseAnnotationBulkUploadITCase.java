@@ -38,6 +38,7 @@ import io.restassured.config.*;
 @Order(11)
 public class DiseaseAnnotationBulkUploadITCase {
     
+    private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "DATEST:Gene0001", "DATEST:Gene0002", "HGNC:0001"));
     private String requiredDoTerm = "DATEST:Disease0001";
     private String requiredEcoTerm = "DATEST:Evidence0001";
     private String requiredGoTerm = "DATEST:GOTerm0001";
@@ -45,11 +46,18 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredChemicalTerm = "DATEST:ChemicalTerm0001";
     private String requiredAllele = "DATEST:Allele0001";
     private String requiredAgm = "DATEST:AGM0001";
+    private String requiredSgdBackgroundStrain = "SGD:AGM0001";
     private String requiredZecoTerm = "DATEST:ExpCondTerm0001";
     private String requiredExpCondTerm = "DATEST:ExpCondTerm0002";
-    private String requiredVocabulary = "Disease annotation note types";
-    private String requiredVocabularyTerm = "disease_summary";
-    private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "DATEST:Gene0001", "DATEST:Gene0002", "HGNC:0001"));
+    private String requiredGeneDiseaseRelation = "is_implicated_in";
+    private String requiredAlleleDiseaseRelation = "is_implicated_in";
+    private String requiredAgmDiseaseRelation = "is_model_of";
+    private String requiredGeneticSex = "male";
+    private String requiredDiseaseGeneticModifierRelation = "ameliorated_by";
+    private String requiredDiseaseQualifier = "susceptibility";
+    private String requiredAnnotationType = "manually_curated";
+    private String requiredNoteType = "disease_summary";
+    private String requiredConditionRelationType = "exacerbated_by";
     
 
     
@@ -93,14 +101,14 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].uniqueId", is("DATEST:Annot0001")).
             body("results[0].subject.curie", is("DATEST:Gene0001")).
             body("results[0].object.curie", is("DATEST:Disease0001")).
-            body("results[0].diseaseRelation", is("is_implicated_in")).
-            body("results[0].geneticSex", is("male")).
+            body("results[0].diseaseRelation.name", is("is_implicated_in")).
+            body("results[0].geneticSex.name", is("male")).
             body("results[0].modifiedBy", is("DATEST:Person0001")).
             body("results[0].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
             body("results[0].createdBy", is("DATEST:Person0001")).
             body("results[0].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[0].conditionRelations", hasSize(1)).
-            body("results[0].conditionRelations[0].conditionRelationType", is("exacerbated_by")).
+            body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
             body("results[0].conditionRelations[0].conditions", hasSize(1)).
             body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
             body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -112,7 +120,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[0].negated", is(true)).
             body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-            body("results[0].diseaseGeneticModifierRelation", is("ameliorated_by")).
+            body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[0].with", hasSize(1)).
             body("results[0].with[0].curie", is("HGNC:0001")).
             body("results[0].singleReference.curie", is("PMID:25920554")).
@@ -120,9 +128,9 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[0].relatedNotes[0].internal", is(false)).
             body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-            body("results[0].annotationType", is("manually_curated")).
-            body("results[0].diseaseQualifiers[0]", is("susceptibility")).
-            body("results[0].sgdStrainBackground.curie", is("DATEST:AGM0001")).
+            body("results[0].annotationType.name", is("manually_curated")).
+            body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
+            body("results[0].sgdStrainBackground.curie", is("SGD:AGM0001")).
             body("results[0].evidenceCodes", hasSize(1)).
             body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -156,14 +164,14 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].uniqueId", is("DATEST:Annot0002")).
             body("results[1].subject.curie", is("DATEST:Allele0001")).
             body("results[1].object.curie", is("DATEST:Disease0001")).
-            body("results[1].diseaseRelation", is("is_implicated_in")).
-            body("results[1].geneticSex", is("male")).
+            body("results[1].diseaseRelation.name", is("is_implicated_in")).
+            body("results[1].geneticSex.name", is("male")).
             body("results[1].modifiedBy", is("DATEST:Person0001")).
             body("results[1].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
             body("results[1].createdBy", is("DATEST:Person0001")).
             body("results[1].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[1].conditionRelations", hasSize(1)).
-            body("results[1].conditionRelations[0].conditionRelationType", is("exacerbated_by")).
+            body("results[1].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
             body("results[1].conditionRelations[0].conditions", hasSize(1)).
             body("results[1].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
             body("results[1].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -175,7 +183,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[1].negated", is(true)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-            body("results[1].diseaseGeneticModifierRelation", is("ameliorated_by")).
+            body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[1].with", hasSize(1)).
             body("results[1].with[0].curie", is("HGNC:0001")).
             body("results[1].singleReference.curie", is("PMID:25920554")).
@@ -183,8 +191,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[1].relatedNotes[0].internal", is(false)).
             body("results[1].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-            body("results[0].annotationType", is("manually_curated")).
-            body("results[0].diseaseQualifiers[0]", is("susceptibility")).
+            body("results[0].annotationType.name", is("manually_curated")).
+            body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
             body("results[1].evidenceCodes", hasSize(1)).
             body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -218,14 +226,14 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].uniqueId", is("DATEST:Annot0003")).
             body("results[2].subject.curie", is("DATEST:AGM0001")).
             body("results[2].object.curie", is("DATEST:Disease0001")).
-            body("results[2].diseaseRelation", is("is_model_of")).
-            body("results[2].geneticSex", is("male")).
+            body("results[2].diseaseRelation.name", is("is_model_of")).
+            body("results[2].geneticSex.name", is("male")).
             body("results[2].modifiedBy", is("DATEST:Person0001")).
             body("results[2].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
             body("results[2].createdBy", is("DATEST:Person0001")).
             body("results[2].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[2].conditionRelations", hasSize(1)).
-            body("results[2].conditionRelations[0].conditionRelationType", is("exacerbated_by")).
+            body("results[2].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
             body("results[2].conditionRelations[0].conditions", hasSize(1)).
             body("results[2].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
             body("results[2].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -237,7 +245,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[2].negated", is(true)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-            body("results[2].diseaseGeneticModifierRelation", is("ameliorated_by")).
+            body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[2].with", hasSize(1)).
             body("results[2].with[0].curie", is("HGNC:0001")).
             body("results[2].singleReference.curie", is("PMID:25920554")).
@@ -245,8 +253,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[2].relatedNotes[0].internal", is(false)).
             body("results[2].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-            body("results[0].annotationType", is("manually_curated")).
-            body("results[0].diseaseQualifiers[0]", is("susceptibility")).
+            body("results[0].annotationType.name", is("manually_curated")).
+            body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
             body("results[2].evidenceCodes", hasSize(1)).
             body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -1663,8 +1671,26 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadAnatomyTerm();
         loadGenes();  
         loadAllele();
-        loadAGM();
-        loadVocabularyAndTerm();
+        loadAGM(requiredAgm);
+        loadAGM(requiredSgdBackgroundStrain);
+        Vocabulary noteTypeVocabulary = createVocabulary("Disease annotation note types");
+        // Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
+        // Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
+        // Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
+        Vocabulary geneticSexVocabulary = getVocabulary("Genetic sexes");
+        // Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary("Disease genetic modifier relations");
+        Vocabulary diseaseQualifierVocabulary = getVocabulary("Disease qualifiers");
+        Vocabulary annotationTypeVocabulary = getVocabulary("Annotation types");
+        Vocabulary conditionRelationTypeVocabulary = getVocabulary("Condition relation types");
+        createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
+        // createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
+        // createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
+        // createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
+        createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier);
+        createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex);
+        // createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
+        createVocabularyTerm(annotationTypeVocabulary, requiredAnnotationType);
+        createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
     }
     
     private void loadDOTerm() throws Exception {
@@ -1790,9 +1816,9 @@ public class DiseaseAnnotationBulkUploadITCase {
         }
     }
 
-    private void loadAGM() throws Exception {
+    private void loadAGM(String agmCurie) throws Exception {
         AffectedGenomicModel agm = new AffectedGenomicModel();
-        agm.setCurie(requiredAgm);
+        agm.setCurie(agmCurie);
         agm.setTaxon(getTaxon("NCBITaxon:6239"));
         agm.setName("Test AGM");
 
@@ -1819,38 +1845,51 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200);
     }
     
-    private void loadVocabularyAndTerm() throws Exception {
-        
+    private Vocabulary createVocabulary(String name) {
         Vocabulary vocabulary = new Vocabulary();
-        vocabulary.setName(requiredVocabulary);
+        vocabulary.setName(name);
         
-        ObjectResponse<Vocabulary> response = RestAssured.given().
-            contentType("application/json").
-            body(vocabulary).
-            when().
-            post("/api/vocabulary").
-            then().
-            statusCode(200).
-            extract().body().as(getObjectResponseTypeRefVocabulary());
-    
+        ObjectResponse<Vocabulary> response = 
+            RestAssured.given().
+                contentType("application/json").
+                body(vocabulary).
+                when().
+                post("/api/vocabulary").
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabulary());
+        
         vocabulary = response.getEntity();
         
-        loadVocabularyTerm(vocabulary);
+        return vocabulary;
     }
     
-    private void loadVocabularyTerm(Vocabulary vocabulary) throws Exception {
+    private Vocabulary getVocabulary(String name) {
+        ObjectResponse<Vocabulary> response = 
+            RestAssured.given().
+                when().
+                get("/api/vocabulary/findBy/" + name).
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabulary());
         
-        VocabularyTerm vocabularyTerm = new VocabularyTerm();
-        vocabularyTerm.setName(requiredVocabularyTerm);
-        vocabularyTerm.setVocabulary(vocabulary);
+        Vocabulary vocabulary = response.getEntity();
+        
+        return vocabulary;
+    }
 
+    private void createVocabularyTerm(Vocabulary vocabulary, String name) {
+        VocabularyTerm vocabularyTerm = new VocabularyTerm();
+        vocabularyTerm.setName(name);
+        vocabularyTerm.setVocabulary(vocabulary);
+        
         RestAssured.given().
-            contentType("application/json").
-            body(vocabularyTerm).
-            when().
-            post("/api/vocabularyterm").
-            then().
-            statusCode(200);
+                contentType("application/json").
+                body(vocabularyTerm).
+                when().
+                post("/api/vocabularyterm").
+                then().
+                statusCode(200);
     }
     
     private NCBITaxonTerm getTaxon(String taxonCurie) {
