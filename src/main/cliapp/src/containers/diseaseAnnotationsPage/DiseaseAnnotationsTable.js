@@ -983,7 +983,7 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '300%' }}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }}
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
