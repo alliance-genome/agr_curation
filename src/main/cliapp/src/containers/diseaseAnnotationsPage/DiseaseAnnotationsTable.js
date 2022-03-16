@@ -368,7 +368,6 @@ export const DiseaseAnnotationsTable = () => {
 
   const onDiseaseRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseRelation = event.value;
       setDiseaseAnnotations(updatedAnnotations);
@@ -379,11 +378,12 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <ControlledVocabularyDropdown
+          field="diseaseRelation"
           options={diseaseRelationsTerms}
           editorChange={onDiseaseRelationEditorValueChange}
           props={props}
-          placeholderText={props.rowData.diseaseRelation.name}
           showClear={false}
+          placeholderText={props.rowData.diseaseRelation.name}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
       </>
@@ -392,23 +392,18 @@ export const DiseaseAnnotationsTable = () => {
 
   const onGeneticSexEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     updatedAnnotations[props.rowIndex].geneticSex = event.value;
     setDiseaseAnnotations(updatedAnnotations);
   };
 
   const geneticSexEditor = (props) => {
-    let placeholderText = '';
-    if (props.rowData.geneticSex) {
-      placeholderText = props.rowData.geneticSex.name;
-    }
     return (
       <>
         <ControlledVocabularyDropdown
+          field="geneticSex"
           options={geneticSexTerms}
           editorChange={onGeneticSexEditorValueChange}
           props={props}
-          placeholderText={placeholderText}
           showClear={true}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"geneticSex"} />
@@ -418,23 +413,18 @@ export const DiseaseAnnotationsTable = () => {
 
   const onAnnotationTypeEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     updatedAnnotations[props.rowIndex].annotationType = event.value;
     setDiseaseAnnotations(updatedAnnotations);
   };
 
   const annotationTypeEditor = (props) => {
-    let placeholderText = '';
-    if (props.rowData.annotationType) {
-      placeholderText = props.rowData.annotationType.name;
-    }
     return (
       <>
         <ControlledVocabularyDropdown
+          field="annotationType"
           options={annotationTypeTerms}
           editorChange={onAnnotationTypeEditorValueChange}
           props={props}
-          placeholderText={placeholderText}
           showClear={true}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"annotationType"} />
@@ -444,23 +434,18 @@ export const DiseaseAnnotationsTable = () => {
 
   const onGeneticModifierRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     updatedAnnotations[props.rowIndex].diseaseGeneticModifierRelation = event.value;
     setDiseaseAnnotations(updatedAnnotations);
   };
 
   const geneticModifierRelationEditor = (props) => {
-    let placeholderText = '';
-    if (props.rowData.diseaseGeneticModifierRelation) {
-      placeholderText = props.rowData.diseaseGeneticModifierRelation.name;
-    }
     return (
       <>
         <ControlledVocabularyDropdown
+          field="diseaseGeneticModifierRelation"
           options={geneticModifierRelationTerms}
           editorChange={onGeneticModifierRelationEditorValueChange}
           props={props}
-          placeholderText={placeholderText}
           showClear={true}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
