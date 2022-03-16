@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import { Dropdown } from "primereact/dropdown"
 
 export function ControlledVocabularyDropdown({ field, options, editorChange, props, showClear, placeholderText}) {
-    console.log(props)
     const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
     const onShow = () => {
         setSelectedValue(props.rowData[field])
