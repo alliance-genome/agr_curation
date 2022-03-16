@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Button } from 'primereact/button';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
+import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 
@@ -113,6 +115,18 @@ export const GenesTable = () => {
       />);
   };
 
+  const nameBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+          {rowData.name}
+        </EllipsisTableCell>
+        <Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.name} />
+      </>
+    );
+  };
+
+
   const columns = [
     {
       field: "curie",
@@ -126,6 +140,7 @@ export const GenesTable = () => {
       header: "Name",
       sortable: isEnabled,
       filter: true,
+      body: nameBodyTemplate,
       filterElement: filterComponentTemplate("nameFilter", ["name"])
     },
     {
@@ -160,6 +175,7 @@ export const GenesTable = () => {
           sortable={isEnabled}
           showFilterMenu={false}
           filterElement={col.filterElement}
+          body={col.body}
         />;
       })
     );

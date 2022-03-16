@@ -8,6 +8,8 @@ import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 
@@ -113,6 +115,33 @@ export const MoleculesTable = () => {
     />);
   };
 
+  const inChiBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.curie.replaceAll(':', '')}`}>{rowData.inchi}</EllipsisTableCell>
+        <Tooltip target={`.a${rowData.curie.replaceAll(':', '')}`} content={rowData.inchi} />
+      </>
+    )
+  };
+
+  const iupacBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`b${rowData.curie.replaceAll(':', '')}`}>{rowData.iupac}</EllipsisTableCell>
+        <Tooltip target={`.b${rowData.curie.replaceAll(':', '')}`} content={rowData.iupac} />
+      </>
+    )
+  };
+
+  const smilesBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`c${rowData.curie.replaceAll(':', '')}`}>{rowData.smiles}</EllipsisTableCell>
+        <Tooltip target={`.c${rowData.curie.replaceAll(':', '')}`} content={rowData.smiles} style={{ width: '450px', maxWidth: '450px' }} />
+      </>
+    )
+  };
+
   const columns = [
     {
       field: "curie",
@@ -133,6 +162,7 @@ export const MoleculesTable = () => {
       header: "InChi",
       sortable: isEnabled,
       filter: true,
+      body: inChiBodyTemplate,
       filterElement: filterComponentTemplate("inchiFilter", ["inchi"])
     },
     {
@@ -147,6 +177,7 @@ export const MoleculesTable = () => {
       header: "IUPAC",
       sortable: isEnabled,
       filter: true,
+      body: iupacBodyTemplate,
       filterElement: filterComponentTemplate("iupacFilter", ["iupac"]),
     },
     {
@@ -161,6 +192,7 @@ export const MoleculesTable = () => {
       header: "SMILES",
       sortable: isEnabled,
       filter: true,
+      body: smilesBodyTemplate,
       filterElement: filterComponentTemplate("smilesFilter", ["smiles"])
     }
 
@@ -182,6 +214,7 @@ export const MoleculesTable = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
+          body={col.body}
         />;
       })
     );

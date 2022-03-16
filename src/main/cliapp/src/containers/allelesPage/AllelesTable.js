@@ -11,6 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { Button } from 'primereact/button';
+import { Tooltip } from 'primereact/tooltip';
 
 export const AllelesTable = () => {
   const defaultColumnNames = ["Curie", "Description", "Symbol", "Taxon"];
@@ -115,6 +116,17 @@ export const AllelesTable = () => {
     />);
   }
 
+  const descriptionTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+          {rowData.description}
+        </EllipsisTableCell>
+        <Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.description} />
+      </>
+    );
+  }
+
   const symbolTemplate = (rowData) => {
     return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
   }
@@ -136,6 +148,7 @@ export const AllelesTable = () => {
       header: "Description",
       sortable: isEnabled,
       filter: true,
+      body: descriptionTemplate,
       filterElement: filterComponentTemplate("descriptionFilter", ["description"])
     },
     {
@@ -172,6 +185,7 @@ export const AllelesTable = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
+          body={col.body}
         />;
       })
     );
