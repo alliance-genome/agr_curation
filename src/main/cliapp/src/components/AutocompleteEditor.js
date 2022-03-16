@@ -94,7 +94,11 @@ export const AutocompleteEditor = (
     let inputValue = trimWhitespace(query.toLowerCase());
     if (autocompleteSelectedItem.synonyms?.length > 0) {
       for (let i in autocompleteSelectedItem.synonyms) {
-        if (autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue) < 0) {
+
+        let selectedItem = isSubject || isWith ? autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase() :
+          autocompleteSelectedItem.synonyms[i].toString().toLowerCase();
+
+        if (selectedItem.indexOf(inputValue) < 0) {
           delete autocompleteSelectedItem.synonyms[i];
         }
       }
@@ -117,7 +121,7 @@ export const AutocompleteEditor = (
     if (item.abbreviation) {
       return (
         <div>
-          <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') '}} />
+          <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') ' }} />
         </div>
       );
     } else if (item.symbol) {
