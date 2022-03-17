@@ -501,7 +501,7 @@ export const ControlledVocabularyComponent = () => {
         <Toast ref={toast_topright} position="top-right" />
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns={isEnabled}
-          ref={dataTable} scrollHeight="62vh" /*scrollable columnResizeMode="expand" responsiveLayout="scroll"*/
+          ref={dataTable} scrollHeight="62vh" scrollable /*scrollable columnResizeMode="expand" responsiveLayout="scroll"*/
           editMode="row" onRowEditInit={onRowEditCVCInit} onRowEditCancel={onRowEditCVCCancel} onRowEditSave={(props) => onRowEditCVCSave(props)}
           editingRows={editingCVCRows} onRowEditChange={onRowEditCVCChange} dataKey="id"
           filterDisplay="row"

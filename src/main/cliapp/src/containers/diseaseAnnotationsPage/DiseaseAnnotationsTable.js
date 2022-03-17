@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react'
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -242,14 +242,8 @@ export const DiseaseAnnotationsTable = () => {
 
   const relatedNotesTemplate = (rowData) => {
     if (rowData.relatedNotes) {
-      return <EllipsisTableCell><button
-        style={{
-          color: 'blue',
-          background: 'none',
-          border: 'none',
-          cursor: 'pointer',
-        }}
-        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></button></EllipsisTableCell>;
+      return <EllipsisTableCell><Button className="p-button-raised p-button-text"
+        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></Button></EllipsisTableCell>;
     }
   };
 
@@ -368,7 +362,6 @@ export const DiseaseAnnotationsTable = () => {
 
   const onDiseaseRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseRelation = event.value;
       setDiseaseAnnotations(updatedAnnotations);
@@ -379,11 +372,12 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <ControlledVocabularyDropdown
+          field="diseaseRelation"
           options={diseaseRelationsTerms}
           editorChange={onDiseaseRelationEditorValueChange}
           props={props}
-          placeholderText={props.rowData.diseaseRelation.name}
           showClear={false}
+          placeholderText={props.rowData.diseaseRelation.name}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
       </>
@@ -392,23 +386,18 @@ export const DiseaseAnnotationsTable = () => {
 
   const onGeneticSexEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     updatedAnnotations[props.rowIndex].geneticSex = event.value;
     setDiseaseAnnotations(updatedAnnotations);
   };
 
   const geneticSexEditor = (props) => {
-    let placeholderText = '';
-    if (props.rowData.geneticSex) {
-      placeholderText = props.rowData.geneticSex.name;
-    }
     return (
       <>
         <ControlledVocabularyDropdown
+          field="geneticSex"
           options={geneticSexTerms}
           editorChange={onGeneticSexEditorValueChange}
           props={props}
-          placeholderText={placeholderText}
           showClear={true}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"geneticSex"} />
@@ -418,23 +407,18 @@ export const DiseaseAnnotationsTable = () => {
 
   const onAnnotationTypeEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     updatedAnnotations[props.rowIndex].annotationType = event.value;
     setDiseaseAnnotations(updatedAnnotations);
   };
 
   const annotationTypeEditor = (props) => {
-    let placeholderText = '';
-    if (props.rowData.annotationType) {
-      placeholderText = props.rowData.annotationType.name;
-    }
     return (
       <>
         <ControlledVocabularyDropdown
+          field="annotationType"
           options={annotationTypeTerms}
           editorChange={onAnnotationTypeEditorValueChange}
           props={props}
-          placeholderText={placeholderText}
           showClear={true}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"annotationType"} />
@@ -444,23 +428,18 @@ export const DiseaseAnnotationsTable = () => {
 
   const onGeneticModifierRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    console.log(updatedAnnotations);
     updatedAnnotations[props.rowIndex].diseaseGeneticModifierRelation = event.value;
     setDiseaseAnnotations(updatedAnnotations);
   };
 
   const geneticModifierRelationEditor = (props) => {
-    let placeholderText = '';
-    if (props.rowData.diseaseGeneticModifierRelation) {
-      placeholderText = props.rowData.diseaseGeneticModifierRelation.name;
-    }
     return (
       <>
         <ControlledVocabularyDropdown
+          field="diseaseGeneticModifierRelation"
           options={geneticModifierRelationTerms}
           editorChange={onGeneticModifierRelationEditorValueChange}
           props={props}
-          placeholderText={placeholderText}
           showClear={true}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
@@ -529,7 +508,7 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='biologicalentity'
           filterName='subjectFilter'
           fieldName='subject'
-          isGene={true}
+          isSubject={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -616,7 +595,6 @@ export const DiseaseAnnotationsTable = () => {
           filterName='withFilter'
           fieldName='with'
           isWith={true}
-          isGene={true}
           isMultiple={true}
         />
         <ErrorMessageComponent
@@ -770,6 +748,15 @@ export const DiseaseAnnotationsTable = () => {
     />);
   }
 
+  const sgdStrainBackgroundEditorSelector = (props) => {
+    if (props.rowData.type === "GeneDiseaseAnnotation") {
+      return sgdStrainBackgroundEditorTemplate(props);
+    }
+    else {
+      return null;
+    }
+  }
+
   const columns = [{
     field: "uniqueId",
     header: "Unique Id",
@@ -869,7 +856,7 @@ export const DiseaseAnnotationsTable = () => {
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("sgdStrainBackgroundFilter", ["sgdStrainBackground.name", "sgdStrainBackground.curie"]),
-    editor: (props) => sgdStrainBackgroundEditorTemplate(props),
+    editor: (props) => sgdStrainBackgroundEditorSelector(props),
     body: sgdStrainBackgroundBodyTemplate
   },
   {
@@ -996,7 +983,7 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '300%' }}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }}
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
