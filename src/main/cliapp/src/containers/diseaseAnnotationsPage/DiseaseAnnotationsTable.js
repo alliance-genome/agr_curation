@@ -28,8 +28,8 @@ import { Tooltip } from 'primereact/tooltip';
 export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
-  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex",
-    "SGD Strain Background", "Annotation Type", "Data Provider", "Modified By", "Created By", "Related Notes"];
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
+    "SGD Strain Background", "Annotation Type", "Data Provider", "Secondary Data Provider", "Modified By", "Created By", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -841,7 +841,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("geneticSexFilter", "geneticSex.name"),
     editor: (props) => geneticSexEditor(props)
   },
-  /*{
+  {
     field: "diseaseQualifiers.name",
     header: "Disease Qualifiers",
     sortable: isEnabled,
@@ -849,7 +849,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("diseaseQualifiersFilter", "diseaseQualifiers.name"),
     editor: (props) => diseaseQualifiersEditor(props),
     body: diseaseQualifiersBodyTemplate
-  },*/
+  },
   {
     field: "sgdStrainBackground.name",
     header: "SGD Strain Background",
@@ -891,13 +891,13 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("dataProviderFilter", ["dataProvider"])
   },
-  /*{
+  {
     field: "secondaryDataProvider",
     header: "Secondary Data Provider",
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("secondaryDataProviderFilter", ["secondaryDataProvider"])
-  },*/
+  },
   {
     field: "modifiedBy",
     header: "Modified By",
