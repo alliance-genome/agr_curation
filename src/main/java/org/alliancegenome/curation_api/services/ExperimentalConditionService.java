@@ -17,6 +17,9 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalConditionValidator;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class ExperimentalConditionService extends BaseCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
 
@@ -113,7 +116,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
         
-        experimentalCondition.setConditionStatement(experimentalConditionSummary.getConditionSummary(dto));
+        String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
+        experimentalCondition.setConditionSummary(conditionSummary);
         
         experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
         

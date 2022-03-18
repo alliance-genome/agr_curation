@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
@@ -16,9 +17,9 @@ import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.*;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
+@RequestScoped
 public class ExperimentalConditionSummary {
     
     @Inject ZecoTermDAO zecoTermDAO;
@@ -55,7 +56,7 @@ public class ExperimentalConditionSummary {
             conditionSummary.add(condition.getConditionFreeText());
         
         
-        return conditionSummary.getCurie();
+        return conditionSummary.getSummary();
     }
     
     public String getConditionSummary(ExperimentalConditionDTO conditionDto) {
@@ -95,6 +96,6 @@ public class ExperimentalConditionSummary {
         if (conditionDto.getConditionFreeText() != null)
             conditionSummary.add(conditionDto.getConditionFreeText());
         
-        return conditionSummary.getCurie();
+        return conditionSummary.getSummary();
     }
 }

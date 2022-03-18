@@ -333,8 +333,6 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
         
-        experimentalCondition.setConditionSummary(experimentalConditionSummary.getConditionSummary(dto));
-        
         experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
         
         return experimentalCondition;
