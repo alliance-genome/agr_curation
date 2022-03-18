@@ -42,11 +42,11 @@ public class ExperimentalConditionSummary {
         if (condition.getConditionGeneOntology() != null)
             conditionSummary.add(condition.getConditionGeneOntology().getName());
         
-        if (condition.getConditionTaxon() != null)
-            conditionSummary.add(condition.getConditionTaxon().getName());
-        
         if (condition.getConditionChemical() != null)
             conditionSummary.add(condition.getConditionChemical().getName());
+        
+        if (condition.getConditionTaxon() != null)
+            conditionSummary.add(condition.getConditionTaxon().getName());
         
         if (condition.getConditionQuantity() != null)
             conditionSummary.add(condition.getConditionQuantity());
@@ -78,15 +78,15 @@ public class ExperimentalConditionSummary {
             GOTerm conditionGeneOntology = goTermDAO.find(conditionDto.getConditionGeneOntology());
             conditionSummary.add(conditionGeneOntology.getName());
         }
+
+        if (conditionDto.getConditionChemical() != null) {
+            ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionDto.getConditionChemical());
+            conditionSummary.add(conditionChemical.getName());
+        }
         
         if (conditionDto.getConditionTaxon() != null) {
             NCBITaxonTerm conditionTaxon = ncbiTaxonTermDAO.find(conditionDto.getConditionTaxon());
             conditionSummary.add(conditionTaxon.getName());
-        }
-        
-        if (conditionDto.getConditionChemical() != null) {
-            ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionDto.getConditionChemical());
-            conditionSummary.add(conditionChemical.getName());
         }
 
         if (conditionDto.getConditionQuantity() != null)
@@ -94,43 +94,6 @@ public class ExperimentalConditionSummary {
         
         if (conditionDto.getConditionFreeText() != null)
             conditionSummary.add(conditionDto.getConditionFreeText());
-        
-        return conditionSummary.getCurie();
-    }
-    
-    public String getConditionSummary(ExperimentalConditionFmsDTO conditionFmsDto) {
-        CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
-        
-        ZecoTerm conditionClass = zecoTermDAO.find(conditionFmsDto.getConditionClassId());
-        conditionSummary.add(conditionClass.getName());
-        
-        if (conditionFmsDto.getConditionId() != null) {
-            ExperimentalConditionOntologyTerm conditionId = expCondTermDAO.find(conditionFmsDto.getConditionId());
-            conditionSummary.add(conditionId.getName());
-        }
-        
-        if (conditionFmsDto.getAnatomicalOntologyId() != null) {
-            AnatomicalTerm conditionAnatomy = anatomicalTermDAO.find(conditionFmsDto.getAnatomicalOntologyId());
-            conditionSummary.add(conditionAnatomy.getName());
-        }
-        
-        if (conditionFmsDto.getGeneOntologyId() != null) {
-            GOTerm conditionGeneOntology = goTermDAO.find(conditionFmsDto.getGeneOntologyId());
-            conditionSummary.add(conditionGeneOntology.getName());
-        }
-        
-        if (conditionFmsDto.getNcbiTaxonId() != null) {
-            NCBITaxonTerm conditionTaxon = ncbiTaxonTermDAO.find(conditionFmsDto.getNcbiTaxonId());
-            conditionSummary.add(conditionTaxon.getName());
-        }
-        
-        if (conditionFmsDto.getChemicalOntologyId() != null) {
-            ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionFmsDto.getChemicalOntologyId());
-            conditionSummary.add(conditionChemical.getName());
-        }
-        
-        if (conditionFmsDto.getConditionQuantity() != null)
-            conditionSummary.add(conditionFmsDto.getConditionQuantity());
         
         return conditionSummary.getCurie();
     }
