@@ -40,7 +40,7 @@ import lombok.*;
 public class DiseaseAnnotation extends Association {
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "modId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
@@ -145,11 +145,13 @@ public class DiseaseAnnotation extends Association {
     @JsonView(View.FieldsOnly.class)
     private String modifiedBy;
     
-    @Basic
-    @JsonView(View.FieldsOnly.class)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+    @KeywordField(name = "creationDate_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+    @JsonView({View.FieldsOnly.class})
     private OffsetDateTime creationDate;
     
-    @Basic
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+    @KeywordField(name = "dateLastModified_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
     @JsonView(View.FieldsOnly.class)
     private OffsetDateTime dateLastModified;
 
