@@ -28,7 +28,7 @@ public abstract class ExperimentalConditionSummary {
     @Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
     @Inject ChemicalTermDAO chemicalTermDAO;
 
-    public String getConditionSummary(ExperimentalCondition condition) {
+    public static String getConditionSummary(ExperimentalCondition condition) {
         CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
     
         conditionSummary.add(condition.getConditionClass().getName());
@@ -47,6 +47,13 @@ public abstract class ExperimentalConditionSummary {
         
         if (condition.getConditionChemical() != null)
             conditionSummary.add(condition.getConditionChemical().getName());
+        
+        if (condition.getConditionQuantity() != null)
+            conditionSummary.add(condition.getConditionQuantity());
+        
+        if (condition.getConditionFreeText() != null)
+            conditionSummary.add(condition.getConditionFreeText());
+        
         
         return conditionSummary.getCurie();
     }
@@ -81,6 +88,12 @@ public abstract class ExperimentalConditionSummary {
             ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionDto.getConditionChemical());
             conditionSummary.add(conditionChemical.getName());
         }
+
+        if (conditionDto.getConditionQuantity() != null)
+            conditionSummary.add(conditionDto.getConditionQuantity());
+        
+        if (conditionDto.getConditionFreeText() != null)
+            conditionSummary.add(conditionDto.getConditionFreeText());
         
         return conditionSummary.getCurie();
     }
@@ -115,6 +128,9 @@ public abstract class ExperimentalConditionSummary {
             ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionFmsDto.getChemicalOntologyId());
             conditionSummary.add(conditionChemical.getName());
         }
+        
+        if (conditionFmsDto.getConditionQuantity() != null)
+            conditionSummary.add(conditionFmsDto.getConditionQuantity());
         
         return conditionSummary.getCurie();
     }

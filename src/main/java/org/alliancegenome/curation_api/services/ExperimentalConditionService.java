@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalConditionValidator;
 
 @RequestScoped
@@ -35,6 +36,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     GoTermDAO goTermDAO;
     @Inject
     ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+    @Inject
+    ExperimentalConditionSummary experimentalConditionSummary;
     
     @Override
     @PostConstruct
@@ -109,6 +112,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
             throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
+        
+        experimentalCondition.setConditionStatement(experimentalConditionSummary.getConditionSummary(dto));
         
         experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
         

@@ -44,6 +44,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject BiologicalEntityDAO biologicalEntityDAO;
     @Inject GeneDAO geneDAO;
     @Inject VocabularyTermDAO vocabularyTermDAO;
+    @Inject ExperimentalConditionSummary experimentalConditionSummary;
     
     @Override
     @PostConstruct
@@ -331,6 +332,8 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
             throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
+        
+        experimentalCondition.setConditionSummary(experimentalConditionSummary.getConditionSummary(dto));
         
         experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
         

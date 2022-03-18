@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -78,6 +79,8 @@ public class ExperimentalConditionValidator {
         dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
         
         dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
+        
+        dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
         
         String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
         SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
