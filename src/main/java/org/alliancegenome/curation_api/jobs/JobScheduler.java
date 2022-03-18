@@ -44,7 +44,7 @@ public class JobScheduler {
             if(g.getLoads().size() > 0) {
                 for(BulkLoad b: g.getLoads()) {
                     for(BulkLoadFile bf: b.getLoadFiles()) {
-                        if(bf.getStatus() == null || bf.getStatus().isRunning() || bf.getLocalFilePath() != null) {
+                        if(bf.getStatus() == null || bf.getStatus().isRunning() || bf.getStatus().isStarted() || bf.getLocalFilePath() != null) {
                             new File(bf.getLocalFilePath()).delete();
                             bf.setLocalFilePath(null);
                             bf.setStatus(BulkLoadStatus.FAILED);

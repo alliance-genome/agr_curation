@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.apache.commons.lang3.*;
 
@@ -76,7 +77,15 @@ public class ExperimentalConditionValidator {
         
         dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
         
-        dbEntity.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity));
+        String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
+        if (!uniqueId.equals(uiEntity.getUniqueId())) {
+            SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
+            if (dbSearchResponse != null) {
+                addMessageResponse("uniqueId", "ExperimentalCondition with uniqueId " + uniqueId + " already exists");
+            } else {
+                dbEntity.setUniqueId(uniqueId);
+            }
+        }
         
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);

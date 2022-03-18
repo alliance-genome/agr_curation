@@ -16,7 +16,7 @@ public abstract class DiseaseAnnotationCurie {
 
     public static String getConditionRelationUnique(ConditionRelation relation) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
-        curie.add(relation.getConditionRelationType());
+        curie.add(relation.getConditionRelationType().getName());
         if (CollectionUtils.isNotEmpty(relation.getConditions()))
             relation.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
         return curie.getCurie();
@@ -46,7 +46,7 @@ public abstract class DiseaseAnnotationCurie {
             curie.add(conditionRelations.stream()
                     .map(condition -> {
                         CurieGeneratorHelper gen = new CurieGeneratorHelper();
-                        gen.add(condition.getConditionRelationType());
+                        gen.add(condition.getConditionRelationType().getName());
                         condition.getConditions().forEach(cond -> {
                             gen.add(getExperimentalConditionCurie(cond));
                         });

@@ -2,12 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Button } from 'primereact/button';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
+import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 
@@ -113,6 +115,18 @@ export const GenesTable = () => {
       />);
   };
 
+  const nameBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+          {rowData.name}
+        </EllipsisTableCell>
+        <Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.name} />
+      </>
+    );
+  };
+
+
   const columns = [
     {
       field: "curie",
@@ -120,13 +134,13 @@ export const GenesTable = () => {
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("curieFilter", ["curie"]),
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' }
     },
     {
       field: "name",
       header: "Name",
       sortable: isEnabled,
       filter: true,
+      body: nameBodyTemplate,
       filterElement: filterComponentTemplate("nameFilter", ["name"])
     },
     {
@@ -151,17 +165,22 @@ export const GenesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
-          columnKey={col.field}
-          key={col.field}
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
           field={col.field}
           header={col.header}
-          sortable={isEnabled}
           filter={col.filter}
+          columnKey={col.field}
+          key={col.field}
+          sortable={isEnabled}
+          showFilterMenu={false}
           filterElement={col.filterElement}
-          style={col.style}
+          body={col.body}
         />;
       })
     );
+
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
@@ -183,11 +202,12 @@ export const GenesTable = () => {
         <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
+          ref={dataTable} filterDisplay="row"
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}

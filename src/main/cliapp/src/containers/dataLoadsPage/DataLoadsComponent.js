@@ -131,17 +131,17 @@ export const DataLoadsComponent = () => {
 
 
   const historyActionBodyTemplate = (rowData) => {
-    return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info p-mr-2" onClick={() => showHistory(rowData)} />
+    return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
   };
 
   const loadFileActionBodyTemplate = (rowData) => {
     let ret = [];
 
     if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoadFile(rowData)} />);
+      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
     }
     if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoadFile(rowData)} />);
+      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
     }
 
     return ret;
@@ -151,14 +151,14 @@ export const DataLoadsComponent = () => {
   const loadActionBodyTemplate = (rowData) => {
     let ret = [];
 
-    ret.push(<Button key="edit" con="pi pi-pencil" className="p-button-rounded p-button-warning p-mr-2" onClick={() => editLoad(rowData)} />);
+    ret.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
 
     if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
-      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success p-mr-2" onClick={() => runLoad(rowData)} />);
+      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
     }
 
     if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
-      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteLoad(rowData)} />);
+      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoad(rowData)} />);
     }
 
     return ret;
@@ -166,7 +166,7 @@ export const DataLoadsComponent = () => {
 
   const groupActionBodyTemplate = (rowData) => {
     if (!rowData.loads || rowData.loads.length === 0) {
-      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-danger p-mr-2" onClick={() => deleteGroup(rowData)} />);
+      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteGroup(rowData)} />);
     }
   };
 
@@ -241,9 +241,9 @@ export const DataLoadsComponent = () => {
   const statusTemplate = (rowData) => {
     let styleClass = 'p-button-text p-button-plain';
     if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status.endsWith('STARTED') || 
+    if (rowData.status && (rowData.status.endsWith('STARTED') || 
       rowData.status.endsWith('RUNNING') ||
-      rowData.status.endsWith('PENDING')) { styleClass = "p-button-success"; }
+      rowData.status.endsWith('PENDING'))) { styleClass = "p-button-success"; }
 
     return (
       <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
@@ -305,9 +305,9 @@ export const DataLoadsComponent = () => {
 
   return (
     <div className="card">
-      <Button label="New Group" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={handleNewBulkLoadGroupOpen} />
-      <Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={handleNewBulkLoadOpen} />
-      <Button label="Refresh Data" icon="pi pi-plus" className="p-button-success p-mr-2" onClick={refresh} />
+      <Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
+      <Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
+      <Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
       <h3>Data Loads Table</h3>
       <Messages ref={errorMessage} />
       <DataTable key="groupTable"

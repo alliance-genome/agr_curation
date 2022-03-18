@@ -27,6 +27,9 @@ quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
 quarkus.hibernate-search-orm.automatic-indexing.synchronization.strategy=write-sync
 
+quarkus.micrometer.binder.vertx.enabled=true
+quarkus.micrometer.export.json.enabled=true
+quarkus.micrometer.export.json.path=api/metrics.json
 
 quarkus.hibernate-search-orm.elasticsearch.analysis.configurer=bean:ApplicationAnalysisConfig
 quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/custom-index-settings.json
@@ -36,6 +39,7 @@ quarkus.vertx.max-worker-execute-time=PT1H
 %dev.quarkus.hibernate-search-orm.elasticsearch.hosts=localhost:9200
 %dev.quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/curation
 
+NET = local
 
 bulk.data.loads.schedulingEnabled = true
 bulk.data.loads.s3Bucket = agr-curation-files

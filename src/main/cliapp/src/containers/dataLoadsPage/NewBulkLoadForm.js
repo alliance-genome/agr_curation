@@ -122,7 +122,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
       <div className='p-justify-center'>
         <form>
 
-          <div className="p-field">
+          <div className="field">
             <label htmlFor="name">Name</label>
             <InputText
               id="name"
@@ -133,7 +133,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
             />
           </div>
 
-          <div className="p-field">
+          <div className="field">
             <label htmlFor="group">Group Name</label>
             <Dropdown
               id="group"
@@ -148,7 +148,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
             />
           </div>
 
-          <div className="p-field">
+          <div className="field">
             <label htmlFor="type">Load Type</label>
             <Dropdown
               id="type"
@@ -162,7 +162,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
             />
           </div>
 
-          <div className="p-field">
+          <div className="field">
             <label htmlFor="fileExtension">File Extension</label>
             <InputText
               id="bulkLoadFileExtension"
@@ -174,7 +174,7 @@ export const NewBulkLoadForm = ({ bulkLoadDialog, setBulkLoadDialog, groups, new
             />
           </div>
           
-          <div className="p-field">
+          <div className="field">
             <label htmlFor="backendBulkLoadType">Backend Bulk Load Type</label>
             <Dropdown
               id="backendBulkLoadType"

@@ -11,7 +11,7 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) =
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
                     />
-                    <div className="p-field">
+                    <div className="field">
                         <label htmlFor="dataType">Data Type</label>
                         <InputText
                             name="dataType"
@@ -21,7 +21,7 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) =
                             disabled={disableFormFields}
                         />
                     </div>
-                    <div className="p-field">
+                    <div className="field">
                         <label htmlFor="dataSubType">Data SubType</label>
                         <InputText
                             name="dataSubType"

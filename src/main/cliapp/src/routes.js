@@ -12,11 +12,12 @@ import { ExperimentalConditionsPage } from './containers/experimentalConditionsP
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
+import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 
 import { FMSComponent } from './components/FMSComponent';
-
+import { MetricsComponent } from './components/MetricsComponent';
 
 import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
 import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
@@ -31,12 +32,17 @@ import { EMAPAOntologyComponent } from './containers/ontologies/EMAPAOntologyCom
 import { WBbtOntologyComponent } from './containers/ontologies/WBbtOntologyComponent';
 import { XCOOntologyComponent } from './containers/ontologies/XCOOntologyComponent';
 import { ZECOOntologyComponent } from './containers/ontologies/ZECOOntologyComponent';
+import { WBlsOntologyComponent } from './containers/ontologies/WBlsOntologyComponent';
+import { FBdvOntologyComponent } from './containers/ontologies/FBdvOntologyComponent';
+import { MmusDvOntologyComponent } from './containers/ontologies/MmusDvOntologyComponent';
+import { ZFSOntologyComponent } from './containers/ontologies/ZFSOntologyComponent';
 import { NCBITaxonOntologyComponent } from './containers/ontologies/NCBITaxonOntologyComponent';
 
 
 export default (
   <>
     <SecureRoute path="/" exact component={DashboardPage} />
+    <SecureRoute path="/profile" component={ProfilePage} />
     <SecureRoute path="/dataloads" component={DataLoadsPage} />
     <SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
     <SecureRoute path="/experimentalConditions" component={ExperimentalConditionsPage} />
@@ -57,8 +63,13 @@ export default (
     <SecureRoute path="/ontology/wbbt" component={WBbtOntologyComponent} />
     <SecureRoute path="/ontology/xco" component={XCOOntologyComponent} />
     <SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
+    <SecureRoute path="/ontology/wbls" component={WBlsOntologyComponent} />
+    <SecureRoute path="/ontology/fbdv" component={FBdvOntologyComponent} />
+    <SecureRoute path="/ontology/mmusdv" component={MmusDvOntologyComponent} />
+    <SecureRoute path="/ontology/zfs" component={ZFSOntologyComponent} />
     <SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
     <SecureRoute path="/fmspage" component={FMSComponent} />
+    <SecureRoute path="/metricspage" component={MetricsComponent} />
     <SecureRoute path="/agms" component={AffectedGenomicModelPage} />
     <Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
   </>
