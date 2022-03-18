@@ -118,6 +118,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
             body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+            body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[0].negated", is(true)).
             body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -181,6 +182,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+            body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[1].negated", is(true)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -243,6 +245,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
             body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+            body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[2].negated", is(true)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -1659,6 +1662,29 @@ public class DiseaseAnnotationBulkUploadITCase {
             then().
             statusCode(200).
             body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(64)
+    public void diseaseAnnotationBulkUploadMissingConditionFreeText() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/64_no_condition_free_text.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)); 
     }
     
     private void loadRequiredEntities() throws Exception {
