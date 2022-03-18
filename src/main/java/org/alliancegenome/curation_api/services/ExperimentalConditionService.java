@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalConditionValidator;
@@ -56,7 +57,15 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     }
     
     public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {
-        ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+        String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dto);
+
+        ExperimentalCondition experimentalCondition;
+        SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
+        if (searchResponse == null || searchResponse.getSingleResult() == null) {
+            experimentalCondition = new ExperimentalCondition();
+        } else {
+            experimentalCondition = searchResponse.getSingleResult();
+        }
         
         if (dto.getConditionChemical() != null) {
             ChemicalTerm term = chemicalTermDAO.find(dto.getConditionChemical());
@@ -119,9 +128,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
         experimentalCondition.setConditionSummary(conditionSummary);
         
-        experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
-        
-        return experimentalCondition;
+        return experimentalConditionDAO.persist(experimentalCondition);
+    
     }
     
 }

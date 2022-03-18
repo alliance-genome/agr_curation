@@ -75,7 +75,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     public DiseaseAnnotation upsert(DiseaseAnnotation annotation, DiseaseAnnotationDTO annotationDTO) throws ObjectUpdateException {
         List<ConditionRelation> conditionRelations = new ArrayList<>();
         List<ConditionRelation> conditionRelationsToPersist = new ArrayList<>();
-        List<ExperimentalCondition> experimentalConditionsToPersist = new ArrayList<>();
         
         // create Experimental Conditions
         if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
@@ -100,13 +99,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                     ExperimentalCondition experimentalCondition = experimentalConditionService.validateExperimentalConditionDTO(experimentalConditionDTO);
                     if (experimentalCondition == null) return null;
                     
-                    // reuse existing experimental condition
-                    SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", experimentalCondition.getUniqueId());
-                    if (searchResponse == null || searchResponse.getSingleResult() == null) {
-                        experimentalConditionsToPersist.add(experimentalCondition);
-                    } else {
-                        experimentalCondition = searchResponse.getSingleResult();
-                    }
                     relation.addExperimentCondition(experimentalCondition);
                 }
                 
@@ -123,8 +115,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             annotation.setConditionRelations(conditionRelations);
         }
 
-
-        experimentalConditionsToPersist.forEach(condition -> experimentalConditionDAO.persist(condition));
         conditionRelationsToPersist.forEach(relation -> conditionRelationDAO.persist(relation));
         diseaseAnnotationDAO.persist(annotation);
         return annotation;
