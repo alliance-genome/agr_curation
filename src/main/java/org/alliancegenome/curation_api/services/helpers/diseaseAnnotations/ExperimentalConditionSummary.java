@@ -19,7 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
-public abstract class ExperimentalConditionSummary {
+public class ExperimentalConditionSummary {
     
     @Inject ZecoTermDAO zecoTermDAO;
     @Inject ExperimentalConditionOntologyTermDAO expCondTermDAO;
