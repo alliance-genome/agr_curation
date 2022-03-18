@@ -85,6 +85,7 @@ public class ExperimentalConditionValidator {
                 throw new ApiErrorException(response);
             }
         }
+        dbEntity.setUniqueId(uniqueId);
         
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
