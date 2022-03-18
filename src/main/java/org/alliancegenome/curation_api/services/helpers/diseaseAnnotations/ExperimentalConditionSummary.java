@@ -32,7 +32,8 @@ public class ExperimentalConditionSummary {
     public static String getConditionSummary(ExperimentalCondition condition) {
         CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
     
-        conditionSummary.add(condition.getConditionClass().getName());
+        if (condition.getConditionClass() != null)
+            conditionSummary.add(condition.getConditionClass().getName());
         
         if (condition.getConditionId() != null)
             conditionSummary.add(condition.getConditionId().getName());
@@ -62,8 +63,10 @@ public class ExperimentalConditionSummary {
     public String getConditionSummary(ExperimentalConditionDTO conditionDto) {
         CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
         
-        ZecoTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClass());
-        conditionSummary.add(conditionClass.getName());
+        if (conditionDto.getConditionClass() != null) {
+            ZecoTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClass());
+            conditionSummary.add(conditionClass.getName());
+        }
         
         if (conditionDto.getConditionId() != null) {
             ExperimentalConditionOntologyTerm conditionId = expCondTermDAO.find(conditionDto.getConditionId());
