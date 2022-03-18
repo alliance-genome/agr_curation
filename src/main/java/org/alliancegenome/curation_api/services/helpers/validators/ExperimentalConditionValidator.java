@@ -77,6 +77,8 @@ public class ExperimentalConditionValidator {
         
         dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
         
+        dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
+        
         String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
         SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
         if (dbSearchResponse != null) {

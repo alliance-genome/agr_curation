@@ -103,6 +103,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         if (dto.getConditionQuantity() != null)
             experimentalCondition.setConditionQuantity(dto.getConditionQuantity());
+        if (dto.getConditionFreeText() != null)
+            experimentalCondition.setConditionFreeText(dto.getConditionFreeText());
         if (dto.getConditionStatement() == null) {
             throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
         }

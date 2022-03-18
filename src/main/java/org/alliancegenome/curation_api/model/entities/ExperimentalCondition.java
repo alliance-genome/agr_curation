@@ -73,4 +73,10 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private ChemicalTerm conditionChemical;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "conditionFreeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsOnly.class})
+    @Column(columnDefinition="TEXT")
+    private String conditionFreeText;
 }
