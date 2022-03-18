@@ -78,11 +78,14 @@ public class ExperimentalConditionValidator {
         dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
         
         String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
-        SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
-        if (dbSearchResponse != null) {
-            addMessageResponse("ExperimentalCondition with uniqueId " + uniqueId + " already exists");
-            throw new ApiErrorException(response);
+        if (!uniqueId.equals(uiEntity.getUniqueId())) {
+            SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
+            if (dbSearchResponse != null) {
+                addMessageResponse("ExperimentalCondition with uniqueId " + uniqueId + " already exists");
+                throw new ApiErrorException(response);
+            }
         }
+        dbEntity.setUniqueId(uniqueId);
         
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
