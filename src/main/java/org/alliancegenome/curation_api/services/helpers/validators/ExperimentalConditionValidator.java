@@ -81,11 +81,11 @@ public class ExperimentalConditionValidator {
         if (!uniqueId.equals(uiEntity.getUniqueId())) {
             SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
             if (dbSearchResponse != null) {
-                addMessageResponse("ExperimentalCondition with uniqueId " + uniqueId + " already exists");
-                throw new ApiErrorException(response);
+                addMessageResponse("uniqueId", "ExperimentalCondition with uniqueId " + uniqueId + " already exists");
+            } else {
+                dbEntity.setUniqueId(uniqueId);
             }
         }
-        dbEntity.setUniqueId(uniqueId);
         
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
