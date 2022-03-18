@@ -28,8 +28,8 @@ import { Tooltip } from 'primereact/tooltip';
 export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
-  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-    "SGD Strain Background", "Annotation Type", "Data Provider", "Secondary Data Provider", "Modified By", "Created By", "Related Notes"];
+  const defaultColumnNames = ["Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
+    "SGD Strain Background", "Annotation Type", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -714,6 +714,18 @@ export const DiseaseAnnotationsTable = () => {
     )
   };
 
+  const modEntityIdBodyTemplate = (rowData) => {
+    return (
+      //the 'a' at the start is a hack since css selectors can't start with a number
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.id}`}>
+          {rowData.modEntityId}
+        </EllipsisTableCell>
+        <Tooltip target={`.a${rowData.id}`} content={rowData.modEntityId} />
+      </>
+    )
+  };
+
   const filterComponentInputTextTemplate = (filterName, fields) => {
     return (<FilterComponentInputText
       isEnabled={isEnabled}
@@ -759,11 +771,19 @@ export const DiseaseAnnotationsTable = () => {
 
   const columns = [{
     field: "uniqueId",
-    header: "Unique Id",
+    header: "Unique ID",
     sortable: isEnabled,
     filter: true,
     body: uniqueIdBodyTemplate,
     filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
+  },
+  {
+    field: "modEntityId",
+    header: "MOD Entity ID",
+    sortable: isEnabled,
+    filter: true,
+    body: modEntityIdBodyTemplate,
+    filterElement: filterComponentInputTextTemplate("modentityidFilter", ["modEntityId"])
   },
   {
     field: "subject.symbol",
@@ -905,23 +925,28 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy"])
   },
-  /*{
+  {
     field: "dateLastModified",
     header: "Date Last Modified",
-    filter: false
-  },*/
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("dateLastModifiedFilter", ["dateLastModified"])
+  },
   {
     field: "createdBy",
     header: "Created By",
     sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy"])
-  }/*,
+  },
   {
     field: "creationDate",
     header: "Creation Date",
-    filter: false
-  }*/
+    sortable: isEnabled,
+    filter: true,
+    filterType: "Date",
+    filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
+  }
   ];
 
   useEffect(() => {
@@ -929,6 +954,7 @@ export const DiseaseAnnotationsTable = () => {
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
       orderedColumns.map((col) => {
+        console.log(col)
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
@@ -940,6 +966,7 @@ export const DiseaseAnnotationsTable = () => {
           showFilterMenu={false}
           filter={col.filter}
           filterElement={col.filterElement}
+          dataType={col.dataType}
           editor={col.editor}
           body={col.body}
         />;
