@@ -242,8 +242,14 @@ export const DiseaseAnnotationsTable = () => {
 
   const relatedNotesTemplate = (rowData) => {
     if (rowData.relatedNotes) {
-      return <EllipsisTableCell><Button className="p-button-raised p-button-text"
-        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} ><span style={{ textDecoration: 'underline' }}>{`Notes(${rowData.relatedNotes.length})`}</span></Button></EllipsisTableCell>;
+      return <EllipsisTableCell>
+        <Button className="p-button-raised p-button-text"
+          onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
+          <span style={{ textDecoration: 'underline' }}>
+            {`Notes(${rowData.relatedNotes.length})`}
+          </span>
+        </Button>
+      </EllipsisTableCell>;
     }
   };
 
@@ -364,7 +370,6 @@ export const DiseaseAnnotationsTable = () => {
     let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseRelation = event.value;
-      setDiseaseAnnotations(updatedAnnotations);
     }
   };
 
@@ -387,7 +392,6 @@ export const DiseaseAnnotationsTable = () => {
   const onGeneticSexEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     updatedAnnotations[props.rowIndex].geneticSex = event.value;
-    setDiseaseAnnotations(updatedAnnotations);
   };
 
   const geneticSexEditor = (props) => {
@@ -408,7 +412,6 @@ export const DiseaseAnnotationsTable = () => {
   const onAnnotationTypeEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     updatedAnnotations[props.rowIndex].annotationType = event.value;
-    setDiseaseAnnotations(updatedAnnotations);
   };
 
   const annotationTypeEditor = (props) => {
@@ -429,7 +432,6 @@ export const DiseaseAnnotationsTable = () => {
   const onGeneticModifierRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     updatedAnnotations[props.rowIndex].diseaseGeneticModifierRelation = event.value;
-    setDiseaseAnnotations(updatedAnnotations);
   };
 
   const geneticModifierRelationEditor = (props) => {
@@ -451,7 +453,6 @@ export const DiseaseAnnotationsTable = () => {
     let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].diseaseQualifiers = event.value;
-      setDiseaseAnnotations(updatedAnnotations);
     }
   };
 
@@ -481,7 +482,6 @@ export const DiseaseAnnotationsTable = () => {
     let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
-      setDiseaseAnnotations(updatedAnnotations);
     }
   };
 
