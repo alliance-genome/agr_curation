@@ -12,12 +12,13 @@ import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../u
 
 export const AffectedGenomicModelTable = () => {
   const defaultColumnNames = ["Curie", "Name", "Sub Type", "Parental Population", "Taxon"];
+  const defaultVisibleColumns = ["Curie", "Name", "Sub Type", "Taxon"];
   let initialTableState = {
     page: 0,
     first: 0,
     rows: 50,
     multiSortMeta: [],
-    selectedColumnNames: defaultColumnNames,
+    selectedColumnNames: defaultVisibleColumns,
     filters: {},
   }
   const [tableState, setTableState] = useSessionStorage("agmTableSettings", initialTableState);
