@@ -20,7 +20,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 
 export const ExperimentalConditionsTable = () => {
-  const defaultColumnNames = ["Unique ID", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
+  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -244,11 +244,20 @@ export const ExperimentalConditionsTable = () => {
     )
   };
 
+  const summaryBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
+        <Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
+      </>
+    )
+  };
+  
   const statementBodyTemplate = (rowData) => {
     return (
       <>
-        <EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
-        <Tooltip target={`.b${rowData.id}`} content={rowData.conditionStatement} />
+        <EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
+        <Tooltip target={`.c${rowData.id}`} content={rowData.conditionStatement} />
       </>
     )
   };
@@ -336,6 +345,14 @@ export const ExperimentalConditionsTable = () => {
       filter: true,
       body: uniqueIdBodyTemplate,
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
+    },
+    {
+      field: "conditionSummary",
+      header: "Summary",
+      sortable: isEnabled,
+      filter: true,
+      body: summaryBodyTemplate,
+      filterElement: filterComponentTemplate("conditionSummaryFilter", ["conditionSummary"])
     },
     {
       field: "conditionStatement",

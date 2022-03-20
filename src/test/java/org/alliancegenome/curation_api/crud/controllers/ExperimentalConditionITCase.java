@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZfaTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.junit.jupiter.api.*;
 
 import static org.hamcrest.Matchers.is;
@@ -95,6 +96,8 @@ public class ExperimentalConditionITCase {
         editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
         editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
         editedExperimentalCondition.setConditionChemical(testChebiTerm);
+        editedExperimentalCondition.setConditionFreeText("Free text");
+        editedExperimentalCondition.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition));
         
         RestAssured.given().
                 contentType("application/json").
@@ -114,7 +117,9 @@ public class ExperimentalConditionITCase {
                 body("entity.conditionQuantity", is("Amount")).
                 body("entity.conditionGeneOntology.curie", is("GO:ec0001")).
                 body("entity.conditionTaxon.curie", is("NCBITaxon:9606")).
-                body("entity.conditionChemical.curie", is("CHEBI:ec0001"));
+                body("entity.conditionChemical.curie", is("CHEBI:ec0001")).
+                body("entity.conditionFreeText", is("Free text")).
+                body("entity.conditionSummary", is("Test ZecoTerm:Test ZecoTerm:Test ZFATerm:Test GOTerm:Test CHEBITerm:Test NCBITaxonTerm:Amount:Free text"));
         
     }
 
@@ -464,6 +469,7 @@ public class ExperimentalConditionITCase {
     private ZecoTerm createZecoTerm(String curie, Boolean obsolete) {
         ZecoTerm zecoTerm = new ZecoTerm();
         zecoTerm.setCurie(curie);
+        zecoTerm.setName("Test ZecoTerm");
         zecoTerm.setObsolete(obsolete);
 
         RestAssured.given().
@@ -482,6 +488,7 @@ public class ExperimentalConditionITCase {
         GOTerm goTerm = new GOTerm();
         goTerm.setCurie(curie);
         goTerm.setObsolete(obsolete);
+        goTerm.setName("Test GOTerm");
 
         RestAssured.given().
                 contentType("application/json").
@@ -497,6 +504,7 @@ public class ExperimentalConditionITCase {
         CHEBITerm chebiTerm = new CHEBITerm();
         chebiTerm.setCurie(curie);
         chebiTerm.setObsolete(obsolete);
+        chebiTerm.setName("Test CHEBITerm");
 
         RestAssured.given().
                 contentType("application/json").
@@ -512,6 +520,7 @@ public class ExperimentalConditionITCase {
         ZfaTerm zfaTerm = new ZfaTerm();
         zfaTerm.setCurie(curie);
         zfaTerm.setObsolete(obsolete);
+        zfaTerm.setName("Test ZFATerm");
 
         RestAssured.given().
                 contentType("application/json").

@@ -44,6 +44,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject BiologicalEntityDAO biologicalEntityDAO;
     @Inject GeneDAO geneDAO;
     @Inject VocabularyTermDAO vocabularyTermDAO;
+    @Inject ExperimentalConditionSummary experimentalConditionSummary;
     
     @Override
     @PostConstruct

@@ -23,7 +23,8 @@
             "condition_quantity": "Some amount",
             "condition_gene_ontology": "DATEST:GOTerm0001",
             "condition_anatomy": "DATEST:AnatomyTerm0001",
-            "condition_taxon": "NCBITaxon:6239"
+            "condition_taxon": "NCBITaxon:6239",
+            "condition_free_text": "Free text"
           }
         ]
       }
