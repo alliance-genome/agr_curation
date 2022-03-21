@@ -170,7 +170,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
       return <>
-        <ul style={{ listStyleType: 'none' }}>
+        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
           {sortedWithGenes.map((a, index) =>
             <li key={index}>
               <EllipsisTableCell>
@@ -190,7 +190,7 @@ export const DiseaseAnnotationsTable = () => {
       return (
         <>
           <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-            <ul style={{ listStyleType: 'none' }}>
+            <ul style={{ listStyleType: 'none', paddingLeft: 0  }}>
               {sortedEvidenceCodes.map((a, index) =>
                 <li key={index}>
                   <EllipsisTableCell>
@@ -222,7 +222,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowData && rowData.diseaseQualifiers) {
       const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
       return (<div>
-        <ul stype={{ listStypeType: 'none' }}>
+        <ul style={{ listStyleType: 'none', paddingLeft: 0  }}>
           {sortedDiseaseQualifiers.map((a, index) =>
             <li key={index}>
               <EllipsisTableCell>
