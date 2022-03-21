@@ -20,7 +20,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 
 export const ExperimentalConditionsTable = () => {
-  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
+  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity", "Free Text"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -212,14 +212,14 @@ export const ExperimentalConditionsTable = () => {
     setEditingRows(event.data);
   };
 
-  const conditionQuantityEditor = (props) => {
+  const freeTextEditor = (props, fieldname) => {
     return (
       <>
         <InputTextEditor
           rowProps={props}
-          fieldName={'conditionQuantity'}
+          fieldName={fieldname}
         />
-        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldname} />
       </>
     );
   };
@@ -307,6 +307,38 @@ export const ExperimentalConditionsTable = () => {
       return <EllipsisTableCell>{rowData.conditionTaxon.curie} ({rowData.conditionTaxon.name})</EllipsisTableCell>;
     }
   };
+  
+  const conditionClassEditorTemplate = (props, autocomplete) => {
+    return (
+      <>
+      <AutocompleteEditor
+        autocompleteFields={autocomplete}
+        rowProps={props}
+        searchService={searchService}
+        fieldname='conditionClass'
+        endpoint='zecoterm'
+        filterName='conditionClassEditorFilter'
+        fieldName='conditionClass'
+        otherFilters={{
+          "obsoleteFilter": {
+            "obsolete": {
+              queryString: false
+            }
+          },
+          "subsetFilter": {
+            "subsets": {
+              queryString: 'ZECO_0000267'
+            }
+          } 
+        }}      
+      />
+      <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField='conditionClass'
+        />
+      </>
+    );
+  };
 
   const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
     return (
@@ -369,7 +401,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionClassBodyTemplate,
       filter: true,
       filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm", curieAutocompleteFields)
+      editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
     },
     {
       field: "conditionId.name",
@@ -422,9 +454,17 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"]),
-      editor: (props) => conditionQuantityEditor(props)
+      editor: (props) => freeTextEditor(props, "conditionQuantity")
     }
-
+    ,
+    {
+      field: "conditionFreeText",
+      header: "Free Text",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionFreeTextFilter", ["conditionFreeText"]),
+      editor: (props) => freeTextEditor(props, "conditionFreeText")
+    }
 
   ];
 
