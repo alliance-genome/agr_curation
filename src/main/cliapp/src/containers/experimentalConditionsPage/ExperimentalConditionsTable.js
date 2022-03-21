@@ -15,8 +15,8 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
-import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 
 export const ExperimentalConditionsTable = () => {
@@ -252,7 +252,7 @@ export const ExperimentalConditionsTable = () => {
       </>
     )
   };
-  
+
   const statementBodyTemplate = (rowData) => {
     return (
       <>
@@ -307,7 +307,7 @@ export const ExperimentalConditionsTable = () => {
       return <EllipsisTableCell>{rowData.conditionTaxon.curie} ({rowData.conditionTaxon.name})</EllipsisTableCell>;
     }
   };
-  
+
   const conditionClassEditorTemplate = (props, autocomplete) => {
     return (
       <>
@@ -329,8 +329,8 @@ export const ExperimentalConditionsTable = () => {
             "subsets": {
               queryString: 'ZECO_0000267'
             }
-          } 
-        }}      
+          }
+        }}
       />
       <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -492,21 +492,25 @@ export const ExperimentalConditionsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Experimental Conditions Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const resetTableState = () => {
@@ -521,14 +525,12 @@ export const ExperimentalConditionsTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <h3>Experimental Conditions Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} header={header} reorderableColumns={isEnabled}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '200%' }}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '200%' }} scrollHeight="62vh"
           ref={dataTable}
           filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
@@ -545,6 +547,5 @@ export const ExperimentalConditionsTable = () => {
           <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
-    </div>
   )
 }

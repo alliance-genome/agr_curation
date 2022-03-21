@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
-import { Button } from 'primereact/button';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
@@ -12,6 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const GenesTable = () => {
   const defaultColumnNames = ["Curie", "Name", "Symbol", "Taxon"];
@@ -87,21 +87,25 @@ export const GenesTable = () => {
     setTableState(_tableState);
   };
 
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
   const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={(event) => setSelectedColumnNames(event.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+      <DataTableHeaderFooterTemplate
+          title = {"Genes Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -197,12 +201,10 @@ export const GenesTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
-        <h3>Genes Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={genes} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable} filterDisplay="row"
+          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
           tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
@@ -214,8 +216,6 @@ export const GenesTable = () => {
         >
           {columnMap}
         </DataTable>
-
       </div>
-    </div>
   )
 }
