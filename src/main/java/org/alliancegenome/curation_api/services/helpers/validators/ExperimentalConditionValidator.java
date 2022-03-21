@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -115,7 +116,7 @@ public class ExperimentalConditionValidator {
             return null;
         }
         ZecoTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
-        if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains("ZECO_0000267")) {
+        if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
             addMessageResponse(field, invalidMessage);
             return null;
         }

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -1350,7 +1351,7 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
         loadECOTerm();
         loadGOTerm();
         loadXCOTerm();
-        loadZECOTerm(requiredZecoTerm, "ZECO_0000267");
+        loadZECOTerm(requiredZecoTerm, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
         loadZECOTerm(requiredNonSlimZecoTerm, null);
         loadZFATerm();
         loadCHEBITerm();

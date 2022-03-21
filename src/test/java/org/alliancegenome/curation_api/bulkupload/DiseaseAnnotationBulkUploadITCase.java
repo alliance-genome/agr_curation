@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -1720,7 +1721,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadECOTerm();
         loadGOTerm();
         loadExpCondTerm();
-        loadZecoTerm(requiredZecoTerm, "ZECO_0000267");
+        loadZecoTerm(requiredZecoTerm, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
         loadZecoTerm(requiredNonSlimZecoTerm, null);
         loadChemicalTerm();
         loadAnatomyTerm();

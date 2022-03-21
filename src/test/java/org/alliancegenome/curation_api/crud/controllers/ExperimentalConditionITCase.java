@@ -4,6 +4,8 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -47,10 +49,10 @@ public class ExperimentalConditionITCase {
     }
     
     private void createRequiredObjects() {
-        testZecoTerm = createZecoTerm("ZECO:ec0001", false, "ZECO_0000267");
-        testZecoTerm2 = createZecoTerm("ZECO:ec0002", false, "ZECO_0000267");
-        testZecoTerm3 = createZecoTerm("ZECO:ec0003", false, "ZECO_0000267");
-        testObsoleteZecoTerm = createZecoTerm("ZECO:ec0005", true, "ZECO_0000267");
+        testZecoTerm = createZecoTerm("ZECO:ec0001", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+        testZecoTerm2 = createZecoTerm("ZECO:ec0002", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+        testZecoTerm3 = createZecoTerm("ZECO:ec0003", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+        testObsoleteZecoTerm = createZecoTerm("ZECO:ec0005", true, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
         testNonSlimZecoTerm = createZecoTerm("ZECO:ec0006", false, null);
         testGoTerm = createGoTerm("GO:ec0001", false);
         testObsoleteGoTerm = createGoTerm("GO:ec0002", true);
