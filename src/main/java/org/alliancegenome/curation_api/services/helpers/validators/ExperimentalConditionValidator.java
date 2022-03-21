@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
@@ -76,10 +77,18 @@ public class ExperimentalConditionValidator {
         String conditionStatement = validateConditionStatement(uiEntity, dbEntity);
         dbEntity.setConditionStatement(conditionStatement);
         
-        dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        if (uiEntity.getConditionQuantity() == null || uiEntity.getConditionQuantity().isEmpty()) {
+            dbEntity.setConditionQuantity(null);
+        } else {
+            dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        }
         
-        dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
-        
+        if (uiEntity.getConditionFreeText() == null || uiEntity.getConditionFreeText().isEmpty()) {
+            dbEntity.setConditionFreeText(null);
+        } else {
+            dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
+        }
+            
         dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
         
         String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
@@ -107,7 +116,7 @@ public class ExperimentalConditionValidator {
             return null;
         }
         ZecoTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
-        if (zecoTerm == null) {
+        if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
             addMessageResponse(field, invalidMessage);
             return null;
         }

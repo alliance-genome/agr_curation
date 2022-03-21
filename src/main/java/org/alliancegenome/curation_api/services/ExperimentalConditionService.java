@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
@@ -83,7 +84,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         if (dto.getConditionClass() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
-            if (term == null) {
+            if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
                 throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
             }
             experimentalCondition.setConditionClass(term);
