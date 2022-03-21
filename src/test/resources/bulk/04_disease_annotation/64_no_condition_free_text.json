@@ -1,6 +1,7 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0005",
+    "mod_entity_id": "DATEST:Annot0064",
+    "subject": "DATEST:Gene0001",
     "object": "DATEST:Disease0001",
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
@@ -23,8 +24,7 @@
             "condition_gene_ontology": "DATEST:GOTerm0001",
             "condition_anatomy": "DATEST:AnatomyTerm0001",
             "condition_taxon": "NCBITaxon:6239",
-            "condition_chemical": "DATEST:ChemicalTerm0001",
-            "condition_free_text": "Free text"
+            "condition_chemical": "DATEST:ChemicalTerm0001"
           }
         ]
       }

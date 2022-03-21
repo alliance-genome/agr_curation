@@ -5,7 +5,9 @@ import static org.hamcrest.Matchers.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -48,6 +50,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredAgm = "DATEST:AGM0001";
     private String requiredSgdBackgroundStrain = "SGD:AGM0001";
     private String requiredZecoTerm = "DATEST:ExpCondTerm0001";
+    private String requiredNonSlimZecoTerm = "DATEST:NSExpCondTerm0001";
     private String requiredExpCondTerm = "DATEST:ExpCondTerm0002";
     private String requiredGeneDiseaseRelation = "is_implicated_in";
     private String requiredAlleleDiseaseRelation = "is_implicated_in";
@@ -118,6 +121,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
             body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+            body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
+            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[0].negated", is(true)).
             body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -181,6 +186,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+            body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
+            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[1].negated", is(true)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -243,6 +250,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
             body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+            body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
+            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[2].negated", is(true)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -1661,12 +1670,59 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(0)); 
     }
     
+    @Test
+    @Order(64)
+    public void diseaseAnnotationBulkUploadMissingConditionFreeText() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/64_no_condition_free_text.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)); 
+    }
+    
+    @Test
+    @Order(65)
+    public void diseaseAnnotationBulkUploadNonSlimConditionClass() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/65_non_slim_condition_class.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(0)); 
+    }
+    
     private void loadRequiredEntities() throws Exception {
         loadDOTerm();
         loadECOTerm();
         loadGOTerm();
         loadExpCondTerm();
-        loadZecoTerm();
+        loadZecoTerm(requiredZecoTerm, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+        loadZecoTerm(requiredNonSlimZecoTerm, null);
         loadChemicalTerm();
         loadAnatomyTerm();
         loadGenes();  
@@ -1770,12 +1826,17 @@ public class DiseaseAnnotationBulkUploadITCase {
             statusCode(200);
     }
     
-    private void loadZecoTerm() throws Exception {
+    private void loadZecoTerm(String name, String subset) throws Exception {
         ZecoTerm zecoTerm = new ZecoTerm();
-        zecoTerm.setCurie(requiredZecoTerm);
+        zecoTerm.setCurie(name);
         zecoTerm.setName("Test ExperimentalConditionOntologyTerm");
         zecoTerm.setObsolete(false);
-
+        List<String> subsets = new ArrayList<String>();
+        if (subset != null) {
+            subsets.add(subset);
+            zecoTerm.setSubsets(subsets);
+        }
+            
         RestAssured.given().
             contentType("application/json").
             body(zecoTerm).

@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -44,6 +45,7 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
     @Inject BiologicalEntityDAO biologicalEntityDAO;
     @Inject GeneDAO geneDAO;
     @Inject VocabularyTermDAO vocabularyTermDAO;
+    @Inject ExperimentalConditionSummary experimentalConditionSummary;
     
     @Override
     @PostConstruct
@@ -294,7 +296,9 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         }
         if (dto.getConditionClassId() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClassId());
-            if (term == null) return null;
+            if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
+                throw new ObjectValidationException(dto, "Invalid ConditionClassId - skipping annotation");
+            }
             experimentalCondition.setConditionClass(term);
         }
         else {
