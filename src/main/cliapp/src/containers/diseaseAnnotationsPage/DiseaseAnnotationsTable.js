@@ -189,25 +189,23 @@ export const DiseaseAnnotationsTable = () => {
       const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
       return (
         <>
-          <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-            <ul style={{ listStyleType: 'none', paddingLeft: 0  }}>
-              {sortedEvidenceCodes.map((a, index) =>
-                <li key={index}>
-                  <EllipsisTableCell>
-                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-                  </EllipsisTableCell>
-                </li>
-              )}
-            </ul>
-          </div>
-          <Tooltip target={`.a${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }}>
-            <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-              <ul style={{ listStyleType: 'none' }}>
+          <div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
+            <EllipsisTableCell>
+              <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                 {sortedEvidenceCodes.map((a, index) =>
                   <li key={index}>
-                    <EllipsisTableCell>
-                      {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-                    </EllipsisTableCell>
+                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
+                  </li>
+                )}
+              </ul>
+            </EllipsisTableCell>
+          </div>
+          <Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+            <div>
+              <ul style={{ listStyleType: 'none', paddingLeft:0 }}>
+                {sortedEvidenceCodes.map((a, index) =>
+                  <li key={`a${index}`}>
+                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
                   </li>
                 )}
               </ul>
@@ -955,7 +953,6 @@ export const DiseaseAnnotationsTable = () => {
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
       orderedColumns.map((col) => {
-        console.log(col)
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
