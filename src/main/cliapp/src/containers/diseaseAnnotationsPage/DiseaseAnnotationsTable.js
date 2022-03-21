@@ -16,6 +16,7 @@ import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
@@ -1006,21 +1007,25 @@ export const DiseaseAnnotationsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20%' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Disease Annotations Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const resetTableState = () => {
@@ -1035,13 +1040,12 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   return (
-    <div>
+      <>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <h3>Disease Annotations Table</h3>
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }} scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
@@ -1069,6 +1073,6 @@ export const DiseaseAnnotationsTable = () => {
         conditionRelationsDialog={conditionRelationsDialog}
         setConditionRelationsDialog={setConditionRelationsDialog}
       />
-    </div>
+    </>
   );
 };

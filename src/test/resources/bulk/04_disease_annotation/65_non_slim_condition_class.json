@@ -1,6 +1,7 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0005",
+    "mod_entity_id": "DATEST:Annot0001",
+    "subject": "DATEST:Gene0001",
     "object": "DATEST:Disease0001",
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
@@ -16,7 +17,7 @@
         "condition_relation_type": "exacerbated_by",
         "conditions": [
           {
-            "condition_class": "DATEST:ExpCondTerm0001",
+            "condition_class": "DATEST:ExpCondTerm0003",
             "condition_statement": "Condition statement",
             "condition_id": "DATEST:ExpCondTerm0002",
             "condition_quantity": "Some amount",

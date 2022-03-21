@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
-import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
@@ -9,15 +8,17 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const AffectedGenomicModelTable = () => {
   const defaultColumnNames = ["Curie", "Name", "Sub Type", "Parental Population", "Taxon"];
+  const defaultVisibleColumns = ["Curie", "Name", "Sub Type", "Taxon"];
   let initialTableState = {
     page: 0,
     first: 0,
     rows: 50,
     multiSortMeta: [],
-    selectedColumnNames: defaultColumnNames,
+    selectedColumnNames: defaultVisibleColumns,
     filters: {},
   }
   const [tableState, setTableState] = useSessionStorage("agmTableSettings", initialTableState);
@@ -75,21 +76,25 @@ export const AffectedGenomicModelTable = () => {
     setTableState(_tableState);
   };
 
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
   const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+      <DataTableHeaderFooterTemplate
+          title = {"Affected Genomic Models Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -185,11 +190,9 @@ export const AffectedGenomicModelTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
-        <h3>AGM</h3>
         <DataTable value={agms} className="p-datatable-md" header={header} reorderableColumns
-          ref={dataTable} filterDisplay="row"
+          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
           tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first} resizableColumns columnResizeMode="expand" showGridlines
@@ -201,6 +204,5 @@ export const AffectedGenomicModelTable = () => {
           {columnMap}
         </DataTable>
       </div>
-    </div>
   )
 }

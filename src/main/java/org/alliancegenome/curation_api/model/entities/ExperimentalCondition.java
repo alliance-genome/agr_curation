@@ -30,6 +30,11 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     private ZecoTerm conditionClass;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "conditionSummary_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsOnly.class})
+    private String conditionSummary;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "conditionStatement_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     private String conditionStatement;
@@ -68,4 +73,10 @@ public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private ChemicalTerm conditionChemical;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "conditionFreeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView({View.FieldsOnly.class})
+    @Column(columnDefinition="TEXT")
+    private String conditionFreeText;
 }

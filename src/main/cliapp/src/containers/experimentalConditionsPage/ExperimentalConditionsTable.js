@@ -15,12 +15,12 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
-import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 
 export const ExperimentalConditionsTable = () => {
-  const defaultColumnNames = ["Unique ID", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
+  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity", "Free Text"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -212,14 +212,14 @@ export const ExperimentalConditionsTable = () => {
     setEditingRows(event.data);
   };
 
-  const conditionQuantityEditor = (props) => {
+  const freeTextEditor = (props, fieldname) => {
     return (
       <>
         <InputTextEditor
           rowProps={props}
-          fieldName={'conditionQuantity'}
+          fieldName={fieldname}
         />
-        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldname} />
       </>
     );
   };
@@ -244,11 +244,20 @@ export const ExperimentalConditionsTable = () => {
     )
   };
 
+  const summaryBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
+        <Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
+      </>
+    )
+  };
+
   const statementBodyTemplate = (rowData) => {
     return (
       <>
-        <EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
-        <Tooltip target={`.b${rowData.id}`} content={rowData.conditionStatement} />
+        <EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
+        <Tooltip target={`.c${rowData.id}`} content={rowData.conditionStatement} />
       </>
     )
   };
@@ -299,6 +308,38 @@ export const ExperimentalConditionsTable = () => {
     }
   };
 
+  const conditionClassEditorTemplate = (props, autocomplete) => {
+    return (
+      <>
+      <AutocompleteEditor
+        autocompleteFields={autocomplete}
+        rowProps={props}
+        searchService={searchService}
+        fieldname='conditionClass'
+        endpoint='zecoterm'
+        filterName='conditionClassEditorFilter'
+        fieldName='conditionClass'
+        otherFilters={{
+          "obsoleteFilter": {
+            "obsolete": {
+              queryString: false
+            }
+          },
+          "subsetFilter": {
+            "subsets": {
+              queryString: 'ZECO_0000267'
+            }
+          }
+        }}
+      />
+      <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField='conditionClass'
+        />
+      </>
+    );
+  };
+
   const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
     return (
       <>
@@ -338,6 +379,14 @@ export const ExperimentalConditionsTable = () => {
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
     },
     {
+      field: "conditionSummary",
+      header: "Summary",
+      sortable: isEnabled,
+      filter: true,
+      body: summaryBodyTemplate,
+      filterElement: filterComponentTemplate("conditionSummaryFilter", ["conditionSummary"])
+    },
+    {
       field: "conditionStatement",
       header: "Statement",
       sortable: isEnabled,
@@ -352,7 +401,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionClassBodyTemplate,
       filter: true,
       filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm", curieAutocompleteFields)
+      editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
     },
     {
       field: "conditionId.name",
@@ -405,9 +454,17 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"]),
-      editor: (props) => conditionQuantityEditor(props)
+      editor: (props) => freeTextEditor(props, "conditionQuantity")
     }
-
+    ,
+    {
+      field: "conditionFreeText",
+      header: "Free Text",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionFreeTextFilter", ["conditionFreeText"]),
+      editor: (props) => freeTextEditor(props, "conditionFreeText")
+    }
 
   ];
 
@@ -435,21 +492,25 @@ export const ExperimentalConditionsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Experimental Conditions Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const resetTableState = () => {
@@ -464,14 +525,12 @@ export const ExperimentalConditionsTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <h3>Experimental Conditions Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={experimentalConditions} header={header} reorderableColumns={isEnabled}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '200%' }}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '200%' }} scrollHeight="62vh"
           ref={dataTable}
           filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
@@ -488,6 +547,5 @@ export const ExperimentalConditionsTable = () => {
           <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
-    </div>
   )
 }
