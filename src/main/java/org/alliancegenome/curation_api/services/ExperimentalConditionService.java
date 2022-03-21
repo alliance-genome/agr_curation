@@ -83,7 +83,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         if (dto.getConditionClass() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
-            if (term == null) {
+            if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains("ZECO_0000267")) {
                 throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
             }
             experimentalCondition.setConditionClass(term);

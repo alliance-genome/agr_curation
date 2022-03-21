@@ -115,7 +115,7 @@ public class ExperimentalConditionValidator {
             return null;
         }
         ZecoTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
-        if (zecoTerm == null) {
+        if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains("ZECO_0000267")) {
             addMessageResponse(field, invalidMessage);
             return null;
         }

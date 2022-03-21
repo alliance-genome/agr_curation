@@ -295,7 +295,9 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
         }
         if (dto.getConditionClassId() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClassId());
-            if (term == null) return null;
+            if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains("ZECO_0000267")) {
+                throw new ObjectValidationException(dto, "Invalid ConditionClassId - skipping annotation");
+            }
             experimentalCondition.setConditionClass(term);
         }
         else {

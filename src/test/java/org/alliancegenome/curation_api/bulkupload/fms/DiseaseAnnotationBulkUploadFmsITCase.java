@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -46,6 +47,7 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     private String requiredDoTerm = "DOID:4";
     private String requiredEcoTerm = "ECO:0000033";
     private String requiredZecoTerm = "ZECO:0000101";
+    private String requiredNonSlimZecoTerm = "ZECO:0000144";
     private String requiredXcoTerm = "XCO:0000131";
     private String requiredGoTerm = "GO:0007569";
     private String requiredChebiTerm = "CHEBI:46631";
@@ -1318,12 +1320,38 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("totalResults", is(4)); // No ZFIN annotations added
     }
     
+    @Order(46)
+    public void diseaseAnnotationNonSlimConditionClassId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/04_disease_annotation/46_non_slim_condition_class_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/fbAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(3)); // 1 FB annotation replaced with 0
+    }
+    
     private void loadRequiredEntities() throws Exception {
         loadDOTerm();
         loadECOTerm();
         loadGOTerm();
         loadXCOTerm();
-        loadZECOTerm();
+        loadZECOTerm(requiredZecoTerm, "ZECO_0000267");
+        loadZECOTerm(requiredNonSlimZecoTerm, null);
         loadZFATerm();
         loadCHEBITerm();
         loadNCBITaxonTerms();
@@ -1438,12 +1466,17 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     }
 
 
-    private void loadZECOTerm() throws Exception {
+    private void loadZECOTerm(String curie, String subset) throws Exception {
         ZecoTerm zecoTerm = new ZecoTerm();
-        zecoTerm.setCurie(requiredZecoTerm);
+        zecoTerm.setCurie(curie);
         zecoTerm.setName("Test ZECOTerm");
         zecoTerm.setObsolete(false);
-        
+        List<String> subsets = new ArrayList<String>();
+        if (subset != null) {
+            subsets.add(subset);
+            zecoTerm.setSubsets(subsets);
+        }
+            
         RestAssured.given().
             contentType("application/json").
             body(zecoTerm).
