@@ -76,10 +76,18 @@ public class ExperimentalConditionValidator {
         String conditionStatement = validateConditionStatement(uiEntity, dbEntity);
         dbEntity.setConditionStatement(conditionStatement);
         
-        dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        if (uiEntity.getConditionQuantity() == null || uiEntity.getConditionQuantity().isEmpty()) {
+            dbEntity.setConditionQuantity(null);
+        } else {
+            dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        }
         
-        dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
-        
+        if (uiEntity.getConditionFreeText() == null || uiEntity.getConditionFreeText().isEmpty()) {
+            dbEntity.setConditionFreeText(null);
+        } else {
+            dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
+        }
+            
         dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
         
         String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
