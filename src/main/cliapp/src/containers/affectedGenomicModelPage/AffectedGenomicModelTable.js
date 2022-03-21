@@ -129,7 +129,7 @@ export const AffectedGenomicModelTable = () => {
       header: "Name",
       body: nameTemplate,
       sortable: isEnabled,
-      filter: false,
+      filter: true,
       filterElement: filterComponentTemplate("nameFilter", ["name"])
     },
     {
