@@ -21,5 +21,7 @@ public class APIVersionInfo {
     private List<String> linkMLClasses;
     @JsonView(View.FieldsOnly.class)
     private String esHost;
+    @JsonView(View.FieldsOnly.class)
+    private String env;
     
 }

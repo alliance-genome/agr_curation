@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import { Dropdown } from "primereact/dropdown";
 
 export function FilterComponentDropDown({ isEnabled, field, tokenOperator= "OR" ,filterName, currentFilters, onFilter, options, optionField }) {

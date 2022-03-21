@@ -3,13 +3,16 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -74,9 +77,29 @@ public class ExperimentalConditionValidator {
         String conditionStatement = validateConditionStatement(uiEntity, dbEntity);
         dbEntity.setConditionStatement(conditionStatement);
         
-        dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        if (uiEntity.getConditionQuantity() == null || uiEntity.getConditionQuantity().isEmpty()) {
+            dbEntity.setConditionQuantity(null);
+        } else {
+            dbEntity.setConditionQuantity(uiEntity.getConditionQuantity());
+        }
         
-        dbEntity.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity));
+        if (uiEntity.getConditionFreeText() == null || uiEntity.getConditionFreeText().isEmpty()) {
+            dbEntity.setConditionFreeText(null);
+        } else {
+            dbEntity.setConditionFreeText(uiEntity.getConditionFreeText());
+        }
+            
+        dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
+        
+        String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
+        if (!uniqueId.equals(uiEntity.getUniqueId())) {
+            SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
+            if (dbSearchResponse != null) {
+                addMessageResponse("uniqueId", "ExperimentalCondition with uniqueId " + uniqueId + " already exists");
+            } else {
+                dbEntity.setUniqueId(uniqueId);
+            }
+        }
         
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
@@ -93,7 +116,7 @@ public class ExperimentalConditionValidator {
             return null;
         }
         ZecoTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
-        if (zecoTerm == null) {
+        if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
             addMessageResponse(field, invalidMessage);
             return null;
         }

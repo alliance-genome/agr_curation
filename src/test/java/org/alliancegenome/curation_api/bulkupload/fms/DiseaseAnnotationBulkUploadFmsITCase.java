@@ -7,13 +7,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
@@ -44,11 +48,18 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     private String requiredDoTerm = "DOID:4";
     private String requiredEcoTerm = "ECO:0000033";
     private String requiredZecoTerm = "ZECO:0000101";
+    private String requiredNonSlimZecoTerm = "ZECO:0000144";
     private String requiredXcoTerm = "XCO:0000131";
     private String requiredGoTerm = "GO:0007569";
     private String requiredChebiTerm = "CHEBI:46631";
     private String requiredZfaTerm = "ZFA:0000001";
     private String requiredNcbiTaxonTerm = "NCBITaxon:1781";
+    private String requiredGeneDiseaseRelation = "is_implicated_in";
+    private String requiredAlleleDiseaseRelation = "is_implicated_in";
+    private String requiredAgmDiseaseRelation = "is_model_of";
+    private String requiredConditionRelationType = "induced_by";
+    private String requiredConditionRelationType2 = "has_condition";
+    
     private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "FB:FBgn0010620", "FB:FBgn0032699", "FB:FBgn0045473", "FB:FBgn0054033", "FB:FBgn0259758", "FB:FBgn0260766",
                                                                             "FB:FBgn0260936", "FB:FBgn0264086", "HGNC:29488", "HGNC:3028", "HGNC:30470", "HGNC:447", "HGNC:460", "HGNC:1121", "HGNC:323",
                                                                             "HGNC:47869", "HGNC:5813", "MGI:105042", "MGI:1098239", "MGI:1346858", "MGI:1347355", "MGI:2139535",
@@ -103,9 +114,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results", hasSize(1)).
             body("results[0].subject.curie", is("FB:FBgn0260936")).
             body("results[0].object.curie", is("DOID:4")).
-            body("results[0].diseaseRelation", is("is_implicated_in")).
+            body("results[0].diseaseRelation.name", is("is_implicated_in")).
             body("results[0].conditionRelations", hasSize(1)).
-            body("results[0].conditionRelations[0].conditionRelationType", is("induced_by")).
+            body("results[0].conditionRelations[0].conditionRelationType.name", is("induced_by")).
             body("results[0].conditionRelations[0].conditions", hasSize(1)).
             body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("ZECO:0000101")).
             body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("XCO:0000131")).
@@ -177,9 +188,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results", hasSize(2)).
             body("results[1].subject.curie", is("WB:WBStrain00005113")).
             body("results[1].object.curie", is("DOID:4")).
-            body("results[1].diseaseRelation", is("is_model_of")).
+            body("results[1].diseaseRelation.name", is("is_model_of")).
             body("results[1].conditionRelations", hasSize(1)).
-            body("results[1].conditionRelations[0].conditionRelationType", is("has_condition")).
+            body("results[1].conditionRelations[0].conditionRelationType.name", is("has_condition")).
             body("results[1].conditionRelations[0].conditions", hasSize(1)).
             body("results[1].conditionRelations[0].conditions[0].conditionClass.curie", is("ZECO:0000101")).
             body("results[1].conditionRelations[0].conditions[0].conditionId.curie", is("XCO:0000131")).
@@ -225,9 +236,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results", hasSize(3)).
             body("results[2].subject.curie", is("ZFIN:ZDB-ALT-200608-1")).
             body("results[2].object.curie", is("DOID:4")).
-            body("results[2].diseaseRelation", is("is_implicated_in")).
+            body("results[2].diseaseRelation.name", is("is_implicated_in")).
             body("results[2].conditionRelations", hasSize(1)).
-            body("results[2].conditionRelations[0].conditionRelationType", is("has_condition")).
+            body("results[2].conditionRelations[0].conditionRelationType.name", is("has_condition")).
             body("results[2].conditionRelations[0].conditions", hasSize(1)).
             body("results[2].conditionRelations[0].conditions[0].conditionClass.curie", is("ZECO:0000101")).
             body("results[2].conditionRelations[0].conditions[0].conditionId.curie", is("XCO:0000131")).
@@ -1310,18 +1321,86 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("totalResults", is(4)); // No ZFIN annotations added
     }
     
+    @Order(46)
+    public void diseaseAnnotationNonSlimConditionClassId() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/fms/04_disease_annotation/46_non_slim_condition_class_id.json"));
+            
+        // upload file
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/disease-annotation/bulk/fbAnnotationFileFms").
+            then().
+            statusCode(200);
+    
+        
+        // check entity count
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(3)); // 1 FB annotation replaced with 0
+    }
+    
     private void loadRequiredEntities() throws Exception {
         loadDOTerm();
         loadECOTerm();
         loadGOTerm();
         loadXCOTerm();
-        loadZECOTerm();
+        loadZECOTerm(requiredZecoTerm, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+        loadZECOTerm(requiredNonSlimZecoTerm, null);
         loadZFATerm();
         loadCHEBITerm();
         loadNCBITaxonTerms();
         loadGenes();  
         loadAlleles();
         loadAGMs();
+        Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
+        Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
+        Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
+        Vocabulary conditionRelationTypeVocabulary = createVocabulary("Condition relation types");
+        createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
+        createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
+        createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
+        createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
+        createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType2);
+    }
+    
+    private Vocabulary createVocabulary(String name) {
+        Vocabulary vocabulary = new Vocabulary();
+        vocabulary.setName(name);
+        
+        ObjectResponse<Vocabulary> response = 
+            RestAssured.given().
+                contentType("application/json").
+                body(vocabulary).
+                when().
+                post("/api/vocabulary").
+                then().
+                statusCode(200).
+                extract().body().as(getObjectResponseTypeRefVocabulary());
+        
+        vocabulary = response.getEntity();
+        
+        return vocabulary;
+    }
+    
+    private void createVocabularyTerm(Vocabulary vocabulary, String name) {
+        VocabularyTerm vocabularyTerm = new VocabularyTerm();
+        vocabularyTerm.setName(name);
+        vocabularyTerm.setVocabulary(vocabulary);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(vocabularyTerm).
+                when().
+                post("/api/vocabularyterm").
+                then().
+                statusCode(200);
     }
     
     private void loadDOTerm() throws Exception {
@@ -1388,12 +1467,17 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     }
 
 
-    private void loadZECOTerm() throws Exception {
+    private void loadZECOTerm(String curie, String subset) throws Exception {
         ZecoTerm zecoTerm = new ZecoTerm();
-        zecoTerm.setCurie(requiredZecoTerm);
+        zecoTerm.setCurie(curie);
         zecoTerm.setName("Test ZECOTerm");
         zecoTerm.setObsolete(false);
-        
+        List<String> subsets = new ArrayList<String>();
+        if (subset != null) {
+            subsets.add(subset);
+            zecoTerm.setSubsets(subsets);
+        }
+            
         RestAssured.given().
             contentType("application/json").
             body(zecoTerm).
@@ -1529,5 +1613,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
     
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+    }
+    
+    private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
+        return new TypeRef<ObjectResponse <Vocabulary>>() { };
     }
 }
