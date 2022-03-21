@@ -15,6 +15,7 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
+import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
@@ -29,7 +30,7 @@ export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   const defaultColumnNames = ["Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-    "SGD Strain Background", "Annotation Type", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
+    "SGD Strain Background", "Annotation Type", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes", "Experimental Conditions"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -49,7 +50,9 @@ export const DiseaseAnnotationsTable = () => {
   const [columnMap, setColumnMap] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
   const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
+  const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
   const [relatedNotes, setRelatedNotes] = useState(false);
+  const [conditionRelations, setConditionRelations] = useState(false);
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
@@ -165,6 +168,11 @@ export const DiseaseAnnotationsTable = () => {
     setRelatedNotesDialog(true);
   };
 
+  const handleConditionRelationsOpen = (event, rowData) => {
+    setConditionRelations(rowData.conditionRelations);
+    setConditionRelationsDialog(true);
+  };
+
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
@@ -247,6 +255,19 @@ export const DiseaseAnnotationsTable = () => {
           onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
           <span style={{ textDecoration: 'underline' }}>
             {`Notes(${rowData.relatedNotes.length})`}
+          </span>
+        </Button>
+      </EllipsisTableCell>;
+    }
+  };
+
+  const conditionRelationsTemplate = (rowData) => {
+    if (rowData.conditionRelations) {
+      return <EllipsisTableCell>
+        <Button className="p-button-raised p-button-text"
+          onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
+          <span style={{ textDecoration: 'underline' }}>
+            {`Conditions(${rowData.conditionRelations.length})`}
           </span>
         </Button>
       </EllipsisTableCell>;
@@ -854,6 +875,17 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
   {
+    field: "conditionRelations.uniqueId",
+    header: "Experimental Conditions",
+    body: conditionRelationsTemplate,
+    sortable: true,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate(
+      "conditionRelationsFilter", 
+      ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name" ]
+    )
+  }, 
+  {
     field: "geneticSex.name",
     header: "Genetic Sex",
     sortable: isEnabled,
@@ -954,7 +986,6 @@ export const DiseaseAnnotationsTable = () => {
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
       orderedColumns.map((col) => {
-        console.log(col)
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
@@ -1032,6 +1063,11 @@ export const DiseaseAnnotationsTable = () => {
         relatedNotes={relatedNotes}
         relatedNotesDialog={relatedNotesDialog}
         setRelatedNotesDialog={setRelatedNotesDialog}
+      />
+    <ConditionRelationsDialog
+        conditonRelations={conditionRelations}
+        conditionRelationsDialog={conditionRelationsDialog}
+        setConditionRelationsDialog={setConditionRelationsDialog}
       />
     </div>
   );

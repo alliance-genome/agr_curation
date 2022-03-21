@@ -70,7 +70,7 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsAndLists.class})
     private List<EcoTerm> evidenceCodes;
     
-    @IndexedEmbedded(includeDepth = 1)
+    @IndexedEmbedded(includeDepth = 2)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JsonView({View.FieldsAndLists.class})
