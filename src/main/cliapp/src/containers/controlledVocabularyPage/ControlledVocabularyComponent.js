@@ -7,12 +7,10 @@ import { useMutation, useQuery} from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { MultiSelect } from 'primereact/multiselect';
-import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import {useOktaAuth} from "@okta/okta-react";
 
 import {returnSorted, filterColumns, orderColumns, reorderArray} from '../../utils/utils';
-import {Splitter, SplitterPanel} from "primereact/splitter";
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
 import {VocabularyService} from "../../service/VocabularyService";
 import {TrueFalseDropdown} from "../../components/TrueFalseDropDownSelector";
@@ -21,6 +19,8 @@ import {InputTextEditor} from "../../components/InputTextEditor";
 import {ControlledVocabularyDropdown} from "../../components/ControlledVocabularySelector";
 import {NewTermForm} from "../../containers/controlledVocabularyPage/NewTermForm";
 import {NewVocabularyForm} from "../../containers/controlledVocabularyPage/NewVocabularyForm";
+import {DataTableHeaderFooterTemplate} from "../../components/DataTableHeaderFooterTemplate";
+import {Button} from "primereact/button";
 
 export const ControlledVocabularyComponent = () => {
   const defaultColumnNames = ["Id", "Name", "Abbreviation", "Vocabulary", "Definition", "Obsolete"];
@@ -148,40 +148,35 @@ export const ControlledVocabularyComponent = () => {
     setNewVocabularyDialog(true);
   };
 
+  const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+      return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+   };
+
+  const createButtons = () => {
+        return (
+            <>
+            <Button label="New Term" icon="pi pi-plus" onClick={handleNewTerm} />&nbsp;&nbsp;
+            <Button label="New Vocabulary" icon="pi pi-plus" onClick={handleNewVocabulary} />
+            </>
+        );
+    };
+
   const header = (
-      <div className="card">
-          <Splitter style={{border:'none', height:'10%'}} gutterSize="0">
-              <SplitterPanel size={50} style={{textAlign: 'left'}}>
-                  <h2>Controlled Vocabulary Terms Table</h2>
-              </SplitterPanel>
-              <SplitterPanel size={50} style={{textAlign: 'right'}}>
-                  <MultiSelect
-                      value={tableState.selectedColumnNames}
-                      options={defaultColumnNames}
-                      onChange={e => setSelectedColumnNames(e.value)}
-                      style={{ width: '20em', textAlign: 'center' }}
-                      disabled={!isEnabled}
-                  />&nbsp;&nbsp;&nbsp;
-                  <Button label="New Term" icon="pi pi-plus" onClick={handleNewTerm} />&nbsp;&nbsp;
-                  <Button label="New Vocabulary" icon="pi pi-plus" onClick={handleNewVocabulary} />&nbsp;&nbsp;
-                  <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-              </SplitterPanel>
-          </Splitter>
-      </div>
-    /*<>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>*/
+      <DataTableHeaderFooterTemplate
+          title = {"Controlled Vocabulary Terms Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          buttons = {createButtons()}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
