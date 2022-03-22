@@ -178,7 +178,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
       return <>
-        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+        <ul className='pl-0 list-none'>
           {sortedWithGenes.map((a, index) =>
             <li key={index}>
               <EllipsisTableCell>
@@ -199,7 +199,7 @@ export const DiseaseAnnotationsTable = () => {
         <>
           <div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
             <EllipsisTableCell>
-              <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
+              <ul className='pl-0 list-none'>
                 {sortedEvidenceCodes.map((a, index) =>
                   <li key={index}>
                     {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
@@ -210,7 +210,7 @@ export const DiseaseAnnotationsTable = () => {
           </div>
           <Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
             <div>
-              <ul style={{ listStyleType: 'none', paddingLeft:0 }}>
+              <ul className='pl-0 list-none'>
                 {sortedEvidenceCodes.map((a, index) =>
                   <li key={`a${index}`}>
                     {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
@@ -228,7 +228,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowData && rowData.diseaseQualifiers) {
       const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
       return (<div>
-        <ul style={{ listStyleType: 'none', paddingLeft: 0  }}>
+        <ul className='pl-0 list-none'>
           {sortedDiseaseQualifiers.map((a, index) =>
             <li key={index}>
               <EllipsisTableCell>
