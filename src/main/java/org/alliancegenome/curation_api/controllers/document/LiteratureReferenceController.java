@@ -10,7 +10,6 @@ import org.alliancegenome.curation_api.interfaces.document.LiteratureReferenceIn
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.services.LiteratureReferenceService;
 
-import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
