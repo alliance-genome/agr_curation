@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.base.dao;
 
-import java.io.IOException;
 import java.util.*;
 
 import javax.inject.Inject;
