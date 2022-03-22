@@ -22,10 +22,3 @@ public class LiteratureReferenceService extends BaseDocumentService<LiteratureRe
         setESDao(literatureReferenceDAO);
     }
 }
-
-
-
-
-
-
-    
