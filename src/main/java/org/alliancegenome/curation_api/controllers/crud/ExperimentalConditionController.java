@@ -8,8 +8,7 @@ import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ExperimentalConditionCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.ExperimentalConditionService;
 
 @RequestScoped

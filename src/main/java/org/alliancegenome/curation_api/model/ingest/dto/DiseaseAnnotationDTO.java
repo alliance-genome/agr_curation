@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
-import javax.persistence.*;
-
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;
