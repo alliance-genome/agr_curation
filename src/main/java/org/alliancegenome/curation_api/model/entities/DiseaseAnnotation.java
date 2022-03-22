@@ -13,9 +13,11 @@ import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
-
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import org.hibernate.search.mapper.pojo.bridge.PropertyBridge;
+import org.hibernate.search.mapper.pojo.bridge.binding.PropertyBindingContext;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.PropertyBinderRef;
 
 import lombok.*;
 
@@ -123,9 +125,9 @@ public class DiseaseAnnotation extends Association {
     @JsonView(View.FieldsOnly.class)
     private String secondaryDataProvider;
 
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class)) 
     @JsonView({View.FieldsOnly.class})
     private BiologicalEntity diseaseGeneticModifier;
     
