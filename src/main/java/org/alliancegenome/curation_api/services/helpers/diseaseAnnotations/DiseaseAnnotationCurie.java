@@ -80,12 +80,14 @@ public abstract class DiseaseAnnotationCurie {
 
     public static String getExperimentalConditionCurie(ExperimentalConditionFmsDTO dto) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
-        curie.add(dto.getConditionClassId());
         curie.add(dto.getConditionStatement());
+        curie.add(dto.getConditionClassId());
         curie.add(dto.getConditionId());
-        curie.add(dto.getConditionQuantity());
-        curie.add(dto.getNcbiTaxonId());
         curie.add(dto.getAnatomicalOntologyId());
+        curie.add(dto.getChemicalOntologyId());
+        curie.add(dto.getGeneOntologyId());
+        curie.add(dto.getNcbiTaxonId());
+        curie.add(dto.getConditionQuantity());
         return curie.getCurie();
     }
 
