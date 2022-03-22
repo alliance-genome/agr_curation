@@ -15,7 +15,7 @@ import org.alliancegenome.curation_api.response.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>> {
+public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntityDAO<E>> {
     
     protected BaseSQLDAO<E> dao;
 

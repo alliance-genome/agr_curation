@@ -26,7 +26,7 @@ import io.micrometer.core.instrument.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
+public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
     @Inject protected EntityManager entityManager;
     @Inject protected SearchSession searchSession;

@@ -3,20 +3,10 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.*;
+import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 @RequestScoped

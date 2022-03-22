@@ -9,8 +9,6 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
 
-import lombok.extern.jbosslog.JBossLog;
-
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 

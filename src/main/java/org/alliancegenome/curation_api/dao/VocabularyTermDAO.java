@@ -1,13 +1,10 @@
 package org.alliancegenome.curation_api.dao;
 
-import java.util.HashMap;
-
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.dao.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
 import lombok.extern.jbosslog.JBossLog;
