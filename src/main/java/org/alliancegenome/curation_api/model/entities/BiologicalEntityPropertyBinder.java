@@ -1,9 +1,5 @@
 package org.alliancegenome.curation_api.model.entities;
 
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.RetentionPolicy;
-
 import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
 import org.hibernate.search.engine.backend.document.IndexObjectFieldReference;
@@ -22,27 +18,29 @@ public class BiologicalEntityPropertyBinder implements PropertyBinder {
     public void bind(PropertyBindingContext context) {
         context.dependencies().use("curie").use("taxon");
         
-        IndexSchemaObjectField diseaseGeneticModifierField = context.indexSchemaElement().objectField("diseaseGeneticModifier");
+        String fieldName = (String) context.param("fieldName");
+        
+        IndexSchemaObjectField biologicalEntityField = context.indexSchemaElement().objectField(fieldName);
         StringIndexFieldTypeOptionsStep<?> fullTextField = context.typeFactory().asString().analyzer("autocompleteAnalyzer").searchAnalyzer("autocompleteSearchAnalyzer");
         StringIndexFieldTypeOptionsStep<?> keywordField = context.typeFactory().asString().searchable(Searchable.YES).sortable(Sortable.YES).projectable(Projectable.YES).normalizer("sortNormalizer");
         
         context.bridge(BiologicalEntity.class, new BiologicalEntityValueBridge(
-                diseaseGeneticModifierField.toReference(),
-                diseaseGeneticModifierField.field("name", fullTextField).toReference(),
-                diseaseGeneticModifierField.field("symbol", fullTextField).toReference(),
-                diseaseGeneticModifierField.field("taxon", fullTextField).toReference(),
-                diseaseGeneticModifierField.field("curie", fullTextField).toReference(),
-                diseaseGeneticModifierField.field("name_keyword", keywordField).toReference(),
-                diseaseGeneticModifierField.field("symbol_keyword", keywordField).toReference(),
-                diseaseGeneticModifierField.field("taxon_keyword", keywordField).toReference(),
-                diseaseGeneticModifierField.field("curie_keyword", keywordField).toReference()
+                biologicalEntityField.toReference(),
+                biologicalEntityField.field("name", fullTextField).toReference(),
+                biologicalEntityField.field("symbol", fullTextField).toReference(),
+                biologicalEntityField.field("taxon", fullTextField).toReference(),
+                biologicalEntityField.field("curie", fullTextField).toReference(),
+                biologicalEntityField.field("name_keyword", keywordField).toReference(),
+                biologicalEntityField.field("symbol_keyword", keywordField).toReference(),
+                biologicalEntityField.field("taxon_keyword", keywordField).toReference(),
+                biologicalEntityField.field("curie_keyword", keywordField).toReference()
             ));
     }
     
     @SuppressWarnings("rawtypes")
     private static class BiologicalEntityValueBridge implements PropertyBridge<BiologicalEntity> {
         
-        private final IndexObjectFieldReference diseaseGeneticModifierField;
+        private final IndexObjectFieldReference biologicalEntityField;
         private final IndexFieldReference<String> nameField;
         private final IndexFieldReference<String> symbolField;
         private final IndexFieldReference<String> taxonField;
@@ -52,7 +50,7 @@ public class BiologicalEntityPropertyBinder implements PropertyBinder {
         private final IndexFieldReference<String> taxonKeywordField;
         private final IndexFieldReference<String> curieKeywordField;
         
-        private BiologicalEntityValueBridge(IndexObjectFieldReference diseaseGeneticModifierField,
+        private BiologicalEntityValueBridge(IndexObjectFieldReference biologicalEntityField,
                 IndexFieldReference<String> nameField,
                 IndexFieldReference<String> symbolField,
                 IndexFieldReference<String> taxonField,
@@ -61,7 +59,7 @@ public class BiologicalEntityPropertyBinder implements PropertyBinder {
                 IndexFieldReference<String> symbolKeywordField,
                 IndexFieldReference<String> taxonKeywordField,
                 IndexFieldReference<String> curieKeywordField) {
-            this.diseaseGeneticModifierField = diseaseGeneticModifierField;
+            this.biologicalEntityField = biologicalEntityField;
             this.nameField = nameField;
             this.symbolField = symbolField;
             this.taxonField = taxonField;
@@ -106,15 +104,15 @@ public class BiologicalEntityPropertyBinder implements PropertyBinder {
                     symbol = null;
                 }
             }
-            DocumentElement diseaseGeneticModifier = target.addObject(this.diseaseGeneticModifierField);
-            diseaseGeneticModifier.addValue(this.symbolField, symbol);
-            diseaseGeneticModifier.addValue(this.nameField, name);
-            diseaseGeneticModifier.addValue(this.taxonField, taxon);
-            diseaseGeneticModifier.addValue(this.curieField, curie);
-            diseaseGeneticModifier.addValue(this.symbolKeywordField, symbol);
-            diseaseGeneticModifier.addValue(this.nameKeywordField, name);
-            diseaseGeneticModifier.addValue(this.taxonKeywordField, taxon);
-            diseaseGeneticModifier.addValue(this.curieKeywordField, curie);
+            DocumentElement biologicalEntity = target.addObject(this.biologicalEntityField);
+            biologicalEntity.addValue(this.symbolField, symbol);
+            biologicalEntity.addValue(this.nameField, name);
+            biologicalEntity.addValue(this.taxonField, taxon);
+            biologicalEntity.addValue(this.curieField, curie);
+            biologicalEntity.addValue(this.symbolKeywordField, symbol);
+            biologicalEntity.addValue(this.nameKeywordField, name);
+            biologicalEntity.addValue(this.taxonKeywordField, taxon);
+            biologicalEntity.addValue(this.curieKeywordField, curie);
         }
         
     }

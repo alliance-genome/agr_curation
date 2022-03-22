@@ -12,6 +12,7 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.common.annotation.Param;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
@@ -127,7 +128,7 @@ public class DiseaseAnnotation extends Association {
 
     @ManyToOne
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class)) 
+    @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
     @JsonView({View.FieldsOnly.class})
     private BiologicalEntity diseaseGeneticModifier;
     
