@@ -8,7 +8,8 @@ import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
 import org.hibernate.search.engine.backend.document.IndexObjectFieldReference;
 import org.hibernate.search.engine.backend.document.model.dsl.IndexSchemaObjectField;
-import org.hibernate.search.engine.backend.types.IndexFieldType;
+import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.engine.backend.types.dsl.StringIndexFieldTypeOptionsStep;
 import org.hibernate.search.mapper.pojo.bridge.PropertyBridge;
 import org.hibernate.search.mapper.pojo.bridge.binding.PropertyBindingContext;
 import org.hibernate.search.mapper.pojo.bridge.mapping.programmatic.PropertyBinder;
@@ -22,17 +23,19 @@ public class BiologicalEntityPropertyBinder implements PropertyBinder {
         context.dependencies().use("curie").use("taxon");
         
         IndexSchemaObjectField diseaseGeneticModifierField = context.indexSchemaElement().objectField("diseaseGeneticModifier");
-        IndexFieldType<String> stringFieldType = context.typeFactory().asString().toIndexFieldType();
+        StringIndexFieldTypeOptionsStep<?> fullTextField = context.typeFactory().asString().analyzer("autocompleteAnalyzer").searchAnalyzer("autocompleteSearchAnalyzer");
+        StringIndexFieldTypeOptionsStep<?> keywordField = context.typeFactory().asString().searchable(Searchable.YES).sortable(Sortable.YES).projectable(Projectable.YES).normalizer("sortNormalizer");
+        
         context.bridge(BiologicalEntity.class, new BiologicalEntityValueBridge(
                 diseaseGeneticModifierField.toReference(),
-                diseaseGeneticModifierField.field("name", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("symbol", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("taxon", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("curie", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("name_keyword", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("symbol_keyword", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("taxon_keyword", stringFieldType).toReference(),
-                diseaseGeneticModifierField.field("curie_keyword", stringFieldType).toReference()
+                diseaseGeneticModifierField.field("name", fullTextField).toReference(),
+                diseaseGeneticModifierField.field("symbol", fullTextField).toReference(),
+                diseaseGeneticModifierField.field("taxon", fullTextField).toReference(),
+                diseaseGeneticModifierField.field("curie", fullTextField).toReference(),
+                diseaseGeneticModifierField.field("name_keyword", keywordField).toReference(),
+                diseaseGeneticModifierField.field("symbol_keyword", keywordField).toReference(),
+                diseaseGeneticModifierField.field("taxon_keyword", keywordField).toReference(),
+                diseaseGeneticModifierField.field("curie_keyword", keywordField).toReference()
             ));
     }
     
