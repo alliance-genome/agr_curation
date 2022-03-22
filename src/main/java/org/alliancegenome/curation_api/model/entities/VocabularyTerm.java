@@ -26,7 +26,7 @@ import lombok.*;
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 public class VocabularyTerm extends BaseGeneratedEntity {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @FullTextField(analyzer = "whitespace", searchAnalyzer = "whitespace")
     @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     private String name;
