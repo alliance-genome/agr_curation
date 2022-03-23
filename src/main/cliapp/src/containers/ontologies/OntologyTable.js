@@ -8,9 +8,9 @@ import { Messages } from "primereact/messages";
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
-import { Button } from 'primereact/button';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
   const defaultColumnNames = columns.map((col) => {
@@ -89,21 +89,25 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
     setTableState(_tableState);
   };
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {ontologyAbbreviation+" Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -173,12 +177,10 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
   };
 
   return (
-    <div>
       <div className="card">
-        <h3>{ontologyAbbreviation} Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable} filterDisplay="row"
+          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
           tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
@@ -191,6 +193,5 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
 
         </DataTable>
       </div>
-    </div>
   )
 }

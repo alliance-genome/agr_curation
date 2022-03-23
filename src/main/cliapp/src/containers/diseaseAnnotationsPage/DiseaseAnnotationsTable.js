@@ -15,6 +15,8 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
+import { ConditionRelationsDialog } from './ConditionRelationsDialog';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
@@ -49,7 +51,9 @@ export const DiseaseAnnotationsTable = () => {
   const [columnMap, setColumnMap] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
   const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
+  const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
   const [relatedNotes, setRelatedNotes] = useState(false);
+  const [conditionRelations, setConditionRelations] = useState(false);
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
@@ -76,7 +80,7 @@ export const DiseaseAnnotationsTable = () => {
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie'],
     'sgdStrainBackground.name': ['sgdStrainBackground.curie'],
-    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifer.name', 'diseaseGeneticModifier.curie']
+    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.curie']
   };
 
   const aggregationFields = [
@@ -165,11 +169,16 @@ export const DiseaseAnnotationsTable = () => {
     setRelatedNotesDialog(true);
   };
 
+  const handleConditionRelationsOpen = (event, rowData) => {
+    setConditionRelations(rowData.conditionRelations);
+    setConditionRelationsDialog(true);
+  };
+
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
       return <>
-        <ul style={{ listStyleType: 'none' }}>
+        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
           {sortedWithGenes.map((a, index) =>
             <li key={index}>
               <EllipsisTableCell>
@@ -188,25 +197,23 @@ export const DiseaseAnnotationsTable = () => {
       const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
       return (
         <>
-          <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-            <ul style={{ listStyleType: 'none' }}>
-              {sortedEvidenceCodes.map((a, index) =>
-                <li key={index}>
-                  <EllipsisTableCell>
-                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-                  </EllipsisTableCell>
-                </li>
-              )}
-            </ul>
-          </div>
-          <Tooltip target={`.a${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }}>
-            <div className={`a${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-              <ul style={{ listStyleType: 'none' }}>
+          <div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
+            <EllipsisTableCell>
+              <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
                 {sortedEvidenceCodes.map((a, index) =>
                   <li key={index}>
-                    <EllipsisTableCell>
-                      {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-                    </EllipsisTableCell>
+                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
+                  </li>
+                )}
+              </ul>
+            </EllipsisTableCell>
+          </div>
+          <Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+            <div>
+              <ul style={{ listStyleType: 'none', paddingLeft:0 }}>
+                {sortedEvidenceCodes.map((a, index) =>
+                  <li key={`a${index}`}>
+                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
                   </li>
                 )}
               </ul>
@@ -221,7 +228,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowData && rowData.diseaseQualifiers) {
       const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
       return (<div>
-        <ul stype={{ listStypeType: 'none' }}>
+        <ul style={{ listStyleType: 'none', paddingLeft: 0  }}>
           {sortedDiseaseQualifiers.map((a, index) =>
             <li key={index}>
               <EllipsisTableCell>
@@ -247,6 +254,19 @@ export const DiseaseAnnotationsTable = () => {
           onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
           <span style={{ textDecoration: 'underline' }}>
             {`Notes(${rowData.relatedNotes.length})`}
+          </span>
+        </Button>
+      </EllipsisTableCell>;
+    }
+  };
+
+  const conditionRelationsTemplate = (rowData) => {
+    if (rowData.conditionRelations) {
+      return <EllipsisTableCell>
+        <Button className="p-button-raised p-button-text"
+          onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
+          <span style={{ textDecoration: 'underline' }}>
+            {`Conditions(${rowData.conditionRelations.length})`}
           </span>
         </Button>
       </EllipsisTableCell>;
@@ -854,6 +874,17 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
   {
+    field: "conditionRelations.uniqueId",
+    header: "Experimental Conditions",
+    body: conditionRelationsTemplate,
+    sortable: true,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate(
+      "conditionRelationsFilter", 
+      ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name" ]
+    )
+  }, 
+  {
     field: "geneticSex.name",
     header: "Genetic Sex",
     sortable: isEnabled,
@@ -954,7 +985,6 @@ export const DiseaseAnnotationsTable = () => {
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
       orderedColumns.map((col) => {
-        console.log(col)
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
@@ -975,21 +1005,25 @@ export const DiseaseAnnotationsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20%' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Disease Annotations Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const resetTableState = () => {
@@ -1004,13 +1038,12 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   return (
-    <div>
+      <>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <h3>Disease Annotations Table</h3>
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }} scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
@@ -1033,6 +1066,11 @@ export const DiseaseAnnotationsTable = () => {
         relatedNotesDialog={relatedNotesDialog}
         setRelatedNotesDialog={setRelatedNotesDialog}
       />
-    </div>
+    <ConditionRelationsDialog
+        conditonRelations={conditionRelations}
+        conditionRelationsDialog={conditionRelationsDialog}
+        setConditionRelationsDialog={setConditionRelationsDialog}
+      />
+    </>
   );
 };

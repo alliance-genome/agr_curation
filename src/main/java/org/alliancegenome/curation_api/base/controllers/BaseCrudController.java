@@ -2,17 +2,14 @@ package org.alliancegenome.curation_api.base.controllers;
 
 import java.util.*;
 
-import javax.enterprise.context.RequestScoped;
-
-import org.alliancegenome.curation_api.base.dao.BaseDAO;
+import org.alliancegenome.curation_api.base.dao.BaseEntityDAO;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.base.interfaces.*;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 
-@RequestScoped
-public abstract class BaseCrudController<S extends BaseCrudService<E, D>, E extends BaseEntity, D extends BaseDAO<E>> implements BaseIdCrudInterface<E>, BaseCurieCrudInterface<E> {
+public abstract class BaseCrudController<S extends BaseCrudService<E, D>, E extends BaseEntity, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E>, BaseCurieCrudInterface<E> {
 
     private BaseCrudService<E, D> service;
 
