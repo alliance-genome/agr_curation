@@ -869,7 +869,7 @@ export const DiseaseAnnotationsTable = () => {
     field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
-    sortable: false,
+    sortable: true,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
