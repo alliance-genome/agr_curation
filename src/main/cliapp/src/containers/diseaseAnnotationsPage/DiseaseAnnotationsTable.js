@@ -647,7 +647,12 @@ export const DiseaseAnnotationsTable = () => {
                 __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
               }}
             />
-            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`} content={`${rowData.subject.symbol} (${rowData.subject.curie})`} />
+            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+              <div dangerouslySetInnerHTML={{
+                __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+              }}
+              />
+            </Tooltip>
           </>
         )
       } else if (rowData.subject.name) {
@@ -658,7 +663,12 @@ export const DiseaseAnnotationsTable = () => {
                 __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
               }}
             />
-            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`} content={`${rowData.subject.name} (${rowData.subject.curie})`} />
+            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+              <div dangerouslySetInnerHTML={{
+                __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
+                }}
+              />
+            </Tooltip>
           </>
         )
       } else {
