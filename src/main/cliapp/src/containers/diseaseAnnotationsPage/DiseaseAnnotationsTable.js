@@ -31,8 +31,12 @@ import { Tooltip } from 'primereact/tooltip';
 export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
-  const defaultColumnNames = ["Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-    "SGD Strain Background", "Annotation Type", "Genetic Modifier", "Genetic Modifier Relation", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
+  const defaultColumnNames = [
+    "Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease","Evidence Code", "With", "Reference", "Experimental Conditions", 
+    "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier", "Genetic Modifier Relation", "Related Notes",
+    "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", 
+  ];
+
   let initialTableState = {
     page: 0,
     first: 0,
