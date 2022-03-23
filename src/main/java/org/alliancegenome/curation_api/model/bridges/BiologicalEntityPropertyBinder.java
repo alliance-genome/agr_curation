@@ -1,5 +1,9 @@
-package org.alliancegenome.curation_api.model.entities;
+package org.alliancegenome.curation_api.model.bridges;
 
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.hibernate.search.engine.backend.document.DocumentElement;
 import org.hibernate.search.engine.backend.document.IndexFieldReference;
 import org.hibernate.search.engine.backend.document.IndexObjectFieldReference;

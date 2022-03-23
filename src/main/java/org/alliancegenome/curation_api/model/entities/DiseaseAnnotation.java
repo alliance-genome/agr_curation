@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.model.bridges.BiologicalEntityPropertyBinder;
+import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
+import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
