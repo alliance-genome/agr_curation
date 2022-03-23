@@ -18,6 +18,6 @@ public class ConditionRelationDTO {
 
     private String handle;
     @JsonProperty("single_reference")
-    private Reference singleReference;
+    private String singleReference;
 
 }

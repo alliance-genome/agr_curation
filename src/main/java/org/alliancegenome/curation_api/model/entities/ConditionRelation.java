@@ -28,6 +28,13 @@ public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
     @JsonView({View.FieldsOnly.class})
     private VocabularyTerm conditionRelationType;
 
+    @JsonView({View.FieldsOnly.class})
+    private String handle;
+
+    @ManyToOne
+    @JsonView({View.FieldsOnly.class})
+    private Reference singleReference;
+
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
