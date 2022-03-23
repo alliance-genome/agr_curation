@@ -85,6 +85,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 
         searchSourceBuilder = searchSourceBuilder.from(pagination.getPage() * pagination.getLimit());
         searchSourceBuilder = searchSourceBuilder.size(pagination.getLimit());
+        searchSourceBuilder = searchSourceBuilder.trackTotalHits(true);
 
         log.debug(searchSourceBuilder);
 
