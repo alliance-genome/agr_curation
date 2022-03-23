@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.model.entities.ontology;
+package org.alliancegenome.curation_api.model.bridges;
 
 import org.hibernate.search.mapper.pojo.bridge.ValueBridge;
 import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeToIndexedValueContext;
