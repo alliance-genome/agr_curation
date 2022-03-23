@@ -5,7 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
-import org.alliancegenome.curation_api.model.entities.ontology.BooleanValueBridge;
+import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -26,7 +26,7 @@ import lombok.*;
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 public class VocabularyTerm extends BaseGeneratedEntity {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @FullTextField(analyzer = "whitespace", searchAnalyzer = "whitespace")
     @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     private String name;
