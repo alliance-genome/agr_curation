@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -33,6 +34,7 @@ public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
 
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
+    @JsonProperty("single_reference")
     private Reference singleReference;
 
     @IndexedEmbedded(includeDepth = 1)
