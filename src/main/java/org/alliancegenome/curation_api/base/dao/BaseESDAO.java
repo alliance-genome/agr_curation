@@ -74,10 +74,10 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
                     
                     int value = (int)map.get("order");
                     if(value == 1) {
-                        query.sort(new FieldSortBuilder(key + "_keyword").order(SortOrder.ASC));
+                        query.sort(new FieldSortBuilder(key + ".keyword").order(SortOrder.ASC));
                     }
                     if(value == -1) {
-                        query.sort(new FieldSortBuilder(key + "_keyword").order(SortOrder.DESC));
+                        query.sort(new FieldSortBuilder(key + ".keyword").order(SortOrder.DESC));
                     }
                 }
             }
@@ -85,6 +85,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 
         searchSourceBuilder = searchSourceBuilder.from(pagination.getPage() * pagination.getLimit());
         searchSourceBuilder = searchSourceBuilder.size(pagination.getLimit());
+        searchSourceBuilder = searchSourceBuilder.trackTotalHits(true);
 
         log.debug(searchSourceBuilder);
 

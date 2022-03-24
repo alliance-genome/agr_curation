@@ -111,7 +111,9 @@ export const AffectedGenomicModelTable = () => {
     return (
       <>
         <div className={`overflow-hidden text-overflow-ellipsis ${rowData.curie.replace(':', '')}`} dangerouslySetInnerHTML={{ __html: rowData.name }} />
-        <Tooltip target={`.${rowData.curie.replace(':', '')}`} content={rowData.name} />
+        <Tooltip target={`.${rowData.curie.replace(':', '')}`}>
+          <div dangerouslySetInnerHTML={{ __html: rowData.name }} />
+        </Tooltip>
       </>
     )
   }

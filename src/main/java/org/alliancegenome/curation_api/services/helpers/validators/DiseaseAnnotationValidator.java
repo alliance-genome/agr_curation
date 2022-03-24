@@ -140,7 +140,7 @@ public class DiseaseAnnotationValidator {
         }
 
         if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
-            addMessageResponse("diseaseGeneticModifer", dependencyMessagePrefix + "diseaseGeneticModifierRelation");
+            addMessageResponse("diseaseGeneticModifier", dependencyMessagePrefix + "diseaseGeneticModifierRelation");
             return null;
         }
         

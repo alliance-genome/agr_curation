@@ -12,6 +12,7 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { ListTableCell } from '../../components/ListTableCell';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
@@ -31,7 +32,7 @@ export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   const defaultColumnNames = ["Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-    "SGD Strain Background", "Annotation Type", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes", "Experimental Conditions"];
+    "SGD Strain Background", "Annotation Type", "Genetic Modifier", "Genetic Modifier Relation", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -79,8 +80,8 @@ export const DiseaseAnnotationsTable = () => {
     'object.name': ['object.curie', 'object.namespace'],
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie'],
-    'sgdStrainBackground.name': ['sgdStrainBackground.curie']/*,
-    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifer.name', 'diseaseGeneticModifier.curie']*/
+    'sgdStrainBackground.name': ['sgdStrainBackground.curie'],
+    'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.curie']
   };
 
   const aggregationFields = [
@@ -177,17 +178,14 @@ export const DiseaseAnnotationsTable = () => {
   const withTemplate = (rowData) => {
     if (rowData && rowData.with) {
       const sortedWithGenes = rowData.with.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
-      return <>
-        <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-          {sortedWithGenes.map((a, index) =>
-            <li key={index}>
-              <EllipsisTableCell>
-                {a.symbol + ' (' + a.curie + ')'}
-              </EllipsisTableCell>
-            </li>
-          )}
-        </ul>
-      </>;
+      const listTemplate = (item) => {
+        return (
+          <EllipsisTableCell>
+            {item.symbol + ' (' + item.curie + ')'}
+          </EllipsisTableCell>
+        );
+      };
+      return <ListTableCell template={listTemplate} listData={sortedWithGenes}/>
     }
   };
 
@@ -195,29 +193,20 @@ export const DiseaseAnnotationsTable = () => {
   const evidenceTemplate = (rowData) => {
     if (rowData && rowData.evidenceCodes) {
       const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
+      const listTemplate = (item) => {
+        return (
+          <EllipsisTableCell>
+            {item.abbreviation + ' - ' + item.name + ' (' + item.curie + ')'}
+          </EllipsisTableCell>
+        );
+      };
       return (
         <>
           <div className={`a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`}>
-            <EllipsisTableCell>
-              <ul style={{ listStyleType: 'none', paddingLeft: 0 }}>
-                {sortedEvidenceCodes.map((a, index) =>
-                  <li key={index}>
-                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-                  </li>
-                )}
-              </ul>
-            </EllipsisTableCell>
+            <ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
           </div>
           <Tooltip target={`.a${rowData.id}${rowData.evidenceCodes[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
-            <div>
-              <ul style={{ listStyleType: 'none', paddingLeft:0 }}>
-                {sortedEvidenceCodes.map((a, index) =>
-                  <li key={`a${index}`}>
-                    {a.abbreviation + ' - ' + a.name + ' (' + a.curie + ')'}
-                  </li>
-                )}
-              </ul>
-            </div>
+            <ListTableCell template={listTemplate} listData={sortedEvidenceCodes}/>
           </Tooltip>
         </>
       );
@@ -227,17 +216,8 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseQualifiersBodyTemplate = (rowData) => {
     if (rowData && rowData.diseaseQualifiers) {
       const sortedDiseaseQualifiers = rowData.diseaseQualifiers.sort((a, b) => (a.name > b.name) ? 1 : -1);
-      return (<div>
-        <ul style={{ listStyleType: 'none', paddingLeft: 0  }}>
-          {sortedDiseaseQualifiers.map((a, index) =>
-            <li key={index}>
-              <EllipsisTableCell>
-                {a.name}
-              </EllipsisTableCell>
-            </li>
-          )}
-        </ul>
-      </div>);
+      const listTemplate = (item) => item.name;
+      return <ListTableCell template={listTemplate} listData={sortedDiseaseQualifiers}/>
     }
   };
 
@@ -667,7 +647,12 @@ export const DiseaseAnnotationsTable = () => {
                 __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
               }}
             />
-            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`} content={`${rowData.subject.symbol} (${rowData.subject.curie})`} />
+            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+              <div dangerouslySetInnerHTML={{
+                __html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+              }}
+              />
+            </Tooltip>
           </>
         )
       } else if (rowData.subject.name) {
@@ -678,7 +663,12 @@ export const DiseaseAnnotationsTable = () => {
                 __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
               }}
             />
-            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`} content={`${rowData.subject.name} (${rowData.subject.curie})`} />
+            <Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+              <div dangerouslySetInnerHTML={{
+                __html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
+                }}
+              />
+            </Tooltip>
           </>
         )
       } else {
@@ -869,7 +859,7 @@ export const DiseaseAnnotationsTable = () => {
     field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
-    sortable: false,
+    sortable: true,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
   },
@@ -918,7 +908,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: FilterMultiSelectComponentTemplate("annotationTypeFilter", "annotationType.name"),
     editor: (props) => annotationTypeEditor(props)
   },
-  /*{
+  {
     field: "diseaseGeneticModifierRelation.name",
     header: "Genetic Modifier Relation",
     sortable: isEnabled,
@@ -934,7 +924,7 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("geneticModifierFilter", ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]),
     editor: (props) => geneticModifierEditorTemplate(props),
     body: geneticModifierBodyTemplate
-  },*/
+  },
   {
     field: "dataProvider",
     header: "Data Provider",
