@@ -37,10 +37,4 @@ public class AffectedGenomicModelCrudController extends BaseCrudController<Affec
         return agmFmsExecutor.runLoad(agmData);
     }
 
-    public ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel entity) {
-
-        return affectedGenomicModelService.createModel(entity);
-    }
-
-
 }
