@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
@@ -33,6 +34,8 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     @Inject
     CrossReferenceService crossReferenceService;
     @Inject
+    CrossReferenceDAO crossReferenceDAO;
+    @Inject
     SynonymService synonymService;
     @Inject
     AlleleDAO alleleDAO;
@@ -47,12 +50,31 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         setSQLDao(affectedGenomicModelDAO);
     }
 
+    @Transactional
+    public ObjectResponse<AffectedGenomicModel> createModel(AffectedGenomicModel entity) {
+        NCBITaxonTerm term = ncbiTaxonTermDAO.find(entity.getCurie());
+        entity.setTaxon(term);
+        if(CollectionUtils.isNotEmpty(entity.getCrossReferences())){
+            List<CrossReference> refs = new ArrayList<>();
+            entity.getCrossReferences().forEach(crossReference -> {
+                CrossReference reference = new CrossReference();
+                reference.setCurie(crossReference.getCurie());
+                crossReferenceDAO.persist(reference);
+                refs.add(reference);
+            });
+            entity.setCrossReferences(refs);
+        }
+        AffectedGenomicModel object = dao.persist(entity);
+        ObjectResponse<AffectedGenomicModel> ret = new ObjectResponse<>(object);
+        return ret;
+    }
+
     @Override
     @Transactional
     public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
         log.info(authenticatedPerson);
         AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
-        return new ObjectResponse<AffectedGenomicModel>(affectedGenomicModelDAO.persist(dbEntity));
+        return new ObjectResponse<>(affectedGenomicModelDAO.persist(dbEntity));
     }
 
 
