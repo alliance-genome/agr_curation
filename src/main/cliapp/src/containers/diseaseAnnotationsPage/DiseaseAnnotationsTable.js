@@ -31,9 +31,9 @@ import { Tooltip } from 'primereact/tooltip';
 export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
-  const defaultColumnNames = [
+  const defaultColumnOptions = [
     "Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease","Evidence Code", "With", "Reference", "Experimental Conditions", 
-    "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier", "Genetic Modifier Relation", "Related Notes",
+    "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation","Genetic Modifier", "Related Notes",
     "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", 
   ];
 
@@ -42,7 +42,7 @@ export const DiseaseAnnotationsTable = () => {
     first: 0,
     rows: 50,
     multiSortMeta: [],
-    selectedColumnNames: defaultColumnNames,
+    selectedColumnNames: defaultColumnOptions,
     filters: {},
   }
 
@@ -124,6 +124,35 @@ export const DiseaseAnnotationsTable = () => {
     refetchOnWindowFocus: false
   }
   );
+
+  //sets the table state's initial column order
+  useEffect(()=>{
+    dataTable.current.state.columnOrder = [
+      "uniqueId",
+      "modEntityId",
+      "subject.symbol",
+      "diseaseRelation.name",
+      "negated",
+      "object.name",
+      "evidenceCodes.abbreviation",
+      "with.symbol",
+      "singleReference.curie",
+      "conditionRelations.uniqueId",
+      "geneticSex.name",
+      "diseaseQualifiers.name",
+      "sgdStrainBackground.name",
+      "annotationType.name",
+      "diseaseGeneticModifierRelation.name",
+      "diseaseGeneticModifier.symbol",
+      "relatedNotes.freeText",
+      "dataProvider",
+      "secondaryDataProvider",
+      "modifiedBy",
+      "dateLastModified",
+      "createdBy",
+      "creationDate",
+    ];
+    },[]);
 
 
   const mutation = useMutation(updatedAnnotation => {
@@ -1013,8 +1042,8 @@ export const DiseaseAnnotationsTable = () => {
       <DataTableHeaderFooterTemplate
           title = {"Disease Annotations Table"}
           tableState = {tableState}
-          defaultColumnNames = {defaultColumnNames}
-          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          defaultColumnNames = {defaultColumnOptions}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnOptions,isEnabled)}
           onclickEvent = {(event) => resetTableState(event)}
           isEnabled = {isEnabled}
       />
