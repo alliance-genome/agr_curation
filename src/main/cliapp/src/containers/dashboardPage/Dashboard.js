@@ -38,6 +38,10 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Molecules", count: results.totalResults, link: '/#/molecules' }]);
     });
 
+    searchService.search("literature-reference", 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Literature References", count: results.totalResults, link: '/#/references' }]);
+    });
+
     // Term Counts
     searchService.search('chebiterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults, link: '/#/ontology/chebi' }]);
