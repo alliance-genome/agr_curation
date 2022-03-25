@@ -381,6 +381,7 @@ export const ControlledVocabularyComponent = () => {
     useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
@@ -392,7 +393,7 @@ export const ControlledVocabularyComponent = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={{whiteSpace: 'normal'}}
+          style={{whiteSpace: 'normal',backgroundColor: 'var(--surface-0)'}}
           editor={col.editor}
           body={col.body}
         />;
