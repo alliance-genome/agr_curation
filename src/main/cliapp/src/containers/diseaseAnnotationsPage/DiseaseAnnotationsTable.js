@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
@@ -124,36 +125,6 @@ export const DiseaseAnnotationsTable = () => {
     refetchOnWindowFocus: false
   }
   );
-
-  //sets the table state's initial column order
-  useEffect(()=>{
-    dataTable.current.state.columnOrder = [
-      "uniqueId",
-      "modEntityId",
-      "subject.symbol",
-      "diseaseRelation.name",
-      "negated",
-      "object.name",
-      "evidenceCodes.abbreviation",
-      "with.symbol",
-      "singleReference.curie",
-      "conditionRelations.uniqueId",
-      "geneticSex.name",
-      "diseaseQualifiers.name",
-      "sgdStrainBackground.name",
-      "annotationType.name",
-      "diseaseGeneticModifierRelation.name",
-      "diseaseGeneticModifier.symbol",
-      "relatedNotes.freeText",
-      "dataProvider",
-      "secondaryDataProvider",
-      "modifiedBy",
-      "dateLastModified",
-      "createdBy",
-      "creationDate",
-    ];
-    },[]);
-
 
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
@@ -1002,6 +973,8 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
   }
   ];
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);

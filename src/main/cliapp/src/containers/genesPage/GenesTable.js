@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Column } from 'primereact/column';
@@ -162,6 +163,8 @@ export const GenesTable = () => {
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
   ];
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
