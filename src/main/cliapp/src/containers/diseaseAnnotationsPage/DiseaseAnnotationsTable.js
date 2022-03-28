@@ -982,7 +982,7 @@ export const DiseaseAnnotationsTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
-          style={{ width: `${100 / orderedColumns.length}%`, display: 'inline-grid' }}
+          style={{ width: `${100 / orderedColumns.length}%`, display: 'inline-block' }}
           className='overflow-hidden text-overflow-ellipsis'
           headerClassName='surface-0'
           key={col.field}
