@@ -138,6 +138,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
           return <Column
             style={{ width: `${100 / orderedColumns.length}%` }}
             className='overflow-hidden text-overflow-ellipsis'
+            headerClassName='surface-0'
             columnKey={col.field}
             key={col.field}
             field={col.field}
@@ -152,6 +153,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}

@@ -174,6 +174,7 @@ export const GenesTable = () => {
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           field={col.field}
           header={col.header}
           filter={col.filter}
