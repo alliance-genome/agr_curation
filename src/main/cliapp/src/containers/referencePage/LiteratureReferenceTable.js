@@ -12,12 +12,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Card } from 'primereact/card';
 import { SearchService } from '../../service/SearchService';
-
-import { Button } from 'primereact/button';
-import { Tooltip } from 'primereact/tooltip';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 const searchService = new SearchService();
-
 
 export const LiteratureReferenceTable = () => {
 
@@ -96,22 +93,25 @@ export const LiteratureReferenceTable = () => {
         setTableState(_tableState);
     };
 
-    const header = (
-        <>
-            <div style={{ textAlign: 'left' }}>
-                <MultiSelect
-                    value={tableState.selectedColumnNames}
-                    options={defaultColumnNames}
-                    onChange={(event) => setSelectedColumnNames(event.value)}
-                    style={{ width: '20em' }}
-                    disabled={!isEnabled}
-                />
-            </div>
-            <div style={{ textAlign: 'right' }}>
-                <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-            </div>
-        </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
 
+    const header = (
+        <DataTableHeaderFooterTemplate
+            title = {"Literature References Table"}
+            tableState = {tableState}
+            defaultColumnNames = {defaultColumnNames}
+            multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+            onclickEvent = {(event) => resetTableState(event)}
+            isEnabled = {isEnabled}
+        />
     );
 
     const filterComponentTemplate = (filterName, fields) => {
@@ -213,12 +213,10 @@ export const LiteratureReferenceTable = () => {
 
 
     return (
-        <div>
             <Card>
-                <h3>Literature References</h3>
                 <Messages ref={errorMessage} />
                 <DataTable value={references} className="p-datatable-sm" header={header} reorderableColumns
-                    ref={dataTable}
+                    ref={dataTable} scrollHeight="62vh" scrollable
                     tableClassName='w-12 p-datatable-md'
                     filterDisplay="row"
                     paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
@@ -231,7 +229,6 @@ export const LiteratureReferenceTable = () => {
                     {columnMap}
                 </DataTable>
             </Card>
-        </div>
     );
 
 }

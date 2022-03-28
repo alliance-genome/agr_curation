@@ -19,17 +19,9 @@ export const RelatedNotesDialog = ({ relatedNotes, relatedNotesDialog, setRelate
   };
 
   return (
-    <Dialog
-      visible={relatedNotesDialog}
-      style={{ width: '90%' }}
-      modal className="p-fluid"
-      onHide={hideDialog}>
+    <Dialog visible={relatedNotesDialog} className='w-6' modal onHide={hideDialog}>
       <h3>Related Notes</h3>
-      <DataTable
-        value={relatedNotes}
-        dataKey="id"
-        showGridlines
-      >
+      <DataTable value={relatedNotes} dataKey="id" showGridlines >
         <Column field="noteType.name" header="Note Type"></Column>
         <Column field="internal" header="Internal" body={internalTemplate}></Column>
         <Column field="freeText" header="Text" body={textTemplate}></Column>
