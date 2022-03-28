@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Messages } from 'primereact/messages';
 import { MultiSelect } from 'primereact/multiselect';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
@@ -173,6 +174,8 @@ export const LiteratureReferenceTable = () => {
             filterElement: filterComponentTemplate("citationFilter", ["citation"])
         }
     ];
+
+    useSetDefaultColumnOrder(columns, dataTable);
 
     useEffect(() => {
         const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
