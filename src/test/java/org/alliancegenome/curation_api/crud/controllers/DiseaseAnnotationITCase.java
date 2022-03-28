@@ -274,7 +274,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.sgdStrainBackground.curie", is("SGD:da0002")).
-                body("entity.modifiedBy", is("TEST:Person0001")).
+                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
     }
@@ -331,7 +331,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
-                body("entity.modifiedBy", is("TEST:Person0001")).
+                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
@@ -389,7 +389,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
-                body("entity.modifiedBy", is("TEST:Person0001")).
+                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
