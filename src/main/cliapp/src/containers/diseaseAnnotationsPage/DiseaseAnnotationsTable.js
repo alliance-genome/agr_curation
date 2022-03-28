@@ -875,7 +875,7 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterElement: filterComponentInputTextTemplate(
       "conditionRelationsFilter",
-      ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name" ]
+      ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
     )
   },
   {
