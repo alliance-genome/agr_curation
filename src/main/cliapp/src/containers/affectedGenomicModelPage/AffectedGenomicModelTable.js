@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
@@ -39,7 +40,7 @@ export const AffectedGenomicModelTable = () => {
     });
 
   }, [tableState]);
-
+ 
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -156,6 +157,8 @@ export const AffectedGenomicModelTable = () => {
       filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
     }
   ];
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
