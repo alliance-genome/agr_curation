@@ -165,6 +165,7 @@ export const AffectedGenomicModelTable = () => {
         return <Column
           className='overflow-hidden text-overflow-ellipsis'
           style={{ width: `${100 / orderedColumns.length}%` }}
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}
