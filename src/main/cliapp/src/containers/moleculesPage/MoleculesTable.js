@@ -170,11 +170,11 @@ export const MoleculesTable = () => {
       filterElement: filterComponentTemplate("inchiFilter", ["inchi"])
     },
     {
-      field: "inchi_key",
+      field: "inchiKey",
       header: "InChiKey",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("inchi_keyFilter", ["inchi_key"])
+      filterElement: filterComponentTemplate("inchiKeyFilter", ["inchiKey"])
     },
     {
       field: "iupac",
