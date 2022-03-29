@@ -62,6 +62,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
         if (searchResponse == null || searchResponse.getSingleResult() == null) {
             experimentalCondition = new ExperimentalCondition();
+            experimentalCondition.setUniqueId(uniqueId);
         } else {
             experimentalCondition = searchResponse.getSingleResult();
         }
