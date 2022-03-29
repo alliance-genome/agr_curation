@@ -9,6 +9,9 @@ import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntit
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
@@ -29,9 +32,13 @@ public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
     @JsonView({View.FieldsOnly.class})
     private VocabularyTerm conditionRelationType;
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "handle_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     private String handle;
 
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("single_reference")

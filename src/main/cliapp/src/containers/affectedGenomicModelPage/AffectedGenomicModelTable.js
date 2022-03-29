@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
@@ -39,7 +40,7 @@ export const AffectedGenomicModelTable = () => {
     });
 
   }, [tableState]);
-
+ 
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -157,6 +158,8 @@ export const AffectedGenomicModelTable = () => {
     }
   ];
 
+  useSetDefaultColumnOrder(columns, dataTable);
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -165,6 +168,7 @@ export const AffectedGenomicModelTable = () => {
         return <Column
           className='overflow-hidden text-overflow-ellipsis'
           style={{ width: `${100 / orderedColumns.length}%` }}
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}

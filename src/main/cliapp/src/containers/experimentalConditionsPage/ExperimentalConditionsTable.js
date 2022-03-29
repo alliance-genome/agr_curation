@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Column } from 'primereact/column';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { AutocompleteEditor } from '../../components/AutocompleteEditor';
@@ -468,14 +469,17 @@ export const ExperimentalConditionsTable = () => {
 
   ];
 
+  useSetDefaultColumnOrder(columns, dataTable);
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
-          style={{ width: `${100 / orderedColumns.length}%` }}
+          style={{ width: `${100 / orderedColumns.length}%` , display: 'inline-block'}}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}

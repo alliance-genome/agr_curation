@@ -5,6 +5,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -28,6 +29,10 @@ public class DiseaseAnnotationValidator {
     BiologicalEntityDAO biologicalEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
+    
+    @Inject
+    @AuthenticatedUser
+    protected Person authenticatedPerson;
     
     private String DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY = "Disease genetic modifier relations";
     
@@ -123,17 +128,6 @@ public class DiseaseAnnotationValidator {
         return createdBy;
     }
     
-    public String validateModifiedBy(DiseaseAnnotation uiEntity) {
-        // TODO: re-enable error response once field can be added in UI
-        String modifiedBy = uiEntity.getModifiedBy();
-        if (modifiedBy == null) {
-            // addMessageResponse("modifiedBy", requiredMessage);
-            return null;
-        }
-        
-        return modifiedBy;
-    }
-    
     public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity) {
         if (uiEntity.getDiseaseGeneticModifier() == null) {
             return null;
@@ -198,13 +192,11 @@ public class DiseaseAnnotationValidator {
         String createdBy = validateCreatedBy(uiEntity);
         if (createdBy != null) dbEntity.setCreatedBy(createdBy);
 
-        String modifiedBy = validateModifiedBy(uiEntity);
-        if (modifiedBy != null) dbEntity.setModifiedBy(modifiedBy);
-    
         if (uiEntity.getCreationDate() != null)
             dbEntity.setCreationDate(uiEntity.getCreationDate());
         
         dbEntity.setDateLastModified(OffsetDateTime.now());
+        dbEntity.setModifiedBy(authenticatedPerson.getFirstName() + " " + authenticatedPerson.getLastName());
         
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());

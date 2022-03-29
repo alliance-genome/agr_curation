@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Messages } from 'primereact/messages';
 import { MultiSelect } from 'primereact/multiselect';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
@@ -11,12 +12,10 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Card } from 'primereact/card';
 import { SearchService } from '../../service/SearchService';
-
-import { Button } from 'primereact/button';
-import { Tooltip } from 'primereact/tooltip';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+import {Tooltip} from "primereact/tooltip";
 
 const searchService = new SearchService();
-
 
 export const LiteratureReferenceTable = () => {
 
@@ -95,22 +94,25 @@ export const LiteratureReferenceTable = () => {
         setTableState(_tableState);
     };
 
-    const header = (
-        <>
-            <div style={{ textAlign: 'left' }}>
-                <MultiSelect
-                    value={tableState.selectedColumnNames}
-                    options={defaultColumnNames}
-                    onChange={(event) => setSelectedColumnNames(event.value)}
-                    style={{ width: '20em' }}
-                    disabled={!isEnabled}
-                />
-            </div>
-            <div style={{ textAlign: 'right' }}>
-                <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-            </div>
-        </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
 
+    const header = (
+        <DataTableHeaderFooterTemplate
+            title = {"Literature References Table"}
+            tableState = {tableState}
+            defaultColumnNames = {defaultColumnNames}
+            multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+            onclickEvent = {(event) => resetTableState(event)}
+            isEnabled = {isEnabled}
+        />
     );
 
     const filterComponentTemplate = (filterName, fields) => {
@@ -140,6 +142,39 @@ export const LiteratureReferenceTable = () => {
         }
     };
 
+    const titleTemplate = (rowData) => {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"TITLE_"}${rowData.curie.replace(':', '')}`}>
+                    {rowData.title}
+                </EllipsisTableCell>
+                <Tooltip target={`.${"TITLE_"}${rowData.curie.replace(':', '')}`} content={rowData.title} style={{ width: '450px', maxWidth: '450px' }}/>
+            </>
+        );
+    };
+
+    const abstractTemplate = (rowData) => {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"ABSTRACT_"}${rowData.curie.replace(':', '')}`}>
+                    {rowData.abstract}
+                </EllipsisTableCell>
+                <Tooltip target={`.${"ABSTRACT_"}${rowData.curie.replace(':', '')}`} content={rowData.abstract} style={{ width: '450px', maxWidth: '450px' }}/>
+            </>
+        );
+    };
+
+    const citationTemplate = (rowData) => {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"CITATION_"}${rowData.curie.replace(':', '')}`}>
+                    {rowData.citation}
+                </EllipsisTableCell>
+                <Tooltip target={`.${"CITATION_"}${rowData.curie.replace(':', '')}`} content={rowData.citation} style={{ width: '450px', maxWidth: '450px' }}/>
+            </>
+        );
+    };
+
     const columns = [{
             field: "curie",
             header: "Curie",
@@ -158,21 +193,26 @@ export const LiteratureReferenceTable = () => {
             header: "Title",
             sortable: isEnabled,
             filter: true,
+            body : titleTemplate,
             filterElement: filterComponentTemplate("titleFilter", ["title"])
         }, {
             field: "abstract",
             header: "Abstract",
             sortable: isEnabled,
             filter: true,
+            body : abstractTemplate,
             filterElement: filterComponentTemplate("abstractFilter", ["abstract"])
         }, {
             field: "citation",
             header: "Citation",
             sortable: isEnabled,
             filter: true,
+            body : citationTemplate,
             filterElement: filterComponentTemplate("citationFilter", ["citation"])
         }
     ];
+
+    useSetDefaultColumnOrder(columns, dataTable);
 
     useEffect(() => {
         const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
@@ -182,6 +222,7 @@ export const LiteratureReferenceTable = () => {
                 return <Column
                     style={{ width: `${100 / orderedColumns.length}%` }}
                     className='overflow-hidden text-overflow-ellipsis'
+                    headerClassName='surface-0'
                     columnKey={col.field}
                     key={col.field}
                     field={col.field}
@@ -210,12 +251,10 @@ export const LiteratureReferenceTable = () => {
 
 
     return (
-        <div>
             <Card>
-                <h3>Literature References</h3>
                 <Messages ref={errorMessage} />
                 <DataTable value={references} className="p-datatable-sm" header={header} reorderableColumns
-                    ref={dataTable}
+                    ref={dataTable} scrollHeight="62vh" scrollable
                     tableClassName='w-12 p-datatable-md'
                     filterDisplay="row"
                     paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
@@ -228,7 +267,6 @@ export const LiteratureReferenceTable = () => {
                     {columnMap}
                 </DataTable>
             </Card>
-        </div>
     );
 
 }

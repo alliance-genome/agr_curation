@@ -58,6 +58,7 @@ public abstract class BulkLoad extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
     @OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
+    @OrderBy("lastUpdated DESC")
     private List<BulkLoadFile> loadFiles;
 
     public enum BulkLoadStatus {

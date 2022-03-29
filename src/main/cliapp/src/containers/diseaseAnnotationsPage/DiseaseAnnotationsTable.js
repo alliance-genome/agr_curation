@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react'
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
@@ -31,14 +32,18 @@ import { Tooltip } from 'primereact/tooltip';
 export const DiseaseAnnotationsTable = () => {
   // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
   //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
-  const defaultColumnNames = ["Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-    "SGD Strain Background", "Annotation Type", "Genetic Modifier", "Genetic Modifier Relation", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
+  const defaultColumnOptions = [
+    "Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease","Evidence Code", "With", "Reference", "Experimental Conditions",
+    "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation","Genetic Modifier", "Related Notes",
+    "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date",
+  ];
+
   let initialTableState = {
     page: 0,
     first: 0,
     rows: 50,
     multiSortMeta: [],
-    selectedColumnNames: defaultColumnNames,
+    selectedColumnNames: defaultColumnOptions,
     filters: {},
   }
 
@@ -120,7 +125,6 @@ export const DiseaseAnnotationsTable = () => {
     refetchOnWindowFocus: false
   }
   );
-
 
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
@@ -870,10 +874,10 @@ export const DiseaseAnnotationsTable = () => {
     sortable: true,
     filter: true,
     filterElement: filterComponentInputTextTemplate(
-      "conditionRelationsFilter", 
-      ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name" ]
+      "conditionRelationsFilter",
+      ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
     )
-  }, 
+  },
   {
     field: "geneticSex.name",
     header: "Genetic Sex",
@@ -970,14 +974,17 @@ export const DiseaseAnnotationsTable = () => {
   }
   ];
 
+  useSetDefaultColumnOrder(columns, dataTable);
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
-          style={{ width: `${100 / orderedColumns.length}%` }}
+          style={{ width: `${100 / orderedColumns.length}%`, display: 'inline-block' }}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           key={col.field}
           columnKey={col.field}
           field={col.field}
@@ -1009,8 +1016,8 @@ export const DiseaseAnnotationsTable = () => {
       <DataTableHeaderFooterTemplate
           title = {"Disease Annotations Table"}
           tableState = {tableState}
-          defaultColumnNames = {defaultColumnNames}
-          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          defaultColumnNames = {defaultColumnOptions}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnOptions,isEnabled)}
           onclickEvent = {(event) => resetTableState(event)}
           isEnabled = {isEnabled}
       />
