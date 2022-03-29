@@ -106,6 +106,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
                     relation.addExperimentCondition(experimentalCondition);
                 }
+                if (conditionRelationDTO.getHandle() != null) {
+                    relation.setHandle(conditionRelationDTO.getHandle());
+                    // reference of annotation equals the reference of the experiment
+                    relation.setSingleReference(annotation.getSingleReference());
+                }
 
                 relation.setUniqueId(DiseaseAnnotationCurie.getConditionRelationUnique(relation));
                 // reuse existing condition relation
@@ -114,11 +119,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                     conditionRelationsToPersist.add(relation);
                 } else {
                     relation = searchResponseRel.getSingleResult();
-                }
-                if (conditionRelationDTO.getHandle() != null) {
-                    relation.setHandle(conditionRelationDTO.getHandle());
-                    // reference of annotation equals the reference of the experiment
-                    relation.setSingleReference(annotation.getSingleReference());
                 }
                 conditionRelations.add(relation);
             }
