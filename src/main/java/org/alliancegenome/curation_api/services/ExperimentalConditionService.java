@@ -19,6 +19,8 @@ import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalC
 
 import lombok.extern.jbosslog.JBossLog;
 
+import static org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie.getExperimentalConditionCurie;
+
 @JBossLog
 @RequestScoped
 public class ExperimentalConditionService extends BaseCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
@@ -56,7 +58,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     }
     
     public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {
-        String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dto);
+        String uniqueId = getExperimentalConditionCurie(dto);
 
         ExperimentalCondition experimentalCondition;
         SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
@@ -126,6 +128,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         
         String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
         experimentalCondition.setConditionSummary(conditionSummary);
+        experimentalCondition.setUniqueId(getExperimentalConditionCurie(experimentalCondition));
         
         return experimentalConditionDAO.persist(experimentalCondition);
     
