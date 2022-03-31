@@ -393,7 +393,7 @@ export const ControlledVocabularyComponent = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={{whiteSpace: 'normal'}}
+          style={{whiteSpace: 'normal', display: 'inline-block'}}
           headerClassName='surface-0'
           editor={col.editor}
           body={col.body}

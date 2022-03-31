@@ -13,6 +13,7 @@ import { Column } from 'primereact/column';
 import { Card } from 'primereact/card';
 import { SearchService } from '../../service/SearchService';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+import {Tooltip} from "primereact/tooltip";
 
 const searchService = new SearchService();
 
@@ -141,6 +142,39 @@ export const LiteratureReferenceTable = () => {
         }
     };
 
+    const titleTemplate = (rowData) => {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"TITLE_"}${rowData.curie.replace(':', '')}`}>
+                    {rowData.title}
+                </EllipsisTableCell>
+                <Tooltip target={`.${"TITLE_"}${rowData.curie.replace(':', '')}`} content={rowData.title} style={{ width: '450px', maxWidth: '450px' }}/>
+            </>
+        );
+    };
+
+    const abstractTemplate = (rowData) => {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"ABSTRACT_"}${rowData.curie.replace(':', '')}`}>
+                    {rowData.abstract}
+                </EllipsisTableCell>
+                <Tooltip target={`.${"ABSTRACT_"}${rowData.curie.replace(':', '')}`} content={rowData.abstract} style={{ width: '450px', maxWidth: '450px' }}/>
+            </>
+        );
+    };
+
+    const citationTemplate = (rowData) => {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"CITATION_"}${rowData.curie.replace(':', '')}`}>
+                    {rowData.citation}
+                </EllipsisTableCell>
+                <Tooltip target={`.${"CITATION_"}${rowData.curie.replace(':', '')}`} content={rowData.citation} style={{ width: '450px', maxWidth: '450px' }}/>
+            </>
+        );
+    };
+
     const columns = [{
             field: "curie",
             header: "Curie",
@@ -159,18 +193,21 @@ export const LiteratureReferenceTable = () => {
             header: "Title",
             sortable: isEnabled,
             filter: true,
+            body : titleTemplate,
             filterElement: filterComponentTemplate("titleFilter", ["title"])
         }, {
             field: "abstract",
             header: "Abstract",
             sortable: isEnabled,
             filter: true,
+            body : abstractTemplate,
             filterElement: filterComponentTemplate("abstractFilter", ["abstract"])
         }, {
             field: "citation",
             header: "Citation",
             sortable: isEnabled,
             filter: true,
+            body : citationTemplate,
             filterElement: filterComponentTemplate("citationFilter", ["citation"])
         }
     ];
