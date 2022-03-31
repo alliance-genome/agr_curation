@@ -21,9 +21,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele> {
 
     @POST @Secured
-    @Path("/bulk/allelefile")
+    @Path("/bulk/{taxonID}/allelefile")
     @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateAlleles(AlleleMetaDataFmsDTO alleleData);
+    public APIResponse updateAlleles(@PathParam("taxonID") String taxonID, AlleleMetaDataFmsDTO alleleData);
 
     @Override
     @JsonView(View.FieldsAndLists.class)
