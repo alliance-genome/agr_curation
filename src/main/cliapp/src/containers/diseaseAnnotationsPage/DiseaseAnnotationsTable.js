@@ -54,7 +54,7 @@ export const DiseaseAnnotationsTable = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
   const [editingRows, setEditingRows] = useState({});
-  const [columnMap, setColumnMap] = useState([]);
+  const [columnList, setColumnList] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
   const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
   const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
@@ -971,20 +971,31 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterType: "Date",
     filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
-  }
+  },
   ];
 
   useSetDefaultColumnOrder(columns, dataTable);
 
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const width = 10;
+
+    const widthsObject = {};
+
+    columns.forEach((col) => {
+      widthsObject[col.field] = width;
+    });
+
+    return widthsObject;
+  });
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnMap(
+    setColumnList(
       orderedColumns.map((col) => {
         return <Column
-          style={{ width: `${100 / orderedColumns.length}%` }}
-          className='overflow-hidden text-overflow-ellipsis'
           headerClassName='surface-0'
+          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
           key={col.field}
           columnKey={col.field}
           field={col.field}
@@ -1000,7 +1011,7 @@ export const DiseaseAnnotationsTable = () => {
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled]);
+  }, [tableState, isEnabled, columnWidths]);
 
     const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
         return (<MultiSelect
@@ -1026,12 +1037,33 @@ export const DiseaseAnnotationsTable = () => {
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
-  }
+    const _columnWidths = {...columnWidths};
+
+    Object.keys(_columnWidths).map((key) => {
+      _columnWidths[key] = 10;
+    });
+
+    setColumnWidths(_columnWidths);
+  };
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
     _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
     setSelectedColumnNames(_columnNames);
+  };
+
+
+
+  const handleColumnResizeEnd = (event) => {
+    const currentWidth = event.element.clientWidth;
+    const delta = event.delta;
+    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+    const field = event.column.props.field;
+
+    const _columnWidths = {...columnWidths};
+
+    _columnWidths[field] = newWidth;
+    setColumnWidths(_columnWidths);
   };
 
   return (
@@ -1040,22 +1072,22 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }} scrollHeight="62vh"
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
           filterDisplay="row"
-          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines
+          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
 
-          {columnMap}
+          {columnList}
+          <Column field='rowEditor' rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }} alignFrozen='right' frozen={true} />
 
-          <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
       <RelatedNotesDialog
@@ -1063,7 +1095,7 @@ export const DiseaseAnnotationsTable = () => {
         relatedNotesDialog={relatedNotesDialog}
         setRelatedNotesDialog={setRelatedNotesDialog}
       />
-    <ConditionRelationsDialog
+      <ConditionRelationsDialog
         conditonRelations={conditionRelations}
         conditionRelationsDialog={conditionRelationsDialog}
         setConditionRelationsDialog={setConditionRelationsDialog}
