@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -13,6 +14,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -25,6 +27,9 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     
     @Inject
     GeneDAO geneDAO;
+    
+    @Inject
+    NoteDAO noteDAO;
     
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
@@ -50,6 +55,11 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     @Transactional
     public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation uiEntity) {
         GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotation(uiEntity);
+        if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
+            for (Note note : dbEntity.getRelatedNotes()) {
+                noteDAO.persist(note);
+            }
+        }
         return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
     }
 
@@ -102,7 +112,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         if (annotation == null) return null;
         
-        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), GENE_DISEASE_RELATION_VOCABULARY);
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
         if (diseaseRelation == null) {
             throw new ObjectValidationException(dto, "Invalid gene disease relation for " + annotationId + " - skipping");
         }

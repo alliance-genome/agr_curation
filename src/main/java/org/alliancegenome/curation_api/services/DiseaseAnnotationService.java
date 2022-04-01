@@ -283,7 +283,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
             List<Note> notesToPersist = new ArrayList<>();
             for (NoteDTO noteDTO : dto.getRelatedNotes()) {
-                Note relatedNote = noteService.validateNoteDTO(noteDTO, "Disease annotation note types");
+                Note relatedNote = noteService.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
                 if (relatedNote == null)
                     throw new ObjectValidationException(dto, "Invalid note attached to disease annotation " + annotation.getUniqueId() + " - skipping annotation");
                 notesToPersist.add(relatedNote);

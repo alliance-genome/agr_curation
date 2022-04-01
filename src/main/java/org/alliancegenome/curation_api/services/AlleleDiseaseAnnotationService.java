@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -13,6 +14,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationD
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -22,20 +24,17 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
 
     @Inject
     AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-    
     @Inject
     AlleleDAO alleleDAO;
-    
+    @Inject
+    NoteDAO noteDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
-    
     @Inject
     AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-    
     @Inject
     DiseaseAnnotationService diseaseAnnotationService;
     
-    private String ALLELE_DISEASE_RELATION_VOCABULARY = "Allele disease relations";
 
     @Override
     @PostConstruct
@@ -48,6 +47,11 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
     public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation uiEntity) {
         log.info(authenticatedPerson);
         AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotation(uiEntity);
+        if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
+            for (Note note : dbEntity.getRelatedNotes()) {
+                noteDAO.persist(note);
+            }
+        }
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
@@ -89,7 +93,7 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
         
         annotation = (AlleleDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         
-        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), ALLELE_DISEASE_RELATION_VOCABULARY);
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
         if (diseaseRelation == null) {
             throw new ObjectValidationException(dto, "Invalid allele disease relation for " + annotationId + " - skipping");
         }

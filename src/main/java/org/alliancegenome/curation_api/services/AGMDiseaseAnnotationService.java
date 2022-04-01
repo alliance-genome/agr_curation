@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -13,6 +14,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -23,11 +25,10 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
     @Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
     @Inject VocabularyTermDAO vocabularyTermDAO;
     @Inject AffectedGenomicModelDAO agmDAO;
+    @Inject NoteDAO noteDAO;
     @Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
     @Inject DiseaseAnnotationService diseaseAnnotationService;
     
-    private String AGM_DISEASE_RELATION_VOCABULARY = "AGM disease relations";
-
     @Override
     @PostConstruct
     protected void init() {
@@ -39,6 +40,11 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
     public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation uiEntity) {
         log.info(authenticatedPerson);
         AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotation(uiEntity);
+        if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
+            for (Note note : dbEntity.getRelatedNotes()) {
+                noteDAO.persist(note);
+            }
+        }
         return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
     }
 
@@ -81,7 +87,7 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
         annotation = (AGMDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         if (annotation == null) return null;
         
-        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), AGM_DISEASE_RELATION_VOCABULARY);
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
         if (diseaseRelation == null) {
             throw new ObjectUpdateException(dto, "Invalid AGM disease relation for " + annotationId + " - skipping");
         }
