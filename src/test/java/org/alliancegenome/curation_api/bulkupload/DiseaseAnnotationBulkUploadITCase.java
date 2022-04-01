@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -1729,15 +1730,16 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadAllele();
         loadAGM(requiredAgm);
         loadAGM(requiredSgdBackgroundStrain);
-        Vocabulary noteTypeVocabulary = createVocabulary("Disease annotation note types");
+        
+        Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
         // Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
         // Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
         // Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
-        Vocabulary geneticSexVocabulary = getVocabulary("Genetic sexes");
+        Vocabulary geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
         // Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary("Disease genetic modifier relations");
-        Vocabulary diseaseQualifierVocabulary = getVocabulary("Disease qualifiers");
-        Vocabulary annotationTypeVocabulary = getVocabulary("Annotation types");
-        Vocabulary conditionRelationTypeVocabulary = getVocabulary("Condition relation types");
+        Vocabulary diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+        Vocabulary annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+        Vocabulary conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
         createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
         // createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
         // createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
