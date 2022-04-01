@@ -232,17 +232,27 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const relatedNotesTemplate = (rowData) => {
-    if (rowData.relatedNotes) {
-      return <EllipsisTableCell>
-        <Button className="p-button-raised p-button-text"
-          onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
-          <span style={{ textDecoration: 'underline' }}>
-            {`Notes(${rowData.relatedNotes.length})`}
-          </span>
-        </Button>
-      </EllipsisTableCell>;
-    }
+    return (
+      <Button className="p-button-text"
+        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
+        <span style={{ textDecoration: 'underline' }}>
+          {`Notes(${rowData?.relatedNotes?.length})`}
+        </span>
+      </Button>
+    )
   };
+
+  const relatedNotesEditor = (props) => {
+    return (
+      <Button className="p-button-text"
+        onClick={(event) => { handleRelatedNotesOpen(event, props.rowData) }} >
+        <span style={{ textDecoration: 'underline' }}>
+          {`Notes(${props.rowData.relatedNotes?.length}) `}        
+          <i className="pi pi-user-edit" style={{'fontSize': '1em'}}></i>
+        </span>
+      </Button>
+    )
+  }; 
 
   const conditionRelationsTemplate = (rowData) => {
     if (rowData.conditionRelations) {
@@ -863,6 +873,7 @@ export const DiseaseAnnotationsTable = () => {
     field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
+    editor: (props) => relatedNotesEditor(props),
     sortable: true,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
