@@ -70,7 +70,7 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
     private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
         AlleleDiseaseAnnotation annotation;
         if (dto.getSubject() == null) {
-            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
+            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject Allele - skipping");
         }
         
         Allele allele = alleleDAO.find(dto.getSubject());

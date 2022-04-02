@@ -94,7 +94,7 @@ public class DiseaseAnnotationITCase {
         testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606");
         testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606");
         testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
-        testAgm2 = createModel("SGD:da0002", "NCBITaxon:9606", "TestAGM2");
+        testAgm2 = createModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
         testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
         geneDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
         alleleDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);

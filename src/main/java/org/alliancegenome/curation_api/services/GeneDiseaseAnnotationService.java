@@ -43,8 +43,6 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     @Inject
     AffectedGenomicModelDAO affectedGenomicModelDAO;
     
-    private String GENE_DISEASE_RELATION_VOCABULARY = "Gene disease relations";
-    
     @Override
     @PostConstruct
     protected void init() {
@@ -77,18 +75,18 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     private GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) throws ObjectValidationException {
         GeneDiseaseAnnotation annotation;
         if (dto.getSubject() == null) {
-            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
+            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject Gene - skipping");
         }
-        
         Gene gene = geneDAO.find(dto.getSubject());
         if (gene == null) {
-            throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
+            throw new ObjectValidationException(dto, "Gene " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
         String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto);
         }
+        
         SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
         if (annotationList == null || annotationList.getResults().size() == 0) {
             annotation = new GeneDiseaseAnnotation();
@@ -99,12 +97,12 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         }
         
         if (dto.getSgdStrainBackground() != null) {
-            if (!dto.getSgdStrainBackground().startsWith("SGD:")) {
-                throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
-            }
             AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
             if (sgdStrainBackground == null) {
                 throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            if (!sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
+                throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
             }
             annotation.setSgdStrainBackground(sgdStrainBackground);
         }

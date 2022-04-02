@@ -188,7 +188,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
+            body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[1].negated", is(true)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -199,8 +199,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[1].relatedNotes[0].internal", is(false)).
             body("results[1].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-            body("results[0].annotationType.name", is("manually_curated")).
-            body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
+            body("results[1].annotationType.name", is("manually_curated")).
+            body("results[1].diseaseQualifiers[0].name", is("susceptibility")).
             body("results[1].evidenceCodes", hasSize(1)).
             body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -252,7 +252,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
+            body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[2].negated", is(true)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -263,8 +263,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].relatedNotes[0].noteType.name", is("disease_summary")).
             body("results[2].relatedNotes[0].internal", is(false)).
             body("results[2].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-            body("results[0].annotationType.name", is("manually_curated")).
-            body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
+            body("results[2].annotationType.name", is("manually_curated")).
+            body("results[2].diseaseQualifiers[0].name", is("susceptibility")).
             body("results[2].evidenceCodes", hasSize(1)).
             body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
     }
@@ -1673,7 +1673,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(64)
-    public void diseaseAnnotationBulkUploadMissingConditionFreeText() throws Exception {
+    public void diseaseAnnotationBulkUploadNoConditionFreeText() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/64_no_condition_free_text.json"));
         
         RestAssured.given().
@@ -1728,15 +1728,15 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadAnatomyTerm();
         loadGenes();  
         loadAllele();
-        loadAGM(requiredAgm);
-        loadAGM(requiredSgdBackgroundStrain);
+        loadAGM(requiredAgm, "NCBITaxon:6239");
+        loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
         
         Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
         // Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
         // Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
         // Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
         Vocabulary geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
-        // Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary("Disease genetic modifier relations");
+        Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
         Vocabulary diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
         Vocabulary annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
         Vocabulary conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
@@ -1746,7 +1746,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         // createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
         createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier);
         createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex);
-        // createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
+        createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
         createVocabularyTerm(annotationTypeVocabulary, requiredAnnotationType);
         createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
     }
@@ -1879,10 +1879,10 @@ public class DiseaseAnnotationBulkUploadITCase {
         }
     }
 
-    private void loadAGM(String agmCurie) throws Exception {
+    private void loadAGM(String agmCurie, String taxon) throws Exception {
         AffectedGenomicModel agm = new AffectedGenomicModel();
         agm.setCurie(agmCurie);
-        agm.setTaxon(getTaxon("NCBITaxon:6239"));
+        agm.setTaxon(getTaxon(taxon));
         agm.setName("Test AGM");
 
         RestAssured.given().
