@@ -5,12 +5,15 @@ import java.util.*;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
+import org.alliancegenome.curation_api.services.helpers.validators.NoteValidator;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -25,6 +28,8 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
     VocabularyTermDAO vocabularyTermDAO;
     @Inject
     ReferenceDAO referenceDAO;
+    @Inject
+    NoteValidator noteValidator;
     
     @Override
     @PostConstruct
@@ -32,10 +37,20 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
         setSQLDao(noteDAO);
     }
     
+    @Override
+    @Transactional
+    public ObjectResponse<Note> update(Note uiEntity) {
+        Note dbEntity = noteValidator.validateNote(uiEntity, null, true);
+        return new ObjectResponse<Note>(noteDAO.persist(dbEntity));
+    }
+    
+    public ObjectResponse<Note> validate(Note uiEntity) {
+        Note note = noteValidator.validateNote(uiEntity, null, true);
+        return new ObjectResponse<Note>(note);
+    }
     
     public Note validateNoteDTO(NoteDTO dto, String note_type_vocabulary) throws ObjectValidationException {
         Note note = new Note();
-        
         if (dto.getFreeText() == null || dto.getNoteType() == null || dto.getInternal() == null) {
             throw new ObjectValidationException(dto, "Note missing required fields");
         }
@@ -64,7 +79,6 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
             }
             note.setReferences(noteReferences);
         }
-        
         return note;
     }
     

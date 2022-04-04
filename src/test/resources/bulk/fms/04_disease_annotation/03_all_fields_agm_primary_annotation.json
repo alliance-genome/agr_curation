@@ -28,6 +28,10 @@
           "publicationId": "PMID:25920554"
         }
       },
+      "with": [
+        "HGNC:1121",
+        "HGNC:323"
+      ],
       "negation": "not",
       "objectId": "WB:WBStrain00005113",
       "objectName": "Test strain 3",

@@ -10,5 +10,6 @@ public final class VocabularyConstants {
     public static final String GENE_DISEASE_RELATION_VOCABULARY = "Gene disease relations";
     public static final String ALLELE_DISEASE_RELATION_VOCABULARY = "Allele disease relations";
     public static final String AGM_DISEASE_RELATION_VOCABULARY = "AGM disease relations";
+    public static final String DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY = "Disease annotation note types";
     
 }
