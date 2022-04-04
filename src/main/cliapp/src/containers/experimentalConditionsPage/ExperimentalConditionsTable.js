@@ -305,7 +305,14 @@ export const ExperimentalConditionsTable = () => {
 
   const conditionTaxonBodyTemplate = (rowData) => {
     if (rowData.conditionTaxon) {
-      return <EllipsisTableCell>{rowData.conditionTaxon.curie} ({rowData.conditionTaxon.name})</EllipsisTableCell>;
+      return (
+          <>
+          <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`}>
+              {rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
+          </EllipsisTableCell>
+          <Tooltip target={`.${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+          </>
+      );
     }
   };
 
@@ -441,7 +448,7 @@ export const ExperimentalConditionsTable = () => {
       editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
     },
     {
-      field: "conditionTaxon.curie",
+      field: "conditionTaxon.name",
       header: "Condition Taxon",
       sortable: isEnabled,
       body: conditionTaxonBodyTemplate,
