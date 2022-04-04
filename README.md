@@ -4,26 +4,99 @@ This repo holds the code for the API and the UI of the AGR curation system.
 
 ## Getting Started
 
-These instructions will get you a copy of the project and the API up and running locally. This includes Postgres, ElasticSearch, Cerebro, and ActiveMQ.
+These instructions will get you a copy of the project and the API up and running locally. This includes Postgres, ElasticSearch and Cerebro.
 
 ## Contents
 
-- [Installing](#installing)
-	* [Docker Setup](#docker-setup)
-	* [Postgres](#postgres)
-	* [ElasticSearch](#elastic-search)
-	* [Cerebro](#cerebro)
-	* [ActiveMQ](#activeMQ)
-- [Building](#Building)
-	* [Building Docker Image](#building-docker-image)
-- [Running](#running)
-	* [Running API](#running-api)
-	* [Running UI](#running-ui)
-- [Releasing and Deploying](#releasing-and-deploying)
-	* [Deployment environments](#deployment-environments)
-	* [Release Creation](#release-creation)
-- [Loading Data](#loading-data)
+-  [Developing](#developing)
+   *  [Branching](#branching)
+-  [Installing](#installing)
+   *  [Docker Setup](#docker-setup)
+   *  [Postgres](#postgres)
+   *  [ElasticSearch](#elastic-search)
+   *  [Cerebro](#cerebro)
+-  [Building](#building)
+   *  [Building Docker Image](#building-docker-image)
+-  [Running](#running)
+   *  [Running API](#running-api)
+   *  [Running UI](#running-ui)
+-  [Releasing and Deploying](#releasing-and-deploying)
+   *  [Deployment environments](#deployment-environments)
+   *  [Promoting code versions](#promoting-code-versions)
+   *  [Deploying to beta or production](#deploying-to-beta-or-production)
+   *  [Release versioning](#release-versioning)
+   *  [Release Creation](#release-creation)
+-  [Loading Data](#loading-data)
+-  [Submitting Data](#submitting-data)
 
+## Developing
+Before starting coding for a new feature or making a bugfix,
+it is important to know the intended goal of your code:
+*  Developing fixes, new features and major changes to be released in some future release (standard)
+   => Must be developed and tested on alpha
+*  Smaller (bug)fixes to a version currently being previewed on beta, in preparation of a release to production
+   => Must be developed and tested on beta
+*  Hotfixes, urgent bugfixes to the current production version which cannot wait on the next full release (bundled with other updates currently under development) to be deployed
+   => Must be developed off the latest production release.
+
+For more details about the intended use of and deployment to each of the environments, see [deployment environments](#deployment-environments).
+
+### Branching
+The three permanent branches in this repository represent the code to be deployed to their respective environments: `alpha`, `beta` and `production`.
+
+*  To create code that must solely go on the alpha environment (most day-to-day development):
+
+   -  Create a feature branch to work on that starts off alpha and have the name contain the ticket number and a short description of it.
+      ```bash
+      > git checkout alpha
+      > git pull
+      > git checkout -b feature/${JIRA-TICKET-NR}_short-description
+      ```
+
+   -  Do your coding and testing, and push the branch to github
+      ```bash
+      #Coding and testing here
+      > git push origin feature/${JIRA-TICKET-NR}_short-description
+      ```
+
+   -  Once coding and testing completed, submit a pull request in github to merge back to alpha.
+      Deployment to alpha will automatically trigger once the PR is approved and merged.
+
+*  To make fixes to the version currently deployed on the beta environment:
+
+   -  Create a betafix branch to work on that starts off beta and have the name contain the ticket number (if applicable) and a short description.
+      ```bash
+      > git checkout beta
+      > git pull
+      > git checkout -b betafix/${JIRA-TICKET-NR}_short-description
+      ```
+
+   -  Do your coding and testing, and push the branch to github
+      ```bash
+      #Coding and testing here
+      > git push origin betafix/${JIRA-TICKET-NR}_short-description
+      ```
+
+   -  Once coding and testing completed, submit a pull request in github to merge back to beta.
+      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
+
+*  To make fixes to the version currently deployed on the production environment:
+
+   -  Create a prodfix branch to work on that starts off production and have the name contain the ticket number and a short description.
+      ```bash
+      > git checkout production
+      > git pull
+      > git checkout -b prodfix/${JIRA-TICKET-NR}_short-description
+      ```
+
+   -  Do your coding and testing, and push the branch to github
+      ```bash
+      #Coding and testing here
+      > git push origin prodfix/${JIRA-TICKET-NR}_short-description
+      ```
+
+   -  Once coding and testing completed, submit a pull request in github to merge back to production.
+      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
 
 
 ## Installing
@@ -113,13 +186,6 @@ Connect to this by browsing to `http://localhost:9000`, this is used to connect 
 entering `http://elasticsearch:9200` (the internal docker address) in the Node address field, while elasticsearch is directly
 accessible at `http://localhost:9200` on the local machine.
 
-
-### Active MQ (Message Queue)<a id="activeMQ"/></a>
-
-[Run Active MQ Script](docker/run_activemq) which will launch activeMQ-artemis, from the last vromero activeMQ image.
-
-The Active MQ is used to queue incoming update requests, the locally running interface can be found at: `http://localhost:8161/console`
-
 ### Up and Running Servers
 
 After running all the previous commands issue the docker command: `docker ps -a`
@@ -129,15 +195,22 @@ This will show all the services that are up and running.
 ```
 CONTAINER ID   IMAGE                                   COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                          NAMES
 4ee5641a9481   yannart/cerebro                         "./bin/cerebro"          26 minutes ago   Up 26 minutes   0.0.0.0:9000->9000/tcp, :::9000->9000/tcp                                                                                                                                      cerebro
-b6ed9006b28e   vromero/activemq-artemis:2.9.0-alpine   "/docker-entrypoint.…"   25 hours ago     Up 25 hours     1883/tcp, 0.0.0.0:5672->5672/tcp, :::5672->5672/tcp, 5445/tcp, 9404/tcp, 0.0.0.0:8161->8161/tcp, :::8161->8161/tcp, 61613/tcp, 0.0.0.0:61616->61616/tcp, :::61616->61616/tcp   activemq
 8e063394038e   agrdocker/agr_elasticsearch_env         "/tini -- /usr/local…"   2 days ago       Up 23 hours     0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 0.0.0.0:9300->9300/tcp, :::9300->9300/tcp                                                                                           elasticsearch
 7de3cf028e9c   postgres:13                             "docker-entrypoint.s…"   3 days ago       Up 3 days       0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                                                                                      postgres
 ```
 
 ## Building
 
+Before building make sure and create a copy of the application.properties file
+
+```bash
+> cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+```
+
+this way custom configuration changes can be used without having to commit them into the repo.
+
 Both the UI or API can be run locally without needing a separate build step.
-For instructions on how to do so, see [Running](#Running).
+For instructions on how to do so, see [Running](#running-api).
 
 Building the application uberjar is done as part of the Docker image creation,
 instructions on how to use this process for local image building can be found [below](#building-docker-image).
@@ -211,7 +284,7 @@ Additionally, there are two convenience commands that will proxy `/api` requests
 
 ### Running the docker image
 
-To run the complete application as the [locally built docker image](#Building-Docker-Image), execute the following command:
+To run the complete application as the [locally built docker image](#building-docker-image), execute the following command:
 ```bash
 > make docker-run
 ```
@@ -219,69 +292,176 @@ To run the complete application as the [locally built docker image](#Building-Do
 ## Releasing and deploying
 ### Deployment environments
 There are three environments to which code automatically gets deployed at different stages during development:
- * The alpha environment should be regarded as the developers environment, where active code development can be happening
+*  The alpha environment should be regarded as the developers environment, where active code development can be happening
    at any moment, and things are expected to break every now and then.
-   This environment receives new deployments on every push made to the main branch.
- * The beta environment should be regarded as the testers environment, where testers can have a first look at
+   This environment receives new deployments on every push made to the alpha branch.
+*  The beta environment should be regarded as the testers environment, where (external) testers can have a first look at
    newly developed functionality before it is ready to be pushed to production. It is more stable than alpha,
    but is still subject to regular change as feedback is collected and the final kinks are being ironed out.
-   This environment receives new deployments for every pre- and full release created on Github.
- * The production environment is the final stage of deployment, where users can rely on full-tested and ready-to-use
+   This environment receives new deployments for every pre-release created on Github.
+*  The production environment is the final stage of deployment, where users can rely on full-tested and ready-to-use
    features and functionality at any moment. This is the most stable and reliable environment.
-   This environment receives new deployments for every full release created on Github.
+   This environment receives new deployments for every full (stable) release created on Github.
 
 All deployments are fully automated through Github actions, for which the configuration files can be found in the [`.github/workflows/` directory](.github/workflows/).
-Deployments to alpha happen automatically as code gets pushed to main (after merging a PR), but for
-deployments to beta and production, a small number of steps needs to be taken in order to create a release and trigger deployment.
+Deployments to the alpha environment happen automatically as code gets pushed to the alpha branch (after merging a PR), but for
+deployments to beta and production, a small number of steps needs to be taken in order to create a release and trigger deployment,
+which are described below.
+
+### Promoting code versions
+The general flow from coding to a production release goes something like this:
+1. Coding and testing for most tickets happens on alpha (throughout the sprint)
+2. When a stable state of alpha gets reached (usually at sprint review),
+   this stable state gets promoted to beta as a release candidate, available
+   for external user testing.
+3. On approval from the external users, and in agreement with the product manager,
+   this release candidate gets promoted to a new stable release on production.
+
+As the code goes through the different stages, it becomes more and more stable as it gets closer to production.
+
+In order to promote changes from alpha to beta:
+
+1. Decide on a proper release version number to be used for the new prerelease
+   that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
+   Generally speaking, for beta (pre)releases that means either
+   *  Incrementing the release candidate version on the latest release candidate
+      when it was decided the previous release candidate will not be promoted to a full release
+      and the latest changes need to be added in order to be able to create a full release.
+    or  
+   *  Incrementing the `MAJOR` or `MINOR` release numbers as appropriate when
+      the previous release candidate was (or will be) promoted to a full release
+      and reset to rc1 for the next release.
+2. Create a release/v`x`.`y`.`z`-rc`a` branch from alpha or use a specific commit
+   from history to promote if alpha moved on since that stable state to be promoted.
+   ```bash
+   git pull
+   git checkout -b release/vx.y.z-rca alpha
+   git push origin release/vx.y.z-rca
+   ```
+3. Create a pull request to merge this release branch in beta
+4. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+   to deploy this code successfully to the beta environment.
+5. After prerelease creation and deployment, merge the beta branch back to alpha and push to github
+   ```bash
+   git pull
+   git checkout alpha
+   git merge beta
+   git push
+   ```
+
+In order to promote changes from beta to production:
+
+1. Decide on a proper release version number to be used for the new release
+   that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
+   Generally speaking, for production (full) releases that means removing the release-candidate extension
+   from the release number used by the latest release candidate, which will be promoted to a full release here.
+2. Create a release/v`x`.`y`.`z` branch from beta or use a specific commit
+   from history to promote if a new release canidate for the next release was already added to beta.
+   ```bash
+   git pull
+   git checkout -b release/vx.y.z beta
+   ```
+3. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file to contain
+   a section describing all (noteworthy) changes made since the last full release,
+   and include JIRA ticket and/or PR references where possible. Commit after update.
+4. Push the release branch to github
+   ```bash
+   git push origin release/vx.y.z
+   ```
+5. Create a pull request to merge this release branch in production
+6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+   to deploy this code successfully to the beta environment.
+7. After release creation and deployment, merge the production branch back to beta and push to github
+   ```bash
+   git pull
+   git checkout beta
+   git merge production
+   git push
+   ```
+
+### Deploying to beta or production
+In order to successfully deploy to the beta or production environment, as few additional steps need to be taken
+to ensure the new version of the application can function in a consistent state upon and after deployment.
+
+1. Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
+   *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
+   *  ENV-specific value changes should be ignored (for example, datasource host will be different for each)
+   *  Other variable value changes should be propagated as appropriate, **before** initiating the deployment
+   *  Removed variables should be cleaned up **after** successfull deployment
+2. Connect to the Environment's Elastic search domain by entering its domain endpoint in Cerebro, and delete all indexes.
+   The domain endpoint URL can be found through the [Amazon OpenSearch console](https://console.aws.amazon.com/esv3/home?region=us-east-1#opensearch/domains), the cerebro UI is available on the application server through HTTP at port 9000.
+3. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
+4. Compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
+   data if needed where schema changes were not automatically propagated correctly upon application launch.  
+   The DB schema can be obtained through the CLI by using pg_dump like so:
+   ```bash
+   pg_dump -s -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER | tee curation_DB_schema.sql
+   ```
+5. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
+   This can be achieved by terminating the environment's running EC2 instance or (more quickly)
+   by connecting into the server as admin through ssh, and restarting the docker container:
+   ```bash
+   sudo docker restart agr.curation.${NET}.api.server
+   ```
+6. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
+   and follow-up through log server to ensure reindexing completed successfully before executing the next.
+7. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
+   and if no new file (with a new md5sum) got loaded then click the play button at file level for the most recently loaded file,
+   to ensure all data gets reloaded, including any new features that may have been implemented in the release just deployed
+   (new code does not automatically trigger old files to get reloaded).
+
+
+### Release versioning
+For our release versioning, we apply [Semantic Versioning](https://semver.org/) whereby
+
+*  `MAJOR`.`MINOR`.`PATCH` is used for full releases
+*  Release-candidate extensions are used for prereleases in the format `MAJOR`.`MINOR`.`PATCH`-rc`x`
+   where x is an increment starting at one.
+*  `PATCH` version upgrades should only be used for hotfixing bugs on the production environment
+   (e.g. a bugfix applied to v0.1.0 becomes v0.1.1).
+
+__Note:__ For the time being, the `MAJOR` release number is kept at 0 to indicate the early development phase,
+until the product is ready for active usage by users external to the development team, in a stable
+production environment.
+
 
 ### Release Creation
-To create a new (pre-)release and deploy to beta and/or production, do the following steps:
+To create a new (pre-)release and deploy to beta or production, do the following steps:
 
- 1. Ensure you're on the main branch and pull the latest code.
-    ```bash
-	git checkout main
-	git pull
-	```
+1. Ensure you're on the branch you intend to create a new release for and pull the latest code.
+   ```bash
+   git checkout beta
+   git pull
+   ```
 
- 2. Decide on a proper release version number to be used for the release being created.
-    We apply [Semantic Versioning](https://semver.org/) whereby
-		* `MAJOR`.`MINOR`.`PATCH` is used for full releases
-		* Release-candidate extensions are used for prereleases in the format `MAJOR`.`MINOR`.`PATCH`-rc`x`
-		  where x is an increment starting at one.
-	For the time being, the `MAJOR` release number is kept at 0 to indicate the early development phase,
-	until the product is ready for active usage by users external to the development team, in a stable
-	production environment.
+2. Confirm the release number proposed earlier through release candidates or release/* branches
+   is appropriate (see [Release versioning](#release-versioning)).
 
- 3. Update the [RELEASE-NOTES.md](RELEASE-NOTES.md) file as required and commit the changes.
-    When creating a full release, ensure the release notes contains a section describing
-	(noteworthy) changes made since the last full release, and include PR and JIRA ticket
-	references where possible.
+3. Ensure you have a clean working directory before continuing, you can save any local changes for later using `git stash` if needed.
 
- 4. Ensure you have a clean working directory before continuing, you can save any local changes for later using `git stash` if needed.
+4. Tag the release and push the tag to github. Prefix the release nr with `v` as tagname,
+   and provide a short description for the release. Beta releases should contain a reference to the
+   date they were demoed at sprint review when applicable.
+   ```bash
+   # Tag name should be the release nr to be release, prefixed with v (eg. v0.2.0-rc1)
+   # Tag message for beta releases can be something like 'As sprint review Jan 19th 2022'
+   git tag -a vx.y.z-rca -m 'As sprint review MMM DDth YYYY'
+   git push origin vx.y.z-rca
+   ```
 
- 5. Prepare the release. This step will update the pom.xml, create a git tag and push
-    those changes to github, in accordance to the details you provide during execution.
-	```bash
-	make release
-	```
-	Provide the following details during execution:
-	 * **release version**: the release version to be used for the release being created (as decided in step 2)
-	 * **SCM release tag or label**: accept the default (v`release version`)
-	 * **new development version**: the release version of the next release being worked.
-	   When creating a release candidate, this version should be `MAJOR`.`MINOR`.`PATCH`-SNAPSHOT,
-	   When creating a final release, this version should be `MAJOR`.`MINOR+1`.`PATCH`-SNAPSHOT.
+5. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
+   *  In the "Choose a tag" selection box, select the git tag you created in the previous step
+   *  Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
+   * let GitHub autogenerate a summary of all changes made in this release by clicking the "Auto-generate rease notes" button.
+   *  **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
+      *  **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
+      *  Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment.
 
- 6. Go to the [AGR curation release page](https://github.com/alliance-genome/agr_curation/releases) on github, create a new release by clicking the "Draft a new release" button at the top.
-	* In the "Choose a tag" selection box, select the SCM release tag you provided in the previous step
-	* Give the release a proper title ("AGR Curation `release version` Release" for full releases, "Prerelease `release version`" for prereleases)
-	* **Ensure** the "This is a pre-release" checkbox at the bottom is checked appropriately.
-		* **Checking** this box creates a prerelease, which only get deployed to the **beta** environment.
-		* Leaving the box **unchecked** (the default) creates a full release which gets deployed to the **production** environment as well.
-
-7. Confirm all entered details are correct and publish the release.
+6. Confirm all entered details are correct and publish the release.
 
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
-Completion of these deployments is reported in the #a-team-code slack channel.
+Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
+continue the remaining steps described in the [deployment section](#Deploying-to-beta-or-production).
 
 ## Loading Data
 
@@ -302,6 +482,62 @@ Example of loading Allele's
 ```bash
 > curl -vX POST http://localhost:8080/api/allele/bulk/allelefile -d @1.0.1.4_ALLELE_MGI_0.json --header "Content-Type: application/json"
 ```
+
+## Submitting Data
+
+Here is an example using curl:
+
+```bash
+curl \
+   -H "Authorization: Bearer 2C07D715..." \
+   -X POST "https://${Curation_System}.alliancegenome.org/api/data/submit" \
+   -F "LoadType_SubType=@/full/path/to/file1.json" \
+   -F "LoadType_SubType=@/full/path/to/file2.json"
+```
+
+Valid values for LoadType, and SubType can be found in the examples below.
+
+### Curation System
+
+This value can be one of the following list.
+
+| Name | Description |
+| --- | --- |
+| alpha-curation | Alpha Curation Site |
+| beta-curation | Beta Curation Site |
+| curation | Production Curation Site |
+
+DQMs can find information regarding the LinkML version and data classes currently supported by the curation system at the following link:
+https://${Curation_System}.alliancegenome.org/api/version
+
+### API Access Token
+
+This will be a key that is generated via logging into the curation website for the DQM's to use for uploading files.
+
+### Load Type
+
+Load type corresponds with the type of file that load needs.
+
+| Name | Description |
+| --- | --- |
+| GENE | LinkML Gene |
+| ALLELE | LinkML Allele |
+| AGM | LinkML AGM |
+| DISEASE_ANNOTATION | LinkML Disease Annotations |
+
+### Sub Type
+
+This is a grouping mechanism to group files together
+
+| Name | Description |
+| --- | --- |
+| FB    | Fly Base |
+| HUMAN | Human Supplied by RGD |
+| MGI   | Mouse Genome Database |
+| RGD   | Rat Genome Database |
+| SGD   | Saccharomyces Genome Database |
+| WB    | Worm Base |
+| ZFIN  | Zebrafish Information Network |
 
 ## EB Deployment (beta)
 This section is WIP.
@@ -324,11 +560,11 @@ Then you can run `make eb-create` to create a new environment and `make eb-termi
 
 Current maintainers:
 
- * Adam Gibson - [https://github.com/adamgibs](https://github.com/adamgibs)
- * Andrés Becerra Sandoval - [https://github.com/abecerra](https://github.com/abecerra)
- * Christian Pich - [https://github.com/cmpich](https://github.com/cmpich)
- * Jyothi Thota - [https://github.com/jt15](https://github.com/jt15)
- * Ketaki Thorat - [https://github.com/kthorat-prog](https://github.com/kthorat-prog)
- * Mark Quinton-Tulloch - [https://github.com/markquintontulloch](https://github.com/markquintontulloch)
- * Manuel Luypaert - [https://github.com/mluypaert](https://github.com/mluypaert)
- * Olin Blodgett - [https://github.com/oblodgett](https://github.com/oblodgett)
+*  [Adam Gibson](https://github.com/adamgibs)
+*  [Andrés Becerra Sandoval](https://github.com/abecerra)
+*  [Christian Pich](https://github.com/cmpich)
+*  [Jyothi Thota](https://github.com/jt15)
+*  [Ketaki Thorat](https://github.com/kthorat-prog)
+*  [Mark Quinton-Tulloch](https://github.com/markquintontulloch)
+*  [Manuel Luypaert](https://github.com/mluypaert)
+*  [Olin Blodgett](https://github.com/oblodgett)

@@ -1,15 +1,19 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
+import { useSessionStorage } from '../../service/useSessionStorage';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
+import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
-import { returnSorted, trimWhitespace } from '../../utils/utils';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { SubjectEditor } from './SubjectEditor';
 import { DiseaseEditor } from './DiseaseEditor';
 import { WithEditor } from './WithEditor';
 import { EvidenceEditor } from './EvidenceEditor';
-import { FilterComponent } from '../../components/FilterComponent';
+import { FilterComponentInputText } from '../../components/FilterComponentInputText';
+import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
+import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 
@@ -18,46 +22,72 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { MultiSelect } from 'primereact/multiselect';
+import { Button } from 'primereact/button';
 
 export const DiseaseAnnotationsTable = () => {
+  const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
+  let initialTableState = {
+    page: 0,
+    first: 0,
+    rows: 50,
+    multiSortMeta: [],
+    selectedColumnNames: defaultColumnNames,
+    filters: {},
+  }
+
+  const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
 
   let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
 
-  const [page, setPage] = useState(0);
-  const [multiSortMeta, setMultiSortMeta] = useState([]);
-  const [filters, setFilters] = useState({});
-  const [rows, setRows] = useState(50);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [first, setFirst] = useState(0);
-  const [originalRows, setOriginalRows] = useState([]); const [editingRows, setEditingRows] = useState({});
+  const [originalRows, setOriginalRows] = useState([]);
+  const [editingRows, setEditingRows] = useState({});
+  const [columnMap, setColumnMap] = useState([]);
+  const [isEnabled, setIsEnabled] = useState(true); //needs better name
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
-  const columnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code"];
 
-  const [selectedColumnNames, setSelectedColumnNames] = useState(columnNames);
   const [errorMessages, setErrorMessages] = useState({});
+  const { authState } = useOktaAuth();
 
-  const rowsInEdit = useRef(0);
 
-  const diseaseAnnotationService = new DiseaseAnnotationService();
   const searchService = new SearchService();
 
+  const rowsInEdit = useRef(0);
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
+  const dataTable = useRef(null);
+
+  let diseaseAnnotationService = null;
 
   const sortMapping = {
     'object.name': ['object.curie', 'object.namespace'],
     'subject.symbol': ['subject.name', 'subject.curie'],
     'with.symbol': ['with.name', 'with.curie']
-
   };
 
+  const aggregationFields = [
+    'diseaseRelation'
+  ];
 
-  useQuery(['diseaseAnnotations', rows, page, multiSortMeta, filters],
-    () => searchService.search('disease-annotation', rows, page, multiSortMeta, filters, sortMapping), {
+    useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
+        () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
+            onSuccess: (data) => {
+            },
+            onError: (error) => {
+                toast_topleft.current.show([
+                    { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
+                ]);
+            },
+            keepPreviousData: true,
+            refetchOnWindowFocus: false
+        }
+    );
+
+   useQuery(['diseaseAnnotations', tableState],
+    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
-
       setDiseaseAnnotations(data.results);
       setTotalRecords(data.totalResults);
     },
@@ -71,28 +101,50 @@ export const DiseaseAnnotationsTable = () => {
     },
     keepPreviousData: true,
     refetchOnWindowFocus: false
-
   }
   );
 
   const mutation = useMutation(updatedAnnotation => {
+    if (!diseaseAnnotationService) {
+      diseaseAnnotationService = new DiseaseAnnotationService(authState);
+    }
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
 
   const onLazyLoad = (event) => {
-    setRows(event.rows);
-    setPage(event.page);
-    setFirst(event.first);
-  };
+    let _tableState = {
+      ...tableState,
+      rows: event.rows,
+      page: event.page,
+      first: event.first
+    };
+
+    setTableState(_tableState);
+  }
 
   const onFilter = (filtersCopy) => {
-    setFilters({ ...filtersCopy });
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
   };
 
   const onSort = (event) => {
-    setMultiSortMeta(
-      returnSorted(event, multiSortMeta)
-    );
+    let _tableState = {
+      ...tableState,
+      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+    }
+    setTableState(_tableState);
+  };
+
+  const setSelectedColumnNames = (newValue) => {
+    let _tableState = {
+      ...tableState,
+      selectedColumnNames: newValue
+    };
+
+    setTableState(_tableState);
   };
 
   const withTemplate = (rowData) => {
@@ -130,7 +182,7 @@ export const DiseaseAnnotationsTable = () => {
     setIsEnabled(false);
     originalRows[event.index] = { ...diseaseAnnotations[event.index] };
     setOriginalRows(originalRows);
-    console.log("in onRowEditInit");
+    console.log(dataTable.current.state);
   };
 
   const onRowEditCancel = (event) => {
@@ -278,7 +330,7 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <SubjectEditor
-          autocompleteFields={["curie", "name", "symbol", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
@@ -312,7 +364,7 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <WithEditor
-          autocompleteFields={["curie", "symbol", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+          autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
           setDiseaseAnnotations={setDiseaseAnnotations}
@@ -354,118 +406,159 @@ export const DiseaseAnnotationsTable = () => {
     }
   };
 
-  const [isEnabled, setIsEnabled] = useState(true); //needs better name
-  const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponent
+  const filterComponentInputTextTemplate = (filterName, fields) => {
+    return (<FilterComponentInputText
       isEnabled={isEnabled}
       fields={fields}
       filterName={filterName}
-      currentFilters={filters}
+      currentFilters={tableState.filters}
       onFilter={onFilter}
     />);
   };
 
-  const columns = [
-    {
-      field: "uniqueId",
-      header: "Unique Id",
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("uniqueidFilter", ["uniqueId"])
-    },
-    {
-      field: "subject.symbol",
-      header: "Subject",
-      sortable: isEnabled,
-      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
-      filter: true,
-      filterElement: filterComponentTemplate("subject", ["subject.symbol", "subject.name", "subject.curie"]),
-      editor: (props) => subjectEditorTemplate(props),
-      body: subjectBodyTemplate,
-    },
-    {
-      field: "diseaseRelation",
-      header: "Disease Relation",
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("diseaseRelation", ["diseaseRelation"]),
-      editor: (props) => diseaseRelationEditor(props)
-    },
-    {
-      field: "negated",
-      header: "Negated",
-      body: negatedTemplate,
-      filter: true,
-      filterElement: filterComponentTemplate("negated", ["negated"]),
-      sortable: isEnabled,
-      editor: (props) => negatedEditor(props)
-    },
-    {
-      field: "object.name",
-      header: "Disease",
-      sortable: { isEnabled },
-      filter: true,
-      filterElement: filterComponentTemplate("object", ["object.curie", "object.name"]),
-      editor: (props) => diseaseEditorTemplate(props),
-      body: diseaseBodyTemplate
-    },
-    {
-      field: "reference.curie",
-      header: "Reference",
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("reference", ["reference.curie"])
-    },
-    {
-      field: "evidenceCodes.abbreviation",
-      header: "Evidence Code",
-      body: evidenceTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("evidenceCodes", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
-      editor: (props) => evidenceEditorTemplate(props)
-    },
-    {
-      field: "with.symbol",
-      header: "With",
-      body: withTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: filterComponentTemplate("with", ["with.curie", "with.symbol"]),
-      editor: (props) => withEditorTemplate(props)
-    }
+  const FilterComponentDropDownTemplate = (filterName, field, options, optionField) => {
+    return (<FilterComponentDropDown
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      options={options}
+      optionField={optionField}
+    />);
+  }
+
+  const FilterMultiSelectComponentTemplate = (filterName, field) => {
+    return (<FilterMultiSelectComponent
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      aggregationFields={aggregationFields}
+      tableState={tableState}
+    />);
+  }
+
+  const columns = [{
+    field: "uniqueId",
+    header: "Unique Id",
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("uniqueidFilter", ["uniqueId"])
+  },
+  {
+    field: "subject.symbol",
+    header: "Subject",
+    sortable: isEnabled,
+    style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("subjectFilter", ["subject.symbol", "subject.name", "subject.curie"]),
+    editor: (props) => subjectEditorTemplate(props),
+    body: subjectBodyTemplate,
+  },
+  {
+    field: "diseaseRelation",
+    header: "Disease Relation",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: FilterMultiSelectComponentTemplate("diseaseRelationFilter", "diseaseRelation"),
+    editor: (props) => diseaseRelationEditor(props)
+  },
+  {
+    field: "negated",
+    header: "Negated",
+    body: negatedTemplate,
+    filter: true,
+    filterElement: FilterComponentDropDownTemplate("negatedFilter", "negated",[{ text: "true" }, { text: "false" }], "text"),
+    sortable: isEnabled,
+    editor: (props) => negatedEditor(props)
+  },
+  {
+    field: "object.name",
+    header: "Disease",
+    sortable: { isEnabled },
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
+    editor: (props) => diseaseEditorTemplate(props),
+    body: diseaseBodyTemplate
+  },
+  {
+    field: "singleReference.curie",
+    header: "Reference",
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("singleReferenceFilter", ["singleReference.curie"])
+  },
+  {
+    field: "evidenceCodes.abbreviation",
+    header: "Evidence Code",
+    body: evidenceTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("evidenceCodesFilter", ["evidenceCodes.curie", "evidenceCodes.name", "evidenceCodes.abbreviation"]),
+    editor: (props) => evidenceEditorTemplate(props)
+  },
+  {
+    field: "with.symbol",
+    header: "With",
+    body: withTemplate,
+    sortable: isEnabled,
+    filter: true,
+    filterElement: filterComponentInputTextTemplate("withFilter", ["with.symbol", "with.name", "with.curie"]),
+    editor: (props) => withEditorTemplate(props)
+  }
   ];
+
+  useEffect(() => {
+    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+    setColumnMap(
+      orderedColumns.map((col) => {
+        return <Column
+          key={col.field}
+          columnKey={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={isEnabled}
+          filter={col.filter}
+          filterElement={col.filterElement}
+          editor={col.editor}
+          body={col.body}
+        />;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableState, isEnabled]);
+
   const header = (
-    <div style={{ textAlign: 'left' }}>
-      <MultiSelect
-        value={selectedColumnNames}
-        options={columnNames}
-        onChange={e => setSelectedColumnNames(e.value)}
-        style={{ width: '20em' }}
-        disabled={!isEnabled}
-      />
-    </div>
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={e => setSelectedColumnNames(e.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
   );
 
-  const filteredColumns = columns.filter((col) => {
-    return selectedColumnNames.includes(col.header);
-  });
+  const resetTableState = () => {
+    setTableState(initialTableState);
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+  }
 
-  const columnMap = filteredColumns.map((col) => {
-    return <Column
-      key={col.field}
-      columnKey={col.field}
-      field={col.field}
-      header={col.header}
-      sortable={isEnabled}
-      filter={col.filter}
-      filterElement={col.filterElement}
-      editor={col.editor}
-      body={col.body}
-    />;
-  });
-
+  const colReorderHandler = (event) => {
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
+  };
 
   return (
     <div>
@@ -473,15 +566,17 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <h3>Disease Annotations Table</h3>
-        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns 
+        <DataTable value={diseaseAnnotations} className="p-datatable-md" header={header} reorderableColumns={isEnabled}
+          ref={dataTable}
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+          onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={multiSortMeta}
-          first={first}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+          first={tableState.first}
           dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
 
           {columnMap}

@@ -1,8 +1,16 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
+import javax.persistence.*;
+
+import org.hibernate.envers.Audited;
+
 import lombok.*;
 
+@Audited
+@Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-public abstract class AnatomicalTerm extends OntologyTerm {
+@ToString(callSuper = true)
+@Inheritance(strategy = InheritanceType.JOINED)
+public class AnatomicalTerm extends OntologyTerm {
 
 }

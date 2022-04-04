@@ -7,9 +7,10 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.dao.BaseDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections4.map.HashedMap;
@@ -20,6 +21,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
     CrossReferenceDAO crossReferenceDAO;
     @Inject
     CrossReferenceService crossReferenceService;
+    
+    @Inject
+    @AuthenticatedUser
+    Person authenticatedPerson;
     
     @Transactional
     public E processUpdate(E inTerm) {

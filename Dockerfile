@@ -28,7 +28,7 @@ RUN if [ "${OVERWRITE_VERSION}" != "" ]; then \
         mvn versions:set -ntp -DnewVersion=$OVERWRITE_VERSION; \
     fi;
 # build the api jar
-RUN ./build/package-api.sh
+RUN mvn -T 8 clean package -Dquarkus.package.type=uber-jar -ntp
 
 
 

@@ -1,16 +1,17 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 
-import java.util.HashMap;
+import java.util.List;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
-import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -22,16 +23,47 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<GeneDiseaseAnnotation> {
 
     @GET
-    @Path("/findBy/{curie}")
+    @Path("/findBy/{uniqueId}")
     @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<GeneDiseaseAnnotation> get(@PathParam("curie") String curie);
+    public ObjectResponse<GeneDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
     
-    @POST
-    @Path("/find")
-    @Tag(name = "Database Search Endpoints")
+    @POST @Secured
+    @Path("/bulk/{taxonID}/annotationFile")
     @JsonView(View.FieldsAndLists.class)
-    public SearchResponse<GeneDiseaseAnnotation> find(
-            @DefaultValue("0") @QueryParam("page") Integer page,
-            @DefaultValue("10") @QueryParam("limit") Integer limit,
-            @RequestBody HashMap<String, Object> params);
+    public APIResponse updateGeneDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<GeneDiseaseAnnotationDTO> annotationData);
+
+    @POST @Secured
+    @Path("/bulk/zfinAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateZfinGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/mgiAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateMgiGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/rgdAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateRgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/fbAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateFbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/wbAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateWbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/humanAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateHumanGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
+    
+    @POST @Secured
+    @Path("/bulk/sgdAnnotationFile")
+    @JsonView(View.FieldsAndLists.class)
+    public APIResponse updateSgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
 }

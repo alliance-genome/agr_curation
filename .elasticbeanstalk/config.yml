@@ -1,5 +1,5 @@
 branch-defaults:
-  main:
+  alpha:
     environment: null
 global:
   application_name: curation-app

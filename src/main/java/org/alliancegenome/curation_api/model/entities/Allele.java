@@ -17,7 +17,7 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicLocations"})
+@ToString(exclude = {"genomicLocations"}, callSuper =  true)
 public class Allele extends GenomicEntity {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
+import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.*;
+
 import java.io.FileInputStream;
 import java.util.*;
 import java.util.zip.GZIPInputStream;
@@ -10,12 +12,11 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
+import org.alliancegenome.curation_api.jobs.executors.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.services.helpers.*;
 import org.alliancegenome.curation_api.services.ontology.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -30,11 +31,6 @@ public class BulkLoadJobExecutor {
 
     @Inject ObjectMapper mapper;
 
-    @Inject AlleleService alleleService;
-    @Inject GeneService geneService;
-    @Inject AffectedGenomicModelService agmService;
-    @Inject
-    DiseaseAnnotationFmsService diseaseService;
 
     @Inject XcoTermService xcoTermService;
     @Inject GoTermService goTermService;
@@ -54,205 +50,112 @@ public class BulkLoadJobExecutor {
 
     @Inject BulkLoadFileDAO bulkLoadFileDAO;
 
+    @Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
+    @Inject AgmDiseaseAnnotationExecutor agmDiseaseAnnotationExecutor;
+    @Inject GeneDiseaseAnnotationExecutor geneDiseaseAnnotationExecutor;
+    @Inject GeneFmsExecutor geneFmsExecutor;
+    @Inject AlleleFmsExecutor alleleFmsExecutor;
+    @Inject AgmFmsExecutor agmFmsExecutor;
+    @Inject DiseaseAnnotationFmsExecutor diseaseAnnotationFmsExecutor;
+    @Inject MoleculeExecutor moleculeExecutor;
+
+
     public void process(BulkLoadFile bulkLoadFile) throws Exception {
-        //log.info("Process Starting for: " + bulkLoadFile);
-        if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE_DTO) {
-            GeneMetaDataFmsDTO geneData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), GeneMetaDataFmsDTO.class);
-            bulkLoadFile.setRecordCount(geneData.getData().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            processGeneDTOData(bulkLoadFile, geneData);
-        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ALLELE_DTO) {
-            AlleleMetaDataFmsDTO alleleData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AlleleMetaDataFmsDTO.class);
-            bulkLoadFile.setRecordCount(alleleData.getData().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            processAlleleDTOData(bulkLoadFile, alleleData);
-        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.AGM_DTO) {
-            AffectedGenomicModelMetaDataFmsDTO agmData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModelMetaDataFmsDTO.class);
-            bulkLoadFile.setRecordCount(agmData.getData().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            processAGMDTOData(bulkLoadFile, agmData);
 
-        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.GENE) {    
-            Gene[] genes = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), Gene[].class);
-            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-            bulkLoadFile.setRecordCount(genes.length);
+        BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
+        
+        List<BackendBulkLoadType> ingestTypes = List.of(
+            AGM_DISEASE_ANNOTATION,
+            ALLELE_DISEASE_ANNOTATION,
+            GENE_DISEASE_ANNOTATION,
+            DISEASE_ANNOTATION,
+            FULL_INGEST
+        );
+
+        if(ingestTypes.contains(loadType)) {
+
+            bulkLoadFile.setRecordCount(0);
             bulkLoadFileDAO.merge(bulkLoadFile);
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Gene Update", genes.length);
-            for(Gene gene: genes) {
-                geneService.update(gene);
-                ph.progressProcess();
+            
+            if(loadType == ALLELE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+                alleleDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
             }
-            ph.finishProcess();
-        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ALLELE) {  
-            Allele[] alleles = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), Allele[].class);
-            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-            bulkLoadFile.setRecordCount(alleles.length);
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Allele Update", alleles.length);
-            for(Allele allele: alleles) {
-                alleleService.update(allele);
-                ph.progressProcess();
+            if(loadType == AGM_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+                agmDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
             }
-            ph.finishProcess();
-
-        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.AGM) { 
-            AffectedGenomicModel[] agms = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AffectedGenomicModel[].class);
-            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-            bulkLoadFile.setRecordCount(agms.length);
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " AGM Update", agms.length);
-            for(AffectedGenomicModel agm: agms) {
-                agmService.update(agm);
-                ph.progressProcess();
+            if(loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
+                geneDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
             }
-            ph.finishProcess();
 
-        } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.DISEASE_ANNOTATION_DTO) {
-            DiseaseAnnotationMetaDataFmsDTO diseaseData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), DiseaseAnnotationMetaDataFmsDTO.class);
-            // TODO find taxon ID and send it with this load
-            BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
-
-            Map<String, String> map = Map.of(
-                    "ZFIN", "NCBITaxon:7955",
-                    "MGI", "NCBITaxon:10090",
-                    "RGD", "NCBITaxon:10116",
-                    "FB", "NCBITaxon:7227",
-                    "WB", "NCBITaxon:6239",
-                    "HUMAN", "NCBITaxon:9606",
-                    "SGD", "NCBITaxon:559292"
-                    );
-            log.info("Running with: " + fms.getDataSubType() + " " + map.get(fms.getDataSubType()));
-
-            bulkLoadFile.setRecordCount(diseaseData.getData().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            diseaseService.runLoad(map.get(fms.getDataSubType()), diseaseData);
+        } else if(loadType == BackendBulkLoadType.GENE_DTO) {
+            geneFmsExecutor.runLoad(bulkLoadFile);
+        } else if(loadType == BackendBulkLoadType.ALLELE_DTO) {
+            alleleFmsExecutor.runLoad(bulkLoadFile);
+        } else if(loadType == BackendBulkLoadType.AGM_DTO) {
+            agmFmsExecutor.runLoad(bulkLoadFile);
+        } else if(loadType == BackendBulkLoadType.DISEASE_ANNOTATION_DTO) {
+            diseaseAnnotationFmsExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
-            MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
-            BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
-
-            log.info("Running with: " + fms.getDataSubType() + " " + fms.getDataSubType());
-            bulkLoadFile.setRecordCount(moleculeData.getData().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);
-
-            processMoleculeDTOData(bulkLoadFile, moleculeData);
-
+            moleculeExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             BaseOntologyTermService service = null;
-            if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ZECO) {
+            OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
+            
+            if(ontologyType == OntologyBulkLoadType.ZECO) {
                 config.setLoadOnlyIRIPrefix("ZECO");
                 service = zecoTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.EMAPA) {
+            } else if(ontologyType == OntologyBulkLoadType.EMAPA) {
                 config.getAltNameSpaces().add("anatomical_structure");
                 service = emapaTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.GO) {
+            } else if(ontologyType == OntologyBulkLoadType.GO) {
                 config.getAltNameSpaces().add("biological_process");
                 config.getAltNameSpaces().add("molecular_function");
                 config.getAltNameSpaces().add("cellular_component");
                 service = goTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.SO) {
+            } else if(ontologyType == OntologyBulkLoadType.SO) {
                 service = soTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.XCO) {
+            } else if(ontologyType == OntologyBulkLoadType.XCO) {
                 service = xcoTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ECO) {
+            } else if(ontologyType == OntologyBulkLoadType.ECO) {
                 service = ecoTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.CHEBI) {
+            } else if(ontologyType == OntologyBulkLoadType.CHEBI) {
                 service = chebiTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ZFA) {
+            } else if(ontologyType == OntologyBulkLoadType.ZFA) {
                 config.getAltNameSpaces().add("zebrafish_anatomy");
                 service = zfaTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.DO) {
+            } else if(ontologyType == OntologyBulkLoadType.DO) {
                 service = doTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.MP) {
+            } else if(ontologyType == OntologyBulkLoadType.MP) {
                 config.setLoadOnlyIRIPrefix("MP");
                 service = mpTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.MA) {
+            } else if(ontologyType == OntologyBulkLoadType.MA) {
                 service = maTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.WBBT) {
+            } else if(ontologyType == OntologyBulkLoadType.WBBT) {
                 service = wbbtTermService;
-            } else if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.DAO) {
+            } else if(ontologyType == OntologyBulkLoadType.DAO) {
                 config.setLoadOnlyIRIPrefix("FBbt");
                 service = daoTermService;
             } else {
-                log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
-                throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + bulkLoadFile.getBulkLoad().getOntologyType() + " not implemented");
+                log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
+                throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
             }
 
             if(service != null) {
-                processTerms(bulkLoadFile, bulkLoadFile.getBulkLoad().getOntologyType().getClazz(), bulkLoadFile.getLocalFilePath(), service, config);
-                if(bulkLoadFile.getBulkLoad().getOntologyType() == OntologyBulkLoadType.ECO) {
+                processTerms(bulkLoadFile, ontologyType.getClazz(), bulkLoadFile.getLocalFilePath(), service, config);
+                if(ontologyType == OntologyBulkLoadType.ECO) {
                     ecoTermService.updateAbbreviations();
                 }
             }
-
-
-        } else if(bulkLoadFile.getBulkLoad().getGroup().getName().equals("Reindex Tasks")) {
-            if(bulkLoadFile.getBulkLoad().getName().equals("Gene Reindex")) { geneService.reindex(); }
-            if(bulkLoadFile.getBulkLoad().getName().equals("Allele Reindex")) { alleleService.reindex(); }
-            if(bulkLoadFile.getBulkLoad().getName().equals("AGM Reindex")) { agmService.reindex(); }
         } else {
             log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
             throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
         }
-
-        //log.info("Process Finished for: " + bulkLoadFile);
+        log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().getName());
     }
 
-    public void processAlleleDTOData(BulkLoadFile bulkLoadFile, AlleleMetaDataFmsDTO alleleData) {
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        if(bulkLoadFile == null) {
-            ph.startProcess("Allele DTO Update", alleleData.getData().size());
-        } else {
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Allele DTO Update", alleleData.getData().size());
-        }
-        for(AlleleFmsDTO allele: alleleData.getData()) {
-            alleleService.processUpdate(allele);
-            ph.progressProcess();
-        }
-        ph.finishProcess();
-    }
 
-    public void processMoleculeDTOData(BulkLoadFile bulkLoadFile, MoleculeMetaDataFmsDTO moleculeData) {
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        if(bulkLoadFile == null) {
-            ph.startProcess("Molecule Update", moleculeData.getData().size());
-        } else {
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Molecule DTO Update", moleculeData.getData().size());
-        }
-        for(MoleculeFmsDTO molecule: moleculeData.getData()) {
-            moleculeService.processUpdate(molecule);
-            ph.progressProcess();
-        }
-        ph.finishProcess();
-    }
 
-    public void processGeneDTOData(BulkLoadFile bulkLoadFile, GeneMetaDataFmsDTO geneData) {
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        if(bulkLoadFile == null) {
-            ph.startProcess("Gene DTO Update", geneData.getData().size());
-        } else {
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " Gene DTO Update", geneData.getData().size());
-        }
-        for(GeneFmsDTO gene: geneData.getData()) {
-            geneService.processUpdate(gene);
-            ph.progressProcess();
-        }
-        ph.finishProcess();
-    }
-
-    public void processAGMDTOData(BulkLoadFile bulkLoadFile, AffectedGenomicModelMetaDataFmsDTO agmData) {
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        if(bulkLoadFile == null) {
-            ph.startProcess("AGM DTO Update", agmData.getData().size());
-        } else {
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + " AGM DTO Update", agmData.getData().size());
-        }
-        for(AffectedGenomicModelFmsDTO agm: agmData.getData()) {
-            agmService.processUpdate(agm);
-            ph.progressProcess();
-        }
-        ph.finishProcess();
-    }
 
     private <T extends OntologyTerm> void processTerms(BulkLoadFile bulkLoadFile, Class<T> clazz, String filePath, BaseOntologyTermService service) throws Exception {
         processTerms(bulkLoadFile, clazz, filePath, service, null);

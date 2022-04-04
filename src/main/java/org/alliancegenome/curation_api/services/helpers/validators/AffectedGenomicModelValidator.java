@@ -1,15 +1,13 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.util.*;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.*;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
@@ -37,7 +35,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
         String name = validateName(uiEntity);
         if (name != null) dbEntity.setName(name);
         
-        String taxon = validateTaxon(uiEntity);
+        NCBITaxonTerm taxon = validateTaxon(uiEntity);
         if (taxon != null) dbEntity.setTaxon(taxon);
         
         if (uiEntity.getSubtype() != null) {

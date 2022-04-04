@@ -1,0 +1,457 @@
+import React, { useRef, useState, useEffect } from 'react';
+import { DataTable } from 'primereact/datatable';
+import { useSessionStorage } from '../../service/useSessionStorage';
+import { Column } from 'primereact/column';
+import { InputTextEditor } from '../../components/InputTextEditor';
+import { useMutation, useQuery } from 'react-query';
+import { useOktaAuth } from '@okta/okta-react';
+import { Toast } from 'primereact/toast';
+import { SearchService } from '../../service/SearchService';
+import { Messages } from 'primereact/messages';
+import { FilterComponentInputText } from '../../components/FilterComponentInputText'
+import { MultiSelect } from 'primereact/multiselect';
+import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
+import { SingleOntologyEditor } from '../../components/SingleOntologyEditor';
+import { Button } from 'primereact/button';
+
+export const ExperimentalConditionsTable = () => {
+  const defaultColumnNames = ["Unique ID", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
+  let initialTableState = {
+    page: 0,
+    first: 0,
+    rows: 50,
+    multiSortMeta: [],
+    selectedColumnNames: defaultColumnNames,
+    filters: {},
+  }
+
+  const [tableState, setTableState] = useSessionStorage("ExConTableSettings", initialTableState);
+
+  let [experimentalConditions, setExperimentalConditions] = useState(null);
+
+  const [errorMessages, setErrorMessages] = useState({});
+  const [originalRows, setOriginalRows] = useState([]);
+  const [editingRows, setEditingRows] = useState({});
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [isEnabled, setIsEnabled] = useState(true);
+  const [columnMap, setColumnMap] = useState([]);
+
+  const searchService = new SearchService();
+  const errorMessage = useRef(null);
+  const { authState } = useOktaAuth();
+  const toast_topleft = useRef(null);
+  const toast_topright = useRef(null);
+  const rowsInEdit = useRef(0);
+  const dataTable = useRef(null);
+
+  let experimentalConditionService = null;
+
+  const sortMapping = {
+    'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']
+  }
+
+  useQuery(['experimentalConditions', tableState],
+    () => searchService.search('experimental-condition', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping), {
+    onSuccess: (data) => {
+      setExperimentalConditions(data.results);
+      setTotalRecords(data.totalResults);
+    },
+    onError: (error) => {
+      toast_topleft.current.show([
+        { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
+      ]);
+    },
+    onSettled: () => {
+      setOriginalRows([]);
+    },
+    keepPreviousData: true,
+    refetchOnWindowFocus: false
+  });
+
+  const mutation = useMutation(updatedCondition => {
+    if (!experimentalConditionService) {
+      experimentalConditionService = new ExperimentalConditionService(authState);
+    }
+    return experimentalConditionService.saveExperimentalCondition(updatedCondition);
+  });
+
+  const onLazyLoad = (event) => {
+    let _tableState = {
+      ...tableState,
+      rows: event.rows,
+      page: event.page,
+      first: event.first
+    };
+
+    setTableState(_tableState);
+  }
+
+  const onFilter = (filtersCopy) => {
+    let _tableState = {
+      ...tableState,
+      filters: { ...filtersCopy }
+    }
+    setTableState(_tableState);
+  };
+
+  const onSort = (event) => {
+    let _tableState = {
+      ...tableState,
+      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+    }
+    setTableState(_tableState);
+  };
+
+  const setSelectedColumnNames = (newValue) => {
+    let _tableState = {
+      ...tableState,
+      selectedColumnNames: newValue
+    };
+
+    setTableState(_tableState);
+  };
+
+  const onRowEditInit = (event) => {
+    rowsInEdit.current++;
+    setIsEnabled(false);
+    originalRows[event.index] = { ...experimentalConditions[event.index] };
+    setOriginalRows(originalRows);
+    console.log("in onRowEditInit");
+  };
+
+  const onRowEditCancel = (event) => {
+    rowsInEdit.current--;
+    if (rowsInEdit.current === 0) {
+      setIsEnabled(true);
+    };
+
+    let conditions = [...experimentalConditions];
+    conditions[event.index] = originalRows[event.index];
+    delete originalRows[event.index];
+    setOriginalRows(originalRows);
+    setExperimentalConditions(conditions);
+    const errorMessagesCopy = errorMessages;
+    errorMessagesCopy[event.index] = {};
+    setErrorMessages({ ...errorMessagesCopy });
+
+  };
+
+
+  const onRowEditSave = (event) => {
+    rowsInEdit.current--;
+    if (rowsInEdit.current === 0) {
+      setIsEnabled(true);
+    }
+    if (event.data.conditionGeneOntology === null) {
+      delete event.data.conditionGeneOntology;
+    }
+    let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
+
+    const curieFields = ["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntology", "conditionChemical"];
+    for (var ix = 0; ix < curieFields.length; ix++) {
+      if (event.data[curieFields[ix]] && Object.keys(event.data[curieFields[ix]]).length >= 1) {
+        event.data[curieFields[ix]].curie = trimWhitespace(event.data[curieFields[ix]].curie);
+        updatedRow[curieFields[ix]] = {};
+        updatedRow[curieFields[ix]] = event.data[curieFields[ix]];
+      }
+    }
+    mutation.mutate(updatedRow, {
+      onSuccess: (response, variables, context) => {
+        toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
+
+        let conditions = [...experimentalConditions];
+        const columns = Object.keys(response.data.entity);
+        columns.forEach(column => {
+          conditions[event.index][column] = response.data.entity[column];
+        });
+        setExperimentalConditions(conditions);
+        const errorMessagesCopy = errorMessages;
+        errorMessagesCopy[event.index] = {};
+        setErrorMessages({ ...errorMessagesCopy });
+      },
+      onError: (error, variables, context) => {
+        rowsInEdit.current++;
+        setIsEnabled(false);
+        toast_topright.current.show([
+          { life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
+        ]);
+
+        let conditions = [...experimentalConditions];
+
+        const errorMessagesCopy = errorMessages;
+
+        console.log(errorMessagesCopy);
+        errorMessagesCopy[event.index] = {};
+        Object.keys(error.response.data.errorMessages).forEach((field) => {
+          let messageObject = {
+            severity: "error",
+            message: error.response.data.errorMessages[field]
+          };
+          errorMessagesCopy[event.index][field] = messageObject;
+        });
+
+        console.log(errorMessagesCopy);
+        setErrorMessages({ ...errorMessagesCopy });
+
+        setExperimentalConditions(conditions);
+        let _editingRows = { ...editingRows, ...{ [`${conditions[event.index].id}`]: true } };
+        setEditingRows(_editingRows);
+      },
+      onSettled: (data, error, variables, context) => {
+
+      },
+    });
+  };
+
+  const onRowEditChange = (event) => {
+    setEditingRows(event.data);
+  };
+
+  const conditionQuantityEditor = (props) => {
+    return (
+      <>
+        <InputTextEditor
+          editorChange={onConditionQuantityEditorValueChange}
+          props={props}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
+      </>
+    );
+  };
+
+  const onConditionQuantityEditorValueChange = (props, event) => {
+    let updatedConditions = [...props.value];
+    if (event.target.value || event.target.value === '') {
+      updatedConditions[props.rowIndex].conditionQuantity = event.target.value;
+      setExperimentalConditions(updatedConditions);
+    }
+  }
+
+  const filterComponentTemplate = (filterName, fields) => {
+    return (<FilterComponentInputText
+      isEnabled={isEnabled}
+      fields={fields}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+    />);
+  };
+
+  const conditionClassBodyTemplate = (rowData) => {
+    if (rowData.conditionClass) {
+      return <div>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</div>;
+    }
+  };
+
+  const conditionIdBodyTemplate = (rowData) => {
+    if (rowData.conditionId) {
+      return <div>{rowData.conditionId.name} ({rowData.conditionId.curie})</div>;
+    }
+  };
+
+  const conditionGeneOntologyBodyTemplate = (rowData) => {
+    if (rowData.conditionGeneOntology) {
+      return <div>{rowData.conditionGeneOntology.name} ({rowData.conditionGeneOntology.curie})</div>;
+    }
+  };
+
+  const conditionChemicalBodyTemplate = (rowData) => {
+    if (rowData.conditionChemical) {
+      return <div>{rowData.conditionChemical.name} ({rowData.conditionChemical.curie})</div>;
+    }
+  };
+
+  const conditionAnatomyBodyTemplate = (rowData) => {
+    if (rowData.conditionAnatomy) {
+      return <div>{rowData.conditionAnatomy.name} ({rowData.conditionAnatomy.curie})</div>;
+    }
+  };
+
+  const conditionTaxonBodyTemplate = (rowData) => {
+    if (rowData.conditionTaxon) {
+      return <div>{rowData.conditionTaxon.curie} ({rowData.conditionTaxon.name})</div>;
+    }
+  };
+
+  const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
+    return (
+      <>
+        <SingleOntologyEditor
+          autocompleteFields={autocomplete}
+          rowProps={props}
+          searchService={searchService}
+          setExperimentalConditions={setExperimentalConditions}
+          fieldname={fieldname}
+          endpoint={endpoint}
+        />
+        <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField={fieldname}
+        />
+      </>
+    );
+  };
+
+  const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"];
+
+  const columns = [
+    {
+      field: "uniqueId",
+      header: "Unique ID",
+      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
+    },
+    {
+      field: "conditionStatement",
+      header: "Statement",
+      style: { whiteSpace: 'pr.e-wrap', overflowWrap: 'break-word' },
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
+    },
+    {
+      field: "conditionClass.name",
+      header: "Class",
+      sortable: isEnabled,
+      body: conditionClassBodyTemplate,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm", curieAutocompleteFields)
+    },
+    {
+      field: "conditionId.name",
+      header: "Condition Term",
+      sortable: isEnabled,
+      body: conditionIdBodyTemplate,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionIdFilter", ["conditionId.curie", "conditionId.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
+    },
+    {
+      field: "conditionGeneOntology.name",
+      header: "Gene Ontology",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionGeneOntologyFilter", ["conditionGeneOntology.curie", "conditionGeneOntology.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
+      body: conditionGeneOntologyBodyTemplate
+    },
+    {
+      field: "conditionChemical.name",
+      header: "Chemical",
+      sortable: isEnabled,
+      body: conditionChemicalBodyTemplate,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionChemicalFilter", ["conditionChemical.curie", "conditionChemical.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
+    },
+    {
+      field: "conditionAnatomy.name",
+      header: "Anatomy",
+      sortable: isEnabled,
+      body: conditionAnatomyBodyTemplate,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionAnatomyFilter", ["conditionAnatomy.curie", "conditionAnatomy.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
+    },
+    {
+      field: "conditionTaxon.curie",
+      header: "Condition Taxon",
+      sortable: isEnabled,
+      body: conditionTaxonBodyTemplate,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionTaxonFilter", ["conditionTaxon.curie", "conditionTaxon.name"]),
+      editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
+    },
+    {
+      field: "conditionQuantity",
+      header: "Quantity",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"]),
+      editor: (props) => conditionQuantityEditor(props)
+    }
+
+
+  ];
+
+  useEffect(() => {
+    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+    setColumnMap(
+      orderedColumns.map((col) => {
+        return <Column
+          columnKey={col.field}
+          key={col.field}
+          field={col.field}
+          header={col.header}
+          sortable={isEnabled}
+          filter={col.filter}
+          filterElement={col.filterElement}
+          editor={col.editor}
+          style={col.style}
+          body={col.body}
+        />;
+      })
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tableState, isEnabled]);
+
+  const header = (
+    <>
+      <div style={{ textAlign: 'left' }}>
+        <MultiSelect
+          value={tableState.selectedColumnNames}
+          options={defaultColumnNames}
+          onChange={e => setSelectedColumnNames(e.value)}
+          style={{ width: '20em' }}
+          disabled={!isEnabled}
+        />
+      </div>
+      <div style={{ textAlign: 'right' }}>
+        <Button disabled={!isEnabled}  onClick={(event) => resetTableState(event)}>Reset Table</Button>
+      </div>
+    </>
+  );
+
+  const resetTableState = () => {
+    setTableState(initialTableState);
+    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+  }
+
+  const colReorderHandler = (event) => {
+    let _columnNames = [...tableState.selectedColumnNames];
+    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    setSelectedColumnNames(_columnNames);
+  };
+
+  return (
+    <div>
+      <div className="card">
+        <Toast ref={toast_topleft} position="top-left" />
+        <Toast ref={toast_topright} position="top-right" />
+        <h3>Experimental Conditions Table</h3>
+        <Messages ref={errorMessage} />
+        <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns={isEnabled}
+          ref={dataTable}
+          editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+          editingRows={editingRows} onRowEditChange={onRowEditChange}
+          onColReorder={colReorderHandler}
+          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+          first={tableState.first}
+          dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
+          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
+          paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+        >
+          {columnMap}
+          <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
+        </DataTable>
+      </div>
+    </div>
+  )
+}

@@ -6,9 +6,6 @@ on:
       - alpha
       - beta
       - production
-    paths-ignore:
-      - '**.md'
-      - .gitignore
 jobs:
   check-branching-rules:
     if: github.event.action != 'edited' || github.event.changes.base
@@ -16,6 +13,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Check branching rules
         run: |
           bash ci-scripts/check-branching.sh ${{ github.base_ref }} ${{ github.head_ref }}
@@ -29,6 +27,7 @@ jobs:
           echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
       - name: Check out repository code
         uses: actions/checkout@v2
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Report files updated in PR
         run: |
           git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
@@ -52,7 +51,7 @@ jobs:
           mvn --no-transfer-progress --batch-mode --update-snapshots verify
       - name: Package API
         run: |
-          ./build/package-api.sh
+          mvn clean package -Dquarkus.package.type=uber-jar -ntp
       - name: Run Integration tests
         run: |
           make integration-test
@@ -63,6 +62,7 @@ jobs:
       steps:
         - name: Check out repository code
           uses: actions/checkout@v2
+        - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
         - name: Build docker image
           env:
             ECR_REPOSITORY: agr_curation

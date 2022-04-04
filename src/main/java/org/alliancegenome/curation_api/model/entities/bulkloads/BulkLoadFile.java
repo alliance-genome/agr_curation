@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.entities.bulkloads;
 
+import java.util.List;
+
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
@@ -43,6 +45,10 @@ public class BulkLoadFile extends BaseGeneratedEntity {
 
     @ManyToOne
     private BulkLoad bulkLoad;
+    
+    @JsonView({View.FieldsOnly.class})
+    @OneToMany(mappedBy = "bulkLoadFile", fetch = FetchType.EAGER)
+    private List<BulkLoadFileHistory> history;
 
     @Transient
     @JsonView({View.FieldsOnly.class})
@@ -56,6 +62,10 @@ public class BulkLoadFile extends BaseGeneratedEntity {
     @JsonIgnore
     @JsonView({View.FieldsOnly.class})
     public String generateS3MD5Path() {
-        return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + ".gz";
+        if(md5Sum != null && md5Sum.length() > 0) {
+            return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + "." + bulkLoad.getFileExtension() + ".gz";
+        } else {
+            return null;
+        }
     }
 }

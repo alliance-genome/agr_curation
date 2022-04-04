@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import classNames from 'classnames';
+import Gravatar from 'react-gravatar';
 import { CSSTransition } from 'react-transition-group';
 
 export const AppProfile = (props) => {
@@ -16,8 +17,9 @@ export const AppProfile = (props) => {
 
   return (
     <div className="layout-profile">
+      <Gravatar email={props.userInfo.email} size={100} /><br />
       <button className="p-link layout-profile-link" onClick={onClick}>
-        <span className="username">{props.email}</span>
+        <span className="username">{props.userInfo.name}</span>
         <i className="pi pi-fw pi-cog" />
       </button>
       <CSSTransition classNames="p-toggleable-content" timeout={{ enter: 1000, exit: 450 }} in={expanded} unmountOnExit>

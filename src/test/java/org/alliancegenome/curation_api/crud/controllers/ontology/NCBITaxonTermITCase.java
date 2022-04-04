@@ -7,6 +7,7 @@ import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
@@ -19,20 +20,14 @@ import static org.hamcrest.Matchers.is;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(1)
+@Order(13)
 public class NCBITaxonTermITCase {
-    private String VALID_TAXON_CURIE = "NCBITaxon:9606";
-    private String INVALID_TAXON_PREFIX = "NCBI:9606";
-    private String INVALID_TAXON_SUFFIX = "NCBITaxon:0000";
-    private NcbiTaxonTermService ncbiTaxonTermService;
-
-    private TypeRef<ObjectResponse<DOTerm>> getObjectResponseTypeRef() {
-        return new TypeRef<ObjectResponse <DOTerm>>() { };
-    }
-
+    private String VALID_TAXON_CURIE = "NCBITaxon:1";
+    private String INVALID_TAXON_PREFIX = "NCBI:1";
+    private String INVALID_TAXON_SUFFIX = "NCBITaxon:0";
+    
     @BeforeEach
     public void init() {
-        ncbiTaxonTermService = new NcbiTaxonTermService();
         RestAssured.config = RestAssuredConfig.config()
                 .httpClient(HttpClientConfig.httpClientConfig()
                         .setParam("http.socket.timeout", 100000)
@@ -42,12 +37,14 @@ public class NCBITaxonTermITCase {
     @Test
     @Order(1)
     void testValidTaxon() {
+        loadNCBITaxonTerm(VALID_TAXON_CURIE);
+        
         RestAssured.given().
             when().
             get("/api/ncbitaxonterm/" + VALID_TAXON_CURIE).
             then().
             statusCode(200).
-            body("entity.name", is("Homo sapiens")).
+            body("entity.name", is("Test NCBITaxonTerm")).
             body("entity.obsolete", is(false));
     }
 
@@ -71,5 +68,20 @@ public class NCBITaxonTermITCase {
             then().
             statusCode(200).
             body("isEmpty()", Matchers.is(true));
+    }
+    
+    private void loadNCBITaxonTerm(String taxonTerm) {
+        NCBITaxonTerm ncbiTaxonTerm = new NCBITaxonTerm();
+        ncbiTaxonTerm.setCurie(taxonTerm);
+        ncbiTaxonTerm.setName("Test NCBITaxonTerm");
+        ncbiTaxonTerm.setObsolete(false);
+    
+        RestAssured.given().
+            contentType("application/json").
+            body(ncbiTaxonTerm).
+            when().
+            put("/api/ncbitaxonterm").
+            then().
+            statusCode(200);
     }
 }

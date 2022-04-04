@@ -2,13 +2,19 @@ package org.alliancegenome.curation_api.base.services;
 
 import java.util.*;
 
+import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.dao.*;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>> {
     
     protected BaseSQLDAO<E> dao;
@@ -17,10 +23,15 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
         this.dao = dao;
     }
     
+    @Inject
+    @AuthenticatedUser
+    protected Person authenticatedPerson;
+    
     protected abstract void init();
     
     @Transactional
     public ObjectResponse<E> create(E entity) {
+        //log.info("Authed Person: " + authenticatedPerson);
         E object = dao.persist(entity);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
@@ -28,6 +39,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
     
     @Transactional
     public ObjectListResponse<E> create(List<E> entities) {
+        //log.info("Authed Person: " + authenticatedPerson);
         List<E> objects = dao.persist(entities);
         ObjectListResponse<E> ret = new ObjectListResponse<E>(objects);
         return ret;
@@ -47,6 +59,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
 
     @Transactional
     public ObjectResponse<E> update(E entity) {
+        //log.info("Authed Person: " + authenticatedPerson);
         E object = dao.merge(entity);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
@@ -54,6 +67,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
 
     @Transactional
     public ObjectResponse<E> delete(String id) {
+        //log.info("Authed Person: " + authenticatedPerson);
         E object = dao.remove(id);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
@@ -80,8 +94,8 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>
         dao.reindex();
     }
 
-    public void reindex(int threads, int indexAmount) {
-        dao.reindex(threads, indexAmount);
+    public void reindex(int threads, int indexAmount, int batchSize) {
+        dao.reindex(threads, indexAmount, batchSize);
     }
 
 }

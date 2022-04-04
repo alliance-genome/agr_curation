@@ -14,7 +14,7 @@ export const DAOOntologyComponent = () => {
     < OntologyTable
       endpoint={"daoterm"}
       ontologyAbbreviation={"DAO"}
-      columnMap={columns}
+      columns={columns}
     />
   )
 }

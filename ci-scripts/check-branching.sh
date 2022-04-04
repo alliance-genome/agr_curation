@@ -14,4 +14,11 @@ elif [[ $BASE == 'beta' ]]; then
         echo "Failure: branch '${HEAD}' not allowed to merge in '${BASE}'"
         false
     fi
+elif [[ $BASE == 'alpha' ]]; then
+    # Prevent direct merges from beta or production, as GH PR merge behavior merges BASE into HEAD first,
+    # before merging HEAD back into BASE (which would conflate the different environment branches)
+    if [[ $HEAD == 'beta' ]] || [[ $HEAD == 'production' ]]; then
+        echo "Failure: branch '${HEAD}' not allowed to merge in '${BASE}'"
+        false
+    fi
 fi

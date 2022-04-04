@@ -1,31 +1,28 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.*;
+import java.util.function.Function;
+import java.util.regex.*;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Synonym;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelComponentFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
@@ -41,7 +38,9 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     AlleleDAO alleleDAO;
     @Inject
     AffectedGenomicModelValidator affectedGenomicModelValidator;
-
+    @Inject
+    NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -51,20 +50,19 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     @Override
     @Transactional
     public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
+        log.info(authenticatedPerson);
         AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
         return new ObjectResponse<AffectedGenomicModel>(affectedGenomicModelDAO.persist(dbEntity));
     }
 
 
     @Transactional
-    public void processUpdate(AffectedGenomicModelFmsDTO agm) {
+    public void processUpdate(AffectedGenomicModelFmsDTO agm) throws ObjectUpdateException {
         // TODO: add loading of components
         // TODO: add loading of sequenceTargetingReagents
         // TODO: add loading of parentalPopulations
 
-        if (!validateAffectedGenomicModelDTO(agm)) {
-            return;
-        }
+        validateAffectedGenomicModelDTO(agm);
 
         AffectedGenomicModel dbAgm = affectedGenomicModelDAO.find(agm.getPrimaryID());
 
@@ -79,7 +77,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         }
 
         dbAgm.setName(agm.getName().substring(0, Math.min(agm.getName().length(), 254)));
-        dbAgm.setTaxon(agm.getTaxonId());
+        dbAgm.setTaxon(ncbiTaxonTermDAO.find(agm.getTaxonId()));
         dbAgm.setSubtype(agm.getSubtype());
 
         handleCrossReference(agm, dbAgm);
@@ -192,47 +190,45 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 
     }
 
-    private boolean validateAffectedGenomicModelDTO(AffectedGenomicModelFmsDTO agm) {
+    private void validateAffectedGenomicModelDTO(AffectedGenomicModelFmsDTO agm) throws ObjectValidationException {
         // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
 
         // Check for required fields
         if (agm.getPrimaryID() == null || agm.getName() == null || agm.getTaxonId() == null) {
-            log.debug("Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
-            return false;
+            throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
         }
 
         // Validate taxon ID
         Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
         Matcher taxonIdMatcher = taxonIdPattern.matcher(agm.getTaxonId());
         if (!taxonIdMatcher.find()) {
-            log.debug("Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
-            return false;
+            throw new ObjectValidationException(agm, "Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
+        }
+        
+        // Validate xref
+        if (agm.getCrossReference() != null && agm.getCrossReference().getId() == null) {
+            throw new ObjectValidationException(agm, "Missing xref ID for AGM " + agm.getPrimaryID() + " - skipping");
         }
 
         // Validate component fields
         if (CollectionUtils.isNotEmpty(agm.getAffectedGenomicModelComponents())) {
             for (AffectedGenomicModelComponentFmsDTO component : agm.getAffectedGenomicModelComponents()) {
                 if (component.getAlleleID() == null) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component with missing allele - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component with missing allele - skipping");
                 }
                 Allele componentAllele = alleleDAO.find(component.getAlleleID());
                 if (componentAllele == null) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") not found in database - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") not found in database - skipping");
                 }
                 if (component.getZygosity() == null) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with missing zygosity - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with missing zygosity - skipping");
                 }
 
                 if (!validZygosityCodes.contains(component.getZygosity())) {
-                    log.debug("Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with invalid zygosity - skipping");
-                    return false;
+                    throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " has component allele (" + component.getAlleleID() + ") with invalid zygosity - skipping");
                 }
             }
         }
-        return true;
     }
 
     private static final Set<String> validZygosityCodes = Set.of(

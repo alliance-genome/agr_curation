@@ -1,0 +1,73 @@
+{
+  "data": [
+    {
+      "DOid": "DOID:4",
+      "dataProvider": [
+        {
+          "crossReference": {
+            "id": "TEST:TestStrain000036",
+            "pages": [
+              "strain"
+            ]
+          },
+          "type": "curated"
+        }
+      ],
+      "dateAssigned": "2021-05-24T00:00:00-04:00",
+      "evidence": {
+        "evidenceCodes": [
+          "ECO:0000033"
+        ],
+        "publication": {
+          "crossReference": {
+            "id": "TEST:xref36",
+            "pages": [
+              "reference"
+            ]
+          },
+          "publicationId": "PMID:25920554"
+        }
+      },
+      "negation": "not",
+      "objectId": "ZFIN:ZDB-FISH-150901-5755",
+      "objectName": "Test strain 36",
+      "objectRelation": {
+        "associationType": "is_marker_for",
+        "objectType": "strain",
+        "inferredGeneAssociation": [
+          "TEST:TestGene000036"
+        ]
+      },
+      "conditionRelations": [
+        {
+          "conditionRelationType": "has_condition",
+          "conditions": [
+            {
+              "conditionClassId": "ZECO:0000101",
+              "conditionId": "XCO:0000131",
+              "conditionStatement": "stress:auditory stimulus",
+              "conditionQuantity": "some amount",
+              "anatomicalOntologyId": "ZFA:0000001",
+              "geneOntologyId": "GO:0007569",
+              "NCBITaxonId": "NCBITaxon:1781",
+              "chemicalOntologyId": "CHEBI:46631"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2021-09-13T12:39:18+01:00",
+    "release": "TEST"
+  }
+}

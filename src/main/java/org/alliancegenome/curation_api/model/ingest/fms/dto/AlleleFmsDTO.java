@@ -17,6 +17,6 @@ public class AlleleFmsDTO extends BaseDTO {
     private String description;
     private String alleleDescription;
     private List<String> secondaryIds;
-    private List<AlleleObjectRelationsFmsDTO> alleleObjectRelations;
+    private List<AlleleObjectRelationFmsDTO> alleleObjectRelations;
     private List<CrossReferenceFmsDTO> crossReferences;
 }

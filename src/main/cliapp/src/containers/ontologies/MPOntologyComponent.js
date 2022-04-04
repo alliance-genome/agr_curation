@@ -13,7 +13,7 @@ export const MPOntologyComponent = () => {
     < OntologyTable
       endpoint={"mpterm"}
       ontologyAbbreviation={"MP"}
-      columnMap={columns}
+      columns={columns}
     />
     )
  

@@ -7,10 +7,10 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.interfaces.crud.GeneCrudInterface;
-import org.alliancegenome.curation_api.jobs.BulkLoadJobExecutor;
+import org.alliancegenome.curation_api.jobs.executors.GeneFmsExecutor;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.GeneMetaDataFmsDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.GeneService;
 
 @RequestScoped
@@ -18,7 +18,7 @@ public class GeneCrudController extends BaseCrudController<GeneService, Gene, Ge
 
     @Inject GeneService geneService;
     
-    @Inject BulkLoadJobExecutor bulkLoadJobExecutor;
+    @Inject GeneFmsExecutor geneFmsExecutor;
     
     @Override
     @PostConstruct
@@ -32,9 +32,8 @@ public class GeneCrudController extends BaseCrudController<GeneService, Gene, Ge
     }
     
     @Override
-    public String updateGenes(GeneMetaDataFmsDTO geneData) {
-        bulkLoadJobExecutor.processGeneDTOData(null, geneData);
-        return "OK";
+    public APIResponse updateGenes(GeneMetaDataFmsDTO geneData) {
+        return geneFmsExecutor.runLoad(geneData);
     }
 
 }

@@ -1,17 +1,21 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.AlleleObjectRelationsFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleValidator;
@@ -19,30 +23,19 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
 public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
-    @Inject
-    AlleleDAO alleleDAO;
-    @Inject
-    AlleleValidator alleleValidator;
-    @Inject
-    GeneDAO geneDAO;
-    @Inject
-    CrossReferenceService crossReferenceService;
-    @Inject
-    SynonymService synonymService;
-    @Inject
-    NcbiTaxonTermService ncbiTaxonTermService;
+    @Inject AlleleDAO alleleDAO;
+    @Inject AlleleValidator alleleValidator;
+    @Inject GeneDAO geneDAO;
+    @Inject CrossReferenceService crossReferenceService;
+    @Inject SynonymService synonymService;
+    @Inject NcbiTaxonTermService ncbiTaxonTermService;
+    @Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
 
     @Override
     @PostConstruct
@@ -58,10 +51,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
     }
 
     @Transactional
-    public void processUpdate(AlleleFmsDTO allele) {
-        if (!validateAlleleDTO(allele)) {
-            return;
-        }
+    public void processUpdate(AlleleFmsDTO allele) throws ObjectUpdateException {
+        validateAlleleDTO(allele);
 
         Allele dbAllele = alleleDAO.find(allele.getPrimaryId());
         //log.info("Allele: " + allele + " : " + alleleDTO.getPrimaryId());
@@ -76,7 +67,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
         dbAllele.setSymbol(allele.getSymbol());
         dbAllele.setDescription(allele.getDescription());
-        dbAllele.setTaxon(allele.getTaxonId());
+        dbAllele.setTaxon(ncbiTaxonTermDAO.find(allele.getTaxonId()));
 
         handleCrossReferences(allele, dbAllele);
         handleSecondaryIds(allele, dbAllele);
@@ -196,62 +187,56 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
     }
 
-    private boolean validateAlleleDTO(AlleleFmsDTO allele) {
-        // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
-
+    private void validateAlleleDTO(AlleleFmsDTO allele) throws ObjectValidationException {
         // Check for required fields
         if (allele.getPrimaryId() == null || allele.getSymbol() == null
                 || allele.getSymbolText() == null || allele.getTaxonId() == null) {
-            log.debug("Entry for allele " + allele.getPrimaryId() + " missing required fields - skipping");
-            return false;
+            throw new ObjectValidationException(allele, "Entry for allele " + allele.getPrimaryId() + " missing required fields - skipping");
         }
 
         // Validate taxon ID
-        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(allele.getTaxonId());
-        if (taxon.getEntity() == null) {
-            log.debug("Invalid taxon ID for allele " + allele.getPrimaryId() + " - skipping");
-            return false;
+        NCBITaxonTerm term = ncbiTaxonTermDAO.find(allele.getTaxonId());
+        if (term == null) {
+            term = ncbiTaxonTermDAO.downloadAndSave(allele.getTaxonId());
+        }
+        if (term == null) {
+            throw new ObjectValidationException(allele, "Invalid taxon ID for allele " + allele.getPrimaryId() + " - skipping");
+        }
+
+        // Validate xrefs
+        if (allele.getCrossReferences() != null) {
+            for (CrossReferenceFmsDTO xrefDTO : allele.getCrossReferences()) {
+                if (xrefDTO.getId() == null) {
+                    throw new ObjectValidationException(allele, "Missing xref ID for allele " + allele.getPrimaryId() + " - skipping");
+                }
+            }
         }
 
         // Validate allele object relations
         // TODO: validate construct relation once constructs are loaded
         if (CollectionUtils.isNotEmpty(allele.getAlleleObjectRelations())) {
-            for (AlleleObjectRelationsFmsDTO objectRelations : allele.getAlleleObjectRelations()) {
-                if (objectRelations.getObjectRelation().containsKey("gene")) {
-                    Gene gene = geneDAO.find(objectRelations.getObjectRelation().get("gene"));
+            for (AlleleObjectRelationFmsDTO alleleObjectRelation : allele.getAlleleObjectRelations()) {
+                if (alleleObjectRelation.getObjectRelation().getAssociationType() == null) {
+                    throw new ObjectValidationException(allele, "No association type found for related gene/construct of " + allele.getPrimaryId() + " - skipping");
+                }
+                if (alleleObjectRelation.getObjectRelation().getGene() != null) {
+                    Gene gene = geneDAO.find(alleleObjectRelation.getObjectRelation().getGene());
                     if (gene == null) {
-                        log.debug("Related gene not found in database for " + allele.getPrimaryId() + " - skipping");
-                        return false;
+                        throw new ObjectValidationException(allele, "Related gene not found in database for " + allele.getPrimaryId() + " - skipping");
                     }
-                    if (objectRelations.getObjectRelation().containsKey("associationType") &&
-                            !objectRelations.getObjectRelation().get("associationType").equals("allele_of")) {
-                        log.debug("Invalid association type for related gene of " + allele.getPrimaryId() + " - skipping");
-                        return false;
+                    if (!alleleObjectRelation.getObjectRelation().getAssociationType().equals("allele_of")) {
+                        throw new ObjectValidationException(allele, "Invalid association type for related gene of " + allele.getPrimaryId() + " - skipping");
                     }
-                }
-                if (objectRelations.getObjectRelation().containsKey("construct")) {
-                    if (objectRelations.getObjectRelation().containsKey("associationType") &&
-                            !objectRelations.getObjectRelation().get("associationType").equals("contains")) {
-                        log.debug("Invalid association type for related construct of " + allele.getPrimaryId() + " - skipping");
-                        return false;
+                } else if (alleleObjectRelation.getObjectRelation().getConstruct() != null) {
+                    // TODO: add validation of construct once constructs are loaded
+                    if (!alleleObjectRelation.getObjectRelation().getAssociationType().equals("contains")) {
+                        throw new ObjectValidationException(allele, "Invalid association type for related gene of " + allele.getPrimaryId() + " - skipping");
                     }
-                }
-                if (!objectRelations.getObjectRelation().containsKey("gene") &&
-                        !objectRelations.getObjectRelation().containsKey("construct")) {
-                    log.debug("No valid related entity type found in " + allele.getPrimaryId() + " objectRelation - skipping");
-                    return false;
-                }
-                for (String orKey : objectRelations.getObjectRelation().keySet()) {
-                    if (!orKey.equals("gene") && !orKey.equals("construct") &&
-                            !orKey.equals("associationType")) {
-                        log.debug("Invalid key (" + orKey + ") found in " + allele.getPrimaryId() + " objectRelation - skipping");
-                        return false;
-                    }
+                } else {
+                    throw new ObjectValidationException(allele, "Nog gene or construct specified in related object of " + allele.getPrimaryId() + " - skipping");
                 }
             }
         }
-
-        return true;
     }
 
 }

@@ -1,31 +1,44 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonView;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.util.*;
+
+import javax.persistence.*;
+
 import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.*;
 
 @Audited
+@Entity
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@Schema(name = "Disease_Relation", description = "Condition class ")
-public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity  {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
+public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
 
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "conditionRelationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("condition_relation_type")
-    private String relationType;
+    @EqualsAndHashCode.Include
+    private String conditionRelationType;
 
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToMany
     @JsonView({View.FieldsAndLists.class})
-    private List<Condition> conditions;
-
-    @JsonView({View.FieldsOnly.class})
-    private List<PaperHandle> paperHandles;
+    private List<ExperimentalCondition> conditions;
 
 
+    public void addExperimentCondition(ExperimentalCondition experimentalCondition) {
+        if (conditions == null)
+            conditions = new ArrayList<>();
+        conditions.add(experimentalCondition);
+    }
 }
