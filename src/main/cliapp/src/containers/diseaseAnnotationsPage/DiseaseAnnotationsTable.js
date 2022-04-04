@@ -246,11 +246,13 @@ export const DiseaseAnnotationsTable = () => {
 
   const conditionRelationsTemplate = (rowData) => {
     if (rowData.conditionRelations) {
+        const handle = rowData.conditionRelations[0].handle
       return <EllipsisTableCell>
         <Button className="p-button-raised p-button-text"
           onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
           <span style={{ textDecoration: 'underline' }}>
-            {`Conditions(${rowData.conditionRelations.length})`}
+            {!handle && `Conditions (${rowData.conditionRelations.length})`}
+              {handle && handle}
           </span>
         </Button>
       </EllipsisTableCell>;
