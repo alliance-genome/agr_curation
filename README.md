@@ -255,6 +255,8 @@ Press [r] to resume testing, [o] Toggle test output, [h] for more options>
 ```
 Some notable commands are `s` for restarting the server to pick up java changes. `j` change the debugging level of the server, `q` or ctrl-c in order to stop the server.
 
+When running into issues when running/building the API, try a clean build by running `make clean` first.
+
 ### Running UI
 
 To build and run the UI, issue the following command:

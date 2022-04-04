@@ -11,6 +11,9 @@ GIT_VERSION = $(shell git describe)
 
 all: docker
 
+clean:
+	mvn clean
+
 registry-docker-login:
 ifneq ($(shell echo ${REG} | egrep "ecr\..+\.amazonaws\.com"),)
 	@$(eval DOCKER_LOGIN_CMD=docker run --rm -it -v ~/.aws:/root/.aws amazon/aws-cli)
