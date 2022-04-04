@@ -51,22 +51,18 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
     
     public Note validateNoteDTO(NoteDTO dto, String note_type_vocabulary) throws ObjectValidationException {
         Note note = new Note();
-        log.info("Creating new note");
         if (dto.getFreeText() == null || dto.getNoteType() == null || dto.getInternal() == null) {
             throw new ObjectValidationException(dto, "Note missing required fields");
         }
         note.setFreeText(dto.getFreeText());
         note.setInternal(dto.getInternal());
         
-        log.info("Searching for vocabularyTerm");
         VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
         if (noteType == null) {
-            log.info("DID NOT FIND NOTETYPE");
             throw new ObjectValidationException(dto, "Note type '" + dto.getNoteType() + "' not found in vocabulary '" + note_type_vocabulary + "'");
         }
         note.setNoteType(noteType);
         
-        log.info("Looping through note references");
         List<Reference> noteReferences = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(dto.getReferences())) {
             for (String publicationId : dto.getReferences()) {
@@ -83,7 +79,6 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
             }
             note.setReferences(noteReferences);
         }
-        log.info("Returning note: " + note.toString());
         return note;
     }
     
