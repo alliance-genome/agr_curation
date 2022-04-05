@@ -315,6 +315,8 @@ export const DiseaseAnnotationsTable = () => {
         let annotations = [...diseaseAnnotations];
         annotations[event.index].subject = data.data.entity.subject;
         annotations[event.index].object = data.data.entity.object;
+        annotations[event.index].dateLastModified = data.data.entity.dateLastModified;
+        annotations[event.index].modifiedBy = data.data.entity.modifiedBy;
         setDiseaseAnnotations(annotations);
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
