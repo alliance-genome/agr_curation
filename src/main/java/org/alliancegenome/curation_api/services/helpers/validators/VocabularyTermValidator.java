@@ -91,7 +91,12 @@ public class VocabularyTermValidator {
             addMessageResponse(field, invalidMessage);
             return null;
         }
+        
         Vocabulary vocabulary = vocabularyResponse.getSingleResult();
+        if (vocabulary.getObsolete()) {
+            addMessageResponse(field, obsoleteMessage);
+            return null;
+        }
         
         return vocabulary;
     }
