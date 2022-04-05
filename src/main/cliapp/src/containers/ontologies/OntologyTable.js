@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
@@ -126,6 +127,8 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
     }
   };
 
+  useSetDefaultColumnOrder(columns, dataTable);
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -135,6 +138,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
           return <Column
             style={{ width: `${100 / orderedColumns.length}%` }}
             className='overflow-hidden text-overflow-ellipsis'
+            headerClassName='surface-0'
             columnKey={col.field}
             key={col.field}
             field={col.field}
@@ -149,6 +153,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}

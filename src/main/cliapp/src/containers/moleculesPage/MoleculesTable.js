@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
@@ -50,7 +51,6 @@ export const MoleculesTable = () => {
     },
     keepPreviousData: true
   });
-
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -170,11 +170,11 @@ export const MoleculesTable = () => {
       filterElement: filterComponentTemplate("inchiFilter", ["inchi"])
     },
     {
-      field: "inchi_key",
+      field: "inchiKey",
       header: "InChiKey",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("inchi_keyFilter", ["inchi_key"])
+      filterElement: filterComponentTemplate("inchiKeyFilter", ["inchiKey"])
     },
     {
       field: "iupac",
@@ -202,6 +202,8 @@ export const MoleculesTable = () => {
 
   ];
 
+  useSetDefaultColumnOrder(columns, dataTable);
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -210,6 +212,7 @@ export const MoleculesTable = () => {
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}

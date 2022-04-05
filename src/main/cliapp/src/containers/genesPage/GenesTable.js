@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Column } from 'primereact/column';
@@ -163,6 +164,8 @@ export const GenesTable = () => {
     }
   ];
 
+  useSetDefaultColumnOrder(columns, dataTable);
+
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -171,6 +174,7 @@ export const GenesTable = () => {
         return <Column
           style={{ width: `${100 / orderedColumns.length}%` }}
           className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           field={col.field}
           header={col.header}
           filter={col.filter}

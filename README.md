@@ -372,7 +372,7 @@ In order to promote changes from beta to production:
    ```
 5. Create a pull request to merge this release branch in production
 6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
-   to deploy this code successfully to the beta environment.
+   to deploy this code successfully to the production environment.
 7. After release creation and deployment, merge the production branch back to beta and push to github
    ```bash
    git pull

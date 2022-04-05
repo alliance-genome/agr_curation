@@ -6,9 +6,10 @@ export function ErrorMessageComponent({ errorField, errorMessages: errorMessages
     if(errorMessagesRow){
         return (
             <div>
-                <Message 
-                    severity={errorMessagesRow[errorField] ? errorMessagesRow[errorField].severity : ""} 
-                    text={errorMessagesRow[errorField] ? errorMessagesRow[errorField].message : ""} 
+                <Message
+                    severity={errorMessagesRow[errorField] ? errorMessagesRow[errorField].severity : ""}
+                    text={errorMessagesRow[errorField] ? errorMessagesRow[errorField].message : ""}
+                    style={{position:"absolute"}}
                 />
             </div>
         );

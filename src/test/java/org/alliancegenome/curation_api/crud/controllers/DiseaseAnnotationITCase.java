@@ -4,6 +4,8 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
@@ -33,12 +35,12 @@ public class DiseaseAnnotationITCase {
     private DOTerm testDoTerm;
     private DOTerm testDoTerm2;
     private DOTerm testObsoleteDoTerm;
-    private List<EcoTerm> testEcoTerm;
-    private List<EcoTerm> testEcoTerm2;
-    private List<EcoTerm> testObsoleteEcoTerm;
+    private List<EcoTerm> testEcoTerms;
+    private List<EcoTerm> testEcoTerms2;
+    private List<EcoTerm> testObsoleteEcoTerms;
     private Gene testGene;
     private Gene testGene2;
-    private List<Gene> testWithGene;
+    private List<Gene> testWithGenes;
     private Allele testAllele;
     private Allele testAllele2;
     private AffectedGenomicModel testAgm;
@@ -51,16 +53,20 @@ public class DiseaseAnnotationITCase {
     private Vocabulary diseaseGeneticModifierRelationVocabulary;
     private Vocabulary diseaseQualifierVocabulary;
     private Vocabulary annotationTypeVocabulary;
+    private Vocabulary noteTypeVocabulary;
     private VocabularyTerm geneDiseaseRelation;
     private VocabularyTerm geneDiseaseRelation2;
     private VocabularyTerm alleleDiseaseRelation;
     private VocabularyTerm agmDiseaseRelation;
     private VocabularyTerm geneticSex;
     private VocabularyTerm diseaseGeneticModifierRelation;
-    private List<VocabularyTerm> diseaseQualifier;
+    private VocabularyTerm noteType;
+    private VocabularyTerm obsoleteNoteType;
+    private List<VocabularyTerm> diseaseQualifiers;
     private VocabularyTerm annotationType;
     private String testPerson;
     private OffsetDateTime testDate;
+    private List<Note> relatedNotes;
 
     private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
         return new TypeRef<>() {
@@ -69,46 +75,48 @@ public class DiseaseAnnotationITCase {
 
     
     private void createRequiredObjects() {
-        testEcoTerm = new ArrayList<EcoTerm>();
-        testEcoTerm2 = new ArrayList<EcoTerm>();
-        testObsoleteEcoTerm = new ArrayList<EcoTerm>();
-        testWithGene = new ArrayList<Gene>();
-        diseaseQualifier = new ArrayList<VocabularyTerm>();
+        testEcoTerms = new ArrayList<EcoTerm>();
+        testEcoTerms2 = new ArrayList<EcoTerm>();
+        testObsoleteEcoTerms = new ArrayList<EcoTerm>();
+        testWithGenes = new ArrayList<Gene>();
+        diseaseQualifiers = new ArrayList<VocabularyTerm>();
+        relatedNotes = new ArrayList<Note>();
         
         testDoTerm = createDiseaseTerm("DOID:da0001", false);
         testDoTerm2 = createDiseaseTerm("DOID:da0002", false);
         testObsoleteDoTerm = createDiseaseTerm("DOID:da0003", true);
-        testEcoTerm.add(createEcoTerm("ECO:da0001", "Test evidence code", false));
-        testEcoTerm2.add(createEcoTerm("ECO:da0002", "Test evidence code2", false));
-        testObsoleteEcoTerm.add(createEcoTerm("ECO:da0003", "Test obsolete evidence code", true));
+        testEcoTerms.add(createEcoTerm("ECO:da0001", "Test evidence code", false));
+        testEcoTerms2.add(createEcoTerm("ECO:da0002", "Test evidence code2", false));
+        testObsoleteEcoTerms.add(createEcoTerm("ECO:da0003", "Test obsolete evidence code", true));
         testGene = createGene("GENE:da0001", "NCBITaxon:9606");
         testGene2 = createGene("GENE:da0002","NCBITaxon:9606");
-        testWithGene.add(createGene("HGNC:1", "NCBITaxon:9606"));
+        testWithGenes.add(createGene("HGNC:1", "NCBITaxon:9606"));
         testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606");
         testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606");
         testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
-        testAgm2 = createModel("SGD:da0002", "NCBITaxon:9606", "TestAGM2");
+        testAgm2 = createModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
         testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
-        // geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
-        // alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
-        // agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
-        geneDiseaseRelationVocabulary = getVocabulary("Gene disease relations");
-        alleleDiseaseRelationVocabulary = getVocabulary("Allele disease relations");
-        agmDiseaseRelationVocabulary = getVocabulary("AGM disease relations");
+        geneDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
+        alleleDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+        agmDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+        noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
         geneticSexVocabulary = createVocabulary("Genetic sexes");
-        diseaseGeneticModifierRelationVocabulary = createVocabulary("Disease genetic modifier relations");
-        diseaseQualifierVocabulary = createVocabulary("Disease qualifiers");
-        annotationTypeVocabulary = createVocabulary("Annotation types");
+        diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+        diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+        annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
         geneDiseaseRelation = getVocabularyTerm(geneDiseaseRelationVocabulary, "is_implicated_in");
-        geneDiseaseRelation2 = createVocabularyTerm(geneDiseaseRelationVocabulary, "is_marker_for");
+        geneDiseaseRelation2 = createVocabularyTerm(geneDiseaseRelationVocabulary, "is_marker_for", false);
         alleleDiseaseRelation = getVocabularyTerm(alleleDiseaseRelationVocabulary, "is_implicated_in");
         agmDiseaseRelation = getVocabularyTerm(agmDiseaseRelationVocabulary, "is_model_of");
-        diseaseQualifier.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity"));
-        geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite");
-        diseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by");
-        annotationType = createVocabularyTerm(annotationTypeVocabulary,"computational");
+        diseaseQualifiers.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity", false));
+        geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite", false);
+        diseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by", false);
+        annotationType = createVocabularyTerm(annotationTypeVocabulary,"computational", false);
         testPerson = "TEST:Person0001";
         testDate = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
+        noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
+        obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+        relatedNotes.add(createNote(noteType, "Test text", false));
     }
 
     @Test
@@ -123,7 +131,7 @@ public class DiseaseAnnotationITCase {
         diseaseAnnotation.setObject(testDoTerm);
         diseaseAnnotation.setDataProvider("TEST");
         diseaseAnnotation.setSubject(testGene);
-        diseaseAnnotation.setEvidenceCodes(testEcoTerm);
+        diseaseAnnotation.setEvidenceCodes(testEcoTerms);
         diseaseAnnotation.setModifiedBy(testPerson);
         diseaseAnnotation.setCreatedBy(testPerson);
 
@@ -159,7 +167,7 @@ public class DiseaseAnnotationITCase {
         diseaseAnnotation.setObject(testDoTerm);
         diseaseAnnotation.setDataProvider("TEST");
         diseaseAnnotation.setSubject(testAllele);
-        diseaseAnnotation.setEvidenceCodes(testEcoTerm);
+        diseaseAnnotation.setEvidenceCodes(testEcoTerms);
         diseaseAnnotation.setModifiedBy(testPerson);
         diseaseAnnotation.setCreatedBy(testPerson);
 
@@ -195,7 +203,7 @@ public class DiseaseAnnotationITCase {
         diseaseAnnotation.setObject(testDoTerm);
         diseaseAnnotation.setDataProvider("TEST");
         diseaseAnnotation.setSubject(testAgm);
-        diseaseAnnotation.setEvidenceCodes(testEcoTerm);
+        diseaseAnnotation.setEvidenceCodes(testEcoTerms);
         diseaseAnnotation.setModifiedBy(testPerson);
         diseaseAnnotation.setCreatedBy(testPerson);
 
@@ -230,20 +238,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -274,7 +283,8 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.sgdStrainBackground.curie", is("SGD:da0002")).
-                body("entity.modifiedBy", is("TEST:Person0001")).
+                //body("entity.relatedNotes[0].freeText", is("Test text")).
+                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
     }
@@ -289,15 +299,15 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testAllele2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0002");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
@@ -331,7 +341,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
-                body("entity.modifiedBy", is("TEST:Person0001")).
+                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
@@ -347,15 +357,15 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testAgm2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0003");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
@@ -389,7 +399,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
-                body("entity.modifiedBy", is("TEST:Person0001")).
+                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
@@ -405,20 +415,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testObsoleteEcoTerm);
+        editedDiseaseAnnotation.setEvidenceCodes(testObsoleteEcoTerms);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
 
         RestAssured.given().
             contentType("application/json").
@@ -439,20 +450,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testObsoleteDoTerm);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
             contentType("application/json").
@@ -473,20 +485,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(null);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -507,20 +520,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(null);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -541,20 +555,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -576,20 +591,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider(null);
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -614,20 +630,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(nonPersistedGene);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -652,20 +669,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(nonPersistedDoTerm);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -686,20 +704,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider(null);
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -734,13 +753,14 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -765,20 +785,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(nonPersistedBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -802,20 +823,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(withGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -840,20 +862,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(nonPersistedModel);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
         RestAssured.given().
                 contentType("application/json").
@@ -874,20 +897,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(null);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
 
         RestAssured.given().
             contentType("application/json").
@@ -908,20 +932,21 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setObject(testDoTerm2);
         editedDiseaseAnnotation.setDataProvider("TEST2");
         editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerm2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
         editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
         editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
         editedDiseaseAnnotation.setGeneticSex(geneticSex);
         editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
         editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
         editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifier);
-        editedDiseaseAnnotation.setWith(testWithGene);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setModifiedBy(null);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
 
         RestAssured.given().
             contentType("application/json").
@@ -930,6 +955,95 @@ public class DiseaseAnnotationITCase {
             put("/api/gene-disease-annotation").
             then().
             statusCode(400);
+    }
+    
+    @Test
+    @Order(22)
+    public void editAttachedNote() {
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(geneticSex);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+        editedDiseaseAnnotation.setAnnotationType(annotationType);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        editedDiseaseAnnotation.setModifiedBy(testPerson);
+        editedDiseaseAnnotation.setCreatedBy(testPerson);
+        editedDiseaseAnnotation.setDateLastModified(testDate);
+        editedDiseaseAnnotation.setCreationDate(testDate);
+        
+        List<Note> editedNotes = new ArrayList<Note>();
+        for (Note note : editedDiseaseAnnotation.getRelatedNotes()) {
+            note.setFreeText("Edited note");
+            editedNotes.add(note);
+        }
+        editedDiseaseAnnotation.setRelatedNotes(editedNotes);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(200);
+        
+        RestAssured.given().
+                when().
+                get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
+                then().
+                statusCode(200).
+                body("entity.relatedNotes[0].freeText", is("Edited note"));
+    }
+    
+    @Test
+    @Order(23)
+    public void editWithObsoleteNoteType() {
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(geneticSex);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+        editedDiseaseAnnotation.setAnnotationType(annotationType);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        editedDiseaseAnnotation.setModifiedBy(testPerson);
+        editedDiseaseAnnotation.setCreatedBy(testPerson);
+        editedDiseaseAnnotation.setDateLastModified(testDate);
+        editedDiseaseAnnotation.setCreationDate(testDate);
+        
+        List<Note> editedNotes = new ArrayList<Note>();
+        for (Note note : editedDiseaseAnnotation.getRelatedNotes()) {
+            note.setNoteType(obsoleteNoteType);
+            editedNotes.add(note);
+        }
+        editedDiseaseAnnotation.setRelatedNotes(editedNotes);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
     }
 
     private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
@@ -1096,10 +1210,11 @@ public class DiseaseAnnotationITCase {
         return vocabulary;
     }
 
-    private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name) {
+    private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name, Boolean obsolete) {
         VocabularyTerm vocabularyTerm = new VocabularyTerm();
         vocabularyTerm.setName(name);
         vocabularyTerm.setVocabulary(vocabulary);
+        vocabularyTerm.setObsolete(obsolete);
         
         ObjectResponse<VocabularyTerm> response = 
             RestAssured.given().
@@ -1146,6 +1261,24 @@ public class DiseaseAnnotationITCase {
         return response.getEntity();
     }
 
+    private Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal) {
+        Note note = new Note();
+        note.setNoteType(vocabularyTerm);
+        note.setFreeText(text);
+        note.setInternal(internal);
+
+        ObjectResponse<Note> response = RestAssured.given().
+            contentType("application/json").
+            body(note).
+            when().
+            post("/api/note").
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefNote());
+        
+        return response.getEntity();
+    }
+    
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
@@ -1158,7 +1291,12 @@ public class DiseaseAnnotationITCase {
         return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
     }
     
+    private TypeRef<ObjectResponse<Note>> getObjectResponseTypeRefNote() {
+        return new TypeRef<ObjectResponse <Note>>() { };
+    }
+    
     private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
         return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
     }
+    
 }

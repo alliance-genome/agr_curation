@@ -52,7 +52,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     @Transactional
     public ObjectResponse<ExperimentalCondition> update(ExperimentalCondition uiEntity) {
         ExperimentalCondition dbEntity = experimentalConditionValidator.validateCondition(uiEntity);
-        return new ObjectResponse<ExperimentalCondition>(experimentalConditionDAO.persist(dbEntity));
+        return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
     }
     
     public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {
@@ -62,6 +62,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
         if (searchResponse == null || searchResponse.getSingleResult() == null) {
             experimentalCondition = new ExperimentalCondition();
+            experimentalCondition.setUniqueId(uniqueId);
         } else {
             experimentalCondition = searchResponse.getSingleResult();
         }

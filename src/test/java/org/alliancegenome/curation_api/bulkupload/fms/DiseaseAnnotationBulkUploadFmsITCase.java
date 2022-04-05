@@ -5,14 +5,13 @@ import static org.hamcrest.Matchers.*;
 import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -201,9 +200,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
             body("results[1].negated", is(true)).
-            body("results[0].with", hasSize(2)).
-            body("results[0].with[0].curie", is("HGNC:1121")).
-            body("results[0].with[1].curie", is("HGNC:323")).
+            body("results[1].with", hasSize(2)).
+            body("results[1].with[0].curie", is("HGNC:1121")).
+            body("results[1].with[1].curie", is("HGNC:323")).
             body("results[1].evidenceCodes", hasSize(1)).
             body("results[1].evidenceCodes[0].curie", is("ECO:0000033")).
             body("results[1].singleReference.curie", is("PMID:25920554"));
@@ -248,9 +247,9 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("GO:0007569")).
             body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
-            body("results[0].with", hasSize(2)).
-            body("results[0].with[0].curie", is("HGNC:1121")).
-            body("results[0].with[1].curie", is("HGNC:323")).
+            body("results[2].with", hasSize(2)).
+            body("results[2].with[0].curie", is("HGNC:1121")).
+            body("results[2].with[1].curie", is("HGNC:323")).
             body("results[2].evidenceCodes", hasSize(1)).
             body("results[2].evidenceCodes[0].curie", is("ECO:0000033")).
             body("results[2].singleReference.curie", is("PMID:25920554")).
@@ -1359,10 +1358,10 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
         loadGenes();  
         loadAlleles();
         loadAGMs();
-        Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
-        Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
-        Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
-        Vocabulary conditionRelationTypeVocabulary = createVocabulary("Condition relation types");
+        Vocabulary geneDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
+        Vocabulary alleleDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+        Vocabulary agmDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+        Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
         createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
         createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
         createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);

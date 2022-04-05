@@ -3,6 +3,7 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { ListTableCell } from '../../components/ListTableCell';
 
 export const ConditionRelationsDialog = ({ conditonRelations, conditionRelationsDialog, setConditionRelationsDialog }) => {
 
@@ -11,31 +12,20 @@ export const ConditionRelationsDialog = ({ conditonRelations, conditionRelations
   };
 
   const conditionStatementTemplate = (rowData) => {
-    return <>
-        <ul style={{ listStyleType: 'none' }}>
-          {rowData?.conditions?.map((condition, index) =>
-            <li key={index}>
-              <EllipsisTableCell>
-                {condition.conditionStatement}
-              </EllipsisTableCell>
-            </li>
-          )}
-        </ul>
-      </>;
+    const listTemplate = (item) => {
+        return (
+          <EllipsisTableCell>
+            {item.conditionStatement}
+          </EllipsisTableCell>
+        );
+      };
+    return <ListTableCell template={listTemplate} listData={rowData.conditions} />
   };
 
   return (
-    <Dialog
-      visible={conditionRelationsDialog}
-      style={{ width: '90%' }}
-      modal className="p-fluid"
-      onHide={hideDialog}>
-      <h3>Related Notes</h3>
-      <DataTable
-        value={conditonRelations}
-        dataKey="id"
-        showGridlines
-      >
+    <Dialog visible={conditionRelationsDialog} className='w-6' modal onHide={hideDialog}>
+      <h3>Experimental Conditions</h3>
+      <DataTable value={conditonRelations} dataKey="id" showGridlines >
         <Column field="conditionRelationType.name" header="Relation"></Column>
         <Column field="handle" header="Handle"></Column>
         <Column field="conditions.conditionStatement" header="Statement" body={conditionStatementTemplate}></Column>
@@ -43,4 +33,4 @@ export const ConditionRelationsDialog = ({ conditonRelations, conditionRelations
     </Dialog>
   );
 };
- 
+
