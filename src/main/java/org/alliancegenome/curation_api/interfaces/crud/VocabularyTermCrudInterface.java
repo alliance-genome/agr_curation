@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -30,5 +31,15 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
             @DefaultValue("0") @QueryParam("page") Integer page,
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
-
+    
+    @Override
+    @GET
+    @Path("/{id}")
+    @JsonView(View.VocabularyTermView.class)
+    public ObjectResponse<VocabularyTerm> get(@PathParam("id") Long id);
+    
+    @GET
+    @Path("/{name}/{vocabulary}")
+    @JsonView(View.VocabularyTermView.class)
+    public ObjectResponse<VocabularyTerm> getTermInVocabulary(@PathParam("name") String name, @PathParam("vocabulary") String vocabulary);
 }
