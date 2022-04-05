@@ -19,7 +19,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"bulkLoadFile"}, callSuper = true)
+@ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
 public class BulkLoadFileHistory extends BaseGeneratedEntity {
 
     @JsonView({View.FieldsOnly.class})
