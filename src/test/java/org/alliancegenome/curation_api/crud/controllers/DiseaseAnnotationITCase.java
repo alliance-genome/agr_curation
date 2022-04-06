@@ -1374,17 +1374,21 @@ public class DiseaseAnnotationITCase {
     private ConditionRelation createConditionRelation(VocabularyTerm conditionRelationType, ExperimentalCondition condition) {
         ConditionRelation conditionRelation = new ConditionRelation();
         conditionRelation.setConditionRelationType(conditionRelationType);
+        List<ExperimentalCondition> conditions = new ArrayList<ExperimentalCondition>();
+        conditions.add(condition);
         conditionRelation.addExperimentCondition(condition);
+        conditionRelation.setConditions(conditions);
         
-        RestAssured.given().
+        ObjectResponse<ConditionRelation> response = RestAssured.given().
             contentType("application/json").
             body(conditionRelation).
             when().
             post("/api/condition-relation").
             then().
-            statusCode(200);
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefConditionRelation());
     
-        return conditionRelation;
+        return response.getEntity();
     }
     
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
@@ -1409,5 +1413,9 @@ public class DiseaseAnnotationITCase {
     
     private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRefExperimentalCondition() {
         return new TypeRef<ObjectResponse <ExperimentalCondition>>() { };
+    }
+    
+    private TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
+        return new TypeRef<ObjectResponse <ConditionRelation>>() { };
     }
 }
