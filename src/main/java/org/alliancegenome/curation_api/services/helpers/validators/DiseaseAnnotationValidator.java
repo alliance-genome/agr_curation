@@ -32,6 +32,8 @@ public class DiseaseAnnotationValidator {
     VocabularyTermDAO vocabularyTermDAO;
     @Inject
     NoteValidator noteValidator;
+    @Inject
+    ConditionRelationValidator conditionRelationValidator;
     
     @Inject
     @AuthenticatedUser
@@ -162,7 +164,7 @@ public class DiseaseAnnotationValidator {
     }
     
     public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity) {
-        List <Note> validatedNotes = new ArrayList<>();
+        List<Note> validatedNotes = new ArrayList<Note>();
         for (Note note : uiEntity.getRelatedNotes()) {
             note = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
             if (note == null) {
@@ -172,6 +174,19 @@ public class DiseaseAnnotationValidator {
             validatedNotes.add(note);
         }
         return validatedNotes;
+    }
+    
+    public List<ConditionRelation> validateConditionRelations(DiseaseAnnotation uiEntity) {
+        List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
+        for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
+            conditionRelation = conditionRelationValidator.validateConditionRelation(conditionRelation, false);
+            if (conditionRelation == null) {
+                addMessageResponse("conditionRelations", invalidMessage);
+                return null;
+            }
+            validatedConditionRelations.add(conditionRelation);
+        }
+        return validatedConditionRelations;
     }
     
     public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -223,7 +238,8 @@ public class DiseaseAnnotationValidator {
         }
         
         if (CollectionUtils.isNotEmpty(uiEntity.getConditionRelations())) {
-            dbEntity.setConditionRelations(uiEntity.getConditionRelations());
+            List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity);
+            dbEntity.setConditionRelations(conditionRelations);
         }
         
         if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
