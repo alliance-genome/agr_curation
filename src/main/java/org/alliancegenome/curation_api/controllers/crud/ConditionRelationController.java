@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ConditionRelationCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ConditionRelationService;
 
 @RequestScoped
@@ -21,4 +22,7 @@ public class ConditionRelationController extends BaseCrudController<ConditionRel
         setService(conditionRelationService);
     }
 
+    public ObjectResponse<ConditionRelation> validate(ConditionRelation entity) {
+        return conditionRelationService.validate(entity);
+    }
 }

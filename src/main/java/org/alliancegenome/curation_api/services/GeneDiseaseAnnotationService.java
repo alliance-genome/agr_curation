@@ -16,9 +16,6 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.alliancegenome.curation_api.services.helpers.validators.GeneDiseaseAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDAO> {
 
@@ -30,6 +27,9 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     
     @Inject
     NoteDAO noteDAO;
+    
+    @Inject
+    ConditionRelationDAO conditionRelationDAO;
     
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
@@ -56,6 +56,11 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
             for (Note note : dbEntity.getRelatedNotes()) {
                 noteDAO.persist(note);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
+            for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
+                conditionRelationDAO.persist(conditionRelation);
             }
         }
         return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));

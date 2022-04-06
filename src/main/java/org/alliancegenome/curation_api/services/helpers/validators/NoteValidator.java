@@ -43,7 +43,7 @@ public class NoteValidator {
             throw new ApiErrorException(response);
         }
         
-    VocabularyTerm noteType = validateNoteType(uiEntity, noteVocabularyName);
+    VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
         dbEntity.setNoteType(noteType);
         
         Boolean internal = validateInternal(uiEntity);
@@ -68,7 +68,7 @@ public class NoteValidator {
         return dbEntity;
     }
     
-    public VocabularyTerm validateNoteType(Note uiEntity, String noteVocabularyName) {
+    public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularyName) {
         String field = "noteType";
         if (uiEntity.getNoteType() == null ) {
             addMessageResponse(field, requiredMessage);
@@ -91,7 +91,7 @@ public class NoteValidator {
             }
         }
         
-        if (noteType.getObsolete()) {
+        if (noteType.getObsolete() && !noteType.getName().equals(dbEntity.getNoteType().getName())) {
             addMessageResponse(field, obsoleteMessage);
             return null;
         }
