@@ -16,7 +16,6 @@ import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.*;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.*;
 
 @RequestScoped
 public class ConditionRelationValidator {
@@ -38,7 +37,7 @@ public class ConditionRelationValidator {
     
     public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, Boolean throwError) {
         response = new ObjectResponse<>(uiEntity);
-        String errorTitle = "Could not update Note: [" + uiEntity.getId() + "]";
+        String errorTitle = "Could not update ConditionRelation: [" + uiEntity.getId() + "]";
         
         Long id = uiEntity.getId();
         if (id == null) {
@@ -51,7 +50,7 @@ public class ConditionRelationValidator {
             throw new ApiErrorException(response);
         }
         
-        VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity);
+        VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
         dbEntity.setConditionRelationType(conditionRelationType);
         
         List<ExperimentalCondition> conditions = validateConditions(uiEntity);
@@ -76,7 +75,7 @@ public class ConditionRelationValidator {
         return dbEntity;
     }
     
-    public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity) {
+    public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {
         String field = "conditionRelationType";
         if (uiEntity.getConditionRelationType() == null ) {
             addMessageResponse(field, requiredMessage);
@@ -91,7 +90,7 @@ public class ConditionRelationValidator {
             return null;
         }
         
-        if (conditionRelationType.getObsolete()) {
+        if (conditionRelationType.getObsolete() && !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName())) {
             addMessageResponse(field, obsoleteMessage);
             return null;
         }

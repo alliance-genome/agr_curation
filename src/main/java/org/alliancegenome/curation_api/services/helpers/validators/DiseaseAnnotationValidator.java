@@ -15,9 +15,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public class DiseaseAnnotationValidator {
 
     @Inject
@@ -190,7 +187,6 @@ public class DiseaseAnnotationValidator {
     }
     
     public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        
         if (uiEntity.getModEntityId() != null)
             dbEntity.setModEntityId(uiEntity.getModEntityId());
 
