@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -54,6 +55,7 @@ public class DiseaseAnnotationITCase {
     private Vocabulary diseaseQualifierVocabulary;
     private Vocabulary annotationTypeVocabulary;
     private Vocabulary noteTypeVocabulary;
+    private Vocabulary conditionRelationTypeVocabulary;
     private VocabularyTerm geneDiseaseRelation;
     private VocabularyTerm geneDiseaseRelation2;
     private VocabularyTerm alleleDiseaseRelation;
@@ -62,11 +64,15 @@ public class DiseaseAnnotationITCase {
     private VocabularyTerm diseaseGeneticModifierRelation;
     private VocabularyTerm noteType;
     private VocabularyTerm obsoleteNoteType;
+    private VocabularyTerm conditionRelationType;
+    private VocabularyTerm obsoleteConditionRelationType;
     private List<VocabularyTerm> diseaseQualifiers;
     private VocabularyTerm annotationType;
     private String testPerson;
     private OffsetDateTime testDate;
     private List<Note> relatedNotes;
+    private ExperimentalCondition experimentalCondition;
+    private ConditionRelation conditionRelation;
 
     private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
         return new TypeRef<>() {
@@ -96,11 +102,13 @@ public class DiseaseAnnotationITCase {
         testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
         testAgm2 = createModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
         testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
+        experimentalCondition = createExperimentalCondition();
         geneDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
         alleleDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
         agmDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
         noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-        geneticSexVocabulary = createVocabulary("Genetic sexes");
+        geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
+        conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
         diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
         diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
         annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
@@ -117,6 +125,9 @@ public class DiseaseAnnotationITCase {
         noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
         obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
         relatedNotes.add(createNote(noteType, "Test text", false));
+        conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
+        obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
+        conditionRelation = createConditionRelation(conditionRelationType, experimentalCondition);
     }
 
     @Test
@@ -232,6 +243,9 @@ public class DiseaseAnnotationITCase {
     @Order(4)
     public void editGeneDiseaseAnnotation() {
         
+        List<ConditionRelation> conditionRelations= new ArrayList<ConditionRelation>();
+        conditionRelations.add(conditionRelation);
+        
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
         editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation2);
         editedDiseaseAnnotation.setNegated(true);
@@ -253,6 +267,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setConditionRelations(conditionRelations);
         
         RestAssured.given().
                 contentType("application/json").
@@ -283,7 +298,9 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.sgdStrainBackground.curie", is("SGD:da0002")).
-                //body("entity.relatedNotes[0].freeText", is("Test text")).
+                body("entity.relatedNotes[0].freeText", is("Test text")).
+                body("entity.conditionRelations[0].conditionRelationType.name", is("relation_type")).
+                body("entity.conditionRelations[0].conditions[0].conditionStatement", is("Statement")).
                 body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
@@ -1045,6 +1062,47 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(400);
     }
+    
+    @Test
+    @Order(24)
+    public void editWithConditionRelationType() {
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(geneticSex);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+        editedDiseaseAnnotation.setAnnotationType(annotationType);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        editedDiseaseAnnotation.setModifiedBy(testPerson);
+        editedDiseaseAnnotation.setCreatedBy(testPerson);
+        editedDiseaseAnnotation.setDateLastModified(testDate);
+        editedDiseaseAnnotation.setCreationDate(testDate);
+        
+        List<ConditionRelation> editedConditionRelations = new ArrayList<ConditionRelation>();
+        for (ConditionRelation conditionRelation : editedDiseaseAnnotation.getConditionRelations()) {
+            conditionRelation.setConditionRelationType(obsoleteConditionRelationType);
+            editedConditionRelations.add(conditionRelation);
+        }
+        editedDiseaseAnnotation.setConditionRelations(editedConditionRelations);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
 
     private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
         ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
@@ -1279,6 +1337,56 @@ public class DiseaseAnnotationITCase {
         return response.getEntity();
     }
     
+    private ExperimentalCondition createExperimentalCondition() {
+        ExperimentalCondition condition = new ExperimentalCondition();
+        condition.setConditionClass(createZecoTerm("ZECO:da001"));
+        condition.setConditionStatement("Statement");
+        condition.setUniqueId("Statement");
+        
+        ObjectResponse<ExperimentalCondition> response = RestAssured.given().
+            contentType("application/json").
+            body(condition).
+            when().
+            post("/api/experimental-condition").
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefExperimentalCondition());
+        
+        return response.getEntity();
+    }
+    
+    private ZecoTerm createZecoTerm(String curie) {
+        ZecoTerm zecoTerm = new ZecoTerm();
+        zecoTerm.setCurie(curie);
+        zecoTerm.setName("Test");
+        zecoTerm.setObsolete(false);
+
+        RestAssured.given().
+                contentType("application/json").
+                body(zecoTerm).
+                when().
+                post("/api/zecoterm").
+                then().
+                statusCode(200);
+        return zecoTerm;
+    }
+    
+    private ConditionRelation createConditionRelation(VocabularyTerm conditionRelationType, ExperimentalCondition condition) {
+        ConditionRelation conditionRelation = new ConditionRelation();
+        conditionRelation.setConditionRelationType(conditionRelationType);
+        conditionRelation.addExperimentCondition(condition);
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(conditionRelation).
+            when().
+            post("/api/condition-relation").
+            then().
+            statusCode(200);
+    
+        return conditionRelation;
+    }
+    
     private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
@@ -1299,4 +1407,7 @@ public class DiseaseAnnotationITCase {
         return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
     }
     
+    private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRefExperimentalCondition() {
+        return new TypeRef<ObjectResponse <ExperimentalCondition>>() { };
+    }
 }
