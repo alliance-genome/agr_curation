@@ -12,7 +12,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ConditionRelationService;
 
 @RequestScoped
-public class ConditionRelationController extends BaseCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
+public class ConditionRelationCrudController extends BaseCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
 
     @Inject ConditionRelationService conditionRelationService;
     
