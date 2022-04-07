@@ -52,7 +52,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     @Transactional
     public ObjectResponse<ExperimentalCondition> update(ExperimentalCondition uiEntity) {
         ExperimentalCondition dbEntity = experimentalConditionValidator.validateCondition(uiEntity);
-        return new ObjectResponse<ExperimentalCondition>(experimentalConditionDAO.persist(dbEntity));
+        return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
     }
     
     public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {

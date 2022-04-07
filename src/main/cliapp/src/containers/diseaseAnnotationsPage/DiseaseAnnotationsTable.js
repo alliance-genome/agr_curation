@@ -280,11 +280,13 @@ export const DiseaseAnnotationsTable = () => {
 
   const conditionRelationsTemplate = (rowData) => {
     if (rowData.conditionRelations) {
+        const handle = rowData.conditionRelations[0].handle
       return <EllipsisTableCell>
         <Button className="p-button-raised p-button-text"
           onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
           <span style={{ textDecoration: 'underline' }}>
-            {`Conditions(${rowData.conditionRelations.length})`}
+            {!handle && `Conditions (${rowData.conditionRelations.length})`}
+              {handle && handle}
           </span>
         </Button>
       </EllipsisTableCell>;
@@ -345,8 +347,7 @@ export const DiseaseAnnotationsTable = () => {
       onSuccess: (data) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
         let annotations = [...diseaseAnnotations];
-        annotations[event.index].subject = data.data.entity.subject;
-        annotations[event.index].object = data.data.entity.object;
+        annotations[event.index] = data.data.entity;
         setDiseaseAnnotations(annotations);
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
@@ -1122,7 +1123,7 @@ export const DiseaseAnnotationsTable = () => {
         >
 
           {columnList}
-          <Column field='rowEditor' rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }} alignFrozen='right' frozen={true} />
+          <Column field='rowEditor' rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }} />
 
         </DataTable>
       </div>

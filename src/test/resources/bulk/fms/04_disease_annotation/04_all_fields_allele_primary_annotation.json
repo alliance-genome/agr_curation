@@ -38,6 +38,10 @@
           "WB:WBGene00000406"
         ]
       },
+      "with": [
+        "HGNC:1121",
+        "HGNC:323"
+      ],
       "conditionRelations": [
         {
           "conditionRelationType": "has_condition",

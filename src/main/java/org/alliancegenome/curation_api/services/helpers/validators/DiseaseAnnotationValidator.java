@@ -6,6 +6,7 @@ import java.util.*;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -14,9 +15,6 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public class DiseaseAnnotationValidator {
 
     @Inject
@@ -29,12 +27,14 @@ public class DiseaseAnnotationValidator {
     BiologicalEntityDAO biologicalEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
+    @Inject
+    NoteValidator noteValidator;
+    @Inject
+    ConditionRelationValidator conditionRelationValidator;
     
     @Inject
     @AuthenticatedUser
     protected Person authenticatedPerson;
-    
-    private String DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY = "Disease genetic modifier relations";
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
@@ -160,8 +160,33 @@ public class DiseaseAnnotationValidator {
         return uiEntity.getDiseaseGeneticModifierRelation();
     }
     
+    public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity) {
+        List<Note> validatedNotes = new ArrayList<Note>();
+        for (Note note : uiEntity.getRelatedNotes()) {
+            note = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
+            if (note == null) {
+                addMessageResponse("relatedNotes", invalidMessage);
+                return null;
+            }
+            validatedNotes.add(note);
+        }
+        return validatedNotes;
+    }
+    
+    public List<ConditionRelation> validateConditionRelations(DiseaseAnnotation uiEntity) {
+        List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
+        for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
+            conditionRelation = conditionRelationValidator.validateConditionRelation(conditionRelation, false);
+            if (conditionRelation == null) {
+                addMessageResponse("conditionRelations", invalidMessage);
+                return null;
+            }
+            validatedConditionRelations.add(conditionRelation);
+        }
+        return validatedConditionRelations;
+    }
+    
     public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-        
         if (uiEntity.getModEntityId() != null)
             dbEntity.setModEntityId(uiEntity.getModEntityId());
 
@@ -206,6 +231,16 @@ public class DiseaseAnnotationValidator {
         if (diseaseGeneticModifier != null && dgmRelation != null) {
             dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
             dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
+        }
+        
+        if (CollectionUtils.isNotEmpty(uiEntity.getConditionRelations())) {
+            List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity);
+            dbEntity.setConditionRelations(conditionRelations);
+        }
+        
+        if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
+            List<Note> relatedNotes = validateRelatedNotes(uiEntity);
+            if (relatedNotes != null) dbEntity.setRelatedNotes(relatedNotes);
         }
         
         if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))

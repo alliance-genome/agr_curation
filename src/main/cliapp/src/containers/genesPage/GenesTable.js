@@ -131,6 +131,18 @@ export const GenesTable = () => {
     );
   };
 
+  const taxonBodyTemplate = (rowData) => {
+      if (rowData.taxon) {
+          return (
+              <>
+                  <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`}>
+                      {rowData.taxon.name} ({rowData.taxon.curie})
+                  </EllipsisTableCell>
+                  <Tooltip target={`.${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+              </>
+          );
+      }
+  };
 
   const columns = [
     {
@@ -156,11 +168,12 @@ export const GenesTable = () => {
       filterElement: filterComponentTemplate("symbolFilter", ["symbol"])
     },
     {
-      field: "taxon.curie",
+      field: "taxon.name",
       header: "Taxon",
       sortable: isEnabled,
+      body: taxonBodyTemplate,
       filter: true,
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie","taxon.name"])
     }
   ];
 

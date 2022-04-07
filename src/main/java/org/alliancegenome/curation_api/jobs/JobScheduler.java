@@ -88,7 +88,7 @@ public class JobScheduler {
                                         ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
 
                                         if(lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
-                                            log.info("Need to run Cron: " + bsl);
+                                            log.info("Need to run Cron: " + bsl.getName());
                                             bsl.setSchedulingErrorMessage(null);
                                             bsl.setStatus(BulkLoadStatus.SCHEDULED_PENDING);
                                             bulkLoadDAO.merge(bsl);
