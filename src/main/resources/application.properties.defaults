@@ -22,6 +22,9 @@ quarkus.flyway.baseline-version=0.3.0
 quarkus.flyway.baseline-on-migrate=true
 quarkus.flyway.clean-disabled=true
 
+quarkus.elasticsearch.hosts = localhost:9200
+quarkus.elasticsearch.protocol = http
+
 quarkus.hibernate-search-orm.elasticsearch.version=7.10.2
 quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
@@ -39,6 +42,7 @@ quarkus.vertx.max-worker-execute-time=PT1H
 %dev.quarkus.hibernate-search-orm.elasticsearch.hosts=localhost:9200
 %dev.quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/curation
 
+NET = local
 
 bulk.data.loads.schedulingEnabled = true
 bulk.data.loads.s3Bucket = agr-curation-files

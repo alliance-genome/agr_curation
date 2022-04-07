@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Column } from 'primereact/column';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { AutocompleteEditor } from '../../components/AutocompleteEditor';
@@ -12,12 +13,15 @@ import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
-import { Button } from 'primereact/button';
+import { Tooltip } from 'primereact/tooltip';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+
 
 export const ExperimentalConditionsTable = () => {
-  const defaultColumnNames = ["Unique ID", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity"];
+  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity", "Free Text"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -209,17 +213,18 @@ export const ExperimentalConditionsTable = () => {
     setEditingRows(event.data);
   };
 
-  const conditionQuantityEditor = (props) => {
+  const freeTextEditor = (props, fieldname) => {
     return (
       <>
         <InputTextEditor
           rowProps={props}
-          fieldName={'conditionQuantity'}
+          fieldName={fieldname}
         />
-        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionQuantity"} />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldname} />
       </>
     );
   };
+
 
   const filterComponentTemplate = (filterName, fields) => {
     return (<FilterComponentInputText
@@ -231,40 +236,116 @@ export const ExperimentalConditionsTable = () => {
     />);
   };
 
+  const uniqueIdBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
+        <Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
+      </>
+    )
+  };
+
+  const summaryBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
+        <Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
+      </>
+    )
+  };
+
+  const statementBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
+        <Tooltip target={`.c${rowData.id}`} content={rowData.conditionStatement} />
+      </>
+    )
+  };
+
   const conditionClassBodyTemplate = (rowData) => {
     if (rowData.conditionClass) {
-      return <div>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</div>;
+      return (
+        <>
+          <EllipsisTableCell otherClasses={rowData.conditionClass.curie.replace(':', '')}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
+          <Tooltip target={`.${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
+        </>
+      )
     }
   };
 
   const conditionIdBodyTemplate = (rowData) => {
     if (rowData.conditionId) {
-      return <div>{rowData.conditionId.name} ({rowData.conditionId.curie})</div>;
+      return (
+        <>
+          <EllipsisTableCell otherClasses={rowData.conditionId.curie.replace(':', '')}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
+          <Tooltip target={`.${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
+        </>
+      )
     }
   };
 
   const conditionGeneOntologyBodyTemplate = (rowData) => {
     if (rowData.conditionGeneOntology) {
-      return <div>{rowData.conditionGeneOntology.name} ({rowData.conditionGeneOntology.curie})</div>;
+      return <EllipsisTableCell>{rowData.conditionGeneOntology.name} ({rowData.conditionGeneOntology.curie})</EllipsisTableCell>;
     }
   };
 
   const conditionChemicalBodyTemplate = (rowData) => {
     if (rowData.conditionChemical) {
-      return <div>{rowData.conditionChemical.name} ({rowData.conditionChemical.curie})</div>;
+      return <EllipsisTableCell>{rowData.conditionChemical.name} ({rowData.conditionChemical.curie})</EllipsisTableCell>;
     }
   };
 
   const conditionAnatomyBodyTemplate = (rowData) => {
     if (rowData.conditionAnatomy) {
-      return <div>{rowData.conditionAnatomy.name} ({rowData.conditionAnatomy.curie})</div>;
+      return <EllipsisTableCell>{rowData.conditionAnatomy.name} ({rowData.conditionAnatomy.curie})</EllipsisTableCell>;
     }
   };
 
   const conditionTaxonBodyTemplate = (rowData) => {
     if (rowData.conditionTaxon) {
-      return <div>{rowData.conditionTaxon.curie} ({rowData.conditionTaxon.name})</div>;
+      return (
+          <>
+          <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`}>
+              {rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
+          </EllipsisTableCell>
+          <Tooltip target={`.${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+          </>
+      );
     }
+  };
+
+  const conditionClassEditorTemplate = (props, autocomplete) => {
+    return (
+      <>
+      <AutocompleteEditor
+        autocompleteFields={autocomplete}
+        rowProps={props}
+        searchService={searchService}
+        fieldname='conditionClass'
+        endpoint='zecoterm'
+        filterName='conditionClassEditorFilter'
+        fieldName='conditionClass'
+        otherFilters={{
+          "obsoleteFilter": {
+            "obsolete": {
+              queryString: false
+            }
+          },
+          "subsetFilter": {
+            "subsets": {
+              queryString: 'ZECO_0000267'
+            }
+          }
+        }}
+      />
+      <ErrorMessageComponent
+          errorMessages={errorMessages[props.rowIndex]}
+          errorField='conditionClass'
+        />
+      </>
+    );
   };
 
   const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
@@ -302,13 +383,23 @@ export const ExperimentalConditionsTable = () => {
       header: "Unique ID",
       sortable: isEnabled,
       filter: true,
+      body: uniqueIdBodyTemplate,
       filterElement: filterComponentTemplate("uniqueIdFilter", ["uniqueId"])
+    },
+    {
+      field: "conditionSummary",
+      header: "Summary",
+      sortable: isEnabled,
+      filter: true,
+      body: summaryBodyTemplate,
+      filterElement: filterComponentTemplate("conditionSummaryFilter", ["conditionSummary"])
     },
     {
       field: "conditionStatement",
       header: "Statement",
       sortable: isEnabled,
       filter: true,
+      body: statementBodyTemplate,
       filterElement: filterComponentTemplate("conditionStatementFilter", ["conditionStatement"])
     },
     {
@@ -318,7 +409,7 @@ export const ExperimentalConditionsTable = () => {
       body: conditionClassBodyTemplate,
       filter: true,
       filterElement: filterComponentTemplate("conditionClassFilter", ["conditionClass.curie", "conditionClass.name"]),
-      editor: (props) => singleOntologyEditorTemplate(props, "conditionClass", "zecoterm", curieAutocompleteFields)
+      editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
     },
     {
       field: "conditionId.name",
@@ -357,7 +448,7 @@ export const ExperimentalConditionsTable = () => {
       editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
     },
     {
-      field: "conditionTaxon.curie",
+      field: "conditionTaxon.name",
       header: "Condition Taxon",
       sortable: isEnabled,
       body: conditionTaxonBodyTemplate,
@@ -371,11 +462,21 @@ export const ExperimentalConditionsTable = () => {
       sortable: isEnabled,
       filter: true,
       filterElement: filterComponentTemplate("conditionQuantityFilter", ["conditionQuantity"]),
-      editor: (props) => conditionQuantityEditor(props)
+      editor: (props) => freeTextEditor(props, "conditionQuantity")
+    }
+    ,
+    {
+      field: "conditionFreeText",
+      header: "Free Text",
+      sortable: isEnabled,
+      filter: true,
+      filterElement: filterComponentTemplate("conditionFreeTextFilter", ["conditionFreeText"]),
+      editor: (props) => freeTextEditor(props, "conditionFreeText")
     }
 
-
   ];
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
@@ -383,6 +484,9 @@ export const ExperimentalConditionsTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` , display: 'inline-block'}}
+          className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}
@@ -392,7 +496,6 @@ export const ExperimentalConditionsTable = () => {
           showFilterMenu={false}
           filterElement={col.filterElement}
           editor={col.editor}
-          style={{ whiteSpace: 'normal' }}
           body={col.body}
         />;
       })
@@ -400,21 +503,25 @@ export const ExperimentalConditionsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled]);
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button disabled={!isEnabled} onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Experimental Conditions Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const resetTableState = () => {
@@ -429,13 +536,12 @@ export const ExperimentalConditionsTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <h3>Experimental Conditions Table</h3>
         <Messages ref={errorMessage} />
-        <DataTable value={experimentalConditions} className="p-datatable-sm" header={header} reorderableColumns={isEnabled}
+        <DataTable value={experimentalConditions} header={header} reorderableColumns={isEnabled}
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '200%' }} scrollHeight="62vh"
           ref={dataTable}
           filterDisplay="row"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
@@ -443,7 +549,7 @@ export const ExperimentalConditionsTable = () => {
           onColReorder={colReorderHandler}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
-          dataKey="id" resizableColumns columnResizeMode="fit" showGridlines
+          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
@@ -452,6 +558,5 @@ export const ExperimentalConditionsTable = () => {
           <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
-    </div>
   )
 }

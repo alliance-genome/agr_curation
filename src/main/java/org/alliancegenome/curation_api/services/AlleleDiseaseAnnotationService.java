@@ -6,32 +6,34 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
 
     @Inject
     AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-    
     @Inject
     AlleleDAO alleleDAO;
-    
+    @Inject
+    NoteDAO noteDAO;
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
     @Inject
     AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-    
     @Inject
     DiseaseAnnotationService diseaseAnnotationService;
+    @Inject
+    ConditionRelationDAO conditionRelationDAO;
+    
 
     @Override
     @PostConstruct
@@ -42,8 +44,17 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
     @Override
     @Transactional
     public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation uiEntity) {
-        log.info(authenticatedPerson);
         AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotation(uiEntity);
+        if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
+            for (Note note : dbEntity.getRelatedNotes()) {
+                noteDAO.persist(note);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
+            for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
+                conditionRelationDAO.persist(conditionRelation);
+            }
+        }
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
     }
 
@@ -62,7 +73,7 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
     private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
         AlleleDiseaseAnnotation annotation;
         if (dto.getSubject() == null) {
-            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
+            throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject Allele - skipping");
         }
         
         Allele allele = alleleDAO.find(dto.getSubject());
@@ -85,10 +96,11 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
         
         annotation = (AlleleDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         
-        if (!dto.getDiseaseRelation().equals("is_implicated_in")) {
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+        if (diseaseRelation == null) {
             throw new ObjectValidationException(dto, "Invalid allele disease relation for " + annotationId + " - skipping");
         }
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
+        annotation.setDiseaseRelation(diseaseRelation);
         
         
         return annotation;

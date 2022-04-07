@@ -14,7 +14,8 @@ export const AutocompleteEditor = (
     otherFilters = [],
     isSubject = false,
     isWith = false,
-    isMultiple = false
+    isMultiple = false,
+    isSgdStrainBackground = false
   }
 ) => {
   const [filtered, setFiltered] = useState([]);
@@ -43,7 +44,11 @@ export const AutocompleteEditor = (
         if (data.results?.length > 0) {
           if (isWith) {
             setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-          } else {
+          }
+          else if (isSgdStrainBackground) {
+            setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
+          }
+          else {
             setFiltered(data.results);
           };
         } else {
@@ -89,7 +94,11 @@ export const AutocompleteEditor = (
     let inputValue = trimWhitespace(query.toLowerCase());
     if (autocompleteSelectedItem.synonyms?.length > 0) {
       for (let i in autocompleteSelectedItem.synonyms) {
-        if (autocompleteSelectedItem.synonyms[i].toString().toLowerCase().indexOf(inputValue) < 0) {
+
+        let selectedItem = isSubject || isWith ? autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase() :
+          autocompleteSelectedItem.synonyms[i].toString().toLowerCase();
+
+        if (selectedItem.indexOf(inputValue) < 0) {
           delete autocompleteSelectedItem.synonyms[i];
         }
       }
@@ -112,7 +121,7 @@ export const AutocompleteEditor = (
     if (item.abbreviation) {
       return (
         <div>
-          <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') '}} />
+          <div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') ' }} />
         </div>
       );
     } else if (item.symbol) {
@@ -153,7 +162,7 @@ export const AutocompleteEditor = (
   )
 }
 
-const EditorTooltip = ({ op, autocompleteSelectedItem, dataType }) => {
+const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
   return (
     <>
       <Tooltip ref={op} style={{ width: '450px', maxWidth: '450px' }} position={'right'} mouseTrack mouseTrackLeft={30}>

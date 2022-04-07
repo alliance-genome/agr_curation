@@ -1,15 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from "primereact/messages";
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
-import { Button } from 'primereact/button';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
   const defaultColumnNames = columns.map((col) => {
@@ -88,21 +90,25 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
     setTableState(_tableState);
   };
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {ontologyAbbreviation+" Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -117,9 +123,11 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
 
   const obsoleteTemplate = (rowData) => {
     if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-      return <div>{JSON.stringify(rowData.obsolete)}</div>
+      return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
     }
   };
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
@@ -128,6 +136,9 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
       orderedColumns.map((col) => {
         if (col.field === 'obsolete') {
           return <Column
+            style={{ width: `${100 / orderedColumns.length}%` }}
+            className='overflow-hidden text-overflow-ellipsis'
+            headerClassName='surface-0'
             columnKey={col.field}
             key={col.field}
             field={col.field}
@@ -135,18 +146,21 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
             sortable={isEnabled}
             body={obsoleteTemplate}
             filter
-            style={{ whiteSpace: 'normal' }}
+            showFilterMenu={false}
             filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
           />;
         }
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}
           header={col.header}
+          body={col.body}
           sortable={isEnabled}
           filter
-          style={{ whiteSpace: 'normal' }}
           showFilterMenu={false}
           filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
         />;
@@ -168,24 +182,21 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
   };
 
   return (
-    <div>
       <div className="card">
-        <h3>{ontologyAbbreviation} Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
-          filterDisplay="row"
+          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
         >
           {columnMap}
 
         </DataTable>
       </div>
-    </div>
   )
 }

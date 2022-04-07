@@ -24,7 +24,8 @@
             "condition_gene_ontology": "DATEST:GOTerm0001",
             "condition_anatomy": "DATEST:AnatomyTerm0001",
             "condition_taxon": "NCBITaxon:6239",
-            "condition_chemical": "DATEST:ChemicalTerm0001"
+            "condition_chemical": "DATEST:ChemicalTerm0001",
+            "condition_free_text": "Free text"
           }
         ]
       }
@@ -45,9 +46,9 @@
       }
     ],
     "created_by": "DATEST:Person0001",
-    "creation_date": "2022-02-14",
-    "date_last_modified": "2022-02-14",
-    "sgd_strain_background": "DATEST:AGM0001",
+    "creation_date": "2022-03-09T22:10:12+00:00",
+    "date_last_modified": "2022-03-09T22:10:12+00:00",
+    "sgd_strain_background": "SGD:AGM0001",
     "annotation_type": "manually_curated",
     "disease_qualifiers": [
       "susceptibility"

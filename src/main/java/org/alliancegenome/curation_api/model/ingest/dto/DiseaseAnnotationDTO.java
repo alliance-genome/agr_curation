@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
-import javax.persistence.*;
-
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;
@@ -96,7 +94,7 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("date_last_modified")
-    private String lastUpdated;
+    private String dateLastModified;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("annotation_type")

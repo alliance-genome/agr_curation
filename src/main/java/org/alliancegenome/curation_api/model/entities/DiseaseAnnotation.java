@@ -1,9 +1,13 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.model.bridges.BiologicalEntityPropertyBinder;
+import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
+import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -11,10 +15,13 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.common.annotation.Param;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
-
 import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import org.hibernate.search.mapper.pojo.bridge.PropertyBridge;
+import org.hibernate.search.mapper.pojo.bridge.binding.PropertyBindingContext;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.PropertyBinderRef;
 
 import lombok.*;
 
@@ -39,7 +46,7 @@ import lombok.*;
 public class DiseaseAnnotation extends Association {
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "modId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @Column(unique = true)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
@@ -57,11 +64,11 @@ public class DiseaseAnnotation extends Association {
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean negated = false;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private DiseaseRelation diseaseRelation;
+    private VocabularyTerm diseaseRelation;
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -69,7 +76,7 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsAndLists.class})
     private List<EcoTerm> evidenceCodes;
     
-    @IndexedEmbedded(includeDepth = 1)
+    @IndexedEmbedded(includeDepth = 2)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JsonView({View.FieldsAndLists.class})
@@ -88,24 +95,23 @@ public class DiseaseAnnotation extends Association {
     @JsonView({View.FieldsOnly.class})
     private Reference singleReference;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "annotationType_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private AnnotationType annotationType;
+    private VocabularyTerm annotationType;
     
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseQualifier_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToMany
     @JsonView({View.FieldsAndLists.class})
-    @Enumerated(EnumType.STRING)
-    @ElementCollection(targetClass = DiseaseQualifier.class)
-    private List<DiseaseQualifier> diseaseQualifiers;
+    private List<VocabularyTerm> diseaseQualifiers;
     
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "geneticSex_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @IndexedEmbedded(includeDepth = 1)
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private GeneticSex geneticSex;
+    private VocabularyTerm geneticSex;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -123,52 +129,37 @@ public class DiseaseAnnotation extends Association {
     @JsonView(View.FieldsOnly.class)
     private String secondaryDataProvider;
 
+    @ManyToOne
+    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+    @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
+    @JsonView({View.FieldsOnly.class})
+    private BiologicalEntity diseaseGeneticModifier;
+    
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    private BiologicalEntity diseaseGeneticModifier;
+    private VocabularyTerm diseaseGeneticModifierRelation;
     
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "diseaseGeneticModifierRelation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @KeywordField(name = "createdBy_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private String createdBy;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "modifiedBy_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+    @JsonView(View.FieldsOnly.class)
+    private String modifiedBy;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+    @KeywordField(name = "creationDate_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
     @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private DiseaseGeneticModifierRelation diseaseGeneticModifierRelation;
+    private OffsetDateTime creationDate;
+    
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+    @KeywordField(name = "dateLastModified_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+    @JsonView(View.FieldsOnly.class)
+    private OffsetDateTime dateLastModified;
 
-    
-    public enum DiseaseRelation {
-        is_model_of,
-        is_implicated_in,
-        is_marker_for;
-    }
-    
-    public enum AnnotationType {
-        manually_curated,
-        high_throughput,
-        computational
-    }
-    
-    public enum DiseaseQualifier {
-        susceptibility,
-        disease_progression,
-        severity,
-        onset,
-        sexual_dimorphism,
-        resistance,
-        penetrance
-    }
-
-    public enum GeneticSex {
-        male,
-        female,
-        hermaphrodite
-    }
-    
-    public enum DiseaseGeneticModifierRelation {
-        ameliorated_by,
-        not_ameliorated_by,
-        exacerbated_by,
-        not_exacerbated_by
-    }
 }
 

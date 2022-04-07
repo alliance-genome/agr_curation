@@ -36,38 +36,23 @@ export const SiteLayout = (props) => {
     const [mobileMenuActive, setMobileMenuActive] = useState(false);
     const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
-    const [userInfo, setUserInfo] = useSessionStorage('userInfo', {});
-    const [localUserInfo, setLocalUserInfo] = useSessionStorage('localUserInfo', {});
+    const [userInfo, setUserInfo] = useState(null);
 
     const copyTooltipRef = useRef();
     const location = useLocation();
 
     const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
-    
+
     const { authState, oktaAuth } = useOktaAuth();
 
     const { children } = props;
-    const apiService = new ApiVersionService(authState);
+    const apiService = new ApiVersionService();
 
     useQuery(['getApiVersion', apiVersion],
         () => apiService.getApiVersion(), {
         onSuccess: (data) => {
             //console.log(data);
             setApiVersion(data);
-        },
-        onError: (error) => {
-            console.log(error);
-        },
-        keepPreviousData: true,
-        refetchOnWindowFocus: false
-    }
-    );
-
-    useQuery(['getLocalUserInfo', localUserInfo],
-        () => apiService.getUserInfo(), {
-        onSuccess: (data) => {
-            //console.log(data);
-            setLocalUserInfo(data);
         },
         onError: (error) => {
             console.log(error);
@@ -211,7 +196,8 @@ export const SiteLayout = (props) => {
                         { label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
                         { label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
                         { label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
-                        { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' }
+                        { label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
+                                                { label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
                     ]
                 },
                 {
@@ -253,8 +239,9 @@ export const SiteLayout = (props) => {
                         { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
                         { label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
                         { label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
-                        { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui' },
-                        { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://${window.location.hostname}:9000/#/overview?host=https://${apiVersion.esHost}` },
+                        { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
+                        { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://${window.location.hostname}:9000/#/overview?host=https://${apiVersion.esHost}`, target: "_blank" },
+                        { label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
                     ]
                 }
             ]

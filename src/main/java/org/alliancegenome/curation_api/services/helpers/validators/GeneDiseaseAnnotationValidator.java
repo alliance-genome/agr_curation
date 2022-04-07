@@ -3,14 +3,12 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
-
-import lombok.extern.jbosslog.JBossLog;
 
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
@@ -21,7 +19,9 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     AffectedGenomicModelDAO agmDAO;
     @Inject
     GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
     public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
@@ -41,7 +41,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         Gene subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
 
-        DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
+        VocabularyTerm relation = validateDiseaseRelation(uiEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
         AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
@@ -71,22 +71,21 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
     }
     
-    private DiseaseRelation validateDiseaseRelation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
+    private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
-        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
         
-        DiseaseRelation relation = uiEntity.getDiseaseRelation();
+        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
 
-        if(relation == DiseaseRelation.is_implicated_in || relation == DiseaseRelation.is_marker_for) {
-            return relation;
-        } else {
+        if(relation == null) {
             addMessageResponse(field, invalidMessage);
             return null;
         }
         
+        return relation;
     }
     
     private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity) {
@@ -95,7 +94,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         }
         
         AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
-        if (sgdStrainBackground == null) {
+        if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
             addMessageResponse("sgdStrainBackground", invalidMessage);
             return null;
         }

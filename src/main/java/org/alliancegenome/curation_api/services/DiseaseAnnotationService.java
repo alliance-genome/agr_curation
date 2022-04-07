@@ -1,30 +1,34 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.AnnotationType;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseQualifier;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseGeneticModifierRelation;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.GeneticSex;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
-import org.alliancegenome.curation_api.model.ingest.dto.*;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -60,6 +64,8 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     NoteService noteService;
     @Inject
     BiologicalEntityDAO biologicalEntityDAO;
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
 
     @Override
     @PostConstruct
@@ -74,47 +80,38 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     public DiseaseAnnotation upsert(DiseaseAnnotation annotation, DiseaseAnnotationDTO annotationDTO) throws ObjectUpdateException {
         List<ConditionRelation> conditionRelations = new ArrayList<>();
         List<ConditionRelation> conditionRelationsToPersist = new ArrayList<>();
-        List<ExperimentalCondition> experimentalConditionsToPersist = new ArrayList<>();
-        
+
         // create Experimental Conditions
         if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
             for (ConditionRelationDTO conditionRelationDTO : annotationDTO.getConditionRelations()) {
                 ConditionRelation relation = new ConditionRelation();
-                
+
                 String conditionRelationType = conditionRelationDTO.getConditionRelationType();
                 if (conditionRelationType == null) {
                     throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
                 }
-                if (conditionRelationType.equals("ameliorated_by") || 
-                        conditionRelationType.equals("exacerbated_by") ||
-                        conditionRelationType.equals("has_condition") ||
-                        conditionRelationType.equals("induced_by") ||
-                        conditionRelationType.equals("not_induced_by") ||
-                        conditionRelationType.equals("not_ameliorated_by") ||
-                        conditionRelationType.equals("not_exacerbated_by")
-                        ) {
-                    relation.setConditionRelationType(conditionRelationType);
-                } else {
+                VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+                if (conditionRelationTypeTerm == null) {
                     throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
-                } 
-                
+                } else {
+                    relation.setConditionRelationType(conditionRelationTypeTerm);
+                }
+
                 if (CollectionUtils.isEmpty(conditionRelationDTO.getConditions())) {
                     throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
                 }
                 for (ExperimentalConditionDTO experimentalConditionDTO : conditionRelationDTO.getConditions()) {
                     ExperimentalCondition experimentalCondition = experimentalConditionService.validateExperimentalConditionDTO(experimentalConditionDTO);
                     if (experimentalCondition == null) return null;
-                    
-                    // reuse existing experimental condition
-                    SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", experimentalCondition.getUniqueId());
-                    if (searchResponse == null || searchResponse.getSingleResult() == null) {
-                        experimentalConditionsToPersist.add(experimentalCondition);
-                    } else {
-                        experimentalCondition = searchResponse.getSingleResult();
-                    }
+
                     relation.addExperimentCondition(experimentalCondition);
                 }
-                
+                if (conditionRelationDTO.getHandle() != null) {
+                    relation.setHandle(conditionRelationDTO.getHandle());
+                    // reference of annotation equals the reference of the experiment
+                    relation.setSingleReference(annotation.getSingleReference());
+                }
+
                 relation.setUniqueId(DiseaseAnnotationCurie.getConditionRelationUnique(relation));
                 // reuse existing condition relation
                 SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", relation.getUniqueId());
@@ -128,8 +125,6 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             annotation.setConditionRelations(conditionRelations);
         }
 
-
-        experimentalConditionsToPersist.forEach(condition -> experimentalConditionDAO.persist(condition));
         conditionRelationsToPersist.forEach(relation -> conditionRelationDAO.persist(relation));
         diseaseAnnotationDAO.persist(annotation);
         return annotation;
@@ -138,13 +133,13 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
     public void removeNonUpdatedAnnotations(String taxonId, List<String> annotationIdsBefore, List<String> annotationIdsAfter) {
         log.debug("runLoad: After: " + taxonId + " " + annotationIdsAfter.size());
-    
+
         List<String> distinctAfter = annotationIdsAfter.stream().distinct().collect(Collectors.toList());
         log.debug("runLoad: Distinct: " + taxonId + " " + distinctAfter.size());
 
         List<String> idsToRemove = ListUtils.subtract(annotationIdsBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonId + " " + idsToRemove.size());
-        
+
         for (String id : idsToRemove) {
             SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", id);
             if (da != null && da.getTotalResults() == 1) {
@@ -156,16 +151,38 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     }
 
     public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
-        
-        if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null || CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
+        if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null ||
+                CollectionUtils.isEmpty(dto.getEvidenceCodes()) || dto.getCreatedBy() == null || dto.getModifiedBy() == null) {
             throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
         annotation.setDataProvider(dto.getDataProvider());
-
+        annotation.setCreatedBy(dto.getCreatedBy());
+        annotation.setModifiedBy(dto.getModifiedBy());
+        
+        if (dto.getDateLastModified() != null) {
+            OffsetDateTime dateLastModified;
+            try {
+                dateLastModified = OffsetDateTime.parse(dto.getDateLastModified());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_last_modified in annotation " + annotation.getUniqueId() + " - skipping");
+            }
+            annotation.setDateLastModified(dateLastModified);
+        }
+        
+        if (dto.getCreationDate() != null) {
+            OffsetDateTime creationDate;
+            try {
+                creationDate = OffsetDateTime.parse(dto.getCreationDate());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse creation_date in annotation " + annotation.getUniqueId() + " - skipping");
+            }
+            annotation.setCreationDate(creationDate);
+        }
+        
         if (dto.getModEntityId() != null) {
             annotation.setModEntityId(dto.getModEntityId());
         }
-        
+
         DOTerm disease = doTermDAO.find(dto.getObject());
         if (disease == null) {
             throw new ObjectValidationException(dto, "Annotation " + annotation.getUniqueId() + " has DOTerm " + disease + " not found in database - skipping");
@@ -183,8 +200,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             referenceDAO.persist(reference);
         }
         annotation.setSingleReference(reference);
-        
-                
+
         List<EcoTerm> ecoTerms = new ArrayList<>();
         for (String ecoCurie : dto.getEvidenceCodes()) {
             EcoTerm ecoTerm = ecoTermDAO.find(ecoCurie);
@@ -197,7 +213,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         
         if (dto.getNegated() != null)
             annotation.setNegated(dto.getNegated());
-        
+
         if (CollectionUtils.isNotEmpty(dto.getWith())) {
             List<Gene> withGenes = new ArrayList<>();
             for (String withCurie : dto.getWith()) {
@@ -215,21 +231,15 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         
         if (dto.getSecondaryDataProvider() != null)
             annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
-        
+
         if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
-            List<DiseaseQualifier> diseaseQualifiers = new ArrayList<>();
+            List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
             for (String qualifier : dto.getDiseaseQualifiers()) {
-                if (!qualifier.equals("susceptibility") &&
-                        !qualifier.equals("disease_progression") &&
-                        !qualifier.equals("severity") &&
-                        !qualifier.equals("onset") &&
-                        !qualifier.equals("sexual_dimorphism") &&
-                        !qualifier.equals("resistance") &&
-                        !qualifier.equals("penetrance")
-                        ) {
+                VocabularyTerm diseaseQualifier = vocabularyTermDAO.getTermInVocabulary(qualifier, VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+                if (diseaseQualifier == null) {
                     throw new ObjectValidationException(dto, "Invalid disease qualifier (" + qualifier + ") for " + annotation.getUniqueId() + " - skipping annotation");
                 }
-                diseaseQualifiers.add(DiseaseQualifier.valueOf(qualifier));
+                diseaseQualifiers.add(diseaseQualifier);
             }
             annotation.setDiseaseQualifiers(diseaseQualifiers);
         }
@@ -238,14 +248,13 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             if (dto.getDiseaseGeneticModifier() == null || dto.getDiseaseGeneticModifierRelation() == null) {
                 throw new ObjectValidationException(dto, "Genetic modifier specified without genetic modifier relation (or vice versa) for " + annotation.getUniqueId() + " - skipping annotation");
             }
-            if (!dto.getDiseaseGeneticModifierRelation().equals("ameliorated_by") &&
-                    !dto.getDiseaseGeneticModifierRelation().equals("not_ameliorated_by") &&
-                    !dto.getDiseaseGeneticModifierRelation().equals("exacerbated_by") &&
-                    !dto.getDiseaseGeneticModifierRelation().equals("not_exacerbated_by")
-                    ) {
+            
+            VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+            if (diseaseGeneticModifierRelation == null) {
                 throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
             }
-            annotation.setDiseaseGeneticModifierRelation(DiseaseGeneticModifierRelation.valueOf(dto.getDiseaseGeneticModifierRelation()));
+            annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+
             BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifier());
             if (diseaseGeneticModifier == null) {
                 throw new ObjectValidationException(dto, "Invalid biological entity (" + dto.getDiseaseGeneticModifier() + ") in 'disease_genetic_modifier' field in " + annotation.getUniqueId() + " - skipping annotation");
@@ -254,34 +263,26 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         }
         
         if (dto.getAnnotationType() != null) {
-            if (!dto.getAnnotationType().equals("manually_curated") &&
-                    !dto.getAnnotationType().equals("high-throughput") &&
-                    !dto.getAnnotationType().equals("computational")
-                    ) {
+            VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+            if (annotationType == null) {
                 throw new ObjectValidationException(dto, "Invalid annotation type (" + dto.getAnnotationType() + ") in " + annotation.getUniqueId() + " - skipping annotation");
-            }   
-            if (dto.getAnnotationType().equals("high-throughput")) {
-                annotation.setAnnotationType(AnnotationType.high_throughput);
             }
-            else {
-                annotation.setAnnotationType(AnnotationType.valueOf(dto.getAnnotationType()));
-            }
+            annotation.setAnnotationType(annotationType);
+
         }
         
         if (dto.getGeneticSex() != null) {
-            if (!dto.getGeneticSex().equals("male") &&
-                    !dto.getGeneticSex().equals("female") &&
-                    !dto.getGeneticSex().equals("hermaphrodite")
-                    ) {
+            VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
+            if (geneticSex == null) {
                 throw new ObjectValidationException(dto, "Invalid genetic sex (" + dto.getGeneticSex() + ") in " + annotation.getUniqueId() + " - skipping annotation");
             }
-            annotation.setGeneticSex(GeneticSex.valueOf(dto.getGeneticSex()));
+            annotation.setGeneticSex(geneticSex);
         }
         
         if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
             List<Note> notesToPersist = new ArrayList<>();
             for (NoteDTO noteDTO : dto.getRelatedNotes()) {
-                Note relatedNote = noteService.validateNoteDTO(noteDTO, "Disease annotation note types");
+                Note relatedNote = noteService.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
                 if (relatedNote == null)
                     throw new ObjectValidationException(dto, "Invalid note attached to disease annotation " + annotation.getUniqueId() + " - skipping annotation");
                 notesToPersist.add(relatedNote);
@@ -290,7 +291,14 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             annotation.setRelatedNotes(notesToPersist);
         }
         
-        
+        if (dto.getConditionRelations() != null) {
+            for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelations()) {
+                if (conditionRelationDTO.getHandle() != null) {
+                    if (!conditionRelationDTO.getSingleReference().equals(dto.getSingleReference()))
+                        throw new ObjectValidationException(dto, "Invalid Paper Handle: reference of annotation needs to be the same as the conditionRelationDto reference " + annotation.getUniqueId());
+                }
+            }
+        }    
 
         return annotation;
     }

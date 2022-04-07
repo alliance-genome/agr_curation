@@ -150,6 +150,7 @@ public class BulkLoadJobExecutor {
                 service = fbdvTermService;
             } else if(ontologyType == OntologyBulkLoadType.MMUSDV) {
                 config.getAltNameSpaces().add("mouse_developmental_stage");
+                config.getAltNameSpaces().add("mouse_stages_ontology");
                 service = mmusdvTermService;
             } else if(ontologyType == OntologyBulkLoadType.ZFS) {
                 service = zfsTermService;

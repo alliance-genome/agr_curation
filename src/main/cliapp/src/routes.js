@@ -14,6 +14,7 @@ import { AllelesPage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
 import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
+import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 
 import { FMSComponent } from './components/FMSComponent';
@@ -53,6 +54,7 @@ export default (
     <SecureRoute path="/genes" component={GenesPage} />
     <SecureRoute path="/alleles" component={AllelesPage} />
     <SecureRoute path="/molecules" component={MoleculesPage} />
+        <SecureRoute path="/references" component={ReferencePage} />
     <SecureRoute path="/vocabterms" component={ControlledVocabularyPage} />
     <SecureRoute path="/ontology/chebi" component={CHEBIOntologyComponent} />
     <SecureRoute path="/ontology/do" component={DiseaseOntologyComponent} />

@@ -1,15 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
-import { Button } from 'primereact/button';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+import { Tooltip } from 'primereact/tooltip';
 
 export const AllelesTable = () => {
   const defaultColumnNames = ["Curie", "Description", "Symbol", "Taxon"];
@@ -49,7 +52,6 @@ export const AllelesTable = () => {
     keepPreviousData: true
   })
 
-
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -86,22 +88,25 @@ export const AllelesTable = () => {
     setTableState(_tableState);
   };
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={(event) => setSelectedColumnNames(event.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
 
+  const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Alleles Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -114,12 +119,32 @@ export const AllelesTable = () => {
     />);
   }
 
+  const descriptionTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+          {rowData.description}
+        </EllipsisTableCell>
+        <Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.description} />
+      </>
+    );
+  }
+
   const symbolTemplate = (rowData) => {
-    return <div dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+    return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
   }
 
   const taxonTemplate = (rowData) => {
-    return <div>{rowData.taxon.curie}</div>;
+      if (rowData.taxon) {
+          return (
+              <>
+                  <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`}>
+                      {rowData.taxon.name} ({rowData.taxon.curie})
+                  </EllipsisTableCell>
+                  <Tooltip target={`.${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+              </>
+          );
+      }
   }
 
   const columns = [
@@ -135,6 +160,7 @@ export const AllelesTable = () => {
       header: "Description",
       sortable: isEnabled,
       filter: true,
+      body: descriptionTemplate,
       filterElement: filterComponentTemplate("descriptionFilter", ["description"])
     },
     {
@@ -146,14 +172,16 @@ export const AllelesTable = () => {
       filterElement: filterComponentTemplate("symbolFilter", ["symbol"])
     },
     {
-      field: "taxon.curie",
+      field: "taxon.name",
       header: "Taxon",
       body: taxonTemplate,
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie","taxon.name"])
     }
   ];
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
@@ -161,6 +189,9 @@ export const AllelesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}
@@ -168,8 +199,8 @@ export const AllelesTable = () => {
           sortable={isEnabled}
           filter={col.filter}
           showFilterMenu={false}
-          style={{whiteSpace: 'normal'}}
           filterElement={col.filterElement}
+          body={col.body}
         />;
       })
     );
@@ -189,23 +220,21 @@ export const AllelesTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
-        <h3>Alleles Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={alleles} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
+          ref={dataTable} scrollHeight="62vh" scrollable
+          tableClassName='w-12 p-datatable-md'
           filterDisplay="row"
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           onColReorder={colReorderHandler}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
           {columnMap}
         </DataTable>
       </div>
-    </div>
   )
 }
