@@ -95,6 +95,11 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "XAO", count: results.totalResults, link: '/#/ontology/xao' }]);
     });
     
+    
+    searchService.search('xaodsterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XAODs", count: results.totalResults, link: '/#/ontology/xaods' }]);
+    });
+    
     searchService.search('xcoterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XCO", count: results.totalResults, link: '/#/ontology/xco' }]);
     });

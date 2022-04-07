@@ -21,6 +21,7 @@ public enum OntologyBulkLoadType {
     MMUSDV(MmusDvTerm.class),
     ZFS(ZFSTerm.class),
     XAO(XAOTerm.class),
+    XAODS(XAODsTerm.class),
     XPO(XPOTerm.class),
     XBED(XBEDTerm.class),
     XSMO(XSMOTerm.class)
