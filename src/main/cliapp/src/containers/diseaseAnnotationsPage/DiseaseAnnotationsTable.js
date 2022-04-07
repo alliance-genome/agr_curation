@@ -56,10 +56,15 @@ export const DiseaseAnnotationsTable = () => {
   const [editingRows, setEditingRows] = useState({});
   const [columnList, setColumnList] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
-  const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
   const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
-  const [relatedNotes, setRelatedNotes] = useState(false);
   const [conditionRelations, setConditionRelations] = useState(false);
+  const [relatedNotesData, setRelatedNotesData] = useState({
+    relatedNotes: [],
+    isInEdit: false,
+    dialog: false,
+    rowIndex: null,
+    mainRowProps: {},
+  });
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
@@ -78,6 +83,7 @@ export const DiseaseAnnotationsTable = () => {
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
+  const relatedNotesRef = useRef([]);
 
   let diseaseAnnotationService = null;
 
@@ -169,9 +175,27 @@ export const DiseaseAnnotationsTable = () => {
     setTableState(_tableState);
   };
 
-  const handleRelatedNotesOpen = (event, rowData) => {
-    setRelatedNotes(rowData.relatedNotes);
-    setRelatedNotesDialog(true);
+  const handleRelatedNotesOpen = (event, rowData, isInEdit) => {//smash these two together?
+    let _relatedNotesData = {};
+    _relatedNotesData["relatedNotes"] = rowData.relatedNotes;
+    _relatedNotesData["dialog"] = true;
+    _relatedNotesData["isInEdit"] = isInEdit;
+    setRelatedNotesData(() => ({
+      ..._relatedNotesData
+    }));
+  };
+
+  const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+    let _relatedNotesData = {};
+    _relatedNotesData["relatedNotes"] = rowProps.rowData.relatedNotes;
+    _relatedNotesData["dialog"] = true;
+    _relatedNotesData["isInEdit"] = isInEdit;
+    _relatedNotesData["rowIndex"] = rowProps.rowIndex;
+    _relatedNotesData["mainRowProps"] = rowProps;
+    relatedNotesRef.current = global.structuredClone(rowProps.rowData.relatedNotes);
+    setRelatedNotesData(() => ({
+      ..._relatedNotesData
+    }));
   };
 
   const handleConditionRelationsOpen = (event, rowData) => {
@@ -234,7 +258,7 @@ export const DiseaseAnnotationsTable = () => {
   const relatedNotesTemplate = (rowData) => {
     return (
       <Button className="p-button-text"
-        onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
+        onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
         <span style={{ textDecoration: 'underline' }}>
           {`Notes(${rowData?.relatedNotes?.length})`}
         </span>
@@ -245,7 +269,7 @@ export const DiseaseAnnotationsTable = () => {
   const relatedNotesEditor = (props) => {
     return (
       <Button className="p-button-text"
-        onClick={(event) => { handleRelatedNotesOpen(event, props.rowData) }} >
+        onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
         <span style={{ textDecoration: 'underline' }}>
           {`Notes(${props.rowData.relatedNotes?.length}) `}        
           <i className="pi pi-user-edit" style={{'fontSize': '1em'}}></i>
@@ -299,7 +323,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
     }
-    let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
+    let updatedRow = global.structuredClone(event.data);//deep copy
     if (Object.keys(event.data.subject).length >= 1) {
       event.data.subject.curie = trimWhitespace(event.data.subject.curie);
       updatedRow.subject = {};
@@ -506,6 +530,7 @@ export const DiseaseAnnotationsTable = () => {
           options={negatedTerms}
           editorChange={onNegatedEditorValueChange}
           props={props}
+          field={"negated"}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
       </>
@@ -1102,9 +1127,9 @@ export const DiseaseAnnotationsTable = () => {
         </DataTable>
       </div>
       <RelatedNotesDialog
-        relatedNotes={relatedNotes}
-        relatedNotesDialog={relatedNotesDialog}
-        setRelatedNotesDialog={setRelatedNotesDialog}
+        relatedNotesData={relatedNotesData}
+        setRelatedNotesData={setRelatedNotesData}
+        relatedNotesRef={relatedNotesRef}
       />
       <ConditionRelationsDialog
         conditonRelations={conditionRelations}
