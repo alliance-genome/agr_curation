@@ -220,11 +220,18 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                                     for(String field: searchFilters.get(filterName).keySet()) {
                                         float value = (float)(100/Math.pow(10, boost));
                                         String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
-                                        if(op== null)
-                                            op = "AND";
+                                        if(op== null) op = "AND";
+                                        
+                                        String queryField = field;
+                                        
+                                        Boolean useKeywordFields = (Boolean)searchFilters.get(filterName).get(field).get("useKeywordFields");
+                                        if(useKeywordFields != null && useKeywordFields) {
+                                            queryField = field + "_keyword";
+                                        }
+                                        
                                         s.should(
                                             p.simpleQueryString()
-                                                .fields(field)
+                                                .fields(queryField)
                                                 .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
                                                 .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
                                                 .boost(value >=1 ? value : 1)
