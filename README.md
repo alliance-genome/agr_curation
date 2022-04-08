@@ -342,12 +342,26 @@ In order to promote changes from alpha to beta:
 4. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
    to deploy this code successfully to the beta environment.
 5. After prerelease creation and deployment, merge the beta branch back to alpha and push to github
-   ```bash
-   git pull
-   git checkout alpha
-   git merge beta
-   git push
-   ```
+   There are two ways you can do this:
+      * Merge locally and push the changes directly to github
+         ```bash
+         git pull
+         git checkout alpha
+         git merge beta
+         git push
+         ```
+      * Create a dedicated merging branch and open a PR in github to merge in
+         ```bash
+         git checkout beta
+         git pull
+         git checkout -b PRmerge/beta
+         git push origin PRmerge/beta
+         ```
+         Now create a PR in github to merge the `PRmerge/beta` branch into the `alpha` branch.
+         This dedicated merge branch is required when using github PRs, as Github's Pull Request merge strategy
+         is to merge the target branch (alpha) into the source branch (beta) first, before doing the opposite.
+         This must be prevented at all times, as we do not want code under active development to get
+         merged into the beta (release-candidate) branch.
 
 In order to promote changes from beta to production:
 
@@ -370,14 +384,29 @@ In order to promote changes from beta to production:
    ```
 5. Create a pull request to merge this release branch in production
 6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
-   to deploy this code successfully to the beta environment.
-7. After release creation and deployment, merge the production branch back to beta and push to github
-   ```bash
-   git pull
-   git checkout beta
-   git merge production
-   git push
-   ```
+   to deploy this code successfully to the production environment.
+7. After release creation and deployment, the production branch must be merged back to beta,
+   in order to make the release tag reachable from beta (and report the correct version number through `git describe`).
+   There are two ways you can do this:
+      * Merge locally and push the changes directly to github
+         ```bash
+         git checkout beta
+         git pull
+         git merge production
+         git push
+         ```
+      * Create a dedicated merging branch and open a PR in github to merge in
+         ```bash
+         git checkout production
+         git pull
+         git checkout -b PRmerge/production
+         git push origin PRmerge/production
+         ```
+         Now create a PR in github to merge the `PRmerge/production` branch into the `beta` branch.
+         This dedicated merge branch is required when using github PRs, as Github's Pull Request merge strategy
+         is to merge the target branch (beta) into the source branch (production) first, before doing the opposite.
+         This must be prevented at all times, as we do not want release candidate code still under evaluation to get
+         merged into the production branch.
 
 ### Deploying to beta or production
 In order to successfully deploy to the beta or production environment, as few additional steps need to be taken
