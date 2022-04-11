@@ -35,7 +35,7 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
     
     @PUT @Secured
     @Path("/")
-    @JsonView(View.FieldsAndLists.class)
+    @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> update(E entity);
 
     @DELETE @Secured
