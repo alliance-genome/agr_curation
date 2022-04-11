@@ -45,6 +45,7 @@ export const RelatedNotesDialog = ({
   }
 
   const hideDialog = () => {
+    setErrorMessages([]);
     setRelatedNotesData((relatedNotesData) => {
       return {
         ...relatedNotesData,
@@ -53,35 +54,46 @@ export const RelatedNotesDialog = ({
     });
   };
 
-  const validateNote = async (note) => {
-    return await validationService.validate('note', note);
+  const validateNotes = async (notes) => {
+    const validationResultsArray = [];
+    for (const note of notes) {
+      const result = await validationService.validate('note', note);
+      validationResultsArray.push(result);
+    }
+    return validationResultsArray;
   };
 
   const saveDataHandler = async () => {
-    const { isSuccess, isError, data } = await validateNote(relatedNotesRef.current[0]);
+    const resultsArray = await validateNotes(relatedNotesRef.current);
+    const errorMessagesCopy = [...errorMessages];
     let keepDialogOpen = false;
+    let anyErrors = false;
 
-    if (isError) {
-      const errorMessagesCopy = [...errorMessages]
-      errorMessagesCopy[0] = {};
-      Object.keys(data).forEach((field) => {
-        let messageObject = {
-          severity: "error",
-          message: data[field]
-        };
-        errorMessagesCopy[0][field] = messageObject;
-        setErrorMessages(errorMessagesCopy);
-        keepDialogOpen = true;
-      });
-    }
+    resultsArray.forEach((result, index) => {
+      const { isError, data } = result;
+      if (isError) {
+        errorMessagesCopy[index] = {};
+        Object.keys(data).forEach((field) => {
+          let messageObject = {
+            severity: "error",
+            message: data[field]
+          };
+          errorMessagesCopy[index][field] = messageObject;
+          setErrorMessages(errorMessagesCopy);
+          keepDialogOpen = true;
+          anyErrors = true;
+        });
+      }
+    });
 
-    if (isSuccess) {
+    if (!anyErrors) {
       setErrorMessages([]);
       mainRowProps.rowData.relatedNotes = relatedNotesRef.current;
       let updatedAnnotations = [...mainRowProps.props.value];
       updatedAnnotations[rowIndex].relatedNotes = relatedNotesRef.current;
       keepDialogOpen = false;
     };
+
     setRelatedNotesData((relatedNotesData) => {
       return {
         ...relatedNotesData,
@@ -131,7 +143,7 @@ export const RelatedNotesDialog = ({
           options={noteTypeTerms}
           editorChange={onNoteTypeEditorValueChange}
           props={props}
-          showClear={true}
+          showClear={false}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
       </>
@@ -155,7 +167,7 @@ export const RelatedNotesDialog = ({
     );
   };
 
-  const footerTemplate = (name) => {
+  const footerTemplate = () => {
     if (!isInEdit) {
       return null;
     };
@@ -169,7 +181,7 @@ export const RelatedNotesDialog = ({
 
   return (
     <Dialog visible={dialog} className='w-6' modal onHide={hideDialog}
-      closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate}>
+      closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
       <h3>Related Notes</h3>
       <DataTable value={relatedNotes} dataKey="id" showGridlines editMode='row'
         editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}

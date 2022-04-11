@@ -175,7 +175,7 @@ export const DiseaseAnnotationsTable = () => {
     setTableState(_tableState);
   };
 
-  const handleRelatedNotesOpen = (event, rowData, isInEdit) => {//smash these two together?
+  const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
     let _relatedNotesData = {};
     _relatedNotesData["relatedNotes"] = rowData.relatedNotes;
     _relatedNotesData["dialog"] = true;
@@ -256,26 +256,30 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const relatedNotesTemplate = (rowData) => {
-    return (
-      <Button className="p-button-text"
-        onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
-        <span style={{ textDecoration: 'underline' }}>
-          {`Notes(${rowData?.relatedNotes?.length})`}
-        </span>
-      </Button>
-    )
+    if (rowData?.relatedNotes) {
+      return (
+        <Button className="p-button-text"
+          onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
+          <span style={{ textDecoration: 'underline' }}>
+            {`Notes(${rowData.relatedNotes.length})`}
+          </span>
+        </Button>
+      )
+    }
   };
 
   const relatedNotesEditor = (props) => {
-    return (
-      <Button className="p-button-text"
-        onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
-        <span style={{ textDecoration: 'underline' }}>
-          {`Notes(${props.rowData.relatedNotes?.length}) `}        
-          <i className="pi pi-user-edit" style={{'fontSize': '1em'}}></i>
-        </span>
-      </Button>
-    )
+    if (props?.rowData?.relatedNotes) {
+      return (
+        <Button className="p-button-text"
+          onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+          <span style={{ textDecoration: 'underline' }}>
+            {`Notes(${props.rowData.relatedNotes.length}) `}
+            <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+          </span>
+        </Button>
+      )
+    }
   }; 
 
   const conditionRelationsTemplate = (rowData) => {
