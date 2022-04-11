@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
@@ -63,7 +64,55 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
                 conditionRelationDAO.persist(conditionRelation);
             }
         }
-        return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
+        ObjectResponse<GeneDiseaseAnnotation> response =
+                new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
+        if (response.getEntity().getObject().getCrossReferences() != null)
+            response.getEntity().getObject().getCrossReferences().size();
+        if (response.getEntity().getSubject().getTaxon().getSubsets() != null)
+            response.getEntity().getSubject().getTaxon().getSubsets().size();
+        if (response.getEntity().getSubject().getTaxon().getCrossReferences() != null)
+            response.getEntity().getSubject().getTaxon().getCrossReferences().size();
+        if (response.getEntity().getSubject().getTaxon().getSecondaryIdentifiers() != null)
+            response.getEntity().getSubject().getTaxon().getSecondaryIdentifiers().size();
+        if (response.getEntity().getSubject().getTaxon().getSynonyms() != null)
+            response.getEntity().getSubject().getTaxon().getSynonyms().size();
+        if (response.getEntity().getSubject().getSynonyms() != null)
+            response.getEntity().getSubject().getSynonyms().size();
+        if (response.getEntity().getSubject().getCrossReferences() != null)
+            response.getEntity().getSubject().getCrossReferences().size();
+        for (EcoTerm ecoTerm : response.getEntity().getEvidenceCodes()) {
+            if (ecoTerm.getCrossReferences() != null)
+                ecoTerm.getCrossReferences().size();    
+        }
+        for (Gene gene : response.getEntity().getWith()) {
+            if (gene.getTaxon().getSubsets() != null)
+                gene.getTaxon().getSubsets().size();
+            if (gene.getTaxon().getCrossReferences() != null)
+                gene.getTaxon().getCrossReferences().size();
+            if (gene.getTaxon().getSecondaryIdentifiers() != null)
+                gene.getTaxon().getSecondaryIdentifiers().size();
+            if (gene.getTaxon().getSynonyms() != null)
+                gene.getTaxon().getSynonyms().size();
+            if (gene.getSynonyms() != null)
+                gene.getSynonyms().size();
+            if (gene.getCrossReferences() != null)
+                gene.getCrossReferences().size();
+        }
+        if (response.getEntity().getSgdStrainBackground() != null) {
+            if (response.getEntity().getSgdStrainBackground().getTaxon().getSubsets() != null)
+                response.getEntity().getSgdStrainBackground().getTaxon().getSubsets().size();
+            if (response.getEntity().getSgdStrainBackground().getTaxon().getCrossReferences() != null)
+                response.getEntity().getSgdStrainBackground().getTaxon().getCrossReferences().size();
+            if (response.getEntity().getSgdStrainBackground().getTaxon().getSecondaryIdentifiers() != null)
+                response.getEntity().getSgdStrainBackground().getTaxon().getSecondaryIdentifiers().size();
+            if (response.getEntity().getSgdStrainBackground().getTaxon().getSynonyms() != null)
+                response.getEntity().getSgdStrainBackground().getTaxon().getSynonyms().size();
+            if (response.getEntity().getSgdStrainBackground().getSynonyms() != null)
+                response.getEntity().getSgdStrainBackground().getSynonyms().size();
+            if (response.getEntity().getSgdStrainBackground().getCrossReferences() != null)
+                response.getEntity().getSgdStrainBackground().getCrossReferences().size();
+        }
+        return response;
     }
 
     @Transactional

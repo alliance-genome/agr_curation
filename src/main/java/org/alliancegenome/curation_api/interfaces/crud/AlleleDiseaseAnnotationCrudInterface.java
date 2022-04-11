@@ -9,6 +9,7 @@ import javax.ws.rs.core.MediaType;
 import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -22,6 +23,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AlleleDiseaseAnnotation> {
 
+    @Override
+    @PUT @Secured
+    @Path("/")
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
+    
     @GET
     @Path("/findBy/{uniqueId}")
     @JsonView(View.FieldsAndLists.class)

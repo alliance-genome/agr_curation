@@ -22,6 +22,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<GeneDiseaseAnnotation> {
 
+    @Override
+    @PUT @Secured
+    @Path("/")
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
+    
     @GET
     @Path("/findBy/{uniqueId}")
     @JsonView(View.FieldsAndLists.class)
