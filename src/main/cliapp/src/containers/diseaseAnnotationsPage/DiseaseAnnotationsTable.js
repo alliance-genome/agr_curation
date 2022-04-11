@@ -798,10 +798,11 @@ export const DiseaseAnnotationsTable = () => {
     />);
   }
 
-  const FilterMultiSelectComponentTemplate = (filterName, field) => {
+  const FilterMultiSelectComponentTemplate = (filterName, field, useKeywordFields = false) => {
     return (<FilterMultiSelectComponent
       isEnabled={isEnabled}
       field={field}
+      useKeywordFields={useKeywordFields}
       filterName={filterName}
       currentFilters={tableState.filters}
       onFilter={onFilter}
@@ -954,7 +955,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Genetic Modifier Relation",
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("geneticModifierRelationFilter", "diseaseGeneticModifierRelation.name"),
+    filterElement: FilterMultiSelectComponentTemplate("geneticModifierRelationFilter", "diseaseGeneticModifierRelation.name", true),
     editor: (props) => geneticModifierRelationEditor(props)
   },
   {
