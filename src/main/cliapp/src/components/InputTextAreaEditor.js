@@ -5,7 +5,6 @@ export const InputTextAreaEditor = ({ rowProps, setRelatedNotesData, relatedNote
   const [fieldValue, setFieldValue] = useState(rowProps.rowData[fieldName] ? rowProps.rowData[fieldName] : '');
 
   const onChange = (event) => {
-    // rowProps.editorCallback(event.target.value);
     relatedNotesRef.current[rowProps.rowIndex].freeText = event.target.value;
     setFieldValue(event.value);
   }

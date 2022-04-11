@@ -1131,6 +1131,7 @@ export const DiseaseAnnotationsTable = () => {
         relatedNotesData={relatedNotesData}
         setRelatedNotesData={setRelatedNotesData}
         relatedNotesRef={relatedNotesRef}
+        authState={authState}
       />
       <ConditionRelationsDialog
         conditonRelations={conditionRelations}
