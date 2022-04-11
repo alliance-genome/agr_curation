@@ -553,6 +553,7 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='biologicalentity'
           filterName='geneticModifierFilter'
           fieldName='diseaseGeneticModifier'
+          isSubject={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
