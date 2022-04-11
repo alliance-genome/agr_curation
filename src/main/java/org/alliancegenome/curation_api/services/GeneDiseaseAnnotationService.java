@@ -9,7 +9,6 @@ import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
@@ -28,10 +27,18 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
     GeneDAO geneDAO;
     
     @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
+    @Inject
     GeneDiseaseAnnotationValidator geneDiseaseValidator;
 
     @Inject
     DiseaseAnnotationService diseaseAnnotationService;
+    
+    @Inject
+    AffectedGenomicModelDAO affectedGenomicModelDAO;
+    
+    private String GENE_DISEASE_RELATION_VOCABULARY = "Gene disease relations";
     
     @Override
     @PostConstruct
@@ -46,6 +53,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
         return new ObjectResponse<GeneDiseaseAnnotation>(geneDiseaseAnnotationDAO.persist(dbEntity));
     }
 
+    @Transactional
     public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         GeneDiseaseAnnotation annotation = validateGeneDiseaseAnnotationDTO(dto);
 
@@ -67,7 +75,7 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
             throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
-        String annotationId = dto.getModId();
+        String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto);
         }
@@ -80,13 +88,25 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
             annotation = annotationList.getResults().get(0);
         }
         
+        if (dto.getSgdStrainBackground() != null) {
+            if (!dto.getSgdStrainBackground().startsWith("SGD:")) {
+                throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+            if (sgdStrainBackground == null) {
+                throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
+            }
+            annotation.setSgdStrainBackground(sgdStrainBackground);
+        }
+        
         annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         if (annotation == null) return null;
         
-        if (!dto.getDiseaseRelation().equals("is_implicated_in") && !dto.getDiseaseRelation().equals("is_marker_for")) {
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), GENE_DISEASE_RELATION_VOCABULARY);
+        if (diseaseRelation == null) {
             throw new ObjectValidationException(dto, "Invalid gene disease relation for " + annotationId + " - skipping");
         }
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
+        annotation.setDiseaseRelation(diseaseRelation);
         
         return annotation;
     }

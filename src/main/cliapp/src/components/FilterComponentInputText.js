@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 
 export function FilterComponentInputText({ isEnabled, fields, filterName, currentFilters, onFilter, tokenOperator="AND" }) {

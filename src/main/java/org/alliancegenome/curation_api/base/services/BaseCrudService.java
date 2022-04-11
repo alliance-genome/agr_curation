@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.dao.*;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
@@ -15,7 +16,7 @@ import org.alliancegenome.curation_api.response.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public abstract class BaseCrudService<E extends BaseEntity, D extends BaseDAO<E>> {
+public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntityDAO<E>> {
     
     protected BaseSQLDAO<E> dao;
 

@@ -6,14 +6,15 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
 import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalConditionValidator;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -38,6 +39,8 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     GoTermDAO goTermDAO;
     @Inject
     ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+    @Inject
+    ExperimentalConditionSummary experimentalConditionSummary;
     
     @Override
     @PostConstruct
@@ -53,7 +56,16 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
     }
     
     public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {
-        ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+        String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dto);
+
+        ExperimentalCondition experimentalCondition;
+        SearchResponse<ExperimentalCondition> searchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
+        if (searchResponse == null || searchResponse.getSingleResult() == null) {
+            experimentalCondition = new ExperimentalCondition();
+            experimentalCondition.setUniqueId(uniqueId);
+        } else {
+            experimentalCondition = searchResponse.getSingleResult();
+        }
         
         if (dto.getConditionChemical() != null) {
             ChemicalTerm term = chemicalTermDAO.find(dto.getConditionChemical());
@@ -71,7 +83,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         if (dto.getConditionClass() != null) {
             ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
-            if (term == null) {
+            if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
                 throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
             }
             experimentalCondition.setConditionClass(term);
@@ -106,14 +118,18 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
         }
         if (dto.getConditionQuantity() != null)
             experimentalCondition.setConditionQuantity(dto.getConditionQuantity());
+        if (dto.getConditionFreeText() != null)
+            experimentalCondition.setConditionFreeText(dto.getConditionFreeText());
         if (dto.getConditionStatement() == null) {
             throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
         
-        experimentalCondition.setUniqueId(DiseaseAnnotationCurie.getExperimentalConditionCurie(dto));
+        String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
+        experimentalCondition.setConditionSummary(conditionSummary);
         
-        return experimentalCondition;
+        return experimentalConditionDAO.persist(experimentalCondition);
+    
     }
     
 }

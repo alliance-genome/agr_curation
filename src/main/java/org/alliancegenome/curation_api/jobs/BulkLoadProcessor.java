@@ -141,6 +141,11 @@ public class BulkLoadProcessor {
             if(load.getStatus() == BulkLoadStatus.SCHEDULED_RUNNING) {
                 bulkLoadFile.setStatus(BulkLoadStatus.SCHEDULED_PENDING);
             }
+            if(load.getStatus() == BulkLoadStatus.MANUAL_RUNNING) {
+                bulkLoadFile.setStatus(BulkLoadStatus.MANUAL_PENDING);
+            }
+            
+            log.info(load.getStatus());
             
             bulkLoadFile.setLocalFilePath(localFilePath);
             bulkLoadFileDAO.persist(bulkLoadFile);

@@ -1,15 +1,18 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
-import { Button } from 'primereact/button';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from 'primereact/messages';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
 import { MultiSelect } from 'primereact/multiselect';
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const MoleculesTable = () => {
   const defaultColumnNames = ["Curie", "Name", "InChi", "InChiKey", "IUPAC", "Formula", "SMILES"];
@@ -49,7 +52,6 @@ export const MoleculesTable = () => {
     keepPreviousData: true
   });
 
-
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -86,21 +88,25 @@ export const MoleculesTable = () => {
     setTableState(_tableState);
   };
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {"Molecules Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -111,6 +117,33 @@ export const MoleculesTable = () => {
       currentFilters={tableState.filters}
       onFilter={onFilter}
     />);
+  };
+
+  const inChiBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`a${rowData.curie.replaceAll(':', '')}`}>{rowData.inchi}</EllipsisTableCell>
+        <Tooltip target={`.a${rowData.curie.replaceAll(':', '')}`} content={rowData.inchi} />
+      </>
+    )
+  };
+
+  const iupacBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`b${rowData.curie.replaceAll(':', '')}`}>{rowData.iupac}</EllipsisTableCell>
+        <Tooltip target={`.b${rowData.curie.replaceAll(':', '')}`} content={rowData.iupac} />
+      </>
+    )
+  };
+
+  const smilesBodyTemplate = (rowData) => {
+    return (
+      <>
+        <EllipsisTableCell otherClasses={`c${rowData.curie.replaceAll(':', '')}`}>{rowData.smiles}</EllipsisTableCell>
+        <Tooltip target={`.c${rowData.curie.replaceAll(':', '')}`} content={rowData.smiles} style={{ width: '450px', maxWidth: '450px' }} />
+      </>
+    )
   };
 
   const columns = [
@@ -133,20 +166,22 @@ export const MoleculesTable = () => {
       header: "InChi",
       sortable: isEnabled,
       filter: true,
+      body: inChiBodyTemplate,
       filterElement: filterComponentTemplate("inchiFilter", ["inchi"])
     },
     {
-      field: "inchi_key",
+      field: "inchiKey",
       header: "InChiKey",
       sortable: isEnabled,
       filter: true,
-      filterElement: filterComponentTemplate("inchi_keyFilter", ["inchi_key"])
+      filterElement: filterComponentTemplate("inchiKeyFilter", ["inchiKey"])
     },
     {
       field: "iupac",
       header: "IUPAC",
       sortable: isEnabled,
       filter: true,
+      body: iupacBodyTemplate,
       filterElement: filterComponentTemplate("iupacFilter", ["iupac"]),
     },
     {
@@ -161,10 +196,13 @@ export const MoleculesTable = () => {
       header: "SMILES",
       sortable: isEnabled,
       filter: true,
+      body: smilesBodyTemplate,
       filterElement: filterComponentTemplate("smilesFilter", ["smiles"])
     }
 
   ];
+
+  useSetDefaultColumnOrder(columns, dataTable);
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
@@ -172,14 +210,18 @@ export const MoleculesTable = () => {
     setColumnMap(
       orderedColumns.map((col) => {
         return <Column
+          style={{ width: `${100 / orderedColumns.length}%` }}
+          className='overflow-hidden text-overflow-ellipsis'
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}
           header={col.header}
           sortable={isEnabled}
           filter={col.filter}
+          showFilterMenu={false}
           filterElement={col.filterElement}
-          style={col.style}
+          body={col.body}
         />;
       })
     );
@@ -199,23 +241,21 @@ export const MoleculesTable = () => {
   };
 
   return (
-    <div>
       <div className="card">
-        <h3>Molecules Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={molecules} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
+          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines
         >
           {columnMap}
         </DataTable>
       </div>
-    </div>
   )
 }

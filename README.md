@@ -30,7 +30,7 @@ These instructions will get you a copy of the project and the API up and running
 -  [Submitting Data](#submitting-data)
 
 ## Developing
-Before starting coding for a new feature or making a bugfix,
+Before you start coding for a new feature or making a bugfix,
 it is important to know the intended goal of your code:
 *  Developing fixes, new features and major changes to be released in some future release (standard)
    => Must be developed and tested on alpha
@@ -597,3 +597,4 @@ Current maintainers:
 *  [Mark Quinton-Tulloch](https://github.com/markquintontulloch)
 *  [Manuel Luypaert](https://github.com/mluypaert)
 *  [Olin Blodgett](https://github.com/oblodgett)
+

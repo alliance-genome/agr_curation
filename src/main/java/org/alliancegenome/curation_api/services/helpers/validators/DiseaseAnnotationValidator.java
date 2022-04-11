@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.time.OffsetDateTime;
 import java.util.*;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -12,20 +14,32 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 public class DiseaseAnnotationValidator {
 
     @Inject
     EcoTermDAO ecoTermDAO;
     @Inject
-    ReferenceDAO referenceDAO;
-    @Inject
     DoTermDAO doTermDAO;
     @Inject
     GeneDAO geneDAO;
+    @Inject
+    BiologicalEntityDAO biologicalEntityDAO;
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
+    @Inject
+    @AuthenticatedUser
+    protected Person authenticatedPerson;
+    
+    private String DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY = "Disease genetic modifier relations";
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
     protected String requiredMessage = "Required field is empty";
+    protected String dependencyMessagePrefix = "Invalid without value for ";
     
     protected ObjectResponse<DiseaseAnnotation > response;
     
@@ -73,7 +87,7 @@ public class DiseaseAnnotationValidator {
     }
     
     
-    public List<Gene> validateWith(DiseaseAnnotation  uiEntity, DiseaseAnnotation  dbEntity) {
+    public List<Gene> validateWith(DiseaseAnnotation  uiEntity) {
         List<Gene> validWithGenes = new ArrayList<Gene>();
         
         if (CollectionUtils.isNotEmpty(uiEntity.getWith())) {
@@ -90,6 +104,118 @@ public class DiseaseAnnotationValidator {
         }
         
         return validWithGenes;
+    }
+    
+    public String validateDataProvider(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
+        String dataProvider = uiEntity.getDataProvider();
+        if (dataProvider == null) {
+            // addMessageResponse("dataProvider", requiredMessage);
+            return null;
+        }
+        
+        return dataProvider;
+    }
+    
+    public String validateCreatedBy(DiseaseAnnotation uiEntity) {
+        // TODO: re-enable error response once field can be added in UI
+        String createdBy = uiEntity.getCreatedBy();
+        if (createdBy == null) {
+            // addMessageResponse("createdBy", requiredMessage);
+            return null;
+        }
+        
+        return createdBy;
+    }
+    
+    public BiologicalEntity validateDiseaseGeneticModifier(DiseaseAnnotation uiEntity) {
+        if (uiEntity.getDiseaseGeneticModifier() == null) {
+            return null;
+        }
+
+        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+            addMessageResponse("diseaseGeneticModifier", dependencyMessagePrefix + "diseaseGeneticModifierRelation");
+            return null;
+        }
+        
+        BiologicalEntity modifier = biologicalEntityDAO.find(uiEntity.getDiseaseGeneticModifier().getCurie());
+        if (modifier == null) {
+            addMessageResponse("diseaseGeneticModifier", invalidMessage);
+            return null;
+        }
+        
+        return modifier;
+    }
+    
+    public VocabularyTerm validateDiseaseGeneticModifierRelation(DiseaseAnnotation uiEntity) {
+        if (uiEntity.getDiseaseGeneticModifierRelation() == null) {
+            return null;
+        }
+        
+        if (uiEntity.getDiseaseGeneticModifier() == null) {
+            addMessageResponse("diseaseGeneticModifierRelation", dependencyMessagePrefix + "diseaseGeneticModifier");
+            return null;
+        }
+        
+        return uiEntity.getDiseaseGeneticModifierRelation();
+    }
+    
+    public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+        
+        if (uiEntity.getModEntityId() != null)
+            dbEntity.setModEntityId(uiEntity.getModEntityId());
+
+        DOTerm term = validateObject(uiEntity, dbEntity);
+        if(term != null) dbEntity.setObject(term);
+
+        List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
+        if(terms != null) dbEntity.setEvidenceCodes(terms);
+
+        List<Gene> genes = validateWith(uiEntity);
+        if(genes != null) dbEntity.setWith(genes);
+
+        if(uiEntity.getNegated() != null) {
+            dbEntity.setNegated(uiEntity.getNegated());
+        }else{
+            dbEntity.setNegated(false);
+        }
+        
+        if (uiEntity.getAnnotationType() != null)
+            dbEntity.setAnnotationType(uiEntity.getAnnotationType());
+
+        if (uiEntity.getGeneticSex() != null)
+            dbEntity.setGeneticSex(uiEntity.getGeneticSex());
+
+        String dataProvider = validateDataProvider(uiEntity);
+        if (dataProvider != null) dbEntity.setDataProvider(dataProvider);
+
+        String createdBy = validateCreatedBy(uiEntity);
+        if (createdBy != null) dbEntity.setCreatedBy(createdBy);
+
+        if (uiEntity.getCreationDate() != null)
+            dbEntity.setCreationDate(uiEntity.getCreationDate());
+        
+        dbEntity.setDateLastModified(OffsetDateTime.now());
+        dbEntity.setModifiedBy(authenticatedPerson.getFirstName() + " " + authenticatedPerson.getLastName());
+        
+        if (uiEntity.getSecondaryDataProvider() != null)
+            dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
+    
+        BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
+        VocabularyTerm dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
+        if (diseaseGeneticModifier != null && dgmRelation != null) {
+            dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
+            dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
+        }
+        
+        if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
+            dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
+        
+        // TODO: Add validation of reference
+        if (uiEntity.getSingleReference() != null)
+            dbEntity.setSingleReference(uiEntity.getSingleReference());
+        
+        return dbEntity;
     }
     
     protected void addMessageResponse(String message) {

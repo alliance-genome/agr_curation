@@ -9,6 +9,10 @@ public class CurieGeneratorHelper extends ArrayList<String> {
     public String getCurie() {
         return StringUtils.join(this, "|");
     }
+    
+    public String getSummary() {
+        return StringUtils.join(this, ":");
+    }
 
     @Override
     public boolean add(String s) {

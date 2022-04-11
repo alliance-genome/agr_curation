@@ -38,6 +38,10 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Molecules", count: results.totalResults, link: '/#/molecules' }]);
     });
 
+    searchService.search("literature-reference", 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Literature References", count: results.totalResults, link: '/#/references' }]);
+    });
+
     // Term Counts
     searchService.search('chebiterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults, link: '/#/ontology/chebi' }]);
@@ -94,6 +98,22 @@ export const Dashboard = () => {
     searchService.search('ncbitaxonterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "NCBITaxon", count: results.totalResults, link: '/#/ontology/ncbitaxon' }]);
     });
+
+    searchService.search('wblsterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "WBls", count: results.totalResults, link: '/#/ontology/wbls' }]);
+    });
+
+    searchService.search('fbdvterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "FBdv", count: results.totalResults, link: '/#/ontology/fbdv' }]);
+    });
+
+    searchService.search('mmusdvterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "MmusDv", count: results.totalResults, link: '/#/ontology/mmusdv' }]);
+    });
+
+    searchService.search('zfsterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "ZFS", count: results.totalResults, link: '/#/ontology/zfs' }]);
+    });
   }, []);
 
   const nameHyperlinkTemplate = (rowData) => {
@@ -102,17 +122,17 @@ export const Dashboard = () => {
 
   return (
 
-    <div className="p-grid p-nested dashboard">
+    <div className="grid nested dashboard">
 
-      <div className="p-col-3">
-        <DataTable value={entityCounts}>
+      <div className="col-3">
+        <DataTable value={entityCounts} sortField="name" sortOrder={1}>
           <Column field="name" header="Entity Name" body={nameHyperlinkTemplate}/>
           <Column field="count" header="Entity Count" />
         </DataTable>
       </div>
 
-      <div className="p-col-3">
-        <DataTable value={termCounts}>
+      <div className="col-3">
+        <DataTable value={termCounts} sortField="name" sortOrder={1}>
           <Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
           <Column field="count" header="Term Count" />
         </DataTable>

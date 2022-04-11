@@ -2,13 +2,13 @@ package org.alliancegenome.curation_api.base.controllers;
 
 import java.util.Map;
 
-import org.alliancegenome.curation_api.base.dao.BaseDAO;
+import org.alliancegenome.curation_api.base.dao.BaseEntityDAO;
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.helpers.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
-public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseDAO<E>> extends BaseCrudController<S, E, BaseDAO<E>> {
+public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseCrudController<S, E, BaseEntityDAO<E>> {
 
     private GenericOntologyLoadHelper<E> loader;
 
