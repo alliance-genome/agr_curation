@@ -313,8 +313,7 @@ export const DiseaseAnnotationsTable = () => {
       onSuccess: (data) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
         let annotations = [...diseaseAnnotations];
-        annotations[event.index].subject = data.data.entity.subject;
-        annotations[event.index].object = data.data.entity.object;
+        annotations[event.index] = data.data.entity;
         setDiseaseAnnotations(annotations);
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
@@ -1089,7 +1088,7 @@ export const DiseaseAnnotationsTable = () => {
         >
 
           {columnList}
-          <Column field='rowEditor' rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }} alignFrozen='right' frozen={true} />
+          <Column field='rowEditor' rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }} />
 
         </DataTable>
       </div>

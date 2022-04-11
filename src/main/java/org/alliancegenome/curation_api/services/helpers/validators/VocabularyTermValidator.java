@@ -56,7 +56,7 @@ public class VocabularyTermValidator {
             dbEntity.setObsolete(uiEntity.getObsolete());
         }
         
-        Vocabulary vocabulary = validateVocabulary(uiEntity);
+        Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
         dbEntity.setVocabulary(vocabulary);
         
         if (CollectionUtils.isNotEmpty(uiEntity.getTextSynonyms()))
@@ -80,7 +80,7 @@ public class VocabularyTermValidator {
         return uiEntity.getName();
     }
     
-    public Vocabulary validateVocabulary(VocabularyTerm uiEntity) {
+    public Vocabulary validateVocabulary(VocabularyTerm uiEntity, VocabularyTerm dbEntity) {
         String field = "vocabulary";
         if (uiEntity.getVocabulary() == null) {
             addMessageResponse(field, requiredMessage);
@@ -93,7 +93,7 @@ public class VocabularyTermValidator {
         }
         
         Vocabulary vocabulary = vocabularyResponse.getSingleResult();
-        if (vocabulary.getObsolete()) {
+        if (vocabulary.getObsolete() && !vocabulary.getName().equals(dbEntity.getVocabulary().getName())) {
             addMessageResponse(field, obsoleteMessage);
             return null;
         }

@@ -19,7 +19,7 @@ import lombok.*;
 @Data
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"bulkLoadFileHistory"}, callSuper = true)
+@ToString(exclude = {"bulkLoadFileHistory", "exception"}, callSuper = true)
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 public class BulkLoadFileException extends BaseGeneratedEntity {
     
