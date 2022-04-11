@@ -91,11 +91,6 @@ export const RelatedNotesDialog = ({
     );
   };
 
-  /* const undoHandler = (event, rowData) => {
-    console.log(event);
-    console.log(rowData);
-  }
- */
   const internalTemplate = (rowData) => {
     return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
   };
@@ -103,17 +98,6 @@ export const RelatedNotesDialog = ({
   const textTemplate = (rowData) => {
     return <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
   };
-
-  /* const undoTemplate = (rowData) => {
-    return (
-      <Button className="p-button-text"
-        onClick={(event) => { undoHandler(event, rowData) }} >
-        <span style={{ textDecoration: 'underline' }}>
-          {'Undo'}
-        </span>
-      </Button>
-    )
-  }; */
 
 
   const onInternalEditorValueChange = (props, event) => {
@@ -202,6 +186,3 @@ export const RelatedNotesDialog = ({
     </Dialog>
   );
 };
-/* {isInEdit &&
-  <Column rowEditor body={undoTemplate} />
-} */
