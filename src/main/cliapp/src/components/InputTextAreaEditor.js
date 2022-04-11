@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState } from 'react';
 import { InputTextarea } from "primereact/inputtextarea"
 
 export const InputTextAreaEditor = ({ rowProps, setRelatedNotesData, relatedNotesRef, fieldName }) => {
