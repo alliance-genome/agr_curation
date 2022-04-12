@@ -36,10 +36,8 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
             AlleleMetaDataFmsDTO alleleData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), AlleleMetaDataFmsDTO.class);
             bulkLoadFile.setRecordCount(alleleData.getData().size());
             bulkLoadFileDAO.merge(bulkLoadFile);
-            BulkFMSLoad fms = (BulkFMSLoad)bulkLoadFile.getBulkLoad();
-            String taxonId = BackendBulkDataType.valueOf(fms.getDataSubType()).getTaxonId();
             
-            trackHistory(runLoad(taxonId, alleleData), bulkLoadFile);
+            trackHistory(runLoad(alleleData), bulkLoadFile);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -47,11 +45,18 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
     }
     
     // Gets called from the API directly
-    public APIResponse runLoad(String taxonID, AlleleMetaDataFmsDTO alleleData) {
-        List<String> annotationsIdsBefore = new ArrayList<String>();
-        annotationsIdsBefore.addAll(alleleDAO.findAllAnnotationIds(taxonID));
+    public APIResponse runLoad(AlleleMetaDataFmsDTO alleleData) {
+        List<String> taxonIDs = alleleData.getData().stream()
+                                 .map( alleleDTO -> alleleDTO.getTaxonId() ).distinct().collect( Collectors.toList() );
 
-        log.debug("runLoad: Before: " + taxonID + " " + annotationsIdsBefore.size());
+        List<String> annotationsIdsBefore = new ArrayList<String>();
+        for(String taxonID: taxonIDs) {
+            List<String> annotationIds = alleleDAO.findAllAnnotationIds(taxonID);
+            log.debug("runLoad: Before: taxonID " + taxonID + " " + annotationIds.size());
+            annotationsIdsBefore.addAll(annotationIds);
+        }
+
+        log.debug("runLoad: Before: total " + annotationsIdsBefore.size());
         List<String> annotationsIdsLoaded = new ArrayList<>();
         
         BulkLoadFileHistory history = new BulkLoadFileHistory(alleleData.getData().size());
@@ -74,13 +79,13 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
         }
         ph.finishProcess();
 
-        log.debug("runLoad: Loaded: " + taxonID + " " + annotationsIdsLoaded.size());
+        log.debug("runLoad: Loaded: " + taxonIDs.toString() + " " + annotationsIdsLoaded.size());
 
         List<String> distinctLoaded = annotationsIdsLoaded.stream().distinct().collect(Collectors.toList());
-        log.debug("runLoad: Distinct loaded: " + taxonID + " " + distinctLoaded.size());
+        log.debug("runLoad: Distinct loaded: " + taxonIDs.toString() + " " + distinctLoaded.size());
 
         List<String> curiesToRemove = ListUtils.subtract(annotationsIdsBefore, distinctLoaded);
-        log.debug("runLoad: Remove: " + taxonID + " " + curiesToRemove.size());
+        log.debug("runLoad: Remove: " + taxonIDs.toString() + " " + curiesToRemove.size());
         
         for (String curie : curiesToRemove) {
             SearchResponse<Allele> allele = alleleDAO.findByField("curie", curie);

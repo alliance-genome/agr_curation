@@ -27,8 +27,8 @@ public class AlleleCrudController extends BaseCrudController<AlleleService, Alle
     }
 
     @Override
-    public APIResponse updateAlleles(String taxonID, AlleleMetaDataFmsDTO alleleData) {
-        return alleleFmsExecutor.runLoad(taxonID, alleleData);
+    public APIResponse updateAlleles(AlleleMetaDataFmsDTO alleleData) {
+        return alleleFmsExecutor.runLoad(alleleData);
     }
 
 }
