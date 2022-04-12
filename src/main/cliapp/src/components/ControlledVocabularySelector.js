@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import { Dropdown } from "primereact/dropdown"
 
 export function ControlledVocabularyDropdown({ field, options, editorChange, props, showClear, placeholderText}) {

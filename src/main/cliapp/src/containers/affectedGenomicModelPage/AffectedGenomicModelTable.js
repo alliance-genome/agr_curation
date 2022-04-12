@@ -10,6 +10,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 
 export const AffectedGenomicModelTable = () => {
   const defaultColumnNames = ["Curie", "Name", "Sub Type", "Parental Population", "Taxon"];
@@ -40,7 +41,7 @@ export const AffectedGenomicModelTable = () => {
     });
 
   }, [tableState]);
- 
+
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -119,6 +120,19 @@ export const AffectedGenomicModelTable = () => {
     )
   }
 
+  const taxonBodyTemplate = (rowData) => {
+    if (rowData.taxon) {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`}>
+                    {rowData.taxon.name} ({rowData.taxon.curie})
+                </EllipsisTableCell>
+                <Tooltip target={`.${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+            </>
+        );
+    }
+  };
+  
   const columns = [
     {
       field: "curie",
@@ -150,11 +164,12 @@ export const AffectedGenomicModelTable = () => {
       filterElement: filterComponentTemplate("parental_populationFilter", ["parental_population"])
     },
     {
-      field: "taxon.curie",
+      field: "taxon.name",
       header: "Taxon",
       sortable: isEnabled,
+      body: taxonBodyTemplate,
       filter: true,
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie","taxon.name"])
     }
   ];
 

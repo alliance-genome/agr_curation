@@ -16,9 +16,6 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> {
 
@@ -28,6 +25,7 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
     @Inject NoteDAO noteDAO;
     @Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
     @Inject DiseaseAnnotationService diseaseAnnotationService;
+    @Inject ConditionRelationDAO conditionRelationDAO;
     
     @Override
     @PostConstruct
@@ -38,11 +36,15 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
     @Override
     @Transactional
     public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation uiEntity) {
-        log.info(authenticatedPerson);
         AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotation(uiEntity);
         if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
             for (Note note : dbEntity.getRelatedNotes()) {
                 noteDAO.persist(note);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
+            for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
+                conditionRelationDAO.persist(conditionRelation);
             }
         }
         return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));

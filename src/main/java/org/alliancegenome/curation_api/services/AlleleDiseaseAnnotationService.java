@@ -16,9 +16,6 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
 
@@ -34,6 +31,8 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
     AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
     @Inject
     DiseaseAnnotationService diseaseAnnotationService;
+    @Inject
+    ConditionRelationDAO conditionRelationDAO;
     
 
     @Override
@@ -45,11 +44,15 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
     @Override
     @Transactional
     public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation uiEntity) {
-        log.info(authenticatedPerson);
         AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotation(uiEntity);
         if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
             for (Note note : dbEntity.getRelatedNotes()) {
                 noteDAO.persist(note);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
+            for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
+                conditionRelationDAO.persist(conditionRelation);
             }
         }
         return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
