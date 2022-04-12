@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -11,11 +13,16 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.map.HashedMap;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> {
 
@@ -47,7 +54,15 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
                 conditionRelationDAO.persist(conditionRelation);
             }
         }
-        return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
+        
+        agmDiseaseAnnotationDAO.persist(dbEntity);
+        
+        Map<String, Object> params = new HashedMap<String, Object>();
+        params.put("id", dbEntity.getId());
+        
+        SearchResponse<AGMDiseaseAnnotation> results = searchByParams(new Pagination(), params);
+        log.info(results);
+        return new ObjectResponse<AGMDiseaseAnnotation>(results.getResults().get(0));
     }
 
     @Transactional
