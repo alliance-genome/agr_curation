@@ -216,7 +216,7 @@ export const AffectedGenomicModelTable = () => {
     const _columnWidths = { ...columnWidths };
 
     Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 100 / columns.length;
+      return _columnWidths[key] = 100 / columns.length;
     });
 
     setColumnWidths(_columnWidths);
