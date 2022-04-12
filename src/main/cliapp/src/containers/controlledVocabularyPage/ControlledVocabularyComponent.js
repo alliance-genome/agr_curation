@@ -56,7 +56,7 @@ export const ControlledVocabularyComponent = () => {
   const [terms, setTerms] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
-  const [columnMap, setColumnMap] = useState([]);
+  const [columnList, setColumnList] = useState([]);
   const [vocabularies, setVocabularies] = useState(null);
   const [newTermDialog, setNewTermDialog] = useState(false);
   const [newVocabularyDialog, setNewVocabularyDialog] = useState(false);
@@ -378,11 +378,23 @@ export const ControlledVocabularyComponent = () => {
     }
   ];
 
+    const [columnWidths, setColumnWidths] = useState(() => {
+      const width = 13;
+
+      const widthsObject = {};
+
+      columns.forEach((col) => {
+        widthsObject[col.field] = width;
+      });
+
+      return widthsObject;
+    });
+
     useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
 
-    setColumnMap(
+    setColumnList(
       orderedColumns.map((col) => {
         return <Column
           columnKey={col.field}
@@ -393,7 +405,11 @@ export const ControlledVocabularyComponent = () => {
           filter={col.filter}
           showFilterMenu={false}
           filterElement={col.filterElement}
-          style={{whiteSpace: 'normal', display: 'inline-block'}}
+          style={{whiteSpace: 'normal', 
+              display: 'inline-block', 
+              minWidth:`${columnWidths[col.field]}vw`, 
+              maxWidth: `${columnWidths[col.field]}vw`
+          }}
           headerClassName='surface-0'
           editor={col.editor}
           body={col.body}
@@ -401,11 +417,18 @@ export const ControlledVocabularyComponent = () => {
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled]);
+  }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    const _columnWidths = {...columnWidths};
+
+    Object.keys(_columnWidths).map((key) => {
+      _columnWidths[key] = 13;
+    });
+
+    setColumnWidths(_columnWidths);
   };
 
   const colReorderHandler = (event) => {
@@ -489,6 +512,18 @@ export const ControlledVocabularyComponent = () => {
 
     const onRowEditCVCChange = (event) => {
         setEditingCVCRows(event.data);
+    };                             
+
+    const handleColumnResizeEnd = (event) => {
+        const currentWidth = event.element.clientWidth;
+        const delta = event.delta;
+        const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+        const field = event.column.props.field;
+
+        const _columnWidths = {...columnWidths};
+
+        _columnWidths[field] = newWidth;
+        setColumnWidths(_columnWidths);
     };
 
   return (
@@ -508,10 +543,10 @@ export const ControlledVocabularyComponent = () => {
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="expand" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
         >
-          {columnMap}
-          <Column rowEditor headerStyle={{width: '10rem'}} bodyStyle={{textAlign: 'center'}}/>
+          {columnList}
+          <Column rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{textAlign: 'center'}}/>
         </DataTable>
         <NewTermForm
             newTermDialog = {newTermDialog}
