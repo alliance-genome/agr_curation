@@ -173,7 +173,7 @@ export const AffectedGenomicModelTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 100 / columns.length;
