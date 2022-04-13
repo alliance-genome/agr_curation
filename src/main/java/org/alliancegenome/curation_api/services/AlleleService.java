@@ -51,7 +51,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
     }
 
     @Transactional
-    public void processUpdate(AlleleFmsDTO allele) throws ObjectUpdateException {
+    public Allele processUpdate(AlleleFmsDTO allele) throws ObjectUpdateException {
         validateAlleleDTO(allele);
 
         Allele dbAllele = alleleDAO.find(allele.getPrimaryId());
@@ -74,6 +74,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 
         alleleDAO.persist(dbAllele);
 
+        return dbAllele;
     }
 
     private void handleCrossReferences(AlleleFmsDTO allele, Allele dbAllele) {
