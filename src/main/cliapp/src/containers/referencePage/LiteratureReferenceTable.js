@@ -35,7 +35,7 @@ export const LiteratureReferenceTable = () => {
     const [references, setReferences] = useState(null);
     const [totalRecords, setTotalRecords] = useState(0);
     const [isEnabled, setIsEnabled] = useState(true);
-    const [columnMap, setColumnMap] = useState([]);
+    const [columnList, setColumnList] = useState([]);
 
     const searchService = new SearchService();
     const errorMessage = useRef(null);
@@ -212,16 +212,27 @@ export const LiteratureReferenceTable = () => {
         }
     ];
 
-    useSetDefaultColumnOrder(columns, dataTable);
+    useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+
+    const [columnWidths, setColumnWidths] = useState(() => {
+        const width = 20;
+
+        const widthsObject = {};
+
+        columns.forEach((col) => {
+          widthsObject[col.field] = width;
+        });
+
+        return widthsObject;
+    });
 
     useEffect(() => {
         const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
         const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-        setColumnMap(
+        setColumnList(
             orderedColumns.map((col) => {
                 return <Column
-                    style={{ width: `${100 / orderedColumns.length}%` }}
-                    className='overflow-hidden text-overflow-ellipsis'
+                    style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
                     headerClassName='surface-0'
                     columnKey={col.field}
                     key={col.field}
@@ -236,17 +247,36 @@ export const LiteratureReferenceTable = () => {
             })
         );
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [tableState, isEnabled]);
+    }, [tableState, isEnabled, columnWidths]);
 
     const resetTableState = () => {
         setTableState(initialTableState);
         dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+          const _columnWidths = {...columnWidths};
+
+          Object.keys(_columnWidths).map((key) => {
+            _columnWidths[key] = 20;
+          });
+
+          setColumnWidths(_columnWidths);
     }
 
     const colReorderHandler = (event) => {
         let _columnNames = [...tableState.selectedColumnNames];
         _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
         setSelectedColumnNames(_columnNames);
+    };
+
+    const handleColumnResizeEnd = (event) => {
+        const currentWidth = event.element.clientWidth;
+        const delta = event.delta;
+        const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+        const field = event.column.props.field;
+
+        const _columnWidths = {...columnWidths};
+
+        _columnWidths[field] = newWidth;
+        setColumnWidths(_columnWidths);
     };
 
 
@@ -261,10 +291,10 @@ export const LiteratureReferenceTable = () => {
                     onColReorder={colReorderHandler}
                     sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
                     paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-                    resizableColumns columnResizeMode="expand" showGridlines
+                    resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
                 >
-                    {columnMap}
+                    {columnList}
                 </DataTable>
             </Card>
     );

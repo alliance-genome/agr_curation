@@ -32,6 +32,17 @@ public class AGMBulkUploadFmsITCase {
     @Test
     @Order(1)
     public void agmBulkUploadCheckFields() throws Exception {
+        // Load required allele (affectedGenomicModelComponents of AGM)
+        String allele_content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/01_all_fields.json"));
+
+        RestAssured.given().
+            contentType("application/json").
+            body(allele_content).
+            when().
+            post("/api/allele/bulk/allelefile").
+            then().
+            statusCode(200);
+
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/01_all_fields.json"));
 
         // upload file

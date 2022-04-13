@@ -46,7 +46,7 @@ public class Note extends BaseGeneratedEntity {
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JsonView({View.FieldsAndLists.class})
     private List<Reference> references;
 }
