@@ -1,15 +1,12 @@
 name: Alpha branch Build and Deployment
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - alpha
-    paths-ignore:
-      - '**.md'
-      - .gitignore
-      - .github/workflows/github-actions-PR-validation.yml
-      - .github/workflows/github-release-build-and-deploy.yml
 jobs:
   build-and-push-docker-image:
+    if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
@@ -43,6 +40,7 @@ jobs:
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
   deploy-to-alpha:
+    if: github.event.pull_request.merged == true && !contains(github.event.pull_request.labels.*.name, 'no-deploy')
     needs: [build-and-push-docker-image]
     runs-on: ubuntu-20.04
     steps:
