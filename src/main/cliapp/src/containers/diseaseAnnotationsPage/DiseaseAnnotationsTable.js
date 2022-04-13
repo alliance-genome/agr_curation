@@ -1017,7 +1017,7 @@ export const DiseaseAnnotationsTable = () => {
   },
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 10;
@@ -1083,7 +1083,7 @@ export const DiseaseAnnotationsTable = () => {
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 10;
+      return _columnWidths[key] = 10;
     });
 
     setColumnWidths(_columnWidths);
