@@ -8,7 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -26,6 +26,11 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
     @Path("/findBy/{uniqueId}")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<GeneDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
+    
+    @PUT @Secured
+    @Path("/")
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
     
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")

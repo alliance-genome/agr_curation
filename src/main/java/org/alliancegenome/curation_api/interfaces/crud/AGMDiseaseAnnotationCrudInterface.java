@@ -27,6 +27,11 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AGMDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
     
+    @PUT @Secured
+    @Path("/")
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation entity);
+    
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")
     @JsonView(View.FieldsAndLists.class)
