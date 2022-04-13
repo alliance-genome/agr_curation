@@ -31,7 +31,7 @@ export const GenesTable = () => {
   const [isEnabled, setIsEnabled] = useState(true);
   const [genes, setGenes] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [columnMap, setColumnMap] = useState([]);
+  const [columnList, setColumnList] = useState([]);
 
   const searchService = new SearchService();
   const errorMessage = useRef(null);
@@ -177,16 +177,27 @@ export const GenesTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const width = 20;
+
+    const widthsObject = {};
+
+    columns.forEach((col) => {
+      widthsObject[col.field] = width;
+    });
+
+    return widthsObject;
+  });
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnMap(
+    setColumnList(
       orderedColumns.map((col) => {
         return <Column
-          style={{ width: `${100 / orderedColumns.length}%` }}
-          className='overflow-hidden text-overflow-ellipsis'
+          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
           headerClassName='surface-0'
           field={col.field}
           header={col.header}
@@ -203,11 +214,18 @@ export const GenesTable = () => {
 
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled]);
+  }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    const _columnWidths = {...columnWidths};
+
+    Object.keys(_columnWidths).map((key) => {
+      _columnWidths[key] = 20;
+    });
+
+    setColumnWidths(_columnWidths);
   }
 
 
@@ -215,6 +233,18 @@ export const GenesTable = () => {
     let _columnNames = [...tableState.selectedColumnNames];
     _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
     setSelectedColumnNames(_columnNames);
+  };
+
+  const handleColumnResizeEnd = (event) => {
+    const currentWidth = event.element.clientWidth;
+    const delta = event.delta;
+    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+    const field = event.column.props.field;
+
+    const _columnWidths = {...columnWidths};
+
+    _columnWidths[field] = newWidth;
+    setColumnWidths(_columnWidths);
   };
 
   return (
@@ -226,12 +256,12 @@ export const GenesTable = () => {
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           first={tableState.first}
-          resizableColumns columnResizeMode="expand" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
-          {columnMap}
+          {columnList}
         </DataTable>
       </div>
   )
