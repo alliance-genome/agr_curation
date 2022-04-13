@@ -115,8 +115,8 @@ public class DiseaseAnnotation extends Association {
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @OneToMany(fetch = FetchType.EAGER)
-    @JsonView({View.FieldsOnly.class})
+    @OneToMany
+    @JsonView({View.FieldsAndLists.class})
     private List<Note> relatedNotes;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
