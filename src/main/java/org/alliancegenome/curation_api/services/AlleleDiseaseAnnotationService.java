@@ -55,7 +55,10 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
                 conditionRelationDAO.persist(conditionRelation);
             }
         }
-        return new ObjectResponse<AlleleDiseaseAnnotation>(alleleDiseaseAnnotationDAO.persist(dbEntity));
+        
+        alleleDiseaseAnnotationDAO.persist(dbEntity);
+        
+        return new ObjectResponse<>(uiEntity);
     }
 
     @Transactional

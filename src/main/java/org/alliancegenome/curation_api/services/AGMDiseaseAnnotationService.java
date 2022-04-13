@@ -47,7 +47,9 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
                 conditionRelationDAO.persist(conditionRelation);
             }
         }
-        return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
+        agmDiseaseAnnotationDAO.persist(dbEntity);
+        
+        return new ObjectResponse<>(uiEntity);
     }
 
     @Transactional
