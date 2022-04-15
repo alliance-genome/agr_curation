@@ -584,8 +584,8 @@ export const ExperimentalConditionsTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
+        <Column rowEditor style={{ maxWidth: '7rem' }} headerStyle={{ maxWidth: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen></Column>
           {columnList}
-          <Column rowEditor style={{ maxWidth: '7rem' }} headerStyle={{ maxWidth: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
   )
