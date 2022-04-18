@@ -54,12 +54,17 @@ export const DiseaseAnnotationsTable = () => {
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
   const [editingRows, setEditingRows] = useState({});
-  const [columnMap, setColumnMap] = useState([]);
+  const [columnList, setColumnList] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
-  const [relatedNotesDialog, setRelatedNotesDialog] = useState(false);
   const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
-  const [relatedNotes, setRelatedNotes] = useState(false);
   const [conditionRelations, setConditionRelations] = useState(false);
+  const [relatedNotesData, setRelatedNotesData] = useState({
+    relatedNotes: [],
+    isInEdit: false,
+    dialog: false,
+    rowIndex: null,
+    mainRowProps: {},
+  });
 
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
@@ -78,6 +83,7 @@ export const DiseaseAnnotationsTable = () => {
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
+  const relatedNotesRef = useRef([]);
 
   let diseaseAnnotationService = null;
 
@@ -169,9 +175,27 @@ export const DiseaseAnnotationsTable = () => {
     setTableState(_tableState);
   };
 
-  const handleRelatedNotesOpen = (event, rowData) => {
-    setRelatedNotes(rowData.relatedNotes);
-    setRelatedNotesDialog(true);
+  const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
+    let _relatedNotesData = {};
+    _relatedNotesData["relatedNotes"] = rowData.relatedNotes;
+    _relatedNotesData["dialog"] = true;
+    _relatedNotesData["isInEdit"] = isInEdit;
+    setRelatedNotesData(() => ({
+      ..._relatedNotesData
+    }));
+  };
+
+  const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+    let _relatedNotesData = {};
+    _relatedNotesData["relatedNotes"] = rowProps.rowData.relatedNotes;
+    _relatedNotesData["dialog"] = true;
+    _relatedNotesData["isInEdit"] = isInEdit;
+    _relatedNotesData["rowIndex"] = rowProps.rowIndex;
+    _relatedNotesData["mainRowProps"] = rowProps;
+    relatedNotesRef.current = global.structuredClone(rowProps.rowData.relatedNotes);
+    setRelatedNotesData(() => ({
+      ..._relatedNotesData
+    }));
   };
 
   const handleConditionRelationsOpen = (event, rowData) => {
@@ -232,25 +256,41 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const relatedNotesTemplate = (rowData) => {
-    if (rowData.relatedNotes) {
-      return <EllipsisTableCell>
-        <Button className="p-button-raised p-button-text"
-          onClick={(event) => { handleRelatedNotesOpen(event, rowData) }} >
+    if (rowData?.relatedNotes) {
+      return (
+        <Button className="p-button-text"
+          onClick={(event) => { handleRelatedNotesOpen(event, rowData, false) }} >
           <span style={{ textDecoration: 'underline' }}>
             {`Notes(${rowData.relatedNotes.length})`}
           </span>
         </Button>
-      </EllipsisTableCell>;
+      )
     }
   };
 
+  const relatedNotesEditor = (props) => {
+    if (props?.rowData?.relatedNotes) {
+      return (
+        <Button className="p-button-text"
+          onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+          <span style={{ textDecoration: 'underline' }}>
+            {`Notes(${props.rowData.relatedNotes.length}) `}
+            <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+          </span>
+        </Button>
+      )
+    }
+  }; 
+
   const conditionRelationsTemplate = (rowData) => {
     if (rowData.conditionRelations) {
+        const handle = rowData.conditionRelations[0].handle
       return <EllipsisTableCell>
         <Button className="p-button-raised p-button-text"
           onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
           <span style={{ textDecoration: 'underline' }}>
-            {`Conditions(${rowData.conditionRelations.length})`}
+            {!handle && `Conditions (${rowData.conditionRelations.length})`}
+              {handle && handle}
           </span>
         </Button>
       </EllipsisTableCell>;
@@ -289,7 +329,7 @@ export const DiseaseAnnotationsTable = () => {
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
     }
-    let updatedRow = JSON.parse(JSON.stringify(event.data));//deep copy
+    let updatedRow = global.structuredClone(event.data);//deep copy
     if (Object.keys(event.data.subject).length >= 1) {
       event.data.subject.curie = trimWhitespace(event.data.subject.curie);
       updatedRow.subject = {};
@@ -311,8 +351,7 @@ export const DiseaseAnnotationsTable = () => {
       onSuccess: (data) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
         let annotations = [...diseaseAnnotations];
-        annotations[event.index].subject = data.data.entity.subject;
-        annotations[event.index].object = data.data.entity.object;
+        annotations[event.index] = data.data.entity;
         setDiseaseAnnotations(annotations);
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
@@ -496,6 +535,7 @@ export const DiseaseAnnotationsTable = () => {
           options={negatedTerms}
           editorChange={onNegatedEditorValueChange}
           props={props}
+          field={"negated"}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
       </>
@@ -552,6 +592,7 @@ export const DiseaseAnnotationsTable = () => {
           endpoint='biologicalentity'
           filterName='geneticModifierFilter'
           fieldName='diseaseGeneticModifier'
+          isSubject={true}
         />
         <ErrorMessageComponent
           errorMessages={errorMessages[props.rowIndex]}
@@ -762,10 +803,11 @@ export const DiseaseAnnotationsTable = () => {
     />);
   }
 
-  const FilterMultiSelectComponentTemplate = (filterName, field) => {
+  const FilterMultiSelectComponentTemplate = (filterName, field, useKeywordFields = false) => {
     return (<FilterMultiSelectComponent
       isEnabled={isEnabled}
       field={field}
+      useKeywordFields={useKeywordFields}
       filterName={filterName}
       currentFilters={tableState.filters}
       onFilter={onFilter}
@@ -863,6 +905,7 @@ export const DiseaseAnnotationsTable = () => {
     field: "relatedNotes.freeText",
     header: "Related Notes",
     body: relatedNotesTemplate,
+    editor: (props) => relatedNotesEditor(props),
     sortable: true,
     filter: true,
     filterElement: filterComponentInputTextTemplate("relatedNotesFilter", ["relatedNotes.freeText"])
@@ -917,7 +960,7 @@ export const DiseaseAnnotationsTable = () => {
     header: "Genetic Modifier Relation",
     sortable: isEnabled,
     filter: true,
-    filterElement: FilterMultiSelectComponentTemplate("geneticModifierRelationFilter", "diseaseGeneticModifierRelation.name"),
+    filterElement: FilterMultiSelectComponentTemplate("geneticModifierRelationFilter", "diseaseGeneticModifierRelation.name", true),
     editor: (props) => geneticModifierRelationEditor(props)
   },
   {
@@ -971,20 +1014,31 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterType: "Date",
     filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
-  }
+  },
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
+
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const width = 10;
+
+    const widthsObject = {};
+
+    columns.forEach((col) => {
+      widthsObject[col.field] = width;
+    });
+
+    return widthsObject;
+  });
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnMap(
+    setColumnList(
       orderedColumns.map((col) => {
         return <Column
-          style={{ width: `${100 / orderedColumns.length}%`, display: 'inline-block' }}
-          className='overflow-hidden text-overflow-ellipsis'
           headerClassName='surface-0'
+          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
           key={col.field}
           columnKey={col.field}
           field={col.field}
@@ -1000,7 +1054,7 @@ export const DiseaseAnnotationsTable = () => {
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled]);
+  }, [tableState, isEnabled, columnWidths]);
 
     const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
         return (<MultiSelect
@@ -1026,12 +1080,33 @@ export const DiseaseAnnotationsTable = () => {
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
-  }
+    const _columnWidths = {...columnWidths};
+
+    Object.keys(_columnWidths).map((key) => {
+      return _columnWidths[key] = 10;
+    });
+
+    setColumnWidths(_columnWidths);
+  };
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
     _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
     setSelectedColumnNames(_columnNames);
+  };
+
+
+
+  const handleColumnResizeEnd = (event) => {
+    const currentWidth = event.element.clientWidth;
+    const delta = event.delta;
+    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+    const field = event.column.props.field;
+
+    const _columnWidths = {...columnWidths};
+
+    _columnWidths[field] = newWidth;
+    setColumnWidths(_columnWidths);
   };
 
   return (
@@ -1040,30 +1115,31 @@ export const DiseaseAnnotationsTable = () => {
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
         <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{ width: '225%' }} scrollHeight="62vh"
+          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
           editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first}
           filterDisplay="row"
-          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines
+          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
 
-          {columnMap}
+          {columnList}
+          <Column field='rowEditor' rowEditor style={{'maxWidth': '7rem'}} headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }} />
 
-          <Column rowEditor headerStyle={{ width: '7rem' }} bodyStyle={{ textAlign: 'center' }}></Column>
         </DataTable>
       </div>
       <RelatedNotesDialog
-        relatedNotes={relatedNotes}
-        relatedNotesDialog={relatedNotesDialog}
-        setRelatedNotesDialog={setRelatedNotesDialog}
+        relatedNotesData={relatedNotesData}
+        setRelatedNotesData={setRelatedNotesData}
+        relatedNotesRef={relatedNotesRef}
+        authState={authState}
       />
-    <ConditionRelationsDialog
+      <ConditionRelationsDialog
         conditonRelations={conditionRelations}
         conditionRelationsDialog={conditionRelationsDialog}
         setConditionRelationsDialog={setConditionRelationsDialog}

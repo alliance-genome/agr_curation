@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -21,8 +22,6 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
     
-    private String ALLELE_DISEASE_RELATION_VOCABULARY = "Allele disease relations";
-
     public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
@@ -76,7 +75,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
             return null;
         }
         
-        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), ALLELE_DISEASE_RELATION_VOCABULARY);
+        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
 
         if(relation == null) {
             addMessageResponse(field, invalidMessage);

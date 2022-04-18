@@ -10,6 +10,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 
 export const AffectedGenomicModelTable = () => {
   const defaultColumnNames = ["Curie", "Name", "Sub Type", "Parental Population", "Taxon"];
@@ -27,7 +28,7 @@ export const AffectedGenomicModelTable = () => {
   const [agms, setAgms] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
-  const [columnMap, setColumnMap] = useState([]);
+  const [columnList, setColumnList] = useState([]);
 
   const dataTable = useRef(null);
 
@@ -40,7 +41,7 @@ export const AffectedGenomicModelTable = () => {
     });
 
   }, [tableState]);
- 
+
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -119,6 +120,19 @@ export const AffectedGenomicModelTable = () => {
     )
   }
 
+  const taxonBodyTemplate = (rowData) => {
+    if (rowData.taxon) {
+        return (
+            <>
+                <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`}>
+                    {rowData.taxon.name} ({rowData.taxon.curie})
+                </EllipsisTableCell>
+                <Tooltip target={`.${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+            </>
+        );
+    }
+  };
+  
   const columns = [
     {
       field: "curie",
@@ -150,24 +164,36 @@ export const AffectedGenomicModelTable = () => {
       filterElement: filterComponentTemplate("parental_populationFilter", ["parental_population"])
     },
     {
-      field: "taxon.curie",
+      field: "taxon.name",
       header: "Taxon",
       sortable: isEnabled,
+      body: taxonBodyTemplate,
       filter: true,
-      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie"])
+      filterElement: filterComponentTemplate("taxonFilter", ["taxon.curie","taxon.name"])
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const width = 100 / columns.length;
+
+    const widthsObject = {};
+
+    columns.forEach((col) => {
+      widthsObject[col.field] = width;
+    });
+
+    return widthsObject;
+  });
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnMap(
+    setColumnList(
       orderedColumns.map((col) => {
         return <Column
-          className='overflow-hidden text-overflow-ellipsis'
-          style={{ width: `${100 / orderedColumns.length}%` }}
+          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
           headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
@@ -182,17 +208,36 @@ export const AffectedGenomicModelTable = () => {
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled]);
+  }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    const _columnWidths = { ...columnWidths };
+
+    Object.keys(_columnWidths).map((key) => {
+      return _columnWidths[key] = 100 / columns.length;
+    });
+
+    setColumnWidths(_columnWidths);
   }
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
     _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
     setSelectedColumnNames(_columnNames);
+  };
+
+  const handleColumnResizeEnd = (event) => {
+    const currentWidth = event.element.clientWidth;
+    const delta = event.delta;
+    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+    const field = event.column.props.field;
+
+    const _columnWidths = {...columnWidths};
+
+    _columnWidths[field] = newWidth;
+    setColumnWidths(_columnWidths);
   };
 
   return (
@@ -203,11 +248,11 @@ export const AffectedGenomicModelTable = () => {
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           first={tableState.first} resizableColumns columnResizeMode="expand" showGridlines
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
-          onColReorder={colReorderHandler}
+          onColReorder={colReorderHandler} onColumnResizeEnd={handleColumnResizeEnd}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
-          {columnMap}
+          {columnList}
         </DataTable>
       </div>
   )
