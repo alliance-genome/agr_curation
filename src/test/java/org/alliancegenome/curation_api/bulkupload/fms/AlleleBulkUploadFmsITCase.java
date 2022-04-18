@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.bulkupload.fms;
 
-import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
 
@@ -79,7 +77,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -87,7 +85,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(2));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00002"));
     }
 
     @Test
@@ -104,7 +104,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -112,7 +112,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00003"));
     }
 
     @Test
@@ -129,7 +131,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -137,7 +139,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(4));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00004"));
     }
 
     @Test
@@ -154,7 +158,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -162,7 +166,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(4));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -179,7 +183,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -187,7 +191,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(4));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -204,7 +208,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -212,7 +216,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00007"));
     }
 
     @Test
@@ -229,7 +235,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
             RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -237,7 +243,7 @@ public class AlleleBulkUploadFmsITCase {
                 post("/api/allele/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(5)); // no entity added due to missing ID
+                body("totalResults", is(0)); // no entity added due to missing ID
     }
 
     @Test
@@ -254,7 +260,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -262,7 +268,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(6));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00009"));
     }
 
     @Test
@@ -279,7 +287,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -287,7 +295,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(7));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00010"));
         }
 
     @Test
@@ -304,7 +314,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -312,7 +322,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(7));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -329,7 +339,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -337,7 +347,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(7));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -354,7 +364,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -362,7 +372,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(7));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -379,7 +389,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -387,7 +397,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(7));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -404,7 +414,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -412,7 +422,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(8));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00015"));
     }
 
     @Test
@@ -429,7 +441,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -437,7 +449,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(9));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00016"));
     }
 
     @Test
@@ -454,7 +468,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -462,7 +476,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(9));
+            body("totalResults", is(0));
     }
 
     // TODO: adjust count (and subsequent test counts) once loading and validation of components in place
@@ -480,7 +494,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -488,7 +502,9 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(10));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAllele00018"));
     }
 
     @Test
@@ -505,7 +521,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -513,7 +529,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(10));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -530,7 +546,7 @@ public class AlleleBulkUploadFmsITCase {
             then().
             statusCode(200);
 
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -538,7 +554,7 @@ public class AlleleBulkUploadFmsITCase {
             post("/api/allele/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(10));
+            body("totalResults", is(0));
     }
 
 }

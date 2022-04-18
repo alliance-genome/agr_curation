@@ -137,10 +137,10 @@ export const DataLoadsComponent = () => {
   const loadFileActionBodyTemplate = (rowData) => {
     let ret = [];
 
-    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
       ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
     }
-    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+    if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
       ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
     }
 
@@ -153,7 +153,7 @@ export const DataLoadsComponent = () => {
 
     ret.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
 
-    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED") {
+    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
       ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
     }
 
@@ -241,9 +241,11 @@ export const DataLoadsComponent = () => {
   const statusTemplate = (rowData) => {
     let styleClass = 'p-button-text p-button-plain';
     if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status && (rowData.status.endsWith('STARTED') || 
-      rowData.status.endsWith('RUNNING') ||
-      rowData.status.endsWith('PENDING'))) { styleClass = "p-button-success"; }
+    if (rowData.status && (
+        rowData.status.endsWith('STARTED') ||
+        rowData.status.endsWith('RUNNING') ||
+        rowData.status.endsWith('PENDING')
+      )) { styleClass = "p-button-success"; }
 
     return (
       <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
@@ -254,7 +256,7 @@ export const DataLoadsComponent = () => {
     return (
       <div className="card">
         <DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
-          
+
           <Column field="loadStarted" header="Load Started" />
           <Column field="loadFinished" header="Load Finished" />
           <Column field="completedRecords" header="Records Completed" />
