@@ -545,7 +545,7 @@ export const ControlledVocabularyComponent = () => {
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
           resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
         >
-        <Column rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}} frozen/>
+        <Column rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
         <NewTermForm
