@@ -49,6 +49,11 @@ public class BulkLoadJobExecutor {
     @Inject FbdvTermService fbdvTermService;
     @Inject MmusdvTermService mmusdvTermService;
     @Inject ZfsTermService zfsTermService;
+    @Inject XbaTermService xbaTermService;
+    @Inject XbsTermService xbsTermService;
+    @Inject XpoTermService xpoTermService;
+    @Inject XbedTermService xbedTermService;
+    @Inject XsmoTermService xsmoTermService;
 
     @Inject MoleculeService moleculeService;
 
@@ -150,6 +155,18 @@ public class BulkLoadJobExecutor {
                 service = mmusdvTermService;
             } else if(ontologyType == OntologyBulkLoadType.ZFS) {
                 service = zfsTermService;
+            } else if(ontologyType == OntologyBulkLoadType.XBA) {
+                service = xbaTermService;
+            } else if(ontologyType == OntologyBulkLoadType.XBS) {
+                config.getAltNameSpaces().add("xenopus_developmental_stage");
+                service = xbsTermService;
+            } else if(ontologyType == OntologyBulkLoadType.XPO) {
+                config.setLoadOnlyIRIPrefix("XPO");
+                service = xpoTermService;
+            } else if(ontologyType == OntologyBulkLoadType.XBED) {
+                service = xbedTermService;
+            } else if(ontologyType == OntologyBulkLoadType.XSMO) {
+                service = xsmoTermService;
             } else {
                 log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
                 throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
