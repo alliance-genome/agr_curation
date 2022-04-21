@@ -49,8 +49,8 @@ public class BulkLoadJobExecutor {
     @Inject FbdvTermService fbdvTermService;
     @Inject MmusdvTermService mmusdvTermService;
     @Inject ZfsTermService zfsTermService;
-    @Inject XaoTermService xaoTermService;
-    @Inject XaoDsTermService xaoDsTermService;
+    @Inject XbaTermService xbaTermService;
+    @Inject XbsTermService xbsTermService;
     @Inject XpoTermService xpoTermService;
     @Inject XbedTermService xbedTermService;
     @Inject XsmoTermService xsmoTermService;
@@ -155,11 +155,11 @@ public class BulkLoadJobExecutor {
                 service = mmusdvTermService;
             } else if(ontologyType == OntologyBulkLoadType.ZFS) {
                 service = zfsTermService;
-            } else if(ontologyType == OntologyBulkLoadType.XAO) {
-                service = xaoTermService;
-            } else if(ontologyType == OntologyBulkLoadType.XAODS) {
+            } else if(ontologyType == OntologyBulkLoadType.XBA) {
+                service = xbaTermService;
+            } else if(ontologyType == OntologyBulkLoadType.XBS) {
                 config.getAltNameSpaces().add("xenopus_developmental_stage");
-                service = xaoDsTermService;
+                service = xbsTermService;
             } else if(ontologyType == OntologyBulkLoadType.XPO) {
                 config.setLoadOnlyIRIPrefix("XPO");
                 service = xpoTermService;

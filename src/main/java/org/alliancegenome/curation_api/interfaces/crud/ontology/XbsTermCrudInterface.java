@@ -4,13 +4,13 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseOntologyTermCrudInterface;
-import org.alliancegenome.curation_api.model.entities.ontology.XAOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.XBSTerm;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-@Path("/xaoterm")
+@Path("/xbsterm")
 @Tag(name = "CRUD - Ontology")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface XaoTermCrudInterface extends BaseOntologyTermCrudInterface<XAOTerm> {
+public interface XbsTermCrudInterface extends BaseOntologyTermCrudInterface<XBSTerm> {
 
 }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { OntologyTable } from './OntologyTable';
 
-export const XAOOntologyComponent = () => {
+export const XAODsOntologyComponent = () => {
   const columns = [
     { field: "curie", header: "Curie" },
     { field: "name", header: "Name" },
@@ -11,8 +11,8 @@ export const XAOOntologyComponent = () => {
 
   return (
     < OntologyTable
-      endpoint={"xaoterm"}
-      ontologyAbbreviation={"XAO"}
+      endpoint={"xbsterm"}
+      ontologyAbbreviation={"XBS"}
       columns={columns}
     />
   )

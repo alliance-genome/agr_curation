@@ -3,13 +3,13 @@ package org.alliancegenome.curation_api.dao.ontology;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.base.dao.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.ontology.XAODsTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.XBATerm;
 
 @ApplicationScoped
-public class XaoDsTermDAO extends BaseSQLDAO<XAODsTerm> {
+public class XbaTermDAO extends BaseSQLDAO<XBATerm> {
 
-    protected XaoDsTermDAO() {
-        super(XAODsTerm.class);
+    protected XbaTermDAO() {
+        super(XBATerm.class);
     }
 
 }

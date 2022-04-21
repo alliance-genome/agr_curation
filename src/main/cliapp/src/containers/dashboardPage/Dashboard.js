@@ -91,13 +91,13 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "WBbt", count: results.totalResults, link: '/#/ontology/wbbt' }]);
     });
 
-    searchService.search('xaoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XAO", count: results.totalResults, link: '/#/ontology/xao' }]);
+    searchService.search('xbaterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XBA", count: results.totalResults, link: '/#/ontology/xba' }]);
     });
     
     
-    searchService.search('xaodsterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XAODs", count: results.totalResults, link: '/#/ontology/xaods' }]);
+    searchService.search('xbsterm', 0, 0).then(results => {
+      setTermCounts((list) => [...list, { name: "XBS", count: results.totalResults, link: '/#/ontology/xbs' }]);
     });
     
     searchService.search('xcoterm', 0, 0).then(results => {

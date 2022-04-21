@@ -37,7 +37,8 @@ import { WBlsOntologyComponent } from './containers/ontologies/WBlsOntologyCompo
 import { FBdvOntologyComponent } from './containers/ontologies/FBdvOntologyComponent';
 import { MmusDvOntologyComponent } from './containers/ontologies/MmusDvOntologyComponent';
 import { ZFSOntologyComponent } from './containers/ontologies/ZFSOntologyComponent';
-import { XAOOntologyComponent } from './containers/ontologies/XAOOntologyComponent';
+import { XBAOntologyComponent } from './containers/ontologies/XBAOntologyComponent';
+import { XBSOntologyComponent } from './containers/ontologies/XBSOntologyComponent';
 import { XPOOntologyComponent } from './containers/ontologies/XPOOntologyComponent';
 import { XBEDOntologyComponent } from './containers/ontologies/XBEDOntologyComponent';
 import { XSMOOntologyComponent } from './containers/ontologies/XSMOOntologyComponent';
@@ -73,7 +74,8 @@ export default (
     <SecureRoute path="/ontology/fbdv" component={FBdvOntologyComponent} />
     <SecureRoute path="/ontology/mmusdv" component={MmusDvOntologyComponent} />
     <SecureRoute path="/ontology/zfs" component={ZFSOntologyComponent} />
-    <SecureRoute path="/ontology/xao" component={XAOOntologyComponent} />
+    <SecureRoute path="/ontology/xba" component={XBAOntologyComponent} />
+    <SecureRoute path="/ontology/xbs" component={XBSOntologyComponent} />
     <SecureRoute path="/ontology/xpo" component={XPOOntologyComponent} />
     <SecureRoute path="/ontology/xbed" component={XBEDOntologyComponent} />
     <SecureRoute path="/ontology/xsmo" component={XSMOOntologyComponent} />

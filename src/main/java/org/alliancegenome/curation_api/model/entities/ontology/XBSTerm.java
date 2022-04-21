@@ -13,6 +13,6 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class XAODsTerm extends StageTerm {
+public class XBSTerm extends StageTerm {
 
 }
