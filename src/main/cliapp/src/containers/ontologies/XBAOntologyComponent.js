@@ -1,7 +1,7 @@
 import React from 'react'
 import { OntologyTable } from './OntologyTable';
 
-export const XAOOntologyComponent = () => {
+export const XBAOntologyComponent = () => {
   const columns = [
     { field: "curie", header: "Curie" },
     { field: "name", header: "Name" },
