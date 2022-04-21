@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.apache.commons.collections.CollectionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
 import org.semanticweb.owlapi.reasoner.*;
@@ -88,6 +89,27 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
         return allNodes;
 
     }
+    
+    public Boolean hasChebiXref(T term) {
+        
+        if (CollectionUtils.isNotEmpty(term.getSynonyms())) {
+            for (String synonym : term.getSynonyms()) {
+                if (synonym.startsWith("CHEBI:")) {
+                    return true;
+                }
+            }
+        }
+        
+        if (CollectionUtils.isNotEmpty(term.getCrossReferences())) {
+            for (CrossReference xref : term.getCrossReferences()) {
+                if (xref.getCurie().startsWith("CHEBI:")) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
 
     public T traverse(OWLClass parent, int depth, ArrayList<String> requiredNamespaces) throws Exception {
 
@@ -98,8 +120,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
             termParent = getOntologyTerm(parent);
     
             if(
-                (termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||
-                (config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_"))
+                (
+                    (termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||    
+                    (config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_"))
+                ) && (
+                    !config.getIgnoreEntitiesWithChebiXref() || !hasChebiXref(termParent)
+                )
             ) {
                 //System.out.println(termParent);
 
@@ -223,7 +249,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
                 if(term.getSecondaryIdentifiers() == null) term.setSecondaryIdentifiers(new ArrayList<>());
                 term.getSecondaryIdentifiers().add(getString(annotation.getValue()));
             }
-            else if(key.equals("hasDbXref")) {
+            else if(key.equals("hasDbXref") || key.equals("database_cross_reference")) {
                 if(term.getCrossReferences() == null) term.setCrossReferences(new ArrayList<>());
                 CrossReference ref = new CrossReference();
                 ref.setCurie(getString(annotation.getValue()));
