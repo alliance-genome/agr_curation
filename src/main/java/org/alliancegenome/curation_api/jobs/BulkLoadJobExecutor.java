@@ -189,12 +189,7 @@ public class BulkLoadJobExecutor {
     
     private void processTerms(BulkLoadFile bulkLoadFile, OntologyBulkLoadType ontologyType, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
 
-        GenericOntologyLoadHelper loader;
-        if(config != null) {
-            loader = new GenericOntologyLoadHelper(ontologyType.getClazz(), config);
-        } else {
-            loader = new GenericOntologyLoadHelper(ontologyType.getClazz());
-        }
+        GenericOntologyLoadHelper loader = new GenericOntologyLoadHelper(ontologyType.getClazz(), config);
 
         Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
