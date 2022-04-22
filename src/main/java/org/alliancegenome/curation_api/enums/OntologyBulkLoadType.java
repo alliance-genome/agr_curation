@@ -20,6 +20,7 @@ public enum OntologyBulkLoadType {
     FBDV(FBdvTerm.class),
     MMUSDV(MmusDvTerm.class),
     ZFS(ZFSTerm.class),
+    XBA_XBS(null),
     XBA(XBATerm.class),
     XBS(XBSTerm.class),
     XPO(XPOTerm.class),
