@@ -107,6 +107,7 @@ public class BulkLoadJobExecutor {
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             moleculeExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
+            bulkLoadFile.setRecordCount(0);
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             BaseOntologyTermService service = null;
             OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
@@ -161,8 +162,9 @@ public class BulkLoadJobExecutor {
                 processTerms(bulkLoadFile, zfsTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XBA_XBS) {
                 processTerms(bulkLoadFile, OntologyBulkLoadType.XBA, xbaTermService, config);
-                config.getAltNameSpaces().add("xenopus_developmental_stage");
-                processTerms(bulkLoadFile, OntologyBulkLoadType.XBS, xbsTermService, config);
+                GenericOntologyLoadConfig config2 = new GenericOntologyLoadConfig();
+                config2.getAltNameSpaces().add("xenopus_developmental_stage");
+                processTerms(bulkLoadFile, OntologyBulkLoadType.XBS, xbsTermService, config2);
             } else if(ontologyType == OntologyBulkLoadType.XPO) {
                 config.setLoadOnlyIRIPrefix("XPO");
                 processTerms(bulkLoadFile,xpoTermService, config);
@@ -197,7 +199,7 @@ public class BulkLoadJobExecutor {
         Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
         bulkLoadFile.setRecordCount(bulkLoadFile.getRecordCount() + termMap.size());
-        
+
         bulkLoadFileDAO.merge(bulkLoadFile);
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Database Persistance", termMap.size());
