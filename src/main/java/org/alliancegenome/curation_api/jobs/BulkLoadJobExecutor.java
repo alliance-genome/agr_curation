@@ -69,7 +69,7 @@ public class BulkLoadJobExecutor {
     @Inject MoleculeExecutor moleculeExecutor;
 
 
-    public <T extends OntologyTerm> void process(BulkLoadFile bulkLoadFile) throws Exception {
+    public void process(BulkLoadFile bulkLoadFile) throws Exception {
 
         BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
         
