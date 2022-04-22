@@ -107,6 +107,7 @@ public class BulkLoadJobExecutor {
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             moleculeExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
+            bulkLoadFile.setRecordCount(0);
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             BaseOntologyTermService service = null;
             OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
@@ -196,7 +197,7 @@ public class BulkLoadJobExecutor {
 
         Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
-        bulkLoadFile.setRecordCount(termMap.size());
+        bulkLoadFile.setRecordCount(bulkLoadFile.getRecordCount() + termMap.size());
         bulkLoadFileDAO.merge(bulkLoadFile);
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Database Persistance", termMap.size());
