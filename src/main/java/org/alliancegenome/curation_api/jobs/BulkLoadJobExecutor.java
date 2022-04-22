@@ -162,8 +162,9 @@ public class BulkLoadJobExecutor {
                 processTerms(bulkLoadFile, zfsTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XBA_XBS) {
                 processTerms(bulkLoadFile, OntologyBulkLoadType.XBA, xbaTermService, config);
-                config.getAltNameSpaces().add("xenopus_developmental_stage");
-                processTerms(bulkLoadFile, OntologyBulkLoadType.XBS, xbsTermService, config);
+                GenericOntologyLoadConfig config2 = new GenericOntologyLoadConfig();
+                config2.getAltNameSpaces().add("xenopus_developmental_stage");
+                processTerms(bulkLoadFile, OntologyBulkLoadType.XBS, xbsTermService, config2);
             } else if(ontologyType == OntologyBulkLoadType.XPO) {
                 config.setLoadOnlyIRIPrefix("XPO");
                 processTerms(bulkLoadFile,xpoTermService, config);
