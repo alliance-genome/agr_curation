@@ -107,6 +107,7 @@ public class BulkLoadJobExecutor {
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             moleculeExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {
+            bulkLoadFile.setRecordCount(0);
             GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
             BaseOntologyTermService service = null;
             OntologyBulkLoadType ontologyType = bulkLoadFile.getBulkLoad().getOntologyType();
@@ -114,65 +115,63 @@ public class BulkLoadJobExecutor {
             if(ontologyType == OntologyBulkLoadType.ZECO) {
                 config.setLoadOnlyIRIPrefix("ZECO");
                 service = zecoTermService;
-                processTerms(bulkLoadFile, ontologyType.getClazz(), zecoTermService, config);
+                processTerms(bulkLoadFile, zecoTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.EMAPA) {
                 config.getAltNameSpaces().add("anatomical_structure");
                 service = emapaTermService;
-                processTerms(bulkLoadFile, ontologyType.getClazz(), emapaTermService, config);
+                processTerms(bulkLoadFile, emapaTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.GO) {
                 config.getAltNameSpaces().add("biological_process");
                 config.getAltNameSpaces().add("molecular_function");
                 config.getAltNameSpaces().add("cellular_component");
                 service = goTermService;
-                processTerms(bulkLoadFile, ontologyType.getClazz(), goTermService, config);
+                processTerms(bulkLoadFile, goTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.SO) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), soTermService, config);
+                processTerms(bulkLoadFile, soTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XCO) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), xcoTermService, config);
+                processTerms(bulkLoadFile, xcoTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.ECO) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), ecoTermService, config);
+                processTerms(bulkLoadFile, ecoTermService, config);
                 ecoTermService.updateAbbreviations();
             } else if(ontologyType == OntologyBulkLoadType.CHEBI) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), chebiTermService, config);
+                processTerms(bulkLoadFile, chebiTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.ZFA) {
                 config.getAltNameSpaces().add("zebrafish_anatomy");
-                processTerms(bulkLoadFile, ontologyType.getClazz(), zfaTermService, config);
+                processTerms(bulkLoadFile, zfaTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.DO) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), doTermService, config);
+                processTerms(bulkLoadFile, doTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.MP) {
                 config.setLoadOnlyIRIPrefix("MP");
-                processTerms(bulkLoadFile, ontologyType.getClazz(), mpTermService, config);
+                processTerms(bulkLoadFile, mpTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.MA) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), maTermService, config);
+                processTerms(bulkLoadFile, maTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.WBBT) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), wbbtTermService, config);
+                processTerms(bulkLoadFile, wbbtTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.DAO) {
                 config.setLoadOnlyIRIPrefix("FBbt");
-                processTerms(bulkLoadFile, ontologyType.getClazz(), daoTermService, config);
+                processTerms(bulkLoadFile,  daoTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.WBLS) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), wblsTermService, config);
+                processTerms(bulkLoadFile, wblsTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.FBDV) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), fbdvTermService, config);
+                processTerms(bulkLoadFile, fbdvTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.MMUSDV) {
                 config.getAltNameSpaces().add("mouse_developmental_stage");
                 config.getAltNameSpaces().add("mouse_stages_ontology");
-                processTerms(bulkLoadFile, ontologyType.getClazz(), mmusdvTermService, config);
+                processTerms(bulkLoadFile, mmusdvTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.ZFS) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), zfsTermService, config);
+                processTerms(bulkLoadFile, zfsTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XBA_XBS) {
+                processTerms(bulkLoadFile, OntologyBulkLoadType.XBA, xbaTermService, config);
                 GenericOntologyLoadConfig config2 = new GenericOntologyLoadConfig();
                 config2.getAltNameSpaces().add("xenopus_developmental_stage");
-                List<OntologyBulkLoadType> loadTypes = Arrays.asList(OntologyBulkLoadType.XBA, OntologyBulkLoadType.XBS);
-                List<BaseOntologyTermService> services = Arrays.asList(xbaTermService, xbsTermService);
-                List<GenericOntologyLoadConfig> configs = Arrays.asList(config, config2);
-                processMultipleTerms(bulkLoadFile, loadTypes, services, configs);
+                processTerms(bulkLoadFile, OntologyBulkLoadType.XBS, xbsTermService, config2);
             } else if(ontologyType == OntologyBulkLoadType.XPO) {
                 config.setLoadOnlyIRIPrefix("XPO");
-                processTerms(bulkLoadFile, ontologyType.getClazz(), xpoTermService, config);
+                processTerms(bulkLoadFile,xpoTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XBED) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), xbedTermService, config);
+                processTerms(bulkLoadFile, xbedTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XSMO) {
-                processTerms(bulkLoadFile, ontologyType.getClazz(), xsmoTermService, config);
+                processTerms(bulkLoadFile, xsmoTermService, config);
             } else {
                 log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
                 throw new Exception("Ontolgy Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
@@ -183,59 +182,32 @@ public class BulkLoadJobExecutor {
         }
         log.info("Process Finished for: " + bulkLoadFile.getBulkLoad().getName());
     }
-
     
-    private <T extends OntologyTerm> void processTerms(BulkLoadFile bulkLoadFile, Class<T> clazz, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
-        GenericOntologyLoadHelper<T> loader;
+    private void processTerms(BulkLoadFile bulkLoadFile, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
+        processTerms(bulkLoadFile, bulkLoadFile.getBulkLoad().getOntologyType(), service, config);
+    }
+    
+    private void processTerms(BulkLoadFile bulkLoadFile, OntologyBulkLoadType ontologyType, BaseOntologyTermService service, GenericOntologyLoadConfig config) throws Exception {
+
+        GenericOntologyLoadHelper loader;
         if(config != null) {
-            loader = new GenericOntologyLoadHelper<T>(clazz, config);
+            loader = new GenericOntologyLoadHelper(ontologyType.getClazz(), config);
         } else {
-            loader = new GenericOntologyLoadHelper<T>(clazz);
+            loader = new GenericOntologyLoadHelper(ontologyType.getClazz());
         }
 
-        Map<String, T> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
+        Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
-        bulkLoadFile.setRecordCount(termMap.size());
+        bulkLoadFile.setRecordCount(bulkLoadFile.getRecordCount() + termMap.size());
+
         bulkLoadFileDAO.merge(bulkLoadFile);
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + clazz.getSimpleName() + " Database Persistance", termMap.size());
+        ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Database Persistance", termMap.size());
         for(String termKey: termMap.keySet()) {
             service.processUpdate(termMap.get(termKey));
             ph.progressProcess();
         }
         ph.finishProcess();
-    }
-    
-    private <T extends OntologyTerm> void processMultipleTerms(BulkLoadFile bulkLoadFile, List<OntologyBulkLoadType> loadTypes, List<BaseOntologyTermService> services, List<GenericOntologyLoadConfig> configs) throws Exception {
-        if (loadTypes.size() != services.size() || loadTypes.size() != configs.size()) {
-            log.info("Unequal list lengths sent to processMultipleTerms - Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
-            throw new Exception("Unequal list lengths sent to processMultipleTerms - Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
-        }
-        
-        GenericOntologyLoadHelper<T> loader;
-        bulkLoadFile.setRecordCount(0);
-        
-        for (int i = 0; i < loadTypes.size(); i++) {
-            Class<T> clazz = (Class<T>) loadTypes.get(i).getClazz();
-            if(configs.get(i) != null) {
-                loader = new GenericOntologyLoadHelper<T>(clazz, configs.get(i));
-            } else {
-                loader = new GenericOntologyLoadHelper<T>(clazz);
-            }
-
-            Map<String, T> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
-
-            bulkLoadFile.setRecordCount(bulkLoadFile.getRecordCount() + termMap.size());
-        
-            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-            ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + clazz.getSimpleName() + " Database Persistance", termMap.size());
-            for(String termKey: termMap.keySet()) {
-                services.get(i).processUpdate(termMap.get(termKey));
-                ph.progressProcess();
-            }
-            ph.finishProcess();
-        }
-        bulkLoadFileDAO.merge(bulkLoadFile);
     }
 
 
