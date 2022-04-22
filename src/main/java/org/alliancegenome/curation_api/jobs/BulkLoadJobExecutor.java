@@ -199,6 +199,7 @@ public class BulkLoadJobExecutor {
         Map<String, ? extends OntologyTerm> termMap = loader.load(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())));
 
         bulkLoadFile.setRecordCount(bulkLoadFile.getRecordCount() + termMap.size());
+
         bulkLoadFileDAO.merge(bulkLoadFile);
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Database Persistance", termMap.size());
