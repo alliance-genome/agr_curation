@@ -37,7 +37,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene with gene start position downstream of gene end position",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_16", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_16",
          "name" : "Test gene 16",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg16"

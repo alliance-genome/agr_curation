@@ -1,19 +1,19 @@
 {
-    "subject" : {
-        "curie" : "SGD:S000005324"
-    },
-    "object" : {
-	    "curie" : "DOID:0070238"
-    },
-    "referenceList" : [
-	{
-	    "curie" : "PMID:21816947"
-	}
-    ],
-    "diseaseRelation" : "",
-    "evidenceCodes" : [
-        {
-            "curie" : "ECO:0000033"
-        }
-    ]
+   "subject" : {
+      "curie" : "SGD:S000005324"
+   },
+   "object" : {
+      "curie" : "DOID:0070238"
+   },
+   "referenceList" : [
+   {
+      "curie" : "PMID:21816947"
+   }
+   ],
+   "diseaseRelation" : "",
+   "evidenceCodes" : [
+      {
+         "curie" : "ECO:0000033"
+      }
+   ]
 }

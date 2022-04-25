@@ -37,7 +37,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene invalid strand",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_17", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_17",
          "name" : "Test gene 17",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg17"
