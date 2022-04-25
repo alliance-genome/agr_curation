@@ -1,5 +1,22 @@
 # AGR curation release notes
 
+## v0.3.0
+ * Data loading
+   * Implemented NCBITaxonTerm class (SCRUM-338)
+   * Enabled linkML format disease annotation submission (SCRUM-1203, SCRUM-122)
+   * Loaded and added UI table for read and edit of Experminetal conditions data (SCRUM-1083, SCRUM-1082, SCRUM-725, SCRUM-1153, SCRUM-1154, SCRUM-1194)
+   * Added better load reporting (counts and errors) (#289)
+   * Fixed loading consistency and performance (SCRUM-1280, SCRUM-1281)
+   * Added type suffix on data load download files (SCRUM-1067)
+ * UI improvements
+   * Added additional developer links in UI (#270, #271)
+   * Enabled data customization session persistence (SCRUM-1036)
+   * Enabled checkbox selection filter option for limited-option fields (SCRUM-1022)
+ * Other
+   * Added API authentication (SCRUM-1045)
+   * Implemented flyway as DB schema managment solution (SCRUM-1054)
+   * Serveral other fixes and improvements (#243, #245, SCRUM-853, #257, #263, #266, #274, #276, #293)
+
 ## v0.2.0
  * Added UI login (authentication) (SCRUM-1034)
  * Enabled filter for Name in Genes Table (SCRUM-1058)

@@ -163,12 +163,15 @@ public class DiseaseAnnotationValidator {
     public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity) {
         List<Note> validatedNotes = new ArrayList<Note>();
         for (Note note : uiEntity.getRelatedNotes()) {
-            note = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
-            if (note == null) {
-                addMessageResponse("relatedNotes", invalidMessage);
+            ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+            if (noteResponse.getEntity() == null) {
+                Map<String, String> errors = noteResponse.getErrorMessages();
+                for (String field : errors.keySet()) {
+                    addMessageResponse("relatedNotes", field + " - " + errors.get(field));
+                }
                 return null;
             }
-            validatedNotes.add(note);
+            validatedNotes.add(noteResponse.getEntity());
         }
         return validatedNotes;
     }
@@ -176,12 +179,15 @@ public class DiseaseAnnotationValidator {
     public List<ConditionRelation> validateConditionRelations(DiseaseAnnotation uiEntity) {
         List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
         for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
-            conditionRelation = conditionRelationValidator.validateConditionRelation(conditionRelation, false);
-            if (conditionRelation == null) {
-                addMessageResponse("conditionRelations", invalidMessage);
+            ObjectResponse<ConditionRelation> crResponse = conditionRelationValidator.validateConditionRelation(conditionRelation);
+            if (crResponse.getEntity() == null) {
+                Map<String, String> errors = crResponse.getErrorMessages();
+                for (String field : errors.keySet()) {
+                    addMessageResponse("conditionRelations", field + " - " + errors.get(field));
+                }
                 return null;
             }
-            validatedConditionRelations.add(conditionRelation);
+            validatedConditionRelations.add(crResponse.getEntity());
         }
         return validatedConditionRelations;
     }

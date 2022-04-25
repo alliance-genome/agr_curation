@@ -14,6 +14,7 @@ public class ApiErrorExceptionMapper implements ExceptionMapper<ApiErrorExceptio
     @Produces(MediaType.APPLICATION_JSON)
     public Response toResponse(ApiErrorException e) {
         log.error(e);
+        e.printStackTrace();
         Response.ResponseBuilder rb = Response.status(Response.Status.BAD_REQUEST);
         // dereference entity to make sure it's not tried to be serialized
         // due to lazy-initialization issues

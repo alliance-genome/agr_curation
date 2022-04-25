@@ -161,6 +161,8 @@ public class BulkLoadJobExecutor {
             } else if(ontologyType == OntologyBulkLoadType.ZFS) {
                 processTerms(bulkLoadFile, zfsTermService, config);
             } else if(ontologyType == OntologyBulkLoadType.XBA_XBS) {
+                config.getAltNameSpaces().add("xenopus_anatomy");
+                config.getAltNameSpaces().add("xenopus_anatomy_in_vitro");
                 processTerms(bulkLoadFile, OntologyBulkLoadType.XBA, xbaTermService, config);
                 GenericOntologyLoadConfig config2 = new GenericOntologyLoadConfig();
                 config2.getAltNameSpaces().add("xenopus_developmental_stage");

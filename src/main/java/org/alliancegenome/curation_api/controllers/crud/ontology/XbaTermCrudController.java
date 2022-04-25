@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.controllers.BaseOntologyTermControll
 import org.alliancegenome.curation_api.dao.ontology.XbaTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.XbaTermCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.XBATerm;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.XbaTermService;
 
 @RequestScoped
@@ -18,6 +19,9 @@ public class XbaTermCrudController extends BaseOntologyTermController<XbaTermSer
     @Override
     @PostConstruct
     public void init() {
+        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+        config.getAltNameSpaces().add("xenopus_anatomy");
+        config.getAltNameSpaces().add("xenopus_anatomy_in_vitro");
         setService(xbaTermService, XBATerm.class);
     }
 
