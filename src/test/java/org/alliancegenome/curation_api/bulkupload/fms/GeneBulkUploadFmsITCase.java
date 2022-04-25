@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.bulkupload.fms;
 
-import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
