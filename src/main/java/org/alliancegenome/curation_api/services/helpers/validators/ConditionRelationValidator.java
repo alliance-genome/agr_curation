@@ -35,6 +35,12 @@ public class ConditionRelationValidator {
     
     protected ObjectResponse<ConditionRelation> response;
     
+    public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
+        ConditionRelation conditionRelation = validateConditionRelation(uiEntity, false);
+        response.setEntity(conditionRelation);
+        return response;
+    }
+    
     public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, Boolean throwError) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update ConditionRelation: [" + uiEntity.getId() + "]";

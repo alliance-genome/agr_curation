@@ -28,6 +28,12 @@ public class NoteValidator {
     
     protected ObjectResponse<Note> response;
     
+    public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularyName) {
+        Note note = validateNote(uiEntity, noteVocabularyName, false);
+        response.setEntity(note);
+        return response;
+    }
+    
     public Note validateNote(Note uiEntity, String noteVocabularyName, Boolean throwError) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update Note: [" + uiEntity.getId() + "]";
@@ -43,7 +49,7 @@ public class NoteValidator {
             throw new ApiErrorException(response);
         }
         
-    VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
+        VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
         dbEntity.setNoteType(noteType);
         
         Boolean internal = validateInternal(uiEntity);
