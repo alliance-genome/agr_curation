@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
-public class ExperimentalConditionValidator {
+public class ExperimentalConditionValidator extends AuditedObjectValidator<ExperimentalCondition> {
 
     @Inject
     ExperimentalConditionDAO experimentalConditionDAO;
@@ -32,12 +32,6 @@ public class ExperimentalConditionValidator {
     NcbiTaxonTermDAO ncbiTaxonTermDAO;
     
     
-    protected String invalidMessage = "Not a valid entry";
-    protected String obsoleteMessage = "Obsolete term specified";
-    protected String requiredMessage = "Required field is empty";
-    
-    protected ObjectResponse<ExperimentalCondition> response;
-    
     public ExperimentalCondition validateCondition(ExperimentalCondition uiEntity) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
@@ -53,6 +47,8 @@ public class ExperimentalConditionValidator {
             throw new ApiErrorException(response);
             // do not continue validation for update if Disease Annotation ID has not been found
         }
+        
+        dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
         
         ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
         dbEntity.setConditionClass(conditionClass);
@@ -221,14 +217,5 @@ public class ExperimentalConditionValidator {
             return null;
         }
         return conditionStatement;
-    }
-
-    
-    protected void addMessageResponse(String message) {
-        response.setErrorMessage(message);
-    }
-    
-    protected void addMessageResponse(String fieldName, String message) {
-        response.addErrorMessage(fieldName, message);
     }
 }

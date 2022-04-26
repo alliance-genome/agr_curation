@@ -1,11 +1,9 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.time.OffsetDateTime;
 import java.util.*;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.dao.ontology.*;
@@ -15,7 +13,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
-public class DiseaseAnnotationValidator {
+public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
     @Inject
     EcoTermDAO ecoTermDAO;
@@ -31,17 +29,6 @@ public class DiseaseAnnotationValidator {
     NoteValidator noteValidator;
     @Inject
     ConditionRelationValidator conditionRelationValidator;
-    
-    @Inject
-    @AuthenticatedUser
-    protected Person authenticatedPerson;
-    
-    protected String invalidMessage = "Not a valid entry";
-    protected String obsoleteMessage = "Obsolete term specified";
-    protected String requiredMessage = "Required field is empty";
-    protected String dependencyMessagePrefix = "Invalid without value for ";
-    
-    protected ObjectResponse<DiseaseAnnotation > response;
     
     public DOTerm validateObject(DiseaseAnnotation  uiEntity, DiseaseAnnotation  dbEntity) {
         String field = "object";
@@ -193,6 +180,8 @@ public class DiseaseAnnotationValidator {
     }
     
     public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+        dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+        
         if (uiEntity.getModEntityId() != null)
             dbEntity.setModEntityId(uiEntity.getModEntityId());
 
@@ -223,12 +212,6 @@ public class DiseaseAnnotationValidator {
         String createdBy = validateCreatedBy(uiEntity);
         if (createdBy != null) dbEntity.setCreatedBy(createdBy);
 
-        if (uiEntity.getCreationDate() != null)
-            dbEntity.setCreationDate(uiEntity.getCreationDate());
-        
-        dbEntity.setDateLastModified(OffsetDateTime.now());
-        dbEntity.setModifiedBy(authenticatedPerson.getFirstName() + " " + authenticatedPerson.getLastName());
-        
         if (uiEntity.getSecondaryDataProvider() != null)
             dbEntity.setSecondaryDataProvider(uiEntity.getSecondaryDataProvider());
     
@@ -257,13 +240,5 @@ public class DiseaseAnnotationValidator {
             dbEntity.setSingleReference(uiEntity.getSingleReference());
         
         return dbEntity;
-    }
-    
-    protected void addMessageResponse(String message) {
-        response.setErrorMessage(message);
-    }
-    
-    protected void addMessageResponse(String fieldName, String message) {
-        response.addErrorMessage(fieldName, message);
     }
 }
