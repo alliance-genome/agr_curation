@@ -4,29 +4,29 @@
       "affectedGenomicModelComponents": [
         {
           "alleleID": "TEST:TestAllele00001",
-          "zygosity": "GENO:0000136"
+          "zygosity": "GENO:000013X"
         }
       ],
       "crossReference": {
-        "id": "TEST:TestAGM00001",
+        "id": "TEST:TestAGM00017",
         "pages": [
           "genotype"
         ]
       },
-      "name": "Test AGM 1",
+      "name": "Test AGM 17",
       "parentalPopulationIDs": [
         "TEST:TestComponent00001"
       ],
-      "primaryID": "TEST:TestAGM00001",
+      "primaryID": "TEST:TestAGM00017",
       "secondaryIds": [
-        "TEST:AGM1"
+        "TEST:AGM17"
       ],
       "sequenceTargetingReagentIDs": [
         "TEST:TestSTR00001"
       ],
       "subtype": "genotype",
       "synonyms": [
-        "TAGM1"
+        "TAGM17"
       ],
       "taxonId": "NCBITaxon:10090"
     }

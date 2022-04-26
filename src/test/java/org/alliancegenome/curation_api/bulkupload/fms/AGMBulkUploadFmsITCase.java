@@ -506,8 +506,8 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    // TODO: adjust count (and subsequent test counts) once loading and validation of STRs in place
-    @Test
+    // TODO: re-enable test once loading and validation of STRs in place
+    // @Test
     @Order(18)
     public void agmBulkUploadInvalidSequenceTargetingReagentId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/18_invalid_str_id.json"));
@@ -529,9 +529,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)).
-            body("results", hasSize(1)).
-            body("results[0].curie", is("TEST:TestAGM00018"));
+            body("totalResults", is(0));
     }
 
     @Test
