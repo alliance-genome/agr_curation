@@ -125,6 +125,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[0].negated", is(true)).
+            body("results[0].internal", is(false)).
             body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[0].with", hasSize(1)).
@@ -190,6 +191,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[1].negated", is(true)).
+            body("results[1].internal", is(false)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[1].with", hasSize(1)).
@@ -254,6 +256,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[2].negated", is(true)).
+            body("results[2].internal", is(false)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[2].with", hasSize(1)).
@@ -1434,7 +1437,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(0)); 
+            body("totalResults", is(1)).
+            body("results[0].relatedNotes[0].internal", is(true));  // should be set to true be default
     }
     
     @Test
@@ -1597,8 +1601,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)).
-            body("results[0].uniqueId", is("DATEST:Annot0060")); 
+            body("totalResults", is(1));
     }
     
     @Test
@@ -1715,6 +1718,54 @@ public class DiseaseAnnotationBulkUploadITCase {
             then().
             statusCode(200).
             body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(65)
+    public void diseaseAnnotationBulkUploadNoInternal() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/66_no_internal.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)).
+            body("results[0].internal", is(false)); // should default to false 
+    }
+    
+    @Test
+    @Order(67)
+    public void diseaseAnnotationBulkUploadNoConditionRelationsInternal() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/67_no_condition_relations_internal.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)).
+            body("results[0].conditionRelations[0].conditions[0].internal", is(false)); //should default to false
     }
     
     private void loadRequiredEntities() throws Exception {

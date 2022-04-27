@@ -86,7 +86,8 @@ public class ExperimentalConditionITCase {
                 then().
                 statusCode(200).
                 body("entity.conditionClass.curie", is("ZECO:ec0001")).
-                body("entity.conditionStatement", is("CRUD:Statement1"));
+                body("entity.conditionStatement", is("CRUD:Statement1")).
+                body("entity.internal", is(false));
     }
 
     @Test
@@ -105,6 +106,7 @@ public class ExperimentalConditionITCase {
         editedExperimentalCondition.setConditionChemical(testChebiTerm);
         editedExperimentalCondition.setConditionFreeText("Free text");
         editedExperimentalCondition.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition));
+        editedExperimentalCondition.setInternal(true);
         
         RestAssured.given().
                 contentType("application/json").
@@ -126,7 +128,8 @@ public class ExperimentalConditionITCase {
                 body("entity.conditionTaxon.curie", is("NCBITaxon:9606")).
                 body("entity.conditionChemical.curie", is("CHEBI:ec0001")).
                 body("entity.conditionFreeText", is("Free text")).
-                body("entity.conditionSummary", is("Test ZecoTerm:Test ZecoTerm:Test ZFATerm:Test GOTerm:Test CHEBITerm:Test NCBITaxonTerm:Amount:Free text"));
+                body("entity.conditionSummary", is("Test ZecoTerm:Test ZecoTerm:Test ZFATerm:Test GOTerm:Test CHEBITerm:Test NCBITaxonTerm:Amount:Free text")).
+                body("entity.internal", is(true));
         
     }
 

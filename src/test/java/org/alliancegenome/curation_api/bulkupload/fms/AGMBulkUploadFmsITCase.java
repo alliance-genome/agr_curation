@@ -68,6 +68,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00001")).
             body("results[0].taxon.curie", is("NCBITaxon:10090")).
             body("results[0].name", is( "Test AGM 1")).
+            body("results[0].internal", is(false)).
             body("results[0].synonyms[0].name", is("TAGM1")).
             body("results[0].crossReferences[0].curie", is("TEST:TestAGM00001")).
             body("results[0].secondaryIdentifiers[0]", is("TEST:AGM1")).

@@ -48,6 +48,7 @@ public class AlleleITCase {
                 body("entity.curie", is(ALLELE_CURIE)).
                 body("entity.symbol", is(ALLELE_SYMBOL)).
                 body("entity.taxon.curie", is(ALLELE_TAXON)).
+                body("entity.internal", is(false)).
                 body("entity.description", is(ALLELE_DESCRIPTION));
     }
 
@@ -57,6 +58,7 @@ public class AlleleITCase {
         allele.setSymbol("Allele<sup>edited</sup>");
         allele.setDescription("Edited allele description");
         allele.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+        allele.setInternal(true);
 
         RestAssured.given().
                 contentType("application/json").
@@ -74,6 +76,7 @@ public class AlleleITCase {
                 body("entity.curie", is(ALLELE_CURIE)).
                 body("entity.symbol", is("Allele<sup>edited</sup>")).
                 body("entity.taxon.curie", is("NCBITaxon:9606")).
+                body("entity.internal", is(true)).
                 body("entity.description", is("Edited allele description"));
     }
 

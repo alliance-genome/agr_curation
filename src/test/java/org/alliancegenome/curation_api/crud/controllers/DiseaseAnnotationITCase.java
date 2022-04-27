@@ -164,6 +164,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseRelation.name", is("is_implicated_in")).
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
+                body("entity.internal", is(false)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
     }
 
@@ -200,6 +201,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseRelation.name", is("is_implicated_in")).
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
+                body("entity.internal", is(false)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
     }
 
@@ -236,6 +238,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseRelation.name", is("is_model_of")).
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
+                body("entity.internal", is(false)).
                 body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
     }
 
@@ -268,6 +271,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         editedDiseaseAnnotation.setConditionRelations(conditionRelations);
+        editedDiseaseAnnotation.setInternal(true);
         
         RestAssured.given().
                 contentType("application/json").
@@ -302,6 +306,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.conditionRelations[0].conditionRelationType.name", is("relation_type")).
                 body("entity.conditionRelations[0].conditions[0].conditionStatement", is("Statement")).
                 body("entity.modifiedBy", is("Local Dev User")).
+                body("entity.internal", is(true)).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
     }
@@ -329,6 +334,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setInternal(true);
         
         RestAssured.given().
                 contentType("application/json").
@@ -359,6 +365,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.modifiedBy", is("Local Dev User")).
+                body("entity.internal", is(true)).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
@@ -387,6 +394,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
+        editedDiseaseAnnotation.setInternal(true);
         
         RestAssured.given().
                 contentType("application/json").
@@ -416,6 +424,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
+                body("entity.internal", is(true)).
                 body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.createdBy", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
