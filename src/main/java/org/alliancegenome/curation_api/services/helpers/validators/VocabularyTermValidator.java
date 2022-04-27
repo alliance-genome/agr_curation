@@ -59,6 +59,9 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
             dbEntity.setObsolete(uiEntity.getObsolete());
         }
         
+        if (uiEntity.getInternal() != null)
+            dbEntity.setInternal(uiEntity.getInternal());
+        
         Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
         dbEntity.setVocabulary(vocabulary);
         

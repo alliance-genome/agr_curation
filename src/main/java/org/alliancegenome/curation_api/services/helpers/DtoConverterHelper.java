@@ -16,6 +16,7 @@ public class DtoConverterHelper {
                 .map(s -> {
                     Synonym syn = new Synonym();
                     syn.setName(s);
+                    syn.setInternal(false);
                     return syn;
                 }).collect(toList());
     }
@@ -27,6 +28,7 @@ public class DtoConverterHelper {
                 .map(s -> {
                     Synonym syn = new Synonym();
                     syn.setName(s);
+                    syn.setInternal(false);
                     return syn;
                 }).collect(toList());
     }
@@ -38,6 +40,7 @@ public class DtoConverterHelper {
                 .map(s -> {
                     Synonym syn = new Synonym();
                     syn.setName(s);
+                    syn.setInternal(false);
                     return syn;
                 }).collect(toList());
     }

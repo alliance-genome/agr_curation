@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -111,6 +112,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
                     // reference of annotation equals the reference of the experiment
                     relation.setSingleReference(annotation.getSingleReference());
                 }
+                if (conditionRelationDTO.getInternal() == null) {
+                    throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without internal flag - skipping");
+                } else {
+                    relation.setInternal(conditionRelationDTO.getInternal());
+                }
 
                 relation.setUniqueId(DiseaseAnnotationCurie.getConditionRelationUnique(relation));
                 // reuse existing condition relation
@@ -151,13 +157,15 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     }
 
     public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
-        if (dto.getObject() == null || dto.getDiseaseRelation() == null || dto.getDataProvider() == null || dto.getSingleReference() == null ||
-                CollectionUtils.isEmpty(dto.getEvidenceCodes()) || dto.getCreatedBy() == null || dto.getModifiedBy() == null) {
+        if (StringUtils.isEmpty(dto.getObject()) || StringUtils.isEmpty(dto.getDiseaseRelation()) || StringUtils.isEmpty(dto.getDataProvider()) ||
+                StringUtils.isEmpty(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
+                StringUtils.isEmpty(dto.getCreatedBy()) || StringUtils.isEmpty(dto.getModifiedBy()) || dto.getInternal() == null) {
             throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
         annotation.setDataProvider(dto.getDataProvider());
         annotation.setCreatedBy(dto.getCreatedBy());
         annotation.setModifiedBy(dto.getModifiedBy());
+        annotation.setInternal(dto.getInternal());
         
         if (dto.getDateLastModified() != null) {
             OffsetDateTime dateLastModified;

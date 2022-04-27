@@ -87,6 +87,7 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
             m.setFormula(molecule.getFormula());
             m.setSmiles(molecule.getSmiles());
             m.setSynonyms(molecule.getSynonyms());
+            m.setInternal(false);
                 
             moleculeDAO.persist(m); 
         

@@ -91,6 +91,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
 
         g.setSymbol(gene.getSymbol());
         g.setName(gene.getName());
+        g.setInternal(false);
         
         g.setTaxon(ncbiTaxonTermDAO.find(gene.getBasicGeneticEntity().getTaxonId()));
         g.setGeneType(soTermDAO.find(gene.getSoTermId()));
@@ -213,8 +214,6 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     }
 
     private void validateGeneDTO(GeneFmsDTO dto) throws ObjectValidationException {
-        // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
-
         // Check for required fields
         if (dto.getBasicGeneticEntity().getPrimaryId() == null || dto.getBasicGeneticEntity().getTaxonId() == null) {
             throw new ObjectValidationException(dto, "Entry for gene " + dto.getBasicGeneticEntity().getPrimaryId() + " missing required fields - skipping");
