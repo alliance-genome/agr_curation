@@ -1,6 +1,7 @@
 [
   {
     "mod_entity_id": "DATEST:Annot0030",
+    "internal": false,
     "subject": "DATEST:Gene0001",
     "object": "DATEST:Disease0001",
     "data_provider": "TEST",
@@ -15,6 +16,7 @@
     "condition_relations": [
       {
         "condition_relation_type": "exacerbated_by",
+        "internal": false,
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
