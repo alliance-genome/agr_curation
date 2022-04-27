@@ -87,7 +87,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 
 
     @Transactional
-    public void processUpdate(AffectedGenomicModelFmsDTO agm) throws ObjectUpdateException {
+    public AffectedGenomicModel processUpdate(AffectedGenomicModelFmsDTO agm) throws ObjectUpdateException {
         // TODO: add loading of components
         // TODO: add loading of sequenceTargetingReagents
         // TODO: add loading of parentalPopulations
@@ -114,6 +114,8 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         handleSecondaryIds(agm, dbAgm);
 
         affectedGenomicModelDAO.persist(dbAgm);
+
+        return dbAgm;
     }
 
     private void handleCrossReference(AffectedGenomicModelFmsDTO agm, AffectedGenomicModel dbAgm) {

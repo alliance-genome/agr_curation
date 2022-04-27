@@ -1,19 +1,19 @@
 {
-    "subject": {
-        "curie": "WB:WBGene00005643"
-    },
-    "object" : {
-	    "curie" : "DOID:14681"
-    },
-    "referenceList" : [
-	    {
-	        "curie" : "PMID:12829789"
-	    }
-    ],
-    "diseaseRelation" : "is_implicated_in",
-    "evidenceCodes" : [
-        {
-            "curie" : "ECO:0000098"
-        }
-    ]
+   "subject": {
+      "curie": "WB:WBGene00005643"
+   },
+   "object" : {
+      "curie" : "DOID:14681"
+   },
+   "referenceList" : [
+      {
+         "curie" : "PMID:12829789"
+      }
+   ],
+   "diseaseRelation" : "is_implicated_in",
+   "evidenceCodes" : [
+      {
+         "curie" : "ECO:0000098"
+      }
+   ]
 }

@@ -22,7 +22,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene with all fields populated except crossReferences",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_2", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_2",
          "name" : "Test gene 2",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg2"
