@@ -46,4 +46,7 @@ public class ExperimentalConditionDTO {
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("condition_free_text")
     private String conditionFreeText;
+    
+    @JsonView({View.FieldsOnly.class})
+    private Boolean internal = false;
 }

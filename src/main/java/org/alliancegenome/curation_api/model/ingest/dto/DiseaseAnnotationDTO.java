@@ -36,6 +36,9 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     private Boolean negated = false;
+    
+    @JsonView({View.FieldsOnly.class})
+    private Boolean internal = false;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("predicate")

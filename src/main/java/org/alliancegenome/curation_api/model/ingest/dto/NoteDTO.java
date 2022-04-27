@@ -13,7 +13,7 @@ import lombok.*;
 public class NoteDTO {
     
     @JsonView({View.FieldsOnly.class})
-    private Boolean internal;
+    private Boolean internal = true;
     
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("free_text")
