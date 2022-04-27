@@ -52,6 +52,7 @@ public class NcbiTaxonTermDAO extends BaseSQLDAO<NCBITaxonTerm> {
         NCBITaxonTerm taxon = new NCBITaxonTerm();
         taxon.setName(name);
         taxon.setCurie(taxonCurie);
+        taxon.setInternal(false);
         if (taxonMap.get("status").equals("active")) {
             taxon.setObsolete(false);
         } else {
