@@ -17,7 +17,7 @@ jobs:
       id: vars
       shell: bash
       run: |
-        echo "##[set-output name=tagname;]$(git describe)"
+        echo "##[set-output name=tagname;]$(git describe --tags)"
     # This step will configure environment variables to be used by all steps
     # involving AWS interaction further down
     - name: AWS credentials configuration
@@ -74,7 +74,7 @@ jobs:
       id: vars
       shell: bash
       run: |
-        echo "##[set-output name=tagname;]$(git describe)"
+        echo "##[set-output name=tagname;]$(git describe --tags)"
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
         sed -i.bak "s/0.0.0/${{ steps.vars.outputs.tagname }}/g" .ebextensions/version.config

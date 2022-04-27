@@ -70,7 +70,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     }
 
     @Transactional
-    public void processUpdate(GeneFmsDTO gene) throws ObjectUpdateException {
+    public Gene processUpdate(GeneFmsDTO gene) throws ObjectUpdateException {
         //log.info("processUpdate Gene: ");
 
         validateGeneDTO(gene);
@@ -101,6 +101,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
 
         geneDAO.persist(g);
 
+        return g;
     }
 
     private void handleSecondaryIds(GeneFmsDTO geneFmsDTO, Gene gene) {

@@ -1,8 +1,8 @@
 {
    "data" : [
-       {
-	  "additionalField" : "Not in BGI ingest schema", 
-          "basicGeneticEntity" : {
+      {
+         "additionalField" : "Not in BGI ingest schema",
+         "basicGeneticEntity" : {
             "crossReferences" : [
                {
                   "id" : "TEST:xref13a"
@@ -38,7 +38,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene with additional field not in BGI schema",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_13", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_13",
          "name" : "Test gene 13",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg13"

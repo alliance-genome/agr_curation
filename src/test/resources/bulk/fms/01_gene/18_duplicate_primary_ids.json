@@ -37,7 +37,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Duplicate primaryId - entry 1 of 2",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_18_1", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_18_1",
          "name" : "Test gene 18_1",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg18_1"
@@ -79,7 +79,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Duplicate primaryId - entry 2 of 2",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_18_2", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_18_2",
          "name" : "Test gene 18_2",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg18_2"

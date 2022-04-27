@@ -32,6 +32,17 @@ public class AGMBulkUploadFmsITCase {
     @Test
     @Order(1)
     public void agmBulkUploadCheckFields() throws Exception {
+        // Load required gene (objectRelation of Allele that is required as affectedGenomicModelComponents of AGM)
+        String gene_content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/01_all_fields.json"));
+
+        RestAssured.given().
+            contentType("application/json").
+            body(gene_content).
+            when().
+            post("/api/gene/bulk/bgifile").
+            then().
+            statusCode(200);
+
         // Load required allele (affectedGenomicModelComponents of AGM)
         String allele_content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/01_all_fields.json"));
 
@@ -93,7 +104,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -101,7 +112,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(2));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00002"));
     }
 
     @Test
@@ -118,7 +131,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -126,7 +139,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(2));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -143,7 +156,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -151,7 +164,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(2));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -168,7 +181,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -176,7 +189,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00005"));
     }
 
     @Test
@@ -193,7 +208,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -201,7 +216,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(3)); //no entity added due to missing ID
+            body("totalResults", is(0)); //no entity added due to missing ID
     }
 
     @Test
@@ -218,7 +233,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -226,7 +241,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(4));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00007"));
     }
 
     @Test
@@ -243,7 +260,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -251,7 +268,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(4)); // Name is required field so entity skipped in load
+            body("totalResults", is(0)); // Name is required field so entity skipped in load
     }
 
     @Test
@@ -268,7 +285,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -276,7 +293,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00009"));
     }
 
     @Test
@@ -293,7 +312,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -301,7 +320,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(5)); // PrimaryID is required field so entity skipped in load
+            body("totalResults", is(0)); // PrimaryID is required field so entity skipped in load
     }
 
     @Test
@@ -318,7 +337,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -326,7 +345,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(6));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00011"));
     }
 
     @Test
@@ -343,7 +364,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -351,7 +372,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(7));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00012"));
     }
 
     @Test
@@ -368,7 +391,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -376,7 +399,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(8));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00013"));
     }
 
     @Test
@@ -393,7 +418,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -401,7 +426,9 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(9));
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00014"));
     }
 
     @Test
@@ -418,15 +445,16 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (failed load expected but no TaxonId => no entity removal, expect previously loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
             body("{}").
             post("/api/agm/find?limit=10&page=0").
             then().
-            statusCode(200).
-            body("totalResults", is(9)); // taxonId is a required field so entity skipped in load;
+            body("totalResults", is(1)).
+            body("results", hasSize(1)).
+            body("results[0].curie", is("TEST:TestAGM00014")); // taxonId is a required field so entity skipped in load;
     }
 
     @Test
@@ -443,7 +471,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -451,7 +479,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(9));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -468,7 +496,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -476,11 +504,11 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(9));
+            body("totalResults", is(0));
     }
 
-    // TODO: adjust count (and subsequent test counts) once loading and validation of STRs in place
-    @Test
+    // TODO: re-enable test once loading and validation of STRs in place
+    // @Test
     @Order(18)
     public void agmBulkUploadInvalidSequenceTargetingReagentId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/18_invalid_str_id.json"));
@@ -494,7 +522,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (expect loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -502,7 +530,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(10));
+            body("totalResults", is(0));
     }
 
     @Test
@@ -519,7 +547,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(400);
         
-        // check entity count
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -527,7 +555,7 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(10));
+            body("totalResults", is(0));
     }
     
     // NOTE: validation currently only based on regex, not DB lookup
@@ -545,7 +573,7 @@ public class AGMBulkUploadFmsITCase {
             then().
             statusCode(200);
         
-        // check entity count
+        // check load (failed load expected but invalid TaxonId => no entity removal, expect previously loaded entity only)
         RestAssured.given().
             when().
             header("Content-Type", "application/json").
@@ -553,6 +581,6 @@ public class AGMBulkUploadFmsITCase {
             post("/api/agm/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(10));
+            body("totalResults", is(0));
     }   
 }

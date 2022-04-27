@@ -1,9 +1,7 @@
 package org.alliancegenome.curation_api.bulkupload.fms;
 
-import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.*;
@@ -86,7 +84,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -94,7 +92,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(2));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00002"));
     }
 
     @Test
@@ -111,7 +111,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -119,7 +119,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(3));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00003"));
     }
 
     @Test
@@ -136,7 +138,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -144,7 +146,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(4));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00005"));
     }
 
     @Test
@@ -161,7 +165,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -169,7 +173,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(5));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00006"));
     }
 
     @Test
@@ -186,7 +192,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (failed load expected but no TaxonId => no entity removal, expect previously loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -194,7 +200,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(5)); // no genes added
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00006")); // no genes added
     }
 
     @Test
@@ -211,7 +219,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -219,7 +227,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(6));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00008"));
     }
 
     @Test
@@ -236,7 +246,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -244,7 +254,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(7));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00009"));
     }
 
     @Test
@@ -261,7 +273,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -269,7 +281,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(8));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00010"));
     }
 
     @Test
@@ -286,7 +300,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -294,7 +308,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(9));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00011"));
     }
 
     @Test
@@ -311,15 +327,17 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
 
-        // check if all the fields are correctly read
-                RestAssured.given().
+        // check load (expect loaded entity only)
+        RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
                 body("{}").
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(10));
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00012"));
     }
 
     @Test
@@ -349,7 +367,8 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
-        
+
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -357,7 +376,7 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(10)); // no genes added
+                body("totalResults", is(0)); // no genes added
     }
 
     @Test
@@ -372,7 +391,8 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
-        
+
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -380,7 +400,7 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(10)); // no genes added
+                body("totalResults", is(0)); // no genes added
     }
 
     @Test
@@ -396,6 +416,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
         
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -403,7 +424,7 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(10)); // no genes added
+                body("totalResults", is(0)); // no genes added
     }
 
     @Test
@@ -419,6 +440,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
         
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -426,7 +448,7 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(10)); // no genes added
+                body("totalResults", is(0)); // no genes added
     }
 
     @Test
@@ -442,6 +464,7 @@ public class GeneBulkUploadFmsITCase {
                 then().
                 statusCode(200);
         
+        // check entity count (failed load expected => 0 entities in DB after load)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -449,7 +472,7 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(10)); // no genes added
+                body("totalResults", is(0)); // no genes added
     }
 
     @Test
@@ -464,7 +487,8 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/bulk/bgifile").
                 then().
                 statusCode(200);
-        
+
+        // check load (expect loaded entity only)
         RestAssured.given().
                 when().
                 header("Content-Type", "application/json").
@@ -472,7 +496,9 @@ public class GeneBulkUploadFmsITCase {
                 post("/api/gene/find?limit=10&page=0").
                 then().
                 statusCode(200).
-                body("totalResults", is(11)); // single gene added
+                body("totalResults", is(1)).
+                body("results", hasSize(1)).
+                body("results[0].curie", is("TEST:TestGene00018")); // single gene added
     }
     
     private void createSoTerm(String curie, String name) {

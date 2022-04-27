@@ -5,7 +5,7 @@ AWS_DEFAULT_REGION := us-east-1
 NET?=alpha
 ENV_NAME?=curation-${NET}
 
-GIT_VERSION = $(shell git describe)
+GIT_VERSION = $(shell git describe --tags)
 
 .PHONY: docker all
 
