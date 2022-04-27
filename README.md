@@ -388,7 +388,7 @@ In order to promote changes from beta to production:
 6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
    to deploy this code successfully to the production environment.
 7. After release creation and deployment, the production branch must be merged back to beta,
-   in order to make the release tag reachable from beta (and report the correct version number through `git describe`).
+   in order to make the release tag reachable from beta (and report the correct version number through `git describe --tags`).
    There are two ways you can do this:
       * Merge locally and push the changes directly to github
          ```bash
