@@ -30,12 +30,10 @@ import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 
 export const DiseaseAnnotationsTable = () => {
-  // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-  //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   const defaultColumnOptions = [
     "Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease","Evidence Code", "With", "Reference", "Experimental Conditions",
     "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation","Genetic Modifier", "Related Notes",
-    "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date",
+    "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Internal"
   ];
 
   let initialTableState = {
@@ -69,7 +67,7 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
   const annotationTypeTerms = useControlledVocabularyService('Annotation types')
-  const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
+  const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
   const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
   const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
@@ -252,6 +250,12 @@ export const DiseaseAnnotationsTable = () => {
   const negatedTemplate = (rowData) => {
     if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
       return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
+    }
+  };
+  
+  const internalTemplate = (rowData) => {
+    if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
+      return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
     }
   };
 
@@ -532,12 +536,33 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <TrueFalseDropdown
-          options={negatedTerms}
+          options={booleanTerms}
           editorChange={onNegatedEditorValueChange}
           props={props}
           field={"negated"}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
+      </>
+    );
+  };
+  
+  const onInternalEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    if (event.value || event.value === '') {
+      updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
+    }
+  };
+
+  const internalEditor = (props) => {
+    return (
+      <>
+        <TrueFalseDropdown
+          options={booleanTerms}
+          editorChange={onInternalEditorValueChange}
+          props={props}
+          field={"internal"}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
       </>
     );
   };
@@ -1014,6 +1039,15 @@ export const DiseaseAnnotationsTable = () => {
     filter: true,
     filterType: "Date",
     filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
+  },
+  {
+    field: "internal",
+    header: "Internal",
+    body: internalTemplate,
+    filter: true,
+    filterElement: FilterComponentDropDownTemplate("internalFilter", "internal", [{ text: "true" }, { text: "false" }], "text"),
+    sortable: isEnabled,
+    editor: (props) => internalEditor(props)
   },
   ];
 
