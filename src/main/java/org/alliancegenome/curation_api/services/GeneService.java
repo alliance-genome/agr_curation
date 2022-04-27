@@ -91,7 +91,6 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
 
         g.setSymbol(gene.getSymbol());
         g.setName(gene.getName());
-        g.setInternal(false);
         
         g.setTaxon(ncbiTaxonTermDAO.find(gene.getBasicGeneticEntity().getTaxonId()));
         g.setGeneType(soTermDAO.find(gene.getSoTermId()));

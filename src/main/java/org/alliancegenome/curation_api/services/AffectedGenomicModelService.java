@@ -112,7 +112,6 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         dbAgm.setName(agm.getName().substring(0, Math.min(agm.getName().length(), 254)));
         dbAgm.setTaxon(ncbiTaxonTermDAO.find(agm.getTaxonId()));
         dbAgm.setSubtype(agm.getSubtype());
-        dbAgm.setInternal(false);
 
         handleCrossReference(agm, dbAgm);
         handleSecondaryIds(agm, dbAgm);

@@ -204,7 +204,6 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
         T term = clazz.getDeclaredConstructor().newInstance();
         term.setObsolete(false);
-        term.setInternal(false);
         
         
         EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {

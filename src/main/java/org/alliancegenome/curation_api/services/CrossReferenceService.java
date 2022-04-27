@@ -32,7 +32,6 @@ public class CrossReferenceService extends BaseCrudService<CrossReference, Cross
         if(crossReference == null) {
             crossReference = new CrossReference();
             crossReference.setCurie(crossReferenceFmsDTO.getId());
-            crossReference.setInternal(false);
             crossReferenceDAO.persist(crossReference);
         }
 

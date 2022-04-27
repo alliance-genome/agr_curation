@@ -255,7 +255,6 @@ public class DiseaseAnnotationFmsService extends BaseCrudService<DiseaseAnnotati
             }
             annotation.setWith(withGenes);
         }
-        annotation.setInternal(false);
 
         return annotation;
     }

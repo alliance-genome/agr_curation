@@ -68,7 +68,6 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         dbAllele.setSymbol(allele.getSymbol());
         dbAllele.setDescription(allele.getDescription());
         dbAllele.setTaxon(ncbiTaxonTermDAO.find(allele.getTaxonId()));
-        dbAllele.setInternal(false);
 
         handleCrossReferences(allele, dbAllele);
         handleSecondaryIds(allele, dbAllele);
