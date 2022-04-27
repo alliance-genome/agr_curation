@@ -124,6 +124,12 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
             throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
         }
         experimentalCondition.setConditionStatement(dto.getConditionStatement());
+        if (dto.getInternal() != null) {
+            experimentalCondition.setInternal(dto.getInternal());
+        }
+        else {
+            throw new ObjectValidationException(dto, "Internal is a required field - skipping annotation");
+        }
         
         String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
         experimentalCondition.setConditionSummary(conditionSummary);
