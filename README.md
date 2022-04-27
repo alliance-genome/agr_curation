@@ -432,7 +432,8 @@ to ensure the new version of the application can function in a consistent state 
    This can be achieved by terminating the environment's running EC2 instance or (more quickly)
    by connecting into the server as admin through ssh, and restarting the docker container:
    ```bash
-   sudo docker restart agr.curation.${NET}.api.server
+   cd /var/app/current/
+   sudo docker-compose restart
    ```
 6. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
    and follow-up through log server to ensure reindexing completed successfully before executing the next.
