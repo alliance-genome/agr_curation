@@ -12,9 +12,9 @@ import javax.ws.rs.container.*;
 import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
 
-import org.alliancegenome.curation_api.dao.PersonDAO;
+import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
 import org.alliancegenome.curation_api.interfaces.okta.*;
-import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -33,9 +33,9 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Inject
     @AuthenticatedUser
-    Event<Person> userAuthenticatedEvent;
+    Event<LoggedInPerson> userAuthenticatedEvent;
 
-    @Inject PersonDAO personDAO;
+    @Inject LoggedInPersonDAO loggedInPersonDAO;
 
     @ConfigProperty(name = "okta.authentication")
     Instance<Boolean> okta_auth;
@@ -73,7 +73,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 } else {
                     String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
     
-                    Person person = validateToken(token);
+                    LoggedInPerson person = validateToken(token);
                     if(person != null) {
                         userAuthenticatedEvent.fire(person);
                     } else {
@@ -98,14 +98,14 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private void loginDevUser() {
         log.debug("OKTA Authentication Disabled using Test Dev User");
-        SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
+        SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findPersonByOktaEmail("test@alliancegenome.org");
         if(res == null) {
-            Person person = new Person();
+            LoggedInPerson person = new LoggedInPerson();
             person.setApiToken(UUID.randomUUID().toString());
-            person.setEmail("test@alliancegenome.org");
+            person.setOktaEmail("test@alliancegenome.org");
             person.setFirstName("Local");
             person.setLastName("Dev User");
-            personDAO.persist(person);
+            loggedInPersonDAO.persist(person);
             userAuthenticatedEvent.fire(person);
         } else {
             userAuthenticatedEvent.fire(res.getResults().get(0));
@@ -113,7 +113,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     // Check Okta(token), Check DB ApiToken(token), else return null
-    private Person validateToken(String token) {
+    private LoggedInPerson validateToken(String token) {
 
         OktaTokenInterface oti = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url.get());
 
@@ -122,7 +122,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
 
         if(info.getUid() == null || info.getUid().length() == 0) {
-            SearchResponse<Person> res = personDAO.findByField("apiToken", token);
+            SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
             if(res != null && res.getResults().size() == 1) {
                 log.info("User Found in local DB via: " + token);
                 return res.getResults().get(0);
@@ -138,20 +138,20 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             User user = client.getUser(info.getUid());
 
             if(user != null) {
-                SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
+                SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findPersonByOktaEmail(user.getProfile().getEmail());
                 if(res == null) {
-                    Person person = new Person();
+                    LoggedInPerson person = new LoggedInPerson();
                     person.setApiToken(UUID.randomUUID().toString());
-                    person.setEmail(user.getProfile().getEmail());
+                    person.setOktaEmail(user.getProfile().getEmail());
                     person.setFirstName(user.getProfile().getFirstName());
                     person.setLastName(user.getProfile().getLastName());
-                    personDAO.persist(person);
+                    loggedInPersonDAO.persist(person);
                     return person;
                 } else {
                     return res.getResults().get(0);
                 }
             } else {
-                SearchResponse<Person> res = personDAO.findByField("apiToken", token);
+                SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
                 if(res != null && res.getResults().size() == 1) {
                     return res.getResults().get(0);
                 }

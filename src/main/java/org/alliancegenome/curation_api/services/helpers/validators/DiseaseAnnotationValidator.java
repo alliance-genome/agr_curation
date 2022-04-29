@@ -104,9 +104,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
         return dataProvider;
     }
     
-    public String validateCreatedBy(DiseaseAnnotation uiEntity) {
+    public Person validateCreatedBy(DiseaseAnnotation uiEntity) {
         // TODO: re-enable error response once field can be added in UI
-        String createdBy = uiEntity.getCreatedBy();
+        Person createdBy = uiEntity.getCreatedBy();
         if (createdBy == null) {
             // addMessageResponse("createdBy", requiredMessage);
             return null;
@@ -209,7 +209,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
         String dataProvider = validateDataProvider(uiEntity);
         if (dataProvider != null) dbEntity.setDataProvider(dataProvider);
 
-        String createdBy = validateCreatedBy(uiEntity);
+        Person createdBy = validateCreatedBy(uiEntity);
         if (createdBy != null) dbEntity.setCreatedBy(createdBy);
 
         if (uiEntity.getSecondaryDataProvider() != null)

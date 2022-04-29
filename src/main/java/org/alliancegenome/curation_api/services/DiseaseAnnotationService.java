@@ -67,6 +67,8 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
     BiologicalEntityDAO biologicalEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
+    @Inject
+    PersonService personService;
 
     @Override
     @PostConstruct
@@ -163,8 +165,12 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
             throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
         }
         annotation.setDataProvider(dto.getDataProvider());
-        annotation.setCreatedBy(dto.getCreatedBy());
-        annotation.setModifiedBy(dto.getModifiedBy());
+        
+        Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+        annotation.setCreatedBy(createdBy);
+        Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
+        annotation.setModifiedBy(modifiedBy);
+        
         annotation.setInternal(dto.getInternal());
         
         if (dto.getDateLastModified() != null) {

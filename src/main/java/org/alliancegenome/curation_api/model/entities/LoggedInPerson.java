@@ -31,4 +31,6 @@ public class LoggedInPerson extends Person {
     @Column(unique = true)
     private String oktaEmail;
 
+    @JsonView({View.FieldsOnly.class})
+    private String apiToken;
 }

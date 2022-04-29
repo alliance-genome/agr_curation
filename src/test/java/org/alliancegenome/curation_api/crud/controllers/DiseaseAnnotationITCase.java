@@ -68,7 +68,7 @@ public class DiseaseAnnotationITCase {
     private VocabularyTerm obsoleteConditionRelationType;
     private List<VocabularyTerm> diseaseQualifiers;
     private VocabularyTerm annotationType;
-    private String testPerson;
+    private Person testPerson;
     private OffsetDateTime testDate;
     private List<Note> relatedNotes;
     private ExperimentalCondition experimentalCondition;
@@ -120,7 +120,7 @@ public class DiseaseAnnotationITCase {
         geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite", false);
         diseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by", false);
         annotationType = createVocabularyTerm(annotationTypeVocabulary,"computational", false);
-        testPerson = "TEST:Person0001";
+        testPerson = createPerson("TEST:Person0001");
         testDate = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
         noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
         obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
@@ -1226,6 +1226,20 @@ public class DiseaseAnnotationITCase {
                 then().
                 statusCode(200);
         return allele;
+    }
+    
+    private Person createPerson(String uniqueId) {
+        Person person = new Person();
+        person.setUniqueId(uniqueId);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(person).
+                when().
+                post("/api/person").
+                then().
+                statusCode(200);
+        return person;
     }
 
     private AffectedGenomicModel createModel(String curie, String taxon, String name) {

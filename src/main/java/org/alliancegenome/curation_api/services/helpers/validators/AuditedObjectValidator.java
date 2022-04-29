@@ -1,26 +1,17 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.time.OffsetDateTime;
-import java.util.*;
-
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.base.entity.BaseEntity;
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.base.entity.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.*;
 
-public class AuditedObjectValidator<E extends BaseEntity> {
+public class AuditedObjectValidator<E extends AuditedObject> {
 
     @Inject
     @AuthenticatedUser
-    protected Person authenticatedPerson;
+    protected LoggedInPerson authenticatedPerson;
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
@@ -39,8 +30,7 @@ public class AuditedObjectValidator<E extends BaseEntity> {
         if (uiEntity.getCreatedBy() != null)
             dbEntity.setCreatedBy(uiEntity.getCreatedBy());
 
-        dbEntity.setDateLastModified(OffsetDateTime.now());
-        dbEntity.setModifiedBy(authenticatedPerson.getFirstName() + " " + authenticatedPerson.getLastName());
+        dbEntity.setModifiedBy(authenticatedPerson);
         
         return dbEntity;
     }
