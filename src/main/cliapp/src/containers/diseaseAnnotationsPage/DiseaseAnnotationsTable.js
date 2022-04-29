@@ -1012,11 +1012,11 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("secondaryDataProviderFilter", ["secondaryDataProvider"])
   },
   {
-    field: "modifiedBy",
+    field: "modifiedBy.uniqueId",
     header: "Modified By",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy"])
+    filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy.uniqueId"])
   },
   {
     field: "dateLastModified",
@@ -1026,11 +1026,11 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("dateLastModifiedFilter", ["dateLastModified"])
   },
   {
-    field: "createdBy",
+    field: "createdBy.uniqueId",
     header: "Created By",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy"])
+    filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy.uniqueId"])
   },
   {
     field: "creationDate",
