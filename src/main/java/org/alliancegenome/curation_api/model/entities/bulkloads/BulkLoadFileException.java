@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.model.entities.bulkloads;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
@@ -21,7 +21,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoadFileHistory", "exception"}, callSuper = true)
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
-public class BulkLoadFileException extends BaseGeneratedEntity {
+public class BulkLoadFileException extends GeneratedAuditedObject {
     
     @Type(type = JsonTypes.JSON_BIN)
     @JsonView({View.BulkLoadFileHistory.class})

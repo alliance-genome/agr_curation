@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -17,7 +17,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoad"})
-public class BulkLoadFile extends BaseGeneratedEntity {
+public class BulkLoadFile extends GeneratedAuditedObject {
     
     @JsonView({View.FieldsOnly.class})
     @Enumerated(EnumType.STRING)

@@ -12,19 +12,13 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
-public class BaseGeneratedAndUniqueIdEntity extends BaseEntity {
+public class GeneratedAuditedObject extends AuditedObject {
 
     @Id @DocumentId
+    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
     protected Long id;
-
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(unique = true, length = 2000)
-    @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    private String uniqueId;
 
 }

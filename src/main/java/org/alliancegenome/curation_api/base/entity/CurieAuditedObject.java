@@ -10,15 +10,17 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
-public class BaseGeneratedEntity extends BaseEntity {
+@ToString(callSuper = true)
+public class CurieAuditedObject extends AuditedObject{
 
     @Id @DocumentId
-    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+    @KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
     @EqualsAndHashCode.Include
-    protected Long id;
+    private String curie;
 
 }

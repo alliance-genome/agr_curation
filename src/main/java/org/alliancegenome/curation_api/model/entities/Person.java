@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -11,7 +11,7 @@ import lombok.Data;
 
 @Entity
 @Data
-public class Person extends BaseGeneratedEntity {
+public class Person extends GeneratedAuditedObject {
 
     @JsonView({View.FieldsOnly.class})
     private String firstName;
