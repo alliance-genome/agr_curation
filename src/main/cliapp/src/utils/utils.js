@@ -57,3 +57,21 @@ export function reorderArray(array, from, to) {
   array.splice(to, 0, item[0]);
   return array;
 };
+
+export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) {
+  let initalColumnOrderObjects = [];
+  let initalColumnOrderFields = [];
+
+  defaultColumnOptions.forEach((option) => {
+    initalColumnOrderObjects.push(
+      columns.find((column) => {
+        return column.header === option;
+      })
+    )
+  });
+
+  initalColumnOrderFields = initalColumnOrderObjects.map(column => column.field);
+  initalColumnOrderFields.unshift('rowEditor');
+
+  dataTable.current.state.columnOrder = initalColumnOrderFields
+};
