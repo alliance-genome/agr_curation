@@ -98,6 +98,17 @@ The three permanent branches in this repository represent the code to be deploye
    -  Once coding and testing completed, submit a pull request in github to merge back to production.
       For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
 
+### Data structure changes
+When making code changes which change any of the data structures, the supporting database schema needs to reflect these changes
+to successfully be able to deploy and run this new code. [Hibernate](https://hibernate.org/) takes care of creating new tables and columns,
+but changing existing columns, removing columns and moving or transforming data is not handled by hibernate, as this usually requires human judgment to correctly assess the required steps to maintain data integrity.
+To automate and correctly replicate the deployment of these sort of data migrations accross environments, we use [flyway](https://flywaydb.org/).
+
+Flyway works by manually defining and storing SQL files to handle the data migrations in [`src/main/resources/db/migration/`](src/main/resources/db/migration/), with a filename formatted as `v${VERSION}__${DESCRIPTION}.sql`.
+ * `${DESCRIPTION}` can be a small free-form description of the changes made and is optional (along with the `__` separator)
+ * `${VERSION}` must be defined. The agreed format for version is `x.y.z.a`, where `x.y.z` represents the curation application version on which this migration file will be applied (excluding any release-candidate portion of it), and the `.a` part represents an incremental number for all migrations applied to this release.
+As an example, the first migration to be applied on top of `v0.4.0` (so while developing what could become `v0.5.0`) could be named `v0.4.0.1__updated-da-foreign-keys.sql`, the second one `v0.4.0.2__renamed-reference-field.sql` etc.
+
 
 ## Installing
 
@@ -388,7 +399,7 @@ In order to promote changes from beta to production:
 6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
    to deploy this code successfully to the production environment.
 7. After release creation and deployment, the production branch must be merged back to beta,
-   in order to make the release tag reachable from beta (and report the correct version number through `git describe`).
+   in order to make the release tag reachable from beta (and report the correct version number through `git describe --tags`).
    There are two ways you can do this:
       * Merge locally and push the changes directly to github
          ```bash
@@ -432,7 +443,8 @@ to ensure the new version of the application can function in a consistent state 
    This can be achieved by terminating the environment's running EC2 instance or (more quickly)
    by connecting into the server as admin through ssh, and restarting the docker container:
    ```bash
-   sudo docker restart agr.curation.${NET}.api.server
+   cd /var/app/current/
+   sudo docker-compose restart
    ```
 6. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
    and follow-up through log server to ensure reindexing completed successfully before executing the next.
