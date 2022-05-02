@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { InputTextarea } from "primereact/inputtextarea"
+import { InputTextarea } from "primereact/inputtextarea";
 
-export const InputTextAreaEditor = ({ rowProps, setRelatedNotesData, relatedNotesRef, fieldName }) => {
-  const [fieldValue, setFieldValue] = useState(rowProps.rowData[fieldName] ? rowProps.rowData[fieldName] : '');
+export const InputTextAreaEditor = ({ initalValue, editorChange, rows, columns}) => {
+  const [fieldValue, setFieldValue] = useState(initalValue ? initalValue : '');
 
   const onChange = (event) => {
-    relatedNotesRef.current[rowProps.rowIndex].freeText = event.target.value;
     setFieldValue(event.value);
+    editorChange(event);
   }
 
   return (
@@ -15,6 +15,8 @@ export const InputTextAreaEditor = ({ rowProps, setRelatedNotesData, relatedNote
         value={fieldValue}
         onChange={(e) => onChange(e)}
         style={{ width: '100%' }}
+        rows={rows}
+        cols={columns}
       />
     </>
   )
