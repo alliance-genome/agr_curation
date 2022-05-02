@@ -24,7 +24,7 @@ export const AllelesTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
     filters: {},
-    first: true,
+    isFirst: true,
   };
 
   const [tableState, setTableState] = useSessionStorage("alleleTableSettings", initialTableState);
@@ -52,10 +52,11 @@ export const AllelesTable = () => {
     },
     keepPreviousData: true
   })
-  const setFirst = (value) => {
+
+  const setIsFirst = (value) => {
     let _tableState = {
       ...tableState,
-      first: value,
+      isFirst: value,
     };
 
     setTableState(_tableState);
@@ -190,7 +191,7 @@ export const AllelesTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setFirst, tableState.first);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 20;
@@ -229,7 +230,12 @@ export const AllelesTable = () => {
 
 
   const resetTableState = () => {
-    setTableState(initialTableState);
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
     setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = { ...columnWidths };
 

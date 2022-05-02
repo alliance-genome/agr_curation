@@ -22,7 +22,7 @@ export const AffectedGenomicModelTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultVisibleColumns,
     filters: {},
-    first: true,
+    isFirst: true,
   }
   const [tableState, setTableState] = useSessionStorage("agmTableSettings", initialTableState);
 
@@ -43,10 +43,10 @@ export const AffectedGenomicModelTable = () => {
 
   }, [tableState]);
 
-  const setFirst = (value) => {
+  const setIsFirst = (value) => {
     let _tableState = {
       ...tableState,
-      first: value,
+      isFirst: value,
     };
 
     setTableState(_tableState);
@@ -183,7 +183,7 @@ export const AffectedGenomicModelTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setFirst, tableState.first);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 100 / columns.length;
@@ -221,7 +221,12 @@ export const AffectedGenomicModelTable = () => {
   }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
-    setTableState(initialTableState);
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
     setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = { ...columnWidths };
 
