@@ -83,7 +83,6 @@ export const DiseaseAnnotationsTable = () => {
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
-  const relatedNotesRef = useRef([]);
 
   let diseaseAnnotationService = null;
 
@@ -177,7 +176,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
     let _relatedNotesData = {};
-    _relatedNotesData["relatedNotes"] = rowData.relatedNotes;
+    _relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
     _relatedNotesData["dialog"] = true;
     _relatedNotesData["isInEdit"] = isInEdit;
     setRelatedNotesData(() => ({
@@ -187,12 +186,11 @@ export const DiseaseAnnotationsTable = () => {
 
   const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
     let _relatedNotesData = {};
-    _relatedNotesData["relatedNotes"] = rowProps.rowData.relatedNotes;
+    _relatedNotesData["originalRelatedNotes"] = rowProps.rowData.relatedNotes;
     _relatedNotesData["dialog"] = true;
     _relatedNotesData["isInEdit"] = isInEdit;
     _relatedNotesData["rowIndex"] = rowProps.rowIndex;
     _relatedNotesData["mainRowProps"] = rowProps;
-    relatedNotesRef.current = global.structuredClone(rowProps.rowData.relatedNotes);
     setRelatedNotesData(() => ({
       ..._relatedNotesData
     }));
@@ -271,13 +269,22 @@ export const DiseaseAnnotationsTable = () => {
   const relatedNotesEditor = (props) => {
     if (props?.rowData?.relatedNotes) {
       return (
-        <Button className="p-button-text"
-          onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
-          <span style={{ textDecoration: 'underline' }}>
-            {`Notes(${props.rowData.relatedNotes.length}) `}
-            <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
-          </span>
-        </Button>
+        <>
+        <div>
+          <Button className="p-button-text"
+            onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+            <span style={{ textDecoration: 'underline' }}>
+              {`Notes(${props.rowData.relatedNotes.length}) `}
+              <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',  }}/>
+            <span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+              <i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+            </span>
+          </Button>
+        </div>
+          <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+        </>
       )
     }
   };
@@ -302,7 +309,7 @@ export const DiseaseAnnotationsTable = () => {
     setIsEnabled(false);
     originalRows[event.index] = { ...diseaseAnnotations[event.index] };
     setOriginalRows(originalRows);
-    console.log(dataTable.current.state);
+    //console.log(dataTable.current.state);
   };
 
   const onRowEditCancel = (event) => {
@@ -324,7 +331,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onRowEditSave = (event) => {//possible to shrink?
-    console.log(event);
+    //console.log(event);
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
@@ -368,7 +375,7 @@ export const DiseaseAnnotationsTable = () => {
 
         const errorMessagesCopy = errorMessages;
 
-        console.log(errorMessagesCopy);
+        //console.log(errorMessagesCopy);
         errorMessagesCopy[event.index] = {};
         Object.keys(error.response.data.errorMessages).forEach((field) => {
           let messageObject = {
@@ -378,7 +385,7 @@ export const DiseaseAnnotationsTable = () => {
           errorMessagesCopy[event.index][field] = messageObject;
         });
 
-        console.log(errorMessagesCopy);
+        //console.log(errorMessagesCopy);
         setErrorMessages({ ...errorMessagesCopy });
 
         setDiseaseAnnotations(annotations);
@@ -1127,15 +1134,16 @@ export const DiseaseAnnotationsTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
-          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+          <Column rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
       </div>
       <RelatedNotesDialog
-        relatedNotesData={relatedNotesData}
-        setRelatedNotesData={setRelatedNotesData}
-        relatedNotesRef={relatedNotesRef}
+        originalRelatedNotesData={relatedNotesData}
+        setOriginalRelatedNotesData={setRelatedNotesData}
         authState={authState}
+        errorMessagesMainRow={errorMessages}
+        setErrorMessagesMainRow={setErrorMessages}
       />
       <ConditionRelationsDialog
         conditonRelations={conditionRelations}
