@@ -31,7 +31,7 @@ export const RelatedNotesDialog = ({
   const rowsInEdit = useRef(0);
   const [editedRows, setEditedRows] = useState({});
   const [externalUpdate, setExternalUpdate] = useState();
-  const [hasEdited, setHasEdited] = useState(false);
+  const hasEdited = useRef(false);
 
   const showDialogHandler = () => {
     let temp = global.structuredClone(originalRelatedNotes);
@@ -74,6 +74,20 @@ export const RelatedNotesDialog = ({
     const errorMessagesCopy = errorMessages;
     errorMessagesCopy[event.index] = {};
     setErrorMessages(errorMessagesCopy);
+
+    hasEdited.current = false;
+  };
+
+  const compareChangesInNotes = (data,index) => {
+    if(data.noteType.name !== originalRelatedNotes[index].noteType.name){
+      hasEdited.current = true;
+    }
+    if(data.internal !== originalRelatedNotes[index].internal){
+      hasEdited.current = true;
+    }
+    if(data.freeText !== originalRelatedNotes[index].freeText){
+      hasEdited.current = true;
+    }
   };
 
   const onRowEditSave = (event) => {
@@ -81,16 +95,7 @@ export const RelatedNotesDialog = ({
     let _localRelateNotes = [...localRelateNotes];
     _localRelateNotes[event.index] = event.data;
     setLocalRelateNotes(_localRelateNotes);
-
-    if(event.data.noteType.name !== originalRelatedNotes[event.index].noteType.name){
-      setHasEdited(true);
-    }
-    if(event.data.internal !== originalRelatedNotes[event.index].internal){
-      setHasEdited(true);
-    }
-    if(event.data.freeText !== originalRelatedNotes[event.index].freeText){
-      setHasEdited(true);
-    }
+    compareChangesInNotes(event.data,event.index);
   };
 
   const hideDialog = () => {
@@ -143,6 +148,9 @@ export const RelatedNotesDialog = ({
       let updatedAnnotations = [...mainRowProps.props.value];
       updatedAnnotations[rowIndex].relatedNotes = localRelateNotes;
       keepDialogOpen = false;
+
+      for(let i in localRelateNotes)
+        compareChangesInNotes(localRelateNotes[i],i);
 
       if(hasEdited){
         const errorMessagesCopy = errorMessagesMainRow;
@@ -236,6 +244,8 @@ export const RelatedNotesDialog = ({
         value={props.rowData[fieldName] ? props.rowData[fieldName] : ''}
         onChange={(e) => onFreeTextEditorValueChange(props, e)}
         style={{ width: '100%' }}
+        rows={5}
+        cols={30}
       />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
       </>
