@@ -32,6 +32,17 @@ public class AlleleBulkUploadFmsITCase {
     @Test
     @Order(1)
     public void alleleBulkUploadCheckFields() throws Exception {
+        // Load required gene (objectRelation of Allele)
+        String gene_content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/01_all_fields.json"));
+
+        RestAssured.given().
+            contentType("application/json").
+            body(gene_content).
+            when().
+            post("/api/gene/bulk/bgifile").
+            then().
+            statusCode(200);
+
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/01_all_fields.json"));
 
         // upload file

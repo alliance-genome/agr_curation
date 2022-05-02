@@ -33,7 +33,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene with all fields populated except synonyms",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_6", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_6",
          "name" : "Test gene 6",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg6"

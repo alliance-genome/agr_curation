@@ -14,5 +14,8 @@ public class GenericOntologyLoadConfig {
     
     // must be set and will only load that Prefix of terms
     private String loadOnlyIRIPrefix = null;
+    
+    // do not load entities that have ChEBI equivalents
+    private Boolean ignoreEntitiesWithChebiXref = false;
 
 }

@@ -1,1 +1,1 @@
-docker run -d --net curation -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.10.2
+docker run -d --net curation -p 9200:9200 -p 9300:9300 -e "discovery.type=single-node" -e "ES_JAVA_OPTS=-Xmx4g -Xms4g" --name elasticsearch docker.elastic.co/elasticsearch/elasticsearch:7.10.2

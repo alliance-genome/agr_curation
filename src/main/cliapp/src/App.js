@@ -7,7 +7,7 @@ import { oktaAuthConfig } from './oktaAuthConfig';
 import { SiteLayout } from './containers/layout'
 
 import routes from './routes';
-
+import './App.scss';
 
 const App = () => {
 
