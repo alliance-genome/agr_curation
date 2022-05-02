@@ -45,7 +45,7 @@ export const DiseaseAnnotationsTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnOptions,
     filters: {},
-    first: true
+    isFirst: true
   }
 
   const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
@@ -139,7 +139,7 @@ export const DiseaseAnnotationsTable = () => {
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
 
-  const setFirst = (value) => {
+  const setIsFirst = (value) => {
     let _tableState = {
       ...tableState,
       first: value,
@@ -1034,7 +1034,7 @@ export const DiseaseAnnotationsTable = () => {
   },
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions, setFirst, tableState.first);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 10;
@@ -1095,7 +1095,12 @@ export const DiseaseAnnotationsTable = () => {
   );
 
   const resetTableState = () => {
-    setTableState(initialTableState);
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
     setDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
     const _columnWidths = {...columnWidths};
 
@@ -1146,7 +1151,7 @@ export const DiseaseAnnotationsTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
-          <Column rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
       </div>
