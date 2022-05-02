@@ -228,7 +228,7 @@ export const RelatedNotesDialog = ({
     );
   };
 
-  const onFreeTextEditorValueChange = (props, event) => {
+  const onFreeTextEditorValueChange = (event, props) => {
     let _localRelateNotes = [...localRelateNotes];
     _localRelateNotes[props.rowIndex].freeText = event.target.value;
     setLocalRelateNotes(_localRelateNotes);
@@ -240,13 +240,20 @@ export const RelatedNotesDialog = ({
     }
     return (
       <>
-      <InputTextarea
-        value={props.rowData[fieldName] ? props.rowData[fieldName] : ''}
-        onChange={(e) => onFreeTextEditorValueChange(props, e)}
-        style={{ width: '100%' }}
+      <InputTextAreaEditor
+        initalValue={props.value}
+        editorChange={(e) => onFreeTextEditorValueChange(e, props)}
         rows={5}
-        cols={30}
+        columns={30}
       />
+        {/*<InputTextarea
+          ref={(input) => {input && input.focus()}}
+          value={props.value}
+          onChange={(e) => onFreeTextEditorValueChange(e, props)}
+          style={{ width: '100%' }}
+          rows={5}
+          cols={30}
+        />*/}
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
       </>
     );
@@ -269,7 +276,7 @@ export const RelatedNotesDialog = ({
       <h3>Related Notes</h3>
       <DataTable value={localRelateNotes} dataKey="id" showGridlines editMode='row'
         editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-        <Column field='rowEditor' rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
+        <Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
               bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
         <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0'/>
         <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
