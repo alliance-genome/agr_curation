@@ -143,12 +143,6 @@
 			<artifactId>quarkus-junit5-mockito</artifactId>
 			<scope>test</scope>
 		</dependency>
-
-		<dependency>
-			<groupId>io.quarkus</groupId>
-			<artifactId>quarkus-micrometer-registry-prometheus</artifactId>
-		</dependency>
-
 		<dependency>
 			<groupId>io.quarkiverse.hibernatetypes</groupId>
 			<artifactId>quarkus-hibernate-types</artifactId>
@@ -262,6 +256,12 @@
 			<groupId>org.testcontainers</groupId>
 			<artifactId>elasticsearch</artifactId>
 			<scope>test</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.reflections</groupId>
+			<artifactId>reflections</artifactId>
+			<version>0.10.2</version>
 		</dependency>
 
 	</dependencies>

@@ -38,7 +38,6 @@ public class VocabularyTermCrudController extends BaseCrudController<VocabularyT
 
     @Override
     public ObjectResponse<VocabularyTerm> delete(Long id) {
-
         ObjectResponse<VocabularyTerm> ret;
         try {
             ret = vocabularyTermService.delete(id);
@@ -55,6 +54,5 @@ public class VocabularyTermCrudController extends BaseCrudController<VocabularyT
         }
         return ret;
     }
-
 
 }
