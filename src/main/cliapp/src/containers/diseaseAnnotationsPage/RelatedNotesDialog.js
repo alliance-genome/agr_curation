@@ -27,24 +27,30 @@ export const RelatedNotesDialog = ({
   const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
   const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
   const validationService = new ValidationService(authState);
-  const [undoEditsButton, setUndoEditsButton] = useState(false);
   const tableRef = useRef(null);
+  const rowsInEdit = useRef(0);
+  const [editedRows, setEditedRows] = useState({});
   const [externalUpdate, setExternalUpdate] = useState();
+  const [hasEdited, setHasEdited] = useState(false);
 
   const showDialogHandler = () => {
-     setUndoEditsButton(true);
-     let temp = global.structuredClone(originalRelatedNotes);
-   setLocalRelateNotes(temp);
+    let temp = global.structuredClone(originalRelatedNotes);
+    setLocalRelateNotes(temp);
 
-    if (isInEdit) {
+    if(isInEdit){
       let rowsObject = {};
+      let cnt = 0;
       if(originalRelatedNotes) {
-      originalRelatedNotes.forEach((note) => {
-        rowsObject[`${note.id}`] = true;
-      });
-    }
+        originalRelatedNotes.forEach((note) => {
+          rowsObject[`${note.id}`] = true;
+        });
+        editedRows[cnt] = { ...temp[cnt] };
+        cnt++;
+      }
       setEditingRows(rowsObject);
-    } else {
+      setEditedRows(editedRows);
+      rowsInEdit.current++;
+    }else{
       setEditingRows({});
     }
   };
@@ -52,6 +58,40 @@ export const RelatedNotesDialog = ({
   const onRowEditChange = (e) => {
     setEditingRows(e.data);
   }
+
+  const onRowEditCancel = (event) => {
+    rowsInEdit.current--;
+    let relatedNotes = [...localRelateNotes];
+    relatedNotes[event.index] = editedRows[event.index];
+    delete editedRows[event.index];
+    setEditedRows(editedRows);
+    setLocalRelateNotes(relatedNotes);
+
+    let _localRelateNotes = [...localRelateNotes];
+    _localRelateNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
+    setLocalRelateNotes(_localRelateNotes);
+
+    const errorMessagesCopy = errorMessages;
+    errorMessagesCopy[event.index] = {};
+    setErrorMessages(errorMessagesCopy);
+  };
+
+  const onRowEditSave = (event) => {
+    rowsInEdit.current--;
+    let _localRelateNotes = [...localRelateNotes];
+    _localRelateNotes[event.index] = event.data;
+    setLocalRelateNotes(_localRelateNotes);
+
+    if(event.data.noteType.name !== originalRelatedNotes[event.index].noteType.name){
+      setHasEdited(true);
+    }
+    if(event.data.internal !== originalRelatedNotes[event.index].internal){
+      setHasEdited(true);
+    }
+    if(event.data.freeText !== originalRelatedNotes[event.index].freeText){
+      setHasEdited(true);
+    }
+  };
 
   const hideDialog = () => {
     setErrorMessages([]);
@@ -61,9 +101,8 @@ export const RelatedNotesDialog = ({
         dialog: false,
       };
     });
-   let temp = global.structuredClone(originalRelatedNotes);
+    let temp = global.structuredClone(originalRelatedNotes);
     setLocalRelateNotes(temp);
-    setUndoEditsButton(false);
   };
 
   const validateNotes = async (notes) => {
@@ -105,16 +144,16 @@ export const RelatedNotesDialog = ({
       updatedAnnotations[rowIndex].relatedNotes = localRelateNotes;
       keepDialogOpen = false;
 
-      if(undoEditsButton) {
-      const errorMessagesCopy = errorMessagesMainRow;
-      let messageObject = {
-        severity: "warn",
-        message: "Pending Edits!"
-      };
-      errorMessagesCopy[mainRowProps.rowIndex] = {};
-      errorMessagesCopy[mainRowProps.rowIndex]["relatedNotes.freeText"] = messageObject;
-      setErrorMessagesMainRow({...errorMessagesCopy});
-    }
+      if(hasEdited){
+        const errorMessagesCopy = errorMessagesMainRow;
+        let messageObject = {
+          severity: "warn",
+          message: "Pending Edits!"
+        };
+        errorMessagesCopy[mainRowProps.rowIndex] = {};
+        errorMessagesCopy[mainRowProps.rowIndex]["relatedNotes.freeText"] = messageObject;
+        setErrorMessagesMainRow({...errorMessagesCopy});
+      }
     };
 
     setOriginalRelatedNotesData((originalRelatedNotesData) => {
@@ -143,7 +182,6 @@ export const RelatedNotesDialog = ({
      let _localRelateNotes = [...localRelateNotes];
      _localRelateNotes[props.rowIndex].internal = event.value.name;
      setLocalRelateNotes(_localRelateNotes);
-    setUndoEditsButton(true);
   }
 
   const internalEditor = (props) => {
@@ -160,12 +198,10 @@ export const RelatedNotesDialog = ({
     );
   };
 
-
   const onNoteTypeEditorValueChange = (props, event) => {
     let _localRelateNotes = [...localRelateNotes];
     _localRelateNotes[props.rowIndex].noteType = event.value;
     setLocalRelateNotes(_localRelateNotes);
-    setUndoEditsButton(true);
   };
 
   const noteTypeEditor = (props) => {
@@ -188,7 +224,6 @@ export const RelatedNotesDialog = ({
     let _localRelateNotes = [...localRelateNotes];
     _localRelateNotes[props.rowIndex].freeText = event.target.value;
     setLocalRelateNotes(_localRelateNotes);
-    setUndoEditsButton(true);
   };
 
   const freeTextEditor = (props, fieldName, errorMessages) => {
@@ -207,38 +242,6 @@ export const RelatedNotesDialog = ({
     );
   };
 
-  const manageUndoEditsOperation = (event, props) => {
-      let hasEdited = false;
-    if(props.rowData.noteType.name !== originalRelatedNotes[props.rowIndex].noteType.name){
-      hasEdited = true;
-    }
-    if(props.rowData.internal !== originalRelatedNotes[props.rowIndex].internal){
-      hasEdited = true;
-    }
-    if(props.rowData.freeText !== originalRelatedNotes[props.rowIndex].freeText){
-      hasEdited = true;
-    }
-      if(hasEdited && undoEditsButton){
-        //setUndoEditsButton(false);
-      }
-     let _localRelateNotes = [...localRelateNotes];
-     _localRelateNotes[props.rowIndex] = global.structuredClone(originalRelatedNotes[props.rowIndex]);
-     setLocalRelateNotes(_localRelateNotes);
-    //const _localRelateNotes = localRelateNotes.map( x => ({...originalRelatedNotes}) );
-    //setLocalRelateNotes(_localRelateNotes);
-  };
-
-  const undoEditsButtonShow = (rowData) => {
-    if (!isInEdit) {
-      return null;
-    };
-      return (
-      <Button className="p-button-text" label="Undo Edits" disabled={!undoEditsButton}
-            onClick={ (event) => { manageUndoEditsOperation(event, rowData) } } >
-      </Button>
-    )
-  };
-
   const footerTemplate = () => {
     if (!isInEdit) {
       return null;
@@ -252,30 +255,22 @@ export const RelatedNotesDialog = ({
   }
 
   return (
-    <Dialog visible={dialog} className='w-6' modal onHide={hideDialog}
-      closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
+    <Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
       <h3>Related Notes</h3>
       <DataTable value={localRelateNotes} dataKey="id" showGridlines editMode='row'
-        editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}
-      >
-        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" />
-        <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} />
+        editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
+        <Column field='rowEditor' rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
+              bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
+        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0'/>
+        <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
         <Column
           editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
           field="freeText"
           header="Text"
           body={textTemplate}
+          headerClassName='surface-0'
         />
-        <Column
-        editor={(props => undoEditsButtonShow(props))}
-        field="undoEditsButton"
-       header=""
-       body={undoEditsTemplate}
-      />
       </DataTable>
-     {JSON.stringify(localRelateNotes)}
-     <hr/>
-     {JSON.stringify(originalRelatedNotes)}
     </Dialog>
   );
 };
