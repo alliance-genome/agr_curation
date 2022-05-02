@@ -7,7 +7,7 @@ import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
-import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
@@ -45,6 +45,7 @@ export const DiseaseAnnotationsTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnOptions,
     filters: {},
+    first: true
   }
 
   const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
@@ -138,6 +139,15 @@ export const DiseaseAnnotationsTable = () => {
     }
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
+
+  const setFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      first: value,
+    };
+
+    setTableState(_tableState);
+  }
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -870,7 +880,7 @@ export const DiseaseAnnotationsTable = () => {
   {
     field: "object.name",
     header: "Disease",
-    sortable: { isEnabled },
+    sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
     editor: (props) => diseaseEditorTemplate(props),
@@ -1017,7 +1027,7 @@ export const DiseaseAnnotationsTable = () => {
   },
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions, setFirst, tableState.first);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 10;
@@ -1056,10 +1066,10 @@ export const DiseaseAnnotationsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled, columnWidths]);
 
-    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+    const createMultiselectComponent = (tableState,defaultColumnOptions,isEnabled) => {
         return (<MultiSelect
             value={tableState.selectedColumnNames}
-            options={defaultColumnNames}
+            options={defaultColumnOptions}
             onChange={e => setSelectedColumnNames(e.value)}
             style={{ width: '20em', textAlign: 'center' }}
             disabled={!isEnabled}
@@ -1079,7 +1089,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const resetTableState = () => {
     setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    setDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
@@ -1091,7 +1101,9 @@ export const DiseaseAnnotationsTable = () => {
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
-    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    //minus one because of the rowEditor column at the start of the table
+    _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
+    console.log(_columnNames);
     setSelectedColumnNames(_columnNames);
   };
 
@@ -1114,7 +1126,7 @@ export const DiseaseAnnotationsTable = () => {
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
+        <DataTable value={diseaseAnnotations} header={header} reorderableColumns ref={dataTable}
           tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}

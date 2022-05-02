@@ -8,7 +8,7 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'primereact/tooltip';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 
@@ -22,6 +22,7 @@ export const AffectedGenomicModelTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultVisibleColumns,
     filters: {},
+    first: true,
   }
   const [tableState, setTableState] = useSessionStorage("agmTableSettings", initialTableState);
 
@@ -41,6 +42,15 @@ export const AffectedGenomicModelTable = () => {
     });
 
   }, [tableState]);
+
+  const setFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      first: value,
+    };
+
+    setTableState(_tableState);
+  }
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -173,7 +183,7 @@ export const AffectedGenomicModelTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setFirst, tableState.first);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 100 / columns.length;
@@ -212,7 +222,7 @@ export const AffectedGenomicModelTable = () => {
 
   const resetTableState = () => {
     setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = { ...columnWidths };
 
     Object.keys(_columnWidths).map((key) => {

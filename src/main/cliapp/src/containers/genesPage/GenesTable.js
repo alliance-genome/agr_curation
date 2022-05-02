@@ -11,7 +11,7 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'primereact/tooltip';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const GenesTable = () => {
@@ -24,6 +24,7 @@ export const GenesTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
     filters: {},
+    first: true,
   }
 
   const [tableState, setTableState] = useSessionStorage("geneTableSettings", initialTableState);
@@ -52,6 +53,14 @@ export const GenesTable = () => {
     keepPreviousData: true
   });
 
+  const setFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      first: value,
+    };
+
+    setTableState(_tableState);
+  } 
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -177,7 +186,7 @@ export const GenesTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setFirst, tableState.first);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 20;
@@ -218,7 +227,7 @@ export const GenesTable = () => {
 
   const resetTableState = () => {
     setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {

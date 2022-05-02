@@ -1,20 +1,12 @@
 import { useEffect } from "react";
+import { setDefaultColumnOrder } from "./utils";
 
-export const useSetDefaultColumnOrder = (columns, dataTable, defaultColumnOptions) => {
+export const useSetDefaultColumnOrder = (columns, dataTable, defaultColumnOptions, setFirst, first) => {
   useEffect(() => {
-    let initalColumnOrder = [];
-
-    defaultColumnOptions.forEach((name) => {
-      initalColumnOrder.push(
-        columns.find((column) => {
-          if (column.header === name) {
-            return column.field;
-          };
-        })
-      )
-    });
-
-    dataTable.current.state.columnOrder = initalColumnOrder;
+    if (first) {
+      setDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
+    };
+    setFirst(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
