@@ -1,15 +1,12 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.util.List;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.*;
 
@@ -21,7 +18,10 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
     
     @Inject
     AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-
+    
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    
     public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
@@ -41,23 +41,10 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
         AffectedGenomicModel subject = validateSubject(uiEntity, dbEntity);
         if(subject != null) dbEntity.setSubject(subject);
 
-        DOTerm term = validateObject(uiEntity, dbEntity);
-        if(term != null) dbEntity.setObject(term);
-
-        List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
-        if(terms != null) dbEntity.setEvidenceCodes(terms);
-
-        DiseaseRelation relation = validateDiseaseRelation(uiEntity, dbEntity);
+        VocabularyTerm relation = validateDiseaseRelation(uiEntity);
         if(relation != null) dbEntity.setDiseaseRelation(relation);
 
-        List<Gene> genes = validateWith(uiEntity, dbEntity);
-        if(genes != null) dbEntity.setWith(genes);
-
-        if(uiEntity.getNegated() != null) {
-            dbEntity.setNegated(uiEntity.getNegated());
-        }else{
-            dbEntity.setNegated(false);
-        }
+        dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 
         if (response.hasErrors()) {
             response.setErrorMessage(errorTitle);
@@ -81,21 +68,20 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
     }
     
-    private DiseaseRelation validateDiseaseRelation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
+    private VocabularyTerm validateDiseaseRelation(AGMDiseaseAnnotation uiEntity) {
         String field = "diseaseRelation";
-        if (StringUtils.isEmpty(uiEntity.getDiseaseRelation().toString())) {
+        if (uiEntity.getDiseaseRelation() == null) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
         
-        DiseaseRelation relation = uiEntity.getDiseaseRelation();
+        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
 
-        if(relation == DiseaseRelation.is_model_of) {
-            return relation;
-        } else {
+        if(relation == null) {
             addMessageResponse(field, invalidMessage);
             return null;
         }
         
+        return relation;
     }
 }

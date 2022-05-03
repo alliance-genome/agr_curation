@@ -14,7 +14,7 @@ export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableF
             {!hideURL.current &&
                 <>
                     {!hideOntology.current &&
-                        <div className="p-field">
+                        <div className="field">
                             <label htmlFor="ontology">Ontology Type</label>
                             <Dropdown
                                 id="ontology"
@@ -32,7 +32,7 @@ export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableF
                         newBulkLoad={newBulkLoad}
                         onChange={onChange}
                     />
-                    <div className="p-field">
+                    <div className="field">
                         <label htmlFor="url">URL</label>
                         <InputText
                             name="url"

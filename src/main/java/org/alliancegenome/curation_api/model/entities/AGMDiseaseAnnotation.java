@@ -18,16 +18,16 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
-@JsonTypeName
+@JsonTypeName("AGMDiseaseAnnotation")
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
+    @ManyToOne(cascade = {})
+    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+    @JoinColumn(foreignKey = @ForeignKey(name="fk_agmdasubject"))
     @JsonView({View.FieldsOnly.class})
     private AffectedGenomicModel subject;
-    
-    private String predicate;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

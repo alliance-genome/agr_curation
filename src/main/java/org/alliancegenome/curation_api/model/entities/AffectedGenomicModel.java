@@ -15,7 +15,7 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
+@ToString(callSuper = true)
 public class AffectedGenomicModel extends GenomicEntity {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

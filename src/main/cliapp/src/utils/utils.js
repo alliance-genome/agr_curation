@@ -34,7 +34,7 @@ export function returnSorted(event, originalSort) {
 };
 
 export function trimWhitespace(value) {
-  return value.replace(/\s{2,}/g, ' ').trim();
+  return value?.replace(/\s{2,}/g, ' ').trim();
 };
 
 export function filterColumns(columns, selectedColumnNames) {

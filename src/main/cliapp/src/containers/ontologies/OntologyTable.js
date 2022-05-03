@@ -1,15 +1,17 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { useSessionStorage } from '../../service/useSessionStorage';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { Column } from 'primereact/column';
 import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
 import { Messages } from "primereact/messages";
 import { FilterComponentInputText } from '../../components/FilterComponentInputText'
+import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
-import { Button } from 'primereact/button';
 
 import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
   const defaultColumnNames = columns.map((col) => {
@@ -30,7 +32,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
   const [terms, setTerms] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [isEnabled, setIsEnabled] = useState(true);
-  const [columnMap, setColumnMap] = useState([]);
+  const [columnList, setColumnList] = useState([]);
   const searchService = new SearchService();
   const errorMessage = useRef(null);
 
@@ -88,21 +90,25 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
     setTableState(_tableState);
   };
 
-  const header = (
-    <>
-      <div style={{ textAlign: 'left' }}>
-        <MultiSelect
-          value={tableState.selectedColumnNames}
-          options={defaultColumnNames}
-          onChange={e => setSelectedColumnNames(e.value)}
-          style={{ width: '20em' }}
-          disabled={!isEnabled}
-        />
-      </div>
-      <div style={{ textAlign: 'right' }}>
-        <Button onClick={(event) => resetTableState(event)}>Reset Table</Button>
-      </div>
-    </>
+    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+        return (<MultiSelect
+            value={tableState.selectedColumnNames}
+            options={defaultColumnNames}
+            onChange={e => setSelectedColumnNames(e.value)}
+            style={{ width: '20em', textAlign: 'center' }}
+            disabled={!isEnabled}
+        />);
+    };
+
+    const header = (
+      <DataTableHeaderFooterTemplate
+          title = {ontologyAbbreviation+" Table"}
+          tableState = {tableState}
+          defaultColumnNames = {defaultColumnNames}
+          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+          onclickEvent = {(event) => resetTableState(event)}
+          isEnabled = {isEnabled}
+      />
   );
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -117,17 +123,33 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
 
   const obsoleteTemplate = (rowData) => {
     if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-      return <div>{JSON.stringify(rowData.obsolete)}</div>
+      return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
     }
   };
+
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const width = 20;
+
+    const widthsObject = {};
+
+    columns.forEach((col) => {
+      widthsObject[col.field] = width;
+    });
+
+    return widthsObject;
+  });
 
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnMap(
+    setColumnList(
       orderedColumns.map((col) => {
         if (col.field === 'obsolete') {
           return <Column
+            style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
+            headerClassName='surface-0'
             columnKey={col.field}
             key={col.field}
             field={col.field}
@@ -135,27 +157,39 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
             sortable={isEnabled}
             body={obsoleteTemplate}
             filter
+            showFilterMenu={false}
             filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
           />;
         }
         return <Column
+          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
+          headerClassName='surface-0'
           columnKey={col.field}
           key={col.field}
           field={col.field}
           header={col.header}
+          body={col.body}
           sortable={isEnabled}
           filter
+          showFilterMenu={false}
           filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
         />;
       })
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled]);
+  }, [tableState, isEnabled, columnWidths]);
 
 
   const resetTableState = () => {
     setTableState(initialTableState);
     dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    const _columnWidths = {...columnWidths};
+
+    Object.keys(_columnWidths).map((key) => {
+      _columnWidths[key] = 20;
+    });
+
+    setColumnWidths(_columnWidths);
   }
 
   const colReorderHandler = (event) => {
@@ -164,24 +198,34 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
     setSelectedColumnNames(_columnNames);
   };
 
+  const handleColumnResizeEnd = (event) => {
+    const currentWidth = event.element.clientWidth;
+    const delta = event.delta;
+    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+    const field = event.column.props.field;
+
+    const _columnWidths = {...columnWidths};
+
+    _columnWidths[field] = newWidth;
+    setColumnWidths(_columnWidths);
+  };
+
   return (
-    <div>
       <div className="card">
-        <h3>{ontologyAbbreviation} Table</h3>
         <Messages ref={errorMessage} />
         <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable}
+          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
+          tableClassName='w-12 p-datatable-md'
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
           onColReorder={colReorderHandler}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="fit" showGridlines
+          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
         >
-          {columnMap}
+          {columnList}
 
         </DataTable>
       </div>
-    </div>
   )
 }

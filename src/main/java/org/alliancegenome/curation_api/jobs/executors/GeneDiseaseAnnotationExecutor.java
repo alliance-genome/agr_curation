@@ -6,7 +6,6 @@ import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
@@ -28,7 +27,6 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
     @Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
     @Inject DiseaseAnnotationService diseaseAnnotationService;
 
-    @Transactional
     public void runLoad(BulkLoadFile bulkLoadFile) {
         
         try {
@@ -54,7 +52,6 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
     }
 
     // Gets called from the API directly
-    @Transactional
     public APIResponse runLoad(String taxonId, List<GeneDiseaseAnnotationDTO> annotations) {
         
         List<String> annotationIdsBefore = new ArrayList<>();

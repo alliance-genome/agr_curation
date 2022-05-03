@@ -36,7 +36,7 @@
             ],
             "taxonId" : "NCBITaxon:10090"
          },
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_8", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_8",
          "name" : "Test gene 8",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg8"

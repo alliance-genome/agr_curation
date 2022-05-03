@@ -1,19 +1,19 @@
 {
-    "subject" : {
-        "curie" : "WB:WBGenotype00000028"
-    },
-    "object" : {
-	    "curie" : "DOID:0080690"
-    },
-    "referenceList" : [
-	    {
-	        "curie" : "PMID:24705357"
-	    }
-    ],
-    "diseaseRelation" : "is_implicated_in",
-    "evidenceCodes" : [
-        {
-            "curie" : "ECO:0000033"
-        }
-    ]
+   "subject" : {
+      "curie" : "WB:WBGenotype00000028"
+   },
+   "object" : {
+      "curie" : "DOID:0080690"
+   },
+   "referenceList" : [
+      {
+         "curie" : "PMID:24705357"
+      }
+   ],
+   "diseaseRelation" : "is_implicated_in",
+   "evidenceCodes" : [
+      {
+         "curie" : "ECO:0000033"
+      }
+   ]
 }

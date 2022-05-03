@@ -22,16 +22,15 @@ import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsSt
 import org.hibernate.search.mapper.orm.session.SearchSession;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 
+import io.micrometer.core.instrument.*;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
-public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
+public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
-    @Inject
-    protected EntityManager entityManager;
-
-    @Inject
-    protected SearchSession searchSession;
+    @Inject protected EntityManager entityManager;
+    @Inject protected SearchSession searchSession;
+    @Inject protected MeterRegistry registry;
 
     protected BaseSQLDAO(Class<E> myClass) {
         super(myClass);
@@ -153,6 +152,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                 .monitor(new MassIndexingMonitor() {
 
             ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+            Counter counter;
                     
             @Override
             public void documentsAdded(long increment) {
@@ -162,6 +162,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
             @Override
             public void documentsBuilt(long increment) {
                 ph.progressProcess();
+                counter.increment();
             }
 
             @Override
@@ -172,11 +173,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
             @Override
             public void addToTotalCount(long increment) {
                 ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
+                counter = registry.counter("reindex." + objectClass.getSimpleName());
+                //registry.timer("").
             }
 
             @Override
             public void indexingCompleted() {
                 ph.finishProcess();
+                registry.remove(counter);
             }
             
         });
@@ -216,11 +220,18 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseDAO<E> {
                                     for(String field: searchFilters.get(filterName).keySet()) {
                                         float value = (float)(100/Math.pow(10, boost));
                                         String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
-                                        if(op== null)
-                                            op = "AND";
+                                        if(op== null) op = "AND";
+                                        
+                                        String queryField = field;
+                                        
+                                        Boolean useKeywordFields = (Boolean)searchFilters.get(filterName).get(field).get("useKeywordFields");
+                                        if(useKeywordFields != null && useKeywordFields) {
+                                            queryField = field + "_keyword";
+                                        }
+                                        
                                         s.should(
                                             p.simpleQueryString()
-                                                .fields(field)
+                                                .fields(queryField)
                                                 .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
                                                 .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
                                                 .boost(value >=1 ? value : 1)

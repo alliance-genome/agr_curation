@@ -36,7 +36,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene with all fields populated except primaryId",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_4", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_4",
          "name" : "Test gene 4",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg4"

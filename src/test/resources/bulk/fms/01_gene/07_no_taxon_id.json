@@ -36,7 +36,7 @@
             ]
          },
          "geneSynopsis" : "Test gene with all fields populated except taxonId",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_7", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_7",
          "name" : "Test gene 7",
          "soTermId" : "SO:0001217",
          "symbol" : "Tg7"

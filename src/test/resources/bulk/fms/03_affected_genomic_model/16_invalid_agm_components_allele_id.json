@@ -3,30 +3,30 @@
     {
       "affectedGenomicModelComponents": [
         {
-          "alleleID": "TEST:TestAllele00001",
+          "alleleID": "TEST:TestAllele0000X",
           "zygosity": "GENO:0000136"
         }
       ],
       "crossReference": {
-        "id": "TEST:TestAGM00001",
+        "id": "TEST:TestAGM00016",
         "pages": [
           "genotype"
         ]
       },
-      "name": "Test AGM 1",
+      "name": "Test AGM 16",
       "parentalPopulationIDs": [
         "TEST:TestComponent00001"
       ],
-      "primaryID": "TEST:TestAGM00001",
+      "primaryID": "TEST:TestAGM00016",
       "secondaryIds": [
-        "TEST:AGM1"
+        "TEST:AGM16"
       ],
       "sequenceTargetingReagentIDs": [
         "TEST:TestSTR00001"
       ],
       "subtype": "genotype",
       "synonyms": [
-        "TAGM1"
+        "TAGM16"
       ],
       "taxonId": "NCBITaxon:10090"
     }

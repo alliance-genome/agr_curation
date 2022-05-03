@@ -42,4 +42,8 @@ public class ExperimentalConditionDTO {
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("condition_chemical")
     private String conditionChemical;
+    
+    @JsonView({View.FieldsOnly.class})
+    @JsonProperty("condition_free_text")
+    private String conditionFreeText;
 }

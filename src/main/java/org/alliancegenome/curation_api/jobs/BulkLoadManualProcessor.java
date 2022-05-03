@@ -42,6 +42,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
         SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(null, params);
         if(load != null && load.getTotalResults() == 1) {
             bulkManualLoad = load.getResults().get(0);
+            bulkManualLoad.setStatus(BulkLoadStatus.MANUAL_STARTED);
             
             startLoad(bulkManualLoad);
             

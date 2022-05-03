@@ -1,9 +1,9 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../service/SearchService';
 
-export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator= "OR", filterName, currentFilters, onFilter, aggregationFields, tableState }) {
+export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields = false, tokenOperator = "OR", filterName, currentFilters, onFilter, aggregationFields, tableState }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectableOptions, setSelectableOptions] = useState( []);
 
@@ -33,7 +33,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator= "O
              }
              if(newSelectedOptions.length>0)
                 setSelectedOptions(newSelectedOptions);
-         }else{
+         } else {
              setSelectedOptions([]);
          }
     },
@@ -77,6 +77,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, tokenOperator= "O
                   delim = " ";
               }
               filter[field] = {
+                  useKeywordFields: useKeywordFields,
                   queryString: queryString,
                   tokenOperator: tokenOperator
               };

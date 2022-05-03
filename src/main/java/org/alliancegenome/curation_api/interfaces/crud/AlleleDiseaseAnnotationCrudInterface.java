@@ -27,6 +27,11 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
     
+    @PUT @Secured
+    @Path("/")
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
+    
     @POST @Secured
     @Path("/bulk/{taxonID}/annotationFile")
     @JsonView(View.FieldsAndLists.class)

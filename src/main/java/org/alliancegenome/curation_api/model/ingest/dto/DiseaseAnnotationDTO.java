@@ -2,8 +2,6 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
-import javax.persistence.*;
-
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;
@@ -15,8 +13,8 @@ import lombok.*;
 public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("mod_id")
-    private String modId;
+    @JsonProperty("mod_entity_id")
+    private String modEntityId;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("unique_id")
@@ -30,7 +28,11 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("data_provider")
-    private List<String> dataProvider;
+    private String dataProvider;
+    
+    @JsonView({View.FieldsOnly.class})
+    @JsonProperty("secondary_data_provider")
+    private String secondaryDataProvider;
 
     @JsonView({View.FieldsOnly.class})
     private Boolean negated = false;
@@ -56,16 +58,16 @@ public class DiseaseAnnotationDTO {
     private List<String> evidenceCodes;
 
     @JsonView({View.FieldsAndLists.class})
+    @JsonProperty("condition_relations")
     private List<ConditionRelationDTO> conditionRelations;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_genetic_modifier")
-    private String geneticModifier;
+    private String diseaseGeneticModifier;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("disease_genetic_modifier_relation")
-    @Enumerated(EnumType.STRING)
-    private GeneticModifierRelation geneticModifierRelation;
+    private String diseaseGeneticModifierRelation;
 
     @JsonView({View.FieldsAndLists.class})
     private List<String> with;
@@ -92,11 +94,21 @@ public class DiseaseAnnotationDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("date_last_modified")
-    private String lastUpdated;
+    private String dateLastModified;
 
-    public enum GeneticModifierRelation {
-        ameliorated_by,
-        exacerbated_by,
-    }
+    @JsonView({View.FieldsOnly.class})
+    @JsonProperty("annotation_type")
+    private String annotationType;
 
+    @JsonView({View.FieldsAndLists.class})
+    @JsonProperty("disease_qualifiers")
+    private List<String> diseaseQualifiers;
+    
+    @JsonView({View.FieldsOnly.class})
+    @JsonProperty("sgd_strain_background")
+    private String sgdStrainBackground;
+    
+    @JsonView({View.FieldsAndLists.class})
+    @JsonProperty("related_notes")
+    private List<NoteDTO> relatedNotes;
 }

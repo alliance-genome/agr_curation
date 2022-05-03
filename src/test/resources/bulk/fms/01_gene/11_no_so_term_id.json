@@ -37,7 +37,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene with all fields populated except soTermId",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_11", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_11",
          "name" : "Test gene 11",
          "symbol" : "Tg11"
       }

@@ -1,19 +1,19 @@
 {
-    "subject" : {
-        "curie" : "MGI:5637817"
-    },
-    "object" : {
-	    "curie" : "DOID:10652"
-    },
-    "referenceList" : [
-	    {
-	        "curie" : "PMID:26742432"
-	    }
-    ],
-    "diseaseRelation" : "is_implicated_in",
-    "evidenceCodes" : [
-        {
-            "curie" : "ECO:0000033"
-        }
-    ]
+   "subject" : {
+      "curie" : "MGI:5637817"
+   },
+   "object" : {
+      "curie" : "DOID:10652"
+   },
+   "referenceList" : [
+      {
+         "curie" : "PMID:26742432"
+      }
+   ],
+   "diseaseRelation" : "is_implicated_in",
+   "evidenceCodes" : [
+      {
+         "curie" : "ECO:0000033"
+      }
+   ]
 }

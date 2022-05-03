@@ -37,7 +37,7 @@
             "taxonId" : "NCBITaxon:10090"
          },
          "geneSynopsis" : "Test gene invalid SO term ID",
-	 "geneSynopsisUrl" : "http://test.org/test_synopsis_14", 
+         "geneSynopsisUrl" : "http://test.org/test_synopsis_14",
          "name" : "Test gene 14",
          "soTermId" : "SO:99999999999",
          "symbol" : "Tg14"

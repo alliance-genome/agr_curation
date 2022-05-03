@@ -6,26 +6,27 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation.DiseaseRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> {
 
     @Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+    @Inject VocabularyTermDAO vocabularyTermDAO;
     @Inject AffectedGenomicModelDAO agmDAO;
+    @Inject NoteDAO noteDAO;
     @Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
     @Inject DiseaseAnnotationService diseaseAnnotationService;
-
+    @Inject ConditionRelationDAO conditionRelationDAO;
+    
     @Override
     @PostConstruct
     protected void init() {
@@ -35,11 +36,24 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
     @Override
     @Transactional
     public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation uiEntity) {
-        log.info(authenticatedPerson);
         AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotation(uiEntity);
-        return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
+        if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
+            for (Note note : dbEntity.getRelatedNotes()) {
+                noteDAO.persist(note);
+            }
+        }
+        if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
+            for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
+                conditionRelationDAO.persist(conditionRelation);
+            }
+        }
+        agmDiseaseAnnotationDAO.persist(dbEntity);
+        
+        // TODO this return needs to be changed back to the dbEntity in order for new items (notes) to be created properly 
+        return new ObjectResponse<>(uiEntity);
     }
 
+    @Transactional
     public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException {
         AGMDiseaseAnnotation annotation = validateAGMDiseaseAnnotationDTO(dto);
         if (annotation == null) throw new ObjectUpdateException(dto, "Validation Failed");
@@ -62,7 +76,7 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
             throw new ObjectUpdateException(dto, "AGM " + dto.getSubject() + " not found in database - skipping annotation");
         }
         
-        String annotationId = dto.getModId();
+        String annotationId = dto.getModEntityId();
         if (annotationId == null) {
             annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(agm.getTaxon().getCurie()).getCurieID(dto);
         }
@@ -78,10 +92,11 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
         annotation = (AGMDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
         if (annotation == null) return null;
         
-        if (!dto.getDiseaseRelation().equals("is_model_of")) {
+        VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+        if (diseaseRelation == null) {
             throw new ObjectUpdateException(dto, "Invalid AGM disease relation for " + annotationId + " - skipping");
         }
-        annotation.setDiseaseRelation(DiseaseRelation.valueOf(dto.getDiseaseRelation()));
+        annotation.setDiseaseRelation(diseaseRelation);
         
         
         return annotation;
