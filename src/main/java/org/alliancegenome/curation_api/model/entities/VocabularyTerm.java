@@ -41,12 +41,6 @@ public class VocabularyTerm extends GeneratedAuditedObject {
     @JsonView({View.FieldsOnly.class})
     private String definition;
     
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-    @KeywordField(name = "obsolete_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-    @JsonView(View.FieldsOnly.class)
-    @Column(columnDefinition = "boolean default false", nullable = false)
-    private Boolean obsolete = false;
-    
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
