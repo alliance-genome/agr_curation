@@ -14,20 +14,22 @@ import org.alliancegenome.curation_api.services.helpers.validators.VocabularyTer
 @RequestScoped
 public class VocabularyTermService extends BaseCrudService<VocabularyTerm, VocabularyTermDAO> {
 
-    @Inject VocabularyTermDAO vocabularyTermDAO;
-    @Inject VocabularyTermValidator vocabularyTermValidator;
+    @Inject
+    VocabularyTermDAO vocabularyTermDAO;
+    @Inject
+    VocabularyTermValidator vocabularyTermValidator;
 
     @Override
     @PostConstruct
     protected void init() {
         setSQLDao(vocabularyTermDAO);
     }
-    
+
     @Override
     @Transactional
     public ObjectResponse<VocabularyTerm> update(VocabularyTerm uiEntity) {
         VocabularyTerm dbEntity = vocabularyTermValidator.validateVocabularyTerm(uiEntity);
-        return new ObjectResponse<VocabularyTerm>(vocabularyTermDAO.persist(dbEntity));
+        return new ObjectResponse<>(vocabularyTermDAO.persist(dbEntity));
     }
 
 }

@@ -11,7 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const MoleculesTable = () => {
@@ -24,6 +24,7 @@ export const MoleculesTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
     filters: {},
+    isFirst: true,
   }
 
   const [tableState, setTableState] = useSessionStorage("moleculeTableSettings", initialTableState);
@@ -51,6 +52,15 @@ export const MoleculesTable = () => {
     },
     keepPreviousData: true
   });
+
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      isFirst: value,
+    };
+
+    setTableState(_tableState);
+  }
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -202,7 +212,7 @@ export const MoleculesTable = () => {
 
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 13;
@@ -240,8 +250,13 @@ export const MoleculesTable = () => {
   }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {

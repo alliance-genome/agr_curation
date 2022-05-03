@@ -20,9 +20,12 @@ import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
 import org.hibernate.search.mapper.orm.session.SearchSession;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
+import org.reflections.Reflections;
 
 import io.micrometer.core.instrument.*;
+import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -44,7 +47,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         entityManager.persist(entity);
         return entity;
     }
-    
+
     @Transactional
     public List<E> persist(List<E> entities) {
         log.debug("SqlDAO: persist: " + entities);
@@ -122,11 +125,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         entityManager.remove(entity);
         return entity;
     }
-    
+
     public void flush() {
         entityManager.flush();
     }
-    
+
     public void commit() {
         entityManager.getTransaction().commit();
     }
@@ -139,10 +142,59 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         reindex(myClass, threads, indexAmount, batchSize);
     }
 
-    public void reindex(Class<E> objectClass, int threads, int indexAmount, int batchSize) {
+    public void reindexEverything(int threads, int indexAmount, int batchSize) {
+        Reflections reflections = new Reflections("org.alliancegenome.curation_api");
+        Set<Class<?>> subTypes = reflections.getTypesAnnotatedWith(Indexed.class);
+
+        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+        ph.startProcess("Mass Indexer for Everything: ");
+        
+        MassIndexer indexer = 
+                searchSession
+                .massIndexer(subTypes)
+                .batchSizeToLoadObjects(batchSize)
+                .dropAndCreateSchemaOnStart(true)
+                .mergeSegmentsOnFinish(true)
+                .typesToIndexInParallel(threads)
+                .threadsToLoadObjects(threads)
+                .monitor(new MassIndexingMonitor() {
+
+                    @Override
+                    public void documentsAdded(long increment) {
+                    }
+
+                    @Override
+                    public void documentsBuilt(long increment) {
+                        ph.progressProcess();
+                    }
+
+                    @Override
+                    public void entitiesLoaded(long increment) {
+                    }
+
+                    @Override
+                    public void addToTotalCount(long increment) {
+                    }
+
+                    @Override
+                    public void indexingCompleted() {
+                        ph.finishProcess();
+                    }
+
+                });
+        //indexer.dropAndCreateSchemaOnStart(true);
+        indexer.transactionTimeout(900);
+        if(indexAmount > 0){
+            indexer.limitIndexedObjectsTo(indexAmount);
+        }
+        indexer.start();
+
+    }
+
+    public void reindex(Class<?> objectClass, int threads, int indexAmount, int batchSize) {
         log.debug("Starting Index for: " + objectClass);
         MassIndexer indexer = 
-            searchSession
+                searchSession
                 .massIndexer(objectClass)
                 .batchSizeToLoadObjects(batchSize)
                 .dropAndCreateSchemaOnStart(true)
@@ -151,39 +203,39 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                 .threadsToLoadObjects(threads)
                 .monitor(new MassIndexingMonitor() {
 
-            ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-            Counter counter;
-                    
-            @Override
-            public void documentsAdded(long increment) {
-                //log.info("documentsAdded: " + increment);
-            }
+                    ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+                    Counter counter;
 
-            @Override
-            public void documentsBuilt(long increment) {
-                ph.progressProcess();
-                counter.increment();
-            }
+                    @Override
+                    public void documentsAdded(long increment) {
+                        //log.info("documentsAdded: " + increment);
+                    }
 
-            @Override
-            public void entitiesLoaded(long increment) {
-                //log.info("entitiesLoaded: " + increment);
-            }
+                    @Override
+                    public void documentsBuilt(long increment) {
+                        ph.progressProcess();
+                        counter.increment();
+                    }
 
-            @Override
-            public void addToTotalCount(long increment) {
-                ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
-                counter = registry.counter("reindex." + objectClass.getSimpleName());
-                //registry.timer("").
-            }
+                    @Override
+                    public void entitiesLoaded(long increment) {
+                        //log.info("entitiesLoaded: " + increment);
+                    }
 
-            @Override
-            public void indexingCompleted() {
-                ph.finishProcess();
-                registry.remove(counter);
-            }
-            
-        });
+                    @Override
+                    public void addToTotalCount(long increment) {
+                        ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
+                        counter = registry.counter("reindex." + objectClass.getSimpleName());
+                        //registry.timer("").
+                    }
+
+                    @Override
+                    public void indexingCompleted() {
+                        ph.finishProcess();
+                        registry.remove(counter);
+                    }
+
+                });
         //indexer.dropAndCreateSchemaOnStart(true);
         indexer.transactionTimeout(900);
         if(indexAmount > 0){
@@ -209,43 +261,43 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         log.debug("Search: " + pagination + " Params: " + params);
 
         SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = 
-            searchSession.search(myClass).where( p -> {
-                return p.bool( b -> {
-                    if(params.containsKey("searchFilters")) {
-                        HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
-                        for(String filterName: searchFilters.keySet()) {
-                            b.must(m -> {
-                                return m.bool(s -> {
-                                    int boost = 0;
-                                    for(String field: searchFilters.get(filterName).keySet()) {
-                                        float value = (float)(100/Math.pow(10, boost));
-                                        String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
-                                        if(op== null) op = "AND";
-                                        
-                                        String queryField = field;
-                                        
-                                        Boolean useKeywordFields = (Boolean)searchFilters.get(filterName).get(field).get("useKeywordFields");
-                                        if(useKeywordFields != null && useKeywordFields) {
-                                            queryField = field + "_keyword";
+                searchSession.search(myClass).where( p -> {
+                    return p.bool( b -> {
+                        if(params.containsKey("searchFilters")) {
+                            HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
+                            for(String filterName: searchFilters.keySet()) {
+                                b.must(m -> {
+                                    return m.bool(s -> {
+                                        int boost = 0;
+                                        for(String field: searchFilters.get(filterName).keySet()) {
+                                            float value = (float)(100/Math.pow(10, boost));
+                                            String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
+                                            if(op== null) op = "AND";
+
+                                            String queryField = field;
+
+                                            Boolean useKeywordFields = (Boolean)searchFilters.get(filterName).get(field).get("useKeywordFields");
+                                            if(useKeywordFields != null && useKeywordFields) {
+                                                queryField = field + "_keyword";
+                                            }
+
+                                            s.should(
+                                                    p.simpleQueryString()
+                                                    .fields(queryField)
+                                                    .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+                                                    .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
+                                                    .boost(value >=1 ? value : 1)
+                                                    //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
+                                                    );
+                                            boost++;
                                         }
-                                        
-                                        s.should(
-                                            p.simpleQueryString()
-                                                .fields(queryField)
-                                                .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-                                                .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
-                                                .boost(value >=1 ? value : 1)
-                                                //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
-                                        );
-                                        boost++;
-                                    }
+                                    });
                                 });
-                            });
+                            }
                         }
-                    }
-                }); 
-            });
-        
+                    }); 
+                });
+
         if(params.containsKey("sortOrders")) {
             step = step.sort(f -> {
                 CompositeSortComponentsStep<?> com = f.composite();
@@ -265,9 +317,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                 return com;
             });
         }
-        
+
         List<AggregationKey<Map<String, Long>>> aggKeys = new ArrayList<>();
-        
+
         if(params.containsKey("aggregations")) {
             ArrayList<String> aggList = (ArrayList<String>)params.get("aggregations");
             for(String aggField: aggList) {
@@ -276,14 +328,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                 step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(10));
             }
         }
-                
+
         SearchQuery<E> query = step.toQuery();
 
         log.debug(query);
         SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
 
         SearchResponse<E> results = new SearchResponse<E>();
-        
+
         if(aggKeys.size() > 0) {
             Map<String, Map<String, Long>> aggregations = aggKeys.stream().collect(Collectors.toMap(AggregationKey::name, result::aggregation));
             results.setAggregations(aggregations);

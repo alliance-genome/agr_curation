@@ -2,12 +2,16 @@ package org.alliancegenome.curation_api.base.controllers;
 
 import java.util.*;
 
+import javax.ws.rs.*;
+
+import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.dao.BaseEntityDAO;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.base.interfaces.*;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 public abstract class BaseCrudController<S extends BaseCrudService<E, D>, E extends BaseEntity, D extends BaseEntityDAO<E>> implements BaseIdCrudInterface<E>, BaseCurieCrudInterface<E> {
 
@@ -67,4 +71,9 @@ public abstract class BaseCrudController<S extends BaseCrudService<E, D>, E exte
     public void reindex(Integer threads, Integer indexAmount, Integer batchSize) {
         service.reindex(threads, indexAmount, batchSize);
     }
+    
+    public void reindexEverything(Integer threads, Integer indexAmount, Integer batchSize) {
+        service.reindexEverything(threads, indexAmount, batchSize);
+    }
+
 }
