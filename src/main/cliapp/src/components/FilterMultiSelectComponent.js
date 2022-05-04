@@ -3,13 +3,13 @@ import { MultiSelect } from 'primereact/multiselect';
 import { useQuery } from 'react-query';
 import { SearchService } from '../service/SearchService';
 
-export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields = false, tokenOperator = "OR", filterName, currentFilters, onFilter, aggregationFields, tableState }) {
+export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields = false, tokenOperator = "OR", filterName, currentFilters, onFilter, aggregationFields, tableState, annotationsAggregations, endpoint }) {
   const [selectedOptions, setSelectedOptions] = useState([]);
   const [selectableOptions, setSelectableOptions] = useState( []);
 
   const searchService = new SearchService();
-  useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
-    () => searchService.search('disease-annotation', 0, 0, null,{},{}, aggregationFields), {
+  useQuery([annotationsAggregations, aggregationFields, tableState],
+    () => searchService.search(endpoint, 0, 0, null,{},{}, aggregationFields), {
      onSuccess: (data) => {
          let tmp = [];
          if(data.aggregations){
