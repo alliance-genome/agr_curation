@@ -13,8 +13,13 @@ public class LoggedInPersonDAO extends BaseSQLDAO<LoggedInPerson> {
         super(LoggedInPerson.class);
     }
     
-    public SearchResponse<LoggedInPerson> findPersonByOktaEmail(String email) {
-        return findByField("oktaEmail", email);
+    public LoggedInPerson findLoggedInPersonByOktaEmail(String email) {
+        SearchResponse<LoggedInPerson> resp = findByField("oktaEmail", email);
+        if (resp != null && resp.getTotalResults() == 1) {
+            return resp.getSingleResult();
+        }
+        
+        return null;
     }
 
 }
