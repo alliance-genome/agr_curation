@@ -2,23 +2,22 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.dto.UniqueIdAuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
-public class DiseaseAnnotationDTO {
+public class DiseaseAnnotationDTO extends UniqueIdAuditedObjectDTO {
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("mod_entity_id")
     private String modEntityId;
-
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("unique_id")
-    private String uniqueID;
 
     @JsonView({View.FieldsOnly.class})
     private String subject;
@@ -38,23 +37,12 @@ public class DiseaseAnnotationDTO {
     private Boolean negated = false;
     
     @JsonView({View.FieldsOnly.class})
-    private Boolean internal = false;
-
-    @JsonView({View.FieldsOnly.class})
     @JsonProperty("predicate")
     private String diseaseRelation;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("genetic_sex")
     private String geneticSex;
-
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("modified_by")
-    private String modifiedBy;
-
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("created_by")
-    private String createdBy;
     
     @JsonView({View.FieldsAndLists.class})
     @JsonProperty("evidence_codes")
@@ -90,14 +78,6 @@ public class DiseaseAnnotationDTO {
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("table_id")
     protected Long tableId;
-
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("creation_date")
-    private String creationDate;
-
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("date_last_modified")
-    private String dateLastModified;
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("annotation_type")
