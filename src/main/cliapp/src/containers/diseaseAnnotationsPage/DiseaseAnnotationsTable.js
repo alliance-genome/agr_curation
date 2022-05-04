@@ -813,6 +813,9 @@ export const DiseaseAnnotationsTable = () => {
       onFilter={onFilter}
       aggregationFields={aggregationFields}
       tableState={tableState}
+		annotationsAggregations='diseaseAnnotationsAggregations'
+		endpoint='disease-annotation'
+
     />);
   }
 
