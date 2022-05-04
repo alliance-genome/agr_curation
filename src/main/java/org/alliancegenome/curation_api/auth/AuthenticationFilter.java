@@ -1,25 +1,31 @@
 package org.alliancegenome.curation_api.auth;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Base64;
+import java.util.UUID;
 
 import javax.annotation.Priority;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.container.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
 import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
-import org.alliancegenome.curation_api.interfaces.okta.*;
+import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
+import org.alliancegenome.curation_api.interfaces.okta.OktaUserInfo;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueId;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.*;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -37,6 +43,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Inject LoggedInPersonDAO loggedInPersonDAO;
 
+    @Inject LoggedInPersonUniqueId loggedInPersonUniqueId;
+    
     @ConfigProperty(name = "okta.authentication")
     Instance<Boolean> okta_auth;
 
@@ -98,17 +106,18 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private void loginDevUser() {
         log.debug("OKTA Authentication Disabled using Test Dev User");
-        SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findPersonByOktaEmail("test@alliancegenome.org");
-        if(res == null) {
+        LoggedInPerson authenticatedUser = loggedInPersonDAO.findLoggedInPersonByOktaEmail("test@alliancegenome.org");
+        if(authenticatedUser == null) {
             LoggedInPerson person = new LoggedInPerson();
             person.setApiToken(UUID.randomUUID().toString());
             person.setOktaEmail("test@alliancegenome.org");
             person.setFirstName("Local");
             person.setLastName("Dev User");
+            person.setUniqueId("Local|Dev User|test@alliancegenome.org");
             loggedInPersonDAO.persist(person);
             userAuthenticatedEvent.fire(person);
         } else {
-            userAuthenticatedEvent.fire(res.getResults().get(0));
+            userAuthenticatedEvent.fire(authenticatedUser);
         }
     }
 
@@ -138,17 +147,18 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             User user = client.getUser(info.getUid());
 
             if(user != null) {
-                SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findPersonByOktaEmail(user.getProfile().getEmail());
-                if(res == null) {
+                LoggedInPerson authenticatedUser = loggedInPersonDAO.findLoggedInPersonByOktaEmail(user.getProfile().getEmail());
+                if(authenticatedUser == null) {
                     LoggedInPerson person = new LoggedInPerson();
                     person.setApiToken(UUID.randomUUID().toString());
                     person.setOktaEmail(user.getProfile().getEmail());
                     person.setFirstName(user.getProfile().getFirstName());
                     person.setLastName(user.getProfile().getLastName());
+                    person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
                     loggedInPersonDAO.persist(person);
                     return person;
                 } else {
-                    return res.getResults().get(0);
+                    return authenticatedUser;
                 }
             } else {
                 SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);

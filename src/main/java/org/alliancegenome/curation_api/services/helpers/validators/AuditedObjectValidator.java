@@ -4,14 +4,23 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.entity.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.PersonService;
 
 public class AuditedObjectValidator<E extends AuditedObject> {
 
     @Inject
     @AuthenticatedUser
     protected LoggedInPerson authenticatedPerson;
+    
+    @Inject
+    PersonService personService;
+    
+    @Inject
+    LoggedInPersonDAO loggedInPersonDAO;
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
@@ -26,11 +35,20 @@ public class AuditedObjectValidator<E extends AuditedObject> {
         
         if (uiEntity.getCreationDate() != null)
             dbEntity.setCreationDate(uiEntity.getCreationDate());
-        
-        if (uiEntity.getCreatedBy() != null)
-            dbEntity.setCreatedBy(uiEntity.getCreatedBy());
 
-        dbEntity.setModifiedBy(authenticatedPerson);
+        if (uiEntity.getCreatedBy() != null) {
+            Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
+            dbEntity.setCreatedBy(createdBy);
+        }
+
+        if (uiEntity.getModifiedBy() != null) {
+            Person modifiedBy = personService.fetchByUniqueIdOrCreate(uiEntity.getModifiedBy().getUniqueId());
+            dbEntity.setModifiedBy(modifiedBy);
+        } else {
+            LoggedInPerson modifiedBy = loggedInPersonDAO.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+            dbEntity.setModifiedBy(modifiedBy);
+        }
+        
         
         return dbEntity;
     }
