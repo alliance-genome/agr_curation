@@ -42,7 +42,6 @@ public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("singleReference")
     private Reference singleReference;
 
     @IndexedEmbedded(includeDepth = 1)
