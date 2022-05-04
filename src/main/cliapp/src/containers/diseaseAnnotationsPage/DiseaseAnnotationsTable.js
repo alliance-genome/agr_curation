@@ -7,7 +7,7 @@ import { useMutation, useQuery } from 'react-query';
 import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
-import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
@@ -45,6 +45,7 @@ export const DiseaseAnnotationsTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnOptions,
     filters: {},
+    isFirst: true
   }
 
   const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
@@ -83,7 +84,6 @@ export const DiseaseAnnotationsTable = () => {
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
-  const relatedNotesRef = useRef([]);
 
   let diseaseAnnotationService = null;
 
@@ -139,6 +139,15 @@ export const DiseaseAnnotationsTable = () => {
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
 
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      first: value,
+    };
+
+    setTableState(_tableState);
+  }
+
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -177,7 +186,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
     let _relatedNotesData = {};
-    _relatedNotesData["relatedNotes"] = rowData.relatedNotes;
+    _relatedNotesData["originalRelatedNotes"] = rowData.relatedNotes;
     _relatedNotesData["dialog"] = true;
     _relatedNotesData["isInEdit"] = isInEdit;
     setRelatedNotesData(() => ({
@@ -187,12 +196,11 @@ export const DiseaseAnnotationsTable = () => {
 
   const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
     let _relatedNotesData = {};
-    _relatedNotesData["relatedNotes"] = rowProps.rowData.relatedNotes;
+    _relatedNotesData["originalRelatedNotes"] = rowProps.rowData.relatedNotes;
     _relatedNotesData["dialog"] = true;
     _relatedNotesData["isInEdit"] = isInEdit;
     _relatedNotesData["rowIndex"] = rowProps.rowIndex;
     _relatedNotesData["mainRowProps"] = rowProps;
-    relatedNotesRef.current = global.structuredClone(rowProps.rowData.relatedNotes);
     setRelatedNotesData(() => ({
       ..._relatedNotesData
     }));
@@ -271,13 +279,22 @@ export const DiseaseAnnotationsTable = () => {
   const relatedNotesEditor = (props) => {
     if (props?.rowData?.relatedNotes) {
       return (
-        <Button className="p-button-text"
-          onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
-          <span style={{ textDecoration: 'underline' }}>
-            {`Notes(${props.rowData.relatedNotes.length}) `}
-            <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
-          </span>
-        </Button>
+        <>
+        <div>
+          <Button className="p-button-text"
+            onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+            <span style={{ textDecoration: 'underline' }}>
+              {`Notes(${props.rowData.relatedNotes.length}) `}
+              <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+            </span>&nbsp;&nbsp;&nbsp;&nbsp;
+            <Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',  }}/>
+            <span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+              <i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+            </span>
+          </Button>
+        </div>
+          <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+        </>
       )
     }
   };
@@ -302,7 +319,7 @@ export const DiseaseAnnotationsTable = () => {
     setIsEnabled(false);
     originalRows[event.index] = { ...diseaseAnnotations[event.index] };
     setOriginalRows(originalRows);
-    console.log(dataTable.current.state);
+    //console.log(dataTable.current.state);
   };
 
   const onRowEditCancel = (event) => {
@@ -324,7 +341,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onRowEditSave = (event) => {//possible to shrink?
-    console.log(event);
+    //console.log(event);
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
@@ -368,7 +385,7 @@ export const DiseaseAnnotationsTable = () => {
 
         const errorMessagesCopy = errorMessages;
 
-        console.log(errorMessagesCopy);
+        //console.log(errorMessagesCopy);
         errorMessagesCopy[event.index] = {};
         Object.keys(error.response.data.errorMessages).forEach((field) => {
           let messageObject = {
@@ -378,7 +395,7 @@ export const DiseaseAnnotationsTable = () => {
           errorMessagesCopy[event.index][field] = messageObject;
         });
 
-        console.log(errorMessagesCopy);
+        //console.log(errorMessagesCopy);
         setErrorMessages({ ...errorMessagesCopy });
 
         setDiseaseAnnotations(annotations);
@@ -873,7 +890,7 @@ export const DiseaseAnnotationsTable = () => {
   {
     field: "object.name",
     header: "Disease",
-    sortable: { isEnabled },
+    sortable: isEnabled,
     filter: true,
     filterElement: filterComponentInputTextTemplate("objectFilter", ["object.curie", "object.name"]),
     editor: (props) => diseaseEditorTemplate(props),
@@ -1020,7 +1037,7 @@ export const DiseaseAnnotationsTable = () => {
   },
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 10;
@@ -1059,10 +1076,10 @@ export const DiseaseAnnotationsTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableState, isEnabled, columnWidths]);
 
-    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+    const createMultiselectComponent = (tableState,defaultColumnOptions,isEnabled) => {
         return (<MultiSelect
             value={tableState.selectedColumnNames}
-            options={defaultColumnNames}
+            options={defaultColumnOptions}
             onChange={e => setSelectedColumnNames(e.value)}
             style={{ width: '20em', textAlign: 'center' }}
             disabled={!isEnabled}
@@ -1081,8 +1098,13 @@ export const DiseaseAnnotationsTable = () => {
   );
 
   const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
+    setDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
@@ -1094,7 +1116,9 @@ export const DiseaseAnnotationsTable = () => {
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
-    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    //minus one because of the rowEditor column at the start of the table
+    _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
+    console.log(_columnNames);
     setSelectedColumnNames(_columnNames);
   };
 
@@ -1117,7 +1141,7 @@ export const DiseaseAnnotationsTable = () => {
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <DataTable value={diseaseAnnotations} header={header} reorderableColumns={isEnabled} ref={dataTable}
+        <DataTable value={diseaseAnnotations} header={header} reorderableColumns ref={dataTable}
           tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
@@ -1135,10 +1159,11 @@ export const DiseaseAnnotationsTable = () => {
         </DataTable>
       </div>
       <RelatedNotesDialog
-        relatedNotesData={relatedNotesData}
-        setRelatedNotesData={setRelatedNotesData}
-        relatedNotesRef={relatedNotesRef}
+        originalRelatedNotesData={relatedNotesData}
+        setOriginalRelatedNotesData={setRelatedNotesData}
         authState={authState}
+        errorMessagesMainRow={errorMessages}
+        setErrorMessagesMainRow={setErrorMessages}
       />
       <ConditionRelationsDialog
         conditonRelations={conditionRelations}

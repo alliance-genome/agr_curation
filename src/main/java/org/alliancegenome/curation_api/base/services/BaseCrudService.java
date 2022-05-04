@@ -97,5 +97,9 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
     public void reindex(int threads, int indexAmount, int batchSize) {
         dao.reindex(threads, indexAmount, batchSize);
     }
+    
+    public void reindexEverything(int threads, int indexAmount, int batchSize) {
+        dao.reindexEverything(threads, indexAmount, batchSize);
+    }
 
 }

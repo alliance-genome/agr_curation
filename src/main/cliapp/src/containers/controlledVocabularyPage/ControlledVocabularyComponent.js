@@ -10,7 +10,8 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Toast } from 'primereact/toast';
 import {useOktaAuth} from "@okta/okta-react";
 
-import {returnSorted, filterColumns, orderColumns, reorderArray} from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
 import {VocabularyService} from "../../service/VocabularyService";
 import {TrueFalseDropdown} from "../../components/TrueFalseDropDownSelector";
@@ -31,7 +32,8 @@ export const ControlledVocabularyComponent = () => {
     rows: 50,
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
-    filters: {}
+    filters: {}, 
+    isFirst: true,
   };
 
     const newTermReducer = (state, action) => {
@@ -102,6 +104,15 @@ export const ControlledVocabularyComponent = () => {
       }
       return vocabularyService.saveTerm(updatedTerm);
   });
+
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      isFirst: value,
+    };
+
+    setTableState(_tableState);
+  } 
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -378,6 +389,9 @@ export const ControlledVocabularyComponent = () => {
     }
   ];
 
+
+    useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
+
     const [columnWidths, setColumnWidths] = useState(() => {
       const width = 13;
 
@@ -420,8 +434,13 @@ export const ControlledVocabularyComponent = () => {
   }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
@@ -433,7 +452,8 @@ export const ControlledVocabularyComponent = () => {
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
-    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    //minus one because of the rowEditor column at the start of the table
+    _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
     setSelectedColumnNames(_columnNames);
   };
 
@@ -545,7 +565,7 @@ export const ControlledVocabularyComponent = () => {
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
           resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
         >
-        <Column rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
+        <Column field='rowEditor' rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
         <NewTermForm
