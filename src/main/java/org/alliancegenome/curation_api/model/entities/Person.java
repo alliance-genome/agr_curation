@@ -4,25 +4,29 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@Audited
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(callSuper = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Person extends Agent {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -40,15 +44,13 @@ public class Person extends Agent {
     @JsonView({View.FieldsOnly.class})
     private String lastName;
     
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @OneToMany
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @ElementCollection
     @JsonView({View.FieldsAndLists.class})
     private List<String> emails;
     
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @OneToMany
+    @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+    @ElementCollection
     @JsonView({View.FieldsAndLists.class})
     private List<String> oldEmails;
     

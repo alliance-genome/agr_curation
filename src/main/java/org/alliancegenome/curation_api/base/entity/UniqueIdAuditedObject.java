@@ -12,6 +12,7 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
+@ToString(callSuper = true)
 public class UniqueIdAuditedObject extends GeneratedAuditedObject{
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

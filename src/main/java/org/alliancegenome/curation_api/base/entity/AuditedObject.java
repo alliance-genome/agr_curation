@@ -19,6 +19,7 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
+@ToString(exclude = {"createdBy", "modifiedBy"})
 public class AuditedObject extends BaseEntity {
 
 

@@ -12,6 +12,7 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
+@ToString(callSuper = true)
 public class GeneratedAuditedObject extends AuditedObject {
 
     @Id @DocumentId
