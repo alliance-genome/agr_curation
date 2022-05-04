@@ -1109,13 +1109,13 @@ export const DiseaseAnnotationsTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   };
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
     //minus one because of the rowEditor column at the start of the table
     _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
-    console.log(_columnNames);
     setSelectedColumnNames(_columnNames);
   };
 
