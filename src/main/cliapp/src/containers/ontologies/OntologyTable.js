@@ -201,7 +201,7 @@ export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 20;
+      return _columnWidths[key] = 20;
     });
 
     setColumnWidths(_columnWidths);

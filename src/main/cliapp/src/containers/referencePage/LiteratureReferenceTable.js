@@ -15,8 +15,6 @@ import { SearchService } from '../../service/SearchService';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 import {Tooltip} from "primereact/tooltip";
 
-const searchService = new SearchService();
-
 export const LiteratureReferenceTable = () => {
 
     const defaultColumnNames = ["Curie", "Cross References", "Title", "Abstract", "Citation"];
@@ -270,7 +268,7 @@ export const LiteratureReferenceTable = () => {
           const _columnWidths = {...columnWidths};
 
           Object.keys(_columnWidths).map((key) => {
-            _columnWidths[key] = 20;
+            return _columnWidths[key] = 20;
           });
 
           setColumnWidths(_columnWidths);

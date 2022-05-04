@@ -260,7 +260,7 @@ export const MoleculesTable = () => {
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 13;
+      return _columnWidths[key] = 13;
     });
 
     setColumnWidths(_columnWidths);
