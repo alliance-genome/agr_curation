@@ -33,4 +33,13 @@ public class PersonService extends BaseCrudService<Person, PersonDAO> {
         return personDAO.persist(person);
     }
     
+    
+    public Person findPersonByEmail(String email) {
+        SearchResponse<Person> resp = personDAO.findByField("email", email);
+        if (resp != null && resp.getTotalResults() == 1) {
+            return resp.getSingleResult();
+        }
+        
+        return null;
+    }
 }

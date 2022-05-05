@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.response.SearchResponse;
 
 @RequestScoped
 public class LoggedInPersonService extends BaseCrudService<LoggedInPerson, LoggedInPersonDAO> {
@@ -18,6 +19,16 @@ public class LoggedInPersonService extends BaseCrudService<LoggedInPerson, Logge
     @PostConstruct
     protected void init() {
         setSQLDao(loggedInPersonDAO);
+    }
+    
+    
+    public LoggedInPerson findLoggedInPersonByOktaEmail(String email) {
+        SearchResponse<LoggedInPerson> resp = loggedInPersonDAO.findByField("oktaEmail", email);
+        if (resp != null && resp.getTotalResults() == 1) {
+            return resp.getSingleResult();
+        }
+        
+        return null;
     }
     
 }

@@ -12,14 +12,5 @@ public class LoggedInPersonDAO extends BaseSQLDAO<LoggedInPerson> {
     protected LoggedInPersonDAO() {
         super(LoggedInPerson.class);
     }
-    
-    public LoggedInPerson findLoggedInPersonByOktaEmail(String email) {
-        SearchResponse<LoggedInPerson> resp = findByField("oktaEmail", email);
-        if (resp != null && resp.getTotalResults() == 1) {
-            return resp.getSingleResult();
-        }
-        
-        return null;
-    }
 
 }

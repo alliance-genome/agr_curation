@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
 import org.alliancegenome.curation_api.interfaces.okta.OktaUserInfo;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.LoggedInPersonService;
 import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueId;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -42,6 +43,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     Event<LoggedInPerson> userAuthenticatedEvent;
 
     @Inject LoggedInPersonDAO loggedInPersonDAO;
+
+    @Inject LoggedInPersonService loggedInPersonService;
 
     @Inject LoggedInPersonUniqueId loggedInPersonUniqueId;
     
@@ -106,7 +109,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     private void loginDevUser() {
         log.debug("OKTA Authentication Disabled using Test Dev User");
-        LoggedInPerson authenticatedUser = loggedInPersonDAO.findLoggedInPersonByOktaEmail("test@alliancegenome.org");
+        LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail("test@alliancegenome.org");
         if(authenticatedUser == null) {
             LoggedInPerson person = new LoggedInPerson();
             person.setApiToken(UUID.randomUUID().toString());
@@ -147,7 +150,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
             User user = client.getUser(info.getUid());
 
             if(user != null) {
-                LoggedInPerson authenticatedUser = loggedInPersonDAO.findLoggedInPersonByOktaEmail(user.getProfile().getEmail());
+                LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(user.getProfile().getEmail());
                 if(authenticatedUser == null) {
                     LoggedInPerson person = new LoggedInPerson();
                     person.setApiToken(UUID.randomUUID().toString());

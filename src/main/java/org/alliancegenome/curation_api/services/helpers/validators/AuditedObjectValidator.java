@@ -6,10 +6,10 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.entity.AuditedObject;
-import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.LoggedInPersonService;
 import org.alliancegenome.curation_api.services.PersonService;
 
 public class AuditedObjectValidator<E extends AuditedObject> {
@@ -22,7 +22,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
     PersonService personService;
     
     @Inject
-    LoggedInPersonDAO loggedInPersonDAO;
+    LoggedInPersonService loggedInPersonService;
     
     protected String invalidMessage = "Not a valid entry";
     protected String obsoleteMessage = "Obsolete term specified";
@@ -43,7 +43,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
             dbEntity.setCreatedBy(createdBy);
         }
 
-        LoggedInPerson modifiedBy = loggedInPersonDAO.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+        LoggedInPerson modifiedBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
         dbEntity.setModifiedBy(modifiedBy);
         
         dbEntity.setDateUpdated(OffsetDateTime.now());
