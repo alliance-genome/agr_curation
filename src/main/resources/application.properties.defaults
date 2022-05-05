@@ -27,6 +27,7 @@ quarkus.elasticsearch.protocol = http
 
 quarkus.hibernate-search-orm.elasticsearch.version=7.10.2
 quarkus.hibernate-search-orm.elasticsearch.protocol=http
+quarkus.hibernate-search-orm.elasticsearch.read-timeout=600S
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
 quarkus.hibernate-search-orm.automatic-indexing.synchronization.strategy=write-sync
 

@@ -34,6 +34,10 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Experimental Conditions", count: results.totalResults, link: '/#/experimentalConditions' }]);
     });
 
+    searchService.search('condition-relation', 0, 0).then(results => {
+      setEntityCounts((list) => [...list, { name: "Condition Relation Handles", count: results.totalResults, link: '/#/conditionRelations' }]);
+    });
+
     searchService.search("molecule", 0, 0).then(results => {
       setEntityCounts((list) => [...list, { name: "Molecules", count: results.totalResults, link: '/#/molecules' }]);
     });
@@ -94,12 +98,12 @@ export const Dashboard = () => {
     searchService.search('xbaterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XBA", count: results.totalResults, link: '/#/ontology/xba' }]);
     });
-    
-    
+
+
     searchService.search('xbsterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XBS", count: results.totalResults, link: '/#/ontology/xbs' }]);
     });
-    
+
     searchService.search('xcoterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XCO", count: results.totalResults, link: '/#/ontology/xco' }]);
     });

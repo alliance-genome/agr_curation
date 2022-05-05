@@ -11,7 +11,7 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { MultiSelect } from 'primereact/multiselect';
 import { Tooltip } from 'primereact/tooltip';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const GenesTable = () => {
@@ -24,6 +24,7 @@ export const GenesTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
     filters: {},
+    isFirst: true,
   }
 
   const [tableState, setTableState] = useSessionStorage("geneTableSettings", initialTableState);
@@ -52,6 +53,14 @@ export const GenesTable = () => {
     keepPreviousData: true
   });
 
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      isFirst: value,
+    };
+
+    setTableState(_tableState);
+  } 
   const onLazyLoad = (event) => {
     let _tableState = {
       ...tableState,
@@ -177,7 +186,7 @@ export const GenesTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 20;
@@ -217,8 +226,13 @@ export const GenesTable = () => {
   }, [tableState, isEnabled, columnWidths]);
 
   const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
@@ -226,6 +240,7 @@ export const GenesTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   }
 
 

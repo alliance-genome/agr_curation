@@ -7,7 +7,7 @@ import { Messages } from 'primereact/messages';
 import { MultiSelect } from 'primereact/multiselect';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Card } from 'primereact/card';
@@ -27,7 +27,8 @@ export const LiteratureReferenceTable = () => {
         rows: 50,
         multiSortMeta: [],
         selectedColumnNames: defaultColumnNames,
-        filters: {}
+        filters: {},
+        isFirst: true,
     };
 
     const [tableState, setTableState] = useSessionStorage("referenceTableSettings", initialTableState);
@@ -56,6 +57,15 @@ export const LiteratureReferenceTable = () => {
         },
         keepPreviousData: true
     });
+
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      isFirst: value,
+    };
+
+    setTableState(_tableState);
+  }
 
 
     const onLazyLoad = (event) => {
@@ -212,7 +222,7 @@ export const LiteratureReferenceTable = () => {
         }
     ];
 
-    useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
     const [columnWidths, setColumnWidths] = useState(() => {
         const width = 20;
@@ -250,8 +260,13 @@ export const LiteratureReferenceTable = () => {
     }, [tableState, isEnabled, columnWidths]);
 
     const resetTableState = () => {
-        setTableState(initialTableState);
-        dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+          let _tableState = {
+            ...initialTableState,
+            isFirst: false,
+          };
+
+          setTableState(_tableState);
+          setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
           const _columnWidths = {...columnWidths};
 
           Object.keys(_columnWidths).map((key) => {
@@ -259,6 +274,7 @@ export const LiteratureReferenceTable = () => {
           });
 
           setColumnWidths(_columnWidths);
+          dataTable.current.el.children[1].scrollLeft = 0;
     }
 
     const colReorderHandler = (event) => {

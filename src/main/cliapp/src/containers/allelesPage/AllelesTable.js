@@ -10,7 +10,7 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 import { Tooltip } from 'primereact/tooltip';
 
@@ -23,7 +23,8 @@ export const AllelesTable = () => {
     rows: 50,
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
-    filters: {}
+    filters: {},
+    isFirst: true,
   };
 
   const [tableState, setTableState] = useSessionStorage("alleleTableSettings", initialTableState);
@@ -51,6 +52,15 @@ export const AllelesTable = () => {
     },
     keepPreviousData: true
   })
+
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      isFirst: value,
+    };
+
+    setTableState(_tableState);
+  } 
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -181,7 +191,7 @@ export const AllelesTable = () => {
     }
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 20;
@@ -220,8 +230,13 @@ export const AllelesTable = () => {
 
 
   const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = { ...columnWidths };
 
     Object.keys(_columnWidths).map((key) => {
@@ -229,6 +244,7 @@ export const AllelesTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   }
 
   const colReorderHandler = (event) => {

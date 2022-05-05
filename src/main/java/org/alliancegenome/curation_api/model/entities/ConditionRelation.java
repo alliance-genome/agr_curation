@@ -22,6 +22,7 @@ import lombok.*;
 @Audited
 @Entity
 @Data
+@Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
 public class ConditionRelation extends UniqueIdAuditedObject {
@@ -41,7 +42,6 @@ public class ConditionRelation extends UniqueIdAuditedObject {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("single_reference")
     private Reference singleReference;
 
     @IndexedEmbedded(includeDepth = 1)

@@ -14,7 +14,7 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { MultiSelect } from 'primereact/multiselect';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Tooltip } from 'primereact/tooltip';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
@@ -32,6 +32,7 @@ export const ExperimentalConditionsTable = () => {
     multiSortMeta: [],
     selectedColumnNames: defaultColumnNames,
     filters: {},
+    isFirst: true,
   }
 
   const [tableState, setTableState] = useSessionStorage("ExConTableSettings", initialTableState);
@@ -84,6 +85,15 @@ export const ExperimentalConditionsTable = () => {
     }
     return experimentalConditionService.saveExperimentalCondition(updatedCondition);
   });
+
+  const setIsFirst = (value) => {
+    let _tableState = {
+      ...tableState,
+      isFirst: value,
+    };
+
+    setTableState(_tableState);
+  }
 
   const onLazyLoad = (event) => {
     let _tableState = {
@@ -528,7 +538,7 @@ export const ExperimentalConditionsTable = () => {
 
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 10;
@@ -588,8 +598,13 @@ export const ExperimentalConditionsTable = () => {
   );
 
   const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
+    let _tableState = {
+      ...initialTableState,
+      isFirst: false,
+    };
+
+    setTableState(_tableState);
+    setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
@@ -597,11 +612,13 @@ export const ExperimentalConditionsTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   }
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
-    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+    //minus one because of the rowEditor column at the start of the table
+    _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
     setSelectedColumnNames(_columnNames);
   };
 
@@ -636,7 +653,8 @@ export const ExperimentalConditionsTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
         >
-        <Column rowEditor style={{ maxWidth: '7rem' }} headerStyle={{ maxWidth: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+            headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
       </div>
