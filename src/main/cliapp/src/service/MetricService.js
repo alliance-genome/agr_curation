@@ -10,12 +10,6 @@ export class MetricService {
       //return axios.get('assets/testTree.json').then(res => res.data).then(d => d.root);
     }
 
-    getSnapshot(release) {
-      //return axios.get('https://fms.alliancegenome.org/api/releaseversion/all').then(res => res.data);
-      return axios.get(`https://fms.alliancegenome.org/api/snapshot/release/${release}`).then(res => res.data.snapShot);
-    }
-
-
     parseMetrics(results) {
       let mets = {};
 
