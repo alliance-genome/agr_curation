@@ -560,6 +560,7 @@ export const ExperimentalConditionsTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   }
 
   const colReorderHandler = (event) => {
