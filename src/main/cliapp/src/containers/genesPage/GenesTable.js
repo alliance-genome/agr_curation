@@ -240,6 +240,7 @@ export const GenesTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   }
 
 
