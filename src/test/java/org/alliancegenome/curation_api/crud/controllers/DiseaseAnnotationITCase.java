@@ -73,12 +73,6 @@ public class DiseaseAnnotationITCase {
     private List<Note> relatedNotes;
     private ExperimentalCondition experimentalCondition;
     private ConditionRelation conditionRelation;
-
-    private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
-        return new TypeRef<>() {
-        };
-    }
-
     
     private void createRequiredObjects() {
         testEcoTerms = new ArrayList<EcoTerm>();
@@ -165,7 +159,9 @@ public class DiseaseAnnotationITCase {
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
                 body("entity.internal", is(false)).
-                body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
+                body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
+                body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
     }
 
     @Test
@@ -202,7 +198,9 @@ public class DiseaseAnnotationITCase {
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
                 body("entity.internal", is(false)).
-                body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
+                body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
+                body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
     }
 
     @Test
@@ -239,7 +237,9 @@ public class DiseaseAnnotationITCase {
                 body("entity.negated", is(false)).
                 body("entity.dataProvider", is("TEST")).
                 body("entity.internal", is(false)).
-                body("entity.evidenceCodes[0].curie", is("ECO:da0001"));
+                body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
+                body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
     }
 
     @Test
@@ -305,10 +305,10 @@ public class DiseaseAnnotationITCase {
                 body("entity.relatedNotes[0].freeText", is("Test text")).
                 body("entity.conditionRelations[0].conditionRelationType.name", is("relation_type")).
                 body("entity.conditionRelations[0].conditions[0].conditionStatement", is("Statement")).
-                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.internal", is(true)).
-                body("entity.createdBy", is("TEST:Person0001")).
-                body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
+                body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z")).
+                body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
     }
 
     @Test
@@ -364,9 +364,9 @@ public class DiseaseAnnotationITCase {
                 body("entity.annotationType.name", is("computational")).
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
-                body("entity.modifiedBy", is("Local Dev User")).
                 body("entity.internal", is(true)).
-                body("entity.createdBy", is("TEST:Person0001")).
+                body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
     }
@@ -425,8 +425,8 @@ public class DiseaseAnnotationITCase {
                 body("entity.diseaseQualifiers[0].name", is("severity")).
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.internal", is(true)).
-                body("entity.modifiedBy", is("Local Dev User")).
-                body("entity.createdBy", is("TEST:Person0001")).
+                body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("TEST:Person0001")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
     }
@@ -1232,14 +1232,15 @@ public class DiseaseAnnotationITCase {
         Person person = new Person();
         person.setUniqueId(uniqueId);
         
-        RestAssured.given().
+        ObjectResponse<Person> response = RestAssured.given().
                 contentType("application/json").
                 body(person).
                 when().
                 post("/api/person").
                 then().
-                statusCode(200);
-        return person;
+                statusCode(200).extract().
+                body().as(getObjectResponseTypeRefPerson());;
+        return response.getEntity();
     }
 
     private AffectedGenomicModel createModel(String curie, String taxon, String name) {
@@ -1418,6 +1419,10 @@ public class DiseaseAnnotationITCase {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
 
+    private TypeRef<ObjectResponse<Person>> getObjectResponseTypeRefPerson() {
+        return new TypeRef<ObjectResponse <Person>>() { };
+    }
+
     private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
         return new TypeRef<ObjectResponse <Vocabulary>>() { };
     }
@@ -1440,5 +1445,10 @@ public class DiseaseAnnotationITCase {
     
     private TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
         return new TypeRef<ObjectResponse <ConditionRelation>>() { };
+    }
+
+    private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
+        return new TypeRef<ObjectResponse <GeneDiseaseAnnotation>>() {
+        };
     }
 }

@@ -107,9 +107,9 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].object.curie", is("DATEST:Disease0001")).
             body("results[0].diseaseRelation.name", is("is_implicated_in")).
             body("results[0].geneticSex.name", is("male")).
-            body("results[0].modifiedBy", is("DATEST:Person0001")).
+            body("results[0].modifiedBy.uniqueId", is("DATEST:Person0001")).
             body("results[0].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
-            body("results[0].createdBy", is("DATEST:Person0001")).
+            body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
             body("results[0].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[0].conditionRelations", hasSize(1)).
             body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
@@ -173,9 +173,9 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].object.curie", is("DATEST:Disease0001")).
             body("results[1].diseaseRelation.name", is("is_implicated_in")).
             body("results[1].geneticSex.name", is("male")).
-            body("results[1].modifiedBy", is("DATEST:Person0001")).
+            body("results[1].modifiedBy.uniqueId", is("DATEST:Person0001")).
             body("results[1].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
-            body("results[1].createdBy", is("DATEST:Person0001")).
+            body("results[1].createdBy.uniqueId", is("DATEST:Person0001")).
             body("results[1].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[1].conditionRelations", hasSize(1)).
             body("results[1].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
@@ -238,9 +238,9 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].object.curie", is("DATEST:Disease0001")).
             body("results[2].diseaseRelation.name", is("is_model_of")).
             body("results[2].geneticSex.name", is("male")).
-            body("results[2].modifiedBy", is("DATEST:Person0001")).
+            body("results[2].modifiedBy.uniqueId", is("DATEST:Person0001")).
             body("results[2].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
-            body("results[2].createdBy", is("DATEST:Person0001")).
+            body("results[2].createdBy.uniqueId", is("DATEST:Person0001")).
             body("results[2].creationDate".toString(), is("2022-03-09T22:10:12Z")).
             body("results[2].conditionRelations", hasSize(1)).
             body("results[2].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).

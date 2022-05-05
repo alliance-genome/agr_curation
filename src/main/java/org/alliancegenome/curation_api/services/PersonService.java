@@ -25,14 +25,12 @@ public class PersonService extends BaseCrudService<Person, PersonDAO> {
     @Transactional
     public Person fetchByUniqueIdOrCreate(String uniqueId) {
         SearchResponse<Person> personResponse = personDAO.findByField("uniqueId", uniqueId);
-        if (personResponse.getResults().size() > 0) {
+        if (personResponse != null && personResponse.getResults().size() > 0) {
             return personResponse.getSingleResult();
         }
         Person person = new Person();
         person.setUniqueId(uniqueId);
-        personDAO.persist(person);
-        
-        return person;
+        return personDAO.persist(person);
     }
     
 }

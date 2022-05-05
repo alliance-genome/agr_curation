@@ -26,7 +26,8 @@
             "condition_gene_ontology": "DATEST:GOTerm0001",
             "condition_anatomy": "DATEST:AnatomyTerm0001",
             "condition_chemical": "DATEST:ChemicalTerm0001",
-            "condition_free_text": "Free text"
+            "condition_free_text": "Free text",
+            "internal": false
           }
         ]
       }
