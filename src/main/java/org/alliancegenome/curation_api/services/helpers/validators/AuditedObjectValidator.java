@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.time.OffsetDateTime;
+
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
@@ -41,14 +43,10 @@ public class AuditedObjectValidator<E extends AuditedObject> {
             dbEntity.setCreatedBy(createdBy);
         }
 
-        if (uiEntity.getModifiedBy() != null) {
-            Person modifiedBy = personService.fetchByUniqueIdOrCreate(uiEntity.getModifiedBy().getUniqueId());
-            dbEntity.setModifiedBy(modifiedBy);
-        } else {
-            LoggedInPerson modifiedBy = loggedInPersonDAO.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
-            dbEntity.setModifiedBy(modifiedBy);
-        }
+        LoggedInPerson modifiedBy = loggedInPersonDAO.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+        dbEntity.setModifiedBy(modifiedBy);
         
+        dbEntity.setDateLastModified(OffsetDateTime.now());
         
         return dbEntity;
     }

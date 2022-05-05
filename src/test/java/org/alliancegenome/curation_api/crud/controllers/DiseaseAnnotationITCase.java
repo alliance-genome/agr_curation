@@ -265,9 +265,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         editedDiseaseAnnotation.setConditionRelations(conditionRelations);
@@ -308,7 +306,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.internal", is(true)).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z")).
                 body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-                body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
+                body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
     }
 
     @Test
@@ -330,9 +328,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setInternal(true);
         
@@ -366,7 +362,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.internal", is(true)).
                 body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-                body("entity.modifiedBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
     }
@@ -390,9 +386,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setAnnotationType(annotationType);
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setInternal(true);
         
@@ -426,7 +420,7 @@ public class DiseaseAnnotationITCase {
                 body("entity.with[0].curie", is("HGNC:1")).
                 body("entity.internal", is(true)).
                 body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-                body("entity.modifiedBy.uniqueId", is("TEST:Person0001")).
+                body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
                 body("entity.creationDate".toString(), is("2022-03-09T22:10:12Z"));
 
     }
@@ -451,9 +445,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
 
@@ -486,9 +478,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -521,9 +511,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -556,9 +544,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -591,9 +577,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -627,9 +611,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -666,9 +648,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -705,9 +685,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -740,9 +718,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -782,9 +758,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -821,9 +795,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -859,9 +831,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(withGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -898,9 +868,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(nonPersistedModel);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         
@@ -933,44 +901,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(null);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
-        editedDiseaseAnnotation.setCreationDate(testDate);
-        editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
-
-        RestAssured.given().
-            contentType("application/json").
-            body(editedDiseaseAnnotation).
-            when().
-            put("/api/gene-disease-annotation").
-            then().
-            statusCode(400);
-    }
-    
-    // TODO: re-enable test once field can be added in UI
-    // @Test
-    @Order(21)
-    public void editWithMissingModifiedBy() {
-        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
-        editedDiseaseAnnotation.setNegated(true);
-        editedDiseaseAnnotation.setObject(testDoTerm2);
-        editedDiseaseAnnotation.setDataProvider("TEST2");
-        editedDiseaseAnnotation.setSubject(testGene2);
-        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
-        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
-        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
-        editedDiseaseAnnotation.setGeneticSex(geneticSex);
-        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
-        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
-        editedDiseaseAnnotation.setAnnotationType(annotationType);
-        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
-        editedDiseaseAnnotation.setWith(testWithGenes);
-        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(null);
-        editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
 
@@ -984,7 +915,7 @@ public class DiseaseAnnotationITCase {
     }
     
     @Test
-    @Order(22)
+    @Order(21)
     public void editAttachedNote() {
         
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
@@ -1003,9 +934,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         
         List<Note> editedNotes = new ArrayList<Note>();
@@ -1032,7 +961,7 @@ public class DiseaseAnnotationITCase {
     }
     
     @Test
-    @Order(23)
+    @Order(22)
     public void editWithObsoleteNoteType() {
         
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
@@ -1051,9 +980,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         
         List<Note> editedNotes = new ArrayList<Note>();
@@ -1073,7 +1000,7 @@ public class DiseaseAnnotationITCase {
     }
     
     @Test
-    @Order(24)
+    @Order(23)
     public void editWithConditionRelationType() {
         
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
@@ -1092,9 +1019,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
         editedDiseaseAnnotation.setWith(testWithGenes);
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
-        editedDiseaseAnnotation.setModifiedBy(testPerson);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
-        editedDiseaseAnnotation.setDateLastModified(testDate);
         editedDiseaseAnnotation.setCreationDate(testDate);
         
         List<ConditionRelation> editedConditionRelations = new ArrayList<ConditionRelation>();
