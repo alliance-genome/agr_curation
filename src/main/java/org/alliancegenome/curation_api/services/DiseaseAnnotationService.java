@@ -173,24 +173,24 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
         
         annotation.setInternal(dto.getInternal());
 
-        if (dto.getDateLastModified() != null) {
+        if (dto.getDateUpdated() != null) {
             OffsetDateTime dateLastModified;
             try {
-                dateLastModified = OffsetDateTime.parse(dto.getDateLastModified());
+                dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
             } catch (DateTimeParseException e) {
-                throw new ObjectValidationException(dto, "Could not parse date_last_modified in annotation " + annotation.getUniqueId() + " - skipping");
+                throw new ObjectValidationException(dto, "Could not parse date_updated in annotation " + annotation.getUniqueId() + " - skipping");
             }
-            annotation.setDateLastModified(dateLastModified);
+            annotation.setDateUpdated(dateLastModified);
         }
 
-        if (dto.getCreationDate() != null) {
+        if (dto.getDateCreated() != null) {
             OffsetDateTime creationDate;
             try {
-                creationDate = OffsetDateTime.parse(dto.getCreationDate());
+                creationDate = OffsetDateTime.parse(dto.getDateCreated());
             } catch (DateTimeParseException e) {
-                throw new ObjectValidationException(dto, "Could not parse creation_date in annotation " + annotation.getUniqueId() + " - skipping");
+                throw new ObjectValidationException(dto, "Could not parse date_created in annotation " + annotation.getUniqueId() + " - skipping");
             }
-            annotation.setCreationDate(creationDate);
+            annotation.setDateCreated(creationDate);
         }
 
         if (dto.getModEntityId() != null) {

@@ -35,8 +35,8 @@ public class AuditedObjectValidator<E extends AuditedObject> {
         Boolean internal = validateInternal(uiEntity);
         if (internal != null) dbEntity.setInternal(internal);
         
-        if (uiEntity.getCreationDate() != null)
-            dbEntity.setCreationDate(uiEntity.getCreationDate());
+        if (uiEntity.getDateCreated() != null)
+            dbEntity.setDateCreated(uiEntity.getDateCreated());
 
         if (uiEntity.getCreatedBy() != null) {
             Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
@@ -46,7 +46,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
         LoggedInPerson modifiedBy = loggedInPersonDAO.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
         dbEntity.setModifiedBy(modifiedBy);
         
-        dbEntity.setDateLastModified(OffsetDateTime.now());
+        dbEntity.setDateUpdated(OffsetDateTime.now());
         
         return dbEntity;
     }
