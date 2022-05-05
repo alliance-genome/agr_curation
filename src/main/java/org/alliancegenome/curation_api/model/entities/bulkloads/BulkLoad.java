@@ -58,7 +58,7 @@ public abstract class BulkLoad extends GeneratedAuditedObject {
 
     @JsonView({View.FieldsOnly.class})
     @OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
-    @OrderBy("lastUpdated DESC")
+    @OrderBy("dateUpdated DESC")
     private List<BulkLoadFile> loadFiles;
 
     public enum BulkLoadStatus {

@@ -33,7 +33,7 @@ export const DiseaseAnnotationsTable = () => {
   const defaultColumnOptions = [
     "Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease","Evidence Code", "With", "Reference", "Experimental Conditions",
     "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation","Genetic Modifier", "Related Notes",
-    "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Internal"
+    "Data Provider", "Secondary Data Provider", "Modified By", "Date Updated", "Created By", "Date Created", "Internal"
   ];
 
   let initialTableState = {
@@ -1039,11 +1039,11 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy.uniqueId"])
   },
   {
-    field: "dateLastModified",
-    header: "Date Last Modified",
+    field: "dateUpdated",
+    header: "Date Updated",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("dateLastModifiedFilter", ["dateLastModified"])
+    filterElement: filterComponentInputTextTemplate("dateUpdatedFilter", ["dateUpdated"])
   },
   {
     field: "createdBy.uniqueId",
@@ -1053,12 +1053,12 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy.uniqueId"])
   },
   {
-    field: "creationDate",
-    header: "Creation Date",
+    field: "dateCreated",
+    header: "Date Created",
     sortable: isEnabled,
     filter: true,
     filterType: "Date",
-    filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
+    filterElement: filterComponentInputTextTemplate("dateCreatedFilter", ["dateCreated"])
   },
   {
     field: "internal",
