@@ -8,7 +8,7 @@ export class ExperimentalConditionService extends BaseAuthService{
   }
 
   saveExperimentalCondition(updatedCondition){
-    return axios.put(`api/experimental-condition`, updatedCondition, this.apiAuthHeader);
+    return this.api.put(`api/experimental-condition`, updatedCondition);
   }
 }
 

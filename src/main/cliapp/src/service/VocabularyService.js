@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { BaseAuthService } from './BaseAuthService';
 
 export class VocabularyService extends BaseAuthService {
@@ -8,19 +7,19 @@ export class VocabularyService extends BaseAuthService {
     }
 
     saveTerm(updatedTerm) { //EDIT
-        return axios.put(`api/vocabularyterm`, updatedTerm, this.apiAuthHeader);
+        return this.api.put(`/vocabularyterm`, updatedTerm);
     }
 
     createVocabulary(vocabulary){ //new Vocab creation
-        return axios.post(`api/vocabulary`, vocabulary, this.apiAuthHeader);
+        return this.api.post(`/vocabulary`, vocabulary);
     }
 
     createTerm(term){ //new Term creation
-        return axios.post(`api/vocabularyterm`, term, this.apiAuthHeader);
+        return this.api.post(`/vocabularyterm`, term);
     }
 
     getVocabularies(){ //get all dropdown list of Vocabs
-        return axios.post(`api/vocabulary/find?limit=100`, {}, this.apiAuthHeader);
+        return this.api.post(`/vocabulary/find?limit=100`, {});
     }
 }
 

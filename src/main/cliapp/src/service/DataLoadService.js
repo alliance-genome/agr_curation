@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { BaseAuthService } from './BaseAuthService';
 
 export class DataLoadService extends BaseAuthService {
@@ -8,11 +7,11 @@ export class DataLoadService extends BaseAuthService {
     }
 
     createGroup(newGroup) {
-        return axios.post(`api/bulkloadgroup`, newGroup, this.apiAuthHeader);
+        return this.api.post(`/bulkloadgroup`, newGroup);
     }
 
     deleteGroup(id) {
-        return axios.delete(`api/bulkloadgroup/${id}`, this.apiAuthHeader);
+        return this.api.delete(`api/bulkloadgroup/${id}`);
     }
 
     createLoad(newLoad) {
@@ -26,7 +25,7 @@ export class DataLoadService extends BaseAuthService {
         }
         console.log("Creating: ");
         console.log(newLoad);
-        return axios.post(`api/${endpoint}`, newLoad, this.apiAuthHeader);
+        return this.api.post(`api/${endpoint}`, newLoad);
     }
 
     updateLoad(newLoad) {
@@ -42,29 +41,29 @@ export class DataLoadService extends BaseAuthService {
         delete newLoad["loadFiles"];
         console.log("Saving: ");
         console.log(newLoad);
-        return axios.put(`api/${endpoint}`, newLoad, this.apiAuthHeader);
+        return this.api.put(`api/${endpoint}`, newLoad);
     }
 
     deleteLoad(loadType, id) {
         let endpoint = loadType.toLowerCase();
-        return axios.delete(`api/${endpoint}/${id}`, this.apiAuthHeader);
+        return this.api.delete(`api/${endpoint}/${id}`);
     }
 
     restartLoad(loadType, id) {
         let endpoint = loadType.toLowerCase();
-        return axios.get(`api/${endpoint}/restart/${id}`, this.apiAuthHeader);
+        return this.api.get(`api/${endpoint}/restart/${id}`);
     }
 
     restartLoadFile(id) {
-      return axios.get(`api/bulkloadfile/restart/${id}`, this.apiAuthHeader);
+      return this.api.get(`api/bulkloadfile/restart/${id}`);
     }
 
     getFileHistoryFile(id) {
-      return axios.get(`api/bulkloadfilehistory/${id}`);
+      return this.api.get(`api/bulkloadfilehistory/${id}`);
     }
 
     deleteLoadFile(id) {
-      return axios.delete(`api/bulkloadfile/${id}`, this.apiAuthHeader);
+      return this.api.delete(`api/bulkloadfile/${id}`);
     }
 
     getBackendBulkLoadTypes(loadType) {

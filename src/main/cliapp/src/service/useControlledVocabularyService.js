@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { useQuery } from 'react-query';
 import { SearchService } from './SearchService';
 
-export function useControlledVocabularyService(termType) {
+export function useControlledVocabularyService(accessToken, termType) {
   const [terms, setTerms] = useState();
-  const searchService = new SearchService();
+  const searchService = new SearchService(accessToken);
 
   const termData = {
     "generic_boolean_terms": {

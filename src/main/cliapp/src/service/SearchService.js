@@ -1,4 +1,3 @@
-import axios from 'axios';
 
 
 export class SearchService {
@@ -13,12 +12,12 @@ export class SearchService {
     searchOptions["sortOrders"] = includeSecondarySorts(sorts, sortMapping);
     searchOptions["aggregations"] = aggregationFields;
     // console.log(searchOptions);
-    return axios.post(`/api/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
+    return this.api.post(`/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
   }
 
   find(endpoint, rows, page, findOptions) {
     //console.log(findOptions);
-    return axios.post(`/api/${endpoint}/find?limit=${rows}&page=${page}`, findOptions).then(res => res.data);
+    return this.api.post(`/${endpoint}/find?limit=${rows}&page=${page}`, findOptions).then(res => res.data);
   }
 
 

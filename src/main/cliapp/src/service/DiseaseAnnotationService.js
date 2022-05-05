@@ -13,7 +13,7 @@ export class DiseaseAnnotationService extends BaseAuthService {
     if (type in typeEndpoints) {
       endpoint = typeEndpoints[type];
     }
-    return axios.put(`api/${endpoint}-disease-annotation`, updatedAnnotation, this.apiAuthHeader);
+    return this.api.put(`/${endpoint}-disease-annotation`, updatedAnnotation);
   }
 }
 
