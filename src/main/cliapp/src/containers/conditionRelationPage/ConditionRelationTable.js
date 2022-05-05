@@ -268,6 +268,7 @@ export const ConditionRelationTable = () => {
 		});
 
 		setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
 	};
 
 
