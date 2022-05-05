@@ -18,6 +18,11 @@ UPDATE loggedinperson
 	FROM person
 	WHERE loggedinperson.id = person.id;
 	
+UPDATE person 
+	SET uniqueid = CONCAT(person.firstname, '|', person.lastname, '|', oktaemail)
+	FROM loggedinperson
+	WHERE loggedinperson.id = person.id;
+	
 ALTER TABLE person
 	ADD COLUMN IF NOT EXISTS modentityid varchar(255);
 	
