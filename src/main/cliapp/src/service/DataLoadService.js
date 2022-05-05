@@ -6,7 +6,7 @@ export class DataLoadService extends BaseAuthService {
     }
 
     deleteGroup(id) {
-        return this.api.delete(`api/bulkloadgroup/${id}`);
+        return this.api.delete(`/bulkloadgroup/${id}`);
     }
 
     createLoad(newLoad) {
@@ -20,7 +20,7 @@ export class DataLoadService extends BaseAuthService {
         }
         console.log("Creating: ");
         console.log(newLoad);
-        return this.api.post(`api/${endpoint}`, newLoad);
+        return this.api.post(`/${endpoint}`, newLoad);
     }
 
     updateLoad(newLoad) {
@@ -36,29 +36,29 @@ export class DataLoadService extends BaseAuthService {
         delete newLoad["loadFiles"];
         console.log("Saving: ");
         console.log(newLoad);
-        return this.api.put(`api/${endpoint}`, newLoad);
+        return this.api.put(`/${endpoint}`, newLoad);
     }
 
     deleteLoad(loadType, id) {
         let endpoint = loadType.toLowerCase();
-        return this.api.delete(`api/${endpoint}/${id}`);
+        return this.api.delete(`/${endpoint}/${id}`);
     }
 
     restartLoad(loadType, id) {
         let endpoint = loadType.toLowerCase();
-        return this.api.get(`api/${endpoint}/restart/${id}`);
+        return this.api.get(`/${endpoint}/restart/${id}`);
     }
 
     restartLoadFile(id) {
-      return this.api.get(`api/bulkloadfile/restart/${id}`);
+      return this.api.get(`/bulkloadfile/restart/${id}`);
     }
 
     getFileHistoryFile(id) {
-      return this.api.get(`api/bulkloadfilehistory/${id}`);
+      return this.api.get(`/bulkloadfilehistory/${id}`);
     }
 
     deleteLoadFile(id) {
-      return this.api.delete(`api/bulkloadfile/${id}`);
+      return this.api.delete(`/bulkloadfile/${id}`);
     }
 
     getBackendBulkLoadTypes(loadType) {

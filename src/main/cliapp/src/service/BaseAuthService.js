@@ -11,7 +11,7 @@ export class BaseAuthService {
       this.api = axios.create({
         baseURL: "/api",
         headers: {
-          Authorization: "Bearer " + accessToken.accessToken
+          Authorization: `${accessToken.tokenType} ${accessToken.accessToken}`
         }
       });
     } else {
