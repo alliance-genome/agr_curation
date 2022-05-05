@@ -1,11 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 
 export class DataLoadService extends BaseAuthService {
-    //eslint-disable-next-line
-    constructor(authState) {
-      super(authState);
-    }
-
     createGroup(newGroup) {
         return this.api.post(`/bulkloadgroup`, newGroup);
     }

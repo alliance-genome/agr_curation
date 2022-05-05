@@ -1,11 +1,6 @@
 import { BaseAuthService } from './BaseAuthService';
 
 export class VocabularyService extends BaseAuthService {
-    //eslint-disable-next-line
-    constructor(authState) {
-        super(authState);
-    }
-
     saveTerm(updatedTerm) { //EDIT
         return this.api.put(`/vocabularyterm`, updatedTerm);
     }

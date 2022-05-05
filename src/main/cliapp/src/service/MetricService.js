@@ -1,13 +1,10 @@
-import axios from 'axios';
-
 import { merge } from "immutable";
+import { BaseAuthService } from './BaseAuthService';
 
-export class MetricService {
+export class MetricService extends BaseAuthService {
 
     getMetrics() {
-      //return axios.get('assets/metrics.json').then(res => this.parseMetrics(res.data));
-      return this.api.get('/api/metrics.json').then(res => this.parseMetrics(res.data));
-      //return axios.get('assets/testTree.json').then(res => res.data).then(d => d.root);
+      return this.api.get('/metrics.json').then(res => this.parseMetrics(res.data));
     }
 
     parseMetrics(results) {
