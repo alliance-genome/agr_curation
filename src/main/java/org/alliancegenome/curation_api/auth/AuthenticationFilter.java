@@ -22,11 +22,9 @@ import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.*;
 import com.okta.sdk.resource.user.User;
 
-import lombok.extern.jbosslog.JBossLog;
+import io.quarkus.logging.Log;
 import si.mazi.rescu.RestProxyFactory;
 
-@JBossLog
-@Secured
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
@@ -97,7 +95,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     private void loginDevUser() {
-        log.debug("OKTA Authentication Disabled using Test Dev User");
+        Log.debug("OKTA Authentication Disabled using Test Dev User");
         SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
         if(res == null) {
             Person person = new Person();
@@ -124,7 +122,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         if(info.getUid() == null || info.getUid().length() == 0) {
             SearchResponse<Person> res = personDAO.findByField("apiToken", token);
             if(res != null && res.getResults().size() == 1) {
-                log.info("User Found in local DB via: " + token);
+                Log.info("User Found in local DB via: " + token);
                 return res.getResults().get(0);
             }
             return null;
