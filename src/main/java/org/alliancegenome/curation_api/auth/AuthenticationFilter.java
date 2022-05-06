@@ -30,8 +30,10 @@ import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 
 import io.quarkus.logging.Log;
+import lombok.extern.jbosslog.JBossLog;
 import si.mazi.rescu.RestProxyFactory;
 
+@JBossLog
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
