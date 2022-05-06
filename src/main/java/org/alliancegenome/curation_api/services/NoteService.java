@@ -1,6 +1,9 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -8,12 +11,17 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
-import org.alliancegenome.curation_api.services.helpers.validators.NoteValidator;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.helpers.validators.NoteValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -30,6 +38,8 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
     ReferenceDAO referenceDAO;
     @Inject
     NoteValidator noteValidator;
+    @Inject
+    PersonService personService;
     
     @Override
     @PostConstruct
@@ -79,6 +89,38 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
             }
             note.setReferences(noteReferences);
         }
+        
+        if (dto.getCreatedBy()!= null) {
+            Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+            note.setCreatedBy(createdBy);
+        }
+        if (dto.getModifiedBy() != null) {
+            Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
+            note.setModifiedBy(modifiedBy);
+        }
+        
+        note.setInternal(dto.getInternal());
+
+        if (dto.getDateUpdated() != null) {
+            OffsetDateTime dateLastModified;
+            try {
+                dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_updated - skipping");
+            }
+            note.setDateUpdated(dateLastModified);
+        }
+
+        if (dto.getDateCreated() != null) {
+            OffsetDateTime creationDate;
+            try {
+                creationDate = OffsetDateTime.parse(dto.getDateCreated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_created - skipping");
+            }
+            note.setDateCreated(creationDate);
+        }
+        
         return note;
     }
     

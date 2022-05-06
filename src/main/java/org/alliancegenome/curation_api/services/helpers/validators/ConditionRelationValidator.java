@@ -14,11 +14,12 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.response.*;
 import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped
-public class ConditionRelationValidator {
+public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
 
     @Inject
     ConditionRelationDAO conditionRelationDAO;
@@ -26,14 +27,6 @@ public class ConditionRelationValidator {
     VocabularyTermDAO vocabularyTermDAO;
     @Inject
     ExperimentalConditionDAO experimentalConditionDAO;
-    
-    
-    
-    protected String invalidMessage = "Not a valid entry";
-    protected String obsoleteMessage = "Obsolete term specified";
-    protected String requiredMessage = "Required field is empty";
-    
-    protected ObjectResponse<ConditionRelation> response;
     
     public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
         ConditionRelation conditionRelation = validateConditionRelation(uiEntity, false);
@@ -55,6 +48,8 @@ public class ConditionRelationValidator {
             addMessageResponse("Could not find ConditionRelation with ID: [" + id + "]");
             throw new ApiErrorException(response);
         }
+        
+        dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
         
         VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
         dbEntity.setConditionRelationType(conditionRelationType);
@@ -123,13 +118,5 @@ public class ConditionRelationValidator {
         }
         
         return conditions;
-    }
-        
-    protected void addMessageResponse(String message) {
-        response.setErrorMessage(message);
-    }
-    
-    protected void addMessageResponse(String fieldName, String message) {
-        response.addErrorMessage(fieldName, message);
     }
 }

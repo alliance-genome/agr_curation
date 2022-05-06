@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
+import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -50,6 +51,8 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     AffectedGenomicModelValidator affectedGenomicModelValidator;
     @Inject
     NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    @Inject
+    NcbiTaxonTermService ncbiTaxonTermService;
 
     @Override
     @PostConstruct
@@ -223,17 +226,14 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     }
 
     private void validateAffectedGenomicModelDTO(AffectedGenomicModelFmsDTO agm) throws ObjectValidationException {
-        // TODO: replace regex method with DB lookup for taxon ID once taxons are loaded
-
         // Check for required fields
         if (agm.getPrimaryID() == null || agm.getName() == null || agm.getTaxonId() == null) {
             throw new ObjectValidationException(agm, "Entry for AGM " + agm.getPrimaryID() + " missing required fields - skipping");
         }
 
         // Validate taxon ID
-        Pattern taxonIdPattern = Pattern.compile("^NCBITaxon:\\d+$");
-        Matcher taxonIdMatcher = taxonIdPattern.matcher(agm.getTaxonId());
-        if (!taxonIdMatcher.find()) {
+        ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(agm.getTaxonId());
+        if (taxon.getEntity() == null) {
             throw new ObjectValidationException(agm, "Invalid taxon ID for AGM " + agm.getPrimaryID() + " - skipping");
         }
 

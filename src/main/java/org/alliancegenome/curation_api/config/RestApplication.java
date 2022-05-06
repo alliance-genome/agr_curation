@@ -3,11 +3,13 @@ package org.alliancegenome.curation_api.config;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
+import org.alliancegenome.curation_api.auth.Secured;
 import org.eclipse.microprofile.openapi.annotations.*;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.info.Info;
 import org.eclipse.microprofile.openapi.annotations.security.*;
 
+@Secured
 @ApplicationPath("/api")
 @OpenAPIDefinition(
         info = @Info(

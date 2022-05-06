@@ -5,7 +5,6 @@ import java.util.*;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -18,12 +17,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BaseCurieCrudInterface<E extends BaseEntity> {
 
-    @POST @Secured
+    @POST
     @Path("/")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> create(E entity);
     
-    @POST @Secured
+    @POST
     @Path("/multiple")
     @JsonView(View.FieldsOnly.class)
     public ObjectListResponse<E> create(List<E> entities);
@@ -33,12 +32,12 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> get(@PathParam("curie") String curie);
     
-    @PUT @Secured
+    @PUT
     @Path("/")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> update(E entity);
 
-    @DELETE @Secured
+    @DELETE
     @Path("/{curie}")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<E> delete(@PathParam("curie") String curie);
@@ -61,7 +60,7 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
             @DefaultValue("10") @QueryParam("limit") Integer limit,
             @RequestBody HashMap<String, Object> params);
     
-    @GET @Secured
+    @GET
     @Path("/reindex")
     @Tag(name = "Reindex Endpoints")
     public void reindex(
@@ -69,15 +68,6 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
         @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
         @DefaultValue("1000") @QueryParam("batchSize") Integer batchSize
     );
-    
-    @GET @Secured
-    @Path("/reindexeverything")
-    @Tag(name = "Reindex Endpoints")
-    public void reindexEverything(
-        @DefaultValue("4") @QueryParam("threads") Integer threads,
-        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
-        @DefaultValue("1000") @QueryParam("batchSize") Integer batchSize
-    );
-    
+
 }
 

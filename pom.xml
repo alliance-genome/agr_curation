@@ -22,6 +22,7 @@
 		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
 		<okta.version>3.0.1</okta.version>
 		<okta.authn.version>2.0.0</okta.authn.version>
+		<okta-jwt.version>0.5.1</okta-jwt.version>
 		<quarkus.platform.version>2.7.1.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
@@ -251,6 +252,23 @@
 			<artifactId>okta-sdk-httpclient</artifactId>
 			<version>${okta.version}</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.okta.jwt</groupId>
+			<artifactId>okta-jwt-verifier</artifactId>
+			<version>${okta-jwt.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.okta.jwt</groupId>
+			<artifactId>okta-jwt-verifier-impl</artifactId>
+			<version>${okta-jwt.version}</version>
+			<scope>runtime</scope>
+		</dependency>
+
+
+
+
 
 		<dependency>
 			<groupId>org.testcontainers</groupId>

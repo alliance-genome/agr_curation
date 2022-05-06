@@ -24,7 +24,7 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
     
     @Inject
     @AuthenticatedUser
-    Person authenticatedPerson;
+    LoggedInPerson authenticatedPerson;
     
     @Transactional
     public E processUpdate(E inTerm) {

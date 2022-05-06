@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.base.dao;
 
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -25,7 +27,6 @@ import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 import org.reflections.Reflections;
 
 import io.micrometer.core.instrument.*;
-import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -144,14 +145,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
     public void reindexEverything(int threads, int indexAmount, int batchSize) {
         Reflections reflections = new Reflections("org.alliancegenome.curation_api");
-        Set<Class<?>> subTypes = reflections.getTypesAnnotatedWith(Indexed.class);
+        Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Mass Indexer for Everything: ");
+        ph.startProcess("MassIndex:");
         
         MassIndexer indexer = 
                 searchSession
-                .massIndexer(subTypes)
+                .massIndexer(annotatedClasses)
                 .batchSizeToLoadObjects(batchSize)
                 .dropAndCreateSchemaOnStart(true)
                 .mergeSegmentsOnFinish(true)

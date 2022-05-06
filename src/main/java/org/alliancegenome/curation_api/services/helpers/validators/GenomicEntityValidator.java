@@ -8,15 +8,10 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
 
-public class GenomicEntityValidator {
+public class GenomicEntityValidator extends AuditedObjectValidator<GenomicEntity> {
 
     @Inject
     NcbiTaxonTermService ncbiTaxonTermService;
-    
-    protected String invalidMessage = "Not a valid entry";
-    protected String requiredMessage = "Required field is empty";
-
-    protected ObjectResponse<GenomicEntity> response;
     
     public String validateCurie(GenomicEntity uiEntity) {
         String curie = uiEntity.getCurie();
@@ -50,11 +45,4 @@ public class GenomicEntityValidator {
         return name;
     }
     
-    protected void addMessageResponse(String message) {
-        response.setErrorMessage(message);
-    }
-    
-    protected void addMessageResponse(String fieldName, String message) {
-        response.addErrorMessage(fieldName, message);
-    }
 }
