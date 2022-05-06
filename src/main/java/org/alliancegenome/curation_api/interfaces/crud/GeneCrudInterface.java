@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.GeneMetaDataFmsDTO;
@@ -24,7 +22,7 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene> {
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<Gene> get(@PathParam("curie") String curie);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/bgifile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateGenes(GeneMetaDataFmsDTO geneData);

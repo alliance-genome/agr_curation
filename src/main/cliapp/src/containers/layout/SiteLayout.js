@@ -48,19 +48,15 @@ export const SiteLayout = (props) => {
     const { children } = props;
     const apiService = new ApiVersionService();
 
-    useQuery(['getApiVersion', apiVersion],
-        () => apiService.getApiVersion(), {
-        onSuccess: (data) => {
-            //console.log(data);
-            setApiVersion(data);
-        },
-        onError: (error) => {
-            console.log(error);
-        },
-        keepPreviousData: true,
-        refetchOnWindowFocus: false
-    }
-    );
+    useEffect(() => {
+      if(authState?.isAuthenticated){
+         apiService.getApiVersion().then((res) => {
+           setApiVersion(res.data);
+         }).catch((err) => {
+           console.log(err);
+         });
+      }
+    }, [authState]);
 
     useEffect(() => {
         if (!authState || !authState.isAuthenticated) {
@@ -242,8 +238,8 @@ export const SiteLayout = (props) => {
                         { label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
                         { label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
                         { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
-                        { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://${window.location.hostname}:9000/#/overview?host=https://${apiVersion.esHost}`, target: "_blank" },
-                        { label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
+                        { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://${window.location.hostname}:9000/#/overview?host=https://${apiVersion?.esHost}`, target: "_blank" },
+                        { label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
                     ]
                 }
             ]

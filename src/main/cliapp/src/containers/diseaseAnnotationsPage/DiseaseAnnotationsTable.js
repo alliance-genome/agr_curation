@@ -75,8 +75,6 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
   const [errorMessages, setErrorMessages] = useState({});
-  const { authState } = useOktaAuth();
-
 
   const searchService = new SearchService();
 
@@ -134,7 +132,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
-      diseaseAnnotationService = new DiseaseAnnotationService(authState);
+      diseaseAnnotationService = new DiseaseAnnotationService();
     }
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
@@ -1162,7 +1160,6 @@ export const DiseaseAnnotationsTable = () => {
       <RelatedNotesDialog
         originalRelatedNotesData={relatedNotesData}
         setOriginalRelatedNotesData={setRelatedNotesData}
-        authState={authState}
         errorMessagesMainRow={errorMessages}
         setErrorMessagesMainRow={setErrorMessages}
       />

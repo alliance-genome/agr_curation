@@ -1,12 +1,12 @@
-import axios from 'axios';
+import { BaseAuthService } from './BaseAuthService';
 
-export class ApiVersionService {
+export class ApiVersionService extends BaseAuthService{
 
   getApiVersion() {
-    return axios.get('/api/version').then(res => res.data);
+    return this.api.get('/version').then(res => res.data);
   }
 
-  getUserInfo(authState) {
-    return axios.get('/api/version/user', { headers: { Authorization: authState.accessToken.tokenType + " " + authState.accessToken.accessToken }}).then(res => res.data);
+  getUserInfo() {
+    return this.api.get('/version/user').then(res => res.data);
   }
 }
