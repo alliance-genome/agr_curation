@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;
+import org.alliancegenome.curation_api.base.entity.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -21,7 +21,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
-public class ExperimentalCondition extends BaseGeneratedAndUniqueIdEntity {
+public class ExperimentalCondition extends UniqueIdAuditedObject {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

@@ -2,18 +2,21 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.dto.AuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
-public class NoteDTO {
+public class NoteDTO extends AuditedObjectDTO{
     
     @JsonView({View.FieldsOnly.class})
-    private Boolean internal;
+    private Boolean internal = true;
     
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("free_text")

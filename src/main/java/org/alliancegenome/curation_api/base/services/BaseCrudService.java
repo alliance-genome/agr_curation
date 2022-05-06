@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.dao.*;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
-import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 
@@ -25,7 +25,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
     
     @Inject
     @AuthenticatedUser
-    protected Person authenticatedPerson;
+    protected LoggedInPerson authenticatedPerson;
     
     protected abstract void init();
     

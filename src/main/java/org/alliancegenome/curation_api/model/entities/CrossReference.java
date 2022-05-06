@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseCurieEntity;
+import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -20,7 +20,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"pageAreas"})
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
-public class CrossReference extends BaseCurieEntity {
+public class CrossReference extends CurieAuditedObject {
 
     @KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
     @ElementCollection

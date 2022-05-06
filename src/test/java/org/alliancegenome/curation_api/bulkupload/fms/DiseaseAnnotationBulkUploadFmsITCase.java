@@ -126,6 +126,7 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
             body("results[0].negated", is(true)).
+            body("results[0].internal", is(false)).
             body("results[0].with", hasSize(2)).
             body("results[0].with[0].curie", is("HGNC:1121")).
             body("results[0].with[1].curie", is("HGNC:323")).
@@ -200,6 +201,7 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:1781")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("CHEBI:46631")).
             body("results[1].negated", is(true)).
+            body("results[1].internal", is(false)).
             body("results[1].with", hasSize(2)).
             body("results[1].with[0].curie", is("HGNC:1121")).
             body("results[1].with[1].curie", is("HGNC:323")).
@@ -253,6 +255,7 @@ public class DiseaseAnnotationBulkUploadFmsITCase {
             body("results[2].evidenceCodes", hasSize(1)).
             body("results[2].evidenceCodes[0].curie", is("ECO:0000033")).
             body("results[2].singleReference.curie", is("PMID:25920554")).
+            body("results[2].internal", is(false)).
             body("results[2].negated", is(true));
     }
     

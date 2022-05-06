@@ -1,6 +1,7 @@
 [
   {
     "mod_entity_id": "DATEST:Annot0007",
+    "internal": false,
     "subject": "DATEST:Gene0001",
     "object": "DATEST:Disease0001",
     "secondary_data_provider": "TEST2",
@@ -14,6 +15,7 @@
     "condition_relations": [
       {
         "condition_relation_type": "exacerbated_by",
+        "internal": false,
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
@@ -24,7 +26,8 @@
             "condition_anatomy": "DATEST:AnatomyTerm0001",
             "condition_taxon": "NCBITaxon:6239",
             "condition_chemical": "DATEST:ChemicalTerm0001",
-            "condition_free_text": "Free text"
+            "condition_free_text": "Free text",
+            "internal": false
           }
         ]
       }
@@ -46,8 +49,8 @@
     "disease_annotation_summary": "Test summary",
     "disease_annotation_note": "Test note",
     "created_by": "DATEST:Person0001",
-    "creation_date": "2022-03-09T22:10:12+00:00",
-    "date_last_modified": "2022-03-09T22:10:12+00:00",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-09T22:10:12+00:00",
     "sgd_strain_background": "SGD:AGM0001",
     "annotation_type": "manually_curated",
     "disease_qualifiers": [

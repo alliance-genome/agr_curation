@@ -49,6 +49,7 @@ public class AffectedGenomicModelITCase {
                 body("entity.curie", is(AGM_CURIE)).
                 body("entity.name", is(AGM_NAME)).
                 body("entity.taxon.curie", is(AGM_TAXON)).
+                body("entity.internal", is(false)).
                 body("entity.subtype", is(AGM_SUBTYPE));
     }
 
@@ -60,6 +61,7 @@ public class AffectedGenomicModelITCase {
         agm.setName("AGM edited");
         agm.setSubtype(Subtype.valueOf("strain"));
         agm.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+        agm.setInternal(true);
 
         RestAssured.given().
                 contentType("application/json").
@@ -77,6 +79,7 @@ public class AffectedGenomicModelITCase {
                 body("entity.curie", is(AGM_CURIE)).
                 body("entity.name", is("AGM edited")).
                 body("entity.taxon.curie", is("NCBITaxon:9606")).
+                body("entity.internal", is(true)).
                 body("entity.subtype", is("strain"));
     }
 

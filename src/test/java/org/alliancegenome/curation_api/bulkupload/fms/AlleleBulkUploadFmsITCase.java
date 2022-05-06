@@ -66,6 +66,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(1)).
             body("results", hasSize(1)).
             body("results[0].curie", is("TEST:TestAllele00001")).
+            body("results[0].internal", is(false)).
             body("results[0].taxon.curie", is("NCBITaxon:10090")).
             body("results[0].symbol", is("Test<sup>allele</sup>")).
             body("results[0].synonyms[0].name", is("test<sup>+</sup>")).

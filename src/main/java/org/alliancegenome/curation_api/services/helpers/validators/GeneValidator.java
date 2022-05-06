@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -18,8 +19,6 @@ public class GeneValidator extends GenomicEntityValidator {
     GeneDAO geneDAO;
     @Inject
     SoTermDAO soTermDAO;
-    
-    protected String obsoleteMessage = "Obsolete term specified";
     
     public Gene validateAnnotation(Gene uiEntity) {
         response = new ObjectResponse<>(uiEntity);
@@ -35,9 +34,10 @@ public class GeneValidator extends GenomicEntityValidator {
             throw new ApiErrorException(response);
         }
         
-
         String errorTitle = "Could not update allele [" + curie + "]";
         
+        dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity);
+
         String name = validateName(uiEntity);
         if (name != null) dbEntity.setName(name);
         

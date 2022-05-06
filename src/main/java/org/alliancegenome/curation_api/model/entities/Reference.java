@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.Entity;
 
-import org.alliancegenome.curation_api.base.entity.BaseCurieEntity;
+import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 
@@ -14,6 +14,6 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 @Schema(name="Reference", description="POJO that represents the Reference")
-public class Reference extends BaseCurieEntity {
+public class Reference extends CurieAuditedObject {
 
 }

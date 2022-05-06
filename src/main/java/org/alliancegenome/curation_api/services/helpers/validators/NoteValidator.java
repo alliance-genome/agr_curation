@@ -13,20 +13,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
-public class NoteValidator {
+public class NoteValidator extends AuditedObjectValidator<Note> {
 
     @Inject
     NoteDAO noteDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
-    
-    
-    
-    protected String invalidMessage = "Not a valid entry";
-    protected String obsoleteMessage = "Obsolete term specified";
-    protected String requiredMessage = "Required field is empty";
-    
-    protected ObjectResponse<Note> response;
     
     public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularyName) {
         Note note = validateNote(uiEntity, noteVocabularyName, false);
@@ -49,11 +41,10 @@ public class NoteValidator {
             throw new ApiErrorException(response);
         }
         
+        dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+        
         VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
         dbEntity.setNoteType(noteType);
-        
-        Boolean internal = validateInternal(uiEntity);
-        dbEntity.setInternal(internal);
         
         String freeText = validateFreeText(uiEntity);
         dbEntity.setFreeText(freeText);
@@ -104,28 +95,11 @@ public class NoteValidator {
         return noteType;
     }
     
-    public Boolean validateInternal(Note uiEntity) {
-        String field = "internal";
-        if (uiEntity.getInternal() == null) {
-            addMessageResponse(field, requiredMessage);
-            return null;
-        }
-        return uiEntity.getInternal();
-    }
-    
     public String validateFreeText(Note uiEntity) {
         String field = "freeText";
         if (!StringUtils.isNotBlank(uiEntity.getFreeText())) {
             addMessageResponse(field, requiredMessage);
         }
         return uiEntity.getFreeText();
-    }
-    
-    protected void addMessageResponse(String message) {
-        response.setErrorMessage(message);
-    }
-    
-    protected void addMessageResponse(String fieldName, String message) {
-        response.addErrorMessage(fieldName, message);
     }
 }

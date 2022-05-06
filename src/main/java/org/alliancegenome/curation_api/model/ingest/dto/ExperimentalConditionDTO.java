@@ -1,13 +1,15 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
+import org.alliancegenome.curation_api.base.dto.UniqueIdAuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 
 @Data
-public class ExperimentalConditionDTO {
+public class ExperimentalConditionDTO extends UniqueIdAuditedObjectDTO{
 
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("condition_class")
