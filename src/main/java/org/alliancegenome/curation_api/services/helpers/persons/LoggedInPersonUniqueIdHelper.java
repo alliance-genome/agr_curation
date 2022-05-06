@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 @RequestScoped
-public class LoggedInPersonUniqueId {
+public class LoggedInPersonUniqueIdHelper {
     public String createLoggedInPersonUniqueId (LoggedInPerson loggedInPerson) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();
         curie.add(loggedInPerson.getFirstName());

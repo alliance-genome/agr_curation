@@ -21,7 +21,7 @@ import org.alliancegenome.curation_api.interfaces.okta.OktaUserInfo;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;
-import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueId;
+import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
@@ -46,7 +46,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Inject LoggedInPersonService loggedInPersonService;
 
-    @Inject LoggedInPersonUniqueId loggedInPersonUniqueId;
+    @Inject LoggedInPersonUniqueIdHelper loggedInPersonUniqueId;
     
     @ConfigProperty(name = "okta.authentication")
     Instance<Boolean> okta_auth;
