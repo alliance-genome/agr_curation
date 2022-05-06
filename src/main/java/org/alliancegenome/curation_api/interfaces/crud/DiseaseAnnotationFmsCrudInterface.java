@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseAnnotationMetaDataFmsDTO;
@@ -19,42 +18,42 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DiseaseAnnotationFmsCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
     
-    @POST @Secured
+    @POST
     @Path("/bulk/{taxonID}/annotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateDiseaseAnnotations(@PathParam("taxonID") String taxonID, DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/zfinAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateZFinDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/mgiAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateMgiDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/rgdAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateRgdDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/fbAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateFBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/wbAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateWBDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/humanAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateHUMANDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/sgdAnnotationFileFms")
     @JsonView({View.FieldsAndLists.class})
     public APIResponse updateSGDDiseaseAnnotations(DiseaseAnnotationMetaDataFmsDTO annotationData);

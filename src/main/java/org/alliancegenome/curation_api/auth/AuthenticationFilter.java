@@ -29,11 +29,9 @@ import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 
-import lombok.extern.jbosslog.JBossLog;
+import io.quarkus.logging.Log;
 import si.mazi.rescu.RestProxyFactory;
 
-@JBossLog
-@Secured
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
@@ -136,7 +134,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         if(info.getUid() == null || info.getUid().length() == 0) {
             SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
             if(res != null && res.getResults().size() == 1) {
-                log.info("User Found in local DB via: " + token);
+                Log.info("User Found in local DB via: " + token);
                 return res.getResults().get(0);
             }
             return null;

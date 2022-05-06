@@ -4,7 +4,6 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -20,12 +19,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<ConditionRelation> {
 
     @Override
-    @POST @Secured
+    @POST
     @Path("/")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
     
-    @POST @Secured
+    @POST
     @Path("/validate")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);

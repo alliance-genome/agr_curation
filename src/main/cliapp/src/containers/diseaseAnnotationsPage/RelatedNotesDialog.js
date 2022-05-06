@@ -15,7 +15,6 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 export const RelatedNotesDialog = ({
   originalRelatedNotesData,
   setOriginalRelatedNotesData,
-  authState,
   errorMessagesMainRow,
   setErrorMessagesMainRow
 }) => {
@@ -26,7 +25,7 @@ export const RelatedNotesDialog = ({
   const [errorMessages, setErrorMessages] = useState([]);
   const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
   const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
-  const validationService = new ValidationService(authState);
+  const validationService = new ValidationService();
   const tableRef = useRef(null);
   const rowsInEdit = useRef(0);
   const [editedRows, setEditedRows] = useState({});

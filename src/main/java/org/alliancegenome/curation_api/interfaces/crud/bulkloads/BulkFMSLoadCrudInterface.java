@@ -4,7 +4,6 @@ package org.alliancegenome.curation_api.interfaces.crud.bulkloads;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -19,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BulkFMSLoadCrudInterface extends BaseIdCrudInterface<BulkFMSLoad> {
 
-    @GET @Secured
+    @GET
     @Path("/restart/{id}")
     @JsonView(View.FieldsOnly.class)
     public ObjectResponse<BulkFMSLoad> restartLoad(@PathParam("id") Long id);
