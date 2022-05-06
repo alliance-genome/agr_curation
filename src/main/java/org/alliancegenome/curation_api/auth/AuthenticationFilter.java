@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.services.LoggedInPersonService;
 import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.okta.jwt.*;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
@@ -41,6 +42,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     @Inject
     @AuthenticatedUser
     Event<LoggedInPerson> userAuthenticatedEvent;
+
+    @Inject AuthenticationService authenticationService;
 
     @Inject LoggedInPersonDAO loggedInPersonDAO;
 
@@ -83,8 +86,15 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     failAuthentication(requestContext);
                 } else {
                     String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-    
-                    LoggedInPerson person = validateToken(token);
+
+                    LoggedInPerson person = validateLocalToken(token);
+                    if(person == null) {
+                        try {
+                            person = validateToken(authenticationService.verifyToken(token));
+                        } catch (JwtVerificationException e) {
+                            failAuthentication(requestContext);
+                        }
+                    }
                     if(person != null) {
                         userAuthenticatedEvent.fire(person);
                     } else {
@@ -102,6 +112,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
         }
 
     }
+    
+    
+    private LoggedInPerson validateLocalToken(String token) {
+        SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
+        if(res != null && res.getResults().size() == 1) {
+            Log.info("User Found in local DB via: " + token);
+            return res.getResults().get(0);
+        }
+        return null;
+    }
+    
     
     private void failAuthentication(ContainerRequestContext requestContext) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME).build());
@@ -125,52 +146,43 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     // Check Okta(token), Check DB ApiToken(token), else return null
-    private LoggedInPerson validateToken(String token) {
+    private LoggedInPerson validateToken(Jwt jsonWebToken) {
+        
+        String oktaId = (String)jsonWebToken.getClaims().get("uid"); // User Id
+        String oktaEmail = (String)jsonWebToken.getClaims().get("sub"); // Subject Id
+        String oktaApplicationId = (String)jsonWebToken.getClaims().get("cid"); // Client Id
+        
+        LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(oktaEmail);
+        
+        if(authenticatedUser != null) {
+            return authenticatedUser;
+        }
+        
+        Log.info("Making OKTA call to get user info: ");
+        
+        Client client = Clients.builder()
+                .setOrgUrl(okta_url.get())
+                .setClientId(client_id.get())
+                .setClientCredentials(new TokenClientCredentials(api_token.get()))
+                .build();
 
-        OktaTokenInterface oti = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url.get());
+        User user = client.getUser(oktaId);
 
-        String basic = "Basic " + Base64.getEncoder().encodeToString((client_id.get() + ":" + client_secret.get()).getBytes());
+        if(user != null) {
+            LoggedInPerson person = new LoggedInPerson();
+            person.setApiToken(UUID.randomUUID().toString());
+            person.setOktaId(oktaId);
+            person.setOktaEmail(user.getProfile().getEmail());
+            person.setFirstName(user.getProfile().getFirstName());
+            person.setLastName(user.getProfile().getLastName());
+            person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
+            loggedInPersonDAO.persist(person);
+            return person;
 
-        OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
-
-        if(info.getUid() == null || info.getUid().length() == 0) {
-            SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
-            if(res != null && res.getResults().size() == 1) {
-                Log.info("User Found in local DB via: " + token);
-                return res.getResults().get(0);
-            }
-            return null;
-        } else {
-            Client client = Clients.builder()
-                    .setOrgUrl(okta_url.get())
-                    .setClientId(client_id.get())
-                    .setClientCredentials(new TokenClientCredentials(api_token.get()))
-                    .build();
-
-            User user = client.getUser(info.getUid());
-
-            if(user != null) {
-                LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(user.getProfile().getEmail());
-                if(authenticatedUser == null) {
-                    LoggedInPerson person = new LoggedInPerson();
-                    person.setApiToken(UUID.randomUUID().toString());
-                    person.setOktaEmail(user.getProfile().getEmail());
-                    person.setFirstName(user.getProfile().getFirstName());
-                    person.setLastName(user.getProfile().getLastName());
-                    person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
-                    loggedInPersonDAO.persist(person);
-                    return person;
-                } else {
-                    return authenticatedUser;
-                }
-            } else {
-                SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
-                if(res != null && res.getResults().size() == 1) {
-                    return res.getResults().get(0);
-                }
-            }
         }
         
         return null;
     }
+    
+    
 }
