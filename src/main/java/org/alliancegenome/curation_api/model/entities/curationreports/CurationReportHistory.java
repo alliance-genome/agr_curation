@@ -22,7 +22,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"curationReport"}, callSuper = true)
-public abstract class CurationReportHistory extends GeneratedAuditedObject {
+public class CurationReportHistory extends GeneratedAuditedObject {
 
     @ManyToOne
     private CurationReport curationReport;

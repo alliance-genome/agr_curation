@@ -20,7 +20,7 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"curationReportGroup"}, callSuper = true)
-public abstract class CurationReport extends GeneratedAuditedObject {
+public class CurationReport extends GeneratedAuditedObject {
 
     @JsonView({View.FieldsOnly.class})
     private String name;
