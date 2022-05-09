@@ -15,7 +15,6 @@ import { SearchService } from '../../service/SearchService';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 import {Tooltip} from "primereact/tooltip";
 
-const searchService = new SearchService();
 
 export const LiteratureReferenceTable = () => {
 

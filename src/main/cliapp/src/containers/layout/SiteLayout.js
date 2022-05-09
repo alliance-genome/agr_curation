@@ -46,17 +46,23 @@ export const SiteLayout = (props) => {
     const { authState, oktaAuth } = useOktaAuth();
 
     const { children } = props;
-    const apiService = new ApiVersionService();
+    let [apiService, setApiService] = useState();
 
     useEffect(() => {
       if(authState?.isAuthenticated){
+        setApiService(new ApiVersionService())
+      }
+    }, [authState]);
+
+    useEffect(() => {
+      if(authState?.isAuthenticated && apiService){
          apiService.getApiVersion().then((res) => {
            setApiVersion(res.data);
          }).catch((err) => {
            console.log(err);
          });
       }
-    }, [authState]);
+    }, [authState, apiService]);
 
     useEffect(() => {
         if (!authState || !authState.isAuthenticated) {
