@@ -54,6 +54,16 @@ export const SiteLayout = (props) => {
       }
     }, [authState]);
 
+    useEffect(() => {
+      if(authState?.isAuthenticated && apiService){
+         apiService.getApiVersion().then((res) => {
+           setApiVersion(res.data);
+         }).catch((err) => {
+           console.log(err);
+         });
+      }
+    }, [authState, apiService]);
+
 
     useQuery(['getApiVersion', apiVersion],
       () => apiService.getApiVersion(), {
