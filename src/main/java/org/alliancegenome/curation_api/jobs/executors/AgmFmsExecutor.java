@@ -50,7 +50,7 @@ public class AgmFmsExecutor extends LoadFileExecutor {
 
         List<String> annotationsIdsBefore = new ArrayList<String>();
         for(String taxonID: taxonIDs) {
-            List<String> annotationIds = affectedGenomicModelDAO.findAllAnnotationIds(taxonID);
+            List<String> annotationIds = affectedGenomicModelDAO.findAllCuriesByTaxon(taxonID);
             log.debug("runLoad: Before: taxonID " + taxonID + " " + annotationIds.size());
             annotationsIdsBefore.addAll(annotationIds);
         }

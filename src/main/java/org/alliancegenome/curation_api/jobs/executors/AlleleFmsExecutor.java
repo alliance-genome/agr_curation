@@ -50,7 +50,7 @@ public class AlleleFmsExecutor extends LoadFileExecutor {
 
         List<String> annotationsIdsBefore = new ArrayList<String>();
         for(String taxonID: taxonIDs) {
-            List<String> annotationIds = alleleDAO.findAllAnnotationIds(taxonID);
+            List<String> annotationIds = alleleDAO.findAllCuriesByTaxon(taxonID);
             log.debug("runLoad: Before: taxonID " + taxonID + " " + annotationIds.size());
             annotationsIdsBefore.addAll(annotationIds);
         }

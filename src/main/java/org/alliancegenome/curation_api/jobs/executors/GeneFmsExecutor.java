@@ -51,7 +51,7 @@ public class GeneFmsExecutor extends LoadFileExecutor {
 
         List<String> annotationsIdsBefore = new ArrayList<String>();
         for(String taxonID: taxonIDs) {
-            List<String> annotationIds = geneDAO.findAllAnnotationIds(taxonID);
+            List<String> annotationIds = geneDAO.findAllCuriesByTaxon(taxonID);
             log.debug("runLoad: Before: taxonID " + taxonID + " " + annotationIds.size());
             annotationsIdsBefore.addAll(annotationIds);
         }

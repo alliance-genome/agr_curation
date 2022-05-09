@@ -1,6 +1,19 @@
 package org.alliancegenome.curation_api.services;
 
-import lombok.extern.jbosslog.JBossLog;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
@@ -13,6 +26,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelComponentFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
@@ -21,17 +35,10 @@ import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
@@ -89,6 +96,40 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     }
 
 
+    @Transactional
+    public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto) throws ObjectUpdateException {
+        AffectedGenomicModel agm = validateAffectedGenomicModelDTO(dto);
+        
+        if (agm == null) return null;
+        
+        return affectedGenomicModelDAO.persist(agm);
+    }
+    
+    public void removeNonUpdatedAlleles(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
+        log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
+
+        List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
+        log.debug("runLoad: Distinct: " + taxonIds + " " + distinctAfter.size());
+
+        List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
+        log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
+
+        for (String curie : curiesToRemove) {
+            AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
+            if (agm != null) {
+                delete(agm.getCurie());
+            } else {
+                log.error("Failed getting AGM: " + curie);
+            }
+        }
+    }
+    
+    public List<String> getCuriesByTaxonId(String taxonId) {
+        List<String> curies = affectedGenomicModelDAO.findAllCuriesByTaxon(taxonId);
+        curies.removeIf(Objects::isNull);
+        return curies;
+    }
+    
     @Transactional
     public AffectedGenomicModel processUpdate(AffectedGenomicModelFmsDTO agm) throws ObjectUpdateException {
         // TODO: add loading of components
@@ -267,4 +308,28 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
             "GENO:0000602", "GENO:0000603", "GENO:0000604", "GENO:0000605", "GENO:0000606", "GENO:0000135",
             "GENO:0000136", "GENO:0000137", "GENO:0000134"
     );
+    
+    private AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
+        // Check for required fields
+        if (dto.getCurie() == null || dto.getTaxon() == null) {
+            throw new ObjectValidationException(dto, "Entry for allele " + dto.getCurie() + " missing required fields - skipping");
+        }
+
+        AffectedGenomicModel agm = affectedGenomicModelDAO.find(dto.getCurie());
+        if (agm == null) {
+            agm = new AffectedGenomicModel();
+            agm.setCurie(dto.getCurie());
+        } 
+        
+        // Validate taxon ID
+        ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
+        if (taxonResponse.getEntity() == null) {
+            throw new ObjectValidationException(dto, "Invalid taxon ID for allele " + dto.getCurie() + " - skipping");
+        }
+        agm.setTaxon(taxonResponse.getEntity());
+        
+        if (dto.getName() != null) agm.setName(dto.getName());
+        
+        return agm;
+    }
 }

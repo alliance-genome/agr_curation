@@ -15,12 +15,15 @@ import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneValidator;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -69,6 +72,40 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         return gene;
     }
 
+    @Transactional
+    public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
+        Gene gene = validateGeneDTO(dto);
+        
+        if (gene == null) return null;
+        
+        return geneDAO.persist(gene);
+    }
+    
+    public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter) {
+        log.debug("runLoad: After: " + taxonIds + " " + geneCuriesAfter.size());
+
+        List<String> distinctAfter = geneCuriesAfter.stream().distinct().collect(Collectors.toList());
+        log.debug("runLoad: Distinct: " + taxonIds + " " + distinctAfter.size());
+
+        List<String> curiesToRemove = ListUtils.subtract(geneCuriesBefore, distinctAfter);
+        log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
+
+        for (String curie : curiesToRemove) {
+            Gene gene = geneDAO.find(curie);
+            if (gene != null) {
+                delete(gene.getCurie());
+            } else {
+                log.error("Failed getting gene: " + curie);
+            }
+        }
+    }
+    
+    public List<String> getCuriesByTaxonId(String taxonId) {
+        List<String> curies = geneDAO.findAllCuriesByTaxon(taxonId);
+        curies.removeIf(Objects::isNull);
+        return curies;
+    }
+    
     @Transactional
     public Gene processUpdate(GeneFmsDTO gene) throws ObjectUpdateException {
         //log.info("processUpdate Gene: ");
@@ -254,6 +291,32 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
             }
         }
 
+    }
+    
+    private Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
+        // Check for required fields
+        if (dto.getCurie() == null || dto.getTaxon() == null || dto.getSymbol() == null) {
+            throw new ObjectValidationException(dto, "Entry for gene " + dto.getCurie() + " missing required fields - skipping");
+        }
+
+        Gene gene = geneDAO.find(dto.getCurie());
+        if (gene == null) {
+            gene = new Gene();
+            gene.setCurie(dto.getCurie());
+        } 
+        
+        // Validate taxon ID
+        ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
+        if (taxonResponse.getEntity() == null) {
+            throw new ObjectValidationException(dto, "Invalid taxon ID for gene " + dto.getCurie() + " - skipping");
+        }
+        gene.setTaxon(taxonResponse.getEntity());
+        
+        gene.setSymbol(dto.getSymbol());
+        
+        if (dto.getName() != null) gene.setName(dto.getName());
+        
+        return gene;
     }
 
 }
