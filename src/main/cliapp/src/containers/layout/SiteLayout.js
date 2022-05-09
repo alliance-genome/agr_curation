@@ -54,15 +54,21 @@ export const SiteLayout = (props) => {
       }
     }, [authState]);
 
-    useEffect(() => {
-      if(authState?.isAuthenticated && apiService){
-         apiService.getApiVersion().then((res) => {
-           setApiVersion(res.data);
-         }).catch((err) => {
-           console.log(err);
-         });
+
+    useQuery(['getApiVersion', apiVersion],
+      () => apiService.getApiVersion(), {
+        onSuccess: (data) => {
+          //console.log(data);
+          setApiVersion(data);
+        },
+        onError: (error) => {
+        console.log(error);
+        },
+        keepPreviousData: true,
+        refetchOnWindowFocus: false,
+        enabled: !!(authState?.isAuthenticated && apiService),
       }
-    }, [authState, apiService]);
+    );
 
     useEffect(() => {
         if (!authState || !authState.isAuthenticated) {
