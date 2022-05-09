@@ -49,6 +49,35 @@ export const RelatedNotesDialog = ({
     hasEdited.current = false;
   };
 
+  const createNewNoteHandler = () => {
+    let rowsObject = {};
+    let editedRows = [];
+    let _localRelateNotes = global.structuredClone(localRelateNotes);
+    let cnt = localRelateNotes.length;
+    let id = cnt+1234567;
+    if(_localRelateNotes) {
+      editedRows[cnt] = {
+        created: "",
+        id: id,
+        internal: false,
+        lastUpdated: "",
+        noteType: {
+          id: id++,
+          name: "",
+          obsolete: false
+        }
+      };
+      rowsObject[`${editedRows[cnt].id}`] = true;
+      _localRelateNotes[cnt] = editedRows[cnt];
+      cnt++;
+    }
+    setEditingRows(rowsObject);
+    setEditedRows(editedRows);
+    setLocalRelateNotes(_localRelateNotes);
+    rowsInEdit.current++;
+    hasEdited.current = true;
+  };
+
   const onRowEditChange = (e) => {
     setEditingRows(e.data);
   }
@@ -282,6 +311,7 @@ export const RelatedNotesDialog = ({
         <Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
         <Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
         <Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
+        <Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
       </div>
     );
   }
