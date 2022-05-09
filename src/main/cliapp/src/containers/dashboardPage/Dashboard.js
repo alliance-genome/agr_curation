@@ -13,9 +13,6 @@ export const Dashboard = () => {
   useEffect(() => {
     const searchService = new SearchService();
 
-    /*
-
-    // Entity Counts
     searchService.search('gene', 0, 0).then(results => {
       setEntityCounts((list) => [...list, { name: "Genes", count: results.totalResults, link: '/#/genes' }]);
     });
@@ -48,7 +45,6 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Literature References", count: results.totalResults, link: '/#/references' }]);
     });
 
-    // Term Counts
     searchService.search('chebiterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults, link: '/#/ontology/chebi' }]);
     });
@@ -101,7 +97,6 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "XBA", count: results.totalResults, link: '/#/ontology/xba' }]);
     });
 
-
     searchService.search('xbsterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XBS", count: results.totalResults, link: '/#/ontology/xbs' }]);
     });
@@ -142,8 +137,6 @@ export const Dashboard = () => {
       setTermCounts((list) => [...list, { name: "XBED", count: results.totalResults, link: '/#/ontology/xbed' }]);
     });
 
-    */
-
   }, []);
 
   const nameHyperlinkTemplate = (rowData) => {
@@ -152,7 +145,6 @@ export const Dashboard = () => {
 
   return (
     <>
-      These tables have been disabled to due too high authentication rates to Okta. This is a work in progress and will be reenabled in future work.<br/><br/>
       <div className="grid nested dashboard">
         <div className="col-3">
           <DataTable value={entityCounts} sortField="name" sortOrder={1}>
