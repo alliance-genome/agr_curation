@@ -8,7 +8,7 @@ export class ValidationService extends BaseAuthService {
       return {
         isSuccess: true,
         isError: false,
-        data: response.entity
+        data: response.data.entity
       }
     } catch (error) {
       return {

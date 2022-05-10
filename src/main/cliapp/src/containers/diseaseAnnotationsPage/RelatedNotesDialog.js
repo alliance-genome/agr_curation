@@ -54,17 +54,17 @@ export const RelatedNotesDialog = ({
   };
 
   const createNewNoteHandler = () => {
-    let rowsObject = {};
+    let rowsObject = global.structuredClone(editingRows);
     let editedRows = [];
     let _localRelateNotes = global.structuredClone(localRelateNotes);
     let cnt = localRelateNotes.length;
     let id = cnt+1234567;
     if(_localRelateNotes) {
       editedRows[cnt] = {
-        created: "",
+        // created: "",
         id: id,
         internal: false,
-        lastUpdated: "",
+        // lastUpdated: "",
         noteType: {
           id: id++,
           name: "",
@@ -75,8 +75,9 @@ export const RelatedNotesDialog = ({
       _localRelateNotes[cnt] = editedRows[cnt];
       cnt++;
     }
+    console.log(rowsObject);
     setEditingRows(rowsObject);
-    setEditedRows(editedRows);
+    setEditedRows(editedRows);//what is this tracking?
     setLocalRelateNotes(_localRelateNotes);
     rowsInEdit.current++;
     hasEdited.current = true;
@@ -106,6 +107,8 @@ export const RelatedNotesDialog = ({
   };
 
   const compareChangesInNotes = (data,index) => {
+    if(!originalRelatedNotesData[index]) return;
+
     if(data.noteType.name !== originalRelatedNotes[index].noteType.name){
       hasEdited.current = true;
     }
