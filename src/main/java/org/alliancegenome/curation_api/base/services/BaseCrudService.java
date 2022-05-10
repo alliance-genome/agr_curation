@@ -90,10 +90,6 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
         return dao.searchByParams(pagination, params);
     }
 
-    public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params, String notNullElement) {
-        return dao.searchByParams(pagination, params, notNullElement);
-    }
-
     public void reindex() {
         dao.reindex();
     }

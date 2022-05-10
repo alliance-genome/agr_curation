@@ -261,10 +261,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-       return searchByParams(pagination, params, null);
-    }
-
-    public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params, String notNullElement) {
         log.debug("Search: " + pagination + " Params: " + params);
 
         SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step =
