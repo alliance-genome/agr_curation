@@ -12,11 +12,11 @@ import { ValidationService } from '../../service/ValidationService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 
 export const RelatedNotesDialog = ({
-  originalRelatedNotesData,
-  setOriginalRelatedNotesData,
-  errorMessagesMainRow,
-  setErrorMessagesMainRow
-}) => {
+                          originalRelatedNotesData,
+                          setOriginalRelatedNotesData,
+                          errorMessagesMainRow,
+                          setErrorMessagesMainRow
+                        }) => {
   const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
   const [localRelateNotes, setLocalRelateNotes] = useState(null) ;
   const [editingRows, setEditingRows] = useState({});
@@ -47,36 +47,6 @@ export const RelatedNotesDialog = ({
       setEditingRows({});
     }
     hasEdited.current = false;
-  };
-
-  const createNewNoteHandler = () => {
-    let rowsObject = global.structuredClone(editingRows);
-    let editedRows = [];
-    let _localRelateNotes = global.structuredClone(localRelateNotes);
-    let cnt = localRelateNotes.length;
-    let id = cnt+1234567;
-    if(_localRelateNotes) {
-      editedRows[cnt] = {
-        // created: "",
-        id: id,
-        internal: false,
-        // lastUpdated: "",
-        noteType: {
-          id: id++,
-          name: "",
-          obsolete: false
-        }
-      };
-      rowsObject[`${editedRows[cnt].id}`] = true;
-      _localRelateNotes[cnt] = editedRows[cnt];
-      cnt++;
-    }
-    console.log(rowsObject);
-    setEditingRows(rowsObject);
-    setEditedRows(editedRows);//what is this tracking?
-    setLocalRelateNotes(_localRelateNotes);
-    rowsInEdit.current++;
-    hasEdited.current = true;
   };
 
   const onRowEditChange = (e) => {
@@ -221,11 +191,11 @@ export const RelatedNotesDialog = ({
     };
 
     setOriginalRelatedNotesData((originalRelatedNotesData) => {
-      return {
-        ...originalRelatedNotesData,
-        dialog: keepDialogOpen,
+        return {
+          ...originalRelatedNotesData,
+          dialog: keepDialogOpen,
+        }
       }
-    }
     );
   };
 
@@ -242,8 +212,8 @@ export const RelatedNotesDialog = ({
   };
 
   const onInternalEditorValueChange = (props, event) => {
-     let _localRelateNotes = [...localRelateNotes];
-     _localRelateNotes[props.rowIndex].internal = event.value.name;
+    let _localRelateNotes = [...localRelateNotes];
+    _localRelateNotes[props.rowIndex].internal = event.value.name;
   }
 
   const internalEditor = (props) => {
@@ -292,12 +262,12 @@ export const RelatedNotesDialog = ({
     }
     return (
       <>
-      <InputTextAreaEditor
-        initalValue={props.value}
-        editorChange={(e) => onFreeTextEditorValueChange(e, props)}
-        rows={5}
-        columns={30}
-      />
+        <InputTextAreaEditor
+          initalValue={props.value}
+          editorChange={(e) => onFreeTextEditorValueChange(e, props)}
+          rows={5}
+          columns={30}
+        />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
       </>
     );
@@ -312,7 +282,6 @@ export const RelatedNotesDialog = ({
         <Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
         <Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
         <Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
-        <Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
       </div>
     );
   }
@@ -321,7 +290,7 @@ export const RelatedNotesDialog = ({
     <Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
       <h3>Related Notes</h3>
       <DataTable value={localRelateNotes} dataKey="dataKey" showGridlines editMode='row'
-        editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
+              editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
         <Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
               bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
         <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
