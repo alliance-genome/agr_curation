@@ -26,26 +26,21 @@ export const RelatedNotesDialog = ({
   const validationService = new ValidationService();
   const tableRef = useRef(null);
   const rowsInEdit = useRef(0);
-  const [editedRows, setEditedRows] = useState({});
   const [externalUpdate, setExternalUpdate] = useState();
   const hasEdited = useRef(false);
 
   const showDialogHandler = () => {
-    let temp = global.structuredClone(originalRelatedNotes);
-    setLocalRelateNotes(temp);
+    let _localRelatedNotes = cloneNotes(originalRelatedNotes);
+    setLocalRelateNotes(_localRelatedNotes);
 
     if(isInEdit){
       let rowsObject = {};
-      let cnt = 0;
-      if(originalRelatedNotes) {
-        originalRelatedNotes.forEach((note) => {
-          rowsObject[`${note.id}`] = true;
+      if(_localRelatedNotes) {
+        _localRelatedNotes.forEach((note) => {
+          rowsObject[`${note.dataKey}`] = true;
         });
-        editedRows[cnt] = { ...temp[cnt] };
-        cnt++;
       }
       setEditingRows(rowsObject);
-      setEditedRows(editedRows);
       rowsInEdit.current++;
     }else{
       setEditingRows({});
@@ -58,33 +53,38 @@ export const RelatedNotesDialog = ({
   }
 
   const onRowEditCancel = (event) => {
+    console.log(editingRows);
     rowsInEdit.current--;
-    let relatedNotes = [...localRelateNotes];
-    relatedNotes[event.index] = editedRows[event.index];
-    delete editedRows[event.index];
-    setEditedRows(editedRows);
-    setLocalRelateNotes(relatedNotes);
+    let _editingRows = { ...editingRows };
+    delete _editingRows[event.index];
+    setEditingRows(_editingRows);
+    console.log(_editingRows);
+    let _localRelateNotes = [...localRelateNotes];//add new note support
+    if(originalRelatedNotes && originalRelatedNotes[event.index]){
+      let dataKey = _localRelateNotes[event.index].dataKey;
+      _localRelateNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
+      _localRelateNotes[event.index].dataKey = dataKey;
+      setLocalRelateNotes(_localRelateNotes);
+    }else{
 
-    let _localRelateNotes = [...localRelateNotes];
-    _localRelateNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
-    setLocalRelateNotes(_localRelateNotes);
-
+    }
     const errorMessagesCopy = errorMessages;
     errorMessagesCopy[event.index] = {};
     setErrorMessages(errorMessagesCopy);
-
     hasEdited.current = false;
   };
 
   const compareChangesInNotes = (data,index) => {
-    if(data.noteType.name !== originalRelatedNotes[index].noteType.name){
-      hasEdited.current = true;
-    }
-    if(data.internal !== originalRelatedNotes[index].internal){
-      hasEdited.current = true;
-    }
-    if(data.freeText !== originalRelatedNotes[index].freeText){
-      hasEdited.current = true;
+    if(originalRelatedNotes && originalRelatedNotes[index]) {
+      if (data.noteType.name !== originalRelatedNotes[index].noteType.name) {
+        hasEdited.current = true;
+      }
+      if (data.internal !== originalRelatedNotes[index].internal) {
+        hasEdited.current = true;
+      }
+      if (data.freeText !== originalRelatedNotes[index].freeText) {
+        hasEdited.current = true;
+      }
     }
   };
 
@@ -104,17 +104,44 @@ export const RelatedNotesDialog = ({
         dialog: false,
       };
     });
-    let temp = global.structuredClone(originalRelatedNotes);
-    setLocalRelateNotes(temp);
+    let _localRelatedNotes = cloneNotes(originalRelatedNotes);
+    setLocalRelateNotes(_localRelatedNotes);
   };
 
   const validateNotes = async (notes) => {
     const validationResultsArray = [];
-    for (const note of notes) {
+    let _notes = global.structuredClone(notes);
+    for (const note of _notes) {
+      delete note.dataKey;
       const result = await validationService.validate('note', note);
       validationResultsArray.push(result);
     }
     return validationResultsArray;
+  };
+
+  const cloneNotes = (clonableNotes) =>{
+    let _clonableNotes = global.structuredClone(clonableNotes);
+    if(_clonableNotes) {
+      let counter = 0 ;
+      _clonableNotes.forEach((note) => {
+        note.dataKey = counter++;
+      });
+    }
+    return _clonableNotes;
+  };
+
+  const createNewNoteHandler = (event) => {
+    let cnt = localRelateNotes.length;
+    localRelateNotes.push({
+      dataKey : cnt,
+      noteType: {
+        name : ""
+      }
+    });
+    let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+    setEditingRows(_editingRows);
+    rowsInEdit.current++;
+    hasEdited.current = true;
   };
 
   const saveDataHandler = async () => {
@@ -171,6 +198,10 @@ export const RelatedNotesDialog = ({
     );
   };
 
+  const noteTypeTemplate = (rowData) => {
+    return <EllipsisTableCell>{rowData.noteType.name}</EllipsisTableCell>;
+  };
+
   const internalTemplate = (rowData) => {
     return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
   };
@@ -178,11 +209,6 @@ export const RelatedNotesDialog = ({
   const textTemplate = (rowData) => {
     return <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
   };
-
-  const undoEditsTemplate = (rowData) => {
-      if(!isInEdit)
-        return null;
-  }
 
   const onInternalEditorValueChange = (props, event) => {
      let _localRelateNotes = [...localRelateNotes];
@@ -253,6 +279,7 @@ export const RelatedNotesDialog = ({
     return (
       <div>
         <Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
+        <Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
         <Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
       </div>
     );
@@ -261,11 +288,11 @@ export const RelatedNotesDialog = ({
   return (
     <Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
       <h3>Related Notes</h3>
-      <DataTable value={localRelateNotes} dataKey="id" showGridlines editMode='row'
+      <DataTable value={localRelateNotes} dataKey="dataKey" showGridlines editMode='row'
         editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
         <Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
               bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
-        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0'/>
+        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
         <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
         <Column
           editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
