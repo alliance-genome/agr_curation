@@ -86,15 +86,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     failAuthentication(requestContext);
                 } else {
                     String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-
-                    LoggedInPerson person = validateLocalToken(token);
-                    if(person == null) {
-                        try {
-                            person = validateToken(authenticationService.verifyToken(token));
-                        } catch (JwtVerificationException e) {
-                            failAuthentication(requestContext);
-                        }
-                    }
+                    LoggedInPerson person = validateToken(token);
                     if(person != null) {
                         userAuthenticatedEvent.fire(person);
                     } else {
@@ -146,12 +138,17 @@ public class AuthenticationFilter implements ContainerRequestFilter {
     }
 
     // Check Okta(token), Check DB ApiToken(token), else return null
-    private LoggedInPerson validateToken(Jwt jsonWebToken) {
+    private LoggedInPerson validateToken(String token) {
+
+        Jwt jsonWebToken;
+        try {
+            jsonWebToken = authenticationService.verifyToken(token);
+        } catch (JwtVerificationException e) {
+            LoggedInPerson person = validateLocalToken(token);
+            return person;
+        }
         
-        String oktaId = (String)jsonWebToken.getClaims().get("uid"); // User Id
         String oktaEmail = (String)jsonWebToken.getClaims().get("sub"); // Subject Id
-        String oktaApplicationId = (String)jsonWebToken.getClaims().get("cid"); // Client Id
-        
         LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(oktaEmail);
         
         if(authenticatedUser != null) {
@@ -166,6 +163,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                 .setClientCredentials(new TokenClientCredentials(api_token.get()))
                 .build();
 
+        String oktaId = (String)jsonWebToken.getClaims().get("uid"); // User Id
         User user = client.getUser(oktaId);
 
         if(user != null) {
