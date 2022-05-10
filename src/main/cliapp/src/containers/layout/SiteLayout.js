@@ -46,17 +46,29 @@ export const SiteLayout = (props) => {
     const { authState, oktaAuth } = useOktaAuth();
 
     const { children } = props;
-    const apiService = new ApiVersionService();
+    let [apiService, setApiService] = useState();
 
     useEffect(() => {
       if(authState?.isAuthenticated){
-         apiService.getApiVersion().then((res) => {
-           setApiVersion(res.data);
-         }).catch((err) => {
-           console.log(err);
-         });
+        setApiService(new ApiVersionService())
       }
     }, [authState]);
+
+
+    useQuery(['getApiVersion', apiVersion],
+      () => apiService.getApiVersion(), {
+        onSuccess: (data) => {
+          //console.log(data);
+          setApiVersion(data);
+        },
+        onError: (error) => {
+        console.log(error);
+        },
+        keepPreviousData: true,
+        refetchOnWindowFocus: false,
+        enabled: !!(authState?.isAuthenticated && apiService),
+      }
+    );
 
     useEffect(() => {
         if (!authState || !authState.isAuthenticated) {
