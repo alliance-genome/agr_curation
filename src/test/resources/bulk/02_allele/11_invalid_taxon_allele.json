@@ -5,8 +5,8 @@
     "symbol": "ta11",
     "taxon": "NCBITaxon:1009",
     "internal": true,
-    "created_by": "GENETEST:Person0001",
-    "modified_by": "GENETEST:Person0002",
+    "created_by": "ALLELETEST:Person0001",
+    "modified_by": "ALLELETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00"
   }

@@ -5,7 +5,7 @@
     "symbol": "ta7",
     "taxon": "NCBITaxon:6239",
     "internal": true,
-    "modified_by": "GENETEST:Person0002",
+    "modified_by": "ALLELETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00"
   }

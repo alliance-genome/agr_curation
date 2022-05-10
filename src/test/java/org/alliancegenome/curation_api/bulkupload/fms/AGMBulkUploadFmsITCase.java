@@ -15,8 +15,8 @@ import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("03 - AGM bulk upload - FMS")
 @Order(3)
 public class AGMBulkUploadFmsITCase {
@@ -29,7 +29,7 @@ public class AGMBulkUploadFmsITCase {
                     .setParam("http.connection.timeout", 100000));
     }
 
-    @Test
+    //@Test
     @Order(1)
     public void agmBulkUploadCheckFields() throws Exception {
         // Load required gene (objectRelation of Allele that is required as affectedGenomicModelComponents of AGM)
@@ -90,7 +90,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].subtype", is("genotype"));
     }
     
-    @Test
+    //@Test
     @Order(2)
     public void agmBulkUploadNoComponents() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/02_no_agm_components.json"));
@@ -117,7 +117,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00002"));
     }
 
-    @Test
+    //@Test
     @Order(3)
     public void agmBulkUploadNoComponentAlleleId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/03_no_agm_components_allele_id.json"));
@@ -142,7 +142,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(4)
     public void agmBulkUploadNoComponentZygosity() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/04_no_agm_components_zygosity.json"));
@@ -167,7 +167,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(5)
     public void agmBulkUploadNoCrossReference() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/05_no_cross_reference.json"));
@@ -194,7 +194,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00005"));
     }
 
-    @Test
+    //@Test
     @Order(6)
     public void agmBulkUploadNoCrossReferenceId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/06_no_cross_reference_id.json"));
@@ -219,7 +219,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0)); //no entity added due to missing ID
     }
 
-    @Test
+    //@Test
     @Order(7)
     public void agmBulkUploadNoCrossReferencePages() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/07_no_cross_reference_pages.json"));
@@ -246,7 +246,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00007"));
     }
 
-    @Test
+    //@Test
     @Order(8)
     public void agmBulkUploadNoName() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/08_no_name.json"));
@@ -271,7 +271,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0)); // Name is required field so entity skipped in load
     }
 
-    @Test
+    //@Test
     @Order(9)
     public void agmBulkUploadNoParentalPopulationIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/09_no_parental_population_ids.json"));
@@ -298,7 +298,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00009"));
     }
 
-    @Test
+    //@Test
     @Order(10)
     public void agmBulkUploadNoPrimaryId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/10_no_primary_id.json"));
@@ -323,7 +323,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0)); // PrimaryID is required field so entity skipped in load
     }
 
-    @Test
+    //@Test
     @Order(11)
     public void agmBulkUploadNoSecondaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/11_no_secondary_ids.json"));
@@ -350,7 +350,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00011"));
     }
 
-    @Test
+    //@Test
     @Order(12)
     public void agmBulkUploadNoSequenceTargetingReagentIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/12_no_str_ids.json"));
@@ -377,7 +377,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00012"));
     }
 
-    @Test
+    //@Test
     @Order(13)
     public void agmBulkUploadNoSubtype() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/13_no_subtype.json"));
@@ -404,7 +404,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00013"));
     }
 
-    @Test
+    //@Test
     @Order(14)
     public void agmBulkUploadNoSynonyms() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/14_no_synonyms.json"));
@@ -431,7 +431,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00014"));
     }
 
-    @Test
+    //@Test
     @Order(15)
     public void agmBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/15_no_taxon_id.json"));
@@ -457,7 +457,7 @@ public class AGMBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAGM00014")); // taxonId is a required field so entity skipped in load;
     }
 
-    @Test
+    //@Test
     @Order(16)
     public void agmBulkUploadInvalidComponentAllele() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/16_invalid_agm_components_allele_id.json"));
@@ -482,7 +482,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(17)
     public void agmBulkUploadInvalidComponentZygosity() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/17_invalid_agm_components_allele_zygosity.json"));
@@ -508,7 +508,7 @@ public class AGMBulkUploadFmsITCase {
     }
 
     // TODO: re-enable test once loading and validation of STRs in place
-    // @Test
+    // //@Test
     @Order(18)
     public void agmBulkUploadInvalidSequenceTargetingReagentId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/18_invalid_str_id.json"));
@@ -533,7 +533,7 @@ public class AGMBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(19)
     public void agmBulkUploadInvalidSubtype() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/19_invalid_subtype.json"));
@@ -559,7 +559,7 @@ public class AGMBulkUploadFmsITCase {
     }
     
     // NOTE: validation currently only based on regex, not DB lookup
-    @Test
+    //@Test
     @Order(20)
     public void agmBulkUploadInvalidTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/03_affected_genomic_model/20_invalid_taxon_id.json"));

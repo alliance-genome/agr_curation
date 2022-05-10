@@ -15,8 +15,8 @@ import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("02 - Allele bulk upload - FMS")
 @Order(2)
 public class AlleleBulkUploadFmsITCase {
@@ -29,7 +29,7 @@ public class AlleleBulkUploadFmsITCase {
                     .setParam("http.connection.timeout", 100000));
     }
 
-    @Test
+    //@Test
     @Order(1)
     public void alleleBulkUploadCheckFields() throws Exception {
         // Load required gene (objectRelation of Allele)
@@ -75,7 +75,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].description", is("Test description of allele"));
     }
 
-    @Test
+    //@Test
     @Order(2)
     public void alleleBulkUploadNoAlleleObjectRelations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/02_no_allele_object_relations.json"));
@@ -102,7 +102,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00002"));
     }
 
-    @Test
+    //@Test
     @Order(3)
     public void alleleBulkUploadNoGeneAlleleObjectRelation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/03_no_gene_allele_object_relation.json"));
@@ -129,7 +129,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00003"));
     }
 
-    @Test
+    //@Test
     @Order(4)
     public void alleleBulkUploadNoConstructAlleleObjectRelation() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/04_no_construct_allele_object_relation.json"));
@@ -156,7 +156,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00004"));
     }
 
-    @Test
+    //@Test
     @Order(5)
     public void alleleBulkUploadNoAlleleObjectRelationAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/05_no_allele_object_relation_association_type.json"));
@@ -181,7 +181,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(6)
     public void alleleBulkUploadNoAlleleObjectRelationEntity() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/06_no_allele_object_relation_entity.json"));
@@ -206,7 +206,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(7)
     public void alleleBulkUploadNoCrossReferences() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/07_no_cross_references.json"));
@@ -233,7 +233,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00007"));
     }
 
-    @Test
+    //@Test
     @Order(8)
     public void alleleBulkUploadNoCrossReferenceId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/08_no_cross_reference_id.json"));
@@ -258,7 +258,7 @@ public class AlleleBulkUploadFmsITCase {
                 body("totalResults", is(0)); // no entity added due to missing ID
     }
 
-    @Test
+    //@Test
     @Order(9)
     public void alleleBulkUploadNoCrossReferencePages() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/09_no_cross_reference_pages.json"));
@@ -285,7 +285,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00009"));
     }
 
-    @Test
+    //@Test
     @Order(10)
     public void alleleBulkUploadNoDescription() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/10_no_description.json"));
@@ -312,7 +312,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00010"));
         }
 
-    @Test
+    //@Test
     @Order(11)
     public void alleleBulkUploadNoPrimaryId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/11_no_primary_id.json"));
@@ -337,7 +337,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(12)
     public void alleleBulkUploadNoSymbol() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/12_no_symbol.json"));
@@ -362,7 +362,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(13)
     public void alleleBulkUploadNoSymbolText() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/13_no_symbol_text.json"));
@@ -387,7 +387,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(14)
     public void alleleBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/14_no_taxon_id.json"));
@@ -412,7 +412,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(15)
     public void alleleBulkUploadNoSynonyms() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/15_no_synonyms.json"));
@@ -439,7 +439,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00015"));
     }
 
-    @Test
+    //@Test
     @Order(16)
     public void alleleBulkUploadNoSecondaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/16_no_secondary_ids.json"));
@@ -466,7 +466,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00016"));
     }
 
-    @Test
+    //@Test
     @Order(17)
     public void alleleBulkUploadInvalidAlleleObjectRelationGene() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/17_invalid_allele_object_relation_gene.json"));
@@ -492,7 +492,7 @@ public class AlleleBulkUploadFmsITCase {
     }
 
     // TODO: adjust count (and subsequent test counts) once loading and validation of components in place
-    @Test
+    //@Test
     @Order(18)
     public void alleleBulkUploadInvalidAlleleObjectRelationComponent() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/18_invalid_allele_object_relation_construct.json"));
@@ -519,7 +519,7 @@ public class AlleleBulkUploadFmsITCase {
             body("results[0].curie", is("TEST:TestAllele00018"));
     }
 
-    @Test
+    //@Test
     @Order(19)
     public void alleleBulkUploadInvalidAlleleObjectRelationAssociationType() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/19_invalid_allele_object_relation_association_type.json"));
@@ -544,7 +544,7 @@ public class AlleleBulkUploadFmsITCase {
             body("totalResults", is(0));
     }
 
-    @Test
+    //@Test
     @Order(20)
     public void alleleBulkUploadInvalidTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/02_allele/20_invalid_taxon_id.json"));

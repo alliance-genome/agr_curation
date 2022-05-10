@@ -16,8 +16,8 @@ import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+//@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+//@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("01 - Gene bulk upload - FMS")
 @Order(1)
 public class GeneBulkUploadFmsITCase {
@@ -30,7 +30,7 @@ public class GeneBulkUploadFmsITCase {
                     .setParam("http.connection.timeout", 200000));
     }
 
-    @Test
+    //@Test
     @Order(1)
     public void geneBulkUploadCheckFields() throws Exception {
         createSoTerm("SO:0001217", "protein_coding_gene");
@@ -70,7 +70,7 @@ public class GeneBulkUploadFmsITCase {
                body("results[0].geneType.curie", is("SO:0001217"));
     }
 
-    @Test
+    //@Test
     @Order(2)
     public void geneBulkUploadNoCrossReferences() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/02_no_cross_references.json"));
@@ -97,7 +97,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00002"));
     }
 
-    @Test
+    //@Test
     @Order(3)
     public void geneBulkUploadNoGenomeLocations() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/03_no_genome_locations.json"));
@@ -124,7 +124,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00003"));
     }
 
-    @Test
+    //@Test
     @Order(4)
     public void geneBulkUploadNoSecondaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/05_no_secondary_ids.json"));
@@ -151,7 +151,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00005"));
     }
 
-    @Test
+    //@Test
     @Order(5)
     public void geneBulkUploadNoSynonyms() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/06_no_synonyms.json"));
@@ -178,7 +178,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00006"));
     }
 
-    @Test
+    //@Test
     @Order(6)
     public void geneBulkUploadNoTaxonId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/07_no_taxon_id.json"));
@@ -205,7 +205,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00006")); // no genes added
     }
 
-    @Test
+    //@Test
     @Order(7)
     public void geneBulkUploadNoGeneSynopsis() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/08_no_gene_synopsis.json"));
@@ -232,7 +232,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00008"));
     }
 
-    @Test
+    //@Test
     @Order(8)
     public void geneBulkUploadNoGeneSynopsisURL() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/09_no_gene_synopsis_url.json"));
@@ -259,7 +259,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00009"));
     }
 
-    @Test
+    //@Test
     @Order(9)
     public void geneBulkUploadNoName() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/10_no_name.json"));
@@ -286,7 +286,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00010"));
     }
 
-    @Test
+    //@Test
     @Order(10)
     public void geneBulkUploadNoTermId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/11_no_so_term_id.json"));
@@ -313,7 +313,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00011"));
     }
 
-    @Test
+    //@Test
     @Order(11)
     public void geneBulkUploadNoSymbol() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/12_no_symbol.json"));
@@ -340,7 +340,7 @@ public class GeneBulkUploadFmsITCase {
                 body("results[0].curie", is("TEST:TestGene00012"));
     }
 
-    @Test
+    //@Test
     @Order(12)
     public void geneBulkUploadAdditionalField() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/13_additional_field.json"));
@@ -355,7 +355,7 @@ public class GeneBulkUploadFmsITCase {
                 statusCode(400);
     }
 
-    @Test
+    //@Test
     @Order(13)
     public void geneBulkUploadNoPrimaryId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/04_no_primary_id.json"));
@@ -379,7 +379,7 @@ public class GeneBulkUploadFmsITCase {
                 body("totalResults", is(0)); // no genes added
     }
 
-    @Test
+    //@Test
     @Order(14)
     public void geneBulkUploadInvalidSoTermId() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/14_invalid_so_term_id.json"));
@@ -403,7 +403,7 @@ public class GeneBulkUploadFmsITCase {
                 body("totalResults", is(0)); // no genes added
     }
 
-    @Test
+    //@Test
     @Order(15)
     public void geneBulkUploadInvalidTaxon() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/15_invalid_taxon_id.json"));
@@ -427,7 +427,7 @@ public class GeneBulkUploadFmsITCase {
                 body("totalResults", is(0)); // no genes added
     }
 
-    @Test
+    //@Test
     @Order(16)
     public void geneBulkUploadStartAfterEnd() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/16_start_after_end.json"));
@@ -451,7 +451,7 @@ public class GeneBulkUploadFmsITCase {
                 body("totalResults", is(0)); // no genes added
     }
 
-    @Test
+    //@Test
     @Order(17)
     public void geneBulkUploadInvalidStrand() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/17_invalid_strand.json"));
@@ -475,7 +475,7 @@ public class GeneBulkUploadFmsITCase {
                 body("totalResults", is(0)); // no genes added
     }
 
-    @Test
+    //@Test
     @Order(18)
     public void geneBulkUploadDuplicatedPrimaryIds() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/fms/01_gene/18_duplicate_primary_ids.json"));
