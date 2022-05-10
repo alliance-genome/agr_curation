@@ -261,8 +261,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-		 return searchByParams(pagination, params, null);
-	 }
+       return searchByParams(pagination, params, null);
+    }
 
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params, String notNullElement) {
         log.debug("Search: " + pagination + " Params: " + params);
@@ -302,10 +302,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                                 });
                             }
                         }
-							  if(params.containsKey("nonNullFields") ) {
-								  List<String> fields = (List<String>)params.get("nonNullFields");
-								  fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
-							  }
+                       if(params.containsKey("nonNullFields") ) {
+                          List<String> fields = (List<String>)params.get("nonNullFields");
+                          fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+                       }
                     });
                 });
 
