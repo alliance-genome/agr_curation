@@ -1,6 +1,13 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -10,15 +17,23 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.exceptions.*;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Synonym;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.GeneFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.GenomeLocationsFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.DtoConverterHelper;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneValidator;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
@@ -48,6 +63,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
     NcbiTaxonTermService ncbiTaxonTermService;
     @Inject 
     NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    @Inject
+    PersonService personService;
 
     @Override
     @PostConstruct
@@ -315,6 +332,37 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         gene.setSymbol(dto.getSymbol());
         
         if (dto.getName() != null) gene.setName(dto.getName());
+        
+        if (dto.getCreatedBy() != null) {
+            Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+            gene.setCreatedBy(createdBy);
+        }
+        if (dto.getModifiedBy() != null) {
+            Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
+            gene.setModifiedBy(modifiedBy);
+        }
+        
+        gene.setInternal(dto.getInternal());
+
+        if (dto.getDateUpdated() != null) {
+            OffsetDateTime dateLastModified;
+            try {
+                dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_updated in " + gene.getCurie() + " - skipping");
+            }
+            gene.setDateUpdated(dateLastModified);
+        }
+
+        if (dto.getDateCreated() != null) {
+            OffsetDateTime creationDate;
+            try {
+                creationDate = OffsetDateTime.parse(dto.getDateCreated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_created in " + gene.getCurie() + " - skipping");
+            }
+            gene.setDateCreated(creationDate);
+        }
         
         return gene;
     }

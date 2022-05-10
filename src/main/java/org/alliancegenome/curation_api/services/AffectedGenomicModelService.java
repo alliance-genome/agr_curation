@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +26,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
@@ -60,6 +63,8 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
     NcbiTaxonTermDAO ncbiTaxonTermDAO;
     @Inject
     NcbiTaxonTermService ncbiTaxonTermService;
+    @Inject
+    PersonService personService;
 
     @Override
     @PostConstruct
@@ -329,6 +334,37 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         agm.setTaxon(taxonResponse.getEntity());
         
         if (dto.getName() != null) agm.setName(dto.getName());
+        
+        if (dto.getCreatedBy() != null) {
+            Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+            agm.setCreatedBy(createdBy);
+        }
+        if (dto.getModifiedBy() != null) {
+            Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
+            agm.setModifiedBy(modifiedBy);
+        }
+        
+        agm.setInternal(dto.getInternal());
+
+        if (dto.getDateUpdated() != null) {
+            OffsetDateTime dateLastModified;
+            try {
+                dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_updated in " + agm.getCurie() + " - skipping");
+            }
+            agm.setDateUpdated(dateLastModified);
+        }
+
+        if (dto.getDateCreated() != null) {
+            OffsetDateTime creationDate;
+            try {
+                creationDate = OffsetDateTime.parse(dto.getDateCreated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_created in " + agm.getCurie() + " - skipping");
+            }
+            agm.setDateCreated(creationDate);
+        }
         
         return agm;
     }

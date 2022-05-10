@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,6 +25,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -50,6 +53,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
     @Inject SynonymService synonymService;
     @Inject NcbiTaxonTermService ncbiTaxonTermService;
     @Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+    @Inject PersonService personService;
 
     @Override
     @PostConstruct
@@ -307,6 +311,37 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         if (dto.getSymbol() != null) allele.setSymbol(dto.getSymbol());
         
         if (dto.getName() != null) allele.setName(dto.getName());
+        
+        if (dto.getCreatedBy() != null) {
+            Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+            allele.setCreatedBy(createdBy);
+        }
+        if (dto.getModifiedBy() != null) {
+            Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
+            allele.setModifiedBy(modifiedBy);
+        }
+        
+        allele.setInternal(dto.getInternal());
+
+        if (dto.getDateUpdated() != null) {
+            OffsetDateTime dateLastModified;
+            try {
+                dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_updated in " + allele.getCurie() + " - skipping");
+            }
+            allele.setDateUpdated(dateLastModified);
+        }
+
+        if (dto.getDateCreated() != null) {
+            OffsetDateTime creationDate;
+            try {
+                creationDate = OffsetDateTime.parse(dto.getDateCreated());
+            } catch (DateTimeParseException e) {
+                throw new ObjectValidationException(dto, "Could not parse date_created in " + allele.getCurie() + " - skipping");
+            }
+            allele.setDateCreated(creationDate);
+        }
         
         return allele;
     }
