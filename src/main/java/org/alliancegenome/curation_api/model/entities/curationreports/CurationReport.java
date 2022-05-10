@@ -1,11 +1,17 @@
 package org.alliancegenome.curation_api.model.entities.curationreports;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 
 import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
@@ -39,5 +45,10 @@ public class CurationReport extends GeneratedAuditedObject {
 
     @JsonView({View.FieldsOnly.class})
     private String birtReportFilePath;
+    
+    @JsonView({View.FieldsOnly.class})
+    @OneToMany(mappedBy = "curationReport", fetch = FetchType.EAGER)
+    @OrderBy("curationReportTimestamp DESC")
+    private List<CurationReportHistory> curationReportHistory;
 
 }

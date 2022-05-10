@@ -1,6 +1,9 @@
 package org.alliancegenome.curation_api.model.entities.curationreports;
 
+import java.util.List;
+
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
 
 import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -21,4 +24,8 @@ public class CurationReportGroup extends GeneratedAuditedObject {
     
     @JsonView({View.FieldsOnly.class})
     private String name;
+    
+    @JsonView({View.FieldsOnly.class})
+    @OneToMany(mappedBy = "curationReportGroup")
+    private List<CurationReport> curationReports;
 }
