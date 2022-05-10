@@ -19,13 +19,12 @@ import lombok.ToString;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-//@ToString(exclude = {"loads"})
 public class CurationReportGroup extends GeneratedAuditedObject {
     
     @JsonView({View.FieldsOnly.class})
     private String name;
     
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     @OneToMany(mappedBy = "curationReportGroup")
     private List<CurationReport> curationReports;
 }

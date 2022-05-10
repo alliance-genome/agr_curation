@@ -11,7 +11,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 
 import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
@@ -25,7 +24,7 @@ import lombok.ToString;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"curationReportGroup"}, callSuper = true)
+@ToString(exclude = {"curationReportGroup", "curationReportHistory"}, callSuper = true)
 public class CurationReport extends GeneratedAuditedObject {
 
     @JsonView({View.FieldsOnly.class})
@@ -46,7 +45,7 @@ public class CurationReport extends GeneratedAuditedObject {
     @JsonView({View.FieldsOnly.class})
     private String birtReportFilePath;
     
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     @OneToMany(mappedBy = "curationReport", fetch = FetchType.EAGER)
     @OrderBy("curationReportTimestamp DESC")
     private List<CurationReportHistory> curationReportHistory;
