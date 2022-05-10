@@ -79,7 +79,6 @@ public class DiseaseAnnotationBulkUploadITCase {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/01_all_fields_gene_annotation.json"));
         
         loadRequiredEntities();
-        clearExistingDiseaseAnnotations();
         
         // upload file
         RestAssured.given().
@@ -2023,20 +2022,6 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
         return new TypeRef<ObjectResponse <Vocabulary>>() { };
-    }
-    
-    private void clearExistingDiseaseAnnotations() throws Exception {
-        ArrayList<String> diseaseAnnotationMods = new ArrayList<String>(Arrays.asList("human", "fb", "mgi", "rgd", "sgd", "wb", "zfin"));
-        for (String mod : diseaseAnnotationMods) {
-            RestAssured.given().
-            contentType("application/json").
-            body("{\"data\":[],\"metaData\":{}}").
-            when().
-            post("/api/disease-annotation/bulk/" + mod + "AnnotationFileFms").
-            then().
-            statusCode(200);
-        }
-    
     }
     
 }
