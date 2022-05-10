@@ -1,0 +1,11 @@
+[
+  {
+    "curie": "AGMTEST:Agm0005",
+    "name": "TestAgm5",
+    "taxon": "NCBITaxon:6239",
+    "created_by": "GENETEST:Person0001",
+    "modified_by": "GENETEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-09T22:10:12+00:00"
+  }
+]
