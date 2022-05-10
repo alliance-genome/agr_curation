@@ -33,13 +33,5 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
 
-	@POST
-	@Path("/handles/search")
-	@Tag(name = "Database Search Endpoints")
-	@JsonView(View.FieldsAndLists.class)
-	public SearchResponse<ConditionRelation> findHandles(
-		@DefaultValue("0") @QueryParam("page") Integer page,
-		@DefaultValue("10") @QueryParam("limit") Integer limit,
-		@RequestBody HashMap<String, Object> params);
 
 }

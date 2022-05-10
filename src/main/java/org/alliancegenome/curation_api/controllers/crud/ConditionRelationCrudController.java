@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ConditionRelationService;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RequestScoped
 public class ConditionRelationCrudController extends BaseCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
@@ -29,15 +30,5 @@ public class ConditionRelationCrudController extends BaseCrudController<Conditio
     public ObjectResponse<ConditionRelation> validate(ConditionRelation entity) {
         return conditionRelationService.validate(entity);
     }
-
-	@Override
-	public SearchResponse<ConditionRelation> findHandles(Integer page, Integer limit, HashMap<String, Object> params) {
-		if(params == null) params = new HashMap<>();
-
-		Pagination pagination = new Pagination();
-		pagination.setLimit(limit);
-		pagination.setPage(page);
-		return conditionRelationService.searchByParams(pagination, params, "handle");
-	}
 
 }

@@ -51,7 +51,7 @@ export const ConditionRelationTable = () => {
   const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 
   useQuery(['conditionRelations', tableState],
-    () => searchService.search('condition-relation/handles', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
+    () => searchService.search('condition-relation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, null, null,['handle']), {
       onSuccess: (data) => {
         setConditionRelations(data.results);
         setTotalRecords(data.totalResults);
@@ -115,6 +115,10 @@ export const ConditionRelationTable = () => {
 
   const aggregationFields = [
     'conditionRelationType.name'
+  ];
+
+  const nonNullFields = [
+    'handle'
   ];
 
 

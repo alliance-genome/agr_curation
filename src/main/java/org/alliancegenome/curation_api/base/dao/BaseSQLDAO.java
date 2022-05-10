@@ -301,9 +301,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                                     });
                                 });
                             }
-									if(StringUtils.isNotEmpty(notNullElement)) {
-                               b.must(m -> m.bool(s -> s.should(p.exists().field(notNullElement))));}
-                    }});
+                        }
+							  if(params.containsKey("nonNullFields") ) {
+								  List<String> fields = (List<String>)params.get("nonNullFields");
+								  fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+							  }
+                    });
                 });
 
         if(params.containsKey("sortOrders")) {
