@@ -33,7 +33,7 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Experimental Conditions", count: results.totalResults, link: '/#/experimentalConditions' }]);
     });
 
-    searchService.search('condition-relation', 0, 0).then(results => {
+    searchService.search('condition-relation', 0, 0, null, {}, null, null,['handle']).then(results => {
       setEntityCounts((list) => [...list, { name: "Condition Relation Handles", count: results.totalResults, link: '/#/conditionRelations' }]);
     });
 
