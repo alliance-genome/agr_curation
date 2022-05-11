@@ -1,26 +1,46 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.time.OffsetDateTime;
 import java.util.List;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import org.alliancegenome.curation_api.model.bridges.BiologicalEntityPropertyBinder;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.PropertyBinderRef;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
 import org.hibernate.search.mapper.pojo.common.annotation.Param;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
-import com.fasterxml.jackson.annotation.*;
-import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
-import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.PropertyBinderRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.PropertyBinding;
 
-import lombok.*;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonView;
+
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 
 @JsonTypeInfo(
@@ -36,7 +56,6 @@ import lombok.*;
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-//@ToString(exclude = {"genomicLocations"})
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public class DiseaseAnnotation extends Association {
@@ -129,6 +148,7 @@ public class DiseaseAnnotation extends Association {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
     @JsonView({View.FieldsOnly.class})
+    @JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName = "curie")
     private BiologicalEntity diseaseGeneticModifier;
     
     @IndexedEmbedded(includeDepth = 1)
@@ -136,5 +156,5 @@ public class DiseaseAnnotation extends Association {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private VocabularyTerm diseaseGeneticModifierRelation;
-}
 
+}

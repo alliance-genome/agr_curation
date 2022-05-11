@@ -23,7 +23,7 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne(cascade = {})
+    @ManyToOne
     @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
     @JoinColumn(foreignKey = @ForeignKey(name="fk_alleledasubject"))
     @JsonView({View.FieldsOnly.class})
