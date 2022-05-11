@@ -17,7 +17,7 @@ public class IngestDTO {
     private List<AffectedGenomicModelDTO> agmIngestSet;
     
     @JsonView({View.FieldsAndLists.class})
-    @JsonProperty("alele_ingest_set")
+    @JsonProperty("allele_ingest_set")
     private List<AlleleDTO> alleleIngestSet;
     
     @JsonView({View.FieldsAndLists.class})
