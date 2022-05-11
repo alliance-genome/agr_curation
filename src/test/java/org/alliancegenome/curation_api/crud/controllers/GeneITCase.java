@@ -57,7 +57,8 @@ public class GeneITCase {
                 body("entity.taxon.curie", is(GENE_TAXON)).
                 body("entity.symbol", is(GENE_SYMBOL)).
                 body("entity.geneType.curie", is(GENE_TYPE)).
-                body("entity.automatedGeneDescription", is(GENE_AUTO_DESC));
+                body("entity.automatedGeneDescription", is(GENE_AUTO_DESC)).
+                body("entity.internal", is(false));
     }
 
     @Test
@@ -70,6 +71,7 @@ public class GeneITCase {
         gene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
         gene.setGeneType(newSoTerm);
         gene.setAutomatedGeneDescription("Edited auto description");
+        gene.setInternal(true);
 
         RestAssured.given().
                 contentType("application/json").
@@ -89,7 +91,8 @@ public class GeneITCase {
                 body("entity.taxon.curie", is("NCBITaxon:9606")).
                 body("entity.symbol", is("GT2")).
                 body("entity.geneType.curie", is("SO:0001000")).
-                body("entity.automatedGeneDescription", is("Edited auto description"));
+                body("entity.automatedGeneDescription", is("Edited auto description")).
+                body("entity.internal", is(true));
     }
 
     @Test

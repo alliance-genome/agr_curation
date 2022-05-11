@@ -1,42 +1,56 @@
 package org.alliancegenome.curation_api.auth;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Base64;
+import java.util.UUID;
 
 import javax.annotation.Priority;
 import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.container.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
-import org.alliancegenome.curation_api.dao.PersonDAO;
-import org.alliancegenome.curation_api.interfaces.okta.*;
-import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
+import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
+import org.alliancegenome.curation_api.interfaces.okta.OktaUserInfo;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.LoggedInPersonService;
+import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
+import com.okta.jwt.*;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.*;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.user.User;
 
+import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
 import si.mazi.rescu.RestProxyFactory;
 
 @JBossLog
-@Secured
 @Provider
 @Priority(Priorities.AUTHENTICATION)
 public class AuthenticationFilter implements ContainerRequestFilter {
 
     @Inject
     @AuthenticatedUser
-    Event<Person> userAuthenticatedEvent;
+    Event<LoggedInPerson> userAuthenticatedEvent;
 
-    @Inject PersonDAO personDAO;
+    @Inject AuthenticationService authenticationService;
 
+    @Inject LoggedInPersonDAO loggedInPersonDAO;
+
+    @Inject LoggedInPersonService loggedInPersonService;
+
+    @Inject LoggedInPersonUniqueIdHelper loggedInPersonUniqueId;
+    
     @ConfigProperty(name = "okta.authentication")
     Instance<Boolean> okta_auth;
 
@@ -72,8 +86,7 @@ public class AuthenticationFilter implements ContainerRequestFilter {
                     failAuthentication(requestContext);
                 } else {
                     String token = authorizationHeader.substring(AUTHENTICATION_SCHEME.length()).trim();
-    
-                    Person person = validateToken(token);
+                    LoggedInPerson person = validateToken(token);
                     if(person != null) {
                         userAuthenticatedEvent.fire(person);
                     } else {
@@ -92,72 +105,82 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
     }
     
+    
+    private LoggedInPerson validateLocalToken(String token) {
+        SearchResponse<LoggedInPerson> res = loggedInPersonDAO.findByField("apiToken", token);
+        if(res != null && res.getResults().size() == 1) {
+            Log.info("User Found in local DB via: " + token);
+            return res.getResults().get(0);
+        }
+        return null;
+    }
+    
+    
     private void failAuthentication(ContainerRequestContext requestContext) {
         requestContext.abortWith(Response.status(Response.Status.UNAUTHORIZED).header(HttpHeaders.WWW_AUTHENTICATE, AUTHENTICATION_SCHEME).build());
     }
 
     private void loginDevUser() {
         log.debug("OKTA Authentication Disabled using Test Dev User");
-        SearchResponse<Person> res = personDAO.findPersonByEmail("test@alliancegenome.org");
-        if(res == null) {
-            Person person = new Person();
+        LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail("test@alliancegenome.org");
+        if(authenticatedUser == null) {
+            LoggedInPerson person = new LoggedInPerson();
             person.setApiToken(UUID.randomUUID().toString());
-            person.setEmail("test@alliancegenome.org");
+            person.setOktaEmail("test@alliancegenome.org");
             person.setFirstName("Local");
             person.setLastName("Dev User");
-            personDAO.persist(person);
+            person.setUniqueId("Local|Dev User|test@alliancegenome.org");
+            loggedInPersonDAO.persist(person);
             userAuthenticatedEvent.fire(person);
         } else {
-            userAuthenticatedEvent.fire(res.getResults().get(0));
+            userAuthenticatedEvent.fire(authenticatedUser);
         }
     }
 
     // Check Okta(token), Check DB ApiToken(token), else return null
-    private Person validateToken(String token) {
+    private LoggedInPerson validateToken(String token) {
 
-        OktaTokenInterface oti = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url.get());
+        Jwt jsonWebToken;
+        try {
+            jsonWebToken = authenticationService.verifyToken(token);
+        } catch (JwtVerificationException e) {
+            LoggedInPerson person = validateLocalToken(token);
+            return person;
+        }
+        
+        String oktaEmail = (String)jsonWebToken.getClaims().get("sub"); // Subject Id
+        LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(oktaEmail);
+        
+        if(authenticatedUser != null) {
+            return authenticatedUser;
+        }
+        
+        Log.info("Making OKTA call to get user info: ");
+        
+        Client client = Clients.builder()
+                .setOrgUrl(okta_url.get())
+                .setClientId(client_id.get())
+                .setClientCredentials(new TokenClientCredentials(api_token.get()))
+                .build();
 
-        String basic = "Basic " + Base64.getEncoder().encodeToString((client_id.get() + ":" + client_secret.get()).getBytes());
+        String oktaId = (String)jsonWebToken.getClaims().get("uid"); // User Id
+        User user = client.getUser(oktaId);
 
-        OktaUserInfo info = oti.getUserInfo(basic, "access_token", token);
+        if(user != null) {
+            LoggedInPerson person = new LoggedInPerson();
+            person.setApiToken(UUID.randomUUID().toString());
+            person.setOktaId(oktaId);
+            person.setOktaEmail(user.getProfile().getEmail());
+            person.setFirstName(user.getProfile().getFirstName());
+            person.setLastName(user.getProfile().getLastName());
+            person.setUniqueId(loggedInPersonUniqueId.createLoggedInPersonUniqueId(person));
+            loggedInPersonDAO.persist(person);
+            return person;
 
-        if(info.getUid() == null || info.getUid().length() == 0) {
-            SearchResponse<Person> res = personDAO.findByField("apiToken", token);
-            if(res != null && res.getResults().size() == 1) {
-                log.info("User Found in local DB via: " + token);
-                return res.getResults().get(0);
-            }
-            return null;
-        } else {
-            Client client = Clients.builder()
-                    .setOrgUrl(okta_url.get())
-                    .setClientId(client_id.get())
-                    .setClientCredentials(new TokenClientCredentials(api_token.get()))
-                    .build();
-
-            User user = client.getUser(info.getUid());
-
-            if(user != null) {
-                SearchResponse<Person> res = personDAO.findPersonByEmail(user.getProfile().getEmail());
-                if(res == null) {
-                    Person person = new Person();
-                    person.setApiToken(UUID.randomUUID().toString());
-                    person.setEmail(user.getProfile().getEmail());
-                    person.setFirstName(user.getProfile().getFirstName());
-                    person.setLastName(user.getProfile().getLastName());
-                    personDAO.persist(person);
-                    return person;
-                } else {
-                    return res.getResults().get(0);
-                }
-            } else {
-                SearchResponse<Person> res = personDAO.findByField("apiToken", token);
-                if(res != null && res.getResults().size() == 1) {
-                    return res.getResults().get(0);
-                }
-            }
         }
         
         return null;
     }
+    
+    
 }

@@ -1,14 +1,21 @@
+import axios from 'axios';
+
 export class BaseAuthService {
 
-  apiAuthHeader;
+  api;
 
-  constructor(authState) {
-    if (authState && authState.accessToken) {
-      this.apiAuthHeader = {
+  constructor() {
+    let oktaTokenStorage = localStorage.getItem('okta-token-storage');
+    const { accessToken } = JSON.parse(oktaTokenStorage);
+    if (accessToken) {
+      this.api = axios.create({
+        baseURL: "/api",
         headers: {
-          Authorization: authState.accessToken.tokenType + " " + authState.accessToken.accessToken
+          Authorization: `${accessToken.tokenType} ${accessToken.accessToken}`
         }
-      }
+      });
+    } else {
+      console.log('No accessToken');
     }
   }
 

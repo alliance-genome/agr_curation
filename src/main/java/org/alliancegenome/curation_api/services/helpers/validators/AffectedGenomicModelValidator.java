@@ -29,9 +29,10 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
             throw new ApiErrorException(response);
         }
         
-
         String errorTitle = "Could not update AGM [" + curie + "]";
         
+        dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity);
+
         String name = validateName(uiEntity);
         if (name != null) dbEntity.setName(name);
         

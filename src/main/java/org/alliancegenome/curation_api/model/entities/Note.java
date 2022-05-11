@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -23,9 +23,10 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
+@AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
 @Schema(name="Note", description="POJO that represents the Note")
-public class Note extends BaseGeneratedEntity {
-    
+public class Note extends GeneratedAuditedObject {
+        
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
     @JsonView({View.FieldsOnly.class})
@@ -37,12 +38,6 @@ public class Note extends BaseGeneratedEntity {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private VocabularyTerm noteType;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-    @KeywordField(name = "internal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-    @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition = "boolean default true", nullable = false)
-    private Boolean internal = true;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

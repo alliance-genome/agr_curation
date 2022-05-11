@@ -17,11 +17,14 @@ import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Tooltip } from 'primereact/tooltip';
+import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
+import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 
 export const ExperimentalConditionsTable = () => {
-  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity", "Free Text"];
+  const defaultColumnNames = ["Unique ID", "Summary", "Statement", "Class", "Condition Term", "Gene Ontology", "Chemical", "Anatomy", "Condition Taxon", "Quantity", "Free Text", "Internal"];
   let initialTableState = {
     page: 0,
     first: 0,
@@ -43,6 +46,7 @@ export const ExperimentalConditionsTable = () => {
   const [isEnabled, setIsEnabled] = useState(true);
   const [columnList, setColumnList] = useState([]);
 
+  const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
   const searchService = new SearchService();
   const errorMessage = useRef(null);
   const { authState } = useOktaAuth();
@@ -246,6 +250,18 @@ export const ExperimentalConditionsTable = () => {
     />);
   };
 
+  const FilterComponentDropDownTemplate = (filterName, field, options, optionField) => {
+    return (<FilterComponentDropDown
+      isEnabled={isEnabled}
+      field={field}
+      filterName={filterName}
+      currentFilters={tableState.filters}
+      onFilter={onFilter}
+      options={options}
+      optionField={optionField}
+    />);
+  }
+  
   const uniqueIdBodyTemplate = (rowData) => {
     return (
       <>
@@ -324,6 +340,33 @@ export const ExperimentalConditionsTable = () => {
           </>
       );
     }
+  };
+  
+  const internalBodyTemplate = (rowData) => {
+    if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
+      return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
+    }
+  };
+
+  const onInternalEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    if (event.value || event.value === '') {
+      updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
+    }
+  };
+
+  const internalEditor = (props) => {
+    return (
+      <>
+        <TrueFalseDropdown
+          options={booleanTerms}
+          editorChange={onInternalEditorValueChange}
+          props={props}
+          field={"internal"}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+      </>
+    );
   };
 
   const conditionClassEditorTemplate = (props, autocomplete) => {
@@ -482,7 +525,16 @@ export const ExperimentalConditionsTable = () => {
       filter: true,
       filterElement: filterComponentTemplate("conditionFreeTextFilter", ["conditionFreeText"]),
       editor: (props) => freeTextEditor(props, "conditionFreeText")
-    }
+    },
+    { 
+      field: "internal",
+      header: "Internal",
+      body: internalBodyTemplate,
+      filter: true,
+      filterElement: FilterComponentDropDownTemplate("internalFilter", "internal", [{ text: "true" }, { text: "false" }], "text"),
+      sortable: isEnabled,
+      editor: (props) => internalEditor(props)
+  },
 
   ];
 
@@ -560,6 +612,7 @@ export const ExperimentalConditionsTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   }
 
   const colReorderHandler = (event) => {

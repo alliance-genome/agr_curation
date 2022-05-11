@@ -21,6 +21,10 @@ export const ConditionRelationsDialog = ({ conditonRelations, conditionRelations
       };
     return <ListTableCell template={listTemplate} listData={rowData.conditions} />
   };
+  
+  const internalTemplate = (rowData) => {
+    return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
+  };
 
   return (
     <Dialog visible={conditionRelationsDialog} className='w-6' modal onHide={hideDialog}>
@@ -29,6 +33,7 @@ export const ConditionRelationsDialog = ({ conditonRelations, conditionRelations
         <Column field="conditionRelationType.name" header="Relation"></Column>
         <Column field="handle" header="Handle"></Column>
         <Column field="conditions.conditionStatement" header="Statement" body={conditionStatementTemplate}></Column>
+        <Column field="internal" header="Internal" body={internalTemplate}></Column>
       </DataTable>
     </Dialog>
   );

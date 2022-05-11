@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
@@ -17,7 +17,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 //@ToString(exclude = {"loads"})
-public class BulkLoadGroup extends BaseGeneratedEntity {
+public class BulkLoadGroup extends GeneratedAuditedObject {
     
     @JsonView({View.FieldsOnly.class})
     private String name;

@@ -64,6 +64,7 @@ public class GeneBulkUploadFmsITCase {
                body("results[0].crossReferences[0].curie", is("TEST:xref1b")).
                body("results[0].crossReferences[1].curie", is("TEST:xref1a")).
                body("results[0].symbol", is("Tg1")).
+               body("results[0].internal", is(false)).
                body("results[0].geneSynopsis", is("Test gene with all fields populated")).
                body("results[0].geneSynopsisURL", is("http://test.org/test_synopsis_1")).
                body("results[0].geneType.curie", is("SO:0001217"));

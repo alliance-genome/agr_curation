@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { Link } from 'react-router-dom';
 import { Menu } from 'primereact/menu';
@@ -7,6 +7,15 @@ import { ApiVersionService } from './service/ApiVersionService';
 
 export const AppTopbar = (props) => {
   const menu = useRef(null);
+
+  let [apiService, setApiService] = useState();
+
+  useEffect(() => {
+    if(props.authState?.isAuthenticated){
+      setApiService(new ApiVersionService())
+    }
+  }, [props.authState]);
+
   const menuItems = [
     {
       items: [
@@ -28,8 +37,6 @@ export const AppTopbar = (props) => {
 
   const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
 
-  const apiService = new ApiVersionService();
-
   useQuery(['getApiVersion', apiVersion],
     () => apiService.getApiVersion(), {
       onSuccess: (data) => {
@@ -40,7 +47,8 @@ export const AppTopbar = (props) => {
       console.log(error);
       },
       keepPreviousData: true,
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      enabled: !!(props.authState?.isAuthenticated && apiService),
     }
   );
 
