@@ -99,7 +99,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         return affectedGenomicModelDAO.persist(agm);
     }
     
-    public void removeNonUpdatedAlleles(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
+    public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
         log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
 
         List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());

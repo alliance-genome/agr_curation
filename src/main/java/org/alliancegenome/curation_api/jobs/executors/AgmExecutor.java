@@ -98,7 +98,7 @@ public class AgmExecutor extends LoadFileExecutor {
         });
         ph.finishProcess();
             
-        affectedGenomicModelService.removeNonUpdatedAlleles(taxonIds.toString(), agmCuriesBefore, agmCuriesAfter);
+        affectedGenomicModelService.removeNonUpdatedAgms(taxonIds.toString(), agmCuriesBefore, agmCuriesAfter);
             
         return new LoadHistoryResponce(history);    
     }
