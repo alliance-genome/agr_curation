@@ -10,11 +10,11 @@ export class SearchService extends BaseAuthService {
     }
 
     if (!aggregationFields) {
-		 aggregationFields = [];
+     aggregationFields = [];
     }
 
     if (!nonNullFields) {
-		 nonNullFields = [];
+     nonNullFields = [];
     }
 
     searchOptions["searchFilters"] = filters;
