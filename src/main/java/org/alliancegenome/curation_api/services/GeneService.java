@@ -96,7 +96,8 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         for (String curie : curiesToRemove) {
             Gene gene = geneDAO.find(curie);
             if (gene != null) {
-                delete(gene.getCurie());
+                geneDAO.deleteReferencingDiseaseAnnotations(curie);
+                delete(curie);
             } else {
                 log.error("Failed getting gene: " + curie);
             }

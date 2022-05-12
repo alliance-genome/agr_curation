@@ -19,6 +19,9 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
+import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -145,10 +148,11 @@ public class DiseaseAnnotation extends Association {
     private String secondaryDataProvider;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
     @JsonView({View.FieldsOnly.class})
-    @JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName = "curie")
+    //@JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName = "curie")
     private BiologicalEntity diseaseGeneticModifier;
     
     @IndexedEmbedded(includeDepth = 1)

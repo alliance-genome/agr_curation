@@ -108,14 +108,17 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
         List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
+        List<String> foundAgmCuries = new ArrayList<String>();
         for (String curie : curiesToRemove) {
             AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
             if (agm != null) {
-                delete(agm.getCurie());
+                foundAgmCuries.add(curie);
             } else {
                 log.error("Failed getting AGM: " + curie);
             }
         }
+        affectedGenomicModelDAO.deleteReferencingDiseaseAnnotations(foundAgmCuries);
+        foundAgmCuries.forEach(curie -> {delete(curie);});
     }
     
     public List<String> getCuriesByTaxonId(String taxonId) {

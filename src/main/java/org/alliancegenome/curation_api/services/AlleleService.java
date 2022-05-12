@@ -75,7 +75,8 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         for (String curie : curiesToRemove) {
             Allele allele = alleleDAO.find(curie);
             if (allele != null) {
-                delete(allele.getCurie());
+                alleleDAO.deleteReferencingDiseaseAnnotations(curie);
+                delete(curie);
             } else {
                 log.error("Failed getting allele: " + curie);
             }

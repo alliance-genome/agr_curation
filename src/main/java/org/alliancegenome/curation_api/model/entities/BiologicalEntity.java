@@ -37,8 +37,8 @@ public class BiologicalEntity extends CurieAuditedObject {
     @JsonView({View.FieldsOnly.class})
     private NCBITaxonTerm taxon;
     
-    @OneToMany(mappedBy = "diseaseGeneticModifier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private  List<DiseaseAnnotation> diseaseGeneticModifiers;
+    //@OneToMany(mappedBy = "diseaseGeneticModifier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    //private    List<DiseaseAnnotation> diseaseGeneticModifiers;
     
 }
 
