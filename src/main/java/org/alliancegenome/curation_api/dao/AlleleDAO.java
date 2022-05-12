@@ -23,13 +23,13 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
     }
     
     @Transactional
-    public void deleteReferencingDiseaseAnnotations(String alleleCurie) {
-        Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie=:alleleCurie");
-        jpqlQuery.setParameter("alleleCurie", alleleCurie);
+    public void deleteReferencingDiseaseAnnotations(List<String> alleleCuries) {
+        Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie IN (:alleleCuries)");
+        jpqlQuery.setParameter("alleleCuries", alleleCuries);
         List<String> results = (List<String>)jpqlQuery.getResultList();
         
-        jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subject.curie=:alleleCurie");
-        jpqlQuery.setParameter("alleleCurie", alleleCurie);
+        jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subject.curie IN (:alleleCuries)");
+        jpqlQuery.setParameter("alleleCuries", alleleCuries);
         results.addAll((List<String>) jpqlQuery.getResultList());
         
         jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_conditionrelation WHERE diseaseannotation_id IN (:ids)");

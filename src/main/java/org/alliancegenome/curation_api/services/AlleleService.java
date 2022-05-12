@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -72,15 +73,17 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         List<String> curiesToRemove = ListUtils.subtract(alleleCuriesBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
+        List<String> foundAlleleCuries = new ArrayList<String>();
         for (String curie : curiesToRemove) {
             Allele allele = alleleDAO.find(curie);
             if (allele != null) {
-                alleleDAO.deleteReferencingDiseaseAnnotations(curie);
-                delete(curie);
+                foundAlleleCuries.add(curie);
             } else {
                 log.error("Failed getting allele: " + curie);
             }
         }
+        alleleDAO.deleteReferencingDiseaseAnnotations(foundAlleleCuries);
+        foundAlleleCuries.forEach(curie -> {delete(curie);});
     }
     
     public List<String> getCuriesByTaxonId(String taxonId) {
