@@ -8,3 +8,6 @@ ALTER TABLE "agmdiseaseannotation"
 	
 ALTER TABLE "genediseaseannotation"
 	DROP CONSTRAINT "fk3j5deigrhrwln0srh51vtw3m8";
+	
+ALTER TABLE "diseaseannotation"
+	DROP CONSTRAINT "fknecrivvmqgg2ifhppubrjy5ey";
