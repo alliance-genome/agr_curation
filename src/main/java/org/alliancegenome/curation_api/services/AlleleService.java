@@ -73,6 +73,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         List<String> curiesToRemove = ListUtils.subtract(alleleCuriesBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
+        log.info("Deleting disease annotations linked to " + curiesToRemove.size() + " unloaded alleles");
         List<String> foundAlleleCuries = new ArrayList<String>();
         for (String curie : curiesToRemove) {
             Allele allele = alleleDAO.find(curie);
@@ -84,6 +85,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
         }
         alleleDAO.deleteReferencingDiseaseAnnotations(foundAlleleCuries);
         foundAlleleCuries.forEach(curie -> {delete(curie);});
+        log.info("Deletion of disease annotations linked to unloaded alleles finished");
     }
     
     public List<String> getCuriesByTaxonId(String taxonId) {

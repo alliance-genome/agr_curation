@@ -94,6 +94,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         List<String> curiesToRemove = ListUtils.subtract(geneCuriesBefore, distinctAfter);
         log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
+        log.info("Deleting disease annotations linked to " + curiesToRemove.size() + " unloaded genes");
         List<String> foundGeneCuries = new ArrayList<String>();
         for (String curie : curiesToRemove) {
             Gene gene = geneDAO.find(curie);
@@ -105,6 +106,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
         }
         geneDAO.deleteReferencingDiseaseAnnotations(foundGeneCuries);
         foundGeneCuries.forEach(curie -> {delete(curie);});
+        log.info("Deletion of disease annotations linked to unloaded genes finished");
     }
     
     public List<String> getCuriesByTaxonId(String taxonId) {
