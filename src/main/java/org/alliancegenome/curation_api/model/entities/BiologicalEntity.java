@@ -1,14 +1,9 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.util.List;
-
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 
 import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -28,7 +23,7 @@ import lombok.ToString;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(callSuper = true, exclude = {"diseaseGeneticModifiers"})
+@ToString(callSuper = true)
 public class BiologicalEntity extends CurieAuditedObject {
 
     @IndexedEmbedded(includeDepth = 1)
@@ -36,9 +31,6 @@ public class BiologicalEntity extends CurieAuditedObject {
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
     private NCBITaxonTerm taxon;
-    
-    //@OneToMany(mappedBy = "diseaseGeneticModifier", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    //private    List<DiseaseAnnotation> diseaseGeneticModifiers;
     
 }
 
