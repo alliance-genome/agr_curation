@@ -11,11 +11,12 @@ export const AutocompleteEditor = (
     endpoint,
     filterName,
     fieldName,
+    subField = "curie",
     otherFilters = [],
     isSubject = false,
     isWith = false,
     isMultiple = false,
-    isSgdStrainBackground = false
+    isSgdStrainBackground = false,
   }
 ) => {
   const [filtered, setFiltered] = useState([]);
@@ -155,7 +156,7 @@ export const AutocompleteEditor = (
       <AutoComplete
         multiple={isMultiple}
         panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
-        field="curie"
+        field={subField}
         value={fieldValue}
         suggestions={filtered}
         itemTemplate={itemTemplate}
