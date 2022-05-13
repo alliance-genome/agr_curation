@@ -1,0 +1,13 @@
+[
+  {
+    "curie": "GENETEST:Gene0012",
+    "name": "TestGene12",
+    "symbol": "tg12",
+    "taxon": "NCBITaxon:6239",
+    "internal": true,
+    "created_by": "GENETEST:Person0001",
+    "modified_by": "GENETEST:Person0002",
+    "date_created": "20220309",
+    "date_updated": "2022-03-09T22:10:12+00:00"
+  }
+]
