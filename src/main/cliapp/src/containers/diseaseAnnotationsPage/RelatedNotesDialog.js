@@ -171,6 +171,10 @@ export const RelatedNotesDialog = ({
     );
   };
 
+  const noteTypeTemplate = (rowData) => {
+    return <EllipsisTableCell>{rowData.noteType.name}</EllipsisTableCell>;
+  };
+  
   const internalTemplate = (rowData) => {
     return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
   };
@@ -265,7 +269,7 @@ export const RelatedNotesDialog = ({
         editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
         <Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
               bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
-        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0'/>
+        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
         <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
         <Column
           editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
