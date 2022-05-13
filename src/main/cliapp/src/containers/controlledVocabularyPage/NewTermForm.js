@@ -102,12 +102,11 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
                                 options={vocabularies}
                                 value={newTerm.vocabulary}
                                 placeholder={"Select Vocabulary"}
-                                className='p-col-12'
                                 name='vocabulary'
                                 optionLabel='name'
                                 onChange={onChange}
                                 required
-                                className={classNames({ 'p-invalid': submitted && !newTerm.vocabulary })}
+                                className={classNames({ 'p-invalid': submitted && !newTerm.vocabulary }, 'p-col-12')}
                             />{submitted && !newTerm.vocabulary && <small className="p-error">Vocabulary is required.</small>}
                         </div>
                         <div className="field">
@@ -127,13 +126,12 @@ export const NewTermForm = ({ newTermDialog, setNewTermDialog, newTerm, newTermD
                                 options={obsoleteTerms}
                                 value={newTerm.obsolete}
                                 placeholder={"Select Obsolete"}
-                                className='p-col-12'
                                 name='obsolete'
                                 optionLabel='text'
                                 optionValue='name'
                                 onChange={onChange}
                                 required
-                                className={classNames({ 'p-invalid': submitted && newTerm.obsolete === undefined })}
+                                className={classNames({ 'p-invalid': submitted && newTerm.obsolete === undefined }, 'p-col-12')}
                             />{submitted && newTerm.obsolete === undefined && <small className="p-error">Obsolete is required.</small>}
                         </div>
                     </form>

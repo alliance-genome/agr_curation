@@ -36,9 +36,8 @@ export const ConditionRelationTable = () => {
 
   let [conditionRelations, setConditionRelations] = useState(null);
 
-  const [originalRows, setOriginalRows] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled] = useState(true);
   const [columnList, setColumnList] = useState([]);
 
   const searchService = new SearchService();
@@ -46,7 +45,7 @@ export const ConditionRelationTable = () => {
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
-  const [errorMessages, setErrorMessages] = useState({});
+  const [errorMessages] = useState({});
 
   const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 
@@ -62,7 +61,6 @@ export const ConditionRelationTable = () => {
         ]);
       },
       onSettled: () => {
-        setOriginalRows([]);
       },
       keepPreviousData: true,
       refetchOnWindowFocus: false
@@ -116,10 +114,10 @@ export const ConditionRelationTable = () => {
   const aggregationFields = [
     'conditionRelationType.name'
   ];
-
-  const nonNullFields = [
+    //commenting out for now to get rid of console warnings
+  /* const nonNullFields = [
     'handle'
-  ];
+  ]; */
 
 
   const filterComponentTemplate = (filterName, fields) => {
