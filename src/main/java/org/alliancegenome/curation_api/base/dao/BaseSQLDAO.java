@@ -264,46 +264,42 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         log.debug("Search: " + pagination + " Params: " + params);
 
         SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step =
-                searchSession.search(myClass).where( p -> {
-                    return p.bool( b -> {
-                        if(params.containsKey("searchFilters") ) {
-                            HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
-                            for(String filterName: searchFilters.keySet()) {
-                                b.must(m -> {
-                                    return m.bool(s -> {
-                                        int boost = 0;
-                                        for(String field: searchFilters.get(filterName).keySet()) {
-                                            float value = (float)(100/Math.pow(10, boost));
-                                            String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
-                                            if(op== null) op = "AND";
+                searchSession.search(myClass).where( p -> p.bool(b -> {
+						  if(params.containsKey("searchFilters") ) {
+								HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
+								for(String filterName: searchFilters.keySet()) {
+									 b.must(m -> m.bool(s -> {
+										  int boost = 0;
+										  for(String field: searchFilters.get(filterName).keySet()) {
+												float value = (float)(100/Math.pow(10, boost));
+												String op = (String)searchFilters.get(filterName).get(field).get("tokenOperator");
+												if(op== null) op = "AND";
 
-                                            String queryField = field;
+												String queryField = field;
 
-                                            Boolean useKeywordFields = (Boolean)searchFilters.get(filterName).get(field).get("useKeywordFields");
-                                            if(useKeywordFields != null && useKeywordFields) {
-                                                queryField = field + "_keyword";
-                                            }
+												Boolean useKeywordFields = (Boolean)searchFilters.get(filterName).get(field).get("useKeywordFields");
+												if(useKeywordFields != null && useKeywordFields) {
+													 queryField = field + "_keyword";
+												}
 
-                                            s.should(
-                                                    p.simpleQueryString()
-                                                    .fields(queryField)
-                                                    .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-                                                    .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
-                                                    .boost(value >=1 ? value : 1)
-                                                    //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
-                                                    );
-                                            boost++;
-                                        }
-                                    });
-                                });
-                            }
-                        }
-                       if(params.containsKey("nonNullFields") ) {
-                          List<String> fields = (List<String>)params.get("nonNullFields");
-                          fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
-                       }
-                    });
-                });
+												s.should(
+														  p.simpleQueryString()
+														  .fields(queryField)
+														  .matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+														  .defaultOperator(op != null ? BooleanOperator.valueOf(op) : BooleanOperator.AND)
+														  .boost(value >=1 ? value : 1)
+														  //p.match().field(field).matching(searchFilters.get(filterName).get(field).toString()).boost(boost*10)
+														  );
+												boost++;
+										  }
+									 }));
+								}
+						  }
+						 if(params.containsKey("nonNullFields") ) {
+							 List<String> fields = (List<String>)params.get("nonNullFields");
+							 fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+						 }
+					 }));
 
         if(params.containsKey("sortOrders")) {
             step = step.sort(f -> {

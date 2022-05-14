@@ -17,24 +17,24 @@ public class LiteratureReference extends BaseDocument {
 
     @JsonView({View.FieldsOnly.class})
     public String curie;
-    
+
     @JsonView({View.FieldsOnly.class})
     public String title;
-    
+
     @JsonView({View.FieldsOnly.class})
     public String pages;
-    
+
     @JsonView({View.FieldsOnly.class})
     public String volume;
-    
+
     @JsonView({View.FieldsOnly.class})
     @JsonProperty("abstract")
     public String referenceAbstract;
-    
+
     @JsonView({View.FieldsOnly.class})
     public String citation;
-    
-    @JsonView({View.FieldsOnly.class})
-    public List<LiteratureCrossReference> cross_references;
-    
+
+    @JsonView({View.FieldsAndLists.class})
+    public List<LiteratureCrossReference> crossReferences;
+
 }

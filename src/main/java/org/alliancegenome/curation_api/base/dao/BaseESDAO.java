@@ -33,7 +33,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
         //log.info("BaseESDAO: searching with: " + params);
 
-        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder(); 
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
         BoolQueryBuilder bool = QueryBuilders.boolQuery();
 
         if(params.containsKey("searchFilters")) {
@@ -44,7 +44,8 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
                 for(String field: searchFilters.get(filterName).keySet()) {
                     float value = (float)(100/Math.pow(10, boost));
                     Operator op = Operator.AND;
-                    if(((String)searchFilters.get(filterName).get(field).get("tokenOperator")).toUpperCase().equals("OR")) {
+						 Object tokenOperator = searchFilters.get(filterName).get(field).get("tokenOperator");
+						 if(tokenOperator != null && ((String) tokenOperator).toUpperCase().equals("OR")) {
                         op = Operator.OR;
                     }
 
@@ -54,24 +55,24 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
                             //.autoGenerateSynonymsPhraseQuery(false)
                             //.fuzzyTranspositions(false)
                             .boost(value >=1 ? value : 1);
-                    
+
                     innerBool.should().add(simple);
                     boost++;
                 }
-                
+
                 bool.must().add(innerBool);
             }
         }
-        
+
         SearchSourceBuilder query = searchSourceBuilder.query(bool);
 
         if(params.containsKey("sortOrders")) {
             ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
             if(sortOrders != null) {
-                
+
                 for(HashMap<String, Object> map: sortOrders) {
                     String key = (String)map.get("field");
-                    
+
                     int value = (int)map.get("order");
                     if(value == 1) {
                         query.sort(new FieldSortBuilder(key + ".keyword").order(SortOrder.ASC));
@@ -87,11 +88,11 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
         searchSourceBuilder = searchSourceBuilder.size(pagination.getLimit());
         searchSourceBuilder = searchSourceBuilder.trackTotalHits(true);
 
-        log.debug(searchSourceBuilder);
+        log.info(searchSourceBuilder);
 
-        SearchRequest searchRequest = new SearchRequest(esIndex); 
+        SearchRequest searchRequest = new SearchRequest(esIndex);
         searchRequest.source(searchSourceBuilder);
-        
+
         // TODO implement aggregations
 
         try {

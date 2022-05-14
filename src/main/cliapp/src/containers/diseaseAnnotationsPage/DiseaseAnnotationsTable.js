@@ -258,7 +258,7 @@ export const DiseaseAnnotationsTable = () => {
       return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
     }
   };
-  
+
   const internalTemplate = (rowData) => {
     if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
       return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
@@ -542,7 +542,11 @@ export const DiseaseAnnotationsTable = () => {
 
   const onNegatedEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
-    if (event.value || event.value === '') {
+	  console.log(props.props.value)
+	  console.log(event.value.name)
+	  console.log(props.rowIndex)
+
+	  if (event.value || event.value === '') {
       updatedAnnotations[props.rowIndex].negated = JSON.parse(event.value.name);
     }
   };
@@ -560,7 +564,7 @@ export const DiseaseAnnotationsTable = () => {
       </>
     );
   };
-  
+
   const onInternalEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
     if (event.value || event.value === '') {
@@ -1186,7 +1190,7 @@ export const DiseaseAnnotationsTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
-          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}}
             headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
