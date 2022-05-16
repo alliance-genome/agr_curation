@@ -100,12 +100,12 @@ public class DiseaseAnnotationITCase {
         geneDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
         alleleDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
         agmDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
-        noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-        geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
+        noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+        geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
         conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
         diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
-        diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
-        annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+        diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+        annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
         geneDiseaseRelation = getVocabularyTerm(geneDiseaseRelationVocabulary, "is_implicated_in");
         geneDiseaseRelation2 = createVocabularyTerm(geneDiseaseRelationVocabulary, "is_marker_for", false);
         alleleDiseaseRelation = getVocabularyTerm(alleleDiseaseRelationVocabulary, "is_implicated_in");

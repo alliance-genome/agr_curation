@@ -38,7 +38,7 @@ import io.restassured.config.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("04 - Disease annotation bulk upload")
-@Order(11)
+@Order(4)
 public class DiseaseAnnotationBulkUploadITCase {
     
     private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "DATEST:Gene0001", "DATEST:Gene0002", "HGNC:0001"));
@@ -79,7 +79,6 @@ public class DiseaseAnnotationBulkUploadITCase {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/01_all_fields_gene_annotation.json"));
         
         loadRequiredEntities();
-        clearExistingDiseaseAnnotations();
         
         // upload file
         RestAssured.given().
@@ -123,7 +122,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
+            body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
             body("results[0].negated", is(true)).
             body("results[0].internal", is(false)).
             body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
@@ -189,7 +188,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-            body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
+            body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
             body("results[1].negated", is(true)).
             body("results[1].internal", is(false)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
@@ -254,7 +253,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
             body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
             body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-            body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
+            body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
             body("results[2].negated", is(true)).
             body("results[2].internal", is(false)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
@@ -1782,19 +1781,19 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadAGM(requiredAgm, "NCBITaxon:6239");
         loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
         
-        Vocabulary noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-        // Vocabulary geneDiseaseRelationVocabulary = createVocabulary("Gene disease relations");
-        // Vocabulary alleleDiseaseRelationVocabulary = createVocabulary("Allele disease relations");
-        // Vocabulary agmDiseaseRelationVocabulary = createVocabulary("AGM disease relations");
-        Vocabulary geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
+        Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+        Vocabulary geneDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
+        Vocabulary alleleDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+        Vocabulary agmDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+        Vocabulary geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
         Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
-        Vocabulary diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
-        Vocabulary annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
-        Vocabulary conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+        Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+        Vocabulary annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+        Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
         createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
-        // createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
-        // createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
-        // createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
+        createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
+        createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
+        createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
         createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier);
         createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex);
         createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
@@ -2023,20 +2022,6 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
         return new TypeRef<ObjectResponse <Vocabulary>>() { };
-    }
-    
-    private void clearExistingDiseaseAnnotations() throws Exception {
-        ArrayList<String> diseaseAnnotationMods = new ArrayList<String>(Arrays.asList("human", "fb", "mgi", "rgd", "sgd", "wb", "zfin"));
-        for (String mod : diseaseAnnotationMods) {
-            RestAssured.given().
-            contentType("application/json").
-            body("{\"data\":[],\"metaData\":{}}").
-            when().
-            post("/api/disease-annotation/bulk/" + mod + "AnnotationFileFms").
-            then().
-            statusCode(200);
-        }
-    
     }
     
 }

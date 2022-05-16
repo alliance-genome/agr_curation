@@ -236,7 +236,7 @@ export const GenesTable = () => {
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 20;
+      return _columnWidths[key] = 20;
     });
 
     setColumnWidths(_columnWidths);

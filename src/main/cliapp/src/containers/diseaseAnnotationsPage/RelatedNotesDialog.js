@@ -27,7 +27,7 @@ export const RelatedNotesDialog = ({
   const tableRef = useRef(null);
   const rowsInEdit = useRef(0);
   const [editedRows, setEditedRows] = useState({});
-  const [externalUpdate, setExternalUpdate] = useState();
+  const [externalUpdate] = useState();
   const hasEdited = useRef(false);
 
   const showDialogHandler = () => {
@@ -183,10 +183,6 @@ export const RelatedNotesDialog = ({
     return <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
   };
 
-  const undoEditsTemplate = (rowData) => {
-      if(!isInEdit)
-        return null;
-  }
 
   const onInternalEditorValueChange = (props, event) => {
      let _localRelateNotes = [...localRelateNotes];
