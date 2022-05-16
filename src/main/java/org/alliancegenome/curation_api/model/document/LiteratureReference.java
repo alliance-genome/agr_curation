@@ -35,6 +35,7 @@ public class LiteratureReference extends BaseDocument {
     public String citation;
 
     @JsonView({View.FieldsAndLists.class})
+	 @JsonProperty("cross_references")
     public List<LiteratureCrossReference> crossReferences;
 
 }

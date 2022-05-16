@@ -173,11 +173,8 @@ export const ConditionRelationTable = () => {
 
 	const onConditionRelationValueChange = (props, event) => {
 		let updatedConditions = [...props.props.value];
-		console.log(props.props.value)
-		console.log(event.value)
-		console.log(props.rowIndex)
 		if (event.value || event.value === '') {
-			updatedConditions[props.rowIndex].conditionRelationType = event.value.name;
+			updatedConditions[props.rowIndex].conditionRelationType = event.value;
 		}
 	};
 
@@ -199,11 +196,10 @@ export const ConditionRelationTable = () => {
 	};
 
 	const referenceEditorTemplate = (props) => {
-		console.log(props)
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["cross_references.curie"]}
+					autocompleteFields={["cross_references.curie","curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
@@ -245,7 +241,8 @@ export const ConditionRelationTable = () => {
 					searchService={searchService}
 					endpoint='experimental-condition'
 					filterName='experimentalConditionFilter'
-					fieldName='conditions.conditionSummary'
+					fieldName='conditions'
+					subField='conditionSummary'
 					isMultiple={true}
 				/>
 				<ErrorMessageComponent
@@ -283,26 +280,20 @@ export const ConditionRelationTable = () => {
 
 
 	const onRowEditSave = (event) => {//possible to shrink?
-		//console.log(event);
+		console.log(event);
 		rowsInEdit.current--;
 		if (rowsInEdit.current === 0) {
 			setIsEnabled(true);
 		}
 		let updatedRow = global.structuredClone(event.data);//deep copy
-		if (Object.keys(event.data.subject).length >= 1) {
-			event.data.subject.curie = trimWhitespace(event.data.subject.curie);
-			updatedRow.subject = {};
-			updatedRow.subject.curie = event.data.subject.curie;
+		if (Object.keys(event.data.singleReference).length >= 1) {
+			event.data.singleReference.curie = trimWhitespace(event.data.singleReference.curie);
+			updatedRow.singleReference = {};
+			updatedRow.singleReference.curie = event.data.singleReference.curie;
 		}
-		if (Object.keys(event.data.object).length >= 1) {
-			event.data.object.curie = trimWhitespace(event.data.object.curie);
-			updatedRow.object = {};
-			updatedRow.object.curie = event.data.object.curie;
-		}
-		if (event.data.diseaseGeneticModifier && Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
-			event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
-			updatedRow.diseaseGeneticModifier = {};
-			updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
+		if (event.data.conditionRelationType && Object.keys(event.data.conditionRelationType).length >= 1) {
+			updatedRow.conditionRelationType = {};
+			updatedRow.conditionRelationType.id = event.data.conditionRelationType.id;
 		}
 
 

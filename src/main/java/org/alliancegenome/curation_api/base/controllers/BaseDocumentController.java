@@ -19,7 +19,7 @@ public abstract class BaseDocumentController<S extends BaseDocumentService<E, D>
     protected void setService(S service) {
         this.service = service;
     }
-    
+
     protected abstract void init();
 
     public ObjectResponse<E> get(String curie) {
@@ -27,7 +27,7 @@ public abstract class BaseDocumentController<S extends BaseDocumentService<E, D>
     }
 
     public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
-        if(params == null) params = new HashMap<String, Object>();
+        if(params == null) params = new HashMap<>();
         Pagination pagination = new Pagination();
         pagination.setLimit(limit);
         pagination.setPage(page);

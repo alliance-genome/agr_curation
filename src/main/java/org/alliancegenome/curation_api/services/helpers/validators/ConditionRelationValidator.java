@@ -27,17 +27,17 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
     VocabularyTermDAO vocabularyTermDAO;
     @Inject
     ExperimentalConditionDAO experimentalConditionDAO;
-    
+
     public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
         ConditionRelation conditionRelation = validateConditionRelation(uiEntity, false);
         response.setEntity(conditionRelation);
         return response;
     }
-    
+
     public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, Boolean throwError) {
         response = new ObjectResponse<>(uiEntity);
         String errorTitle = "Could not update ConditionRelation: [" + uiEntity.getId() + "]";
-        
+
         Long id = uiEntity.getId();
         if (id == null) {
             addMessageResponse("No ConditionRelation ID provided");
@@ -48,22 +48,22 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
             addMessageResponse("Could not find ConditionRelation with ID: [" + id + "]");
             throw new ApiErrorException(response);
         }
-        
+
         dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
-        
+
         VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
         dbEntity.setConditionRelationType(conditionRelationType);
-        
+
         List<ExperimentalCondition> conditions = validateConditions(uiEntity);
         dbEntity.setConditions(conditions);
-        
+
         // TODO: add validation for reference
         if (uiEntity.getSingleReference() != null)
             dbEntity.setSingleReference(uiEntity.getSingleReference());
-        
+
         if (uiEntity.getHandle() != null)
             dbEntity.setHandle(uiEntity.getHandle());
-        
+
         if (response.hasErrors()) {
             if (throwError) {
                 response.setErrorMessage(errorTitle);
@@ -72,40 +72,46 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
                 return null;
             }
         }
-        
+
         return dbEntity;
     }
-    
+
     public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {
         String field = "conditionRelationType";
         if (uiEntity.getConditionRelationType() == null ) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
-        
-        VocabularyTerm conditionRelationType =
-                vocabularyTermDAO.getTermInVocabulary(uiEntity.getConditionRelationType().getName(), 
-                        VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
-        if (conditionRelationType == null) {
+
+		 VocabularyTerm conditionRelationType = null;
+        // first check if an id is provided. If not then check for term Name
+		 if(uiEntity.getConditionRelationType().getId() != null){
+			  conditionRelationType = vocabularyTermDAO.find(uiEntity.getConditionRelationType().getId());
+		 } else if(uiEntity.getConditionRelationType().getName() != null){
+			 conditionRelationType =
+				 vocabularyTermDAO.getTermInVocabulary(uiEntity.getConditionRelationType().getName(),
+					 VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+		 }
+       if (conditionRelationType == null) {
             addMessageResponse(field, invalidMessage);
             return null;
-        }
-        
-        if (conditionRelationType.getObsolete() && !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName())) {
+       }
+
+       if (conditionRelationType.getObsolete() && !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName())) {
             addMessageResponse(field, obsoleteMessage);
             return null;
-        }
-        
+       }
+
         return conditionRelationType;
     }
-    
+
     public List<ExperimentalCondition> validateConditions(ConditionRelation uiEntity) {
         String field = "conditions";
         if (CollectionUtils.isEmpty(uiEntity.getConditions())) {
             addMessageResponse(field, requiredMessage);
             return null;
         }
-        
+
         List<ExperimentalCondition> conditions = new ArrayList<ExperimentalCondition>();
         for (ExperimentalCondition condition : uiEntity.getConditions()) {
             SearchResponse<ExperimentalCondition> conditionResponse =
@@ -116,7 +122,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
             }
             conditions.add(condition);
         }
-        
+
         return conditions;
     }
 }
