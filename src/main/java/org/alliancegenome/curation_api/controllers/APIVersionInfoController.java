@@ -7,7 +7,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.interfaces.APIVersionInterface;
-import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -34,7 +34,7 @@ public class APIVersionInfoController implements APIVersionInterface {
     
     @Inject
     @AuthenticatedUser
-    protected Person authenticatedPerson;
+    protected LoggedInPerson authenticatedPerson;
     
     @Override
     public APIVersionInfo get() {
@@ -49,7 +49,7 @@ public class APIVersionInfoController implements APIVersionInterface {
     }
 
     @Override
-    public Person getAuthUser() {
+    public LoggedInPerson getAuthUser() {
         return authenticatedPerson;
     }
 

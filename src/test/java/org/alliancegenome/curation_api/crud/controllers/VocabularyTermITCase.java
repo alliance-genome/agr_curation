@@ -64,6 +64,7 @@ public class VocabularyTermITCase {
                 statusCode(200).
                 body("entity.name", is("Test vocabulary term")).
                 body("entity.obsolete", is(true)).
+                body("entity.internal", is(false)).
                 body("entity.vocabulary.name", is("VocabularyTerm test vocabulary"));
     }
 
@@ -81,6 +82,7 @@ public class VocabularyTermITCase {
         editedTerm.setAbbreviation("ABRV");
         editedTerm.setDefinition("Test definition");
         editedTerm.setTextSynonyms(synonyms);
+        editedTerm.setInternal(true);
         editedTerm.setVocabulary(testVocabulary2);
         
         RestAssured.given().
@@ -98,6 +100,7 @@ public class VocabularyTermITCase {
                 statusCode(200).
                 body("entity.name", is("Edited test vocabulary term")).
                 body("entity.obsolete", is(false)).
+                body("entity.internal", is(true)).
                 body("entity.abbreviation", is("ABRV")).
                 body("entity.definition", is("Test definition")).
                 body("entity.textSynonyms[0]", is("VocabularyTerm synonym")).

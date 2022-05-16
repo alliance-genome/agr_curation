@@ -4,7 +4,6 @@ package org.alliancegenome.curation_api.interfaces.crud;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.AffectedGenomicModelMetaDataFmsDTO;
@@ -24,7 +23,7 @@ public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterfac
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AffectedGenomicModel> get(@PathParam("curie") String curie);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/agmfile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateAGMs(AffectedGenomicModelMetaDataFmsDTO agmData);

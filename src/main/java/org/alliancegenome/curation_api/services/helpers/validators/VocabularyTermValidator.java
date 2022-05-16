@@ -8,12 +8,13 @@ import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.response.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
-public class VocabularyTermValidator {
+public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTerm>{
 
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
@@ -41,6 +42,8 @@ public class VocabularyTermValidator {
             throw new ApiErrorException(response);
         }
         
+        dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+        
         String name = validateName(uiEntity);
         dbEntity.setName(name);
         
@@ -55,6 +58,9 @@ public class VocabularyTermValidator {
         } else {
             dbEntity.setObsolete(uiEntity.getObsolete());
         }
+        
+        if (uiEntity.getInternal() != null)
+            dbEntity.setInternal(uiEntity.getInternal());
         
         Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
         dbEntity.setVocabulary(vocabulary);

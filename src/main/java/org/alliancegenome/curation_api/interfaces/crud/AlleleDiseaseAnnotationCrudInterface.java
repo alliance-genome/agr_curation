@@ -6,9 +6,8 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -27,47 +26,47 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
     
-    @PUT @Secured
+    @PUT
     @Path("/")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/{taxonID}/annotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
 
-    @POST @Secured
+    @POST
     @Path("/bulk/zfinAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/mgiAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/rgdAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/fbAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/wbAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/humanAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
     
-    @POST @Secured
+    @POST
     @Path("/bulk/sgdAnnotationFile")
     @JsonView(View.FieldsAndLists.class)
     public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);

@@ -12,9 +12,5 @@ public class PersonDAO extends BaseSQLDAO<Person> {
     protected PersonDAO() {
         super(Person.class);
     }
-    
-    public SearchResponse<Person> findPersonByEmail(String email) {
-        return findByField("email", email);
-    }
 
 }

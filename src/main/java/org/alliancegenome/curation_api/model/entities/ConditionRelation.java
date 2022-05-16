@@ -5,7 +5,7 @@ import java.util.*;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedAndUniqueIdEntity;
+import org.alliancegenome.curation_api.base.entity.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -22,9 +22,10 @@ import lombok.*;
 @Audited
 @Entity
 @Data
+@Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
-public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
+public class ConditionRelation extends UniqueIdAuditedObject {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -41,7 +42,6 @@ public class ConditionRelation extends BaseGeneratedAndUniqueIdEntity {
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToOne
     @JsonView({View.FieldsOnly.class})
-    @JsonProperty("single_reference")
     private Reference singleReference;
 
     @IndexedEmbedded(includeDepth = 1)

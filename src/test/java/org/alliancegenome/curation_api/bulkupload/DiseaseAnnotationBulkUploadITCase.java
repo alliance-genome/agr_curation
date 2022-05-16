@@ -107,10 +107,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].object.curie", is("DATEST:Disease0001")).
             body("results[0].diseaseRelation.name", is("is_implicated_in")).
             body("results[0].geneticSex.name", is("male")).
-            body("results[0].modifiedBy", is("DATEST:Person0001")).
-            body("results[0].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
-            body("results[0].createdBy", is("DATEST:Person0001")).
-            body("results[0].creationDate".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[0].modifiedBy.uniqueId", is("DATEST:Person0001")).
+            body("results[0].dateUpdated".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
+            body("results[0].dateCreated".toString(), is("2022-03-09T22:10:12Z")).
             body("results[0].conditionRelations", hasSize(1)).
             body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
             body("results[0].conditionRelations[0].conditions", hasSize(1)).
@@ -125,6 +125,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[0].negated", is(true)).
+            body("results[0].internal", is(false)).
             body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[0].with", hasSize(1)).
@@ -172,10 +173,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].object.curie", is("DATEST:Disease0001")).
             body("results[1].diseaseRelation.name", is("is_implicated_in")).
             body("results[1].geneticSex.name", is("male")).
-            body("results[1].modifiedBy", is("DATEST:Person0001")).
-            body("results[1].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
-            body("results[1].createdBy", is("DATEST:Person0001")).
-            body("results[1].creationDate".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[1].modifiedBy.uniqueId", is("DATEST:Person0001")).
+            body("results[1].dateUpdated".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[1].createdBy.uniqueId", is("DATEST:Person0001")).
+            body("results[1].dateCreated".toString(), is("2022-03-09T22:10:12Z")).
             body("results[1].conditionRelations", hasSize(1)).
             body("results[1].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
             body("results[1].conditionRelations[0].conditions", hasSize(1)).
@@ -190,6 +191,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[1].negated", is(true)).
+            body("results[1].internal", is(false)).
             body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[1].with", hasSize(1)).
@@ -236,10 +238,10 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].object.curie", is("DATEST:Disease0001")).
             body("results[2].diseaseRelation.name", is("is_model_of")).
             body("results[2].geneticSex.name", is("male")).
-            body("results[2].modifiedBy", is("DATEST:Person0001")).
-            body("results[2].dateLastModified".toString(), is("2022-03-09T22:10:12Z")).
-            body("results[2].createdBy", is("DATEST:Person0001")).
-            body("results[2].creationDate".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[2].modifiedBy.uniqueId", is("DATEST:Person0001")).
+            body("results[2].dateUpdated".toString(), is("2022-03-09T22:10:12Z")).
+            body("results[2].createdBy.uniqueId", is("DATEST:Person0001")).
+            body("results[2].dateCreated".toString(), is("2022-03-09T22:10:12Z")).
             body("results[2].conditionRelations", hasSize(1)).
             body("results[2].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
             body("results[2].conditionRelations[0].conditions", hasSize(1)).
@@ -254,6 +256,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
             body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Test NCBITaxonTerm:Some amount:Free text")).
             body("results[2].negated", is(true)).
+            body("results[2].internal", is(false)).
             body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
             body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
             body("results[2].with", hasSize(1)).
@@ -460,7 +463,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(12)
-    public void diseaseAnnotationBulkUploadNoDateLastModified() throws Exception {
+    public void diseaseAnnotationBulkUploadNoDateUpdated() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/12_no_date_last_modified.json"));
         
         RestAssured.given().
@@ -507,7 +510,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(14)
-    public void diseaseAnnotationBulkUploadNoCreationDate() throws Exception {
+    public void diseaseAnnotationBulkUploadNoDateCreated() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/14_no_creation_date.json"));
         
         RestAssured.given().
@@ -1434,7 +1437,8 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(0)); 
+            body("totalResults", is(1)).
+            body("results[0].relatedNotes[0].internal", is(true));  // should be set to true be default
     }
     
     @Test
@@ -1597,8 +1601,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)).
-            body("results[0].uniqueId", is("DATEST:Annot0060")); 
+            body("totalResults", is(1));
     }
     
     @Test
@@ -1627,7 +1630,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(62)
-    public void diseaseAnnotationBulkUploadInvalidCreationDate() throws Exception {
+    public void diseaseAnnotationBulkUploadInvalidDateCreated() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/62_invalid_creation_date.json"));
         
         RestAssured.given().
@@ -1650,7 +1653,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     
     @Test
     @Order(63)
-    public void diseaseAnnotationBulkUploadInvalidDateLastModified() throws Exception {
+    public void diseaseAnnotationBulkUploadInvalidDateUpdated() throws Exception {
         String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/63_invalid_date_last_modified.json"));
         
         RestAssured.given().
@@ -1715,6 +1718,54 @@ public class DiseaseAnnotationBulkUploadITCase {
             then().
             statusCode(200).
             body("totalResults", is(0)); 
+    }
+    
+    @Test
+    @Order(65)
+    public void diseaseAnnotationBulkUploadNoInternal() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/66_no_internal.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)).
+            body("results[0].internal", is(false)); // should default to false 
+    }
+    
+    @Test
+    @Order(67)
+    public void diseaseAnnotationBulkUploadNoConditionRelationsInternal() throws Exception {
+        String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/67_no_condition_relations_internal.json"));
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(content).
+            when().
+            post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+            then().
+            statusCode(200);
+        
+        RestAssured.given().
+            when().
+            header("Content-Type", "application/json").
+            body("{}").
+            post("/api/disease-annotation/find?limit=10&page=0").
+            then().
+            statusCode(200).
+            body("totalResults", is(1)).
+            body("results[0].conditionRelations[0].conditions[0].internal", is(false)); //should default to false
     }
     
     private void loadRequiredEntities() throws Exception {

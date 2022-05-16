@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseCurieEntity;
+import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -18,7 +18,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-public class BiologicalEntity extends BaseCurieEntity {
+public class BiologicalEntity extends CurieAuditedObject {
 
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

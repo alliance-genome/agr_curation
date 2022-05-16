@@ -15,7 +15,6 @@ import { SearchService } from '../../service/SearchService';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 import {Tooltip} from "primereact/tooltip";
 
-const searchService = new SearchService();
 
 export const LiteratureReferenceTable = () => {
 
@@ -274,6 +273,7 @@ export const LiteratureReferenceTable = () => {
           });
 
           setColumnWidths(_columnWidths);
+          dataTable.current.el.children[1].scrollLeft = 0;
     }
 
     const colReorderHandler = (event) => {

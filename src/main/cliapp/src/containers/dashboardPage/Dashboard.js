@@ -13,7 +13,6 @@ export const Dashboard = () => {
   useEffect(() => {
     const searchService = new SearchService();
 
-    // Entity Counts
     searchService.search('gene', 0, 0).then(results => {
       setEntityCounts((list) => [...list, { name: "Genes", count: results.totalResults, link: '/#/genes' }]);
     });
@@ -34,6 +33,10 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Experimental Conditions", count: results.totalResults, link: '/#/experimentalConditions' }]);
     });
 
+    searchService.search('condition-relation', 0, 0, null, {}, null, null,['handle']).then(results => {
+      setEntityCounts((list) => [...list, { name: "Condition Relation Handles", count: results.totalResults, link: '/#/conditionRelations' }]);
+    });
+
     searchService.search("molecule", 0, 0).then(results => {
       setEntityCounts((list) => [...list, { name: "Molecules", count: results.totalResults, link: '/#/molecules' }]);
     });
@@ -42,7 +45,6 @@ export const Dashboard = () => {
       setEntityCounts((list) => [...list, { name: "Literature References", count: results.totalResults, link: '/#/references' }]);
     });
 
-    // Term Counts
     searchService.search('chebiterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults, link: '/#/ontology/chebi' }]);
     });
@@ -94,12 +96,11 @@ export const Dashboard = () => {
     searchService.search('xbaterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XBA", count: results.totalResults, link: '/#/ontology/xba' }]);
     });
-    
-    
+
     searchService.search('xbsterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XBS", count: results.totalResults, link: '/#/ontology/xbs' }]);
     });
-    
+
     searchService.search('xcoterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XCO", count: results.totalResults, link: '/#/ontology/xco' }]);
     });
@@ -135,6 +136,7 @@ export const Dashboard = () => {
     searchService.search('xbedterm', 0, 0).then(results => {
       setTermCounts((list) => [...list, { name: "XBED", count: results.totalResults, link: '/#/ontology/xbed' }]);
     });
+
   }, []);
 
   const nameHyperlinkTemplate = (rowData) => {
@@ -142,23 +144,23 @@ export const Dashboard = () => {
   }
 
   return (
+    <>
+      <div className="grid nested dashboard">
+        <div className="col-3">
+          <DataTable value={entityCounts} sortField="name" sortOrder={1}>
+            <Column field="name" header="Entity Name" body={nameHyperlinkTemplate}/>
+            <Column field="count" header="Entity Count" />
+          </DataTable>
+        </div>
 
-    <div className="grid nested dashboard">
-
-      <div className="col-3">
-        <DataTable value={entityCounts} sortField="name" sortOrder={1}>
-          <Column field="name" header="Entity Name" body={nameHyperlinkTemplate}/>
-          <Column field="count" header="Entity Count" />
-        </DataTable>
+        <div className="col-3">
+          <DataTable value={termCounts} sortField="name" sortOrder={1}>
+            <Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
+            <Column field="count" header="Term Count" />
+          </DataTable>
+        </div>
       </div>
-
-      <div className="col-3">
-        <DataTable value={termCounts} sortField="name" sortOrder={1}>
-          <Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
-          <Column field="count" header="Term Count" />
-        </DataTable>
-      </div>
-    </div>
+    </>
 
   );
 };

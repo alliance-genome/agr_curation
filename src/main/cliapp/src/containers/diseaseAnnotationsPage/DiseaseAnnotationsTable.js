@@ -30,12 +30,10 @@ import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 
 export const DiseaseAnnotationsTable = () => {
-  // const defaultColumnNames = ["Unique Id", "Subject", "Disease Relation", "Negated", "Disease", "Reference", "With", "Evidence Code", "Genetic Sex", "Disease Qualifiers",
-  //  "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation", "Genetic Modifier", "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date", "Related Notes"];
   const defaultColumnOptions = [
     "Unique ID", "MOD Entity ID", "Subject", "Disease Relation", "Negated", "Disease","Evidence Code", "With", "Reference", "Experimental Conditions",
     "Genetic Sex", "Disease Qualifiers", "SGD Strain Background", "Annotation Type", "Genetic Modifier Relation","Genetic Modifier", "Related Notes",
-    "Data Provider", "Secondary Data Provider", "Modified By", "Date Last Modified", "Created By", "Creation Date",
+    "Data Provider", "Secondary Data Provider", "Modified By", "Date Updated", "Created By", "Date Created", "Internal"
   ];
 
   let initialTableState = {
@@ -70,13 +68,11 @@ export const DiseaseAnnotationsTable = () => {
   const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
   const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
   const annotationTypeTerms = useControlledVocabularyService('Annotation types')
-  const negatedTerms = useControlledVocabularyService('generic_boolean_terms');
+  const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
   const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
   const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
   const [errorMessages, setErrorMessages] = useState({});
-  const { authState } = useOktaAuth();
-
 
   const searchService = new SearchService();
 
@@ -134,7 +130,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
-      diseaseAnnotationService = new DiseaseAnnotationService(authState);
+      diseaseAnnotationService = new DiseaseAnnotationService();
     }
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
@@ -260,6 +256,12 @@ export const DiseaseAnnotationsTable = () => {
   const negatedTemplate = (rowData) => {
     if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
       return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
+    }
+  };
+  
+  const internalTemplate = (rowData) => {
+    if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
+      return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
     }
   };
 
@@ -549,12 +551,33 @@ export const DiseaseAnnotationsTable = () => {
     return (
       <>
         <TrueFalseDropdown
-          options={negatedTerms}
+          options={booleanTerms}
           editorChange={onNegatedEditorValueChange}
           props={props}
           field={"negated"}
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
+      </>
+    );
+  };
+  
+  const onInternalEditorValueChange = (props, event) => {
+    let updatedAnnotations = [...props.props.value];
+    if (event.value || event.value === '') {
+      updatedAnnotations[props.rowIndex].internal = JSON.parse(event.value.name);
+    }
+  };
+
+  const internalEditor = (props) => {
+    return (
+      <>
+        <TrueFalseDropdown
+          options={booleanTerms}
+          editorChange={onInternalEditorValueChange}
+          props={props}
+          field={"internal"}
+        />
+        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
       </>
     );
   };
@@ -830,6 +853,9 @@ export const DiseaseAnnotationsTable = () => {
       onFilter={onFilter}
       aggregationFields={aggregationFields}
       tableState={tableState}
+    annotationsAggregations='diseaseAnnotationsAggregations'
+    endpoint='disease-annotation'
+
     />);
   }
 
@@ -1004,33 +1030,42 @@ export const DiseaseAnnotationsTable = () => {
     filterElement: filterComponentInputTextTemplate("secondaryDataProviderFilter", ["secondaryDataProvider"])
   },
   {
-    field: "modifiedBy",
+    field: "modifiedBy.uniqueId",
     header: "Modified By",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy"])
+    filterElement: filterComponentInputTextTemplate("modifiedByFilter", ["modifiedBy.uniqueId"])
   },
   {
-    field: "dateLastModified",
-    header: "Date Last Modified",
+    field: "dateUpdated",
+    header: "Date Updated",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("dateLastModifiedFilter", ["dateLastModified"])
+    filterElement: filterComponentInputTextTemplate("dateUpdatedFilter", ["dateUpdated"])
   },
   {
-    field: "createdBy",
+    field: "createdBy.uniqueId",
     header: "Created By",
     sortable: isEnabled,
     filter: true,
-    filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy"])
+    filterElement: filterComponentInputTextTemplate("createdByFilter", ["createdBy.uniqueId"])
   },
   {
-    field: "creationDate",
-    header: "Creation Date",
+    field: "dateCreated",
+    header: "Date Created",
     sortable: isEnabled,
     filter: true,
     filterType: "Date",
-    filterElement: filterComponentInputTextTemplate("creationDateFilter", ["creationDate"])
+    filterElement: filterComponentInputTextTemplate("dateCreatedFilter", ["dateCreated"])
+  },
+  {
+    field: "internal",
+    header: "Internal",
+    body: internalTemplate,
+    filter: true,
+    filterElement: FilterComponentDropDownTemplate("internalFilter", "internal", [{ text: "true" }, { text: "false" }], "text"),
+    sortable: isEnabled,
+    editor: (props) => internalEditor(props)
   },
   ];
 
@@ -1109,13 +1144,13 @@ export const DiseaseAnnotationsTable = () => {
     });
 
     setColumnWidths(_columnWidths);
+    dataTable.current.el.children[1].scrollLeft = 0;
   };
 
   const colReorderHandler = (event) => {
     let _columnNames = [...tableState.selectedColumnNames];
     //minus one because of the rowEditor column at the start of the table
     _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
-    console.log(_columnNames);
     setSelectedColumnNames(_columnNames);
   };
 
@@ -1151,14 +1186,14 @@ export const DiseaseAnnotationsTable = () => {
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
         >
-          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem'}} headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+            headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
           {columnList}
         </DataTable>
       </div>
       <RelatedNotesDialog
         originalRelatedNotesData={relatedNotesData}
         setOriginalRelatedNotesData={setRelatedNotesData}
-        authState={authState}
         errorMessagesMainRow={errorMessages}
         setErrorMessagesMainRow={setErrorMessages}
       />

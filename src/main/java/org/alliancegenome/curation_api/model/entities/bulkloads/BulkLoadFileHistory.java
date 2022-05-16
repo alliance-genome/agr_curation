@@ -6,7 +6,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
@@ -20,7 +20,7 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
-public class BulkLoadFileHistory extends BaseGeneratedEntity {
+public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime loadStarted;

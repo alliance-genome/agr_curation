@@ -9,6 +9,7 @@ import { Login } from './Login'
 import { DataLoadsPage } from './containers/dataLoadsPage/';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
+import { ConditionRelationPage } from './containers/conditionRelationPage';
 import { AffectedGenomicModelPage } from './containers/affectedGenomicModelPage';
 import { AllelesPage } from './containers/allelesPage';
 import { GenesPage } from './containers/genesPage';
@@ -52,6 +53,7 @@ export default (
     <SecureRoute path="/dataloads" component={DataLoadsPage} />
     <SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
     <SecureRoute path="/experimentalConditions" component={ExperimentalConditionsPage} />
+    <SecureRoute path="/conditionRelations" component={ConditionRelationPage} />
     <SecureRoute path="/genes" component={GenesPage} />
     <SecureRoute path="/alleles" component={AllelesPage} />
     <SecureRoute path="/molecules" component={MoleculesPage} />
