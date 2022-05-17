@@ -7,6 +7,7 @@ import { DashboardPage } from './containers/dashboardPage';
 import { Login } from './Login'
 
 import { DataLoadsPage } from './containers/dataLoadsPage/';
+import { ReportsPage } from './containers/reportsPage/';
 import { DiseaseAnnotationsPage } from './containers/diseaseAnnotationsPage';
 import { ExperimentalConditionsPage } from './containers/experimentalConditionsPage';
 import { ConditionRelationPage } from './containers/conditionRelationPage';
@@ -51,6 +52,7 @@ export default (
     <SecureRoute path="/" exact component={DashboardPage} />
     <SecureRoute path="/profile" component={ProfilePage} />
     <SecureRoute path="/dataloads" component={DataLoadsPage} />
+    <SecureRoute path="/reports" component={ReportsPage} />
     <SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
     <SecureRoute path="/experimentalConditions" component={ExperimentalConditionsPage} />
     <SecureRoute path="/conditionRelations" component={ConditionRelationPage} />
