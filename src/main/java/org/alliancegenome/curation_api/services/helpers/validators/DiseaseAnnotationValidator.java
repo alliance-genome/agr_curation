@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,9 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
     @Inject
@@ -205,6 +209,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
             addMessageResponse(field, requiredMessage);
             return null;
         }
+        
         Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getCurie());
         if (singleReference == null) {
             singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
@@ -213,10 +218,12 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
                 return null;
             }
         }
+        
         if (singleReference.getObsolete() && !singleReference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
             addMessageResponse(field, obsoleteMessage);
             return null;
         }
+        
         return singleReference;
     }
     

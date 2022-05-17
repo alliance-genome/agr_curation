@@ -1265,7 +1265,16 @@ public class DiseaseAnnotationITCase {
         Reference reference = new Reference();
         reference.setCurie(curie);
         
-        return reference;
+        ObjectResponse<Reference> response = RestAssured.given().
+            contentType("application/json").
+            body(reference).
+            when().
+            post("/api/reference").
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefReference());
+            
+        return response.getEntity();
     }
 
     private Vocabulary getVocabulary(String name) {
@@ -1435,6 +1444,11 @@ public class DiseaseAnnotationITCase {
     
     private TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
         return new TypeRef<ObjectResponse <ConditionRelation>>() { };
+    }
+
+    private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
+        return new TypeRef<ObjectResponse <Reference>>() {
+        };
     }
 
     private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
