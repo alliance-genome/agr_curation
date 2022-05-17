@@ -311,7 +311,7 @@ export const ReportsComponent = () => {
       <Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewReportGroupOpen} />
       <Button label="New Report" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewReportOpen} />
       <Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
-      <h3>Data Loads Table</h3>
+      <h3>Reports Table</h3>
       <Messages ref={errorMessage} />
       <DataTable key="groupTable"
         value={groups} className="p-datatable-sm"

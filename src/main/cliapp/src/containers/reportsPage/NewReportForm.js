@@ -7,12 +7,9 @@ import { Button } from 'primereact/button';
 import { useMutation, useQueryClient } from 'react-query';
 import { ReportService } from '../../service/ReportService';
 import { InputText } from 'primereact/inputtext';
-import { useOktaAuth } from '@okta/okta-react';
 
 export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport, reportDispatch, disableFormFields, setDisableFormFields, reportService }) => {
   const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-
-  const { authState } = useOktaAuth();
 
   const queryClient = useQueryClient();
 
@@ -35,7 +32,7 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
 
   const getService = () => {
     if(!reportService) {
-      reportService = new ReportService(authState);
+      reportService = new ReportService();
     }
     return reportService;
   }

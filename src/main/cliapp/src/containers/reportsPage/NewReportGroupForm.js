@@ -4,13 +4,10 @@ import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { classNames } from 'primereact/utils';
 import { ReportService } from '../../service/ReportService';
-import { useOktaAuth } from '@okta/okta-react';
 
 import { useMutation, useQueryClient } from 'react-query';
 
 export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) => {
-
-  const { authState } = useOktaAuth();
 
   const [group, setGroup] = useState({});
 
@@ -34,7 +31,7 @@ export const NewReportGroupForm = ({ reportGroupDialog, setReportGroupDialog }) 
 
   const getService = () => {
     if(!reportService) {
-      reportService = new ReportService(authState);
+      reportService = new ReportService();
     }
     return reportService;
   }
