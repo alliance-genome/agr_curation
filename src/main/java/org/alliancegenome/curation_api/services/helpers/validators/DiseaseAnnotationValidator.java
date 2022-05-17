@@ -1,17 +1,33 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
@@ -25,6 +41,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
     BiologicalEntityDAO biologicalEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
+    @Inject
+    ReferenceDAO referenceDAO;
+    @Inject
+    ReferenceService referenceService;
     @Inject
     NoteValidator noteValidator;
     @Inject
@@ -179,6 +199,27 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
         return validatedConditionRelations;
     }
     
+    public Reference validateSingleReference(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+        String field = "singleReference";
+        if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isEmpty(uiEntity.getSingleReference().getCurie())) {
+            addMessageResponse(field, requiredMessage);
+            return null;
+        }
+        Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getCurie());
+        if (singleReference == null) {
+            singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
+            if (singleReference == null) {
+                addMessageResponse(field, invalidMessage);
+                return null;
+            }
+        }
+        if (singleReference.getObsolete() && !singleReference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
+            addMessageResponse(field, obsoleteMessage);
+            return null;
+        }
+        return singleReference;
+    }
+    
     public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
         dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
         
@@ -235,9 +276,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
         if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
             dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
         
-        // TODO: Add validation of reference
-        if (uiEntity.getSingleReference() != null)
-            dbEntity.setSingleReference(uiEntity.getSingleReference());
+        Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+        if (singleReference != null)
+            dbEntity.setSingleReference(singleReference);
         
         return dbEntity;
     }

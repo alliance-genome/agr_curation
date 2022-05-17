@@ -1162,7 +1162,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(0)); 
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(42)
     public void diseaseAnnotationBulkUploadInvalidSingleReference() throws Exception {
@@ -1183,7 +1182,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)); 
+            body("totalResults", is(0)); 
     }
     
     @Test
