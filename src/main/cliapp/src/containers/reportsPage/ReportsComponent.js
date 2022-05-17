@@ -19,7 +19,7 @@ export const ReportsComponent = () => {
       case 'EDIT':
         return { ...action.editReport };
       case 'RESET':
-        return { name: "" };
+        return { name: "", cronSchedule: "" };
       default:
         return { ...state, [action.field]: action.value };
     }
@@ -43,11 +43,11 @@ export const ReportsComponent = () => {
 
   let reportService = null;
 
-  const handleNewBulkLoadGroupOpen = (event) => {
+  const handleNewReportGroupOpen = () => {
     setReportGroupDialog(true);
   };
 
-  const handleNewReportOpen = (event) => {
+  const handleNewReportOpen = () => {
     reportDispatch({ type: "RESET" });
     setReportDialog(true);
   };
@@ -97,8 +97,8 @@ export const ReportsComponent = () => {
     });
   }; */
 
-  const editLoad = (rowData) => {
-    reportDispatch({ type: "EDIT", editBulkLoad: rowData });
+  const editReport = (rowData) => {
+    reportDispatch({ type: "EDIT", editReport: rowData });
     setReportDialog(true);
     setDisableFormFields(true);
   };
@@ -148,7 +148,7 @@ export const ReportsComponent = () => {
   const reportActionBodyTemplate = (rowData) => {
     let buttons = [];
 
-    buttons.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
+    buttons.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editReport(rowData)} />);
 
     //not sure how status will be handled in the reports or if these are valid states
     // if (!rowData.curationReportStatus || rowData.curationReportStatus === "FINISHED" || rowData.curationReportStatus === "FAILED" || rowData.curationReportStatus === "STOPPED") {
@@ -308,7 +308,7 @@ export const ReportsComponent = () => {
 
   return (
     <div className="card">
-      <Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
+      <Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewReportGroupOpen} />
       <Button label="New Report" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewReportOpen} />
       <Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
       <h3>Data Loads Table</h3>

@@ -24,9 +24,7 @@ export class ReportService extends BaseAuthService {
     }
 
     updateReport(newReport) {
-
-
-        newReport.group = { id: newReport.group };
+        newReport.curationReportGroup = { id: newReport.curationReportGroup };
         for (const objectKey in newReport) {
             if (!newReport[objectKey]) {
                 delete newReport[objectKey];

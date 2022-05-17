@@ -27,17 +27,10 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
   });
 
   const onChange = (e) => {
-    if (e.target.name === "scheduleActive" || e.target.name === "group") {
-      reportDispatch({
-        field: e.target.name,
-        value: e.value
-      });
-    } else {
-      reportDispatch({
-        field: e.target.name,
-        value: e.target.value
-      });
-    }
+    reportDispatch({
+      field: e.target.name,
+      value: e.target.value
+    });
   };
 
   const getService = () => {
