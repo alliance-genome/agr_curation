@@ -8,6 +8,8 @@ import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -38,6 +40,7 @@ public class BulkLoadFileHistory extends GeneratedAuditedObject {
     private Long completedRecords = 0l;
     
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private BulkLoadFile bulkLoadFile;
 
     @JsonView(View.BulkLoadFileHistory.class)
