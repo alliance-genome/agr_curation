@@ -134,7 +134,6 @@ export const LiteratureReferenceTable = () => {
     };
 
     const crossReferenceTemplate = (rowData) => {
-      console.log(rowData);
         if (rowData && rowData.cross_reference) {
             const sortedCross_References= rowData.cross_reference.sort((a, b) => (a.curie > b.curie) ? 1 : -1);
             return (<div>
