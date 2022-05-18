@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.bulkupload;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
@@ -24,13 +27,20 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
-import io.restassured.config.*;
+import io.restassured.config.HttpClientConfig;
+import io.restassured.config.RestAssuredConfig;
 
 
 @QuarkusIntegrationTest
@@ -62,6 +72,7 @@ public class DiseaseAnnotationBulkUploadITCase {
     private String requiredAnnotationType = "manually_curated";
     private String requiredNoteType = "disease_summary";
     private String requiredConditionRelationType = "exacerbated_by";
+    private String requiredReference = "PMID:25920554";
     
 
     
@@ -1162,7 +1173,6 @@ public class DiseaseAnnotationBulkUploadITCase {
             body("totalResults", is(0)); 
     }
     
-    // TODO: Update count once validation for field in place
     @Test
     @Order(42)
     public void diseaseAnnotationBulkUploadInvalidSingleReference() throws Exception {
@@ -1183,7 +1193,7 @@ public class DiseaseAnnotationBulkUploadITCase {
             post("/api/disease-annotation/find?limit=10&page=0").
             then().
             statusCode(200).
-            body("totalResults", is(1)); 
+            body("totalResults", is(0)); 
     }
     
     @Test
@@ -1780,6 +1790,7 @@ public class DiseaseAnnotationBulkUploadITCase {
         loadAllele();
         loadAGM(requiredAgm, "NCBITaxon:6239");
         loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
+        loadReference();
         
         Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
         Vocabulary geneDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
@@ -1812,6 +1823,20 @@ public class DiseaseAnnotationBulkUploadITCase {
             body(doTerm).
             when().
             put("/api/doterm").
+            then().
+            statusCode(200);
+    }
+    
+    private void loadReference() throws Exception {
+        Reference reference = new Reference();
+        reference.setCurie(requiredReference);
+        reference.setObsolete(false);
+        
+        RestAssured.given().
+            contentType("application/json").
+            body(reference).
+            when().
+            put("/api/reference").
             then().
             statusCode(200);
     }
