@@ -42,10 +42,10 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
         searchDetails.put("queryString", curie);
         
         HashMap<String, Object> searchField = new HashMap<>();
-        searchField.put("cross_references.curie", searchDetails);
+        searchField.put("cross_reference.curie", searchDetails);
         
         HashMap<String, Object> filter = new HashMap<>();
-        filter.put("cross_referencesFilter", searchField);
+        filter.put("cross_referenceFilter", searchField);
         
         HashMap<String, Object> params = new HashMap<>();
         params.put("searchFilters", filter);        
