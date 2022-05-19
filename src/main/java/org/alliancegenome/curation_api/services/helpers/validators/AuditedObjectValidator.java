@@ -6,11 +6,9 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.base.entity.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
-import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.LoggedInPersonService;
-import org.alliancegenome.curation_api.services.PersonService;
+import org.alliancegenome.curation_api.services.*;
 
 public class AuditedObjectValidator<E extends AuditedObject> {
 
