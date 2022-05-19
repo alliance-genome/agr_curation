@@ -2,10 +2,7 @@ package org.alliancegenome.curation_api.model.entities.curationreports;
 
 import java.time.LocalDateTime;
 
-import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -13,9 +10,7 @@ import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 @Audited
 @Entity
@@ -30,14 +25,34 @@ public class CurationReportHistory extends GeneratedAuditedObject {
     @JsonView({View.FieldsOnly.class})
     private LocalDateTime curationReportTimestamp;
 
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private String pdfFilePath;
     
-    @JsonView({View.FieldsOnly.class})
-    private String xlsxFilePath;
+    @JsonView({View.FieldsAndLists.class})
+    private String xlsFilePath;
     
+    @JsonView({View.FieldsAndLists.class})
+    private String htmlFilePath;
 
     @JsonView({View.FieldsOnly.class})
     private String curationReportStatus;
 
+    @Transient
+    @JsonView({View.FieldsOnly.class})
+    public String pdfUrl() {
+        return "https://agr-curation-files.s3.amazonaws.com/" + pdfFilePath;
+    }
+    
+    @Transient
+    @JsonView({View.FieldsOnly.class})
+    public String xlsUrl() {
+        return "https://agr-curation-files.s3.amazonaws.com/" + xlsFilePath;
+    }
+    
+    @Transient
+    @JsonView({View.FieldsOnly.class})
+    public String htmlUrl() {
+        return "https://agr-curation-files.s3.amazonaws.com/" + htmlFilePath;
+    }
+    
 }
