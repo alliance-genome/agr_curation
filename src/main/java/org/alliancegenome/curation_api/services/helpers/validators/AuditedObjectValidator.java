@@ -33,9 +33,6 @@ public class AuditedObjectValidator<E extends AuditedObject> {
         Boolean internal = validateInternal(uiEntity);
         if (internal != null) dbEntity.setInternal(internal);
         
-        if (uiEntity.getDateCreated() != null)
-            dbEntity.setDateCreated(uiEntity.getDateCreated());
-
         if (uiEntity.getCreatedBy() != null) {
             Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
             dbEntity.setCreatedBy(createdBy);
