@@ -37,6 +37,9 @@ public class AuditedObjectValidator<E extends AuditedObject> {
             Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
             dbEntity.setCreatedBy(createdBy);
         }
+        
+        if (uiEntity.getDateCreated() != null)
+            dbEntity.setDateCreated(uiEntity.getDateCreated());
 
         LoggedInPerson modifiedBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
         dbEntity.setModifiedBy(modifiedBy);
