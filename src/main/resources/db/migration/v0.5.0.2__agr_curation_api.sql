@@ -1,1 +1,1 @@
-ALTER table curationreporthistory drop column xlsxfilepath;
+ALTER table if exists curationreporthistory drop column if exists xlsxfilepath;
