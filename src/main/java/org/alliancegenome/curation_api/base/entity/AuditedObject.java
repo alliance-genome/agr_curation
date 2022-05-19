@@ -81,8 +81,8 @@ public class AuditedObject extends BaseEntity {
     
     @PrePersist
     protected void onCreate() {
-        Log.info("onCreate: dateCreated: " + getClass().getSimpleName() + " " + dateCreated);
-        Log.info("onCreate: dateUpdated: " + getClass().getSimpleName() + " " + dateUpdated);
+        //Log.info("onCreate: dateCreated: " + getClass().getSimpleName() + " " + dateCreated);
+        //Log.info("onCreate: dateUpdated: " + getClass().getSimpleName() + " " + dateUpdated);
         OffsetDateTime date = OffsetDateTime.now();
         if(dateCreated == null) {
             dateCreated = date;
@@ -102,8 +102,8 @@ public class AuditedObject extends BaseEntity {
 
     @PreUpdate
     protected void onUpdate() {
-        Log.info("onUpdate: dateUpdated: " + getClass().getSimpleName() + " " + dateUpdated);
-        Log.info("onUpdate: previousDateUpdated: " + getClass().getSimpleName() + " " + previousDateUpdated);
+        //Log.info("onUpdate: dateUpdated: " + getClass().getSimpleName() + " " + dateUpdated);
+        //Log.info("onUpdate: previousDateUpdated: " + getClass().getSimpleName() + " " + previousDateUpdated);
         OffsetDateTime date = OffsetDateTime.now();
         
         if(dateCreated == null) {
