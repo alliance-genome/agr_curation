@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 
@@ -35,7 +36,7 @@ public class CurationReportHistory extends GeneratedAuditedObject {
     private String htmlFilePath;
 
     @JsonView({View.FieldsOnly.class})
-    private String curationReportStatus;
+    private JobStatus curationReportStatus;
 
     @Transient
     @JsonView({View.FieldsOnly.class})
