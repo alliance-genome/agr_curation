@@ -45,35 +45,21 @@ public class ReportJobExecutor {
     protected FileTransferHelper fileHelper = new FileTransferHelper();
     
     public void process(CurationReport curationReport) throws Exception {
-        //Log.info(curationReport);
         Log.info("Processing Report: " + curationReport.getName());
 
-        //ReportRunner r = new ReportRunner();
-
         EngineConfig config = new EngineConfig( );
-
-        //config.setBIRTHome("/Users/olinblodgett/Desktop/birt-runtime-4.9.0");
-        //config.setEngineHome("/Users/olinblodgett/Desktop/birt-runtime-4.9.0/ReportEngine");
-        //config.setLogConfig("logs", Level.FINE);
         
         Platform.startup( config );
         IReportEngineFactory factory = (IReportEngineFactory) Platform.createFactoryObject( IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY );
         IReportEngine engine = factory.createReportEngine( config );
 
-        // JRE default level is INFO, which may reveal too much internal
-        // logging
-        // information.
-        //engine.changeLogLevel( Level.WARNING );
-
-        //Open the report design
         Log.info("Reading Report File: " + curationReport.getBirtReportFilePath());
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream("reports/" + curationReport.getBirtReportFilePath());
         
         IReportRunnable design = engine.openReportDesign(inputStream);
 
         IRunAndRenderTask task = engine.createRunAndRenderTask(design);
-        
-        //Set parent classloader for engine
+
         task.getAppContext().put(EngineConstants.APPCONTEXT_CLASSLOADER_KEY, ReportJobExecutor.class.getClassLoader()); 
 
         //Set parameter values and validate
