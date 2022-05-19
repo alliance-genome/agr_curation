@@ -14,7 +14,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
 @ToString(callSuper = true)
-public class CurieAuditedObject extends AuditedObject{
+public class CurieAuditedObject extends AuditedObject {
 
     @Id @DocumentId
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
