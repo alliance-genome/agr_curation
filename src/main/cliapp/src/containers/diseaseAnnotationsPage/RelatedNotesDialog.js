@@ -26,8 +26,6 @@ export const RelatedNotesDialog = ({
   const validationService = new ValidationService();
   const tableRef = useRef(null);
   const rowsInEdit = useRef(0);
-  const [editedRows, setEditedRows] = useState({});
-  const [externalUpdate] = useState();
   const hasEdited = useRef(false);
 
   const showDialogHandler = () => {
@@ -54,12 +52,10 @@ export const RelatedNotesDialog = ({
   }
 
   const onRowEditCancel = (event) => {
-    console.log(editingRows);
     rowsInEdit.current--;
     let _editingRows = { ...editingRows };
     delete _editingRows[event.index];
     setEditingRows(_editingRows);
-    console.log(_editingRows);
     let _localRelateNotes = [...localRelateNotes];//add new note support
     if(originalRelatedNotes && originalRelatedNotes[event.index]){
       let dataKey = _localRelateNotes[event.index].dataKey;
@@ -105,7 +101,7 @@ export const RelatedNotesDialog = ({
         dialog: false,
       };
     });
-    let _localRelatedNotes = cloneNotes(originalRelatedNotes);
+    let _localRelatedNotes = [];
     setLocalRelateNotes(_localRelatedNotes);
   };
 
@@ -120,7 +116,7 @@ export const RelatedNotesDialog = ({
     return validationResultsArray;
   };
 
-  const cloneNotes = (clonableNotes) =>{
+  const cloneNotes = (clonableNotes) => {
     let _clonableNotes = global.structuredClone(clonableNotes);
     if(_clonableNotes) {
       let counter = 0 ;
@@ -170,13 +166,13 @@ export const RelatedNotesDialog = ({
 
     if (!anyErrors) {
       setErrorMessages([]);
+      for (const note of localRelateNotes) {
+        delete note.dataKey;
+      }
       mainRowProps.rowData.relatedNotes = localRelateNotes;
       let updatedAnnotations = [...mainRowProps.props.value];
       updatedAnnotations[rowIndex].relatedNotes = localRelateNotes;
       keepDialogOpen = false;
-
-      for(let i in localRelateNotes)
-        compareChangesInNotes(localRelateNotes[i],i);
 
       if(hasEdited.current){
         const errorMessagesCopy = errorMessagesMainRow;
@@ -191,12 +187,11 @@ export const RelatedNotesDialog = ({
     };
 
     setOriginalRelatedNotesData((originalRelatedNotesData) => {
-        return {
-          ...originalRelatedNotesData,
-          dialog: keepDialogOpen,
-        }
+      return {
+        ...originalRelatedNotesData,
+        dialog: keepDialogOpen,
       }
-    );
+    });
   };
 
   const noteTypeTemplate = (rowData) => {
@@ -244,7 +239,7 @@ export const RelatedNotesDialog = ({
           editorChange={onNoteTypeEditorValueChange}
           props={props}
           showClear={false}
-          externalUpdate={externalUpdate}
+          dataKey='id'
         />
         <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
       </>

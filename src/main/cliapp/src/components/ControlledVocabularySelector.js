@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Dropdown } from "primereact/dropdown"
 
-export function ControlledVocabularyDropdown({ field, options, editorChange, props, showClear, placeholderText}) {
+export function ControlledVocabularyDropdown({ field, options, editorChange, props, showClear, placeholderText, dataKey}) {
     const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
     const onShow = () => {
         setSelectedValue(props.rowData[field])
@@ -10,11 +10,12 @@ export function ControlledVocabularyDropdown({ field, options, editorChange, pro
         setSelectedValue(e.value)
         editorChange(props, e)
     }
-  
+
     return (
         <>
             <Dropdown
                 value={selectedValue}
+                dataKey={dataKey}
                 options={options}
                 onShow={onShow}
                 onChange={(e) => onChange(e)}
