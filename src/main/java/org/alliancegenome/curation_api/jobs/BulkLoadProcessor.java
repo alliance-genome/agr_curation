@@ -7,8 +7,8 @@ import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.*;
+import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
@@ -64,10 +64,10 @@ public class BulkLoadProcessor {
                 syncWithS3(bulkLoadFile);
             }
             bulkLoadJobExecutor.process(bulkLoadFile);
-            endLoadFile(bulkLoadFile, "", BulkLoadStatus.FINISHED);
+            endLoadFile(bulkLoadFile, "", JobStatus.FINISHED);
             
         } catch (Exception e) {
-            endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), BulkLoadStatus.FAILED);
+            endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), JobStatus.FAILED);
             log.error("Load File: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
             e.printStackTrace();
         }
@@ -101,7 +101,7 @@ public class BulkLoadProcessor {
             } else {
                 //log.error("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
                 bulkLoadFile.setErrorMessage("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
-                bulkLoadFile.setStatus(BulkLoadStatus.FAILED);
+                bulkLoadFile.setStatus(JobStatus.FAILED);
             }
             //log.info("Saving File: " + bulkLoadFile);
             bulkLoadFileDAO.merge(bulkLoadFile);
@@ -113,13 +113,13 @@ public class BulkLoadProcessor {
             bulkLoadFileDAO.merge(bulkLoadFile);
         } else if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
             bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
-            bulkLoadFile.setStatus(BulkLoadStatus.FAILED);
+            bulkLoadFile.setStatus(JobStatus.FAILED);
         }
         log.info("Syncing with S3 Finished");
     }
 
     protected void processFilePath(BulkLoad bulkLoad, String localFilePath) {
-        String md5Sum = getMD5SumOfGzipFile(localFilePath);
+        String md5Sum = fileHelper.getMD5SumOfGzipFile(localFilePath);
         log.info("processFilePath: MD5 Sum: " + md5Sum);
 
         File inputFile = new File(localFilePath);
@@ -135,14 +135,14 @@ public class BulkLoadProcessor {
             bulkLoadFile.setBulkLoad(load);
             bulkLoadFile.setMd5Sum(md5Sum);
             bulkLoadFile.setFileSize(inputFile.length());
-            if(load.getStatus() == BulkLoadStatus.FORCED_RUNNING) {
-                bulkLoadFile.setStatus(BulkLoadStatus.FORCED_PENDING);
+            if(load.getStatus() == JobStatus.FORCED_RUNNING) {
+                bulkLoadFile.setStatus(JobStatus.FORCED_PENDING);
             }
-            if(load.getStatus() == BulkLoadStatus.SCHEDULED_RUNNING) {
-                bulkLoadFile.setStatus(BulkLoadStatus.SCHEDULED_PENDING);
+            if(load.getStatus() == JobStatus.SCHEDULED_RUNNING) {
+                bulkLoadFile.setStatus(JobStatus.SCHEDULED_PENDING);
             }
-            if(load.getStatus() == BulkLoadStatus.MANUAL_RUNNING) {
-                bulkLoadFile.setStatus(BulkLoadStatus.MANUAL_PENDING);
+            if(load.getStatus() == JobStatus.MANUAL_RUNNING) {
+                bulkLoadFile.setStatus(JobStatus.MANUAL_PENDING);
             }
             
             log.info(load.getStatus());
@@ -153,7 +153,7 @@ public class BulkLoadProcessor {
             bulkLoadFile = bulkLoadFiles.getResults().get(0);
             if(bulkLoadFile.getStatus().isNotRunning()) {
                 bulkLoadFile.setLocalFilePath(localFilePath);
-                bulkLoadFile.setStatus(BulkLoadStatus.FORCED_PENDING);
+                bulkLoadFile.setStatus(JobStatus.FORCED_PENDING);
             } else {
                 log.warn("Bulk File is already running: " + bulkLoadFile.getMd5Sum());
                 log.info("Cleaning up downloaded file: " + localFilePath);
@@ -173,18 +173,6 @@ public class BulkLoadProcessor {
         bulkLoadFileDAO.merge(bulkLoadFile);
         bulkLoadDAO.merge(load);
     }
-    
-    public String getMD5SumOfGzipFile(String fullFilePath) {
-        try {
-            InputStream is = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
-            String md5Sum = DigestUtils.md5Hex(is);
-            is.close();
-            return md5Sum;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
 
     protected void startLoad(BulkLoad load) {
         log.info("Load: " + load.getName() + " is starting");
@@ -199,7 +187,7 @@ public class BulkLoadProcessor {
         log.info("Load: " + bulkLoad.getName() + " is running");
     }
     
-    protected void endLoad(BulkLoad load, String message, BulkLoadStatus status) {
+    protected void endLoad(BulkLoad load, String message, JobStatus status) {
         BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
         bulkLoad.setErrorMessage(message);
         bulkLoad.setStatus(status);
@@ -213,7 +201,7 @@ public class BulkLoadProcessor {
         log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is running with file: " + bulkLoadFile.getLocalFilePath());
     }
 
-    protected void endLoadFile(BulkLoadFile bulkLoadFile, String message, BulkLoadStatus status) {
+    protected void endLoadFile(BulkLoadFile bulkLoadFile, String message, JobStatus status) {
         if(bulkLoadFile.getLocalFilePath() != null) {
             new File(bulkLoadFile.getLocalFilePath()).delete();
             bulkLoadFile.setLocalFilePath(null);
