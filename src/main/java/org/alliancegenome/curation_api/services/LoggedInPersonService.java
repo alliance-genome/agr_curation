@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.HashMap;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -21,6 +23,11 @@ public class LoggedInPersonService extends BaseCrudService<LoggedInPerson, Logge
         setSQLDao(loggedInPersonDAO);
     }
     
+    public void saveSettings(HashMap<String, Object> settings) {
+        LoggedInPerson user = loggedInPersonDAO.find(authenticatedPerson.getId());
+        user.setUserSettings(settings);
+        loggedInPersonDAO.merge(user);
+    }
     
     public LoggedInPerson findLoggedInPersonByOktaEmail(String email) {
         SearchResponse<LoggedInPerson> resp = loggedInPersonDAO.findByField("oktaEmail", email);
