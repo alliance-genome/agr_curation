@@ -7,6 +7,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
@@ -21,6 +23,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface LoggedInPersonInterface {
 
+    @POST
+    @Path("/")
+    @Operation(hidden=true)
+    @JsonView(View.FieldsOnly.class)
+    public ObjectResponse<LoggedInPerson> create(LoggedInPerson entity);
+    
     @GET
     @Path("/")
     @JsonView(View.FieldsOnly.class)
