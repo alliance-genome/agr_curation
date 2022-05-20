@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 
 @Path("/loggedinperson")
-@Tag(name = "LoggedInPerson Settings")
+@Tag(name = "LoggedInPerson Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface LoggedInPersonInterface {
