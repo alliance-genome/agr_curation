@@ -1,6 +1,5 @@
 import { BaseAuthService } from './BaseAuthService';
 
-
 export class ValidationService extends BaseAuthService {
   async validate(endpoint, objectToValidate) {
     try {
