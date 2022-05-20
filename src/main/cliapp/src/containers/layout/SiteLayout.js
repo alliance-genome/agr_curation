@@ -54,7 +54,6 @@ export const SiteLayout = (props) => {
       }
     }, [authState]);
 
-
     useQuery(['getApiVersion', apiVersion],
       () => apiService.getApiVersion(), {
         onSuccess: (data) => {
