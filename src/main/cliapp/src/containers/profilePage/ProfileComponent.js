@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card } from 'primereact/card';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { ApiVersionService } from '../../service/ApiVersionService';
+import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 import { useOktaAuth } from '@okta/okta-react';
 
 export const ProfileComponent = () => {
@@ -11,14 +11,14 @@ export const ProfileComponent = () => {
   const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
 
   const { authState, oktaAuth } = useOktaAuth();
-  const apiService = new ApiVersionService();
+
+  const loggedInPersonService = LoggedInPersonService();
 
   useEffect(() => {
       if (!authState || !authState.isAuthenticated) {
           setLocalUserInfo(null);
       } else {
-          apiService.getUserInfo(authState).then((data) => {
-            //localUserInfo.lastName;
+          loggedInPersonService.getUserInfo().then((data) => {
             setLocalUserInfo(data);
           }).catch((err) => {
             console.log(err);
@@ -26,13 +26,11 @@ export const ProfileComponent = () => {
       }
   }, [authState, oktaAuth, setLocalUserInfo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   const userInfos = [
     { name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName },
     { name: "Email", value: localUserInfo.email },
     { name: "Okta Token", value: oktaToken.accessToken.accessToken },
     { name: "Curation API Token", value: localUserInfo.apiToken },
-
   ];
 
   return (

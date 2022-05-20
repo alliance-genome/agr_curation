@@ -32,10 +32,7 @@ public class APIVersionInfoController implements APIVersionInterface {
     @ConfigProperty(name = "NET")
     String env;
     
-    @Inject
-    @AuthenticatedUser
-    protected LoggedInPerson authenticatedPerson;
-    
+
     @Override
     public APIVersionInfo get() {
         APIVersionInfo info = new APIVersionInfo();
@@ -46,11 +43,6 @@ public class APIVersionInfoController implements APIVersionInterface {
         info.setEsHost(es_host);
         info.setEnv(env);
         return info;
-    }
-
-    @Override
-    public LoggedInPerson getAuthUser() {
-        return authenticatedPerson;
     }
 
 }
