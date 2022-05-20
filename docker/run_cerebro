@@ -1,1 +1,1 @@
-docker run -d --net curation -p 9000:9000 --name cerebro yannart/cerebro
+docker run -d --net curation -p 9000:9000 --name cerebro lmenezes/cerebro:latest
