@@ -16,20 +16,6 @@ services:
     env_file:
       - .env
 
-  cerebro:
-    container_name: agr.curation.${NET}.cerebro.server
-    image: yannart/cerebro
-    logging:
-      driver: gelf
-      options:
-        gelf-address: "udp://logs.alliancegenome.org:12201"
-    ports:
-      - "9000:9000"
-    networks:
-      - curation
-    env_file:
-      - .env
-
 networks:
   # The presence of these objects is sufficient to define them
   curation:
