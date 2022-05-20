@@ -24,6 +24,7 @@ public class CurationReport extends GeneratedAuditedObject {
     private String name;
 
     @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
     private JobStatus curationReportStatus;
 
     @JsonView({View.FieldsOnly.class})
