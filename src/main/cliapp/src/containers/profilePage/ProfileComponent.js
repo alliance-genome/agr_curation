@@ -12,7 +12,7 @@ export const ProfileComponent = () => {
 
   const { authState, oktaAuth } = useOktaAuth();
 
-  const loggedInPersonService = LoggedInPersonService();
+  const loggedInPersonService = new LoggedInPersonService();
 
   useEffect(() => {
       if (!authState || !authState.isAuthenticated) {

@@ -1,6 +1,5 @@
 import { BaseAuthService } from "./BaseAuthService";
 
-
 export class SearchService extends BaseAuthService {
 
   search(endpoint, rows, page, sorts, filters, sortMapping, aggregationFields, nonNullFields) {
