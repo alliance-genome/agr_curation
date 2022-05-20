@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import java.util.Map;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
@@ -14,7 +16,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextFi
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import io.quarkiverse.hibernate.types.json.JsonBinaryType;
 import io.quarkiverse.hibernate.types.json.JsonTypes;
@@ -47,6 +48,6 @@ public class LoggedInPerson extends Person {
     
     @Type(type = JsonTypes.JSON_BIN)
     @Column(columnDefinition = JsonTypes.JSON_BIN)
-    private JsonNode userSettings;
+    private Map<String, Object> userSettings;
     
 }
