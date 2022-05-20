@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.crud;
+package org.alliancegenome.curation_api.interfaces.person;
 
 
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Path("/loggedinperson")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface LoggedInPersonCrudInterface {
+public interface LoggedInPersonInterface {
 
     @GET
     @Path("/")
