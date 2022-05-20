@@ -13,15 +13,9 @@ import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;
 
 @RequestScoped
-public class LoggedInPersonCrudController extends BaseCrudController<LoggedInPersonService, LoggedInPerson, LoggedInPersonDAO> implements LoggedInPersonCrudInterface {
+public class LoggedInPersonCrudController implements LoggedInPersonCrudInterface {
 
     @Inject LoggedInPersonService loggedInPersonService;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(loggedInPersonService);
-    }
     
     public void saveSettings(HashMap<String, Object> settings) {
         if (settings == null) settings = new HashMap<>();
