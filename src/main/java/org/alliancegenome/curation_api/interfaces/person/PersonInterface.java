@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.crud;
+package org.alliancegenome.curation_api.interfaces.person;
 
 
 import javax.ws.rs.Consumes;
@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Path("/person")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface PersonCrudInterface {
+public interface PersonInterface {
     @POST
     @Path("/")
     @Operation(hidden=true)

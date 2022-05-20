@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.crud;
+package org.alliancegenome.curation_api.interfaces.person;
 
 
 import java.util.HashMap;
@@ -10,14 +10,16 @@ import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
 
 @Path("/loggedinperson")
+@Tag(name = "LoggedInPerson Endpoints")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface LoggedInPersonCrudInterface {
+public interface LoggedInPersonInterface {
 
     @GET
     @Path("/")
@@ -26,7 +28,6 @@ public interface LoggedInPersonCrudInterface {
     
     @POST
     @Path("/savesettings")
-    @Operation(hidden=true)
     public void saveSettings(@RequestBody HashMap<String, Object> settings);
     
 }

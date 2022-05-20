@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.controllers.crud;
+package org.alliancegenome.curation_api.controllers.person;
 
 import java.util.HashMap;
 
@@ -6,12 +6,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.interfaces.crud.LoggedInPersonCrudInterface;
+import org.alliancegenome.curation_api.interfaces.person.LoggedInPersonInterface;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;
 
 @RequestScoped
-public class LoggedInPersonCrudController implements LoggedInPersonCrudInterface {
+public class LoggedInPersonController implements LoggedInPersonInterface {
 
     @Inject @AuthenticatedUser LoggedInPerson authenticatedPerson;
     @Inject LoggedInPersonService loggedInPersonService;
