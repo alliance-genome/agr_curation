@@ -36,6 +36,7 @@ public class CurationReportHistory extends GeneratedAuditedObject {
     private String htmlFilePath;
 
     @JsonView({View.FieldsOnly.class})
+    @Enumerated(EnumType.STRING)
     private JobStatus curationReportStatus;
 
     @Transient
