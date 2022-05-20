@@ -54,23 +54,6 @@ export const SiteLayout = (props) => {
       }
     }, [authState]);
 
-
-    useQuery(['getApiVersion', apiVersion],
-      () => apiService.getApiVersion(), {
-        onSuccess: (data) => {
-          //console.log(data);
-          setApiVersion(data);
-        },
-        onError: (error) => {
-        console.log(error);
-        },
-        keepPreviousData: true,
-        refetchOnWindowFocus: false,
-        enabled: !!(authState?.isAuthenticated && apiService),
-      }
-    );
-
-
     useQuery(['getApiVersion', apiVersion],
       () => apiService.getApiVersion(), {
         onSuccess: (data) => {
