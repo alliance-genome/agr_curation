@@ -45,7 +45,15 @@ quarkus.vertx.max-worker-execute-time=PT1H
 
 NET = local
 
+reports.schedulingEnabled = true
+%dev.reports.schedulingEnabled = false
+reports.s3Bucket = agr-curation-files
+reports.s3AccessKey = ""
+reports.s3SecretKey = ""
+reports.s3PathPrefix = dev/reports
+
 bulk.data.loads.schedulingEnabled = true
+%dev.bulk.data.loads.schedulingEnabled = false
 bulk.data.loads.s3Bucket = agr-curation-files
 bulk.data.loads.s3AccessKey = ""
 bulk.data.loads.s3SecretKey = ""
@@ -62,7 +70,6 @@ okta.api.token = ""
 %dev.okta.authentication = false
 %test.okta.authentication = false
 
-%dev.bulk.data.loads.schedulingEnabled = false
 %dev.quarkus.live-reload.instrumentation = true
 
 //%dev.quarkus.log.category."org.hibernate.SQL".level=DEBUG

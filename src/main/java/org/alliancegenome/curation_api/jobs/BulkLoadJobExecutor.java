@@ -1,17 +1,9 @@
 package org.alliancegenome.curation_api.jobs;
 
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.AGM;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.ALLELE;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.DISEASE_ANNOTATION;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.FULL_INGEST;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.GENE;
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.*;
 
 import java.io.FileInputStream;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -19,42 +11,16 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
-import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
-import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
+import org.alliancegenome.curation_api.enums.*;
+import org.alliancegenome.curation_api.jobs.executors.*;
 import org.alliancegenome.curation_api.jobs.executors.AgmExecutor;
-import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
-import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
-import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.MoleculeService;
-import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
-import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
-import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
-import org.alliancegenome.curation_api.services.ontology.DaoTermService;
-import org.alliancegenome.curation_api.services.ontology.DoTermService;
-import org.alliancegenome.curation_api.services.ontology.EcoTermService;
-import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
-import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
-import org.alliancegenome.curation_api.services.ontology.GoTermService;
-import org.alliancegenome.curation_api.services.ontology.MaTermService;
-import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
-import org.alliancegenome.curation_api.services.ontology.MpTermService;
-import org.alliancegenome.curation_api.services.ontology.SoTermService;
-import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
-import org.alliancegenome.curation_api.services.ontology.WblsTermService;
-import org.alliancegenome.curation_api.services.ontology.XbaTermService;
-import org.alliancegenome.curation_api.services.ontology.XbedTermService;
-import org.alliancegenome.curation_api.services.ontology.XbsTermService;
-import org.alliancegenome.curation_api.services.ontology.XcoTermService;
-import org.alliancegenome.curation_api.services.ontology.XpoTermService;
-import org.alliancegenome.curation_api.services.ontology.XsmoTermService;
-import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
-import org.alliancegenome.curation_api.services.ontology.ZfaTermService;
-import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
+import org.alliancegenome.curation_api.services.helpers.*;
+import org.alliancegenome.curation_api.services.ontology.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
