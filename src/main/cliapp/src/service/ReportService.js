@@ -34,20 +34,17 @@ export class ReportService extends BaseAuthService {
     }
 
     deleteReport(id) {
-        return this.api.delete(`/curationreport/${id}`);
+      return this.api.delete(`/curationreport/${id}`);
     }
   
-    /* restartLoad(loadType, id) {
-        let endpoint = loadType.toLowerCase();
-        return this.api.get(`/${endpoint}/restart/${id}`);
+    restartReport(id) {
+      console.log(id);
+      return Promise.resolve();
+      // return this.api.get(`/curationreport/restart/${id}`);
     }
-    restartLoadFile(id) {
-      return this.api.get(`/bulkloadfile/restart/${id}`);
-    }
- */
 
-   getReport(id) {
-        return this.api.get(`/curationreport/${id}`);
+    getReport(id) {
+      return this.api.get(`/curationreport/${id}`);
     }
 
     getFileHistoryFile(id) {

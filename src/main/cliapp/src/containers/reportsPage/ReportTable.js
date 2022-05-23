@@ -24,17 +24,11 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
     });
   };
 
-  /* const runLoad = (rowData) => {
-    getService().restartLoad(rowData.type, rowData.id).then(response => {
-      queryClient.invalidateQueries('bulkloadtable');
+  const runReport = (rowData) => {
+    getService().restartReport(rowData.id).then(() => {
+      queryClient.invalidateQueries('reporttable');
     });
-  }; */
-
-  /* const runLoadFile = (rowData) => {
-    getService().restartLoadFile(rowData.id).then(response => {
-      queryClient.invalidateQueries('bulkloadtable');
-    });
-  }; */
+  };
 
   const reportActionBodyTemplate = (rowData) => {
     let buttons = [];
@@ -42,9 +36,9 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
     buttons.push(<Button key="openDialog" icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => handleReportOpen(rowData)} />);
     buttons.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => handleReportEdit(rowData)} />);
 
-    // if (!rowData.curationReportStatus || rowData.curationReportStatus === "FINISHED" || rowData.curationReportStatus === "FAILED" || rowData.curationReportStatus === "STOPPED") {
-      // buttons.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
-    // }
+    if (!rowData.curationReportStatus || rowData.curationReportStatus === "FINISHED" || rowData.curationReportStatus === "FAILED" || rowData.curationReportStatus === "STOPPED") {
+      buttons.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runReport(rowData)} />);
+    }
 
     if (!rowData.reportFiles || rowData.reportFiles.length === 0) {
       buttons.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteReport(rowData)} />);
