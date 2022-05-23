@@ -8,7 +8,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { ReportService } from '../../service/ReportService';
 import { InputText } from 'primereact/inputtext';
 
-export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport, reportDispatch, disableFormFields, setDisableFormFields, reportService }) => {
+export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, newReport, reportDispatch, disableFormFields, setDisableFormFields, reportService }) => {
   const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 
   const queryClient = useQueryClient();
@@ -39,7 +39,7 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
 
   const hideDialog = () => {
     reportDispatch({ type: "RESET" });
-    setReportDialog(false);
+    setNewReportDialog(false);
     setDisableFormFields(false);
   };
 
@@ -50,7 +50,7 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
       onSuccess: () => {
         queryClient.invalidateQueries('reporttable');
         reportDispatch({ type: "RESET" });
-        setReportDialog(false);
+        setNewReportDialog(false);
         setDisableFormFields(false);
       },
       onError: () => {
@@ -59,7 +59,7 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
     });
   };
 
-  const newBulkLoadDialogFooter = (
+  const newReportDialogFooter = (
     <>
       <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
       <Button label="Save" icon="pi pi-check" className="p-button-text" onClick={handleSubmit} />
@@ -68,21 +68,9 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
 
 
   return (
-    <Dialog visible={reportDialog} style={{ width: '450px' }} header="Add Bulk Load" modal className="p-fluid" footer={newBulkLoadDialogFooter} onHide={hideDialog} resizeable >
+    <Dialog visible={newReportDialog} style={{ width: '450px' }} header="Add Report" modal className="p-fluid" footer={newReportDialogFooter} onHide={hideDialog} resizeable >
       <div className='p-justify-center'>
         <form>
-
-          <div className="field">
-            <label htmlFor="name">Name</label>
-            <InputText
-              id="name"
-              name="name"
-              placeholder={"Name"}
-              value={newReport.name}
-              onChange={onChange}
-            />
-          </div>
-
           <div className="field">
             <label htmlFor="group">Group Name</label>
             <Dropdown
@@ -97,6 +85,28 @@ export const NewReportForm = ({ reportDialog, setReportDialog, groups, newReport
               optionValue='id'
             />
           </div>
+          <div className="field">
+            <label htmlFor="name">Name</label>
+            <InputText
+              id="name"
+              name="name"
+              placeholder={"Name"}
+              value={newReport.name}
+              onChange={onChange}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="birtReportFilePath">BIRT Report File Path</label>
+            <InputText
+              id="birtReportFilePath"
+              name="birtReportFilePath"
+              placeholder={"BIRT Report File Path (sample_report.rptdesign)"}
+              value={newReport.birtReportFilePath}
+              onChange={onChange}
+            />
+          </div>
+
           <CronFields
               newItem={newReport}
               onChange={onChange}
