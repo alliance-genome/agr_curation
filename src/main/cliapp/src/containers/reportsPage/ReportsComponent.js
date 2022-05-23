@@ -9,7 +9,7 @@ import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { NewReportForm } from './NewReportForm';
 import { NewReportGroupForm } from './NewReportGroupForm';
-import { HistoryDialog } from './HistoryDialog';
+import { ReportDialog } from './ReportDialog/ReportDialog';
 import { useQueryClient } from 'react-query';
 
 export const ReportsComponent = () => {
@@ -26,14 +26,15 @@ export const ReportsComponent = () => {
   };
 
   const [groups, setGroups] = useState({});
-  const [history, setHistory] = useState({ id: 0 });
+  const [report, setReport] = useState({ id: 0 });
   const [reportGroupDialog, setReportGroupDialog] = useState(false);
-  const [historyDialog, setHistoryDialog] = useState(false);
   const [reportDialog, setReportDialog] = useState(false);
+  const [newReportDialog, setNewReportDialog] = useState(false);
   const [expandedGroupRows, setExpandedGroupRows] = useState(null);
   const [expandedLoadRows, setExpandedLoadRows] = useState(null);
   const [expandedFileRows, setExpandedFileRows] = useState(null);
   const [disableFormFields, setDisableFormFields] = useState(false);
+  const [history, setHistory] = useState({});
   const errorMessage = useRef(null);
   const searchService = new SearchService();
 
@@ -49,7 +50,7 @@ export const ReportsComponent = () => {
 
   const handleNewReportOpen = () => {
     reportDispatch({ type: "RESET" });
-    setReportDialog(true);
+    setNewReportDialog(true);
   };
 
   useQuery(['reporttable'],
@@ -82,7 +83,7 @@ export const ReportsComponent = () => {
   };
  */
   const refresh = () => {
-    queryClient.invalidateQueries('bulkloadtable');
+    queryClient.invalidateQueries('reporttable');
   };
 
   /* const runLoad = (rowData) => {
@@ -97,9 +98,9 @@ export const ReportsComponent = () => {
     });
   }; */
 
-  const editReport = (rowData) => {
+  const handleReportEdit = (rowData) => {
     reportDispatch({ type: "EDIT", editReport: rowData });
-    setReportDialog(true);
+    setNewReportDialog(true);
     setDisableFormFields(true);
   };
 
@@ -118,6 +119,14 @@ export const ReportsComponent = () => {
   const deleteGroup = (rowData) => {
     getService().deleteGroup(rowData.id).then(() => {
       queryClient.invalidateQueries('reporttable');
+    });
+  };
+
+  const handleReportOpen = async (rowData) => {
+    getService().getReport(rowData.id).then((res) => {
+      const { data: { entity } } = res;
+      setReport(entity);
+      setReportDialog(true);
     });
   };
 
@@ -148,7 +157,8 @@ export const ReportsComponent = () => {
   const reportActionBodyTemplate = (rowData) => {
     let buttons = [];
 
-    buttons.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editReport(rowData)} />);
+    buttons.push(<Button key="openDialog" icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => handleReportOpen(rowData)} />);
+    buttons.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => handleReportEdit(rowData)} />);
 
     //not sure how status will be handled in the reports or if these are valid states
     // if (!rowData.curationReportStatus || rowData.curationReportStatus === "FINISHED" || rowData.curationReportStatus === "FAILED" || rowData.curationReportStatus === "STOPPED") {
@@ -238,15 +248,15 @@ export const ReportsComponent = () => {
 
   const statusTemplate = (rowData) => {
     let styleClass = 'p-button-text p-button-plain';
-    if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
+    if (rowData.curationReportStatus === 'FAILED') { styleClass = "p-button-danger"; }
     if (rowData.status && (
-      rowData.status.endsWith('STARTED') ||
-      rowData.status.endsWith('RUNNING') ||
-      rowData.status.endsWith('PENDING')
+      rowData.curationReportStatus.endsWith('STARTED') ||
+      rowData.curationReportStatus.endsWith('RUNNING') ||
+      rowData.curationReportStatus.endsWith('PENDING')
     )) { styleClass = "p-button-success"; }
 
     return (
-      <Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
+      <Button label={rowData.curationReportStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
     );
   };
 
@@ -290,17 +300,13 @@ export const ReportsComponent = () => {
     return (
       <div className="card">
         <DataTable key="reportTable" value={group.curationReports} responsiveLayout="scroll"
-        // expandedRows={expandedLoadRows} onRowToggle={(e) => setExpandedLoadRows(e.data)}
-        // rowExpansionTemplate={fileTable} dataKey="id"
         >
-          <Column expander style={{ width: '3em' }} />
           <Column field="name" header="Name" />
           <Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />
           <Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />
-          <Column field="status" body={statusTemplate} header="Status" />
+          <Column field="curationReportStatus" body={statusTemplate} header="Status" />
+          <Column field="birtReportFilePath" header="BIRT Report File Path" />
           <Column key="reportAction" body={reportActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-      {/* <Column field="curationreportgroup.name" header="Curation Report Group" />
-            /*dynamicColumns(group.reports)*/}
         </DataTable>
       </div>
     );
@@ -323,8 +329,8 @@ export const ReportsComponent = () => {
         <Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
       </DataTable>
       <NewReportForm
-        reportDialog={reportDialog}
-        setReportDialog={setReportDialog}
+        newReportDialog={newReportDialog}
+        setNewReportDialog={setNewReportDialog}
         newReport={newReport}
         reportDispatch={reportDispatch}
         groups={groups}
@@ -336,12 +342,13 @@ export const ReportsComponent = () => {
         reportGroupDialog={reportGroupDialog}
         setReportGroupDialog={setReportGroupDialog}
       />
-      <HistoryDialog
-        historyDialog={historyDialog}
-        setHistoryDialog={setHistoryDialog}
-        dataLoadService={getService()}
+     <ReportDialog
+        reportDialog={reportDialog}
         history={history}
-      />
+        setReportDialog={setReportDialog}
+        service={getService()}
+        report={report}
+      /> 
     </div>
   );
 };

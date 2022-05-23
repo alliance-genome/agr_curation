@@ -10,8 +10,6 @@ export class ReportService extends BaseAuthService {
     }
 
     createReport(newReport) {
-        // let endpoint = newReport.type.toLowerCase();
-
         newReport.curationReportGroup = { id: newReport.curationReportGroup };
         for (const objectKey in newReport) {
             if (!newReport[objectKey]) {
@@ -39,7 +37,6 @@ export class ReportService extends BaseAuthService {
         return this.api.delete(`/curationreport/${id}`);
     }
   
-  //not sure this is needed for reports
     /* restartLoad(loadType, id) {
         let endpoint = loadType.toLowerCase();
         return this.api.get(`/${endpoint}/restart/${id}`);
@@ -48,41 +45,13 @@ export class ReportService extends BaseAuthService {
       return this.api.get(`/bulkloadfile/restart/${id}`);
     }
  */
+
+   getReport(id) {
+        return this.api.get(`/curationreport/${id}`);
+    }
+
     getFileHistoryFile(id) {
       return this.api.get(`/curationreporthistory/${id}`);
     }
-
-    deleteLoadFile(id) {
-      return this.api.delete(`/bulkloadfile/${id}`);
-    }
-
-  //Do the reports need these as well?
-    getBackendBulkLoadTypes(loadType) {
-        const bulkLoadTypes = {
-            BulkFMSLoad: ["MOLECULE"],
-            BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
-            BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
-        };
-        return bulkLoadTypes[loadType];
-    }
-
-    getLoadTypes() {
-        return [
-            "BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
-        ];
-    }
-
-    getOntologyTypes() {
-        return [
-            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO"
-        ];
-    }
-
-    getDataTypes() {
-        return [
-            "RGD", "MGI", "SGD", "HUMAN", "ZFIN", "FB", "WB"
-        ];
-    }
-
 
 }
