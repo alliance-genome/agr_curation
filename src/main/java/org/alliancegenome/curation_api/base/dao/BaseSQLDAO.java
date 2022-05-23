@@ -11,9 +11,11 @@ import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.*;
 import org.hibernate.search.engine.search.query.*;
@@ -149,8 +151,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
         ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
         ph.startProcess("MassIndex:");
-        
-        MassIndexer indexer = 
+
+        MassIndexer indexer =
                 searchSession
                 .massIndexer(annotatedClasses)
                 .batchSizeToLoadObjects(batchSize)
@@ -194,7 +196,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
     public void reindex(Class<?> objectClass, int threads, int indexAmount, int batchSize) {
         log.debug("Starting Index for: " + objectClass);
-        MassIndexer indexer = 
+        MassIndexer indexer =
                 searchSession
                 .massIndexer(objectClass)
                 .batchSizeToLoadObjects(batchSize)
@@ -252,7 +254,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
     }
 
     public SearchResponse<E> searchByField(Pagination pagination, String field, String value) {
-        HashMap<String, Object> params = new HashMap<String, Object>();
+        HashMap<String, Object> params = new HashMap<>();
         params.put(field, value);
         return searchByParams(pagination, params);
     }
@@ -261,10 +263,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
     public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
         log.debug("Search: " + pagination + " Params: " + params);
 
-        SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = 
+        SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step =
                 searchSession.search(myClass).where( p -> {
                     return p.bool( b -> {
-                        if(params.containsKey("searchFilters")) {
+                        if(params.containsKey("searchFilters") ) {
                             HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
                             for(String filterName: searchFilters.keySet()) {
                                 b.must(m -> {
@@ -296,7 +298,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
                                 });
                             }
                         }
-                    }); 
+                       if(params.containsKey("nonNullFields") ) {
+                          List<String> fields = (List<String>)params.get("nonNullFields");
+                          fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+                       }
+                    });
                 });
 
         if(params.containsKey("sortOrders")) {

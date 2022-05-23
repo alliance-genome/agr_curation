@@ -1,12 +1,27 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
+import static org.hamcrest.Matchers.is;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -14,13 +29,16 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
@@ -73,6 +91,7 @@ public class DiseaseAnnotationITCase {
     private List<Note> relatedNotes;
     private ExperimentalCondition experimentalCondition;
     private ConditionRelation conditionRelation;
+    private Reference testReference;
     
     private void createRequiredObjects() {
         testEcoTerms = new ArrayList<EcoTerm>();
@@ -82,6 +101,7 @@ public class DiseaseAnnotationITCase {
         diseaseQualifiers = new ArrayList<VocabularyTerm>();
         relatedNotes = new ArrayList<Note>();
         
+        testReference = createReference("PMID:14978094");
         testDoTerm = createDiseaseTerm("DOID:da0001", false);
         testDoTerm2 = createDiseaseTerm("DOID:da0002", false);
         testObsoleteDoTerm = createDiseaseTerm("DOID:da0003", true);
@@ -100,12 +120,12 @@ public class DiseaseAnnotationITCase {
         geneDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
         alleleDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
         agmDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
-        noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-        geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
+        noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+        geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
         conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
         diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
-        diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
-        annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+        diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+        annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
         geneDiseaseRelation = getVocabularyTerm(geneDiseaseRelationVocabulary, "is_implicated_in");
         geneDiseaseRelation2 = createVocabularyTerm(geneDiseaseRelationVocabulary, "is_marker_for", false);
         alleleDiseaseRelation = getVocabularyTerm(alleleDiseaseRelationVocabulary, "is_implicated_in");
@@ -270,6 +290,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
         editedDiseaseAnnotation.setConditionRelations(conditionRelations);
         editedDiseaseAnnotation.setInternal(true);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -331,6 +352,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setInternal(true);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -389,6 +411,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setInternal(true);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -448,6 +471,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
 
         RestAssured.given().
             contentType("application/json").
@@ -481,6 +505,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
             contentType("application/json").
@@ -514,6 +539,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -547,6 +573,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -580,6 +607,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -614,6 +642,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -651,6 +680,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -688,6 +718,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -721,6 +752,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -761,6 +793,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -798,6 +831,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -834,6 +868,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -871,6 +906,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -904,6 +940,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setCreatedBy(null);
         editedDiseaseAnnotation.setDateCreated(testDate);
         editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+        editedDiseaseAnnotation.setSingleReference(testReference);
 
         RestAssured.given().
             contentType("application/json").
@@ -936,6 +973,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         List<Note> editedNotes = new ArrayList<Note>();
         for (Note note : editedDiseaseAnnotation.getRelatedNotes()) {
@@ -982,6 +1020,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         List<Note> editedNotes = new ArrayList<Note>();
         for (Note note : editedDiseaseAnnotation.getRelatedNotes()) {
@@ -1001,7 +1040,7 @@ public class DiseaseAnnotationITCase {
     
     @Test
     @Order(23)
-    public void editWithConditionRelationType() {
+    public void editWithObsoleteConditionRelationType() {
         
         GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
         editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
@@ -1021,6 +1060,7 @@ public class DiseaseAnnotationITCase {
         editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
         editedDiseaseAnnotation.setCreatedBy(testPerson);
         editedDiseaseAnnotation.setDateCreated(testDate);
+        editedDiseaseAnnotation.setSingleReference(testReference);
         
         List<ConditionRelation> editedConditionRelations = new ArrayList<ConditionRelation>();
         for (ConditionRelation conditionRelation : editedDiseaseAnnotation.getConditionRelations()) {
@@ -1028,6 +1068,42 @@ public class DiseaseAnnotationITCase {
             editedConditionRelations.add(conditionRelation);
         }
         editedDiseaseAnnotation.setConditionRelations(editedConditionRelations);
+        
+        RestAssured.given().
+                contentType("application/json").
+                body(editedDiseaseAnnotation).
+                when().
+                put("/api/gene-disease-annotation").
+                then().
+                statusCode(400);
+    }
+    
+    @Test
+    @Order(24)
+    public void editWithInvalidSingleReference() {
+        
+        Reference invalidReference = new Reference();
+        invalidReference.setCurie("Invalid");
+        
+        GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+        editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+        editedDiseaseAnnotation.setNegated(true);
+        editedDiseaseAnnotation.setObject(testDoTerm2);
+        editedDiseaseAnnotation.setDataProvider("TEST2");
+        editedDiseaseAnnotation.setSubject(testGene2);
+        editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+        editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+        editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+        editedDiseaseAnnotation.setGeneticSex(geneticSex);
+        editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+        editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+        editedDiseaseAnnotation.setAnnotationType(annotationType);
+        editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+        editedDiseaseAnnotation.setWith(testWithGenes);
+        editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+        editedDiseaseAnnotation.setCreatedBy(testPerson);
+        editedDiseaseAnnotation.setDateCreated(testDate);
+        editedDiseaseAnnotation.setSingleReference(invalidReference);
         
         RestAssured.given().
                 contentType("application/json").
@@ -1154,18 +1230,20 @@ public class DiseaseAnnotationITCase {
     }
     
     private Person createPerson(String uniqueId) {
-        Person person = new Person();
+        LoggedInPerson person = new LoggedInPerson();
         person.setUniqueId(uniqueId);
         
-        ObjectResponse<Person> response = RestAssured.given().
+        ObjectResponse<LoggedInPerson> response = RestAssured.given().
                 contentType("application/json").
                 body(person).
                 when().
-                post("/api/person").
+                post("/api/loggedinperson").
                 then().
                 statusCode(200).extract().
-                body().as(getObjectResponseTypeRefPerson());;
-        return response.getEntity();
+                body().as(getObjectResponseTypeRefLoggedInPerson());
+        
+        person = response.getEntity();
+        return (Person) person;
     }
 
     private AffectedGenomicModel createModel(String curie, String taxon, String name) {
@@ -1201,6 +1279,22 @@ public class DiseaseAnnotationITCase {
         vocabulary = response.getEntity();
         
         return vocabulary;
+    }
+    
+    private Reference createReference(String curie) {
+        Reference reference = new Reference();
+        reference.setCurie(curie);
+        
+        ObjectResponse<Reference> response = RestAssured.given().
+            contentType("application/json").
+            body(reference).
+            when().
+            post("/api/reference").
+            then().
+            statusCode(200).
+            extract().body().as(getObjectResponseTypeRefReference());
+            
+        return response.getEntity();
     }
 
     private Vocabulary getVocabulary(String name) {
@@ -1344,8 +1438,8 @@ public class DiseaseAnnotationITCase {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
 
-    private TypeRef<ObjectResponse<Person>> getObjectResponseTypeRefPerson() {
-        return new TypeRef<ObjectResponse <Person>>() { };
+    private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
+        return new TypeRef<ObjectResponse <LoggedInPerson>>() { };
     }
 
     private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
@@ -1370,6 +1464,11 @@ public class DiseaseAnnotationITCase {
     
     private TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
         return new TypeRef<ObjectResponse <ConditionRelation>>() { };
+    }
+
+    private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
+        return new TypeRef<ObjectResponse <Reference>>() {
+        };
     }
 
     private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {

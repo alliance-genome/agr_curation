@@ -36,9 +36,8 @@ export const ConditionRelationTable = () => {
 
   let [conditionRelations, setConditionRelations] = useState(null);
 
-  const [originalRows, setOriginalRows] = useState([]);
   const [totalRecords, setTotalRecords] = useState(0);
-  const [isEnabled, setIsEnabled] = useState(true);
+  const [isEnabled] = useState(true);
   const [columnList, setColumnList] = useState([]);
 
   const searchService = new SearchService();
@@ -46,12 +45,12 @@ export const ConditionRelationTable = () => {
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
-  const [errorMessages, setErrorMessages] = useState({});
+  const [errorMessages] = useState({});
 
   const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 
   useQuery(['conditionRelations', tableState],
-    () => searchService.search('condition-relation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
+    () => searchService.search('condition-relation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, null, null,['handle']), {
       onSuccess: (data) => {
         setConditionRelations(data.results);
         setTotalRecords(data.totalResults);
@@ -62,7 +61,6 @@ export const ConditionRelationTable = () => {
         ]);
       },
       onSettled: () => {
-        setOriginalRows([]);
       },
       keepPreviousData: true,
       refetchOnWindowFocus: false
@@ -116,6 +114,10 @@ export const ConditionRelationTable = () => {
   const aggregationFields = [
     'conditionRelationType.name'
   ];
+    //commenting out for now to get rid of console warnings
+  /* const nonNullFields = [
+    'handle'
+  ]; */
 
 
   const filterComponentTemplate = (filterName, fields) => {
@@ -331,7 +333,7 @@ export const ConditionRelationTable = () => {
               paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
               currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
       >
-          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}}
             headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
         {columnList}
       </DataTable>

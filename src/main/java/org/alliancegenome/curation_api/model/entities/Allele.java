@@ -17,7 +17,7 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicLocations"}, callSuper =  true)
+@ToString(exclude = {"genomicLocations", "alleleDiseaseAnnotations"}, callSuper =  true)
 public class Allele extends GenomicEntity {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -38,5 +38,7 @@ public class Allele extends GenomicEntity {
     @ManyToMany
     private List<GeneGenomicLocation> genomicLocations;
     
+    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
+    private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 }
 

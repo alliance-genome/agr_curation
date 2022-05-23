@@ -4,8 +4,8 @@ import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
 
+import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkFMSLoad;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 
 import io.quarkus.vertx.ConsumeEvent;
@@ -30,16 +30,16 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
                 String filePath = fileHelper.saveIncomingURLFile(s3Url);
                 String localFilePath = fileHelper.compressInputFile(filePath);
                 processFilePath(bulkFMSLoad, localFilePath);
-                endLoad(bulkFMSLoad, null, BulkLoadStatus.FINISHED);
+                endLoad(bulkFMSLoad, null, JobStatus.FINISHED);
             } else {
                 log.warn("Files: " + files);
                 log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType());
-                endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType(), BulkLoadStatus.FAILED);
+                endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType(), JobStatus.FAILED);
             }
             
         } else {
             log.error("Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing");
-            endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", BulkLoadStatus.FAILED);
+            endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", JobStatus.FAILED);
         }
     }
 

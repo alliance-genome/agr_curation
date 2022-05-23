@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+
 import java.util.*;
 
 import javax.inject.Inject;
@@ -10,9 +11,13 @@ import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
     @Inject
@@ -25,6 +30,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
     BiologicalEntityDAO biologicalEntityDAO;
     @Inject
     VocabularyTermDAO vocabularyTermDAO;
+    @Inject
+    ReferenceDAO referenceDAO;
+    @Inject
+    ReferenceService referenceService;
     @Inject
     NoteValidator noteValidator;
     @Inject
@@ -179,6 +188,30 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
         return validatedConditionRelations;
     }
     
+    public Reference validateSingleReference(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+        String field = "singleReference";
+        if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isEmpty(uiEntity.getSingleReference().getCurie())) {
+            addMessageResponse(field, requiredMessage);
+            return null;
+        }
+        
+        Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getCurie());
+        if (singleReference == null) {
+            singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
+            if (singleReference == null) {
+                addMessageResponse(field, invalidMessage);
+                return null;
+            }
+        }
+        
+        if (singleReference.getObsolete() && !singleReference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
+            addMessageResponse(field, obsoleteMessage);
+            return null;
+        }
+        
+        return singleReference;
+    }
+    
     public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
         dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
         
@@ -235,9 +268,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
         if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
             dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
         
-        // TODO: Add validation of reference
-        if (uiEntity.getSingleReference() != null)
-            dbEntity.setSingleReference(uiEntity.getSingleReference());
+        Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+        if (singleReference != null)
+            dbEntity.setSingleReference(singleReference);
         
         return dbEntity;
     }

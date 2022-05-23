@@ -29,6 +29,7 @@ public class BulkLoadFileException extends GeneratedAuditedObject {
     private ObjectUpdateExceptionData exception;
     
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private BulkLoadFileHistory bulkLoadFileHistory;
     
 }

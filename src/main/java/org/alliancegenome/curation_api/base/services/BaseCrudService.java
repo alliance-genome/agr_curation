@@ -16,19 +16,19 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntityDAO<E>> {
-    
+
     protected BaseSQLDAO<E> dao;
 
     protected void setSQLDao(BaseSQLDAO<E> dao) {
         this.dao = dao;
     }
-    
+
     @Inject
     @AuthenticatedUser
     protected LoggedInPerson authenticatedPerson;
-    
+
     protected abstract void init();
-    
+
     @Transactional
     public ObjectResponse<E> create(E entity) {
         //log.info("Authed Person: " + authenticatedPerson);
@@ -36,7 +36,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
     }
-    
+
     @Transactional
     public ObjectListResponse<E> create(List<E> entities) {
         //log.info("Authed Person: " + authenticatedPerson);
@@ -50,7 +50,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
     }
-    
+
     public ObjectResponse<E> get(String id) {
         E object = dao.find(id);
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
@@ -79,7 +79,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
         ObjectResponse<E> ret = new ObjectResponse<E>(object);
         return ret;
     }
-    
+
     public SearchResponse<E> findByField(String field, String value) {
         return dao.findByField(field, value);
     }
@@ -97,7 +97,7 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
     public void reindex(int threads, int indexAmount, int batchSize) {
         dao.reindex(threads, indexAmount, batchSize);
     }
-    
+
     public void reindexEverything(int threads, int indexAmount, int batchSize) {
         dao.reindexEverything(threads, indexAmount, batchSize);
     }

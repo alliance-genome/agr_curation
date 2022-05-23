@@ -7,10 +7,14 @@ import javax.ws.rs.core.MediaType;
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
+
+import java.util.HashMap;
 
 @Path("/condition-relation")
 @Tag(name = "CRUD - ConditionRelations")
@@ -23,9 +27,11 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
     @Path("/")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
-    
+
     @POST
     @Path("/validate")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
+
+
 }

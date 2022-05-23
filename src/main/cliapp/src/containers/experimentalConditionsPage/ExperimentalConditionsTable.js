@@ -608,7 +608,7 @@ export const ExperimentalConditionsTable = () => {
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 10;
+      return _columnWidths[key] = 10;
     });
 
     setColumnWidths(_columnWidths);

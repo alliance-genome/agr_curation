@@ -4,7 +4,6 @@ import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { useMutation, useQuery } from 'react-query';
-import { useOktaAuth } from '@okta/okta-react';
 import { Toast } from 'primereact/toast';
 
 import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
@@ -1143,8 +1142,8 @@ export const DiseaseAnnotationsTable = () => {
     setDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
     const _columnWidths = {...columnWidths};
 
-    Object.keys(_columnWidths).map((key) => {
-      return _columnWidths[key] = 10;
+    Object.keys(_columnWidths).forEach((key) => {
+      _columnWidths[key] = 10;
     });
 
     setColumnWidths(_columnWidths);

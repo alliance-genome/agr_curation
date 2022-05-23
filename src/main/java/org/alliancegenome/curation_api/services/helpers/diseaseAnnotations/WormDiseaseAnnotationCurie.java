@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.DiseaseModelAnnotationFmsDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
@@ -15,15 +14,6 @@ public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
      * @param annotationDTO DiseaseModelAnnotationFmsDTO
      * @return curie string
      */
-    @Override
-    public String getCurieID(DiseaseModelAnnotationFmsDTO annotationDTO) {
-        CurieGeneratorHelper curie = new CurieGeneratorHelper();
-        curie.add(annotationDTO.getObjectId());
-        curie.add(annotationDTO.getDoId());
-        curie.add(getPublicationCurie(annotationDTO.getEvidence().getPublication()));
-        return curie.getCurie();
-    }
-    
     @Override
     public String getCurieID(DiseaseAnnotationDTO annotationDTO) {
         CurieGeneratorHelper curie = new CurieGeneratorHelper();

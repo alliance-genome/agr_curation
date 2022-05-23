@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.jobs;
 
-import static org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType.*;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.*;
 
 import java.io.FileInputStream;
 import java.util.*;
@@ -11,9 +11,11 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
-import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.enums.*;
 import org.alliancegenome.curation_api.jobs.executors.*;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
+import org.alliancegenome.curation_api.jobs.executors.AgmExecutor;
+import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
+import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.MoleculeService;
@@ -62,10 +64,9 @@ public class BulkLoadJobExecutor {
     @Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
     @Inject AgmDiseaseAnnotationExecutor agmDiseaseAnnotationExecutor;
     @Inject GeneDiseaseAnnotationExecutor geneDiseaseAnnotationExecutor;
-    @Inject GeneFmsExecutor geneFmsExecutor;
-    @Inject AlleleFmsExecutor alleleFmsExecutor;
-    @Inject AgmFmsExecutor agmFmsExecutor;
-    @Inject DiseaseAnnotationFmsExecutor diseaseAnnotationFmsExecutor;
+    @Inject GeneExecutor geneExecutor;
+    @Inject AlleleExecutor alleleExecutor;
+    @Inject AgmExecutor agmExecutor;
     @Inject MoleculeExecutor moleculeExecutor;
 
 
@@ -78,6 +79,9 @@ public class BulkLoadJobExecutor {
             ALLELE_DISEASE_ANNOTATION,
             GENE_DISEASE_ANNOTATION,
             DISEASE_ANNOTATION,
+            AGM,
+            ALLELE,
+            GENE,
             FULL_INGEST
         );
 
@@ -95,15 +99,16 @@ public class BulkLoadJobExecutor {
             if(loadType == GENE_DISEASE_ANNOTATION || loadType == DISEASE_ANNOTATION || loadType == FULL_INGEST) {
                 geneDiseaseAnnotationExecutor.runLoad(bulkLoadFile);
             }
+            if(loadType == AGM || loadType == FULL_INGEST) {
+                agmExecutor.runLoad(bulkLoadFile);
+            }
+            if(loadType == ALLELE || loadType == FULL_INGEST) {
+                alleleExecutor.runLoad(bulkLoadFile);
+            }
+            if(loadType == GENE || loadType == FULL_INGEST) {
+                geneExecutor.runLoad(bulkLoadFile);
+            }
 
-        } else if(loadType == BackendBulkLoadType.GENE_DTO) {
-            geneFmsExecutor.runLoad(bulkLoadFile);
-        } else if(loadType == BackendBulkLoadType.ALLELE_DTO) {
-            alleleFmsExecutor.runLoad(bulkLoadFile);
-        } else if(loadType == BackendBulkLoadType.AGM_DTO) {
-            agmFmsExecutor.runLoad(bulkLoadFile);
-        } else if(loadType == BackendBulkLoadType.DISEASE_ANNOTATION_DTO) {
-            diseaseAnnotationFmsExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.MOLECULE) {
             moleculeExecutor.runLoad(bulkLoadFile);
         } else if(bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.ONTOLOGY) {

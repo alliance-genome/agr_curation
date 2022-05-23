@@ -8,8 +8,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.*;
+import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BulkLoadStatus;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
@@ -18,11 +18,10 @@ import com.cronutils.model.definition.*;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 
+import io.quarkus.logging.Log;
 import io.quarkus.scheduler.Scheduled;
 import io.vertx.mutiny.core.eventbus.EventBus;
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 @ApplicationScoped
 public class JobScheduler {
 
@@ -47,16 +46,16 @@ public class JobScheduler {
                         if(bf.getStatus() == null || bf.getStatus().isRunning() || bf.getStatus().isStarted() || bf.getLocalFilePath() != null) {
                             new File(bf.getLocalFilePath()).delete();
                             bf.setLocalFilePath(null);
-                            bf.setStatus(BulkLoadStatus.FAILED);
+                            bf.setStatus(JobStatus.FAILED);
                             bulkLoadFileDAO.merge(bf);
                         }
                     }
                     if(b.getStatus() == null) {
-                        b.setStatus(BulkLoadStatus.STOPPED);
+                        b.setStatus(JobStatus.STOPPED);
                         bulkLoadDAO.merge(b);
                     }
                     if(b.getStatus().isRunning()) {
-                        b.setStatus(BulkLoadStatus.FAILED);
+                        b.setStatus(JobStatus.FAILED);
                         bulkLoadDAO.merge(b);
                     }
                 }
@@ -88,16 +87,16 @@ public class JobScheduler {
                                         ZonedDateTime nextExecution = executionTime.nextExecution(lastCheck).get();
 
                                         if(lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
-                                            log.info("Need to run Cron: " + bsl.getName());
+                                            Log.info("Need to run Cron: " + bsl.getName());
                                             bsl.setSchedulingErrorMessage(null);
-                                            bsl.setStatus(BulkLoadStatus.SCHEDULED_PENDING);
+                                            bsl.setStatus(JobStatus.SCHEDULED_PENDING);
                                             bulkLoadDAO.merge(bsl);
                                         }
                                     }
                                 } catch (Exception e) {
                                     bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
-                                    bsl.setStatus(BulkLoadStatus.FAILED);
-                                    log.error(e.getLocalizedMessage());
+                                    bsl.setStatus(JobStatus.FAILED);
+                                    Log.error(e.getLocalizedMessage());
                                     bulkLoadDAO.merge(bsl);
                                 }
                             }
@@ -114,7 +113,7 @@ public class JobScheduler {
         SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
         for(BulkLoadGroup group: groups.getResults()) {
             for(BulkLoad load: group.getLoads()) {
-                if(load.getStatus() == null) load.setStatus(BulkLoadStatus.FINISHED);
+                if(load.getStatus() == null) load.setStatus(JobStatus.FINISHED);
                 if(load.getStatus().isPending()) {
                     load.setStatus(load.getStatus().getNextStatus());
                     bulkLoadDAO.merge(load);
@@ -128,7 +127,7 @@ public class JobScheduler {
     public void runFileJobs() {
         SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll(null);
         for(BulkLoadFile file: res.getResults()) {
-            if(file.getStatus() == null) file.setStatus(BulkLoadStatus.FINISHED);
+            if(file.getStatus() == null) file.setStatus(JobStatus.FINISHED);
             if(file.getStatus().isPending()) {
                 file.setStatus(file.getStatus().getNextStatus());
                 file.setErrorMessage(null);

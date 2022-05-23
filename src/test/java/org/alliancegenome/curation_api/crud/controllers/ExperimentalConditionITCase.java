@@ -128,7 +128,7 @@ public class ExperimentalConditionITCase {
                 body("entity.conditionTaxon.curie", is("NCBITaxon:9606")).
                 body("entity.conditionChemical.curie", is("CHEBI:ec0001")).
                 body("entity.conditionFreeText", is("Free text")).
-                body("entity.conditionSummary", is("Test ZecoTerm:Test ZecoTerm:Test ZFATerm:Test GOTerm:Test CHEBITerm:Test NCBITaxonTerm:Amount:Free text")).
+                body("entity.conditionSummary", is("Test ZecoTerm:Test ZecoTerm:Test ZFATerm:Test GOTerm:Test CHEBITerm:Homo sapiens:Amount:Free text")).
                 body("entity.internal", is(true));
         
     }
