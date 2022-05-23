@@ -28,7 +28,7 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
     
     @PUT
     @Path("/")
-    @JsonView(View.FieldsAndLists.class)
+    @JsonView(View.DiseaseAnnotationUpdate.class)
     public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation entity);
     
     @POST
