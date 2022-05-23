@@ -50,7 +50,7 @@ public class OntologyTerm extends CurieAuditedObject {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView(View.FieldsAndLists.class)
     @Column(columnDefinition="TEXT")
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> definitionUrls;
