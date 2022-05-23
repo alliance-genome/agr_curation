@@ -92,20 +92,20 @@ public class DiseaseAnnotation extends Association {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
     private List<EcoTerm> evidenceCodes;
     
     @IndexedEmbedded(includeDepth = 2)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
     private List<ConditionRelation> conditionRelations;
     
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
     @JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
     private List<Gene> with;
     
     @IndexedEmbedded(includeDepth = 1)
@@ -123,7 +123,7 @@ public class DiseaseAnnotation extends Association {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
     private List<VocabularyTerm> diseaseQualifiers;
     
     @IndexedEmbedded(includeDepth = 1)
@@ -135,7 +135,7 @@ public class DiseaseAnnotation extends Association {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @OneToMany
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
     private List<Note> relatedNotes;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
