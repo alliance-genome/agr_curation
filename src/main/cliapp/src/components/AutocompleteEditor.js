@@ -170,7 +170,8 @@ export const AutocompleteEditor = (
 }
 
 const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
-  return (
+  console.log(autocompleteSelectedItem)
+	return (
     <>
       <Tooltip ref={op} style={{ width: '450px', maxWidth: '450px' }} position={'right'} mouseTrack mouseTrackLeft={30}>
 			{autocompleteSelectedItem.curie &&
@@ -189,7 +190,7 @@ const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
           autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn.name ? syn.name : syn}`}>Synonym: {syn.name ? syn.name : syn}</div>)
         }
         {autocompleteSelectedItem.crossReferences &&
-          autocompleteSelectedItem.crossReferences.map((cr) => <div key={`crossReferences${cr.curie}`}>Cross Reference: {cr.curie}</div>)
+		  autocompleteSelectedItem.autocompleteSelectedItem.crossReferences.crossReferences.map((ref) => <div key={`crossReferences${ref.curie}`}>{ref.curie}</div>)
         }
         {autocompleteSelectedItem.secondaryIdentifiers &&
           autocompleteSelectedItem.secondaryIdentifiers.map((si) => { return <div key={`secondaryIdentifiers${si.name ? si.name : si}`}>Secondary Identifiers: {si.name ? si.name : si}</div> })

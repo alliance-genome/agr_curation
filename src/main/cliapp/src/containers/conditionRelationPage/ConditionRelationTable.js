@@ -19,6 +19,7 @@ import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
 import {ConditionRelationService} from "../../service/ConditionRelationService";
 import {AutocompleteEditor} from "../../components/AutocompleteEditor";
+import { InputText } from 'primereact/inputtext';
 
 
 export const ConditionRelationTable = () => {
@@ -253,6 +254,25 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
+	const onHandleValueChange = (event, newValue, props) => {
+		console.log(props.rowIndex)
+		console.log(newValue)
+		console.log(props.props.value)
+		let updatedHandle = [...props.props.value];
+		if (newValue || newValue === '') {
+			updatedHandle[props.rowIndex].handle = newValue;
+		}
+	};
+
+	const handleEditor = (props) => {
+		console.log(props)
+		return (
+			<>
+				<InputText value={props.value} onChange={(event) => { onHandleValueChange(event, event.target.value, props) }} />
+			</>
+		);
+	};
+
 	const onRowEditInit = (event) => {
 		rowsInEdit.current++;
 		setIsEnabled(false);
@@ -280,7 +300,6 @@ export const ConditionRelationTable = () => {
 
 
 	const onRowEditSave = (event) => {//possible to shrink?
-		console.log(event);
 		rowsInEdit.current--;
 		if (rowsInEdit.current === 0) {
 			setIsEnabled(true);
@@ -318,7 +337,8 @@ export const ConditionRelationTable = () => {
 
 				const errorMessagesCopy = errorMessages;
 
-				//console.log(errorMessagesCopy);
+				console.log(error);
+				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};
 				Object.keys(error.response.data.errorMessages).forEach((field) => {
 					let messageObject = {
@@ -351,7 +371,8 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.handle,
-			filterElement: filterComponentTemplate("uniqueIdFilter", ["handle"])
+			filterElement: filterComponentTemplate("uniqueIdFilter", ["handle"]),
+			editor: (props) => handleEditor(props)
 		},
 		{
 			field: "singleReference.curie",
