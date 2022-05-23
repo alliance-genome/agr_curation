@@ -248,6 +248,7 @@ export const SiteLayout = (props) => {
                         { label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
                         { label: 'Site Metrics', icon: 'pi pi-fw pi-home', to: '/metricspage' },
                         { label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
+                        { label: 'Reports', icon: 'pi pi-fw pi-home', to: '/reports' },
                         { label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
                         { label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${apiVersion?.esHost}`, target: "_blank" },
                         { label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
