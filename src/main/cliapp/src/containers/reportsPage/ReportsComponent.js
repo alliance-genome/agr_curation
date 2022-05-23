@@ -1,16 +1,17 @@
 import React, { useReducer, useRef, useState } from 'react';
 import { useQuery } from 'react-query';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
 
 import { SearchService } from '../../service/SearchService';
 import { ReportService } from '../../service/ReportService';
 import { Messages } from 'primereact/messages';
-import { Button } from 'primereact/button';
 import { NewReportForm } from './NewReportForm';
 import { NewReportGroupForm } from './NewReportGroupForm';
 import { ReportDialog } from './ReportDialog/ReportDialog';
 import { useQueryClient } from 'react-query';
+import { GroupTable } from './GroupTable';
+import { ReportTable } from './ReportTable';
+import { TopButtons } from './TopButtons';
+
 
 export const ReportsComponent = () => {
 
@@ -30,11 +31,6 @@ export const ReportsComponent = () => {
   const [reportGroupDialog, setReportGroupDialog] = useState(false);
   const [reportDialog, setReportDialog] = useState(false);
   const [newReportDialog, setNewReportDialog] = useState(false);
-  const [expandedGroupRows, setExpandedGroupRows] = useState(null);
-  const [expandedLoadRows, setExpandedLoadRows] = useState(null);
-  const [expandedFileRows, setExpandedFileRows] = useState(null);
-  const [disableFormFields, setDisableFormFields] = useState(false);
-  const [history, setHistory] = useState({});
   const errorMessage = useRef(null);
   const searchService = new SearchService();
 
@@ -43,15 +39,6 @@ export const ReportsComponent = () => {
   const queryClient = useQueryClient();
 
   let reportService = null;
-
-  const handleNewReportGroupOpen = () => {
-    setReportGroupDialog(true);
-  };
-
-  const handleNewReportOpen = () => {
-    reportDispatch({ type: "RESET" });
-    setNewReportDialog(true);
-  };
 
   useQuery(['reporttable'],
     () => searchService.find('curationreportgroup', 100, 0, {}), {
@@ -78,264 +65,37 @@ export const ReportsComponent = () => {
     return reportService;
   }
 
-  /* const urlTemplate = (rowData) => {
-    return <a href={rowData.s3Url}>Download</a>;
-  };
- */
-  const refresh = () => {
-    queryClient.invalidateQueries('reporttable');
-  };
-
-  /* const runLoad = (rowData) => {
-    getService().restartLoad(rowData.type, rowData.id).then(response => {
-      queryClient.invalidateQueries('bulkloadtable');
-    });
-  }; */
-
-  /* const runLoadFile = (rowData) => {
-    getService().restartLoadFile(rowData.id).then(response => {
-      queryClient.invalidateQueries('bulkloadtable');
-    });
-  }; */
-
-  const handleReportEdit = (rowData) => {
-    reportDispatch({ type: "EDIT", editReport: rowData });
-    setNewReportDialog(true);
-    setDisableFormFields(true);
-  };
-
-  /* const deleteLoadFile = (rowData) => {
-    getService().deleteLoadFile(rowData.id).then(response => {
-      queryClient.invalidateQueries('bulkloadtable');
-    });
-  }; */
-
-  const deleteReport = (rowData) => {
-    getService().deleteReport(rowData.id).then(() => {
-      queryClient.invalidateQueries('reporttable');
-    });
-  };
-
-  const deleteGroup = (rowData) => {
-    getService().deleteGroup(rowData.id).then(() => {
-      queryClient.invalidateQueries('reporttable');
-    });
-  };
-
-  const handleReportOpen = async (rowData) => {
-    getService().getReport(rowData.id).then((res) => {
-      const { data: { entity } } = res;
-      setReport(entity);
-      setReportDialog(true);
-    });
-  };
-
-  /* const showHistory = (rowData) => {
-    setHistory(rowData);
-    setHistoryDialog(true);
-  }; */
-
-
-  /* const historyActionBodyTemplate = (rowData) => {
-    return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
-  };
-
-  const loadFileActionBodyTemplate = (rowData) => {
-    let ret = [];
-
-    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
-      ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
-    }
-    if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
-      ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
-    }
-
-    return ret;
-
-  }; */
-
-  const reportActionBodyTemplate = (rowData) => {
-    let buttons = [];
-
-    buttons.push(<Button key="openDialog" icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => handleReportOpen(rowData)} />);
-    buttons.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => handleReportEdit(rowData)} />);
-
-    //not sure how status will be handled in the reports or if these are valid states
-    // if (!rowData.curationReportStatus || rowData.curationReportStatus === "FINISHED" || rowData.curationReportStatus === "FAILED" || rowData.curationReportStatus === "STOPPED") {
-      // buttons.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
-    // }
-
-    if (!rowData.reportFiles || rowData.reportFiles.length === 0) {
-      buttons.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteReport(rowData)} />);
-    }
-
-    return buttons;
-  };
-
-  const groupActionBodyTemplate = (rowData) => {
-    if (!rowData.curationReports || rowData.curationReports.length === 0) {
-      return (<Button icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteGroup(rowData)} />);
-    }
-  };
-
-  const nameBodyTemplate = (rowData) => {
-    return (
-      <React.Fragment>
-        {rowData.name}
-      </React.Fragment>
-    );
-  };
-
-  /* const urlBodyTemplate = (rowData) => {
-    if (rowData.url) {
-      return <a href={rowData.url}>Source Download URL</a>;
-    }
-  }; */
-
-  /* const backendBulkLoadTypeTemplate = (rowData) => {
-    if (rowData.backendBulkLoadType === 'ONTOLOGY') {
-      return rowData.backendBulkLoadType + "(" + rowData.ontologyType + ")";
-    } else {
-      return rowData.backendBulkLoadType;
-    }
-  }; */
-
-  const scheduleActiveTemplate = (rowData) => {
-    return (
-      <div>
-        {rowData.scheduleActive ? "true" : "false"}
-      </div>
-    );
-  };
-
-
-
-
-  /* const dynamicColumns = (loads) => {
-
-    let showFMSLoad = false;
-    let showURLLoad = false;
-    let showManualLoad = false;
-
-    let ret = [];
-
-    if (loads) {
-      for (const load of loads) {
-        if (load.type === "BulkFMSLoad") showFMSLoad = true;
-        if (load.type === "BulkURLLoad") showURLLoad = true;
-        if (load.type === "BulkManualLoad") showManualLoad = true;
-      }
-    }
-
-    if (showFMSLoad || showURLLoad) {
-      ret.push(<Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />);
-      ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
-      ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
-      if (showFMSLoad) {
-        ret.push(<Column key="dataType" field="dataType" header="FMS Data Type" />);
-        ret.push(<Column key="dataSubType" field="dataSubType" header="FMS Data Sub Type" />);
-      }
-      if (showURLLoad) {
-        ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
-      }
-    }
-    if (showManualLoad) {
-      ret.push(<Column key="dataType2" field="dataType" header="Load Data Type" />);
-    }
-
-    return ret;
-  }; */
-
-  const statusTemplate = (rowData) => {
-    let styleClass = 'p-button-text p-button-plain';
-    if (rowData.curationReportStatus === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status && (
-      rowData.curationReportStatus.endsWith('STARTED') ||
-      rowData.curationReportStatus.endsWith('RUNNING') ||
-      rowData.curationReportStatus.endsWith('PENDING')
-    )) { styleClass = "p-button-success"; }
-
-    return (
-      <Button label={rowData.curationReportStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
-    );
-  };
-
-  /* const hisotryTable = (file) => {
-    return (
-      <div className="card">
-        <DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
-
-          <Column field="loadStarted" header="Load Started" />
-          <Column field="loadFinished" header="Load Finished" />
-          <Column field="completedRecords" header="Records Completed" />
-          <Column field="failedRecords" header="Records Failed" />
-          <Column field="totalRecords" header="Total Records" />
-          <Column body={historyActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-        </DataTable>
-      </div>
-    );
-  }; */
-
-  /* const fileTable = (load) => {
-    return (
-      <div className="card">
-        <DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll"
-          expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
-          rowExpansionTemplate={hisotryTable} dataKey="id">
-          <Column expander style={{ width: '3em' }} />
-          <Column field="md5Sum" header="MD5 Sum" />
-          <Column field="fileSize" header="Compressed File Size" />
-          <Column field="recordCount" header="Record Count" />
-          <Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
-          <Column field="dateUpdated" header="Last Loaded" />
-          <Column field="status" body={statusTemplate} header="Status" />
-          <Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-        </DataTable>
-      </div>
-    );
-  }; */
-
-
   const reportTable = (group) => {
     return (
-      <div className="card">
-        <DataTable key="reportTable" value={group.curationReports} responsiveLayout="scroll"
-        >
-          <Column field="name" header="Name" />
-          <Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />
-          <Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />
-          <Column field="curationReportStatus" body={statusTemplate} header="Status" />
-          <Column field="birtReportFilePath" header="BIRT Report File Path" />
-          <Column key="reportAction" body={reportActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-        </DataTable>
-      </div>
+      <ReportTable 
+        curationReports={group.curationReports} 
+        getService={getService} 
+        setReport={setReport} 
+        setReportDialog={setReportDialog} 
+        reportDispatch={reportDispatch} 
+        setNewReportDialog={setNewReportDialog} 
+        queryClient={queryClient}
+      />
     );
   };
 
   return (
     <div className="card">
-      <Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewReportGroupOpen} />
-      <Button label="New Report" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewReportOpen} />
-      <Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
+      <TopButtons 
+        reportDispatch={reportDispatch}
+        setNewReportDialog={setNewReportDialog}
+        setReportGroupDialog={setReportGroupDialog}
+        queryClient={queryClient}
+      />
       <h3>Reports Table</h3>
       <Messages ref={errorMessage} />
-      <DataTable key="groupTable"
-        value={groups} className="p-datatable-sm"
-        expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
-        rowExpansionTemplate={reportTable}
-        dataKey="id">
-        <Column expander style={{ width: '3em' }} />
-        <Column body={nameBodyTemplate} header="Group Name" />
-        <Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-      </DataTable>
+      <GroupTable getService={getService} queryClient={queryClient} groups={groups} reportTable={reportTable}/>
       <NewReportForm
         newReportDialog={newReportDialog}
         setNewReportDialog={setNewReportDialog}
         newReport={newReport}
         reportDispatch={reportDispatch}
         groups={groups}
-        disableFormFields={disableFormFields}
-        setDisableFormFields={setDisableFormFields}
         reportService={reportService}
       />
       <NewReportGroupForm
@@ -344,9 +104,8 @@ export const ReportsComponent = () => {
       />
      <ReportDialog
         reportDialog={reportDialog}
-        history={history}
         setReportDialog={setReportDialog}
-        service={getService()}
+        service={getService}
         report={report}
       /> 
     </div>

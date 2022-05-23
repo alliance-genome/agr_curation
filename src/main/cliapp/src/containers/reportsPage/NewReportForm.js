@@ -1,5 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import React from 'react';
 import { CronFields } from './CronFields';
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from 'primereact/dialog';
@@ -8,8 +7,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { ReportService } from '../../service/ReportService';
 import { InputText } from 'primereact/inputtext';
 
-export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, newReport, reportDispatch, disableFormFields, setDisableFormFields, reportService }) => {
-  const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
+export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, newReport, reportDispatch, reportService }) => {
 
   const queryClient = useQueryClient();
 
@@ -40,7 +38,6 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
   const hideDialog = () => {
     reportDispatch({ type: "RESET" });
     setNewReportDialog(false);
-    setDisableFormFields(false);
   };
 
   const handleSubmit = (event) => {
@@ -51,7 +48,6 @@ export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, new
         queryClient.invalidateQueries('reporttable');
         reportDispatch({ type: "RESET" });
         setNewReportDialog(false);
-        setDisableFormFields(false);
       },
       onError: () => {
         // lookup group and set 

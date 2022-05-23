@@ -4,9 +4,9 @@ import { Column } from 'primereact/column';
 
 export const ReportHistoryTable = ({ history }) => {
 
-  const pdfBody = rowData => <a href={rowData.pdfUrl} target="_blank">PDF</a>;
-  const xlsBody = rowData => <a href={rowData.xlsUrl} target="_blank">XLS</a>;
-  const htmlBody = rowData => <a href={rowData.htmlUrl} target="_blank">HTML</a>;
+  const pdfBody = rowData => <a href={rowData.pdfUrl} rel="noopener noreferrer" target="_blank">PDF</a>;
+  const xlsBody = rowData => <a href={rowData.xlsUrl} rel="noopener noreferrer" target="_blank">XLS</a>;
+  const htmlBody = rowData => <a href={rowData.htmlUrl} rel="noopener noreferrer" target="_blank">HTML</a>;
 
   if (!history) return <div>No history to show</div>; 
 
