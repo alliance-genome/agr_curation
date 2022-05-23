@@ -19,7 +19,7 @@ import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
 import {ConditionRelationService} from "../../service/ConditionRelationService";
 import {AutocompleteEditor} from "../../components/AutocompleteEditor";
-import { InputText } from 'primereact/inputtext';
+import {InputTextEditor} from "../../components/InputTextEditor";
 
 
 export const ConditionRelationTable = () => {
@@ -254,23 +254,16 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const onHandleValueChange = (event, newValue, props) => {
-		console.log(props.rowIndex)
-		console.log(newValue)
-		console.log(props.props.value)
-		let updatedHandle = [...props.props.value];
-		if (newValue || newValue === '') {
-			updatedHandle[props.rowIndex].handle = newValue;
-		}
-	};
-
 	const handleEditor = (props) => {
-		console.log(props)
-		return (
-			<>
-				<InputText value={props.value} onChange={(event) => { onHandleValueChange(event, event.target.value, props) }} />
-			</>
-		);
+      return (
+          <>
+              <InputTextEditor
+                  rowProps={props}
+                  fieldName={'handle'}
+              />
+              <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"name"} />
+          </>
+      );
 	};
 
 	const onRowEditInit = (event) => {
