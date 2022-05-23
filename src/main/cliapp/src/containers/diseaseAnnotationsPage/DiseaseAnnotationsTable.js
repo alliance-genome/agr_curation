@@ -361,11 +361,9 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onRowEditSave = (event) => {//possible to shrink?
-    console.log(event);
-    const { subject, object, relatedNotes, diseaseGeneticModifier } = event.data;
-    relatedNotes.forEach((note) => {
-      delete note.dataKey;
-    });
+    // console.log(event);
+    const { subject, object, diseaseGeneticModifier } = event.data;
+
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
