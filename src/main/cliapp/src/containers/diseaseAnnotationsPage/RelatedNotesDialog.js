@@ -124,12 +124,14 @@ export const RelatedNotesDialog = ({
       _clonableNotes.forEach((note) => {
         note.dataKey = counter++;
       });
-    }
+    } else {
+      _clonableNotes = [];
+    };
     return _clonableNotes;
   };
 
   const createNewNoteHandler = (event) => {
-    let cnt = localRelateNotes.length;
+    let cnt = localRelateNotes ? localRelateNotes.length : 0;
     localRelateNotes.push({
       dataKey : cnt,
       noteType: {

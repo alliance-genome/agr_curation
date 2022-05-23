@@ -297,6 +297,25 @@ export const DiseaseAnnotationsTable = () => {
           <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
         </>
       )
+    } else {
+      return (
+        <>
+          <div>
+            <Button className="p-button-text"
+              onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+              <span style={{ textDecoration: 'underline' }}>
+                Add Note
+                <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+              </span>&nbsp;&nbsp;&nbsp;&nbsp;
+              <Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',  }}/>
+              <span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+                <i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+              </span>
+            </Button>
+          </div>
+          <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+        </>
+      )
     }
   };
 
