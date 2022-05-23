@@ -50,26 +50,26 @@ public class OntologyTerm extends CurieAuditedObject {
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
-    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+    @JsonView({View.FieldsAndLists.class})
     @Column(columnDefinition="TEXT")
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> definitionUrls;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> subsets;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     private List<String> secondaryIdentifiers;
 
     @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
     @ElementCollection
-    @JsonView({View.FieldsAndLists.class})
+    @JsonView(View.FieldsAndLists.class)
     @JoinTable(indexes = @Index( columnList = "ontologyterm_curie"))
     @Column(columnDefinition="TEXT")
     private List<String> synonyms;
