@@ -1,6 +1,7 @@
 import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { StatusTemplate } from '../StatusTemplate';
 
 export const ReportHistoryTable = ({ history }) => {
 
@@ -15,6 +16,7 @@ export const ReportHistoryTable = ({ history }) => {
       <Column body={pdfBody} field="pdfUrl" header="PDF File" />
       <Column body={xlsBody} field="xlsUrl" header="XLS File" />
       <Column body={htmlBody} field="htmlUrl" header="HTML File" />
+      <Column body={(rowData) => <StatusTemplate rowData={rowData}/>} header="Status" />
     </DataTable>
   )
 };

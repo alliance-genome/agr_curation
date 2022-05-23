@@ -2,6 +2,7 @@ import React from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
+import { StatusTemplate } from './StatusTemplate';
 
 export const ReportTable = ({ curationReports, getService, setReport, setReportDialog, reportDispatch, setNewReportDialog, queryClient }) => {
 
@@ -47,20 +48,6 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
     return buttons;
   };
 
-  const statusTemplate = (rowData) => {
-    let styleClass = 'p-button-text p-button-plain';
-    if (rowData.curationReportStatus === 'FAILED') { styleClass = "p-button-danger"; }
-    if (rowData.status && (
-      rowData.curationReportStatus.endsWith('STARTED') ||
-      rowData.curationReportStatus.endsWith('RUNNING') ||
-      rowData.curationReportStatus.endsWith('PENDING')
-    )) { styleClass = "p-button-success"; }
-
-    return (
-      <Button label={rowData.curationReportStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
-    );
-  };
-
   const scheduleActiveTemplate = (rowData) => {
     return (
       <>
@@ -75,7 +62,7 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
           <Column field="name" header="Name" />
           <Column key="scheduleActive" field="scheduleActive" header="Schedule Active" body={scheduleActiveTemplate} />
           <Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />
-          <Column field="curationReportStatus" body={statusTemplate} header="Status" />
+          <Column field="curationReportStatus" body={(rowData) => <StatusTemplate rowData={rowData}/>} header="Status" />
           <Column field="birtReportFilePath" header="BIRT Report File Path" />
           <Column key="reportAction" body={reportActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
         </DataTable>

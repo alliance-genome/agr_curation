@@ -4,6 +4,7 @@ import React from 'react';
 import Moment from 'react-moment';
 import { DialogCard } from './DialogCard';
 import { DialogCardRow} from './DialogCardRow';
+import { StatusTemplate } from '../StatusTemplate';
 
 export const DialogTop = ({ report }) => {
   return (
@@ -12,7 +13,7 @@ export const DialogTop = ({ report }) => {
         {report.name}
       </DialogCard>
       <DialogCard topText="Status">
-        {report.curationReportStatus}
+        <StatusTemplate rowData={report}/>
       </DialogCard>
       <DialogCard topText="Date Created">
         <Moment format="MMM Do YYYY" date={report.dateCreated} />
