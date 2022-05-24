@@ -4,7 +4,7 @@ import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
 import { StatusTemplate } from './StatusTemplate';
 
-export const ReportTable = ({ curationReports, getService, setReport, setReportDialog, reportDispatch, setNewReportDialog, queryClient }) => {
+export const ReportTable = ({ curationReports, getService, setReport, setReportDialog, reportDispatch, setNewReportDialog, queryClient, toast }) => {
 
   const handleReportOpen = async (rowData) => {
     getService().getReport(rowData.id).then((res) => {
@@ -22,6 +22,11 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
   const deleteReport = (rowData) => {
     getService().deleteReport(rowData.id).then(() => {
       queryClient.invalidateQueries('reporttable');
+    }).catch((error) => {
+        toast.current.show([
+          { life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.details, sticky: false }
+        ]);
+      console.warn(error.response.data);
     });
   };
 
@@ -29,6 +34,18 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
     getService().restartReport(rowData.id).then(() => {
       queryClient.invalidateQueries('reporttable');
     });
+  };
+
+  const PlayButton = ({ rowData }) => {
+    if (!rowData.curationReportStatus || rowData.curationReportStatus === "FINISHED" || rowData.curationReportStatus === "FAILED" || rowData.curationReportStatus === "STOPPED") {
+      return (
+        <div className='col-2'>
+          <Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runReport(rowData)} />
+        </div>
+      );
+    }else {
+      return null;
+    };
   };
 
   const reportActionBodyTemplate = (rowData) => {
@@ -45,7 +62,20 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
       buttons.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteReport(rowData)} />);
     }
 
-    return buttons;
+    return (
+      <div className='grid'>
+        <div className='col-2'>
+          <Button key="openDialog" icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => handleReportOpen(rowData)} />
+        </div>
+        <div className='col-2'>
+          <Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => handleReportEdit(rowData)} />
+        </div>
+        <PlayButton rowData={rowData} />
+        <div className='col-2'>
+          <Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteReport(rowData)} />
+        </div>
+      </div>
+    );
   };
 
   const scheduleActiveTemplate = (rowData) => {
@@ -55,6 +85,7 @@ export const ReportTable = ({ curationReports, getService, setReport, setReportD
       </>
     );
   };
+
     return (
       <div className="card">
         <DataTable key="reportTable" value={curationReports} responsiveLayout="scroll"
