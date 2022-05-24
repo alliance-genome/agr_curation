@@ -38,9 +38,7 @@ export class ReportService extends BaseAuthService {
     }
   
     restartReport(id) {
-      console.log(id);
-      return Promise.resolve();
-      // return this.api.get(`/curationreport/restart/${id}`);
+      return this.api.get(`/curationreport/restart/${id}`);
     }
 
     getReport(id) {

@@ -11,6 +11,7 @@ import { useQueryClient } from 'react-query';
 import { GroupTable } from './GroupTable';
 import { ReportTable } from './ReportTable';
 import { TopButtons } from './TopButtons';
+import { Toast } from 'primereact/toast';
 
 
 export const ReportsComponent = () => {
@@ -31,6 +32,8 @@ export const ReportsComponent = () => {
   const [reportGroupDialog, setReportGroupDialog] = useState(false);
   const [reportDialog, setReportDialog] = useState(false);
   const [newReportDialog, setNewReportDialog] = useState(false);
+
+  const toast = useRef(null);
   const errorMessage = useRef(null);
   const searchService = new SearchService();
 
@@ -75,12 +78,14 @@ export const ReportsComponent = () => {
         reportDispatch={reportDispatch} 
         setNewReportDialog={setNewReportDialog} 
         queryClient={queryClient}
+        toast={toast}
       />
     );
   };
 
   return (
     <div className="card">
+      <Toast ref={toast} position="top-right" />
       <TopButtons 
         reportDispatch={reportDispatch}
         setNewReportDialog={setNewReportDialog}
