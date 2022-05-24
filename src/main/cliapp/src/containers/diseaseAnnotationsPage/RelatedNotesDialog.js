@@ -52,6 +52,7 @@ export const RelatedNotesDialog = ({
   }
 
   const onRowEditCancel = (event) => {
+    console.log(editingRows);
     rowsInEdit.current--;
     let _editingRows = { ...editingRows };
     delete _editingRows[event.index];
@@ -123,12 +124,14 @@ export const RelatedNotesDialog = ({
       _clonableNotes.forEach((note) => {
         note.dataKey = counter++;
       });
-    }
+    } else {
+      _clonableNotes = [];
+    };
     return _clonableNotes;
   };
 
   const createNewNoteHandler = (event) => {
-    let cnt = localRelateNotes.length;
+    let cnt = localRelateNotes ? localRelateNotes.length : 0;
     localRelateNotes.push({
       dataKey : cnt,
       noteType: {
@@ -187,11 +190,12 @@ export const RelatedNotesDialog = ({
     };
 
     setOriginalRelatedNotesData((originalRelatedNotesData) => {
-      return {
-        ...originalRelatedNotesData,
-        dialog: keepDialogOpen,
+        return {
+          ...originalRelatedNotesData,
+          dialog: keepDialogOpen,
+        }
       }
-    });
+    );
   };
 
   const noteTypeTemplate = (rowData) => {

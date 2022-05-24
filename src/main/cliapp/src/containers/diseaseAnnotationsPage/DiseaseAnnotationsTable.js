@@ -297,6 +297,25 @@ export const DiseaseAnnotationsTable = () => {
           <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
         </>
       )
+    } else {
+      return (
+        <>
+          <div>
+            <Button className="p-button-text"
+              onClick={(event) => { handleRelatedNotesOpenInEdit(event, props, true) }} >
+              <span style={{ textDecoration: 'underline' }}>
+                Add Note
+                <i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+              </span>&nbsp;&nbsp;&nbsp;&nbsp;
+              <Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',  }}/>
+              <span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+                <i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+              </span>
+            </Button>
+          </div>
+          <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+        </>
+      )
     }
   };
 
@@ -342,23 +361,25 @@ export const DiseaseAnnotationsTable = () => {
 
 
   const onRowEditSave = (event) => {//possible to shrink?
-    //console.log(event);
+    // console.log(event);
+    const { subject, object, diseaseGeneticModifier } = event.data;
+
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
     }
     let updatedRow = global.structuredClone(event.data);//deep copy
-    if (Object.keys(event.data.subject).length >= 1) {
+    if (Object.keys(subject).length >= 1) {
       event.data.subject.curie = trimWhitespace(event.data.subject.curie);
       updatedRow.subject = {};
       updatedRow.subject.curie = event.data.subject.curie;
     }
-    if (Object.keys(event.data.object).length >= 1) {
+    if (Object.keys(object).length >= 1) {
       event.data.object.curie = trimWhitespace(event.data.object.curie);
       updatedRow.object = {};
       updatedRow.object.curie = event.data.object.curie;
     }
-    if (event.data.diseaseGeneticModifier && Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
+    if (diseaseGeneticModifier && Object.keys(diseaseGeneticModifier).length >= 1) {
       event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
       updatedRow.diseaseGeneticModifier = {};
       updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
