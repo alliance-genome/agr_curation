@@ -69,7 +69,8 @@ export const RelatedNotesDialog = ({
     const errorMessagesCopy = errorMessages;
     errorMessagesCopy[event.index] = {};
     setErrorMessages(errorMessagesCopy);
-    hasEdited.current = false;
+    if(hasEdited && hasEdited.current === false)
+      compareChangesInNotes(event.data,event.index);
   };
 
   const compareChangesInNotes = (data,index) => {
