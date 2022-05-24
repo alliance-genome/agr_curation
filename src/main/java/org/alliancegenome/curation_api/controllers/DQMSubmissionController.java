@@ -2,10 +2,9 @@ package org.alliancegenome.curation_api.controllers;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
+import org.alliancegenome.curation_api.enums.*;
 import org.alliancegenome.curation_api.interfaces.DQMSubmissionInterface;
 import org.alliancegenome.curation_api.jobs.BulkLoadManualProcessor;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.BackendBulkLoadType;
 import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
 public class DQMSubmissionController implements DQMSubmissionInterface {

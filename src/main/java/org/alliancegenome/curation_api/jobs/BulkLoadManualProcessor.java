@@ -4,8 +4,7 @@ import java.util.*;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.alliancegenome.curation_api.enums.BackendBulkDataType;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad.*;
+import org.alliancegenome.curation_api.enums.*;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.jboss.resteasy.plugins.providers.multipart.*;
@@ -42,7 +41,7 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
         SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(null, params);
         if(load != null && load.getTotalResults() == 1) {
             bulkManualLoad = load.getResults().get(0);
-            bulkManualLoad.setStatus(BulkLoadStatus.MANUAL_STARTED);
+            bulkManualLoad.setStatus(JobStatus.MANUAL_STARTED);
             
             startLoad(bulkManualLoad);
             
@@ -50,10 +49,10 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
             String localFilePath = fileHelper.compressInputFile(filePath);
             processFilePath(bulkManualLoad, localFilePath);
 
-            endLoad(bulkManualLoad, null, BulkLoadStatus.FINISHED);
+            endLoad(bulkManualLoad, null, JobStatus.FINISHED);
         } else {
             log.warn("BulkManualLoad not found: " + loadType);
-            endLoad(bulkManualLoad, "BulkManualLoad not found: " + loadType, BulkLoadStatus.FAILED);
+            endLoad(bulkManualLoad, "BulkManualLoad not found: " + loadType, JobStatus.FAILED);
             return;
         }
 

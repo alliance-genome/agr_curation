@@ -1,12 +1,27 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
+import static org.hamcrest.Matchers.is;
+
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -14,13 +29,16 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.hamcrest.Matchers.is;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
@@ -1212,18 +1230,20 @@ public class DiseaseAnnotationITCase {
     }
     
     private Person createPerson(String uniqueId) {
-        Person person = new Person();
+        LoggedInPerson person = new LoggedInPerson();
         person.setUniqueId(uniqueId);
         
-        ObjectResponse<Person> response = RestAssured.given().
+        ObjectResponse<LoggedInPerson> response = RestAssured.given().
                 contentType("application/json").
                 body(person).
                 when().
-                post("/api/person").
+                post("/api/loggedinperson").
                 then().
                 statusCode(200).extract().
-                body().as(getObjectResponseTypeRefPerson());;
-        return response.getEntity();
+                body().as(getObjectResponseTypeRefLoggedInPerson());
+        
+        person = response.getEntity();
+        return (Person) person;
     }
 
     private AffectedGenomicModel createModel(String curie, String taxon, String name) {
@@ -1418,8 +1438,8 @@ public class DiseaseAnnotationITCase {
         return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
     }
 
-    private TypeRef<ObjectResponse<Person>> getObjectResponseTypeRefPerson() {
-        return new TypeRef<ObjectResponse <Person>>() { };
+    private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
+        return new TypeRef<ObjectResponse <LoggedInPerson>>() { };
     }
 
     private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {

@@ -5,6 +5,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.zip.*;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
 import org.jboss.resteasy.plugins.providers.multipart.*;
 
@@ -131,10 +132,14 @@ public class FileTransferHelper {
     }
     
     private File generateFilePath() {
+        return new File(generateUniqueFileName());
+    }
+    
+    public String generateUniqueFileName() {
         Date d = new Date();
         UUID uuid = UUID.randomUUID();
         String outFileName = "tmp_file." + uuid + ".data_" + d.getTime();
-        return new File(outFileName);
+        return outFileName;
     }
 
     private boolean compressGzipFile(File inFile, File gzipOutFile) {
@@ -153,6 +158,30 @@ public class FileTransferHelper {
             return false;
         }
         return true;
+    }
+
+    public String getMD5SumOfGzipFile(String fullFilePath) {
+        try {
+            InputStream is = new GZIPInputStream(new FileInputStream(new File(fullFilePath)));
+            String md5Sum = DigestUtils.md5Hex(is);
+            is.close();
+            return md5Sum;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+    
+    public String getMD5SumOfFile(String fullFilePath) {
+        try {
+            InputStream is = new FileInputStream(new File(fullFilePath));
+            String md5Sum = DigestUtils.md5Hex(is);
+            is.close();
+            return md5Sum;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }
