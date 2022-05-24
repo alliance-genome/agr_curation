@@ -158,6 +158,7 @@ export const ExperimentalConditionsTable = () => {
 
 
   const onRowEditSave = (event) => {
+    console.log(event);
     rowsInEdit.current--;
     if (rowsInEdit.current === 0) {
       setIsEnabled(true);
@@ -178,7 +179,6 @@ export const ExperimentalConditionsTable = () => {
     mutation.mutate(updatedRow, {
       onSuccess: (response, variables, context) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
-
         let conditions = [...experimentalConditions];
         const columns = Object.keys(response.data.entity);
         columns.forEach(column => {

@@ -13,6 +13,7 @@ import { FilterComponentDropDown } from '../../components/FilterComponentDropdow
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
+import { GenericDataTable } from '../../components/GenericDataTable';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
@@ -335,7 +336,7 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   const onRowEditInit = (event) => {
-    rowsInEdit.current++;
+    rowsInEdit.current++; 
     setIsEnabled(false);
     originalRows[event.index] = { ...diseaseAnnotations[event.index] };
     setOriginalRows(originalRows);
@@ -344,7 +345,7 @@ export const DiseaseAnnotationsTable = () => {
 
   const onRowEditCancel = (event) => {
     rowsInEdit.current--;
-    if (rowsInEdit.current === 0) {
+    if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
       setIsEnabled(true);
     };
 
@@ -365,7 +366,7 @@ export const DiseaseAnnotationsTable = () => {
     const { subject, object, diseaseGeneticModifier } = event.data;
 
     rowsInEdit.current--;
-    if (rowsInEdit.current === 0) {
+    if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
       setIsEnabled(true);
     }
     let updatedRow = global.structuredClone(event.data);//deep copy
@@ -1189,11 +1190,11 @@ export const DiseaseAnnotationsTable = () => {
   };
 
   return (
-      <>
+    <>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <DataTable value={diseaseAnnotations} header={header} reorderableColumns ref={dataTable}
+    {/*<DataTable value={diseaseAnnotations} header={header} reorderableColumns ref={dataTable}
           tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" scrollHeight="62vh"
           editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
           onColReorder={colReorderHandler}
@@ -1209,7 +1210,16 @@ export const DiseaseAnnotationsTable = () => {
           <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
             headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
           {columnList}
-        </DataTable>
+        </DataTable>*/}
+      <GenericDataTable 
+        endpoint="disease-annotations" 
+        tableName="Disease Annotations" 
+        columns={columns}  
+        aggregationFields={aggregationFields}
+        isEditable
+        curieFields={["subject", "object", "diseaseGeneticModifier"]}
+        mutation={mutation}
+      />
       </div>
       <RelatedNotesDialog
         originalRelatedNotesData={relatedNotesData}

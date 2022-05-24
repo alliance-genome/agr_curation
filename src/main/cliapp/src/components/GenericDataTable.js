@@ -1,25 +1,32 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { DataTable } from 'primereact/datatable';
-import { useSessionStorage } from '../../service/useSessionStorage';
-import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
-import { Column } from 'primereact/column';
-import { SearchService } from '../../service/SearchService';
 import { useQuery } from 'react-query';
-import { Messages } from "primereact/messages";
-import { FilterComponentInputText } from '../../components/FilterComponentInputText'
-import { EllipsisTableCell } from '../../components/EllipsisTableCell';
-import { MultiSelect } from 'primereact/multiselect';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
-import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { MultiSelect } from 'primereact/multiselect';
+import { Toast } from 'primereact/toast';
+
+
+import { FilterComponentInputText } from './FilterComponentInputText'
+import { EllipsisTableCell } from './EllipsisTableCell';
+import { DataTableHeaderFooterTemplate } from "./DataTableHeaderFooterTemplate";
+
+import { SearchService } from '../service/SearchService';
+import { useSessionStorage } from '../service/useSessionStorage';
+
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../utils/utils';
+import { useSetDefaultColumnOrder } from '../utils/useSetDefaultColumnOrder';
+
 
 export const GenericDataTable = ({ 
   endpoint, 
   tableName, 
   columns,  
-  mutation,
-  sortMapping,
   aggregationFields,
+  isEditable,
+  curieFields,
+  sortMapping,
+  mutation,
 }) => {
   const defaultColumnNames = columns.map((col) => {
     return col.header;
@@ -38,15 +45,16 @@ export const GenericDataTable = ({
 
   
   const [tableState, setTableState] = useSessionStorage(
-  `${tableKeyName}TableSettings`, 
+  `${initialTableState.tableKeyName}TableSettings`, 
     initialTableState
-);
+  );
 
-  const [data, setData] = useState(null);
+  const [entity, setEntity] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true);
   const [columnList, setColumnList] = useState([]);
+  const [editingRows, setEditingRows] = useState({});
   const searchService = new SearchService();
 
   const [errorMessages, setErrorMessages] = useState({});
@@ -56,7 +64,8 @@ export const GenericDataTable = ({
   const toast_topright = useRef(null);
   const dataTable = useRef(null);
 
-  useQuery([`${tableKeyName}Aggregations`, aggregationFields, tableState],
+  //what is this doing?
+  useQuery([`${tableState.tableKeyName}Aggregations`, aggregationFields, tableState],
     () => searchService.search(endpoint, 0, 0, null, {}, {}, aggregationFields), {
     onSuccess: (data) => {
     },
@@ -70,11 +79,11 @@ export const GenericDataTable = ({
   }
   );
 
-  useQuery([tableKeyName, tableState],
-    () => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
+  useQuery([tableState.tableKeyName, tableState],
+    () => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
     onSuccess: (data) => {
       setIsEnabled(true);
-      setData(data.results);
+      setEntity(data.results);
       setTotalRecords(data.totalResults);
     },
     onError: (error) => {
@@ -133,62 +142,53 @@ export const GenericDataTable = ({
   const onRowEditInit = (event) => {
     rowsInEdit.current++;
     setIsEnabled(false);
-    originalRows[event.index] = { ...data[event.index] };
+    originalRows[event.index] = { ...entity[event.index] };
     setOriginalRows(originalRows);
     //console.log(dataTable.current.state);
   };
 
   const onRowEditCancel = (event) => {
     rowsInEdit.current--;
-    if (rowsInEdit.current === 0) {
+    if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
       setIsEnabled(true);
     };
 
-    let _data = [...data];
-    _data[event.index] = originalRows[event.index];
+    let _entity = [...entity];
+    _entity[event.index] = originalRows[event.index];
     delete originalRows[event.index];
     setOriginalRows(originalRows);
-    setData(_data);
+    setEntity(_entity);
     const errorMessagesCopy = errorMessages;
     errorMessagesCopy[event.index] = {};
     setErrorMessages({ ...errorMessagesCopy });
 
   };
 
- const onRowEditSave = (event) => {//possible to shrink?
-    //console.log(event);
+  const onRowEditSave = (event) => {
     rowsInEdit.current--;
-    if (rowsInEdit.current === 0) {
+
+    if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
       setIsEnabled(true);
     }
-    let updatedRow = global.structuredClone(event.data);//deep copy
-   
-   //can this be changed? I believe this is happening because the backend is expecting an just on object with a curie for these
-   //fields. Is that still the case? Can that be changed? If not, can this be extracted into some sort of utility method? Identify
-   //what fields need this and if that info can kept in the method and just pass event.data through that method.
-    if (Object.keys(event.data.subject).length >= 1) {
-      event.data.subject.curie = trimWhitespace(event.data.subject.curie);
-      updatedRow.subject = {};
-      updatedRow.subject.curie = event.data.subject.curie;
-    }
-    if (Object.keys(event.data.object).length >= 1) {
-      event.data.object.curie = trimWhitespace(event.data.object.curie);
-      updatedRow.object = {};
-      updatedRow.object.curie = event.data.object.curie;
-    }
-    if (event.data.diseaseGeneticModifier && Object.keys(event.data.diseaseGeneticModifier).length >= 1) {
-      event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
-      updatedRow.diseaseGeneticModifier = {};
-      updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
-    }
 
+    let updatedRow = global.structuredClone(event.data);//deep copy
+
+    //does this need to happen to every field that is a plain object? If so, can we just check for objects in event.data and do this to each?
+    curieFields.forEach((field) => {
+      if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
+        event.data[field].curie = trimWhitespace(event.data[field].curie);
+        updatedRow[field] = {};
+        updatedRow[field] = event.data[field];
+      }
+    });
 
     mutation.mutate(updatedRow, {
-      onSuccess: (data) => {
+      onSuccess: (response, variables, context) => {
         toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
-        let annotations = [...diseaseAnnotations];
-        annotations[event.index] = data.data.entity;
-        setDiseaseAnnotations(annotations);
+
+        let _entity = global.structuredClone(entity);
+        _entity[event.index] = response.data.entity;
+        setEntity(_entity);
         const errorMessagesCopy = errorMessages;
         errorMessagesCopy[event.index] = {};
         setErrorMessages({ ...errorMessagesCopy });
@@ -200,11 +200,11 @@ export const GenericDataTable = ({
           { life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
         ]);
 
-        let annotations = [...diseaseAnnotations];
+        let _entity = global.structuredClone(entity);
 
         const errorMessagesCopy = errorMessages;
 
-        //console.log(errorMessagesCopy);
+        console.log(errorMessagesCopy);
         errorMessagesCopy[event.index] = {};
         Object.keys(error.response.data.errorMessages).forEach((field) => {
           let messageObject = {
@@ -214,17 +214,19 @@ export const GenericDataTable = ({
           errorMessagesCopy[event.index][field] = messageObject;
         });
 
-        //console.log(errorMessagesCopy);
+        console.log(errorMessagesCopy);
         setErrorMessages({ ...errorMessagesCopy });
 
-        setDiseaseAnnotations(annotations);
-        let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
+        setEntity(_entity);
+        let _editingRows = { ...editingRows, ...{ [`${_entity[event.index].id}`]: true } };
         setEditingRows(_editingRows);
       },
-      onSettled: (data, error, variables, context) => {
-
-      },
     });
+  };
+
+
+  const onRowEditChange = (event) => {
+    setEditingRows(event.data);
   };
  
 
@@ -354,22 +356,33 @@ export const GenericDataTable = ({
     setColumnWidths(_columnWidths);
   };
 
+  const RowEditColumn = ({ isEditable }) => {
+    if(isEditable){
+      return (
+        <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+          headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+      );
+    }else {
+      return null;
+    };
+  }; 
+
   return (
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-        <DataTable value={data} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
-          tableClassName='w-12 p-datatable-md'
+        <DataTable value={entity} header={header} ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable tableClassName='w-12 p-datatable-md'
+          editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+          editingRows={editingRows} onRowEditChange={onRowEditChange}
           sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-          onColReorder={colReorderHandler}
+          onColReorder={colReorderHandler} reorderableColumns 
+          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
           paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
         >
+          <RowEditColumn isEditable={isEditable} />
           {columnList}
-
         </DataTable>
       </div>
   )
