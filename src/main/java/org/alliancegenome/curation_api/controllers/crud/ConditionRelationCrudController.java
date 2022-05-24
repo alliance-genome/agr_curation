@@ -31,4 +31,8 @@ public class ConditionRelationCrudController extends BaseCrudController<Conditio
         return conditionRelationService.validate(entity);
     }
 
+	@Override
+	public ObjectResponse<ConditionRelation> update(ConditionRelation entity) {
+		return super.update(entity);
+	}
 }

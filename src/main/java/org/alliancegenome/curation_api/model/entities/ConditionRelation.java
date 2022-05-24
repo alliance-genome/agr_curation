@@ -47,7 +47,7 @@ public class ConditionRelation extends UniqueIdAuditedObject {
     @IndexedEmbedded(includeDepth = 1)
     @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
     @ManyToMany
-    @JsonView({View.FieldsOnly.class})
+    @JsonView({View.FieldsAndLists.class})
     private List<ExperimentalCondition> conditions;
 
 

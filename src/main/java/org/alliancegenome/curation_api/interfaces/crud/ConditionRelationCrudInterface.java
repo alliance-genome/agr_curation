@@ -28,6 +28,11 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
 
+    @PUT
+    @Path("/")
+    @JsonView(View.FieldsAndLists.class)
+    public ObjectResponse<ConditionRelation> update(ConditionRelation entity);
+
     @POST
     @Path("/validate")
     @JsonView(View.FieldsAndLists.class)
