@@ -60,7 +60,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		List<ExperimentalCondition> conditions = validateConditions(uiEntity);
 		dbEntity.setConditions(conditions);
 
-		validateReferenceField(uiEntity, dbEntity);
+		//validateReferenceField(uiEntity, dbEntity);
 
 		if (uiEntity.getHandle() != null)
 			dbEntity.setHandle(uiEntity.getHandle());
@@ -127,7 +127,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			return null;
 		}
 
-		List<ExperimentalCondition> conditions = new ArrayList<ExperimentalCondition>();
+		List<ExperimentalCondition> conditions = new ArrayList<>();
 		for (ExperimentalCondition condition : uiEntity.getConditions()) {
 			SearchResponse<ExperimentalCondition> conditionResponse =
 				experimentalConditionDAO.findByField("uniqueId", condition.getUniqueId());
