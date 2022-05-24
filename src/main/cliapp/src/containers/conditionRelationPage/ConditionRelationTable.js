@@ -3,12 +3,12 @@ import {DataTable} from 'primereact/datatable';
 import {useSessionStorage} from '../../service/useSessionStorage';
 import {useSetDefaultColumnOrder} from '../../utils/useSetDefaultColumnOrder';
 import {Column} from 'primereact/column';
-import {useQuery} from 'react-query';
+import {useMutation, useQuery} from 'react-query';
 import {Toast} from 'primereact/toast';
 import {SearchService} from '../../service/SearchService';
 import {Messages} from 'primereact/messages';
 import {MultiSelect} from 'primereact/multiselect';
-import {filterColumns, orderColumns, reorderArray, returnSorted} from '../../utils/utils';
+import {filterColumns, orderColumns, reorderArray, returnSorted, trimWhitespace} from '../../utils/utils';
 import {DataTableHeaderFooterTemplate} from "../../components/DataTableHeaderFooterTemplate";
 import {FilterComponentInputText} from "../../components/FilterComponentInputText";
 import {FilterMultiSelectComponent} from "../../components/FilterMultiSelectComponent";
@@ -17,6 +17,9 @@ import {ErrorMessageComponent} from "../../components/ErrorMessageComponent";
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
 import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
+import {ConditionRelationService} from "../../service/ConditionRelationService";
+import {AutocompleteEditor} from "../../components/AutocompleteEditor";
+import {InputTextEditor} from "../../components/InputTextEditor";
 
 
 export const ConditionRelationTable = () => {
@@ -36,8 +39,10 @@ export const ConditionRelationTable = () => {
 
 	let [conditionRelations, setConditionRelations] = useState(null);
 
+	const [originalRows, setOriginalRows] = useState([]);
 	const [totalRecords, setTotalRecords] = useState(0);
-	const [isEnabled] = useState(true);
+	const [editingRows, setEditingRows] = useState({});
+	const [isEnabled, setIsEnabled] = useState(true);
 	const [columnList, setColumnList] = useState([]);
 
 	const searchService = new SearchService();
@@ -45,12 +50,16 @@ export const ConditionRelationTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const dataTable = useRef(null);
-	const [errorMessages] = useState({});
+	const [errorMessages, setErrorMessages] = useState({});
+
+	const rowsInEdit = useRef(0);
+
+	let conditionRelationService = null;
 
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 
 	useQuery(['conditionRelations', tableState],
-		() => searchService.search('condition-relation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, null, null,['handle']), {
+		() => searchService.search('condition-relation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, null, null, ['handle', 'singleReference.curie']), {
 			onSuccess: (data) => {
 				setConditionRelations(data.results);
 				setTotalRecords(data.totalResults);
@@ -61,10 +70,18 @@ export const ConditionRelationTable = () => {
 				]);
 			},
 			onSettled: () => {
+				setOriginalRows([]);
 			},
 			keepPreviousData: true,
 			refetchOnWindowFocus: false
 		});
+
+	const mutation = useMutation(updatedAnnotation => {
+		if (!conditionRelationService) {
+			conditionRelationService = new ConditionRelationService();
+		}
+		return conditionRelationService.saveConditionRelation(updatedAnnotation);
+	});
 
 	const setIsFirst = (value) => {
 		let _tableState = {
@@ -114,10 +131,10 @@ export const ConditionRelationTable = () => {
 	const aggregationFields = [
 		'conditionRelationType.name'
 	];
-		//commenting out for now to get rid of console warnings
-	/* const nonNullFields = [
+
+	const nonNullFields = [
 		'handle'
-	]; */
+	];
 
 
 	const filterComponentTemplate = (filterName, fields) => {
@@ -155,21 +172,49 @@ export const ConditionRelationTable = () => {
 		/>);
 	}
 
+	const onConditionRelationValueChange = (props, event) => {
+		let updatedConditions = [...props.props.value];
+		if (event.value || event.value === '') {
+			updatedConditions[props.rowIndex].conditionRelationType = event.value;
+		}
+	};
+
+
 	const conditionRelationTypeEditor = (props) => {
 		return (
 			<>
 				<ControlledVocabularyDropdown
-					field="conditionRelationType"
+					field="conditionRelationType.name"
 					options={conditionRelationTypeTerms}
-					//editorChange={onDiseaseRelationEditorValueChange}
+					editorChange={onConditionRelationValueChange}
 					props={props}
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType"}/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType.name"}/>
 			</>
 		);
 	};
+
+	const referenceEditorTemplate = (props) => {
+		return (
+			<>
+				<AutocompleteEditor
+					autocompleteFields={["cross_references.curie","curie"]}
+					rowProps={props}
+					searchService={searchService}
+					endpoint='literature-reference'
+					filterName='searchFilter'
+					fieldName='singleReference'
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessages[props.rowIndex]}
+					errorField={"reference"}
+				/>
+			</>
+		);
+	};
+
 
 	const conditionTemplate = (rowData) => {
 		if (rowData.conditions) {
@@ -182,13 +227,136 @@ export const ConditionRelationTable = () => {
 			};
 			return (
 				<>
-						<ListTableCell template={listTemplate} listData={rowData.conditions} showBullets={true}/>
+					<ListTableCell template={listTemplate} listData={rowData.conditions} showBullets={true}/>
 				</>
 			);
 		}
 	};
 
+	const conditionRelationTemplate = (props) => {
+		return (
+			<>
+				<AutocompleteEditor
+					autocompleteFields={["conditionSummary"]}
+					rowProps={props}
+					searchService={searchService}
+					endpoint='experimental-condition'
+					filterName='experimentalConditionFilter'
+					fieldName='conditions'
+					subField='conditionSummary'
+					isMultiple={true}
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessages[props.rowIndex]}
+					errorField="conditions"
+				/>
+			</>
+		);
+	};
 
+	const handleEditor = (props) => {
+			return (
+					<>
+							<InputTextEditor
+									rowProps={props}
+									fieldName={'handle'}
+							/>
+							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"handle"} />
+					</>
+			);
+	};
+
+	const onRowEditInit = (event) => {
+		rowsInEdit.current++;
+		setIsEnabled(false);
+		originalRows[event.index] = {...conditionRelations[event.index]};
+		setOriginalRows(originalRows);
+		//console.log(dataTable.current.state);
+	};
+
+	const onRowEditCancel = (event) => {
+		rowsInEdit.current--;
+		if (rowsInEdit.current === 0) {
+			setIsEnabled(true);
+		}
+
+		let annotations = [...conditionRelations];
+		annotations[event.index] = originalRows[event.index];
+		delete originalRows[event.index];
+		setOriginalRows(originalRows);
+		setConditionRelations(annotations);
+		const errorMessagesCopy = errorMessages;
+		errorMessagesCopy[event.index] = {};
+		setErrorMessages({...errorMessagesCopy});
+
+	};
+
+
+	const onRowEditSave = (event) => {//possible to shrink?
+		rowsInEdit.current--;
+		if (rowsInEdit.current === 0) {
+			setIsEnabled(true);
+		}
+		let updatedRow = global.structuredClone(event.data);//deep copy
+		if (Object.keys(event.data.singleReference).length >= 1) {
+			event.data.singleReference.curie = trimWhitespace(event.data.singleReference.curie);
+			updatedRow.singleReference = {};
+			updatedRow.singleReference.curie = event.data.singleReference.curie;
+		}
+		if (event.data.conditionRelationType && Object.keys(event.data.conditionRelationType).length >= 1) {
+			updatedRow.conditionRelationType = {};
+			updatedRow.conditionRelationType.id = event.data.conditionRelationType.id;
+		}
+
+
+		mutation.mutate(updatedRow, {
+			onSuccess: (data) => {
+				toast_topright.current.show({severity: 'success', summary: 'Successful', detail: 'Row Updated'});
+				let _conditionRelations = [...conditionRelations];
+				_conditionRelations[event.index] = data.data.entity;
+				setConditionRelations(_conditionRelations);
+				const errorMessagesCopy = errorMessages;
+				errorMessagesCopy[event.index] = {};
+				setErrorMessages({...errorMessagesCopy});
+			},
+			onError: (error, variables, context) => {
+				rowsInEdit.current++;
+				setIsEnabled(false);
+				toast_topright.current.show([
+					{life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false}
+				]);
+
+				let _conditionRelations = [...conditionRelations];
+
+				const errorMessagesCopy = errorMessages;
+
+				console.log(error);
+				console.log(errorMessagesCopy);
+				errorMessagesCopy[event.index] = {};
+				Object.keys(error.response.data.errorMessages).forEach((field) => {
+					let messageObject = {
+						severity: "error",
+						message: error.response.data.errorMessages[field]
+					};
+					errorMessagesCopy[event.index][field] = messageObject;
+				});
+
+				//console.log(errorMessagesCopy);
+				setErrorMessages({...errorMessagesCopy});
+
+				setConditionRelations(_conditionRelations);
+				let _editingRows = {...editingRows, ...{[`${_conditionRelations[event.index].id}`]: true}};
+				setEditingRows(_editingRows);
+			},
+			onSettled: (data, error, variables, context) => {
+
+			},
+		});
+	};
+
+	const onRowEditChange = (event) => {
+		setEditingRows(event.data);
+	};
 	const columns = [
 		{
 			field: "handle",
@@ -196,14 +364,16 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: (rowData) => rowData.handle,
-			filterElement: filterComponentTemplate("uniqueIdFilter", ["handle"])
+			filterElement: filterComponentTemplate("uniqueIdFilter", ["handle"]),
+			editor: (props) => handleEditor(props)
 		},
 		{
 			field: "singleReference.curie",
 			header: "Reference",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: filterComponentInputTextTemplate("singleReferenceFilter", ["singleReference.curie"])
+			filterElement: filterComponentInputTextTemplate("singleReferenceFilter", ["singleReference.curie"]),
+			//editor: (props) => referenceEditorTemplate(props)
 		},
 		{
 			field: "conditionRelationType.name",
@@ -219,7 +389,8 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
-			filterElement: filterComponentTemplate("conditionsFilter", ["conditions.conditionSummary"])
+			filterElement: filterComponentTemplate("experimentalConditionFilter", ["conditions.conditionSummary"]),
+			editor: (props) => conditionRelationTemplate(props)
 		},
 
 	];
@@ -255,7 +426,7 @@ export const ConditionRelationTable = () => {
 			tableState={tableState}
 			defaultColumnNames={defaultColumnNames}
 			multiselectComponent={createMultiselectComponent(tableState, defaultColumnNames, isEnabled)}
-			onclickEvent = {(event) => resetTableState(event)}
+			onclickEvent={(event) => resetTableState(event)}
 			isEnabled={isEnabled}
 		/>
 	);
@@ -323,6 +494,9 @@ export const ConditionRelationTable = () => {
 			<Messages ref={errorMessage}/>
 			<DataTable value={conditionRelations} header={header} reorderableColumns={isEnabled}
 							tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{width: '200%'}} scrollHeight="62vh"
+							editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+							onColReorder={colReorderHandler}
+							editingRows={editingRows} onRowEditChange={onRowEditChange}
 							ref={dataTable}
 							filterDisplay="row"
 							onColReorder={colReorderHandler}
@@ -333,8 +507,8 @@ export const ConditionRelationTable = () => {
 							paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
 							currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 			>
-					<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}}
-						headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+				<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}}
+							headerStyle={{width: '7rem', position: 'sticky'}} bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
 				{columnList}
 			</DataTable>
 		</div>
