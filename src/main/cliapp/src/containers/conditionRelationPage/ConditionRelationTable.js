@@ -200,7 +200,7 @@ export const ConditionRelationTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["cross_references.curie","curie"]}
+					autocompleteFields={["cross_references.curie", "curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
@@ -255,15 +255,15 @@ export const ConditionRelationTable = () => {
 	};
 
 	const handleEditor = (props) => {
-			return (
-					<>
-							<InputTextEditor
-									rowProps={props}
-									fieldName={'handle'}
-							/>
-							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"handle"} />
-					</>
-			);
+		return (
+			<>
+				<InputTextEditor
+					rowProps={props}
+					fieldName={'handle'}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"handle"}/>
+			</>
+		);
 	};
 
 	const onRowEditInit = (event) => {
@@ -493,22 +493,22 @@ export const ConditionRelationTable = () => {
 			<Toast ref={toast_topright} position="top-right"/>
 			<Messages ref={errorMessage}/>
 			<DataTable value={conditionRelations} header={header} reorderableColumns={isEnabled}
-							tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{width: '200%'}} scrollHeight="62vh"
-							editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-							onColReorder={colReorderHandler}
-							editingRows={editingRows} onRowEditChange={onRowEditChange}
-							ref={dataTable}
-							filterDisplay="row"
-							onColReorder={colReorderHandler}
-							sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-							first={tableState.first}
-							dataKey="id" resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
-							paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
-							paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-							currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+						  tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" tableStyle={{width: '200%'}} scrollHeight="62vh"
+						  editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
+						  onColReorder={colReorderHandler}
+						  editingRows={editingRows} onRowEditChange={onRowEditChange}
+						  ref={dataTable}
+						  filterDisplay="row"
+						  onColReorder={colReorderHandler}
+						  sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+						  first={tableState.first}
+						  dataKey="id" resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
+						  paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
+						  paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+						  currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
 			>
 				<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}}
-							headerStyle={{width: '7rem', position: 'sticky'}} bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
+						  headerStyle={{width: '7rem', position: 'sticky'}} bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
 				{columnList}
 			</DataTable>
 		</div>
