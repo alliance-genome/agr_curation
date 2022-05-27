@@ -128,6 +128,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         entityManager.remove(entity);
         return entity;
     }
+    
+    public Long count(Class<?> clazz) {
+        CriteriaBuilder qb = entityManager.getCriteriaBuilder();
+        CriteriaQuery<Long> cq = qb.createQuery(Long.class);
+        cq.select(qb.count(cq.from(clazz)));
+        return entityManager.createQuery(cq).getSingleResult();
+    }
 
     public void flush() {
         entityManager.flush();
