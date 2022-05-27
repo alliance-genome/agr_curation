@@ -1,24 +1,20 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
-import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { MultiSelect } from 'primereact/multiselect';
-import { Toast } from 'primereact/toast';
 
+import { FilterComponentInputText } from '../FilterComponentInputText'
+import { EllipsisTableCell } from '../EllipsisTableCell';
+import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
-import { FilterComponentInputText } from './FilterComponentInputText'
-import { EllipsisTableCell } from './EllipsisTableCell';
-import { DataTableHeaderFooterTemplate } from "./DataTableHeaderFooterTemplate";
+import { SearchService } from '../../service/SearchService';
+import { useSessionStorage } from '../../service/useSessionStorage';
 
-import { SearchService } from '../service/SearchService';
-import { useSessionStorage } from '../service/useSessionStorage';
+import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
+import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 
-import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../utils/utils';
-import { useSetDefaultColumnOrder } from '../utils/useSetDefaultColumnOrder';
-
-
-export const GenericDataTable = ({ 
+export const useGenericDataTable = ({ 
   endpoint, 
   tableName, 
   columns,  
@@ -27,7 +23,11 @@ export const GenericDataTable = ({
   curieFields,
   sortMapping,
   mutation,
+  isEnabled,
+  setIsEnabled,
+  toasts,
 }) => {
+
   const defaultColumnNames = columns.map((col) => {
     return col.header;
   });
@@ -49,10 +49,10 @@ export const GenericDataTable = ({
     initialTableState
   );
 
+  //probably should be plural
   const [entity, setEntity] = useState(null);
   const [totalRecords, setTotalRecords] = useState(0);
   const [originalRows, setOriginalRows] = useState([]);
-  const [isEnabled, setIsEnabled] = useState(true);
   const [columnList, setColumnList] = useState([]);
   const [editingRows, setEditingRows] = useState({});
   const searchService = new SearchService();
@@ -60,9 +60,9 @@ export const GenericDataTable = ({
   const [errorMessages, setErrorMessages] = useState({});
 
   const rowsInEdit = useRef(0);
-  const toast_topleft = useRef(null);
-  const toast_topright = useRef(null);
   const dataTable = useRef(null);
+
+  const { toast_topleft, toast_topright } = toasts;
 
   //what is this doing?
   useQuery([`${tableState.tableKeyName}Aggregations`, aggregationFields, tableState],
@@ -144,7 +144,6 @@ export const GenericDataTable = ({
     setIsEnabled(false);
     originalRows[event.index] = { ...entity[event.index] };
     setOriginalRows(originalRows);
-    //console.log(dataTable.current.state);
   };
 
   const onRowEditCancel = (event) => {
@@ -267,7 +266,7 @@ export const GenericDataTable = ({
     }
   };
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
+    useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
     const width = 20;
@@ -281,6 +280,18 @@ export const GenericDataTable = ({
     return widthsObject;
   });
 
+  /*filterElement on the columns will have an object like this:
+    *{
+  *    type: "input",
+  *    name: "name",
+  *    fields: ["field", "field.subField"]
+  *  }
+    *in this return, filterElement can be set equal to a funtion that returns a funtion. 
+  *    Within that function there will be logic to select which type of element to return
+  *    base on the type field*/
+    /*may need some logic here to choose the appropriate filter based on this fields value
+      also, this filter fields logic will need to change as well. perhaps the filterElement field
+      can be on object with the type of filter and what fields need to be filtered*/
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -295,8 +306,9 @@ export const GenericDataTable = ({
             field={col.field}
             header={col.header}
             sortable={isEnabled}
-            body={obsoleteTemplate}
+            body={obsoleteTemplate/*just have an inline check here instead of two different columns?*/}
             filter
+            editor={col.editor}
             showFilterMenu={false}
             filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
           />;
@@ -311,6 +323,7 @@ export const GenericDataTable = ({
           body={col.body}
           sortable={isEnabled}
           filter
+          editor={col.editor}
           showFilterMenu={false}
           filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
         />;
@@ -356,34 +369,44 @@ export const GenericDataTable = ({
     setColumnWidths(_columnWidths);
   };
 
-  const RowEditColumn = ({ isEditable }) => {
-    if(isEditable){
-      return (
-        <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
-          headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
-      );
-    }else {
-      return null;
-    };
-  }; 
+  const tableProps = { 
+          dataKey:'id',
+          value:entity,
+          header:header, 
+          ref:dataTable, 
+          filterDisplay:"row", 
+          scrollHeight:"62vh", 
+          scrollable: true,
+          tableClassName:'w-12 p-datatable-md',
+          editMode: "row",
+          onRowEditInit: onRowEditInit,
+          onRowEditCancel: onRowEditCancel, 
+          onRowEditSave: onRowEditSave,
+          editingRows: editingRows, 
+          onRowEditChange:onRowEditChange,
+          sortMode:"multiple", 
+          removableSort:true, 
+          onSort:onSort, 
+          multiSortMeta:tableState.multiSortMeta,
+          onColReorder:colReorderHandler, 
+          reorderableColumns: true, 
+          resizableColumns: true, 
+          columnResizeMode:"expand", 
+          showGridlines: true, 
+          onColumnResizeEnd:handleColumnResizeEnd,
+          paginator: true, 
+          totalRecords:totalRecords, 
+          onPage:onLazyLoad, 
+          lazy: true, 
+          first:tableState.first,
+          paginatorTemplate:"CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown",
+          currentPageReportTemplate:"Showing {first} to {last} of {totalRecords}", 
+          rows:tableState.rows, 
+          rowsPerPageOptions:[10, 20, 50, 100, 250, 1000],
+  }
 
-  return (
-      <div className="card">
-        <Toast ref={toast_topleft} position="top-left" />
-        <Toast ref={toast_topright} position="top-right" />
-        <DataTable value={entity} header={header} ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable tableClassName='w-12 p-datatable-md'
-          editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-          editingRows={editingRows} onRowEditChange={onRowEditChange}
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-          onColReorder={colReorderHandler} reorderableColumns 
-          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
-          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
-          paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-        >
-          <RowEditColumn isEditable={isEditable} />
-          {columnList}
-        </DataTable>
-      </div>
-  )
-}
+  return {
+    tableProps,
+    columnList
+  };
+};

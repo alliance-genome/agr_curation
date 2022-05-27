@@ -1,31 +1,25 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSessionStorage } from '../../service/useSessionStorage';
-import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import { useMutation, useQuery } from 'react-query';
+import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { trimWhitespace, returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { AutocompleteEditor } from '../../components/AutocompleteEditor';
 import { FilterComponentInputText } from '../../components/FilterComponentInputText';
 import { FilterComponentDropDown } from '../../components/FilterComponentDropdown';
 import { FilterMultiSelectComponent } from '../../components/FilterMultiSelectComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
-import { GenericDataTable } from '../../components/GenericDataTable';
+import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { SearchService } from '../../service/SearchService';
 import { DiseaseAnnotationService } from '../../service/DiseaseAnnotationService';
 import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
-import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
-import { MultiSelect } from 'primereact/multiselect';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 
@@ -48,12 +42,6 @@ export const DiseaseAnnotationsTable = () => {
 
   const [tableState, setTableState] = useSessionStorage("DATableSettings", initialTableState);
 
-  let [diseaseAnnotations, setDiseaseAnnotations] = useState(null);
-
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [originalRows, setOriginalRows] = useState([]);
-  const [editingRows, setEditingRows] = useState({});
-  const [columnList, setColumnList] = useState([]);
   const [isEnabled, setIsEnabled] = useState(true); //needs better name
   const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
   const [conditionRelations, setConditionRelations] = useState(false);
@@ -76,10 +64,8 @@ export const DiseaseAnnotationsTable = () => {
 
   const searchService = new SearchService();
 
-  const rowsInEdit = useRef(0);
   const toast_topleft = useRef(null);
   const toast_topright = useRef(null);
-  const dataTable = useRef(null);
 
   let diseaseAnnotationService = null;
 
@@ -95,39 +81,6 @@ export const DiseaseAnnotationsTable = () => {
     'diseaseRelation.name', 'geneticSex.name', 'annotationType.name', 'diseaseGeneticModifierRelation.name', 'diseaseQualifiers.name'
   ];
 
-  useQuery(['diseaseAnnotationsAggregations', aggregationFields, tableState],
-    () => searchService.search('disease-annotation', 0, 0, null, {}, {}, aggregationFields), {
-    onSuccess: (data) => {
-    },
-    onError: (error) => {
-      toast_topleft.current.show([
-        { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
-      ]);
-    },
-    keepPreviousData: true,
-    refetchOnWindowFocus: false
-  }
-  );
-
-  useQuery(['diseaseAnnotations', tableState],
-    () => searchService.search('disease-annotation', tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
-    onSuccess: (data) => {
-      setDiseaseAnnotations(data.results);
-      setTotalRecords(data.totalResults);
-    },
-    onError: (error) => {
-      toast_topleft.current.show([
-        { life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
-      ]);
-    },
-    onSettled: () => {
-      setOriginalRows([]);
-    },
-    keepPreviousData: true,
-    refetchOnWindowFocus: false
-  }
-  );
-
   const mutation = useMutation(updatedAnnotation => {
     if (!diseaseAnnotationService) {
       diseaseAnnotationService = new DiseaseAnnotationService();
@@ -135,48 +88,11 @@ export const DiseaseAnnotationsTable = () => {
     return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
   });
 
-  const setIsFirst = (value) => {
-    let _tableState = {
-      ...tableState,
-      first: value,
-    };
-
-    setTableState(_tableState);
-  }
-
-  const onLazyLoad = (event) => {
-    let _tableState = {
-      ...tableState,
-      rows: event.rows,
-      page: event.page,
-      first: event.first
-    };
-
-    setTableState(_tableState);
-  }
-
   const onFilter = (filtersCopy) => {
     let _tableState = {
       ...tableState,
       filters: { ...filtersCopy }
     }
-    setTableState(_tableState);
-  };
-
-  const onSort = (event) => {
-    let _tableState = {
-      ...tableState,
-      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
-    }
-    setTableState(_tableState);
-  };
-
-  const setSelectedColumnNames = (newValue) => {
-    let _tableState = {
-      ...tableState,
-      selectedColumnNames: newValue
-    };
-
     setTableState(_tableState);
   };
 
@@ -335,107 +251,6 @@ export const DiseaseAnnotationsTable = () => {
     }
   };
 
-  const onRowEditInit = (event) => {
-    rowsInEdit.current++; 
-    setIsEnabled(false);
-    originalRows[event.index] = { ...diseaseAnnotations[event.index] };
-    setOriginalRows(originalRows);
-    //console.log(dataTable.current.state);
-  };
-
-  const onRowEditCancel = (event) => {
-    rowsInEdit.current--;
-    if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
-      setIsEnabled(true);
-    };
-
-    let annotations = [...diseaseAnnotations];
-    annotations[event.index] = originalRows[event.index];
-    delete originalRows[event.index];
-    setOriginalRows(originalRows);
-    setDiseaseAnnotations(annotations);
-    const errorMessagesCopy = errorMessages;
-    errorMessagesCopy[event.index] = {};
-    setErrorMessages({ ...errorMessagesCopy });
-
-  };
-
-
-  const onRowEditSave = (event) => {//possible to shrink?
-    // console.log(event);
-    const { subject, object, diseaseGeneticModifier } = event.data;
-
-    rowsInEdit.current--;
-    if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
-      setIsEnabled(true);
-    }
-    let updatedRow = global.structuredClone(event.data);//deep copy
-    if (Object.keys(subject).length >= 1) {
-      event.data.subject.curie = trimWhitespace(event.data.subject.curie);
-      updatedRow.subject = {};
-      updatedRow.subject.curie = event.data.subject.curie;
-    }
-    if (Object.keys(object).length >= 1) {
-      event.data.object.curie = trimWhitespace(event.data.object.curie);
-      updatedRow.object = {};
-      updatedRow.object.curie = event.data.object.curie;
-    }
-    if (diseaseGeneticModifier && Object.keys(diseaseGeneticModifier).length >= 1) {
-      event.data.diseaseGeneticModifier.curie = trimWhitespace(event.data.diseaseGeneticModifier.curie);
-      updatedRow.diseaseGeneticModifier = {};
-      updatedRow.diseaseGeneticModifier.curie = event.data.diseaseGeneticModifier.curie;
-    }
-
-
-    mutation.mutate(updatedRow, {
-      onSuccess: (data) => {
-        toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
-        let annotations = [...diseaseAnnotations];
-        annotations[event.index] = data.data.entity;
-        setDiseaseAnnotations(annotations);
-        const errorMessagesCopy = errorMessages;
-        errorMessagesCopy[event.index] = {};
-        setErrorMessages({ ...errorMessagesCopy });
-      },
-      onError: (error, variables, context) => {
-        rowsInEdit.current++;
-        setIsEnabled(false);
-        toast_topright.current.show([
-          { life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
-        ]);
-
-        let annotations = [...diseaseAnnotations];
-
-        const errorMessagesCopy = errorMessages;
-
-        //console.log(errorMessagesCopy);
-        errorMessagesCopy[event.index] = {};
-        Object.keys(error.response.data.errorMessages).forEach((field) => {
-          let messageObject = {
-            severity: "error",
-            message: error.response.data.errorMessages[field]
-          };
-          errorMessagesCopy[event.index][field] = messageObject;
-        });
-
-        //console.log(errorMessagesCopy);
-        setErrorMessages({ ...errorMessagesCopy });
-
-        setDiseaseAnnotations(annotations);
-        let _editingRows = { ...editingRows, ...{ [`${annotations[event.index].id}`]: true } };
-        setEditingRows(_editingRows);
-      },
-      onSettled: (data, error, variables, context) => {
-
-      },
-    });
-  };
-
-  const onRowEditChange = (event) => {
-    setEditingRows(event.data);
-  };
-
-
   const diseaseBodyTemplate = (rowData) => {
     if (rowData.object) {
       return (
@@ -446,8 +261,6 @@ export const DiseaseAnnotationsTable = () => {
       )
     }
   };
-
-
 
   const onDiseaseRelationEditorValueChange = (props, event) => {
     let updatedAnnotations = [...props.props.value];
@@ -696,7 +509,6 @@ export const DiseaseAnnotationsTable = () => {
           autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
           endpoint='gene'
           filterName='withFilter'
           fieldName='with'
@@ -718,7 +530,6 @@ export const DiseaseAnnotationsTable = () => {
           autocompleteFields={["curie", "name", "abbreviation"]}
           rowProps={props}
           searchService={searchService}
-          setDiseaseAnnotations={setDiseaseAnnotations}
           endpoint='ecoterm'
           filterName='evidenceFilter'
           fieldName='evidenceCodes'
@@ -1090,136 +901,25 @@ export const DiseaseAnnotationsTable = () => {
   },
   ];
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnOptions, setIsFirst, tableState.isFirst);
-
-  const [columnWidths, setColumnWidths] = useState(() => {
-    const width = 10;
-
-    const widthsObject = {};
-
-    columns.forEach((col) => {
-      widthsObject[col.field] = width;
-    });
-
-    return widthsObject;
-  });
-
-  useEffect(() => {
-    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
-    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnList(
-      orderedColumns.map((col) => {
-        return <Column
-          headerClassName='surface-0'
-          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
-          key={col.field}
-          columnKey={col.field}
-          field={col.field}
-          header={col.header}
-          sortable={col.sortable}
-          showFilterMenu={false}
-          filter={col.filter}
-          filterElement={col.filterElement}
-          dataType={col.dataType}
-          editor={col.editor}
-          body={col.body}
-        />;
-      })
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled, columnWidths]);
-
-    const createMultiselectComponent = (tableState,defaultColumnOptions,isEnabled) => {
-        return (<MultiSelect
-            value={tableState.selectedColumnNames}
-            options={defaultColumnOptions}
-            onChange={e => setSelectedColumnNames(e.value)}
-            style={{ width: '20em', textAlign: 'center' }}
-            disabled={!isEnabled}
-        />);
-    };
-
-    const header = (
-      <DataTableHeaderFooterTemplate
-          title = {"Disease Annotations Table"}
-          tableState = {tableState}
-          defaultColumnNames = {defaultColumnOptions}
-          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnOptions,isEnabled)}
-          onclickEvent = {(event) => resetTableState(event)}
-          isEnabled = {isEnabled}
-      />
-  );
-
-  const resetTableState = () => {
-    let _tableState = {
-      ...initialTableState,
-      isFirst: false,
-    };
-
-    setTableState(_tableState);
-    setDefaultColumnOrder(columns, dataTable, defaultColumnOptions);
-    const _columnWidths = {...columnWidths};
-
-    Object.keys(_columnWidths).forEach((key) => {
-      _columnWidths[key] = 10;
-    });
-
-    setColumnWidths(_columnWidths);
-    dataTable.current.el.children[1].scrollLeft = 0;
-  };
-
-  const colReorderHandler = (event) => {
-    let _columnNames = [...tableState.selectedColumnNames];
-    //minus one because of the rowEditor column at the start of the table
-    _columnNames = reorderArray(_columnNames, event.dragIndex - 1, event.dropIndex - 1);
-    setSelectedColumnNames(_columnNames);
-  };
-
-
-
-  const handleColumnResizeEnd = (event) => {
-    const currentWidth = event.element.clientWidth;
-    const delta = event.delta;
-    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
-    const field = event.column.props.field;
-
-    const _columnWidths = {...columnWidths};
-
-    _columnWidths[field] = newWidth;
-    setColumnWidths(_columnWidths);
-  };
 
   return (
     <>
       <div className="card">
         <Toast ref={toast_topleft} position="top-left" />
         <Toast ref={toast_topright} position="top-right" />
-    {/*<DataTable value={diseaseAnnotations} header={header} reorderableColumns ref={dataTable}
-          tableClassName='p-datatable-md' scrollable scrollDirection="horizontal" scrollHeight="62vh"
-          editMode="row" onRowEditInit={onRowEditInit} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}
-          onColReorder={colReorderHandler}
-          editingRows={editingRows} onRowEditChange={onRowEditChange}
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-          first={tableState.first}
-          filterDisplay="row"
-          dataKey="id" resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
-          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy
-          paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[1, 10, 20, 50, 100, 250, 1000]}
-        >
-          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
-            headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
-          {columnList}
-        </DataTable>*/}
-      <GenericDataTable 
-        endpoint="disease-annotations" 
-        tableName="Disease Annotations" 
-        columns={columns}  
-        aggregationFields={aggregationFields}
-        isEditable
-        curieFields={["subject", "object", "diseaseGeneticModifier"]}
-        mutation={mutation}
-      />
+        <GenericDataTable 
+          endpoint="disease-annotation" 
+          tableName="Disease Annotations" 
+          columns={columns}  
+          aggregationFields={aggregationFields}
+          isEditable={true}
+          curieFields={["subject", "object", "diseaseGeneticModifier"]}
+          sortMapping={sortMapping}
+          mutation={mutation}
+          isEnabled={isEnabled}
+          setIsEnabled={setIsEnabled}
+          toasts={{toast_topleft, toast_topright }}
+        />
       </div>
       <RelatedNotesDialog
         originalRelatedNotesData={relatedNotesData}

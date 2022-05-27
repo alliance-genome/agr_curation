@@ -2,7 +2,7 @@ import { BaseAuthService } from "./BaseAuthService";
 
 export class SearchService extends BaseAuthService {
 
-  search(endpoint, rows, page, sorts=[], filters, sortMapping, aggregationFields=[], nonNullFields=[]) {
+  search(endpoint, rows, page, sorts, filters, sortMapping, aggregationFields, nonNullFields) {
     const searchOptions = {};
     if (!sorts) {
       sorts = [];
