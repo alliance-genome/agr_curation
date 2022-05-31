@@ -74,7 +74,8 @@ export const Dashboard = () => {
       }
       setTableData(_tableData);
     });
-  }, [lookupMap]);
+    // eslint-disable-next-line
+  }, []);
 
   const nameHyperlinkTemplate = (rowData) => {
     return <a href={rowData.link}>{rowData.name}</a>
