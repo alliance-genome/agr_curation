@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { Column } from 'primereact/column';
 import { MultiSelect } from 'primereact/multiselect';
 
-import { FilterComponentInputText } from '../FilterComponentInputText'
+import { FilterComponent } from './FilterComponent'
 import { EllipsisTableCell } from '../EllipsisTableCell';
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
@@ -251,14 +251,23 @@ export const useGenericDataTable = ({
     />
   );
 
-  const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponentInputText
-      isEnabled={isEnabled}
-      fields={fields}
-      filterName={filterName}
-      currentFilters={tableState.filters}
-      onFilter={onFilter}
-    />);
+  const filterComponentTemplate = ({ type, filterName, fields, options, optionField, useKeywordFields, annotationsAggregations }) => {
+    return (
+      <FilterComponent
+        type={type}
+        filterName={filterName}
+        fields={fields}
+        isEnabled={isEnabled}
+        onFilter={onFilter}
+        options={options}
+        optionField={optionField}
+        useKeywordFields = {useKeywordFields}
+        aggregationFields={aggregationFields}
+        tableState={tableState}
+        annotationsAggregations={annotationsAggregations}
+        endpoint={endpoint}
+      />
+    );
   };
 
   const obsoleteTemplate = (rowData) => {
@@ -298,22 +307,6 @@ export const useGenericDataTable = ({
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
     setColumnList(
       orderedColumns.map((col) => {
-        if (col.field === 'obsolete') {
-          return <Column
-            style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
-            headerClassName='surface-0'
-            columnKey={col.field}
-            key={col.field}
-            field={col.field}
-            header={col.header}
-            sortable={isEnabled}
-            body={obsoleteTemplate/*just have an inline check here instead of two different columns?*/}
-            filter
-            editor={col.editor}
-            showFilterMenu={false}
-            filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
-          />;
-        }
         return <Column
           style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
           headerClassName='surface-0'
@@ -326,7 +319,7 @@ export const useGenericDataTable = ({
           filter
           editor={col.editor}
           showFilterMenu={false}
-          filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
+          filterElement={() => filterComponentTemplate({...col.filterElement})}
         />;
       })
     );
