@@ -378,7 +378,7 @@ export const useGenericDataTable = ({
           filterDisplay:"row", 
           scrollHeight:"62vh", 
           scrollable: true,
-          tableClassName:'w-12 p-datatable-md',
+          tableClassName:'p-datatable-md',
           editMode: "row",
           onRowEditInit: onRowEditInit,
           onRowEditCancel: onRowEditCancel, 
