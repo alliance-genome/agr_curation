@@ -26,6 +26,7 @@ export const useGenericDataTable = ({
   isEnabled,
   setIsEnabled,
   toasts,
+  initialColumnWidth,
 }) => {
 
   const defaultColumnNames = columns.map((col) => {
@@ -269,7 +270,7 @@ export const useGenericDataTable = ({
     useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const [columnWidths, setColumnWidths] = useState(() => {
-    const width = 20;
+    const width = initialColumnWidth;
 
     const widthsObject = {};
 
@@ -344,7 +345,7 @@ export const useGenericDataTable = ({
     const _columnWidths = {...columnWidths};
 
     Object.keys(_columnWidths).map((key) => {
-      return _columnWidths[key] = 20;
+      return _columnWidths[key] = initialColumnWidth;
     });
 
     setColumnWidths(_columnWidths);

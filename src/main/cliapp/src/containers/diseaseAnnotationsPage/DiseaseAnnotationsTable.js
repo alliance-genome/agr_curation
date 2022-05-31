@@ -919,6 +919,7 @@ export const DiseaseAnnotationsTable = () => {
           isEnabled={isEnabled}
           setIsEnabled={setIsEnabled}
           toasts={{toast_topleft, toast_topright }}
+          initialColumnWidth={10}
         />
       </div>
       <RelatedNotesDialog
