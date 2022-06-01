@@ -56,6 +56,18 @@ export const useGenericDataTable = ({
   const [originalRows, setOriginalRows] = useState([]);
   const [columnList, setColumnList] = useState([]);
   const [editingRows, setEditingRows] = useState({});
+  const [columnWidths, setColumnWidths] = useState(() => {
+    const width = initialColumnWidth;
+
+    const widthsObject = {};
+
+    columns.forEach((col) => {
+      widthsObject[col.field] = width;
+    });
+
+    return widthsObject;
+  });
+
   const searchService = new SearchService();
 
   const [errorMessages, setErrorMessages] = useState({});
@@ -64,6 +76,7 @@ export const useGenericDataTable = ({
   const dataTable = useRef(null);
 
   const { toast_topleft, toast_topright } = toasts;
+
 
   //what is this doing?
   useQuery([`${tableState.tableKeyName}Aggregations`, aggregationFields, tableState],
@@ -139,6 +152,8 @@ export const useGenericDataTable = ({
     };
     setTableState(_tableState);
   };
+
+  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
   const onRowEditInit = (event) => {
     rowsInEdit.current++;
@@ -276,32 +291,6 @@ export const useGenericDataTable = ({
     }
   };
 
-    useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
-
-  const [columnWidths, setColumnWidths] = useState(() => {
-    const width = initialColumnWidth;
-
-    const widthsObject = {};
-
-    columns.forEach((col) => {
-      widthsObject[col.field] = width;
-    });
-
-    return widthsObject;
-  });
-
-  /*filterElement on the columns will have an object like this:
-    *{
-  *    type: "input",
-  *    name: "name",
-  *    fields: ["field", "field.subField"]
-  *  }
-    *in this return, filterElement can be set equal to a funtion that returns a funtion. 
-  *    Within that function there will be logic to select which type of element to return
-  *    base on the type field*/
-    /*may need some logic here to choose the appropriate filter based on this fields value
-      also, this filter fields logic will need to change as well. perhaps the filterElement field
-      can be on object with the type of filter and what fields need to be filtered*/
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -314,7 +303,7 @@ export const useGenericDataTable = ({
           key={col.field}
           field={col.field}
           header={col.header}
-          body={col.body}
+          body={col.field === "obsolete" ? obsoleteTemplate : col.body}
           sortable={isEnabled}
           filter
           editor={col.editor}

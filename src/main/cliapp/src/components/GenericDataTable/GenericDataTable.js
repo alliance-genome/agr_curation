@@ -10,8 +10,10 @@ export const GenericDataTable = (props) => {
   return (
       <div className="card">
         <DataTable {...tableProps} >
+        {props.isEditable && 
           <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
             headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+        }
           {columnList}
         </DataTable>
       </div>
