@@ -854,6 +854,7 @@ export const DiseaseAnnotationsTable = () => {
           setIsEnabled={setIsEnabled}
           toasts={{toast_topleft, toast_topright }}
           initialColumnWidth={10}
+          errorObject = {{errorMessages, setErrorMessages}}
         />
       </div>
       <RelatedNotesDialog

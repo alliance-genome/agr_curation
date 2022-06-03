@@ -14,7 +14,7 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-  const { tableName, isEnabled, aggregationFields, endpoint, columns } = props; 
+  const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons } = props; 
 
   const { 
     setSelectedColumnNames, 
@@ -55,6 +55,7 @@ export const GenericDataTable = (props) => {
         tableState = {tableState}
         defaultColumnNames = {defaultColumnNames}
         multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+        buttons = {headerButtons}
         onclickEvent = {(event) => resetTableState(event)}
         isEnabled = {isEnabled}
     />

@@ -18,6 +18,7 @@ export const useGenericDataTable = ({
   setIsEnabled,
   toasts,
   initialColumnWidth,
+  errorObject
 }) => {
 
   const defaultColumnNames = columns.map((col) => {
@@ -61,7 +62,7 @@ export const useGenericDataTable = ({
 
   const searchService = new SearchService();
 
-  const [errorMessages, setErrorMessages] = useState({});
+  const { errorMessages, setErrorMessages } = errorObject;
 
   const rowsInEdit = useRef(0);
   const dataTable = useRef(null);
@@ -179,14 +180,15 @@ export const useGenericDataTable = ({
 
     let updatedRow = global.structuredClone(event.data);//deep copy
 
-    //does this need to happen to every field that is a plain object? If so, can we just check for objects in event.data and do this to each?
-    curieFields.forEach((field) => {
-      if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
-        event.data[field].curie = trimWhitespace(event.data[field].curie);
-        updatedRow[field] = {};
-        updatedRow[field] = event.data[field];
-      }
-    });
+    if(curieFields){
+      curieFields.forEach((field) => {
+        if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
+          const curie = trimWhitespace(event.data[field].curie);
+          updatedRow[field] = {};
+          updatedRow[field].curie = curie;
+        }
+      });
+    };
 
     mutation.mutate(updatedRow, {
       onSuccess: (response, variables, context) => {
