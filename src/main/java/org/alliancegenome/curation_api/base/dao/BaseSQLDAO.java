@@ -19,7 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.*;
 import org.hibernate.search.engine.search.query.*;
-import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
+import org.hibernate.search.engine.search.query.dsl.*;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
@@ -129,11 +129,17 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
         return entity;
     }
     
-    public Long count(Class<?> clazz) {
+    // DB Count
+    public Long dbCount(Class<?> clazz) {
         CriteriaBuilder qb = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> cq = qb.createQuery(Long.class);
         cq.select(qb.count(cq.from(clazz)));
         return entityManager.createQuery(cq).getSingleResult();
+    }
+    
+    // ES Count
+    public Long esCount(Class<?> clazz) {
+        return searchSession.search(clazz).where( f -> f.matchAll() ).fetchTotalHitCount();
     }
 
     public void flush() {
