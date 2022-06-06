@@ -55,7 +55,7 @@ export const GenericDataTable = (props) => {
         tableState = {tableState}
         defaultColumnNames = {defaultColumnNames}
         multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
-        buttons = {headerButtons}
+        buttons = {headerButtons ? headerButtons() : undefined}
         onclickEvent = {(event) => resetTableState(event)}
         isEnabled = {isEnabled}
     />

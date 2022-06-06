@@ -18,7 +18,8 @@ export const useGenericDataTable = ({
   setIsEnabled,
   toasts,
   initialColumnWidth,
-  errorObject
+  errorObject,
+  defaultVisibleColumns
 }) => {
 
   const defaultColumnNames = columns.map((col) => {
@@ -30,7 +31,7 @@ export const useGenericDataTable = ({
     first: 0,
     rows: 50,
     multiSortMeta: [],
-    selectedColumnNames: defaultColumnNames,
+    selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
     filters: {},
     isFirst: true,
     tableKeyName: tableName.replace(/\s+/g, ''), //remove whitespace from tableName
@@ -62,15 +63,14 @@ export const useGenericDataTable = ({
 
   const searchService = new SearchService();
 
-  const { errorMessages, setErrorMessages } = errorObject;
+  const { errorMessages, setErrorMessages } = errorObject || {};
 
   const rowsInEdit = useRef(0);
   const dataTable = useRef(null);
 
-  const { toast_topleft, toast_topright } = toasts;
+  const { toast_topleft, toast_topright } = toasts || {};
 
 
-  //what is this doing?
   useQuery([`${tableState.tableKeyName}Aggregations`, aggregationFields, tableState],
     () => searchService.search(endpoint, 0, 0, null, {}, {}, aggregationFields), {
     onSuccess: (data) => {
