@@ -81,7 +81,7 @@ export const GenericDataTable = (props) => {
   };
 
   const obsoleteTemplate = (rowData) => {
-    if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
+    if (rowData && rowData.obsolete) {
       return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
     }
   };
