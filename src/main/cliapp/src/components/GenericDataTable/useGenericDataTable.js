@@ -63,12 +63,12 @@ export const useGenericDataTable = ({
 
   const searchService = new SearchService();
 
-  const { errorMessages, setErrorMessages } = errorObject || {};
+  const { errorMessages, setErrorMessages } = errorObject;
 
   const rowsInEdit = useRef(0);
   const dataTable = useRef(null);
 
-  const { toast_topleft, toast_topright } = toasts || {};
+  const { toast_topleft, toast_topright } = toasts;
 
 
   useQuery([`${tableState.tableKeyName}Aggregations`, aggregationFields, tableState],
