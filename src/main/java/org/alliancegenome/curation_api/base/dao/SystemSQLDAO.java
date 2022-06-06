@@ -26,11 +26,9 @@ public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
         Map<String, Object> map = new HashMap<>();
         
         for(Class<?> clazz: annotatedClasses) {
-            Long dbCount = dbCount(clazz);
-            Long esCount = esCount(clazz);
             Map<String, Object> tempMap = new HashMap<String, Object>();
-            tempMap.put("dbCount", dbCount);
-            tempMap.put("esCount", esCount);
+            tempMap.put("dbCount", dbCount(clazz));
+            tempMap.put("esCount", esCount(clazz));
             map.put(clazz.getSimpleName(), tempMap);
         }
         
