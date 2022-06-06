@@ -1,12 +1,17 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 
 import { Tooltip } from 'primereact/tooltip';
+import { Toast } from 'primereact/toast';
 
 export const AllelesTable = () => {
 
   const [isEnabled, setIsEnabled] = useState(true);
+  const [errorMessages, setErrorMessages] = useState({});
+
+  const toast_topleft = useRef(null);
+  const toast_topright = useRef(null);
 
   const descriptionTemplate = (rowData) => {
     return (
@@ -72,6 +77,8 @@ export const AllelesTable = () => {
 
   return (
       <div className="card">
+        <Toast ref={toast_topleft} position="top-left" />
+        <Toast ref={toast_topright} position="top-right" />
         <GenericDataTable 
           endpoint="allele" 
           tableName="Alleles" 
@@ -79,7 +86,9 @@ export const AllelesTable = () => {
           isEditable={false}
           isEnabled={isEnabled}
           setIsEnabled={setIsEnabled}
+          toasts={{toast_topleft, toast_topright }}
           initialColumnWidth={20}
+          errorObject = {{errorMessages, setErrorMessages}}
         />
       </div>
   )
