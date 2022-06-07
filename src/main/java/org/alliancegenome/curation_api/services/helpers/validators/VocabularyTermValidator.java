@@ -44,11 +44,17 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
         String name = validateName(uiEntity);
         dbEntity.setName(name);
         
-        if (!StringUtils.isBlank(uiEntity.getAbbreviation()))
+        if (!StringUtils.isBlank(uiEntity.getAbbreviation())) {
             dbEntity.setAbbreviation(uiEntity.getAbbreviation());
-            
-        if (!StringUtils.isBlank(uiEntity.getDefinition()))
+        } else {
+            dbEntity.setAbbreviation(null);
+        }
+        
+        if (!StringUtils.isBlank(uiEntity.getDefinition())) {
             dbEntity.setDefinition(uiEntity.getDefinition());
+        } else {
+            dbEntity.setDefinition(null);
+        }
         
         if (uiEntity.getObsolete() == null) {
             dbEntity.setObsolete(false);
