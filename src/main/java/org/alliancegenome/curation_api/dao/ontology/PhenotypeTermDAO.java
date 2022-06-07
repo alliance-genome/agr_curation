@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.PhenotypeTerm;
 @ApplicationScoped
 public class PhenotypeTermDAO extends BaseSQLDAO<PhenotypeTerm> {
 
-    protected PhenotypeTermDAO() {
-        super(PhenotypeTerm.class);
-    }
-    
+	protected PhenotypeTermDAO() {
+		super(PhenotypeTerm.class);
+	}
+	
 }

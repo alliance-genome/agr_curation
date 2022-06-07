@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.XcoTermService;
 @RequestScoped
 public class XcoTermCrudController extends BaseOntologyTermController<XcoTermService, XcoTerm, XcoTermDAO> implements XcoTermCrudInterface {
 
-    @Inject XcoTermService xcoTermService;
+	@Inject XcoTermService xcoTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(xcoTermService, XcoTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(xcoTermService, XcoTerm.class);
+	}
 
 }

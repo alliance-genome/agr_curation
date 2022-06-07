@@ -18,19 +18,19 @@ import org.alliancegenome.curation_api.services.AlleleService;
 @RequestScoped
 public class AlleleCrudController extends BaseCrudController<AlleleService, Allele, AlleleDAO> implements AlleleCrudInterface {
 
-    @Inject AlleleService alleleService;
-    
-    @Inject AlleleExecutor alleleExecutor;
+	@Inject AlleleService alleleService;
+	
+	@Inject AlleleExecutor alleleExecutor;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(alleleService);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(alleleService);
+	}
 
-    @Override
-    public APIResponse updateAlleles(List<AlleleDTO> alleleData) {
-        return alleleExecutor.runLoad(alleleData);
-    }
+	@Override
+	public APIResponse updateAlleles(List<AlleleDTO> alleleData) {
+		return alleleExecutor.runLoad(alleleData);
+	}
 
 }

@@ -9,8 +9,8 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 @ApplicationScoped
 public class LoggedInPersonDAO extends BaseSQLDAO<LoggedInPerson> {
 
-    protected LoggedInPersonDAO() {
-        super(LoggedInPerson.class);
-    }
+	protected LoggedInPersonDAO() {
+		super(LoggedInPerson.class);
+	}
 
 }

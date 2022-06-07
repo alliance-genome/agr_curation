@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.services.ontology.XsmoTermService;
 @RequestScoped
 public class XsmoTermCrudController extends BaseOntologyTermController<XsmoTermService, XSMOTerm, XsmoTermDAO> implements XsmoTermCrudInterface {
 
-    @Inject XsmoTermService xsmoTermService;
+	@Inject XsmoTermService xsmoTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setIgnoreEntitiesWithChebiXref(true);
-        setService(xsmoTermService, XSMOTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setIgnoreEntitiesWithChebiXref(true);
+		setService(xsmoTermService, XSMOTerm.class, config);
+	}
 
 }

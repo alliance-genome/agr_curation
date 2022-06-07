@@ -19,16 +19,16 @@ import java.util.List;
 @RequestScoped
 public class ConditionRelationCrudController extends BaseCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
 
-    @Inject ConditionRelationService conditionRelationService;
+	@Inject ConditionRelationService conditionRelationService;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(conditionRelationService);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(conditionRelationService);
+	}
 
-    public ObjectResponse<ConditionRelation> validate(ConditionRelation entity) {
-        return conditionRelationService.validate(entity);
-    }
+	public ObjectResponse<ConditionRelation> validate(ConditionRelation entity) {
+		return conditionRelationService.validate(entity);
+	}
 
 }

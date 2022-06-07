@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.XBEDTerm;
 @ApplicationScoped
 public class XbedTermDAO extends BaseSQLDAO<XBEDTerm> {
 
-    protected XbedTermDAO() {
-        super(XBEDTerm.class);
-    }
+	protected XbedTermDAO() {
+		super(XBEDTerm.class);
+	}
 
 }

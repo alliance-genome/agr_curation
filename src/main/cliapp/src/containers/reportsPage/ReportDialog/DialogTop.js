@@ -7,20 +7,20 @@ import { DialogCardRow} from './DialogCardRow';
 import { StatusTemplate } from '../StatusTemplate';
 
 export const DialogTop = ({ report }) => {
-  return (
-    <DialogCardRow>
-      <DialogCard topText="Name">
-        {report.name}
-      </DialogCard>
-      <DialogCard topText="Status">
-        <StatusTemplate rowData={report}/>
-      </DialogCard>
-      <DialogCard topText="Date Created">
-        <Moment format="MMM Do YYYY" date={report.dateCreated} />
-      </DialogCard>
-      <DialogCard topText="Date Updated">
-        <Moment format="MMM Do YYYY" date={report.dateUpdated} />
-      </DialogCard>
-    </DialogCardRow>
-  )
+	return (
+		<DialogCardRow>
+			<DialogCard topText="Name">
+				{report.name}
+			</DialogCard>
+			<DialogCard topText="Status">
+				<StatusTemplate rowData={report}/>
+			</DialogCard>
+			<DialogCard topText="Date Created">
+				<Moment format="MMM Do YYYY" date={report.dateCreated} />
+			</DialogCard>
+			<DialogCard topText="Date Updated">
+				<Moment format="MMM Do YYYY" date={report.dateUpdated} />
+			</DialogCard>
+		</DialogCardRow>
+	)
 };

@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.Note;
 @ApplicationScoped
 public class NoteDAO extends BaseSQLDAO<Note> {
 
-    protected NoteDAO() {
-        super(Note.class);
-    }
+	protected NoteDAO() {
+		super(Note.class);
+	}
 
 }

@@ -15,11 +15,11 @@ import lombok.*;
 @ToString(callSuper = true)
 public class UniqueIdAuditedObject extends GeneratedAuditedObject {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(unique = true, length = 2000)
-    @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    private String uniqueId;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "uniqueId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true, length = 2000)
+	@JsonView({View.FieldsOnly.class})
+	@EqualsAndHashCode.Include
+	private String uniqueId;
 
 }

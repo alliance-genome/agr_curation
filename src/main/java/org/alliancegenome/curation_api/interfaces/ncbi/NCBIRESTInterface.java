@@ -11,11 +11,11 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "DataFile Endpoints")
 public interface NCBIRESTInterface {
 
-    @GET
-    @Path("/esummary.fcgi")
-    public NCBITaxonResponseDTO getTaxonFromNCBI(
-            @QueryParam("db") String db,
-            @QueryParam("retmode") String retmode,
-            @QueryParam("id") String id
-    );
+	@GET
+	@Path("/esummary.fcgi")
+	public NCBITaxonResponseDTO getTaxonFromNCBI(
+			@QueryParam("db") String db,
+			@QueryParam("retmode") String retmode,
+			@QueryParam("id") String id
+	);
 }

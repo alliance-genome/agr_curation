@@ -5,11 +5,11 @@ import javax.enterprise.context.ApplicationScoped;
 import org.eclipse.microprofile.health.*;
 
 @Liveness
-@ApplicationScoped  
+@ApplicationScoped	
 public class SiteHealthCheck implements HealthCheck {
 
-    @Override
-    public HealthCheckResponse call() {
-        return HealthCheckResponse.up("Simple health check");
-    }
+	@Override
+	public HealthCheckResponse call() {
+		return HealthCheckResponse.up("Simple health check");
+	}
 }

@@ -15,9 +15,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface APIVersionInterface {
 
-    @GET
-    @Path("/")
-    @JsonView(View.FieldsOnly.class)
-    public APIVersionInfo get();
-    
+	@GET
+	@Path("/")
+	@JsonView(View.FieldsOnly.class)
+	public APIVersionInfo get();
+	
 }

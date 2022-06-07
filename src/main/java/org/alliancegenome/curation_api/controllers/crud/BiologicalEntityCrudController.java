@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.BiologicalEntityService;
 @RequestScoped
 public class BiologicalEntityCrudController extends BaseCrudController<BiologicalEntityService, BiologicalEntity, BiologicalEntityDAO> implements BiologicalEntityCrudInterface {
 
-    @Inject BiologicalEntityService biologicalEntityService;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(biologicalEntityService);
-    }
+	@Inject BiologicalEntityService biologicalEntityService;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(biologicalEntityService);
+	}
 
 }

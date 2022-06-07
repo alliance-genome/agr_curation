@@ -16,19 +16,19 @@ import org.alliancegenome.curation_api.services.MoleculeService;
 @RequestScoped
 public class MoleculeCrudController extends BaseCrudController<MoleculeService, Molecule, MoleculeDAO> implements MoleculeCrudInterface {
 
-    @Inject MoleculeService moleculeService;
-    
-    @Inject MoleculeExecutor moleculeExecutor;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(moleculeService);
-    }
+	@Inject MoleculeService moleculeService;
+	
+	@Inject MoleculeExecutor moleculeExecutor;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(moleculeService);
+	}
 
-    @Override
-    public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData) {
-        return moleculeExecutor.runLoad(moleculeData);
-    }
+	@Override
+	public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData) {
+		return moleculeExecutor.runLoad(moleculeData);
+	}
 
 }

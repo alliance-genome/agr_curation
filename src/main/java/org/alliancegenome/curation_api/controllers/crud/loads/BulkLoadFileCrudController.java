@@ -14,17 +14,17 @@ import org.alliancegenome.curation_api.services.loads.BulkLoadFileService;
 @RequestScoped
 public class BulkLoadFileCrudController extends BaseCrudController<BulkLoadFileService, BulkLoadFile, BulkLoadFileDAO> implements BulkLoadFileCrudInterface {
 
-    @Inject BulkLoadFileService bulkLoadFileService;
+	@Inject BulkLoadFileService bulkLoadFileService;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(bulkLoadFileService);
-    }
-    
-    @Override
-    public ObjectResponse<BulkLoadFile> restartLoadFile(Long id) {
-        return bulkLoadFileService.restartLoad(id);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(bulkLoadFileService);
+	}
+	
+	@Override
+	public ObjectResponse<BulkLoadFile> restartLoadFile(Long id) {
+		return bulkLoadFileService.restartLoad(id);
+	}
 
 }

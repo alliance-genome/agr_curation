@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 @ApplicationScoped
 public class BiologicalEntityDAO extends BaseSQLDAO<BiologicalEntity> {
 
-    protected BiologicalEntityDAO() {
-        super(BiologicalEntity.class);
-    }
+	protected BiologicalEntityDAO() {
+		super(BiologicalEntity.class);
+	}
 
 }

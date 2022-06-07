@@ -18,8 +18,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BulkLoadFileCrudInterface extends BaseIdCrudInterface<BulkLoadFile> {
 
-    @GET
-    @Path("/restart/{id}")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<BulkLoadFile> restartLoadFile(@PathParam("id") Long id);
+	@GET
+	@Path("/restart/{id}")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<BulkLoadFile> restartLoadFile(@PathParam("id") Long id);
 }

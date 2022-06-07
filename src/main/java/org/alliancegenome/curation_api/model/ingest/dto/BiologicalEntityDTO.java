@@ -7,6 +7,6 @@ import lombok.Data;
 @Data
 public class BiologicalEntityDTO extends CurieAuditedObjectDTO {
 
-    private String taxon;
-    
+	private String taxon;
+	
 }

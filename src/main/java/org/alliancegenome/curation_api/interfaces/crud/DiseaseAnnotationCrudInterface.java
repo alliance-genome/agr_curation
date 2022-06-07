@@ -17,9 +17,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<DiseaseAnnotation> {
 
-    @GET
-    @Path("/findBy/{uniqueId}")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<DiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
-    
+	@GET
+	@Path("/findBy/{uniqueId}")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<DiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
+	
 }

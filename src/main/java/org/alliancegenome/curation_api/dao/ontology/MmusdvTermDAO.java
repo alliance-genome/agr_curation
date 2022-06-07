@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.MmusDvTerm;
 @ApplicationScoped
 public class MmusdvTermDAO extends BaseSQLDAO<MmusDvTerm> {
 
-    protected MmusdvTermDAO() {
-        super(MmusDvTerm.class);
-    }
+	protected MmusdvTermDAO() {
+		super(MmusDvTerm.class);
+	}
 
 }

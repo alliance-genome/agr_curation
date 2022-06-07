@@ -21,31 +21,31 @@ import lombok.*;
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"}, callSuper = true)
 public class GenomicEntity extends BiologicalEntity {
 
-    //@Analyzer(definition = "caseInsensitiveAnalyzer")
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(columnDefinition="TEXT")
-    @JsonView({View.FieldsOnly.class})
-    private String name;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
-    @JsonView({View.FieldsAndLists.class})
-    private List<Synonym> synonyms;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
-    @JsonView({View.FieldsAndLists.class})
-    private List<CrossReference> crossReferences;
+	//@Analyzer(definition = "caseInsensitiveAnalyzer")
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(columnDefinition="TEXT")
+	@JsonView({View.FieldsOnly.class})
+	private String name;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
+	@JsonView({View.FieldsAndLists.class})
+	private List<Synonym> synonyms;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
+	@JsonView({View.FieldsAndLists.class})
+	private List<CrossReference> crossReferences;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @ElementCollection
-    @JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
-    @JsonView({View.FieldsAndLists.class})
-    private List<String> secondaryIdentifiers;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@ElementCollection
+	@JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
+	@JsonView({View.FieldsAndLists.class})
+	private List<String> secondaryIdentifiers;
 
 }

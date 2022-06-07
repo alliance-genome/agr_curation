@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
 @RequestScoped
 public class FbdvTermCrudController extends BaseOntologyTermController<FbdvTermService, FBdvTerm, FbdvTermDAO> implements FbdvTermCrudInterface {
 
-    @Inject FbdvTermService fbdvTermService;
+	@Inject FbdvTermService fbdvTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(fbdvTermService, FBdvTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(fbdvTermService, FBdvTerm.class);
+	}
 
 }

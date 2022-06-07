@@ -26,38 +26,38 @@ import lombok.*;
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 public class VocabularyTerm extends GeneratedAuditedObject {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    private String name;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    private String abbreviation;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    private String definition;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JoinTable(indexes = { @Index( columnList = "vocabularyterm_id"), @Index( columnList = "crossreferences_curie")})
-    @JsonView({View.FieldsAndLists.class})
-    private List<CrossReference> crossReferences;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.VocabularyTermView.class})
-    private Vocabulary vocabulary;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @ElementCollection
-    @JsonView(View.FieldsAndLists.class)
-    @JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))
-    @Column(columnDefinition="TEXT")
-    private List<String> textSynonyms;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	private String name;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	private String abbreviation;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "definition_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	private String definition;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JoinTable(indexes = { @Index( columnList = "vocabularyterm_id"), @Index( columnList = "crossreferences_curie")})
+	@JsonView({View.FieldsAndLists.class})
+	private List<CrossReference> crossReferences;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.VocabularyTermView.class})
+	private Vocabulary vocabulary;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@ElementCollection
+	@JsonView(View.FieldsAndLists.class)
+	@JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))
+	@Column(columnDefinition="TEXT")
+	private List<String> textSynonyms;
 }

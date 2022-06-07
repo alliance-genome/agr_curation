@@ -4,22 +4,22 @@ import OktaSignInWidget from './OktaSignInWidget';
 import { useOktaAuth } from '@okta/okta-react';
 
 export const Login = ({ config }) => {
-  const { oktaAuth, authState } = useOktaAuth();
+	const { oktaAuth, authState } = useOktaAuth();
 
-  const onSuccess = (tokens) => {
-    oktaAuth.handleLoginRedirect(tokens);
-  };
+	const onSuccess = (tokens) => {
+		oktaAuth.handleLoginRedirect(tokens);
+	};
 
-  const onError = (err) => {
-    console.log('error logging in', err);
-  };
+	const onError = (err) => {
+		console.log('error logging in', err);
+	};
 
-  if (!authState) return null;
+	if (!authState) return null;
 
-  return authState.isAuthenticated ?
-    <Redirect to={{ pathname: '/' }}/> :
-    <OktaSignInWidget
-      config={config}
-      onSuccess={onSuccess}
-      onError={onError}/>;
+	return authState.isAuthenticated ?
+		<Redirect to={{ pathname: '/' }}/> :
+		<OktaSignInWidget
+			config={config}
+			onSuccess={onSuccess}
+			onError={onError}/>;
 };

@@ -26,11 +26,11 @@ import lombok.ToString;
 @ToString(callSuper = true)
 public class BiologicalEntity extends CurieAuditedObject {
 
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private NCBITaxonTerm taxon;
-    
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private NCBITaxonTerm taxon;
+	
 }
 

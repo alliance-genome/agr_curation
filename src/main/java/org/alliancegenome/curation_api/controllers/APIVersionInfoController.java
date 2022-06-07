@@ -14,35 +14,35 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 @RequestScoped
 public class APIVersionInfoController implements APIVersionInterface {
 
-    @ConfigProperty(name = "quarkus.application.version")
-    String version;
-    
-    @ConfigProperty(name = "quarkus.application.name")
-    String name;
-    
-    @ConfigProperty(name = "linkML.version")
-    String linkMLVersion;
-    
-    @ConfigProperty(name = "linkML.classes")
-    List<String> linkMLClasses;
-    
-    @ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
-    String es_host;
-    
-    @ConfigProperty(name = "NET")
-    String env;
-    
+	@ConfigProperty(name = "quarkus.application.version")
+	String version;
+	
+	@ConfigProperty(name = "quarkus.application.name")
+	String name;
+	
+	@ConfigProperty(name = "linkML.version")
+	String linkMLVersion;
+	
+	@ConfigProperty(name = "linkML.classes")
+	List<String> linkMLClasses;
+	
+	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
+	String es_host;
+	
+	@ConfigProperty(name = "NET")
+	String env;
+	
 
-    @Override
-    public APIVersionInfo get() {
-        APIVersionInfo info = new APIVersionInfo();
-        info.setVersion(version);
-        info.setName(name);
-        info.setLinkMLVersion(linkMLVersion);
-        info.setLinkMLClasses(linkMLClasses);
-        info.setEsHost(es_host);
-        info.setEnv(env);
-        return info;
-    }
+	@Override
+	public APIVersionInfo get() {
+		APIVersionInfo info = new APIVersionInfo();
+		info.setVersion(version);
+		info.setName(name);
+		info.setLinkMLVersion(linkMLVersion);
+		info.setLinkMLClasses(linkMLClasses);
+		info.setEsHost(es_host);
+		info.setEnv(env);
+		return info;
+	}
 
 }

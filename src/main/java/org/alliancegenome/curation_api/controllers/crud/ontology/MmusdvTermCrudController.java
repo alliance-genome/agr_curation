@@ -14,15 +14,15 @@ import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
 @RequestScoped
 public class MmusdvTermCrudController extends BaseOntologyTermController<MmusdvTermService, MmusDvTerm, MmusdvTermDAO> implements MmusdvTermCrudInterface {
 
-    @Inject MmusdvTermService mmusdvTermService;
+	@Inject MmusdvTermService mmusdvTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.getAltNameSpaces().add("mouse_developmental_stage");
-        config.getAltNameSpaces().add("mouse_stages_ontology");
-        setService(mmusdvTermService, MmusDvTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.getAltNameSpaces().add("mouse_developmental_stage");
+		config.getAltNameSpaces().add("mouse_stages_ontology");
+		setService(mmusdvTermService, MmusDvTerm.class, config);
+	}
 
 }

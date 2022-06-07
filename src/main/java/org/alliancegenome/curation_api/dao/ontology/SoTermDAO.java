@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 @ApplicationScoped
 public class SoTermDAO extends BaseSQLDAO<SOTerm> {
 
-    protected SoTermDAO() {
-        super(SOTerm.class);
-    }
+	protected SoTermDAO() {
+		super(SOTerm.class);
+	}
 
 }

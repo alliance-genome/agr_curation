@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 
 @ApplicationScoped
 public class BulkLoadFileDAO extends BaseSQLDAO<BulkLoadFile> {
-    protected BulkLoadFileDAO() {
-        super(BulkLoadFile.class);
-    }
+	protected BulkLoadFileDAO() {
+		super(BulkLoadFile.class);
+	}
 }
