@@ -9,6 +9,6 @@ import lombok.Data;
 @Data
 public class MoleculeMetaDataFmsDTO extends BaseDTO {
 
-    private MetaDataFmsDTO metaData;
-    private List<MoleculeFmsDTO> data;
+	private MetaDataFmsDTO metaData;
+	private List<MoleculeFmsDTO> data;
 }

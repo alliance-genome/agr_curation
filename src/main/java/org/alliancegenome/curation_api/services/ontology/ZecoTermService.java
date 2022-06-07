@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 @RequestScoped
 public class ZecoTermService extends BaseOntologyTermService<ZecoTerm, ZecoTermDAO> {
 
-    @Inject ZecoTermDAO zecoTermDAO;
+	@Inject ZecoTermDAO zecoTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(zecoTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(zecoTermDAO);
+	}
 
 }

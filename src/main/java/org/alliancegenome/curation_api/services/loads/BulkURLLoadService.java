@@ -13,22 +13,22 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 
 @RequestScoped
 public class BulkURLLoadService extends BaseCrudService<BulkURLLoad, BulkURLLoadDAO> {
-    
-    @Inject
-    BulkURLLoadDAO bulkURLLoadDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(bulkURLLoadDAO);
-    }
-    
-    @Transactional
-    public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
-        BulkURLLoad load = bulkURLLoadDAO.find(id);
-        if(load.getStatus().isNotRunning()) {
-            load.setStatus(JobStatus.FORCED_PENDING);
-        }
-        return new ObjectResponse<BulkURLLoad>(load);
-    }
+	
+	@Inject
+	BulkURLLoadDAO bulkURLLoadDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(bulkURLLoadDAO);
+	}
+	
+	@Transactional
+	public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
+		BulkURLLoad load = bulkURLLoadDAO.find(id);
+		if(load.getStatus().isNotRunning()) {
+			load.setStatus(JobStatus.FORCED_PENDING);
+		}
+		return new ObjectResponse<BulkURLLoad>(load);
+	}
 }

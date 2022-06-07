@@ -22,66 +22,66 @@ import static org.hamcrest.Matchers.is;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(13)
 public class NCBITaxonTermITCase {
-    private String VALID_TAXON_CURIE = "NCBITaxon:1";
-    private String INVALID_TAXON_PREFIX = "NCBI:1";
-    private String INVALID_TAXON_SUFFIX = "NCBITaxon:0";
-    
-    @BeforeEach
-    public void init() {
-        RestAssured.config = RestAssuredConfig.config()
-                .httpClient(HttpClientConfig.httpClientConfig()
-                        .setParam("http.socket.timeout", 100000)
-                        .setParam("http.connection.timeout", 100000));
-    }
+	private String VALID_TAXON_CURIE = "NCBITaxon:1";
+	private String INVALID_TAXON_PREFIX = "NCBI:1";
+	private String INVALID_TAXON_SUFFIX = "NCBITaxon:0";
+	
+	@BeforeEach
+	public void init() {
+		RestAssured.config = RestAssuredConfig.config()
+				.httpClient(HttpClientConfig.httpClientConfig()
+						.setParam("http.socket.timeout", 100000)
+						.setParam("http.connection.timeout", 100000));
+	}
 
-    @Test
-    @Order(1)
-    void testValidTaxon() {
-        loadNCBITaxonTerm(VALID_TAXON_CURIE);
-        
-        RestAssured.given().
-            when().
-            get("/api/ncbitaxonterm/" + VALID_TAXON_CURIE).
-            then().
-            statusCode(200).
-            body("entity.name", is("Test NCBITaxonTerm")).
-            body("entity.obsolete", is(false));
-    }
+	@Test
+	@Order(1)
+	void testValidTaxon() {
+		loadNCBITaxonTerm(VALID_TAXON_CURIE);
+		
+		RestAssured.given().
+			when().
+			get("/api/ncbitaxonterm/" + VALID_TAXON_CURIE).
+			then().
+			statusCode(200).
+			body("entity.name", is("Test NCBITaxonTerm")).
+			body("entity.obsolete", is(false));
+	}
 
-    @Test
-    @Order(2)
-    void testInvalidPrefix() {
-        RestAssured.given().
-            when().
-            get("/api/ncbitaxonterm/" + INVALID_TAXON_PREFIX).
-            then().
-            statusCode(200).
-            body("isEmpty()", Matchers.is(true));
-    }
+	@Test
+	@Order(2)
+	void testInvalidPrefix() {
+		RestAssured.given().
+			when().
+			get("/api/ncbitaxonterm/" + INVALID_TAXON_PREFIX).
+			then().
+			statusCode(200).
+			body("isEmpty()", Matchers.is(true));
+	}
 
-    @Test
-    @Order(3)
-    void testInvalidSuffix() {
-        RestAssured.given().
-            when().
-            get("/api/ncbitaxonterm/" + INVALID_TAXON_SUFFIX).
-            then().
-            statusCode(200).
-            body("isEmpty()", Matchers.is(true));
-    }
-    
-    private void loadNCBITaxonTerm(String taxonTerm) {
-        NCBITaxonTerm ncbiTaxonTerm = new NCBITaxonTerm();
-        ncbiTaxonTerm.setCurie(taxonTerm);
-        ncbiTaxonTerm.setName("Test NCBITaxonTerm");
-        ncbiTaxonTerm.setObsolete(false);
-    
-        RestAssured.given().
-            contentType("application/json").
-            body(ncbiTaxonTerm).
-            when().
-            put("/api/ncbitaxonterm").
-            then().
-            statusCode(200);
-    }
+	@Test
+	@Order(3)
+	void testInvalidSuffix() {
+		RestAssured.given().
+			when().
+			get("/api/ncbitaxonterm/" + INVALID_TAXON_SUFFIX).
+			then().
+			statusCode(200).
+			body("isEmpty()", Matchers.is(true));
+	}
+	
+	private void loadNCBITaxonTerm(String taxonTerm) {
+		NCBITaxonTerm ncbiTaxonTerm = new NCBITaxonTerm();
+		ncbiTaxonTerm.setCurie(taxonTerm);
+		ncbiTaxonTerm.setName("Test NCBITaxonTerm");
+		ncbiTaxonTerm.setObsolete(false);
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(ncbiTaxonTerm).
+			when().
+			put("/api/ncbitaxonterm").
+			then().
+			statusCode(200);
+	}
 }

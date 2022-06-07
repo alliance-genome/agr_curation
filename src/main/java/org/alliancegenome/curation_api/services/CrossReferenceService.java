@@ -16,60 +16,60 @@ import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO
 @RequestScoped
 public class CrossReferenceService extends BaseCrudService<CrossReference, CrossReferenceDAO>{
 
-    @Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject CrossReferenceDAO crossReferenceDAO;
 
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(crossReferenceDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(crossReferenceDAO);
+	}
 
-    @Transactional
-    public CrossReference processUpdate(CrossReferenceFmsDTO crossReferenceFmsDTO) {
+	@Transactional
+	public CrossReference processUpdate(CrossReferenceFmsDTO crossReferenceFmsDTO) {
 
-        CrossReference crossReference = crossReferenceDAO.find(crossReferenceFmsDTO.getId());
-        if(crossReference == null) {
-            crossReference = new CrossReference();
-            crossReference.setCurie(crossReferenceFmsDTO.getId());
-            crossReferenceDAO.persist(crossReference);
-        }
+		CrossReference crossReference = crossReferenceDAO.find(crossReferenceFmsDTO.getId());
+		if(crossReference == null) {
+			crossReference = new CrossReference();
+			crossReference.setCurie(crossReferenceFmsDTO.getId());
+			crossReferenceDAO.persist(crossReference);
+		}
 
-        handlePageAreas(crossReferenceFmsDTO, crossReference);
+		handlePageAreas(crossReferenceFmsDTO, crossReference);
 
-        return crossReference;
+		return crossReference;
 
-    }
+	}
 
-    private void handlePageAreas(CrossReferenceFmsDTO crDTO, CrossReference cr) {
+	private void handlePageAreas(CrossReferenceFmsDTO crDTO, CrossReference cr) {
 
-        Set<String> currentPages;
-        if(cr.getPageAreas() == null) {
-            currentPages = new HashSet<>();
-            cr.setPageAreas(new ArrayList<>());
-        } else {
-            currentPages = cr.getPageAreas().stream().collect(Collectors.toSet());
-        }
+		Set<String> currentPages;
+		if(cr.getPageAreas() == null) {
+			currentPages = new HashSet<>();
+			cr.setPageAreas(new ArrayList<>());
+		} else {
+			currentPages = cr.getPageAreas().stream().collect(Collectors.toSet());
+		}
 
-        Set<String> newPages;
-        if(crDTO.getPages() == null) {
-            newPages = new HashSet<>();
-        } else {
-            newPages = crDTO.getPages().stream().collect(Collectors.toSet());
-        }
+		Set<String> newPages;
+		if(crDTO.getPages() == null) {
+			newPages = new HashSet<>();
+		} else {
+			newPages = crDTO.getPages().stream().collect(Collectors.toSet());
+		}
 
-        newPages.forEach(id -> {
-            if(!currentPages.contains(id)) {
-                cr.getPageAreas().add(id);
-            }
-        });
+		newPages.forEach(id -> {
+			if(!currentPages.contains(id)) {
+				cr.getPageAreas().add(id);
+			}
+		});
 
-        currentPages.forEach(id -> {
-            if(!newPages.contains(id)) {
-                cr.getPageAreas().remove(id);
-            }
-        });
+		currentPages.forEach(id -> {
+			if(!newPages.contains(id)) {
+				cr.getPageAreas().remove(id);
+			}
+		});
 
-    }
+	}
 
 }

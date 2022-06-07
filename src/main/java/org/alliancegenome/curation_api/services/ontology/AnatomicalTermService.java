@@ -14,12 +14,12 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class AnatomicalTermService extends BaseOntologyTermService<AnatomicalTerm, AnatomicalTermDAO> {
 
-    @Inject AnatomicalTermDAO anatomicalTermDAO;
+	@Inject AnatomicalTermDAO anatomicalTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(anatomicalTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(anatomicalTermDAO);
+	}
+	
 }

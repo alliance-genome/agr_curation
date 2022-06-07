@@ -13,7 +13,7 @@ import lombok.*;
 @Schema(name="ObjectListResponse", description="POJO that represents the Object List Response")
 public class ObjectListResponse<E> extends APIResponse {
 
-    @JsonView(View.FieldsOnly.class)
-    private List<E> entities;
+	@JsonView(View.FieldsOnly.class)
+	private List<E> entities;
 
 }

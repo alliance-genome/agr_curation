@@ -9,26 +9,26 @@ import org.apache.commons.lang3.StringUtils;
 
 public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 
-    /**
-     * genotype ID + DOID + PubID
-     *
-     * @param annotationDTO DiseaseModelAnnotationFmsDTO
-     * @return curie string
-     */
-    @Override
-    public String getCurieID(DiseaseAnnotationDTO annotationDTO) {
-        CurieGeneratorHelper curie = new CurieGeneratorHelper();
-        curie.add(annotationDTO.getSubject());
-        curie.add(annotationDTO.getObject());
-        curie.add(annotationDTO.getSingleReference());
-        curie.add(StringUtils.join(annotationDTO.getEvidenceCodes(), "::"));
-        return curie.getCurie();
-    }
-    
-    @Override
-    public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
-        return super.getCurieID(subject, object, reference, null,null, null);
-    }
+	/**
+	 * genotype ID + DOID + PubID
+	 *
+	 * @param annotationDTO DiseaseModelAnnotationFmsDTO
+	 * @return curie string
+	 */
+	@Override
+	public String getCurieID(DiseaseAnnotationDTO annotationDTO) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		curie.add(annotationDTO.getSubject());
+		curie.add(annotationDTO.getObject());
+		curie.add(annotationDTO.getSingleReference());
+		curie.add(StringUtils.join(annotationDTO.getEvidenceCodes(), "::"));
+		return curie.getCurie();
+	}
+	
+	@Override
+	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
+		return super.getCurieID(subject, object, reference, null,null, null);
+	}
 
 
 }
