@@ -48,45 +48,45 @@ import { NCBITaxonOntologyComponent } from './containers/ontologies/NCBITaxonOnt
 
 
 export default (
-  <>
-    <SecureRoute path="/" exact component={DashboardPage} />
-    <SecureRoute path="/profile" component={ProfilePage} />
-    <SecureRoute path="/dataloads" component={DataLoadsPage} />
-    <SecureRoute path="/reports" component={ReportsPage} />
-    <SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
-    <SecureRoute path="/experimentalConditions" component={ExperimentalConditionsPage} />
-    <SecureRoute path="/conditionRelations" component={ConditionRelationPage} />
-    <SecureRoute path="/genes" component={GenesPage} />
-    <SecureRoute path="/alleles" component={AllelesPage} />
-    <SecureRoute path="/molecules" component={MoleculesPage} />
-        <SecureRoute path="/references" component={ReferencePage} />
-    <SecureRoute path="/vocabterms" component={ControlledVocabularyPage} />
-    <SecureRoute path="/ontology/chebi" component={CHEBIOntologyComponent} />
-    <SecureRoute path="/ontology/do" component={DiseaseOntologyComponent} />
-    <SecureRoute path="/ontology/eco" component={ECOOntologyComponent} />
-    <SecureRoute path="/ontology/go" component={GOOntologyComponent} />
-    <SecureRoute path="/ontology/so" component={SOOntologyComponent} />
-    <SecureRoute path="/ontology/ma" component={MAOntologyComponent} />
-    <SecureRoute path="/ontology/zfa" component={ZFAOntologyComponent} />
-    <SecureRoute path="/ontology/mp" component={MPOntologyComponent} />
-    <SecureRoute path="/ontology/dao" component={DAOOntologyComponent} />
-    <SecureRoute path="/ontology/emapa" component={EMAPAOntologyComponent} />
-    <SecureRoute path="/ontology/wbbt" component={WBbtOntologyComponent} />
-    <SecureRoute path="/ontology/xco" component={XCOOntologyComponent} />
-    <SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
-    <SecureRoute path="/ontology/wbls" component={WBlsOntologyComponent} />
-    <SecureRoute path="/ontology/fbdv" component={FBdvOntologyComponent} />
-    <SecureRoute path="/ontology/mmusdv" component={MmusDvOntologyComponent} />
-    <SecureRoute path="/ontology/zfs" component={ZFSOntologyComponent} />
-    <SecureRoute path="/ontology/xba" component={XBAOntologyComponent} />
-    <SecureRoute path="/ontology/xbs" component={XBSOntologyComponent} />
-    <SecureRoute path="/ontology/xpo" component={XPOOntologyComponent} />
-    <SecureRoute path="/ontology/xbed" component={XBEDOntologyComponent} />
-    <SecureRoute path="/ontology/xsmo" component={XSMOOntologyComponent} />
-    <SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
-    <SecureRoute path="/fmspage" component={FMSComponent} />
-    <SecureRoute path="/metricspage" component={MetricsComponent} />
-    <SecureRoute path="/agms" component={AffectedGenomicModelPage} />
-    <Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
-  </>
+	<>
+		<SecureRoute path="/" exact component={DashboardPage} />
+		<SecureRoute path="/profile" component={ProfilePage} />
+		<SecureRoute path="/dataloads" component={DataLoadsPage} />
+		<SecureRoute path="/reports" component={ReportsPage} />
+		<SecureRoute path="/diseaseAnnotations" component={DiseaseAnnotationsPage} />
+		<SecureRoute path="/experimentalConditions" component={ExperimentalConditionsPage} />
+		<SecureRoute path="/conditionRelations" component={ConditionRelationPage} />
+		<SecureRoute path="/genes" component={GenesPage} />
+		<SecureRoute path="/alleles" component={AllelesPage} />
+		<SecureRoute path="/molecules" component={MoleculesPage} />
+				<SecureRoute path="/references" component={ReferencePage} />
+		<SecureRoute path="/vocabterms" component={ControlledVocabularyPage} />
+		<SecureRoute path="/ontology/chebi" component={CHEBIOntologyComponent} />
+		<SecureRoute path="/ontology/do" component={DiseaseOntologyComponent} />
+		<SecureRoute path="/ontology/eco" component={ECOOntologyComponent} />
+		<SecureRoute path="/ontology/go" component={GOOntologyComponent} />
+		<SecureRoute path="/ontology/so" component={SOOntologyComponent} />
+		<SecureRoute path="/ontology/ma" component={MAOntologyComponent} />
+		<SecureRoute path="/ontology/zfa" component={ZFAOntologyComponent} />
+		<SecureRoute path="/ontology/mp" component={MPOntologyComponent} />
+		<SecureRoute path="/ontology/dao" component={DAOOntologyComponent} />
+		<SecureRoute path="/ontology/emapa" component={EMAPAOntologyComponent} />
+		<SecureRoute path="/ontology/wbbt" component={WBbtOntologyComponent} />
+		<SecureRoute path="/ontology/xco" component={XCOOntologyComponent} />
+		<SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
+		<SecureRoute path="/ontology/wbls" component={WBlsOntologyComponent} />
+		<SecureRoute path="/ontology/fbdv" component={FBdvOntologyComponent} />
+		<SecureRoute path="/ontology/mmusdv" component={MmusDvOntologyComponent} />
+		<SecureRoute path="/ontology/zfs" component={ZFSOntologyComponent} />
+		<SecureRoute path="/ontology/xba" component={XBAOntologyComponent} />
+		<SecureRoute path="/ontology/xbs" component={XBSOntologyComponent} />
+		<SecureRoute path="/ontology/xpo" component={XPOOntologyComponent} />
+		<SecureRoute path="/ontology/xbed" component={XBEDOntologyComponent} />
+		<SecureRoute path="/ontology/xsmo" component={XSMOOntologyComponent} />
+		<SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
+		<SecureRoute path="/fmspage" component={FMSComponent} />
+		<SecureRoute path="/metricspage" component={MetricsComponent} />
+		<SecureRoute path="/agms" component={AffectedGenomicModelPage} />
+		<Route path='/login' render={() => <Login config={oktaSignInConfig} />} />
+	</>
 )

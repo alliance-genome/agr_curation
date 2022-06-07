@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class EvidenceFmsDTO extends BaseDTO {
 
-    private PublicationFmsDTO publication;
-    private List<String> evidenceCodes;
+	private PublicationFmsDTO publication;
+	private List<String> evidenceCodes;
 
 }

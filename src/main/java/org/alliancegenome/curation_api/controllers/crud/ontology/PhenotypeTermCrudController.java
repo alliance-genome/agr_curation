@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.PhenotypeTermService;
 @RequestScoped
 public class PhenotypeTermCrudController extends BaseOntologyTermController<PhenotypeTermService, PhenotypeTerm, PhenotypeTermDAO> implements PhenotypeTermCrudInterface {
 
-    @Inject PhenotypeTermService phenotypeTermService;
+	@Inject PhenotypeTermService phenotypeTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(phenotypeTermService, PhenotypeTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(phenotypeTermService, PhenotypeTerm.class);
+	}
 
 }

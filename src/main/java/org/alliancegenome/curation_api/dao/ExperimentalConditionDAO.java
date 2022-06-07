@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 @ApplicationScoped
 public class ExperimentalConditionDAO extends BaseSQLDAO<ExperimentalCondition> {
 
-    protected ExperimentalConditionDAO() {
-        super(ExperimentalCondition.class);
-    }
+	protected ExperimentalConditionDAO() {
+		super(ExperimentalCondition.class);
+	}
 
 }

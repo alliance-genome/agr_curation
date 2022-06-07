@@ -26,12 +26,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterface<AffectedGenomicModel> {
 
-    @Override
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<AffectedGenomicModel> get(@PathParam("curie") String curie);
-    
-    @POST
-    @Path("/bulk/agms")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData);
+	@Override
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<AffectedGenomicModel> get(@PathParam("curie") String curie);
+	
+	@POST
+	@Path("/bulk/agms")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData);
 }

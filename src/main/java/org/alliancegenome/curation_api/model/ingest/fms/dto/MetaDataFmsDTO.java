@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class MetaDataFmsDTO extends BaseDTO {
-    
-    private String dateProduced;
-    private DataProviderFmsDTO dataProvider;
-    private String release;
+	
+	private String dateProduced;
+	private DataProviderFmsDTO dataProvider;
+	private String release;
 
 }

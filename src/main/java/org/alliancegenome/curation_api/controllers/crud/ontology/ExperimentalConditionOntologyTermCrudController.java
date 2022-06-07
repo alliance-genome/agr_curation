@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.ExperimentalConditionOn
 @RequestScoped
 public class ExperimentalConditionOntologyTermCrudController extends BaseOntologyTermController<ExperimentalConditionOntologyTermService, ExperimentalConditionOntologyTerm, ExperimentalConditionOntologyTermDAO> implements ExperimentalConditionOntologyTermCrudInterface {
 
-    @Inject ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
+	@Inject ExperimentalConditionOntologyTermService experimentalConditionOntologyTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(experimentalConditionOntologyTermService, ExperimentalConditionOntologyTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(experimentalConditionOntologyTermService, ExperimentalConditionOntologyTerm.class);
+	}
 
 }

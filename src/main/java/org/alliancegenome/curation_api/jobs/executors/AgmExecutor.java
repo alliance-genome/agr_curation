@@ -29,77 +29,77 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class AgmExecutor extends LoadFileExecutor {
 
-    @Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 
-    @Inject AffectedGenomicModelService affectedGenomicModelService;
+	@Inject AffectedGenomicModelService affectedGenomicModelService;
 
-    public void runLoad(BulkLoadFile bulkLoadFile) {
+	public void runLoad(BulkLoadFile bulkLoadFile) {
 
-        try {
-            BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
-            log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
-            
-            IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-            List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
-            String taxonId = manual.getDataType().getTaxonId();
-            
-            if (agms != null) {
-                bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
-                bulkLoadFileDAO.merge(bulkLoadFile);
-                
-                trackHistory(runLoad(taxonId, agms), bulkLoadFile);
-            }
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-    
-    // Gets called from the API directly
-    public APIResponse runLoad (List <AffectedGenomicModelDTO> agms) {
-        List<String> taxonIds = agms.stream()
-                .map( agmDTO -> agmDTO.getTaxon() ).distinct().collect( Collectors.toList() );
-        return runLoad(taxonIds, agms);
-    }
-        
-    public APIResponse runLoad(String taxonId, List<AffectedGenomicModelDTO> agms) {
-        List<String> taxonIds = new ArrayList<String>();
-        taxonIds.add(taxonId);
-        return runLoad(taxonIds, agms);
-    }
-            
-    public APIResponse runLoad(List<String> taxonIds, List<AffectedGenomicModelDTO> agms) {
-            
-        List<String> agmCuriesBefore = new ArrayList<String>();
-        for (String taxonId : taxonIds) {
-            List<String> agmCuries = affectedGenomicModelService.getCuriesByTaxonId(taxonId);
-            log.debug("runLoad: Before: " + taxonId + " " + agmCuries.size());
-            agmCuriesBefore.addAll(agmCuries);
-        }
-        if (taxonIds.size() > 1) log.debug("runLoad: Before: total " + agmCuriesBefore.size());
-            
-        List<String> agmCuriesAfter = new ArrayList<>();
-        BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("AGM Update " + taxonIds.toString(), agms.size());
-        agms.forEach(agmDTO -> {
-                
-            try {
-                AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
-                history.incrementCompleted();
-                agmCuriesAfter.add(agm.getCurie());
-            } catch (ObjectUpdateException e) {
-                addException(history, e.getData());
-            } catch (Exception e) {
-                addException(history, new ObjectUpdateExceptionData(agmDTO, e.getMessage()));
-            }
-                
-            ph.progressProcess();
-        });
-        ph.finishProcess();
-            
-        affectedGenomicModelService.removeNonUpdatedAgms(taxonIds.toString(), agmCuriesBefore, agmCuriesAfter);
-            
-        return new LoadHistoryResponce(history);    
-    }
+		try {
+			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
+			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
+			
+			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
+			String taxonId = manual.getDataType().getTaxonId();
+			
+			if (agms != null) {
+				bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
+				bulkLoadFileDAO.merge(bulkLoadFile);
+				
+				trackHistory(runLoad(taxonId, agms), bulkLoadFile);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	// Gets called from the API directly
+	public APIResponse runLoad (List <AffectedGenomicModelDTO> agms) {
+		List<String> taxonIds = agms.stream()
+				.map( agmDTO -> agmDTO.getTaxon() ).distinct().collect( Collectors.toList() );
+		return runLoad(taxonIds, agms);
+	}
+		
+	public APIResponse runLoad(String taxonId, List<AffectedGenomicModelDTO> agms) {
+		List<String> taxonIds = new ArrayList<String>();
+		taxonIds.add(taxonId);
+		return runLoad(taxonIds, agms);
+	}
+			
+	public APIResponse runLoad(List<String> taxonIds, List<AffectedGenomicModelDTO> agms) {
+			
+		List<String> agmCuriesBefore = new ArrayList<String>();
+		for (String taxonId : taxonIds) {
+			List<String> agmCuries = affectedGenomicModelService.getCuriesByTaxonId(taxonId);
+			log.debug("runLoad: Before: " + taxonId + " " + agmCuries.size());
+			agmCuriesBefore.addAll(agmCuries);
+		}
+		if (taxonIds.size() > 1) log.debug("runLoad: Before: total " + agmCuriesBefore.size());
+			
+		List<String> agmCuriesAfter = new ArrayList<>();
+		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ph.startProcess("AGM Update " + taxonIds.toString(), agms.size());
+		agms.forEach(agmDTO -> {
+				
+			try {
+				AffectedGenomicModel agm = affectedGenomicModelService.upsert(agmDTO);
+				history.incrementCompleted();
+				agmCuriesAfter.add(agm.getCurie());
+			} catch (ObjectUpdateException e) {
+				addException(history, e.getData());
+			} catch (Exception e) {
+				addException(history, new ObjectUpdateExceptionData(agmDTO, e.getMessage()));
+			}
+				
+			ph.progressProcess();
+		});
+		ph.finishProcess();
+			
+		affectedGenomicModelService.removeNonUpdatedAgms(taxonIds.toString(), agmCuriesBefore, agmCuriesAfter);
+			
+		return new LoadHistoryResponce(history);	
+	}
 }

@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.MmusDvTerm;
 @RequestScoped
 public class MmusdvTermService extends BaseOntologyTermService<MmusDvTerm, MmusdvTermDAO> {
 
-    @Inject MmusdvTermDAO mmusdvTermDAO;
+	@Inject MmusdvTermDAO mmusdvTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(mmusdvTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(mmusdvTermDAO);
+	}
+	
 }

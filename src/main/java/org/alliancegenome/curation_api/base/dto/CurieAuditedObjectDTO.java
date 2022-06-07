@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 @Getter
 public class CurieAuditedObjectDTO extends AuditedObjectDTO {
-    
-    @JsonView({View.FieldsOnly.class})
-    private String curie;
-    
+	
+	@JsonView({View.FieldsOnly.class})
+	private String curie;
+	
 }

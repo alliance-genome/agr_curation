@@ -15,11 +15,11 @@ import lombok.*;
 @ToString(callSuper = true)
 public class GeneratedAuditedObject extends AuditedObject {
 
-    @Id @DocumentId
-    @GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    protected Long id;
+	@Id @DocumentId
+	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@JsonView({View.FieldsOnly.class})
+	@EqualsAndHashCode.Include
+	protected Long id;
 
 }

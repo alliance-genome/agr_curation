@@ -13,22 +13,22 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 
 @RequestScoped
 public class BulkLoadFileService extends BaseCrudService<BulkLoadFile, BulkLoadFileDAO> {
-    
-    @Inject
-    BulkLoadFileDAO bulkLoadFileDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(bulkLoadFileDAO);
-    }
-    
-    @Transactional
-    public ObjectResponse<BulkLoadFile> restartLoad(Long id) {
-        BulkLoadFile load = bulkLoadFileDAO.find(id);
-        if(load.getStatus().isNotRunning()) {
-            load.setStatus(JobStatus.FORCED_PENDING);
-        }
-        return new ObjectResponse<BulkLoadFile>(load);
-    }
+	
+	@Inject
+	BulkLoadFileDAO bulkLoadFileDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(bulkLoadFileDAO);
+	}
+	
+	@Transactional
+	public ObjectResponse<BulkLoadFile> restartLoad(Long id) {
+		BulkLoadFile load = bulkLoadFileDAO.find(id);
+		if(load.getStatus().isNotRunning()) {
+			load.setStatus(JobStatus.FORCED_PENDING);
+		}
+		return new ObjectResponse<BulkLoadFile>(load);
+	}
 }

@@ -19,24 +19,24 @@ import org.alliancegenome.curation_api.services.GeneService;
 @RequestScoped
 public class GeneCrudController extends BaseCrudController<GeneService, Gene, GeneDAO> implements GeneCrudInterface {
 
-    @Inject GeneService geneService;
-    
-    @Inject GeneExecutor geneExecutor;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(geneService);
-    }
+	@Inject GeneService geneService;
+	
+	@Inject GeneExecutor geneExecutor;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(geneService);
+	}
 
-    @Override
-    public ObjectResponse<Gene> get(String id) {
-        return geneService.get(id);
-    }
-    
-    @Override
-    public APIResponse updateGenes(List<GeneDTO> geneData) {
-        return geneExecutor.runLoad(geneData);
-    }
+	@Override
+	public ObjectResponse<Gene> get(String id) {
+		return geneService.get(id);
+	}
+	
+	@Override
+	public APIResponse updateGenes(List<GeneDTO> geneData) {
+		return geneExecutor.runLoad(geneData);
+	}
 
 }

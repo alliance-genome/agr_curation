@@ -13,11 +13,11 @@ import org.alliancegenome.curation_api.services.ReferenceService;
 @RequestScoped
 public class ReferenceCrudController extends BaseCrudController<ReferenceService, Reference, ReferenceDAO> implements ReferenceCrudInterface {
 
-    @Inject ReferenceService referenceService;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(referenceService);
-    }
+	@Inject ReferenceService referenceService;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(referenceService);
+	}
 }

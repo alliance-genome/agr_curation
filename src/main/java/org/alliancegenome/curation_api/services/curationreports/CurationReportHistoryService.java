@@ -10,13 +10,13 @@ import org.alliancegenome.curation_api.model.entities.curationreports.CurationRe
 
 @RequestScoped
 public class CurationReportHistoryService extends BaseCrudService<CurationReportHistory, CurationReportHistoryDAO> {
-    
-    @Inject
-    CurationReportHistoryDAO curationReportHistoryDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(curationReportHistoryDAO);
-    }
+	
+	@Inject
+	CurationReportHistoryDAO curationReportHistoryDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(curationReportHistoryDAO);
+	}
 }

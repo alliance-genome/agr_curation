@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 @RequestScoped
 public class EmapaTermCrudController extends BaseOntologyTermController<EmapaTermService, EMAPATerm, EmapaTermDAO> implements EmapaTermCrudInterface {
 
-    @Inject EmapaTermService emapaTermService;
+	@Inject EmapaTermService emapaTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.getAltNameSpaces().add("anatomical_structure");
-        setService(emapaTermService, EMAPATerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.getAltNameSpaces().add("anatomical_structure");
+		setService(emapaTermService, EMAPATerm.class, config);
+	}
 
 }

@@ -2,9 +2,9 @@ import React from 'react';
 import { GenesTable } from './GenesTable';
 
 function GenesPage() {
-    return (
-        <GenesTable />
-    );
+		return (
+				<GenesTable />
+		);
 }
 
 export default GenesPage;

@@ -31,18 +31,18 @@ import lombok.EqualsAndHashCode;
 @OnDelete(action = OnDeleteAction.CASCADE)
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-    @JoinColumn(foreignKey = @ForeignKey(name="fk_alleledasubject"))
-    @JsonView({View.FieldsOnly.class})
-    private Allele subject;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private Gene inferredGene;
-    
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
+	@JoinColumn(foreignKey = @ForeignKey(name="fk_alleledasubject"))
+	@JsonView({View.FieldsOnly.class})
+	private Allele subject;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Gene inferredGene;
+	
 }

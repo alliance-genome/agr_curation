@@ -9,32 +9,32 @@ import org.hibernate.search.backend.elasticsearch.analysis.*;
 @Named("ApplicationAnalysisConfig")
 public class AnalysisConfigurer implements ElasticsearchAnalysisConfigurer {
 
-    @Override
-    public void configure(ElasticsearchAnalysisConfigurationContext context) {
-        context.analyzer("autocompleteAnalyzer").custom()
-                .tokenizer("ngram_tokenizer")
-                .tokenFilters("asciifolding", "lowercase");
-        
-        context.analyzer("autocompleteSearchAnalyzer").custom()
-                .tokenizer("search_query_tokenizer")
-                .tokenFilters("asciifolding", "lowercase");
-        
-        context.tokenizer("ngram_tokenizer")
-                .type("ngram")
-                .param("min_gram", 1)
-                .param("max_gram", 20)
-                .param("token_chars", "punctuation", "letter", "digit");
-        
-        context.tokenizer("search_query_tokenizer")
-            .type("whitespace");
-        
-        context.tokenFilter( "ngram_filter" )
-                .type( "ngram" )
-                .param( "min_gram", 1 )
-                .param( "max_gram", 20 );
+	@Override
+	public void configure(ElasticsearchAnalysisConfigurationContext context) {
+		context.analyzer("autocompleteAnalyzer").custom()
+				.tokenizer("ngram_tokenizer")
+				.tokenFilters("asciifolding", "lowercase");
+		
+		context.analyzer("autocompleteSearchAnalyzer").custom()
+				.tokenizer("search_query_tokenizer")
+				.tokenFilters("asciifolding", "lowercase");
+		
+		context.tokenizer("ngram_tokenizer")
+				.type("ngram")
+				.param("min_gram", 1)
+				.param("max_gram", 20)
+				.param("token_chars", "punctuation", "letter", "digit");
+		
+		context.tokenizer("search_query_tokenizer")
+			.type("whitespace");
+		
+		context.tokenFilter( "ngram_filter" )
+				.type( "ngram" )
+				.param( "min_gram", 1 )
+				.param( "max_gram", 20 );
 
-        context.normalizer("sortNormalizer").custom() 
-                .tokenFilters("asciifolding", "lowercase");
+		context.normalizer("sortNormalizer").custom() 
+				.tokenFilters("asciifolding", "lowercase");
 
-    }
+	}
 }

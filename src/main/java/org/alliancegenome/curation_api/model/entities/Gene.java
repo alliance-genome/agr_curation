@@ -34,33 +34,33 @@ import lombok.ToString;
 @Schema(name="Gene", description="POJO that represents the Gene")
 public class Gene extends GenomicEntity {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "symbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    private String symbol;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "symbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	private String symbol;
 
-    @FullTextField
-    @Column(columnDefinition="TEXT")
-    @JsonView({View.FieldsOnly.class})
-    private String geneSynopsis;
+	@FullTextField
+	@Column(columnDefinition="TEXT")
+	@JsonView({View.FieldsOnly.class})
+	private String geneSynopsis;
 
-    @KeywordField
-    @JsonView({View.FieldsOnly.class})
-    private String geneSynopsisURL;
+	@KeywordField
+	@JsonView({View.FieldsOnly.class})
+	private String geneSynopsisURL;
 
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private SOTerm geneType;
-    
-    @FullTextField
-    @Column(columnDefinition="TEXT")
-    @JsonView({View.FieldsOnly.class})
-    private String automatedGeneDescription;
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private SOTerm geneType;
+	
+	@FullTextField
+	@Column(columnDefinition="TEXT")
+	@JsonView({View.FieldsOnly.class})
+	private String automatedGeneDescription;
 
-    @ManyToMany
-    private List<GeneGenomicLocation> genomicLocations;
+	@ManyToMany
+	private List<GeneGenomicLocation> genomicLocations;
 
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 }
 
