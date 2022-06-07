@@ -1,13 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
-import { Tooltip } from 'primereact/tooltip';
+import { EllipsisTableCell } from "../../components/EllipsisTableCell";
 
-import {EllipsisTableCell} from "../../components/EllipsisTableCell";
+import { Tooltip } from 'primereact/tooltip';
+import { Toast } from 'primereact/toast';
+
 
 export const AffectedGenomicModelTable = () => {
   const defaultVisibleColumns = ["Curie", "Name", "Sub Type", "Taxon"];
 
   const [isEnabled, setIsEnabled] = useState(true);
+  const [errorMessages, setErrorMessages] = useState({});
+
+  const toast_topleft = useRef(null);
+  const toast_topright = useRef(null);
 
   const nameTemplate = (rowData) => {
     return (
@@ -75,6 +81,8 @@ export const AffectedGenomicModelTable = () => {
 
   return (
       <div className="card">
+        <Toast ref={toast_topleft} position="top-left" />
+        <Toast ref={toast_topright} position="top-right" />
         <GenericDataTable 
           endpoint="agm" 
           tableName="Affected Genomic Models" 
@@ -82,8 +90,10 @@ export const AffectedGenomicModelTable = () => {
           isEditable={false}
           isEnabled={isEnabled}
           setIsEnabled={setIsEnabled}
+          toasts={{toast_topleft, toast_topright }}
           initialColumnWidth={100 / columns.length}
           defaultVisibleColumns={defaultVisibleColumns}
+          errorObject = {{errorMessages, setErrorMessages}}
         />
       </div>
   )
