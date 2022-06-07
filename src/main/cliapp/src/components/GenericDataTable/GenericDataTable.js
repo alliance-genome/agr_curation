@@ -80,12 +80,6 @@ export const GenericDataTable = (props) => {
     );
   };
 
-  const obsoleteTemplate = (rowData) => {
-    if (rowData && rowData.obsolete) {
-      return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
-    }
-  };
-
   useEffect(() => {
     const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
     const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
@@ -98,12 +92,12 @@ export const GenericDataTable = (props) => {
           key={col.field}
           field={col.field}
           header={col.header}
-          body={col.field === "obsolete" ? obsoleteTemplate : col.body}
+          body={col.body}
           sortable={isEnabled}
           filter
           editor={col.editor}
           showFilterMenu={false}
-          filterElement={() => filterComponentTemplate({...col.filterElement})}
+          filterElement={() => filterComponentTemplate(col.filterElement)}
         />;
       })
     );
@@ -123,12 +117,11 @@ export const GenericDataTable = (props) => {
           paginator= {true} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
           paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown" 
           currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" 
-          rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-  >
-        {props.isEditable && 
-          <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
-            headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
-        }
+          rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} >
+          {props.isEditable && 
+            <Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+              headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
+          }
           {columnList}
         </DataTable>
       </div>
