@@ -1,4 +1,4 @@
-import {useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
 import {trimWhitespace} from '../utils/utils';
 import {Tooltip} from "primereact/tooltip";

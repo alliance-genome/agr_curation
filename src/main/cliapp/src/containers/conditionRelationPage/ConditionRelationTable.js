@@ -132,11 +132,6 @@ export const ConditionRelationTable = () => {
 		'conditionRelationType.name'
 	];
 
-	const nonNullFields = [
-		'handle'
-	];
-
-
 	const filterComponentTemplate = (filterName, fields) => {
 		return (<FilterComponentInputText
 			isEnabled={isEnabled}
@@ -195,26 +190,6 @@ export const ConditionRelationTable = () => {
 			</>
 		);
 	};
-
-	const referenceEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteEditor
-					autocompleteFields={["cross_references.curie", "curie"]}
-					rowProps={props}
-					searchService={searchService}
-					endpoint='literature-reference'
-					filterName='searchFilter'
-					fieldName='singleReference'
-				/>
-				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
-				/>
-			</>
-		);
-	};
-
 
 	const conditionTemplate = (rowData) => {
 		if (rowData.conditions) {
@@ -499,7 +474,6 @@ export const ConditionRelationTable = () => {
 				editingRows={editingRows} onRowEditChange={onRowEditChange}
 				ref={dataTable}
 				filterDisplay="row"
-				onColReorder={colReorderHandler}
 				sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
 				first={tableState.first}
 				dataKey="id" resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
