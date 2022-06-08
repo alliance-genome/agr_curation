@@ -58,7 +58,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 
 	
-	public List<EcoTerm> validateEvidenceCodes(DiseaseAnnotation  uiEntity, DiseaseAnnotation  dbEntity) {
+	public List<EcoTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "evidence";
 		if (CollectionUtils.isEmpty(uiEntity.getEvidenceCodes())) {
 			addMessageResponse(field, requiredMessage);
@@ -83,7 +83,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 	
 	
-	public List<Gene> validateWith(DiseaseAnnotation  uiEntity) {
+	public List<Gene> validateWith(DiseaseAnnotation uiEntity) {
 		List<Gene> validWithGenes = new ArrayList<Gene>();
 		
 		if (CollectionUtils.isNotEmpty(uiEntity.getWith())) {

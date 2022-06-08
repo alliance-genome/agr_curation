@@ -311,10 +311,10 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 								});
 							}
 						}
-					   if(params.containsKey("nonNullFields") ) {
-						  List<String> fields = (List<String>)params.get("nonNullFields");
-						  fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
-					   }
+						if(params.containsKey("nonNullFields") ) {
+							List<String> fields = (List<String>)params.get("nonNullFields");
+							fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+						}
 					});
 				});
 

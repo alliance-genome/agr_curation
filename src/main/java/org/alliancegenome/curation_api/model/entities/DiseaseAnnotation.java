@@ -50,10 +50,10 @@ import lombok.ToString;
   use = JsonTypeInfo.Id.NAME, 
   include = JsonTypeInfo.As.PROPERTY, 
   property = "type")
-@JsonSubTypes({ 
-  @Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"), 
-  @Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"), 
-  @Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation") 
+@JsonSubTypes({
+	@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"),
+	@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
+	@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation")
 })
 @Audited
 @Entity

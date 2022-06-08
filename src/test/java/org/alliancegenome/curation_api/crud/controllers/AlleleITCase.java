@@ -31,7 +31,7 @@ public class AlleleITCase {
 	@Test
 	@Order(1)
 	public void createValidAllele() {
-		allele =  createAllele(ALLELE_CURIE, ALLELE_TAXON, ALLELE_SYMBOL, ALLELE_DESCRIPTION);
+		allele = createAllele(ALLELE_CURIE, ALLELE_TAXON, ALLELE_SYMBOL, ALLELE_DESCRIPTION);
 		
 		RestAssured.given().
 				contentType("application/json").

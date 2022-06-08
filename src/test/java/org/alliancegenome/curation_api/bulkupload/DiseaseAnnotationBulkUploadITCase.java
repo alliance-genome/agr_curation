@@ -445,7 +445,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0010"));  
+			body("results[2].uniqueId", is("DATEST:Annot0010"));
 	}
 	
 	@Test
@@ -585,7 +585,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			post("/api/disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));  
+			body("totalResults", is(2));
 	}
 	
 	@Test
@@ -655,7 +655,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			post("/api/disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));  
+			body("totalResults", is(2));
 	}
 	
 	@Test
@@ -1786,7 +1786,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		loadZecoTerm(requiredNonSlimZecoTerm, null);
 		loadChemicalTerm();
 		loadAnatomyTerm();
-		loadGenes();  
+		loadGenes();
 		loadAllele();
 		loadAGM(requiredAgm, "NCBITaxon:6239");
 		loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
