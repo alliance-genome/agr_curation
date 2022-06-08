@@ -16,12 +16,12 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class LiteratureReferenceController extends BaseDocumentController<LiteratureReferenceService, LiteratureReference, LiteratureReferenceDAO> implements LiteratureReferenceInterface {
 
-    @Inject LiteratureReferenceService literatureReferenceService;
+	@Inject LiteratureReferenceService literatureReferenceService;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(literatureReferenceService);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(literatureReferenceService);
+	}
 
 }

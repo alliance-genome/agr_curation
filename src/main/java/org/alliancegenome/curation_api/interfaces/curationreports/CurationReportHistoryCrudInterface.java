@@ -22,9 +22,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface CurationReportHistoryCrudInterface extends BaseIdCrudInterface<CurationReportHistory> {
 
-    @GET
-    @Path("/{id}")
-    @JsonView(View.BulkLoadFileHistory.class)
-    public ObjectResponse<CurationReportHistory> get(@PathParam("id") Long id);
-    
+	@GET
+	@Path("/{id}")
+	@JsonView(View.BulkLoadFileHistory.class)
+	public ObjectResponse<CurationReportHistory> get(@PathParam("id") Long id);
+	
 }

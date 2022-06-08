@@ -1,10 +1,12 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.util.*;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;

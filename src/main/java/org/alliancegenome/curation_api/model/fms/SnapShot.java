@@ -6,5 +6,5 @@ import lombok.*;
 
 @Getter @Setter
 public class SnapShot {
-    private List<DataFile> dataFiles;
+	private List<DataFile> dataFiles;
 }

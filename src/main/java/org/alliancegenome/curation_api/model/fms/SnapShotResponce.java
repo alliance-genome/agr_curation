@@ -4,5 +4,5 @@ import lombok.*;
 
 @Getter @Setter
 public class SnapShotResponce {
-    private SnapShot snapShot;
+	private SnapShot snapShot;
 }

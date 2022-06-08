@@ -7,22 +7,22 @@ import org.junit.jupiter.api.Test;
 
 class GeneServiceTest {
 
-    @InjectMock
-    GeneDAO geneDAO;
+	@InjectMock
+	GeneDAO geneDAO;
 
-    GeneService geneService;
+	GeneService geneService;
 
-    @BeforeEach
-    void setUp() {
-        geneService = new GeneService();
-    }
+	@BeforeEach
+	void setUp() {
+		geneService = new GeneService();
+	}
 
-    @Test
-    void init() {
+	@Test
+	void init() {
 
-    }
+	}
 
-    @Test
-    void getByIdOrCurie() {
-    }
+	@Test
+	void getByIdOrCurie() {
+	}
 }

@@ -25,22 +25,22 @@ import lombok.*;
 @ToString
 @Schema(name="Vocabulary", description="POJO that represents the Vocabulary")
 public class Vocabulary extends GeneratedAuditedObject {
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(unique = true)
-    @JsonView({View.FieldsOnly.class})
-    private String name;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
+	@JsonView({View.FieldsOnly.class})
+	private String name;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "vocabularyDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    private String vocabularyDescription;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @OneToMany(mappedBy = "vocabulary")
-    @JsonView({View.VocabularyView.class})
-    private List<VocabularyTerm> memberTerms;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "vocabularyDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	private String vocabularyDescription;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(mappedBy = "vocabulary")
+	@JsonView({View.VocabularyView.class})
+	private List<VocabularyTerm> memberTerms;
 
 }

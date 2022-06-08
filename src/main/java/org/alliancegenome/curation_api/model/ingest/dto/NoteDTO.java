@@ -14,18 +14,18 @@ import lombok.Setter;
 @Setter
 @Getter
 public class NoteDTO extends AuditedObjectDTO{
-    
-    @JsonView({View.FieldsOnly.class})
-    private Boolean internal = true;
-    
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("free_text")
-    private String freeText;
-    
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("note_type")
-    private String noteType;
-    
-    @JsonView({View.FieldsAndLists.class})
-    private List<String> references;
+	
+	@JsonView({View.FieldsOnly.class})
+	private Boolean internal = true;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("free_text")
+	private String freeText;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("note_type")
+	private String noteType;
+	
+	@JsonView({View.FieldsAndLists.class})
+	private List<String> references;
 }

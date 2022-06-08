@@ -25,13 +25,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene> {
 
-    @Override
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<Gene> get(@PathParam("curie") String curie);
+	@Override
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<Gene> get(@PathParam("curie") String curie);
 
-    @POST
-    @Path("/bulk/genes")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateGenes(List<GeneDTO> geneData);
-    
+	@POST
+	@Path("/bulk/genes")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateGenes(List<GeneDTO> geneData);
+	
 }

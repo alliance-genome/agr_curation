@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 @ApplicationScoped
 public class VocabularyDAO extends BaseSQLDAO<Vocabulary> {
 
-    protected VocabularyDAO() {
-        super(Vocabulary.class);
-    }
+	protected VocabularyDAO() {
+		super(Vocabulary.class);
+	}
 
 }

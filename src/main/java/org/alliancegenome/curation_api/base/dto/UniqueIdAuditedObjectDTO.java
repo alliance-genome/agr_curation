@@ -11,9 +11,9 @@ import lombok.Setter;
 @Setter
 @Getter
 public class UniqueIdAuditedObjectDTO extends AuditedObjectDTO {
-    
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("unique_id")
-    private String uniqueId;
-    
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("unique_id")
+	private String uniqueId;
+	
 }

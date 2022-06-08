@@ -4,113 +4,113 @@ import { trimWhitespace } from '../utils/utils';
 import { Tooltip } from "primereact/tooltip";
 
 export const AutocompleteEditor = (
-  {
-    rowProps,
-    searchService,
-    autocompleteFields,
-    endpoint,
-    filterName,
-    fieldName,
-    subField = "curie",
-    otherFilters = [],
-    isSubject = false,
-    isWith = false,
-    isMultiple = false,
-    isSgdStrainBackground = false,
-  }
+	{
+		rowProps,
+		searchService,
+		autocompleteFields,
+		endpoint,
+		filterName,
+		fieldName,
+		subField = "curie",
+		otherFilters = [],
+		isSubject = false,
+		isWith = false,
+		isMultiple = false,
+		isSgdStrainBackground = false,
+	}
 ) => {
-  const [filtered, setFiltered] = useState([]);
-  const [query, setQuery] = useState();
-  const [fieldValue, setFieldValue] = useState(() => {
-    return isMultiple ?
-      rowProps.rowData[fieldName] :
-      rowProps.rowData[fieldName]?.curie
-  }
-  );
+	const [filtered, setFiltered] = useState([]);
+	const [query, setQuery] = useState();
+	const [fieldValue, setFieldValue] = useState(() => {
+		return isMultiple ?
+			rowProps.rowData[fieldName] :
+			rowProps.rowData[fieldName]?.curie
+	}
+	);
 
-  const op = useRef(null);
-  const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
-  const search = (event) => {
-    setQuery(event.query);
-    let filter = {};
-    autocompleteFields.forEach(field => {
-      filter[field] = {
-        queryString: event.query,
-        ...((isSubject || isWith) && { tokenOperator: "AND" })
-      }
-    });
+	const op = useRef(null);
+	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
+	const search = (event) => {
+		setQuery(event.query);
+		let filter = {};
+		autocompleteFields.forEach(field => {
+			filter[field] = {
+				queryString: event.query,
+				...((isSubject || isWith) && { tokenOperator: "AND" })
+			}
+		});
 
-    searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters })
-      .then((data) => {
-        if (data.results?.length > 0) {
-          if (isWith) {
-            setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-          }
-          else if (isSgdStrainBackground) {
-            setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
-          }
-          else {
-            setFiltered(data.results);
-          };
-        } else {
-          setFiltered([]);
-        }
-      });
-  };
+		searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters })
+			.then((data) => {
+				if (data.results?.length > 0) {
+					if (isWith) {
+						setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
+					}
+					else if (isSgdStrainBackground) {
+						setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
+					}
+					else {
+						setFiltered(data.results);
+					};
+				} else {
+					setFiltered([]);
+				}
+			});
+	};
 
-  const onValueChange = (event) => {
-    let updatedRows = [...rowProps.props.value];
+	const onValueChange = (event) => {
+		let updatedRows = [...rowProps.props.value];
 
-    if (!event.target.value) {
-      updatedRows[rowProps.rowIndex][fieldName] = null;
-      setFieldValue('');
-      return;
-    };
+		if (!event.target.value) {
+			updatedRows[rowProps.rowIndex][fieldName] = null;
+			setFieldValue('');
+			return;
+		};
 
-    if (isMultiple) {
-      updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
-      setFieldValue(updatedRows[rowProps.rowIndex][fieldName]);
-      return;
-    }
+		if (isMultiple) {
+			updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
+			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]);
+			return;
+		}
 
-    updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
+		updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
 
-    if (typeof event.target.value === "object") {
-      updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
-    } else {
-      updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
-    }
+		if (typeof event.target.value === "object") {
+			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
+		} else {
+			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
+		}
 
-    setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 
-  };
+	};
 
 
-  const onSelectionOver = (event, item) => {
-    setAutocompleteSelectedItem(item);
-    op.current.show(event);
-  };
+	const onSelectionOver = (event, item) => {
+		setAutocompleteSelectedItem(item);
+		op.current.show(event);
+	};
 
-  const itemTemplate = (item) => {
-    let inputValue = trimWhitespace(query.toLowerCase());
-    if (autocompleteSelectedItem.synonyms?.length > 0) {
-      for (let i in autocompleteSelectedItem.synonyms) {
+	const itemTemplate = (item) => {
+		let inputValue = trimWhitespace(query.toLowerCase());
+		if (autocompleteSelectedItem.synonyms?.length > 0) {
+			for (let i in autocompleteSelectedItem.synonyms) {
 
-        let selectedItem = isSubject || isWith ? autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase() :
-          autocompleteSelectedItem.synonyms[i].toString().toLowerCase();
+				let selectedItem = isSubject || isWith ? autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase() :
+					autocompleteSelectedItem.synonyms[i].toString().toLowerCase();
 
-        if (selectedItem.indexOf(inputValue) < 0) {
-          delete autocompleteSelectedItem.synonyms[i];
-        }
-      }
-    }
-    if (autocompleteSelectedItem.crossReferences?.length > 0) {
-      for (let i in autocompleteSelectedItem.crossReferences) {
-        if (autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
-          delete autocompleteSelectedItem.crossReferences[i];
-        }
-      }
-    }
+				if (selectedItem.indexOf(inputValue) < 0) {
+					delete autocompleteSelectedItem.synonyms[i];
+				}
+			}
+		}
+		if (autocompleteSelectedItem.crossReferences?.length > 0) {
+			for (let i in autocompleteSelectedItem.crossReferences) {
+				if (autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
+					delete autocompleteSelectedItem.crossReferences[i];
+				}
+			}
+		}
 
     if (autocompleteSelectedItem.secondaryIdentifiers?.length > 0) {
       for (let i in autocompleteSelectedItem.secondaryIdentifiers) {

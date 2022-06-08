@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.services.ontology.XbsTermService;
 @RequestScoped
 public class XbsTermCrudController extends BaseOntologyTermController<XbsTermService, XBSTerm, XbsTermDAO> implements XbsTermCrudInterface {
 
-    @Inject XbsTermService xbsTermService;
+	@Inject XbsTermService xbsTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.getAltNameSpaces().add("xenopus_developmental_stage");
-        setService(xbsTermService, XBSTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.getAltNameSpaces().add("xenopus_developmental_stage");
+		setService(xbsTermService, XBSTerm.class, config);
+	}
 
 }

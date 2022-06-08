@@ -4,5 +4,5 @@ import lombok.*;
 
 @Getter @Setter
 public class DataSubType {
-    private String name;
+	private String name;
 }

@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.DoTermService;
 @RequestScoped
 public class DoTermCrudController extends BaseOntologyTermController<DoTermService, DOTerm, DoTermDAO> implements DoTermCrudInterface {
 
-    @Inject DoTermService doTermService;
+	@Inject DoTermService doTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(doTermService, DOTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(doTermService, DOTerm.class);
+	}
 
 }

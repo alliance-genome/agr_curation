@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZfaTerm;
 @ApplicationScoped
 public class ZfaTermDAO extends BaseSQLDAO<ZfaTerm> {
 
-    protected ZfaTermDAO() {
-        super(ZfaTerm.class);
-    }
+	protected ZfaTermDAO() {
+		super(ZfaTerm.class);
+	}
 
 }

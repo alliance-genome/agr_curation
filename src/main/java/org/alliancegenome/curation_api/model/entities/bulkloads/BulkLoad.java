@@ -15,13 +15,13 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import lombok.*;
 
 @JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME, 
-        include = JsonTypeInfo.As.PROPERTY, 
-        property = "type")
+		use = JsonTypeInfo.Id.NAME, 
+		include = JsonTypeInfo.As.PROPERTY, 
+		property = "type")
 @JsonSubTypes({ 
-    @Type(value = BulkFMSLoad.class, name = "BulkFMSLoad"), 
-    @Type(value = BulkURLLoad.class, name = "BulkURLLoad"), 
-    @Type(value = BulkManualLoad.class, name = "BulkManualLoad") 
+	@Type(value = BulkFMSLoad.class, name = "BulkFMSLoad"), 
+	@Type(value = BulkURLLoad.class, name = "BulkURLLoad"), 
+	@Type(value = BulkManualLoad.class, name = "BulkManualLoad") 
 })
 
 @Audited
@@ -31,35 +31,35 @@ import lombok.*;
 @ToString(exclude = {"group"}, callSuper = true)
 public abstract class BulkLoad extends GeneratedAuditedObject {
 
-    @JsonView({View.FieldsOnly.class})
-    private String name;
+	@JsonView({View.FieldsOnly.class})
+	private String name;
 
-    @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private JobStatus status = JobStatus.STOPPED;
+	@JsonView({View.FieldsOnly.class})
+	@Enumerated(EnumType.STRING)
+	private JobStatus status = JobStatus.STOPPED;
 
-    @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition="TEXT")
-    private String errorMessage;
+	@JsonView({View.FieldsOnly.class})
+	@Column(columnDefinition="TEXT")
+	private String errorMessage;
 
-    @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private BackendBulkLoadType backendBulkLoadType;
+	@JsonView({View.FieldsOnly.class})
+	@Enumerated(EnumType.STRING)
+	private BackendBulkLoadType backendBulkLoadType;
 
-    @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private OntologyBulkLoadType ontologyType;
+	@JsonView({View.FieldsOnly.class})
+	@Enumerated(EnumType.STRING)
+	private OntologyBulkLoadType ontologyType;
 
-    @ManyToOne
-    private BulkLoadGroup group;
+	@ManyToOne
+	private BulkLoadGroup group;
 
-    @JsonView({View.FieldsOnly.class})
-    private String fileExtension;
+	@JsonView({View.FieldsOnly.class})
+	private String fileExtension;
 
-    @JsonView({View.FieldsOnly.class})
-    @OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
-    @OrderBy("dateUpdated DESC")
-    private List<BulkLoadFile> loadFiles;
+	@JsonView({View.FieldsOnly.class})
+	@OneToMany(mappedBy = "bulkLoad", fetch = FetchType.EAGER)
+	@OrderBy("dateUpdated DESC")
+	private List<BulkLoadFile> loadFiles;
 
 
 

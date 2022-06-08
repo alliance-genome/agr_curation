@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 @ApplicationScoped
 public class StageTermDAO extends BaseSQLDAO<StageTerm> {
 
-    protected StageTermDAO() {
-        super(StageTerm.class);
-    }
-    
+	protected StageTermDAO() {
+		super(StageTerm.class);
+	}
+	
 }

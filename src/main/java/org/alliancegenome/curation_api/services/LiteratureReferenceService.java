@@ -13,12 +13,12 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 @RequestScoped
 public class LiteratureReferenceService extends BaseDocumentService<LiteratureReference, LiteratureReferenceDAO> {
-    
-    @Inject LiteratureReferenceDAO literatureReferenceDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setESDao(literatureReferenceDAO);
-    }
+	
+	@Inject LiteratureReferenceDAO literatureReferenceDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setESDao(literatureReferenceDAO);
+	}
 }

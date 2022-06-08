@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.WBbtTerm;
 @ApplicationScoped
 public class WbbtTermDAO extends BaseSQLDAO<WBbtTerm> {
 
-    protected WbbtTermDAO() {
-        super(WBbtTerm.class);
-    }
+	protected WbbtTermDAO() {
+		super(WBbtTerm.class);
+	}
 
 }

@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class GenomicEntityDTO extends BiologicalEntityDTO {
 
-    private String name;
-    
+	private String name;
+	
 }

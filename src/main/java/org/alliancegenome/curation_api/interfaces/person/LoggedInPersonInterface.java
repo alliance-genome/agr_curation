@@ -23,19 +23,19 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface LoggedInPersonInterface {
 
-    @POST
-    @Path("/")
-    @Operation(hidden=true)
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<LoggedInPerson> create(LoggedInPerson entity);
-    
-    @GET
-    @Path("/")
-    @JsonView(View.FieldsOnly.class)
-    public LoggedInPerson getLoggedInPerson();
-    
-    @POST
-    @Path("/savesettings")
-    public void saveSettings(@RequestBody HashMap<String, Object> settings);
-    
+	@POST
+	@Path("/")
+	@Operation(hidden=true)
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<LoggedInPerson> create(LoggedInPerson entity);
+	
+	@GET
+	@Path("/")
+	@JsonView(View.FieldsOnly.class)
+	public LoggedInPerson getLoggedInPerson();
+	
+	@POST
+	@Path("/savesettings")
+	public void saveSettings(@RequestBody HashMap<String, Object> settings);
+	
 }

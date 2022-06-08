@@ -18,19 +18,19 @@ import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 @RequestScoped
 public class AffectedGenomicModelCrudController extends BaseCrudController<AffectedGenomicModelService, AffectedGenomicModel, AffectedGenomicModelDAO> implements AffectedGenomicModelCrudInterface {
 
-    @Inject AffectedGenomicModelService affectedGenomicModelService;
+	@Inject AffectedGenomicModelService affectedGenomicModelService;
 
-    @Inject AgmExecutor agmExecutor;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(affectedGenomicModelService);
-    }
+	@Inject AgmExecutor agmExecutor;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(affectedGenomicModelService);
+	}
 
-    @Override
-    public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData) {
-        return agmExecutor.runLoad(agmData);
-    }
+	@Override
+	public APIResponse updateAGMs(List<AffectedGenomicModelDTO> agmData) {
+		return agmExecutor.runLoad(agmData);
+	}
 
 }

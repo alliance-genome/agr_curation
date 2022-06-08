@@ -16,31 +16,31 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 
-    @ConsumeEvent(value = "BulkFMSLoad", blocking = true) // Triggered by the Scheduler
-    public void processBulkFMSLoad(Message<BulkFMSLoad> load) {
-        BulkFMSLoad bulkFMSLoad = load.body();
-        startLoad(bulkFMSLoad);
+	@ConsumeEvent(value = "BulkFMSLoad", blocking = true) // Triggered by the Scheduler
+	public void processBulkFMSLoad(Message<BulkFMSLoad> load) {
+		BulkFMSLoad bulkFMSLoad = load.body();
+		startLoad(bulkFMSLoad);
 
-        if(bulkFMSLoad.getDataType() != null && bulkFMSLoad.getDataSubType() != null) {
-            List<DataFile> files = fmsDataFileService.getDataFiles(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
+		if(bulkFMSLoad.getDataType() != null && bulkFMSLoad.getDataSubType() != null) {
+			List<DataFile> files = fmsDataFileService.getDataFiles(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
 
-            if(files.size() == 1) {
-                DataFile df = files.get(0);
-                String s3Url = df.getS3Url();
-                String filePath = fileHelper.saveIncomingURLFile(s3Url);
-                String localFilePath = fileHelper.compressInputFile(filePath);
-                processFilePath(bulkFMSLoad, localFilePath);
-                endLoad(bulkFMSLoad, null, JobStatus.FINISHED);
-            } else {
-                log.warn("Files: " + files);
-                log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType());
-                endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType(), JobStatus.FAILED);
-            }
-            
-        } else {
-            log.error("Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing");
-            endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", JobStatus.FAILED);
-        }
-    }
+			if(files.size() == 1) {
+				DataFile df = files.get(0);
+				String s3Url = df.getS3Url();
+				String filePath = fileHelper.saveIncomingURLFile(s3Url);
+				String localFilePath = fileHelper.compressInputFile(filePath);
+				processFilePath(bulkFMSLoad, localFilePath);
+				endLoad(bulkFMSLoad, null, JobStatus.FINISHED);
+			} else {
+				log.warn("Files: " + files);
+				log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType());
+				endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType(), JobStatus.FAILED);
+			}
+			
+		} else {
+			log.error("Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing");
+			endLoad(bulkFMSLoad, "Load: " + bulkFMSLoad.getName() + " failed: FMS Params are missing", JobStatus.FAILED);
+		}
+	}
 
 }

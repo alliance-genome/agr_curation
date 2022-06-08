@@ -13,92 +13,92 @@ import org.apache.commons.lang3.*;
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
-    @Inject
-    GeneDAO geneDAO;
-    @Inject
-    AffectedGenomicModelDAO agmDAO;
-    @Inject
-    GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-    @Inject
-    VocabularyTermDAO vocabularyTermDAO;
-    
-    public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity) {
-        response = new ObjectResponse<>(uiEntity);
-        String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	AffectedGenomicModelDAO agmDAO;
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+	
+	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
 
-        Long id = uiEntity.getId();
-        if (id == null) {
-            addMessageResponse("No Gene Disease Annotation ID provided");
-            throw new ApiErrorException(response);
-        }
-        GeneDiseaseAnnotation dbEntity = geneDiseaseAnnotationDAO.find(id);
-        if (dbEntity == null) {
-            addMessageResponse("Could not find Gene Disease Annotation with ID: [" + id + "]");
-            throw new ApiErrorException(response);
-            // do not continue validation for update if Disease Annotation ID has not been found
-        }       
+		Long id = uiEntity.getId();
+		if (id == null) {
+			addMessageResponse("No Gene Disease Annotation ID provided");
+			throw new ApiErrorException(response);
+		}
+		GeneDiseaseAnnotation dbEntity = geneDiseaseAnnotationDAO.find(id);
+		if (dbEntity == null) {
+			addMessageResponse("Could not find Gene Disease Annotation with ID: [" + id + "]");
+			throw new ApiErrorException(response);
+			// do not continue validation for update if Disease Annotation ID has not been found
+		}		
 
-        Gene subject = validateSubject(uiEntity, dbEntity);
-        if(subject != null) dbEntity.setSubject(subject);
+		Gene subject = validateSubject(uiEntity, dbEntity);
+		if(subject != null) dbEntity.setSubject(subject);
 
-        VocabularyTerm relation = validateDiseaseRelation(uiEntity);
-        if(relation != null) dbEntity.setDiseaseRelation(relation);
+		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
+		if(relation != null) dbEntity.setDiseaseRelation(relation);
 
-        AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
-        if (sgdStrainBackground != null) dbEntity.setSgdStrainBackground(uiEntity.getSgdStrainBackground());
-        
-        dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
-        
-        if (response.hasErrors()) {
-            response.setErrorMessage(errorTitle);
-            throw new ApiErrorException(response);
-        }
+		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
+		if (sgdStrainBackground != null) dbEntity.setSgdStrainBackground(uiEntity.getSgdStrainBackground());
+		
+		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
+		
+		if (response.hasErrors()) {
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
 
-        return dbEntity;
-    }
+		return dbEntity;
+	}
 
-    private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-        if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isEmpty(uiEntity.getSubject().getCurie())) {
-            addMessageResponse("subject", requiredMessage);
-            return null;
-        }
-        Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getCurie());
-        if (subjectEntity == null) {
-            addMessageResponse("subject", invalidMessage);
-            return null;
-        }
-        return subjectEntity;
+	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
+		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isEmpty(uiEntity.getSubject().getCurie())) {
+			addMessageResponse("subject", requiredMessage);
+			return null;
+		}
+		Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getCurie());
+		if (subjectEntity == null) {
+			addMessageResponse("subject", invalidMessage);
+			return null;
+		}
+		return subjectEntity;
 
-    }
-    
-    private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
-        String field = "diseaseRelation";
-        if (uiEntity.getDiseaseRelation() == null) {
-            addMessageResponse(field, requiredMessage);
-            return null;
-        }
-        
-        VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
+	}
+	
+	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
+		String field = "diseaseRelation";
+		if (uiEntity.getDiseaseRelation() == null) {
+			addMessageResponse(field, requiredMessage);
+			return null;
+		}
+		
+		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
 
-        if(relation == null) {
-            addMessageResponse(field, invalidMessage);
-            return null;
-        }
-        
-        return relation;
-    }
-    
-    private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity) {
-        if (uiEntity.getSgdStrainBackground() == null) {
-            return null;
-        }
-        
-        AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
-        if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
-            addMessageResponse("sgdStrainBackground", invalidMessage);
-            return null;
-        }
-        
-        return sgdStrainBackground;
-    }
+		if(relation == null) {
+			addMessageResponse(field, invalidMessage);
+			return null;
+		}
+		
+		return relation;
+	}
+	
+	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity) {
+		if (uiEntity.getSgdStrainBackground() == null) {
+			return null;
+		}
+		
+		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
+		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
+			addMessageResponse("sgdStrainBackground", invalidMessage);
+			return null;
+		}
+		
+		return sgdStrainBackground;
+	}
 }

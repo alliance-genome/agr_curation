@@ -14,17 +14,17 @@ import org.alliancegenome.curation_api.services.loads.BulkFMSLoadService;
 @RequestScoped
 public class BulkFMSLoadCrudController extends BaseCrudController<BulkFMSLoadService, BulkFMSLoad, BulkFMSLoadDAO> implements BulkFMSLoadCrudInterface {
 
-    @Inject BulkFMSLoadService bulkFMSLoadService;
+	@Inject BulkFMSLoadService bulkFMSLoadService;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(bulkFMSLoadService);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(bulkFMSLoadService);
+	}
 
-    @Override
-    public ObjectResponse<BulkFMSLoad> restartLoad(Long id) {
-        return bulkFMSLoadService.restartLoad(id);
-    }
+	@Override
+	public ObjectResponse<BulkFMSLoad> restartLoad(Long id) {
+		return bulkFMSLoadService.restartLoad(id);
+	}
 
 }

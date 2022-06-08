@@ -22,14 +22,14 @@ import lombok.*;
 @ToString(exclude = {"bulkLoadFileHistory", "exception"}, callSuper = true)
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 public class BulkLoadFileException extends GeneratedAuditedObject {
-    
-    @Type(type = JsonTypes.JSON_BIN)
-    @JsonView({View.BulkLoadFileHistory.class})
-    @Column(columnDefinition = JsonTypes.JSON_BIN)
-    private ObjectUpdateExceptionData exception;
-    
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    private BulkLoadFileHistory bulkLoadFileHistory;
-    
+	
+	@Type(type = JsonTypes.JSON_BIN)
+	@JsonView({View.BulkLoadFileHistory.class})
+	@Column(columnDefinition = JsonTypes.JSON_BIN)
+	private ObjectUpdateExceptionData exception;
+	
+	@ManyToOne
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	private BulkLoadFileHistory bulkLoadFileHistory;
+	
 }

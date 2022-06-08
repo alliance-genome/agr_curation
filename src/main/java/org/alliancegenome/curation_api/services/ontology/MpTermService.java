@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 @RequestScoped
 public class MpTermService extends BaseOntologyTermService<MPTerm, MpTermDAO> {
 
-    @Inject MpTermDAO mpTermDAO;
+	@Inject MpTermDAO mpTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(mpTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(mpTermDAO);
+	}
 
 }

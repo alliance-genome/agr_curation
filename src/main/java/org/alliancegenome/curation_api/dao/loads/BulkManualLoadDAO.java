@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
 
 @ApplicationScoped
 public class BulkManualLoadDAO extends BaseSQLDAO<BulkManualLoad> {
-    protected BulkManualLoadDAO() {
-        super(BulkManualLoad.class);
-    }
+	protected BulkManualLoadDAO() {
+		super(BulkManualLoad.class);
+	}
 }

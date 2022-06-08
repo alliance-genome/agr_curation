@@ -9,8 +9,8 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 @ApplicationScoped
 public class PersonDAO extends BaseSQLDAO<Person> {
 
-    protected PersonDAO() {
-        super(Person.class);
-    }
+	protected PersonDAO() {
+		super(Person.class);
+	}
 
 }

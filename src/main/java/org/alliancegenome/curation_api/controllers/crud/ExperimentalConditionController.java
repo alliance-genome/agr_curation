@@ -14,22 +14,22 @@ import org.alliancegenome.curation_api.services.ExperimentalConditionService;
 @RequestScoped
 public class ExperimentalConditionController extends BaseCrudController<ExperimentalConditionService, ExperimentalCondition, ExperimentalConditionDAO> implements ExperimentalConditionCrudInterface {
 
-    @Inject ExperimentalConditionService experimentalConditionService;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(experimentalConditionService);
-    }
-    
-    @Override
-    public ObjectResponse<ExperimentalCondition> get(String conditionStatement) {
-        SearchResponse<ExperimentalCondition> ret = findByField("conditionStatement", conditionStatement);
-        if(ret != null && ret.getTotalResults() == 1) {
-            return new ObjectResponse<ExperimentalCondition>(ret.getResults().get(0));
-        } else {
-            return new ObjectResponse<ExperimentalCondition>();
-        }
-    }
+	@Inject ExperimentalConditionService experimentalConditionService;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(experimentalConditionService);
+	}
+	
+	@Override
+	public ObjectResponse<ExperimentalCondition> get(String conditionStatement) {
+		SearchResponse<ExperimentalCondition> ret = findByField("conditionStatement", conditionStatement);
+		if(ret != null && ret.getTotalResults() == 1) {
+			return new ObjectResponse<ExperimentalCondition>(ret.getResults().get(0));
+		} else {
+			return new ObjectResponse<ExperimentalCondition>();
+		}
+	}
 
 }

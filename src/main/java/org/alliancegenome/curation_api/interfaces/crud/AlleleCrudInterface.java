@@ -26,13 +26,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele> {
 
-    @POST
-    @Path("/bulk/alleles")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateAlleles(List<AlleleDTO> alleleData);
+	@POST
+	@Path("/bulk/alleles")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateAlleles(List<AlleleDTO> alleleData);
 
-    @Override
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<Allele> get(@PathParam("curie") String curie);
+	@Override
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
 
 }

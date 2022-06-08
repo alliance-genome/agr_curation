@@ -22,5 +22,5 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 public class BaseEntity implements Serializable {
-    
+	
 }

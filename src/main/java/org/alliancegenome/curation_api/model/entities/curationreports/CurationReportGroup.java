@@ -20,11 +20,11 @@ import lombok.ToString;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class CurationReportGroup extends GeneratedAuditedObject {
-    
-    @JsonView({View.FieldsOnly.class})
-    private String name;
-    
-    @JsonView({View.FieldsAndLists.class})
-    @OneToMany(mappedBy = "curationReportGroup")
-    private List<CurationReport> curationReports;
+	
+	@JsonView({View.FieldsOnly.class})
+	private String name;
+	
+	@JsonView({View.FieldsAndLists.class})
+	@OneToMany(mappedBy = "curationReportGroup")
+	private List<CurationReport> curationReports;
 }

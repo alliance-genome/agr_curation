@@ -11,14 +11,14 @@ import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 @ApplicationScoped
 public class AGMDiseaseAnnotationDAO extends BaseSQLDAO<AGMDiseaseAnnotation> {
 
-    protected AGMDiseaseAnnotationDAO() {
-        super(AGMDiseaseAnnotation.class);
-    }
+	protected AGMDiseaseAnnotationDAO() {
+		super(AGMDiseaseAnnotation.class);
+	}
 
-    public List<String> findAllAnnotationIds(String taxonID) {
-        Query jpqlQuery = entityManager.createQuery("SELECT annotation.uniqueId FROM AGMDiseaseAnnotation annotation WHERE annotation.subject.taxon.curie=:taxonId");
-        jpqlQuery.setParameter("taxonId", taxonID);
-        return (List<String>) jpqlQuery.getResultList();
-    }
-    
+	public List<String> findAllAnnotationIds(String taxonID) {
+		Query jpqlQuery = entityManager.createQuery("SELECT annotation.uniqueId FROM AGMDiseaseAnnotation annotation WHERE annotation.subject.taxon.curie=:taxonId");
+		jpqlQuery.setParameter("taxonId", taxonID);
+		return (List<String>) jpqlQuery.getResultList();
+	}
+	
 }

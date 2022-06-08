@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 @RequestScoped
 public class ZecoTermCrudController extends BaseOntologyTermController<ZecoTermService, ZecoTerm, ZecoTermDAO> implements ZecoTermCrudInterface {
 
-    @Inject ZecoTermService zecoTermService;
+	@Inject ZecoTermService zecoTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setLoadOnlyIRIPrefix("ZECO");
-        setService(zecoTermService, ZecoTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setLoadOnlyIRIPrefix("ZECO");
+		setService(zecoTermService, ZecoTerm.class, config);
+	}
 
 }

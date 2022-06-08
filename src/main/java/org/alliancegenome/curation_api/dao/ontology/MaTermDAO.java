@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
 @ApplicationScoped
 public class MaTermDAO extends BaseSQLDAO<MATerm> {
 
-    protected MaTermDAO() {
-        super(MATerm.class);
-    }
+	protected MaTermDAO() {
+		super(MATerm.class);
+	}
 
 }

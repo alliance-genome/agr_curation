@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 @ApplicationScoped
 public class DoTermDAO extends BaseSQLDAO<DOTerm> {
 
-    protected DoTermDAO() {
-        super(DOTerm.class);
-    }
+	protected DoTermDAO() {
+		super(DOTerm.class);
+	}
 
 }

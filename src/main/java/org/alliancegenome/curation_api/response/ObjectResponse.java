@@ -11,7 +11,7 @@ import lombok.*;
 @Schema(name="ObjectResponse", description="POJO that represents the ObjectResponse")
 public class ObjectResponse<E> extends APIResponse {
 
-    @JsonView(View.FieldsOnly.class)
-    private E entity;
+	@JsonView(View.FieldsOnly.class)
+	private E entity;
 
 }
