@@ -32,25 +32,25 @@ import lombok.ToString;
 @Schema(name="AffectedGenomicModel", description="POJO that represents the AGM")
 public class AffectedGenomicModel extends GenomicEntity {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "subtype_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private Subtype subtype;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "subtype_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	@Enumerated(EnumType.STRING)
+	private Subtype subtype;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "parental_population_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    private String parental_population;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "parental_population_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	private String parental_population;
 
-    //private List<AffectedGenomicModelComponent> components;
-    //private List<SequenceTargetingReagent> sequence_targeting_reagents;
+	//private List<AffectedGenomicModelComponent> components;
+	//private List<SequenceTargetingReagent> sequence_targeting_reagents;
 
-    @OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
-    
-    public enum Subtype {
-        strain, genotype;
-    }
+	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
+	
+	public enum Subtype {
+		strain, genotype;
+	}
 }
 

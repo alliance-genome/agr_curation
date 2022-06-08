@@ -14,12 +14,12 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class ChemicalTermService extends BaseOntologyTermService<ChemicalTerm, ChemicalTermDAO> {
 
-    @Inject ChemicalTermDAO chemicalTermDAO;
+	@Inject ChemicalTermDAO chemicalTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(chemicalTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(chemicalTermDAO);
+	}
+	
 }

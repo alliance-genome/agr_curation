@@ -13,13 +13,13 @@ import org.alliancegenome.curation_api.services.ontology.ZfaTermService;
 @RequestScoped
 public class ZfaTermCrudController extends BaseOntologyTermController<ZfaTermService, ZfaTerm, ZfaTermDAO> implements ZfaTermCrudInterface {
 
-    @Inject
-    ZfaTermService zfaTermService;
+	@Inject
+	ZfaTermService zfaTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(zfaTermService, ZfaTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(zfaTermService, ZfaTerm.class);
+	}
 
 }

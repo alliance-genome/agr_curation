@@ -7,10 +7,10 @@ import org.hibernate.search.mapper.pojo.bridge.runtime.ValueBridgeToIndexedValue
 
 
 public class OffsetDateTimeValueBridge implements ValueBridge<OffsetDateTime, String> {
-    @Override
-    public String toIndexedValue(OffsetDateTime value, ValueBridgeToIndexedValueContext context) {
-        if(value == null)
-            return null;
-        return value.toString();
-    }
+	@Override
+	public String toIndexedValue(OffsetDateTime value, ValueBridgeToIndexedValueContext context) {
+		if(value == null)
+			return null;
+		return value.toString();
+	}
 }

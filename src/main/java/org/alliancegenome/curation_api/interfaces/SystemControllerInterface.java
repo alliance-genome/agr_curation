@@ -14,16 +14,16 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface SystemControllerInterface {
 
-    @GET
-    @Path("/reindexeverything")
-    public void reindexEverything(
-        @DefaultValue("1") @QueryParam("threads") Integer threads,
-        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
-        @DefaultValue("20000") @QueryParam("batchSize") Integer batchSize
-    );
+	@GET
+	@Path("/reindexeverything")
+	public void reindexEverything(
+		@DefaultValue("1") @QueryParam("threads") Integer threads,
+		@DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
+		@DefaultValue("20000") @QueryParam("batchSize") Integer batchSize
+	);
 
-    @GET
-    @Path("/sitesummary")
-    public ObjectResponse<Map<String, Object>> getSiteSummary();
+	@GET
+	@Path("/sitesummary")
+	public ObjectResponse<Map<String, Object>> getSiteSummary();
 
 }

@@ -8,12 +8,12 @@ import org.alliancegenome.curation_api.model.entities.Molecule;
 @ApplicationScoped
 public class MoleculeDAO extends BaseSQLDAO<Molecule> {
 
-    protected MoleculeDAO() {
-        super(Molecule.class);
-    }
-    
-    public Molecule getByIdOrCurie(String id) {
-        return find(id);
-    }
+	protected MoleculeDAO() {
+		super(Molecule.class);
+	}
+	
+	public Molecule getByIdOrCurie(String id) {
+		return find(id);
+	}
 
 }

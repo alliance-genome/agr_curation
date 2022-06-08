@@ -3,14 +3,14 @@ package org.alliancegenome.curation_api.base.dao;
 import org.alliancegenome.curation_api.base.document.BaseDocument;
 
 public abstract class BaseDocumentDAO<E extends BaseDocument> {
-    
-    protected Class<E> myClass;
-    protected String esIndex;
+	
+	protected Class<E> myClass;
+	protected String esIndex;
 
-    protected BaseDocumentDAO(Class<E> myClass, String esIndex) {
-        this.myClass = myClass;
-        this.esIndex = esIndex;
-    }
+	protected BaseDocumentDAO(Class<E> myClass, String esIndex) {
+		this.myClass = myClass;
+		this.esIndex = esIndex;
+	}
 }
 
 

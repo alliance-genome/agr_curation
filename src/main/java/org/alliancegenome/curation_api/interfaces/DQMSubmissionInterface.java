@@ -11,9 +11,9 @@ import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 @Produces(MediaType.APPLICATION_JSON)
 public interface DQMSubmissionInterface {
 
-    @POST
-    @Path("/submit")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public String update(MultipartFormDataInput input);
-    
+	@POST
+	@Path("/submit")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public String update(MultipartFormDataInput input);
+	
 }

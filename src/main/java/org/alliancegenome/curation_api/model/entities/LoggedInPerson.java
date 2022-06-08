@@ -31,23 +31,23 @@ import lombok.ToString;
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 public class LoggedInPerson extends Person {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "oktaId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    @Column(unique = true)
-    private String oktaId;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "oktaEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    @Column(unique = true)
-    private String oktaEmail;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "oktaId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	@Column(unique = true)
+	private String oktaId;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "oktaEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	@Column(unique = true)
+	private String oktaEmail;
 
-    @JsonView({View.FieldsOnly.class})
-    private String apiToken;
-    
-    @Type(type = JsonTypes.JSON_BIN)
-    @Column(columnDefinition = JsonTypes.JSON_BIN)
-    private Map<String, Object> userSettings;
-    
+	@JsonView({View.FieldsOnly.class})
+	private String apiToken;
+	
+	@Type(type = JsonTypes.JSON_BIN)
+	@Column(columnDefinition = JsonTypes.JSON_BIN)
+	private Map<String, Object> userSettings;
+	
 }

@@ -14,16 +14,16 @@ import org.alliancegenome.curation_api.services.ontology.GoTermService;
 @RequestScoped
 public class GoTermCrudController extends BaseOntologyTermController<GoTermService, GOTerm, GoTermDAO> implements GoTermCrudInterface {
 
-    @Inject GoTermService goTermService;
+	@Inject GoTermService goTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.getAltNameSpaces().add("biological_process");
-        config.getAltNameSpaces().add("molecular_function");
-        config.getAltNameSpaces().add("cellular_component");
-        setService(goTermService, GOTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.getAltNameSpaces().add("biological_process");
+		config.getAltNameSpaces().add("molecular_function");
+		config.getAltNameSpaces().add("cellular_component");
+		setService(goTermService, GOTerm.class, config);
+	}
 
 }

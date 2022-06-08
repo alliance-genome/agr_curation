@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.WBbtTerm;
 @RequestScoped
 public class WbbtTermService extends BaseOntologyTermService<WBbtTerm, WbbtTermDAO> {
 
-    @Inject WbbtTermDAO wbbtTermDAO;
+	@Inject WbbtTermDAO wbbtTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(wbbtTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(wbbtTermDAO);
+	}
+	
 }

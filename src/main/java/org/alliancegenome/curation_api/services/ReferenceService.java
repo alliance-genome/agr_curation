@@ -20,42 +20,42 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
-    @Inject
-    ReferenceDAO referenceDAO;
-    @Inject
-    LiteratureReferenceDAO literatureReferenceDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(referenceDAO);
-    }
-    
-    @Transactional
-    public Reference retrieveFromLiteratureService(String curie) {
-        Pagination pagination = new Pagination();
-        pagination.setPage(0);
-        pagination.setLimit(2);
-        
-        HashMap<String, String> searchDetails = new HashMap<>();
-        searchDetails.put("tokenOperator", "AND");
-        searchDetails.put("queryString", curie);
-        
-        HashMap<String, Object> searchField = new HashMap<>();
-        searchField.put("cross_reference.curie", searchDetails);
-        
-        HashMap<String, Object> filter = new HashMap<>();
-        filter.put("cross_referenceFilter", searchField);
-        
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("searchFilters", filter);        
-        
-        SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-        if (response == null || response.getResults().size() != 1)
-            return null;
-        
-        Reference reference = new Reference();
-        reference.setCurie(curie);
-        return referenceDAO.persist(reference);
-    }
+	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
+	LiteratureReferenceDAO literatureReferenceDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(referenceDAO);
+	}
+	
+	@Transactional
+	public Reference retrieveFromLiteratureService(String curie) {
+		Pagination pagination = new Pagination();
+		pagination.setPage(0);
+		pagination.setLimit(2);
+		
+		HashMap<String, String> searchDetails = new HashMap<>();
+		searchDetails.put("tokenOperator", "AND");
+		searchDetails.put("queryString", curie);
+		
+		HashMap<String, Object> searchField = new HashMap<>();
+		searchField.put("cross_reference.curie", searchDetails);
+		
+		HashMap<String, Object> filter = new HashMap<>();
+		filter.put("cross_referenceFilter", searchField);
+		
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("searchFilters", filter);		
+		
+		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
+		if (response == null || response.getResults().size() != 1)
+			return null;
+		
+		Reference reference = new Reference();
+		reference.setCurie(curie);
+		return referenceDAO.persist(reference);
+	}
 }

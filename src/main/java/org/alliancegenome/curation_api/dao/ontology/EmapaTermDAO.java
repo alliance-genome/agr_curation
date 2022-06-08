@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.EMAPATerm;
 @ApplicationScoped
 public class EmapaTermDAO extends BaseSQLDAO<EMAPATerm> {
 
-    protected EmapaTermDAO() {
-        super(EMAPATerm.class);
-    }
+	protected EmapaTermDAO() {
+		super(EMAPATerm.class);
+	}
 
 }

@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
 @RequestScoped
 public class MaTermService extends BaseOntologyTermService<MATerm, MaTermDAO> {
 
-    @Inject MaTermDAO maTermDAO;
+	@Inject MaTermDAO maTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(maTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(maTermDAO);
+	}
+	
 }

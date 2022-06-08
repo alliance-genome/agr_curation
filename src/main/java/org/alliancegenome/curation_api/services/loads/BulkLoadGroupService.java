@@ -10,13 +10,13 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadGroup;
 
 @RequestScoped
 public class BulkLoadGroupService extends BaseCrudService<BulkLoadGroup, BulkLoadGroupDAO> {
-    
-    @Inject
-    BulkLoadGroupDAO bulkLoadGroupDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(bulkLoadGroupDAO);
-    }
+	
+	@Inject
+	BulkLoadGroupDAO bulkLoadGroupDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(bulkLoadGroupDAO);
+	}
 }

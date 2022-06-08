@@ -8,6 +8,6 @@ import lombok.Data;
 
 @Data
 public class LiteratureCrossReference {
-    @JsonView({View.FieldsOnly.class})
-    private String curie;
+	@JsonView({View.FieldsOnly.class})
+	private String curie;
 }

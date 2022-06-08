@@ -22,16 +22,16 @@ import java.util.HashMap;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<ConditionRelation> {
 
-    @Override
-    @POST
-    @Path("/")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
+	@Override
+	@POST
+	@Path("/")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
 
-    @POST
-    @Path("/validate")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
+	@POST
+	@Path("/validate")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
 
 
 }

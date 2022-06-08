@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.FBdvTerm;
 @ApplicationScoped
 public class FbdvTermDAO extends BaseSQLDAO<FBdvTerm> {
 
-    protected FbdvTermDAO() {
-        super(FBdvTerm.class);
-    }
+	protected FbdvTermDAO() {
+		super(FBdvTerm.class);
+	}
 
 }

@@ -15,20 +15,20 @@ import org.alliancegenome.curation_api.services.LoggedInPersonService;
 @RequestScoped
 public class LoggedInPersonController implements LoggedInPersonInterface {
 
-    @Inject @AuthenticatedUser LoggedInPerson authenticatedPerson;
-    @Inject LoggedInPersonService loggedInPersonService;
-    
-    public void saveSettings(HashMap<String, Object> settings) {
-        if (settings == null) settings = new HashMap<>();
-        loggedInPersonService.saveSettings(settings);
-    }
-    
-    public ObjectResponse<LoggedInPerson> create(LoggedInPerson person) {
-        return loggedInPersonService.create(person);
-    }
-    
-    @Override
-    public LoggedInPerson getLoggedInPerson() {
-        return authenticatedPerson;
-    }
+	@Inject @AuthenticatedUser LoggedInPerson authenticatedPerson;
+	@Inject LoggedInPersonService loggedInPersonService;
+	
+	public void saveSettings(HashMap<String, Object> settings) {
+		if (settings == null) settings = new HashMap<>();
+		loggedInPersonService.saveSettings(settings);
+	}
+	
+	public ObjectResponse<LoggedInPerson> create(LoggedInPerson person) {
+		return loggedInPersonService.create(person);
+	}
+	
+	@Override
+	public LoggedInPerson getLoggedInPerson() {
+		return authenticatedPerson;
+	}
 }

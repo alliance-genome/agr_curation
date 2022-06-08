@@ -12,15 +12,15 @@ import lombok.Data;
 @Data
 public class ConditionRelationDTO extends UniqueIdAuditedObjectDTO {
 
-    @JsonProperty("condition_relation_type")
-    private String conditionRelationType;
+	@JsonProperty("condition_relation_type")
+	private String conditionRelationType;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
-    private List<ExperimentalConditionDTO> conditions;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private List<ExperimentalConditionDTO> conditions;
 
-    private String handle;
-    
-    @JsonProperty("single_reference")
-    private String singleReference;
+	private String handle;
+	
+	@JsonProperty("single_reference")
+	private String singleReference;
 
 }

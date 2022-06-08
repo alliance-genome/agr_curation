@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.XPOTerm;
 @ApplicationScoped
 public class XpoTermDAO extends BaseSQLDAO<XPOTerm> {
 
-    protected XpoTermDAO() {
-        super(XPOTerm.class);
-    }
+	protected XpoTermDAO() {
+		super(XPOTerm.class);
+	}
 
 }

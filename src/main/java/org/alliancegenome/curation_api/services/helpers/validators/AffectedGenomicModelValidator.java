@@ -11,56 +11,56 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
-    
-    @Inject
-    AffectedGenomicModelDAO affectedGenomicModelDAO;
-    
-    public AffectedGenomicModel validateAnnotation(AffectedGenomicModel uiEntity) {
-        response = new ObjectResponse<>(uiEntity);
-        
-        String curie = validateCurie(uiEntity);
-        if (curie == null) {
-            throw new ApiErrorException(response);
-        }
-        
-        AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
-        if (dbEntity == null) {
-            addMessageResponse("Could not find AGM with curie: [" + curie + "]");
-            throw new ApiErrorException(response);
-        }
-        
-        String errorTitle = "Could not update AGM [" + curie + "]";
-        
-        dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity);
+	
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	
+	public AffectedGenomicModel validateAnnotation(AffectedGenomicModel uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		
+		String curie = validateCurie(uiEntity);
+		if (curie == null) {
+			throw new ApiErrorException(response);
+		}
+		
+		AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
+		if (dbEntity == null) {
+			addMessageResponse("Could not find AGM with curie: [" + curie + "]");
+			throw new ApiErrorException(response);
+		}
+		
+		String errorTitle = "Could not update AGM [" + curie + "]";
+		
+		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity);
 
-        String name = validateName(uiEntity);
-        if (name != null) dbEntity.setName(name);
-        
-        NCBITaxonTerm taxon = validateTaxon(uiEntity);
-        if (taxon != null) dbEntity.setTaxon(taxon);
-        
-        if (uiEntity.getSubtype() != null) {
-            dbEntity.setSubtype(uiEntity.getSubtype());
-        }
-        
-        if (uiEntity.getSynonyms() != null) {
-            dbEntity.setSynonyms(uiEntity.getSynonyms());
-        }
+		String name = validateName(uiEntity);
+		if (name != null) dbEntity.setName(name);
+		
+		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		if (taxon != null) dbEntity.setTaxon(taxon);
+		
+		if (uiEntity.getSubtype() != null) {
+			dbEntity.setSubtype(uiEntity.getSubtype());
+		}
+		
+		if (uiEntity.getSynonyms() != null) {
+			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		}
 
-        if (uiEntity.getSecondaryIdentifiers() != null) {
-            dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
-        }
+		if (uiEntity.getSecondaryIdentifiers() != null) {
+			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
+		}
 
-        if (uiEntity.getCrossReferences() != null) {
-            dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-        }
-        
-        if (response.hasErrors()) {
-            response.setErrorMessage(errorTitle);
-            throw new ApiErrorException(response);
-        }
-        
-        return dbEntity;
-    }
+		if (uiEntity.getCrossReferences() != null) {
+			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
+		}
+		
+		if (response.hasErrors()) {
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+		
+		return dbEntity;
+	}
 
 }

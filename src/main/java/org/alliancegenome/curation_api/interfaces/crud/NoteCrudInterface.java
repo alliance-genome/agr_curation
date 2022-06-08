@@ -17,10 +17,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
-    
-    @POST
-    @Path("/validate")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<Note> validate(Note entity);
-    
+	
+	@POST
+	@Path("/validate")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<Note> validate(Note entity);
+	
 }

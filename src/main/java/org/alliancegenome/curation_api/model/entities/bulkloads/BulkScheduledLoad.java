@@ -23,34 +23,34 @@ import lombok.*;
 @ToString(callSuper = true)
 public abstract class BulkScheduledLoad extends BulkLoad {
 
-    @JsonView({View.FieldsOnly.class})
-    private Boolean scheduleActive;
-    @JsonView({View.FieldsOnly.class})
-    private String cronSchedule;
+	@JsonView({View.FieldsOnly.class})
+	private Boolean scheduleActive;
+	@JsonView({View.FieldsOnly.class})
+	private String cronSchedule;
 
-    @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition="TEXT")
-    private String schedulingErrorMessage;
-    
-    @Transient
-    @JsonView({View.FieldsOnly.class})
-    public String getNextRun() {
-        CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
-        CronParser parser = new CronParser(cronDefinition);
-        try {
-            Cron unixCron = parser.parse(cronSchedule);
-            unixCron.validate();
-            ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
-            ZonedDateTime nextExecution = executionTime.nextExecution(ZonedDateTime.now()).get();
-            
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss Z");
-            return nextExecution.format(formatter);
+	@JsonView({View.FieldsOnly.class})
+	@Column(columnDefinition="TEXT")
+	private String schedulingErrorMessage;
+	
+	@Transient
+	@JsonView({View.FieldsOnly.class})
+	public String getNextRun() {
+		CronDefinition cronDefinition = CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ);
+		CronParser parser = new CronParser(cronDefinition);
+		try {
+			Cron unixCron = parser.parse(cronSchedule);
+			unixCron.validate();
+			ExecutionTime executionTime = ExecutionTime.forCron(unixCron);
+			ZonedDateTime nextExecution = executionTime.nextExecution(ZonedDateTime.now()).get();
+			
+			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss Z");
+			return nextExecution.format(formatter);
 
-        } catch (Exception e) {
-            return "";
-        }
-    }
-    
-    public void setNextRun(String nextRun) { }
-    
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
+	public void setNextRun(String nextRun) { }
+	
 }

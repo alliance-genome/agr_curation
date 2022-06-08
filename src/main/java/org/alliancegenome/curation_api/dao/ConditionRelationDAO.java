@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 @ApplicationScoped
 public class ConditionRelationDAO extends BaseSQLDAO<ConditionRelation> {
 
-    protected ConditionRelationDAO() {
-        super(ConditionRelation.class);
-    }
+	protected ConditionRelationDAO() {
+		super(ConditionRelation.class);
+	}
 
 }

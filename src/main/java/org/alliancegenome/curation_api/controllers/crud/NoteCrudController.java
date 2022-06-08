@@ -14,15 +14,15 @@ import org.alliancegenome.curation_api.services.NoteService;
 @RequestScoped
 public class NoteCrudController extends BaseCrudController<NoteService, Note, NoteDAO> implements NoteCrudInterface {
 
-    @Inject NoteService noteService;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(noteService);
-    }
+	@Inject NoteService noteService;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(noteService);
+	}
 
-    public ObjectResponse<Note> validate(Note entity) {
-        return noteService.validate(entity);
-    }
+	public ObjectResponse<Note> validate(Note entity) {
+		return noteService.validate(entity);
+	}
 }

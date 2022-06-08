@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.curationreports.CurationReportGr
 @RequestScoped
 public class CurationReportGroupCrudController extends BaseCrudController<CurationReportGroupService, CurationReportGroup, CurationReportGroupDAO> implements CurationReportGroupCrudInterface {
 
-    @Inject CurationReportGroupService curationReportGroupService;
+	@Inject CurationReportGroupService curationReportGroupService;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(curationReportGroupService);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(curationReportGroupService);
+	}
 
 }

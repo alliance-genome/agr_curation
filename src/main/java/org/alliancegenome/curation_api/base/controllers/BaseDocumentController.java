@@ -14,24 +14,24 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 public abstract class BaseDocumentController<S extends BaseDocumentService<E, D>, E extends BaseDocument, D extends BaseDocumentDAO<E>> implements BaseIdDocumentInterface<E> {
 
-    private BaseDocumentService<E, D> service;
+	private BaseDocumentService<E, D> service;
 
-    protected void setService(S service) {
-        this.service = service;
-    }
-    
-    protected abstract void init();
+	protected void setService(S service) {
+		this.service = service;
+	}
+	
+	protected abstract void init();
 
-    public ObjectResponse<E> get(String curie) {
-        return service.get(curie);
-    }
+	public ObjectResponse<E> get(String curie) {
+		return service.get(curie);
+	}
 
-    public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
-        if(params == null) params = new HashMap<String, Object>();
-        Pagination pagination = new Pagination();
-        pagination.setLimit(limit);
-        pagination.setPage(page);
-        return service.searchByParams(pagination, params);
-    }
+	public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
+		if(params == null) params = new HashMap<String, Object>();
+		Pagination pagination = new Pagination();
+		pagination.setLimit(limit);
+		pagination.setPage(page);
+		return service.searchByParams(pagination, params);
+	}
 
 }

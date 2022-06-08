@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.curationreports.CurationRe
 
 @ApplicationScoped
 public class CurationReportHistoryDAO extends BaseSQLDAO<CurationReportHistory> {
-    protected CurationReportHistoryDAO() {
-        super(CurationReportHistory.class);
-    }
+	protected CurationReportHistoryDAO() {
+		super(CurationReportHistory.class);
+	}
 }

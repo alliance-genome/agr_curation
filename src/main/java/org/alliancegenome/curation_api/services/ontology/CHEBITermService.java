@@ -10,12 +10,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 
 @RequestScoped
 public class CHEBITermService extends BaseOntologyTermService<CHEBITerm, CHEBITermDAO> {
-    @Inject
-    CHEBITermDAO chebiTermDAO;
+	@Inject
+	CHEBITermDAO chebiTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(chebiTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(chebiTermDAO);
+	}
 }

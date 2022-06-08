@@ -50,10 +50,10 @@ import lombok.ToString;
   use = JsonTypeInfo.Id.NAME, 
   include = JsonTypeInfo.As.PROPERTY, 
   property = "type")
-@JsonSubTypes({ 
-  @Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"), 
-  @Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"), 
-  @Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation") 
+@JsonSubTypes({
+	@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"),
+	@Type(value = AlleleDiseaseAnnotation.class, name = "AlleleDiseaseAnnotation"),
+	@Type(value = GeneDiseaseAnnotation.class, name = "GeneDiseaseAnnotation")
 })
 @Audited
 @Entity
@@ -63,103 +63,103 @@ import lombok.ToString;
 //@ToString(exclude = {"genomicLocations"})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public class DiseaseAnnotation extends Association {
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @Column(unique = true)
-    @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    private String modEntityId;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private DOTerm object;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-    @KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-    @JsonView({View.FieldsOnly.class})
-    @Column(columnDefinition = "boolean default false", nullable = false)
-    private Boolean negated = false;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
+	@JsonView({View.FieldsOnly.class})
+	@EqualsAndHashCode.Include
+	private String modEntityId;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private DOTerm object;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
+	@JsonView({View.FieldsOnly.class})
+	@Column(columnDefinition = "boolean default false", nullable = false)
+	private Boolean negated = false;
 
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private VocabularyTerm diseaseRelation;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private VocabularyTerm diseaseRelation;
 
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-    private List<EcoTerm> evidenceCodes;
-    
-    @IndexedEmbedded(includeDepth = 2)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-    private List<ConditionRelation> conditionRelations;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
-    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-    private List<Gene> with;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private Reference singleReference;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	private List<EcoTerm> evidenceCodes;
+	
+	@IndexedEmbedded(includeDepth = 2)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	private List<ConditionRelation> conditionRelations;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	private List<Gene> with;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Reference singleReference;
 
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private VocabularyTerm annotationType;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToMany
-    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-    private List<VocabularyTerm> diseaseQualifiers;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private VocabularyTerm geneticSex;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @OneToMany
-    @JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-    private List<Note> relatedNotes;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private VocabularyTerm annotationType;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	private List<VocabularyTerm> diseaseQualifiers;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private VocabularyTerm geneticSex;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	private List<Note> relatedNotes;
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "dataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView(View.FieldsOnly.class)
-    private String dataProvider;
-    
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "secondaryDataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView(View.FieldsOnly.class)
-    private String secondaryDataProvider;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "dataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView(View.FieldsOnly.class)
+	private String dataProvider;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "secondaryDataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView(View.FieldsOnly.class)
+	private String secondaryDataProvider;
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
-    @JsonView({View.FieldsOnly.class})
-    //@JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName = "curie")
-    private BiologicalEntity diseaseGeneticModifier;
-    
-    @IndexedEmbedded(includeDepth = 1)
-    @IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-    @ManyToOne
-    @JsonView({View.FieldsOnly.class})
-    private VocabularyTerm diseaseGeneticModifierRelation;
+	@ManyToOne
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
+	@JsonView({View.FieldsOnly.class})
+	//@JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName = "curie")
+	private BiologicalEntity diseaseGeneticModifier;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private VocabularyTerm diseaseGeneticModifierRelation;
 
 }

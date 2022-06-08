@@ -7,89 +7,89 @@ import { Toast } from 'primereact/toast';
 
 export const AllelesTable = () => {
 
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [errorMessages, setErrorMessages] = useState({});
+	const [isEnabled, setIsEnabled] = useState(true);
+	const [errorMessages, setErrorMessages] = useState({});
 
-  const toast_topleft = useRef(null);
-  const toast_topright = useRef(null);
+	const toast_topleft = useRef(null);
+	const toast_topright = useRef(null);
 
-  const descriptionTemplate = (rowData) => {
-    return (
-      <>
-        <EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-          {rowData.description}
-        </EllipsisTableCell>
-        <Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.description} />
-      </>
-    );
-  }
+	const descriptionTemplate = (rowData) => {
+		return (
+			<>
+				<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+					{rowData.description}
+				</EllipsisTableCell>
+				<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.description} />
+			</>
+		);
+	}
 
-  const symbolTemplate = (rowData) => {
-    return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
-  }
+	const symbolTemplate = (rowData) => {
+		return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+	}
 
-  const taxonTemplate = (rowData) => {
-      if (rowData.taxon) {
-          return (
-              <>
-                  <EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`}>
-                      {rowData.taxon.name} ({rowData.taxon.curie})
-                  </EllipsisTableCell>
-                  <Tooltip target={`.${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-              </>
-          );
-      }
-  }
+	const taxonTemplate = (rowData) => {
+			if (rowData.taxon) {
+					return (
+							<>
+									<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`}>
+											{rowData.taxon.name} ({rowData.taxon.curie})
+									</EllipsisTableCell>
+									<Tooltip target={`.${"TAXON_NAME_"}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+							</>
+					);
+			}
+	}
 
-  const columns = [
-    {
-      field: "curie",
-      header: "Curie",
-      sortable: { isEnabled },
-      filter: true,
-      filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
-    },
-    {
-      field: "description",
-      header: "Description",
-      sortable: isEnabled,
-      filter: true,
-      body: descriptionTemplate,
-      filterElement: {type: "input", filterName: "descriptionFilter", fields: ["description"]}, 
-    },
-    {
-      field: "symbol",
-      header: "Symbol",
-      body: symbolTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]}, 
-    },
-    {
-      field: "taxon.name",
-      header: "Taxon",
-      body: taxonTemplate,
-      sortable: isEnabled,
-      filter: true,
-      filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]}, 
-    }
-  ];
+	const columns = [
+		{
+			field: "curie",
+			header: "Curie",
+			sortable: { isEnabled },
+			filter: true,
+			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+		},
+		{
+			field: "description",
+			header: "Description",
+			sortable: isEnabled,
+			filter: true,
+			body: descriptionTemplate,
+			filterElement: {type: "input", filterName: "descriptionFilter", fields: ["description"]}, 
+		},
+		{
+			field: "symbol",
+			header: "Symbol",
+			body: symbolTemplate,
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]}, 
+		},
+		{
+			field: "taxon.name",
+			header: "Taxon",
+			body: taxonTemplate,
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]}, 
+		}
+	];
 
-  return (
-      <div className="card">
-        <Toast ref={toast_topleft} position="top-left" />
-        <Toast ref={toast_topright} position="top-right" />
-        <GenericDataTable 
-          endpoint="allele" 
-          tableName="Alleles" 
-          columns={columns}  
-          isEditable={false}
-          isEnabled={isEnabled}
-          setIsEnabled={setIsEnabled}
-          toasts={{toast_topleft, toast_topright }}
-          initialColumnWidth={20}
-          errorObject = {{errorMessages, setErrorMessages}}
-        />
-      </div>
-  )
+	return (
+			<div className="card">
+				<Toast ref={toast_topleft} position="top-left" />
+				<Toast ref={toast_topright} position="top-right" />
+				<GenericDataTable 
+					endpoint="allele" 
+					tableName="Alleles" 
+					columns={columns}	 
+					isEditable={false}
+					isEnabled={isEnabled}
+					setIsEnabled={setIsEnabled}
+					toasts={{toast_topleft, toast_topright }}
+					initialColumnWidth={20}
+					errorObject = {{errorMessages, setErrorMessages}}
+				/>
+			</div>
+	)
 }
