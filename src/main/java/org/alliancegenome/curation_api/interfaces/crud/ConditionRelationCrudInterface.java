@@ -25,7 +25,7 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 
     @PUT
     @Path("/")
-    @JsonView(View.FieldsAndLists.class)
+    @JsonView(View.ConditionRelationUpdateView.class)
     public ObjectResponse<ConditionRelation> update(ConditionRelation entity);
 
     @POST
