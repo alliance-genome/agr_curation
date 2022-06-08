@@ -20,7 +20,7 @@ export const Dashboard = () => {
 		ExperimentalCondition: { name: "Experimental Conditions", link: "/#/experimentalConditions", type: 'entity', },
 		ConditionRelation: { name: "Condition Relations", link: "/#/conditionRelations", type: 'entity', },
 		Molecule: { name: "Molecules", link: "/#/molecules", type: 'entity', },
-		Reference: { name: "Literature Relations", link: "/#/references", type: 'entity', },
+		Reference: { name: "Literature References", link: "/#/references", type: 'entity', },
 
 		DOTerm: { name: "DO", link: "/#/ontology/do", type: 'ontology', },
 		CHEBITerm: { name: "CHEBI", link: "/#/ontology/chebi", type: 'ontology', },
