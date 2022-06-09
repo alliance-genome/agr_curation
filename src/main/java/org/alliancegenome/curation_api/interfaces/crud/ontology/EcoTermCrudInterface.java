@@ -12,9 +12,9 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface EcoTermCrudInterface extends BaseOntologyTermCrudInterface<EcoTerm> {
-    
-    @GET
-    @Path("/updateAbbreviations")
-    public void updateAbbreviations();
-    
+	
+	@GET
+	@Path("/updateAbbreviations")
+	public void updateAbbreviations();
+	
 }

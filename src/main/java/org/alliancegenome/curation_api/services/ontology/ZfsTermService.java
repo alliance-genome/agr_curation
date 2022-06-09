@@ -11,13 +11,13 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZFSTerm;
 @RequestScoped
 public class ZfsTermService extends BaseOntologyTermService<ZFSTerm, ZfsTermDAO> {
 
-    @Inject
-    ZfsTermDAO zfsTermDAO;
+	@Inject
+	ZfsTermDAO zfsTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(zfsTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(zfsTermDAO);
+	}
 
 }

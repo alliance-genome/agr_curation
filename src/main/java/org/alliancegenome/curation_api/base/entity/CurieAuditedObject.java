@@ -14,13 +14,13 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
 @ToString(callSuper = true)
-public class CurieAuditedObject extends AuditedObject{
+public class CurieAuditedObject extends AuditedObject {
 
-    @Id @DocumentId
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-    @JsonView({View.FieldsOnly.class})
-    @EqualsAndHashCode.Include
-    private String curie;
+	@Id @DocumentId
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.FieldsOnly.class})
+	@EqualsAndHashCode.Include
+	private String curie;
 
 }

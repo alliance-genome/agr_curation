@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.XBEDTerm;
 @RequestScoped
 public class XbedTermService extends BaseOntologyTermService<XBEDTerm, XbedTermDAO> {
 
-    @Inject XbedTermDAO xbedTermDAO;
+	@Inject XbedTermDAO xbedTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(xbedTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(xbedTermDAO);
+	}
 
 }

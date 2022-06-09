@@ -14,12 +14,12 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class PhenotypeTermService extends BaseOntologyTermService<PhenotypeTerm, PhenotypeTermDAO> {
 
-    @Inject PhenotypeTermDAO phenotypeTermDAO;
+	@Inject PhenotypeTermDAO phenotypeTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(phenotypeTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(phenotypeTermDAO);
+	}
+	
 }

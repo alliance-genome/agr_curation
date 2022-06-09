@@ -11,27 +11,27 @@ import lombok.Setter;
 @Setter
 @Getter
 public class AuditedObjectDTO {
-    
-    @JsonView({View.FieldsOnly.class})
-    private Boolean internal = false;
-    
-    @JsonView({View.FieldsOnly.class})
-    private Boolean obsolete = false;
-    
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("created_by")
-    private String createdBy;
+	
+	@JsonView({View.FieldsOnly.class})
+	private Boolean internal = false;
+	
+	@JsonView({View.FieldsOnly.class})
+	private Boolean obsolete = false;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("created_by")
+	private String createdBy;
 
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("modified_by")
-    private String modifiedBy;
-    
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("date_created")
-    private String dateCreated;
-    
-    @JsonView({View.FieldsOnly.class})
-    @JsonProperty("date_updated")
-    private String dateUpdated;
-    
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("modified_by")
+	private String modifiedBy;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("date_created")
+	private String dateCreated;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("date_updated")
+	private String dateUpdated;
+	
 }

@@ -1,92 +1,92 @@
 import { BaseAuthService } from './BaseAuthService';
 
 export class DataLoadService extends BaseAuthService {
-    createGroup(newGroup) {
-        return this.api.post(`/bulkloadgroup`, newGroup);
-    }
+		createGroup(newGroup) {
+				return this.api.post(`/bulkloadgroup`, newGroup);
+		}
 
-    deleteGroup(id) {
-        return this.api.delete(`/bulkloadgroup/${id}`);
-    }
+		deleteGroup(id) {
+				return this.api.delete(`/bulkloadgroup/${id}`);
+		}
 
-    createLoad(newLoad) {
-        let endpoint = newLoad.type.toLowerCase();
+		createLoad(newLoad) {
+				let endpoint = newLoad.type.toLowerCase();
 
-        newLoad.group = { id: newLoad.group };
-        for (const objectKey in newLoad) {
-            if (!newLoad[objectKey]) {
-                delete newLoad[objectKey];
-            }
-        }
-        console.log("Creating: ");
-        console.log(newLoad);
-        return this.api.post(`/${endpoint}`, newLoad);
-    }
+				newLoad.group = { id: newLoad.group };
+				for (const objectKey in newLoad) {
+						if (!newLoad[objectKey]) {
+								delete newLoad[objectKey];
+						}
+				}
+				console.log("Creating: ");
+				console.log(newLoad);
+				return this.api.post(`/${endpoint}`, newLoad);
+		}
 
-    updateLoad(newLoad) {
+		updateLoad(newLoad) {
 
-        let endpoint = newLoad.type.toLowerCase();
+				let endpoint = newLoad.type.toLowerCase();
 
-        newLoad.group = { id: newLoad.group };
-        for (const objectKey in newLoad) {
-            if (!newLoad[objectKey]) {
-                delete newLoad[objectKey];
-            }
-        }
-        delete newLoad["loadFiles"];
-        console.log("Saving: ");
-        console.log(newLoad);
-        return this.api.put(`/${endpoint}`, newLoad);
-    }
+				newLoad.group = { id: newLoad.group };
+				for (const objectKey in newLoad) {
+						if (!newLoad[objectKey]) {
+								delete newLoad[objectKey];
+						}
+				}
+				delete newLoad["loadFiles"];
+				console.log("Saving: ");
+				console.log(newLoad);
+				return this.api.put(`/${endpoint}`, newLoad);
+		}
 
-    deleteLoad(loadType, id) {
-        let endpoint = loadType.toLowerCase();
-        return this.api.delete(`/${endpoint}/${id}`);
-    }
+		deleteLoad(loadType, id) {
+				let endpoint = loadType.toLowerCase();
+				return this.api.delete(`/${endpoint}/${id}`);
+		}
 
-    restartLoad(loadType, id) {
-        let endpoint = loadType.toLowerCase();
-        return this.api.get(`/${endpoint}/restart/${id}`);
-    }
+		restartLoad(loadType, id) {
+				let endpoint = loadType.toLowerCase();
+				return this.api.get(`/${endpoint}/restart/${id}`);
+		}
 
-    restartLoadFile(id) {
-      return this.api.get(`/bulkloadfile/restart/${id}`);
-    }
+		restartLoadFile(id) {
+			return this.api.get(`/bulkloadfile/restart/${id}`);
+		}
 
-    getFileHistoryFile(id) {
-      return this.api.get(`/bulkloadfilehistory/${id}`);
-    }
+		getFileHistoryFile(id) {
+			return this.api.get(`/bulkloadfilehistory/${id}`);
+		}
 
-    deleteLoadFile(id) {
-      return this.api.delete(`/bulkloadfile/${id}`);
-    }
+		deleteLoadFile(id) {
+			return this.api.delete(`/bulkloadfile/${id}`);
+		}
 
-    getBackendBulkLoadTypes(loadType) {
-        const bulkLoadTypes = {
-            BulkFMSLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "MOLECULE"],
-            BulkURLLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
-            BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
-        };
-        return bulkLoadTypes[loadType];
-    }
+		getBackendBulkLoadTypes(loadType) {
+				const bulkLoadTypes = {
+						BulkFMSLoad: ["MOLECULE"],
+						BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
+						BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
+				};
+				return bulkLoadTypes[loadType];
+		}
 
-    getLoadTypes() {
-        return [
-            "BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
-        ];
-    }
+		getLoadTypes() {
+				return [
+						"BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
+				];
+		}
 
-    getOntologyTypes() {
-        return [
-            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO"
-        ];
-    }
+		getOntologyTypes() {
+				return [
+						"ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO"
+				];
+		}
 
-    getDataTypes() {
-        return [
-            "RGD", "MGI", "SGD", "HUMAN", "ZFIN", "FB", "WB"
-        ];
-    }
+		getDataTypes() {
+				return [
+						"RGD", "MGI", "SGD", "HUMAN", "ZFIN", "FB", "WB"
+				];
+		}
 
 
 }

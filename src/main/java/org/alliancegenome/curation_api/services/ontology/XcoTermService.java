@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.XcoTerm;
 @RequestScoped
 public class XcoTermService extends BaseOntologyTermService<XcoTerm, XcoTermDAO> {
 
-    @Inject XcoTermDAO xcoTermDAO;
+	@Inject XcoTermDAO xcoTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(xcoTermDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(xcoTermDAO);
+	}
 
 }

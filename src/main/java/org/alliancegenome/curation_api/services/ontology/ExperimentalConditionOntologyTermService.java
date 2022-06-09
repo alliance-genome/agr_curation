@@ -14,12 +14,12 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class ExperimentalConditionOntologyTermService extends BaseOntologyTermService<ExperimentalConditionOntologyTerm, ExperimentalConditionOntologyTermDAO> {
 
-    @Inject ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+	@Inject ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(experimentalConditionOntologyTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(experimentalConditionOntologyTermDAO);
+	}
+	
 }

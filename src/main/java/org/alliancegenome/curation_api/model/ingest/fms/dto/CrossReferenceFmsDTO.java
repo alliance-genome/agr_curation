@@ -8,10 +8,10 @@ import lombok.Data;
 
 @Data
 public class CrossReferenceFmsDTO extends BaseDTO {
-    private String id;
-    private List<String> pages;
+	private String id;
+	private List<String> pages;
 
-    public String getCurie() {
-        return id;
-    }
+	public String getCurie() {
+		return id;
+	}
 }

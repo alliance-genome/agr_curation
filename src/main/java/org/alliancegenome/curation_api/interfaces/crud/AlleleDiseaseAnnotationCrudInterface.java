@@ -21,53 +21,53 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AlleleDiseaseAnnotation> {
 
-    @GET
-    @Path("/findBy/{uniqueId}")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
-    
-    @PUT
-    @Path("/")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
-    
-    @POST
-    @Path("/bulk/{taxonID}/annotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
+	@GET
+	@Path("/findBy/{uniqueId}")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
+	
+	@PUT
+	@Path("/")
+	@JsonView(View.DiseaseAnnotationUpdate.class)
+	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
+	
+	@POST
+	@Path("/bulk/{taxonID}/annotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
 
-    @POST
-    @Path("/bulk/zfinAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-    
-    @POST
-    @Path("/bulk/mgiAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-    
-    @POST
-    @Path("/bulk/rgdAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-    
-    @POST
-    @Path("/bulk/fbAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-    
-    @POST
-    @Path("/bulk/wbAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-    
-    @POST
-    @Path("/bulk/humanAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-    
-    @POST
-    @Path("/bulk/sgdAnnotationFile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	@POST
+	@Path("/bulk/zfinAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	
+	@POST
+	@Path("/bulk/mgiAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	
+	@POST
+	@Path("/bulk/rgdAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	
+	@POST
+	@Path("/bulk/fbAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	
+	@POST
+	@Path("/bulk/wbAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	
+	@POST
+	@Path("/bulk/humanAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
+	
+	@POST
+	@Path("/bulk/sgdAnnotationFile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
 }

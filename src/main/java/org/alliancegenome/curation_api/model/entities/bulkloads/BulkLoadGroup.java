@@ -18,11 +18,11 @@ import lombok.*;
 @ToString
 //@ToString(exclude = {"loads"})
 public class BulkLoadGroup extends GeneratedAuditedObject {
-    
-    @JsonView({View.FieldsOnly.class})
-    private String name;
-    
-    @JsonView({View.FieldsOnly.class})
-    @OneToMany(mappedBy = "group")
-    private List<BulkLoad> loads;
+	
+	@JsonView({View.FieldsOnly.class})
+	private String name;
+	
+	@JsonView({View.FieldsOnly.class})
+	@OneToMany(mappedBy = "group")
+	private List<BulkLoad> loads;
 }

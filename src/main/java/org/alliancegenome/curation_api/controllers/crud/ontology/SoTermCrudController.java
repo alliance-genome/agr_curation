@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.SoTermService;
 @RequestScoped
 public class SoTermCrudController extends BaseOntologyTermController<SoTermService, SOTerm, SoTermDAO> implements SoTermCrudInterface {
 
-    @Inject SoTermService soTermService;
+	@Inject SoTermService soTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(soTermService, SOTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(soTermService, SOTerm.class);
+	}
 
 }

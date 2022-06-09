@@ -19,39 +19,39 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class MoleculeExecutor extends LoadFileExecutor {
 
-    @Inject MoleculeService moleculeService;
-    
-    public void runLoad(BulkLoadFile bulkLoadFile) {
-        try {
-            MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
-            bulkLoadFile.setRecordCount(moleculeData.getData().size());
-            bulkLoadFileDAO.merge(bulkLoadFile);
-            
-            trackHistory(runLoad(moleculeData), bulkLoadFile);
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+	@Inject MoleculeService moleculeService;
+	
+	public void runLoad(BulkLoadFile bulkLoadFile) {
+		try {
+			MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
+			bulkLoadFile.setRecordCount(moleculeData.getData().size());
+			bulkLoadFileDAO.merge(bulkLoadFile);
+			
+			trackHistory(runLoad(moleculeData), bulkLoadFile);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-    // Gets called from the API directly
-    public APIResponse runLoad(MoleculeMetaDataFmsDTO moleculeData) {
-        ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-        ph.startProcess("Molecule DTO Update", moleculeData.getData().size());
+	// Gets called from the API directly
+	public APIResponse runLoad(MoleculeMetaDataFmsDTO moleculeData) {
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ph.startProcess("Molecule DTO Update", moleculeData.getData().size());
 
-        BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
-        for(MoleculeFmsDTO molecule: moleculeData.getData()) {
-            try {
-                moleculeService.processUpdate(molecule);
-                history.incrementCompleted();
-            } catch (ObjectUpdateException e) {
-                addException(history, e.getData());
-            }
-            ph.progressProcess();
-        }
-        ph.finishProcess();
-        
-        return new LoadHistoryResponce(history);
-    }
+		BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
+		for(MoleculeFmsDTO molecule: moleculeData.getData()) {
+			try {
+				moleculeService.processUpdate(molecule);
+				history.incrementCompleted();
+			} catch (ObjectUpdateException e) {
+				addException(history, e.getData());
+			}
+			ph.progressProcess();
+		}
+		ph.finishProcess();
+		
+		return new LoadHistoryResponce(history);
+	}
 
 }

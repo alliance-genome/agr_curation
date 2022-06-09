@@ -1,0 +1,13 @@
+[
+  {
+    "curie": "ALLELETEST:Allele0012",
+    "name": "TestAllele12",
+    "symbol": "ta12",
+    "taxon": "NCBITaxon:6239",
+    "internal": true,
+    "created_by": "ALLELETEST:Person0001",
+    "modified_by": "ALLELETEST:Person0002",
+    "date_created": "20220309",
+    "date_updated": "2022-03-09T22:10:12+00:00"
+  }
+]

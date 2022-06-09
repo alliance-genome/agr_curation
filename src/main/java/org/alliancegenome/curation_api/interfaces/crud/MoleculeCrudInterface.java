@@ -18,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface MoleculeCrudInterface extends BaseCurieCrudInterface<Molecule> {
 
-    @POST
-    @Path("/bulk/moleculefile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData);
-    
+	@POST
+	@Path("/bulk/moleculefile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData);
+	
 }

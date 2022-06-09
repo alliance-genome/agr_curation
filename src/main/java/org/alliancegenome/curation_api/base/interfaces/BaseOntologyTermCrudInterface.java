@@ -10,13 +10,13 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Tag(name = "CRUD - Ontology - Bulk")
 public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends BaseCurieCrudInterface<E> {
 
-    @POST
-    @Path("/bulk/owl")
-    @Consumes(MediaType.APPLICATION_XML)
-    public String updateTerms(
-            @DefaultValue("true") 
-            @QueryParam("async") boolean async,
-            @RequestBody String fullText);
-    
-    public void init();
+	@POST
+	@Path("/bulk/owl")
+	@Consumes(MediaType.APPLICATION_XML)
+	public String updateTerms(
+			@DefaultValue("true") 
+			@QueryParam("async") boolean async,
+			@RequestBody String fullText);
+	
+	public void init();
 }

@@ -17,57 +17,57 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BaseIdCrudInterface<E extends BaseEntity> {
 
-    @POST
-    @Path("/")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> create(E entity);
+	@POST
+	@Path("/")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<E> create(E entity);
 
-    @POST
-    @Path("/multiple")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectListResponse<E> create(List<E> entities);
-    
-    @GET
-    @Path("/{id}")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> get(@PathParam("id") Long id);
-    
-    @PUT
-    @Path("/")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> update(E entity);
+	@POST
+	@Path("/multiple")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectListResponse<E> create(List<E> entities);
+	
+	@GET
+	@Path("/{id}")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<E> get(@PathParam("id") Long id);
+	
+	@PUT
+	@Path("/")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<E> update(E entity);
 
-    @DELETE
-    @Path("/{id}")
-    @JsonView(View.FieldsOnly.class)
-    public ObjectResponse<E> delete(@PathParam("id") Long id);
-    
-    @POST
-    @Path("/find")
-    @Tag(name = "Database Search Endpoints")
-    @JsonView(View.FieldsAndLists.class)
-    public SearchResponse<E> find(
-            @DefaultValue("0") @QueryParam("page") Integer page,
-            @DefaultValue("10") @QueryParam("limit") Integer limit,
-            @RequestBody HashMap<String, Object> params);
-    
-    @POST
-    @Path("/search")
-    @Tag(name = "Elastic Search Endpoints")
-    @JsonView({View.FieldsAndLists.class})
-    public SearchResponse<E> search(
-            @DefaultValue("0") @QueryParam("page") Integer page,
-            @DefaultValue("10") @QueryParam("limit") Integer limit,
-            @RequestBody HashMap<String, Object> params);
-    
-    @GET
-    @Path("/reindex")
-    @Tag(name = "Reindex Endpoints")
-    public void reindex(
-        @DefaultValue("4") @QueryParam("threads") Integer threads,
-        @DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
-        @DefaultValue("1000") @QueryParam("batchSize") Integer batchSize
-    );
-    
+	@DELETE
+	@Path("/{id}")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectResponse<E> delete(@PathParam("id") Long id);
+	
+	@POST
+	@Path("/find")
+	@Tag(name = "Database Search Endpoints")
+	@JsonView(View.FieldsAndLists.class)
+	public SearchResponse<E> find(
+			@DefaultValue("0") @QueryParam("page") Integer page,
+			@DefaultValue("10") @QueryParam("limit") Integer limit,
+			@RequestBody HashMap<String, Object> params);
+	
+	@POST
+	@Path("/search")
+	@Tag(name = "Elastic Search Endpoints")
+	@JsonView({View.FieldsAndLists.class})
+	public SearchResponse<E> search(
+			@DefaultValue("0") @QueryParam("page") Integer page,
+			@DefaultValue("10") @QueryParam("limit") Integer limit,
+			@RequestBody HashMap<String, Object> params);
+	
+	@GET
+	@Path("/reindex")
+	@Tag(name = "Reindex Endpoints")
+	public void reindex(
+		@DefaultValue("4") @QueryParam("threads") Integer threads,
+		@DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
+		@DefaultValue("1000") @QueryParam("batchSize") Integer batchSize
+	);
+	
 }
 

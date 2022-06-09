@@ -18,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ExperimentalConditionCrudInterface extends BaseIdCrudInterface<ExperimentalCondition> {
 
-    @GET
-    @Path("/findBy/{conditionStatement}")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<ExperimentalCondition> get(@PathParam("conditionStatement") String uniqueId);
-    
+	@GET
+	@Path("/findBy/{conditionStatement}")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ExperimentalCondition> get(@PathParam("conditionStatement") String uniqueId);
+	
 }

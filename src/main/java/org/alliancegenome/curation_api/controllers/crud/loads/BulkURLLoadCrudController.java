@@ -14,16 +14,16 @@ import org.alliancegenome.curation_api.services.loads.BulkURLLoadService;
 @RequestScoped
 public class BulkURLLoadCrudController extends BaseCrudController<BulkURLLoadService, BulkURLLoad, BulkURLLoadDAO> implements BulkURLLoadCrudInterface {
 
-    @Inject BulkURLLoadService bulkURLLoadService;
+	@Inject BulkURLLoadService bulkURLLoadService;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(bulkURLLoadService);
-    }
-    
-    @Override
-    public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
-        return bulkURLLoadService.restartLoad(id);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(bulkURLLoadService);
+	}
+	
+	@Override
+	public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
+		return bulkURLLoadService.restartLoad(id);
+	}
 }

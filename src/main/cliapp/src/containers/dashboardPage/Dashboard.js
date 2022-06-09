@@ -3,164 +3,110 @@ import React, { useState, useEffect } from 'react';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 
-import { SearchService } from '../../service/SearchService';
+import { SystemService } from '../../service/SystemService';
 
 export const Dashboard = () => {
 
-  const [entityCounts, setEntityCounts] = useState([]);
-  const [termCounts, setTermCounts] = useState([]);
+	const [tableData, setTableData] = useState({});
 
-  useEffect(() => {
-    const searchService = new SearchService();
+	const lookupMap = {
+		Gene: { name: "Genes", link: "/#/genes", type: 'entity', },
+		Allele: { name: "Alleles", link: "/#/alleles", type: 'entity', },
+		AffectedGenomicModel: { name: "Affected Genomic Models", link: "/#/agms", type: 'entity', },
+		DiseaseAnnotation: { name: "Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
+		AGMDiseaseAnnotation: { name: "AGM Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
+		AlleleDiseaseAnnotation: { name: "Allele Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
+		GeneDiseaseAnnotation: { name: "Gene Disease Annotations", link: "/#/diseaseAnnotations", type: 'entity', },
+		ExperimentalCondition: { name: "Experimental Conditions", link: "/#/experimentalConditions", type: 'entity', },
+		ConditionRelation: { name: "Condition Relations", link: "/#/conditionRelations", type: 'entity', },
+		Molecule: { name: "Molecules", link: "/#/molecules", type: 'entity', },
+		Reference: { name: "Literature References", link: "/#/references", type: 'entity', },
 
-    searchService.search('gene', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Genes", count: results.totalResults, link: '/#/genes' }]);
-    });
+		DOTerm: { name: "DO", link: "/#/ontology/do", type: 'ontology', },
+		CHEBITerm: { name: "CHEBI", link: "/#/ontology/chebi", type: 'ontology', },
+		XSMOTerm: { name: "XSMO", link: "/#/ontology/xsmo", type: 'ontology', },
+		EcoTerm: { name: "ECO", link: "/#/ontology/eco", type: 'ontology', },
+		SOTerm: { name: "SO", link: "/#/ontology/so", type: 'ontology', },
+		GOTerm: { name: "GO", link: "/#/ontology/go", type: 'ontology', },
+		MATerm: { name: "MA", link: "/#/ontology/ma", type: 'ontology', },
+		ZfaTerm: { name: "ZFA", link: "/#/ontology/zfa", type: 'ontology', },
+		MPTerm: { name: "MP", link: "/#/ontology/mp", type: 'ontology', },
+		DAOTerm: { name: "DAO", link: "/#/ontology/dao", type: 'ontology', },
+		EMAPATerm: { name: "EMAPA", link: "/#/ontology/emapa", type: 'ontology', },
+		WBbtTerm: { name: "WBbt", link: "/#/ontology/wbbt", type: 'ontology', },
+		XBATerm: { name: "XBA", link: "/#/ontology/xba", type: 'ontology', },
+		XBSTerm: { name: "XBS", link: "/#/ontology/xbs", type: 'ontology', },
+		XcoTerm: { name: "XCO", link: "/#/ontology/xco", type: 'ontology', },
+		ZecoTerm: { name: "ZECO", link: "/#/ontology/zeco", type: 'ontology', },
+		NCBITaxonTerm: { name: "NCBITaxon", link: "/#/ontology/ncbitaxon", type: 'ontology', },
+		WBlsTaxonTerm: { name: "WBls", link: "/#/ontology/wbls", type: 'ontology', },
+		FBdvTerm: { name: "FBdv", link: "/#/ontology/fbdv", type: 'ontology', },
+		MmusDvTerm: { name: "MmusDv", link: "/#/ontology/mmusdv", type: 'ontology', },
+		ZFSTerm: { name: "ZFS", link: "/#/ontology/zfs", type: 'ontology', },
+		XPOTerm: { name: "XPO", link: "/#/ontology/xpo", type: 'ontology', },
+		XBEDTerm: { name: "XBED", link: "/#/ontology/xbed", type: 'ontology', },
 
-    searchService.search('allele', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Alleles", count: results.totalResults, link: '/#/alleles' }]);
-    });
+		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },
+		BulkLoad: { name: "Bulk Load", link: "/#/dataloads", type: 'system', },
+	};
 
-    searchService.search('agm', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Affected Genomic Models", count: results.totalResults, link: '/#/agms' }]);
-    });
+	useEffect(() => {
+		const systemService = new SystemService();
 
-    searchService.search('disease-annotation', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Disease Annotations", count: results.totalResults, link: '/#/diseaseAnnotations' }]);
-    });
+		let _tableData = {};
 
-    searchService.search('experimental-condition', 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Experimental Conditions", count: results.totalResults, link: '/#/experimentalConditions' }]);
-    });
+		systemService.getSiteSummary().then((res) => {
+			for (const key in res.entity){
 
-    searchService.search('condition-relation', 0, 0, null, {}, null, null,['handle']).then(results => {
-      setEntityCounts((list) => [...list, { name: "Condition Relation Handles", count: results.totalResults, link: '/#/conditionRelations' }]);
-    });
+				if(!lookupMap[key]) continue;
 
-    searchService.search("molecule", 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Molecules", count: results.totalResults, link: '/#/molecules' }]);
-    });
+				const { type } = lookupMap[key];
 
-    searchService.search("literature-reference", 0, 0).then(results => {
-      setEntityCounts((list) => [...list, { name: "Literature References", count: results.totalResults, link: '/#/references' }]);
-    });
+				if(!_tableData[type]){
+					_tableData[type] = [];
+				}
 
-    searchService.search('chebiterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "CHEBI", count: results.totalResults, link: '/#/ontology/chebi' }]);
-    });
+				_tableData[type].push({
+					name: lookupMap[key].name,
+					link: lookupMap[key].link,
+					dbCount: res.entity[key]["dbCount"],
+					esCount: res.entity[key]["esCount"]
+				});
+			}
+			setTableData(_tableData);
+		});
+		// eslint-disable-next-line
+	}, []);
 
-    searchService.search('xsmoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XSMO", count: results.totalResults, link: '/#/ontology/xsmo' }]);
-    });
+	const nameHyperlinkTemplate = (rowData) => {
+		return <a href={rowData.link}>{rowData.name}</a>
+	}
 
-    searchService.search('ecoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "ECO", count: results.totalResults, link: '/#/ontology/eco' }]);
-    });
-
-    searchService.search('doterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "DO", count: results.totalResults, link: '/#/ontology/do' }]);
-    });
-
-    searchService.search('soterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "SO", count: results.totalResults, link: '/#/ontology/so' }]);
-    });
-
-    searchService.search('goterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "GO", count: results.totalResults, link: '/#/ontology/go' }]);
-    });
-
-    searchService.search('materm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "MA", count: results.totalResults, link: '/#/ontology/ma' }]);
-    });
-
-    searchService.search('zfaterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "ZFA", count: results.totalResults, link: '/#/ontology/zfa' }]);
-    });
-
-    searchService.search('mpterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "MP", count: results.totalResults, link: '/#/ontology/mp' }]);
-    });
-
-    searchService.search('daoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "DAO", count: results.totalResults, link: '/#/ontology/dao' }]);
-    });
-
-    searchService.search('emapaterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "EMAPA", count: results.totalResults, link: '/#/ontology/emapa' }]);
-    });
-
-    searchService.search('wbbtterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "WBbt", count: results.totalResults, link: '/#/ontology/wbbt' }]);
-    });
-
-    searchService.search('xbaterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XBA", count: results.totalResults, link: '/#/ontology/xba' }]);
-    });
-
-    searchService.search('xbsterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XBS", count: results.totalResults, link: '/#/ontology/xbs' }]);
-    });
-
-    searchService.search('xcoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XCO", count: results.totalResults, link: '/#/ontology/xco' }]);
-    });
-
-    searchService.search('zecoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "ZECO", count: results.totalResults, link: '/#/ontology/zeco' }]);
-    });
-
-    searchService.search('ncbitaxonterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "NCBITaxon", count: results.totalResults, link: '/#/ontology/ncbitaxon' }]);
-    });
-
-    searchService.search('wblsterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "WBls", count: results.totalResults, link: '/#/ontology/wbls' }]);
-    });
-
-    searchService.search('fbdvterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "FBdv", count: results.totalResults, link: '/#/ontology/fbdv' }]);
-    });
-
-    searchService.search('mmusdvterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "MmusDv", count: results.totalResults, link: '/#/ontology/mmusdv' }]);
-    });
-
-    searchService.search('zfsterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "ZFS", count: results.totalResults, link: '/#/ontology/zfs' }]);
-    });
-
-    searchService.search('xpoterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XPO", count: results.totalResults, link: '/#/ontology/xpo' }]);
-    });
-
-    searchService.search('xbedterm', 0, 0).then(results => {
-      setTermCounts((list) => [...list, { name: "XBED", count: results.totalResults, link: '/#/ontology/xbed' }]);
-    });
-
-  }, []);
-
-  const nameHyperlinkTemplate = (rowData) => {
-    return <a href={rowData.link}>{rowData.name}</a>
-  }
-
-  return (
-    <>
-      <div className="grid nested dashboard">
-        <div className="col-3">
-          <DataTable value={entityCounts} sortField="name" sortOrder={1}>
-            <Column field="name" header="Entity Name" body={nameHyperlinkTemplate}/>
-            <Column field="count" header="Entity Count" />
-          </DataTable>
-        </div>
-
-        <div className="col-3">
-          <DataTable value={termCounts} sortField="name" sortOrder={1}>
-            <Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
-            <Column field="count" header="Term Count" />
-          </DataTable>
-        </div>
-      </div>
-    </>
-
-  );
+	return (
+		<>
+			<div className="grid nested dashboard">
+				<div className="col-3">
+					<DataTable header="Entities" value={tableData.entity} sortField="name" sortOrder={1}>
+						<Column field="name" header="Entity Name" body={nameHyperlinkTemplate}/>
+						<Column field="dbCount" header="Database Entity Count" />
+						<Column field="esCount" header="ElasticSearch Entity Count" />
+					</DataTable>
+				</div>
+				<div className="col-3">
+					<DataTable header="Ontologies" value={tableData.ontology} sortField="name" sortOrder={1}>
+						<Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
+						<Column field="dbCount" header="Database Term Count" />
+						<Column field="esCount" header="ElasticSearch Term Count" />
+					</DataTable>
+				</div>
+				<div className="col-3">
+					<DataTable header="System" value={tableData.system} sortField="name" sortOrder={1}>
+						<Column field="name" header="System Name" body={nameHyperlinkTemplate} />
+						<Column field="dbCount" header="Database Object Count" />
+						<Column field="esCount" header="ElasticSearch Object Count" />
+					</DataTable>
+				</div>
+			</div>
+		</>
+	);
 };

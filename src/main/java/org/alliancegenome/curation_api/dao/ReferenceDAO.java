@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 @ApplicationScoped
 public class ReferenceDAO extends BaseSQLDAO<Reference> {
 
-    protected ReferenceDAO() {
-        super(Reference.class);
-    }
+	protected ReferenceDAO() {
+		super(Reference.class);
+	}
 
 }

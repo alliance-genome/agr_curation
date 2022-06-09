@@ -7,7 +7,7 @@ import lombok.Data;
 @Data
 public class PublicationFmsDTO extends BaseDTO {
 
-    private String publicationId;
-    private CrossReferenceFmsDTO crossReference;
+	private String publicationId;
+	private CrossReferenceFmsDTO crossReference;
 
 }

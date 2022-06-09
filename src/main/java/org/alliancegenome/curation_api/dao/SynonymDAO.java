@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.Synonym;
 @ApplicationScoped
 public class SynonymDAO extends BaseSQLDAO<Synonym> {
 
-    protected SynonymDAO() {
-        super(Synonym.class);
-    }
+	protected SynonymDAO() {
+		super(Synonym.class);
+	}
 
 }

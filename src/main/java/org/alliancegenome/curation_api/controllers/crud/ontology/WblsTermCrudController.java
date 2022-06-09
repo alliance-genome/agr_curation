@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.WblsTermService;
 @RequestScoped
 public class WblsTermCrudController extends BaseOntologyTermController<WblsTermService, WBlsTerm, WblsTermDAO> implements WblsTermCrudInterface {
 
-    @Inject WblsTermService wblsTermService;
+	@Inject WblsTermService wblsTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(wblsTermService, WBlsTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(wblsTermService, WBlsTerm.class);
+	}
 
 }

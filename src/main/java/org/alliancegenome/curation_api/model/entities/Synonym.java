@@ -21,11 +21,11 @@ import lombok.*;
 @ToString(exclude = {"genomicEntities"})
 public class Synonym extends GeneratedAuditedObject {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @JsonView({View.FieldsOnly.class})
-    private String name;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@JsonView({View.FieldsOnly.class})
+	private String name;
 
-    @ManyToMany(mappedBy="synonyms")
-    private List<GenomicEntity> genomicEntities;
+	@ManyToMany(mappedBy="synonyms")
+	private List<GenomicEntity> genomicEntities;
 
 }

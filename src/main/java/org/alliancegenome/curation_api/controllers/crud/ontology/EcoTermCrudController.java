@@ -13,24 +13,24 @@ import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 @RequestScoped
 public class EcoTermCrudController extends BaseOntologyTermController<EcoTermService, EcoTerm, EcoTermDAO> implements EcoTermCrudInterface {
 
-    @Inject EcoTermService ecoTermService;
+	@Inject EcoTermService ecoTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(ecoTermService, EcoTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(ecoTermService, EcoTerm.class);
+	}
 
-    @Override
-    public String updateTerms(boolean async, String fullText) {
-        String status = super.updateTerms(async, fullText);
-        if (status.equals("OK")) {
-            ecoTermService.updateAbbreviations();
-        }
-        return status;
-    }
-    
-    public void updateAbbreviations() {
-        ecoTermService.updateAbbreviations();
-    }
+	@Override
+	public String updateTerms(boolean async, String fullText) {
+		String status = super.updateTerms(async, fullText);
+		if (status.equals("OK")) {
+			ecoTermService.updateAbbreviations();
+		}
+		return status;
+	}
+	
+	public void updateAbbreviations() {
+		ecoTermService.updateAbbreviations();
+	}
 }
