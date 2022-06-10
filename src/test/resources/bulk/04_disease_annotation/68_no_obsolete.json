@@ -1,13 +1,12 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0049",
-    "internal": false,
-    "obsolete": false,
+    "mod_entity_id": "DATEST:Annot0068",
     "subject": "DATEST:Gene0001",
     "object": "DATEST:Disease0001",
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
     "negated": true,
+    "internal": false,
     "predicate": "is_implicated_in",
     "genetic_sex": "male",
     "modified_by": "DATEST:Person0001",
@@ -57,6 +56,7 @@
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00",
     "sgd_strain_background": "SGD:AGM0001",
+    "annotation_type": "manually_curated",
     "disease_qualifiers": [
       "susceptibility"
     ]

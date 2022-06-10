@@ -144,6 +144,7 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
 		experimentalCondition.setConditionStatement(dto.getConditionStatement());
 		
 		experimentalCondition.setInternal(dto.getInternal());
+		experimentalCondition.setObsolete(dto.getObsolete());
 		
 		if (dto.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
