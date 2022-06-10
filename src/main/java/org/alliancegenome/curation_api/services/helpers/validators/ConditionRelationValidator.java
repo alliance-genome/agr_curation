@@ -65,10 +65,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		if (StringUtils.isNotEmpty(uiEntity.getHandle())) {
 			dbEntity.setHandle(uiEntity.getHandle());
-		} else {
-			addMessageResponse("handle", requiredMessage);
 		}
-
 
 		if (response.hasErrors()) {
 			if (throwError) {
