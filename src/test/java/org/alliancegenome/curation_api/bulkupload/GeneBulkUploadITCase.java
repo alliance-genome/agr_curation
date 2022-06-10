@@ -68,6 +68,7 @@ public class GeneBulkUploadITCase {
 			body("results[0].symbol", is("tg1")).
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
+			body("results[0].obsolete", is(true)).
 			body("results[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("results[0].modifiedBy.uniqueId", is("GENETEST:Person0002")).
 			body("results[0].dateCreated", is("2022-03-09T22:10:12Z")).
@@ -399,5 +400,34 @@ public class GeneBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
+	}
+	
+	
+	@Test
+	@Order(14)
+	public void geneBulkUploadNoObsolete() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/14_no_obsolete_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].curie", is("GENETEST:Gene0014")).
+			body("results[0].obsolete", is(false));
 	}
 }

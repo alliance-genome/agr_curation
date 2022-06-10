@@ -113,6 +113,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 				ConditionRelation relation = new ConditionRelation();
 
 				relation.setInternal(conditionRelationDTO.getInternal());
+				relation.setObsolete(conditionRelationDTO.getObsolete());
 				
 				if (conditionRelationDTO.getCreatedBy() != null) {
 					Person createdBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getCreatedBy());
@@ -220,6 +221,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 		annotation.setModifiedBy(modifiedBy);
 		
 		annotation.setInternal(dto.getInternal());
+		annotation.setObsolete(dto.getObsolete());
 
 		if (dto.getDateUpdated() != null) {
 			OffsetDateTime dateLastModified;
