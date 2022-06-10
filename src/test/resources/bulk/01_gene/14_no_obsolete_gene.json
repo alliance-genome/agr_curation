@@ -1,10 +1,10 @@
 [
   {
-    "curie": "GENETEST:Gene0006",
-    "name": "TestGene6",
-    "symbol": "tg6",
+    "curie": "GENETEST:Gene0014",
+    "name": "TestGene1",
+    "symbol": "tg1",
     "taxon": "NCBITaxon:6239",
-    "obsolete": true,
+    "internal": true,
     "created_by": "GENETEST:Person0001",
     "modified_by": "GENETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",

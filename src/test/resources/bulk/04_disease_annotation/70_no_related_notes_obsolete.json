@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0049",
+    "mod_entity_id": "DATEST:Annot0070",
     "internal": false,
     "obsolete": false,
     "subject": "DATEST:Gene0001",
@@ -47,7 +47,6 @@
         "free_text": "Test note",
         "note_type": "disease_summary",
         "internal": false,
-        "obsolete": false,
         "references": [
           "PMID:25920554"
         ]
@@ -57,6 +56,7 @@
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00",
     "sgd_strain_background": "SGD:AGM0001",
+    "annotation_type": "manually_curated",
     "disease_qualifiers": [
       "susceptibility"
     ]
