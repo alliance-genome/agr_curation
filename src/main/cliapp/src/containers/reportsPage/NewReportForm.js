@@ -1,5 +1,5 @@
 import React from 'react';
-import { CronFields } from './CronFields';
+import { CronFields } from '../../components/CronFields';
 import { Dropdown } from "primereact/dropdown";
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
@@ -10,8 +10,6 @@ import { InputText } from 'primereact/inputtext';
 export const NewReportForm = ({ newReportDialog, setNewReportDialog, groups, newReport, reportDispatch, reportService }) => {
 
 	const queryClient = useQueryClient();
-
-	// const [backendBulkLoadTypes, setBackendLoadTypes] = useState();
 
 	const mutation = useMutation(report => {
 		if (report.id) {

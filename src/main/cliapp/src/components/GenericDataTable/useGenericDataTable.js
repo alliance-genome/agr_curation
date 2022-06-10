@@ -65,7 +65,6 @@ export const useGenericDataTable = ({
 
 	const { errorMessages, setErrorMessages } = errorObject;
 
-	const rowsInEdit = useRef(0);
 	const dataTable = useRef(null);
 
 	const { toast_topleft, toast_topright } = toasts;
@@ -148,15 +147,14 @@ export const useGenericDataTable = ({
 	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
 	const onRowEditInit = (event) => {
-		rowsInEdit.current++;
 		setIsEnabled(false);
 		originalRows[event.index] = { ...entity[event.index] };
 		setOriginalRows(originalRows);
 	};
 
 	const onRowEditCancel = (event) => {
-		rowsInEdit.current--;
-		if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
+		const rowsInEdit = Object.keys(editingRows).length - 1;
+		if (rowsInEdit === 0) {
 			setIsEnabled(true);
 		};
 
@@ -172,9 +170,8 @@ export const useGenericDataTable = ({
 	};
 
 	const onRowEditSave = (event) => {
-		rowsInEdit.current--;
-
-		if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
+		const rowsInEdit = Object.keys(editingRows).length - 1;
+		if (rowsInEdit === 0) {
 			setIsEnabled(true);
 		}
 
@@ -202,7 +199,6 @@ export const useGenericDataTable = ({
 				setErrorMessages({ ...errorMessagesCopy });
 			},
 			onError: (error, variables, context) => {
-				rowsInEdit.current++;
 				setIsEnabled(false);
 				toast_topright.current.show([
 					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
