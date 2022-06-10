@@ -5,7 +5,6 @@ import { Column } from 'primereact/column';
 import { MultiSelect } from 'primereact/multiselect';
 
 import { FilterComponent } from './FilterComponent'
-import { EllipsisTableCell } from '../EllipsisTableCell';
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
 
