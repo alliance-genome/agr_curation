@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 @RequestScoped
 public class VocabularyService extends BaseCrudService<Vocabulary, VocabularyDAO> {
 
-    @Inject VocabularyDAO vocabularyDAO;
+	@Inject VocabularyDAO vocabularyDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(vocabularyDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(vocabularyDAO);
+	}
 
 }

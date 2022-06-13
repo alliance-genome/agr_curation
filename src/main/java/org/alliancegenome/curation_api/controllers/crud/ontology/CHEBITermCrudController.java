@@ -12,13 +12,13 @@ import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 
 @RequestScoped
 public class CHEBITermCrudController extends BaseOntologyTermController<CHEBITermService, CHEBITerm, CHEBITermDAO> implements CHEBITermCrudInterface {
-    @Inject
-    CHEBITermService chebiTermService;
+	@Inject
+	CHEBITermService chebiTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(chebiTermService, CHEBITerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(chebiTermService, CHEBITerm.class);
+	}
 
 }

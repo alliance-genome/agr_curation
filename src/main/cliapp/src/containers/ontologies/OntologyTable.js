@@ -10,222 +10,238 @@ import { FilterComponentInputText } from '../../components/FilterComponentInputT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { MultiSelect } from 'primereact/multiselect';
 
-import { returnSorted, filterColumns, orderColumns, reorderArray } from '../../utils/utils';
+import { returnSorted, filterColumns, orderColumns, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
 import { DataTableHeaderFooterTemplate } from "../../components/DataTableHeaderFooterTemplate";
 
 export const OntologyTable = ({ endpoint, ontologyAbbreviation, columns }) => {
-  const defaultColumnNames = columns.map((col) => {
-    return col.header;
-  });
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
 
-  let initialTableState = {
-    page: 0,
-    first: 0,
-    rows: 50,
-    multiSortMeta: [],
-    selectedColumnNames: defaultColumnNames,
-    filters: {},
-  }
+	let initialTableState = {
+		page: 0,
+		first: 0,
+		rows: 50,
+		multiSortMeta: [],
+		selectedColumnNames: defaultColumnNames,
+		filters: {},
+		isFirst: true,
+	}
 
-  const [tableState, setTableState] = useSessionStorage(`${ontologyAbbreviation}TableSettings`, initialTableState);
+	const [tableState, setTableState] = useSessionStorage(`${ontologyAbbreviation}TableSettings`, initialTableState);
 
-  const [terms, setTerms] = useState(null);
-  const [totalRecords, setTotalRecords] = useState(0);
-  const [isEnabled, setIsEnabled] = useState(true);
-  const [columnList, setColumnList] = useState([]);
-  const searchService = new SearchService();
-  const errorMessage = useRef(null);
+	const [terms, setTerms] = useState(null);
+	const [totalRecords, setTotalRecords] = useState(0);
+	const [isEnabled, setIsEnabled] = useState(true);
+	const [columnList, setColumnList] = useState([]);
+	const searchService = new SearchService();
+	const errorMessage = useRef(null);
 
-  const dataTable = useRef(null);
+	const dataTable = useRef(null);
 
-  useQuery(['terms', tableState],
-    () => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
-    onSuccess: (data) => {
-      setIsEnabled(true);
-      setTerms(data.results);
-      setTotalRecords(data.totalResults);
-    },
-    onError: (error) => {
-      errorMessage.current.show([
-        { severity: 'error', summary: 'Error', detail: error.message, sticky: true }
-      ])
-    },
-    keepPreviousData: true,
-    refetchOnWindowFocus: false
-  });
+	useQuery(['terms', tableState],
+		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters), {
+		onSuccess: (data) => {
+			setIsEnabled(true);
+			setTerms(data.results);
+			setTotalRecords(data.totalResults);
+		},
+		onError: (error) => {
+			errorMessage.current.show([
+				{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
+			])
+		},
+		keepPreviousData: true,
+		refetchOnWindowFocus: false
+	});
 
-  const onLazyLoad = (event) => {
-    let _tableState = {
-      ...tableState,
-      rows: event.rows,
-      page: event.page,
-      first: event.first
-    };
+	const setIsFirst = (value) => {
+		let _tableState = {
+			...tableState,
+			isFirst: value,
+		};
 
-    setTableState(_tableState);
-  }
+		setTableState(_tableState);
+	}
 
-  const onFilter = (filtersCopy) => {
-    let _tableState = {
-      ...tableState,
-      filters: { ...filtersCopy }
-    }
-    setTableState(_tableState);
-  };
+	const onLazyLoad = (event) => {
+		let _tableState = {
+			...tableState,
+			rows: event.rows,
+			page: event.page,
+			first: event.first
+		};
 
-  const onSort = (event) => {
-    let _tableState = {
-      ...tableState,
-      multiSortMeta: returnSorted(event, tableState.multiSortMeta)
-    }
-    setTableState(_tableState);
-  };
+		setTableState(_tableState);
+	}
 
-  const setSelectedColumnNames = (newValue) => {
-    let _tableState = {
-      ...tableState,
-      selectedColumnNames: newValue
-    };
+	const onFilter = (filtersCopy) => {
+		let _tableState = {
+			...tableState,
+			filters: { ...filtersCopy }
+		}
+		setTableState(_tableState);
+	};
 
-    setTableState(_tableState);
-  };
+	const onSort = (event) => {
+		let _tableState = {
+			...tableState,
+			multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+		}
+		setTableState(_tableState);
+	};
 
-    const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
-        return (<MultiSelect
-            value={tableState.selectedColumnNames}
-            options={defaultColumnNames}
-            onChange={e => setSelectedColumnNames(e.value)}
-            style={{ width: '20em', textAlign: 'center' }}
-            disabled={!isEnabled}
-        />);
-    };
+	const setSelectedColumnNames = (newValue) => {
+		let _tableState = {
+			...tableState,
+			selectedColumnNames: newValue
+		};
 
-    const header = (
-      <DataTableHeaderFooterTemplate
-          title = {ontologyAbbreviation+" Table"}
-          tableState = {tableState}
-          defaultColumnNames = {defaultColumnNames}
-          multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
-          onclickEvent = {(event) => resetTableState(event)}
-          isEnabled = {isEnabled}
-      />
-  );
+		setTableState(_tableState);
+	};
 
-  const filterComponentTemplate = (filterName, fields) => {
-    return (<FilterComponentInputText
-      isEnabled={isEnabled}
-      fields={fields}
-      filterName={filterName}
-      currentFilters={tableState.filters}
-      onFilter={onFilter}
-    />);
-  };
+		const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
+				return (<MultiSelect
+						value={tableState.selectedColumnNames}
+						options={defaultColumnNames}
+						onChange={e => setSelectedColumnNames(e.value)}
+						style={{ width: '20em', textAlign: 'center' }}
+						disabled={!isEnabled}
+				/>);
+		};
 
-  const obsoleteTemplate = (rowData) => {
-    if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-      return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
-    }
-  };
+		const header = (
+			<DataTableHeaderFooterTemplate
+					title = {ontologyAbbreviation+" Table"}
+					tableState = {tableState}
+					defaultColumnNames = {defaultColumnNames}
+					multiselectComponent = {createMultiselectComponent(tableState,defaultColumnNames,isEnabled)}
+					onclickEvent = {(event) => resetTableState(event)}
+					isEnabled = {isEnabled}
+			/>
+	);
 
-  useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+	const filterComponentTemplate = (filterName, fields) => {
+		return (<FilterComponentInputText
+			isEnabled={isEnabled}
+			fields={fields}
+			filterName={filterName}
+			currentFilters={tableState.filters}
+			onFilter={onFilter}
+		/>);
+	};
 
-  const [columnWidths, setColumnWidths] = useState(() => {
-    const width = 20;
+	const obsoleteTemplate = (rowData) => {
+		if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
+			return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>
+		}
+	};
 
-    const widthsObject = {};
+	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
-    columns.forEach((col) => {
-      widthsObject[col.field] = width;
-    });
+	const [columnWidths, setColumnWidths] = useState(() => {
+		const width = 20;
 
-    return widthsObject;
-  });
+		const widthsObject = {};
 
-  useEffect(() => {
-    const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
-    const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
-    setColumnList(
-      orderedColumns.map((col) => {
-        if (col.field === 'obsolete') {
-          return <Column
-            style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
-            headerClassName='surface-0'
-            columnKey={col.field}
-            key={col.field}
-            field={col.field}
-            header={col.header}
-            sortable={isEnabled}
-            body={obsoleteTemplate}
-            filter
-            showFilterMenu={false}
-            filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
-          />;
-        }
-        return <Column
-          style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
-          headerClassName='surface-0'
-          columnKey={col.field}
-          key={col.field}
-          field={col.field}
-          header={col.header}
-          body={col.body}
-          sortable={isEnabled}
-          filter
-          showFilterMenu={false}
-          filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
-        />;
-      })
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tableState, isEnabled, columnWidths]);
+		columns.forEach((col) => {
+			widthsObject[col.field] = width;
+		});
+
+		return widthsObject;
+	});
+
+	useEffect(() => {
+		const filteredColumns = filterColumns(columns, tableState.selectedColumnNames);
+		const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
+		setColumnList(
+			orderedColumns.map((col) => {
+				if (col.field === 'obsolete') {
+					return <Column
+						style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
+						headerClassName='surface-0'
+						columnKey={col.field}
+						key={col.field}
+						field={col.field}
+						header={col.header}
+						sortable={isEnabled}
+						body={obsoleteTemplate}
+						filter
+						showFilterMenu={false}
+						filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
+					/>;
+				}
+				return <Column
+					style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
+					headerClassName='surface-0'
+					columnKey={col.field}
+					key={col.field}
+					field={col.field}
+					header={col.header}
+					body={col.body}
+					sortable={isEnabled}
+					filter
+					showFilterMenu={false}
+					filterElement={filterComponentTemplate(col.field + "Filter", [col.field])}
+				/>;
+			})
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [tableState, isEnabled, columnWidths]);
 
 
-  const resetTableState = () => {
-    setTableState(initialTableState);
-    dataTable.current.state.columnOrder = initialTableState.selectedColumnNames;
-    const _columnWidths = {...columnWidths};
+	const resetTableState = () => {
+		let _tableState = {
+			...initialTableState,
+			isFirst: false,
+		};
 
-    Object.keys(_columnWidths).map((key) => {
-      _columnWidths[key] = 20;
-    });
+		setTableState(_tableState);
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+		const _columnWidths = {...columnWidths};
 
-    setColumnWidths(_columnWidths);
-  }
+		Object.keys(_columnWidths).map((key) => {
+			return _columnWidths[key] = 20;
+		});
 
-  const colReorderHandler = (event) => {
-    let _columnNames = [...tableState.selectedColumnNames];
-    _columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
-    setSelectedColumnNames(_columnNames);
-  };
+		setColumnWidths(_columnWidths);
+		dataTable.current.el.children[1].scrollLeft = 0;
+	}
 
-  const handleColumnResizeEnd = (event) => {
-    const currentWidth = event.element.clientWidth;
-    const delta = event.delta;
-    const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
-    const field = event.column.props.field;
+	const colReorderHandler = (event) => {
+		let _columnNames = [...tableState.selectedColumnNames];
+		_columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
+		setSelectedColumnNames(_columnNames);
+	};
 
-    const _columnWidths = {...columnWidths};
+	const handleColumnResizeEnd = (event) => {
+		const currentWidth = event.element.clientWidth;
+		const delta = event.delta;
+		const newWidth = Math.floor(((currentWidth + delta) / window.innerWidth) * 100);
+		const field = event.column.props.field;
 
-    _columnWidths[field] = newWidth;
-    setColumnWidths(_columnWidths);
-  };
+		const _columnWidths = {...columnWidths};
 
-  return (
-      <div className="card">
-        <Messages ref={errorMessage} />
-        <DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
-          ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
-          tableClassName='w-12 p-datatable-md'
-          sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-          onColReorder={colReorderHandler}
-          paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
-          paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
-          currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
-          resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
-        >
-          {columnList}
+		_columnWidths[field] = newWidth;
+		setColumnWidths(_columnWidths);
+	};
 
-        </DataTable>
-      </div>
-  )
+	return (
+			<div className="card">
+				<Messages ref={errorMessage} />
+				<DataTable value={terms} className="p-datatable-sm" header={header} reorderableColumns
+					ref={dataTable} filterDisplay="row" scrollHeight="62vh" scrollable
+					tableClassName='w-12 p-datatable-md'
+					sortMode="multiple" removableSort onSort={onSort} multiSortMeta={tableState.multiSortMeta}
+					onColReorder={colReorderHandler}
+					paginator totalRecords={totalRecords} onPage={onLazyLoad} lazy first={tableState.first}
+					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]}
+					resizableColumns columnResizeMode="expand" showGridlines onColumnResizeEnd={handleColumnResizeEnd}
+				>
+					{columnList}
+
+				</DataTable>
+			</div>
+	)
 }

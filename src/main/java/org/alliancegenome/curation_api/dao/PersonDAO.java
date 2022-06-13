@@ -9,12 +9,8 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 @ApplicationScoped
 public class PersonDAO extends BaseSQLDAO<Person> {
 
-    protected PersonDAO() {
-        super(Person.class);
-    }
-    
-    public SearchResponse<Person> findPersonByEmail(String email) {
-        return findByField("email", email);
-    }
+	protected PersonDAO() {
+		super(Person.class);
+	}
 
 }

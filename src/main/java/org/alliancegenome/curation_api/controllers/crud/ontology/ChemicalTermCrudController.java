@@ -13,12 +13,12 @@ import org.alliancegenome.curation_api.services.ontology.ChemicalTermService;
 @RequestScoped
 public class ChemicalTermCrudController extends BaseOntologyTermController<ChemicalTermService, ChemicalTerm, ChemicalTermDAO> implements ChemicalTermCrudInterface {
 
-    @Inject ChemicalTermService chemicalTermService;
+	@Inject ChemicalTermService chemicalTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(chemicalTermService, ChemicalTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(chemicalTermService, ChemicalTerm.class);
+	}
 
 }

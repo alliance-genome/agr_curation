@@ -11,15 +11,15 @@ import ScrollToTop from './ScrollToTop';
 const queryClient = new QueryClient();
 
 ReactDOM.render(
-  <HashRouter>
-    <ScrollToTop>
-      <QueryClientProvider client={queryClient}>
-        <App></App>
-        <ReactQueryDevtools />
-      </QueryClientProvider>
-    </ScrollToTop>
-  </HashRouter>,
-  document.getElementById('root')
+	<HashRouter>
+		<ScrollToTop>
+			<QueryClientProvider client={queryClient}>
+				<App></App>
+				<ReactQueryDevtools />
+			</QueryClientProvider>
+		</ScrollToTop>
+	</HashRouter>,
+	document.getElementById('root')
 );
 
 // If you want your app to work offline and load faster, you can change

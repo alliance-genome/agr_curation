@@ -11,13 +11,13 @@ import org.alliancegenome.curation_api.model.entities.Synonym;
 @RequestScoped
 public class SynonymService extends BaseCrudService<Synonym, SynonymDAO> {
 
-    @Inject
-    SynonymDAO synonymDAO;
+	@Inject
+	SynonymDAO synonymDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(synonymDAO);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(synonymDAO);
+	}
 
 }

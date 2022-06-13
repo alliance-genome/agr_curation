@@ -14,26 +14,26 @@ import org.alliancegenome.curation_api.services.helpers.validators.ConditionRela
 @RequestScoped
 public class ConditionRelationService extends BaseCrudService<ConditionRelation, ConditionRelationDAO> {
 
-    @Inject
-    ConditionRelationDAO conditionRelationDAO;
-    @Inject
-    ConditionRelationValidator conditionRelationValidator;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(conditionRelationDAO);
-    }
-    
-    @Override
-    @Transactional
-    public ObjectResponse<ConditionRelation> update(ConditionRelation uiEntity) {
-        ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelation(uiEntity, true);
-        return new ObjectResponse<ConditionRelation>(conditionRelationDAO.persist(dbEntity));
-    }
-    
-    public ObjectResponse<ConditionRelation> validate(ConditionRelation uiEntity) {
-        ConditionRelation conditionRelation = conditionRelationValidator.validateConditionRelation(uiEntity, true);
-        return new ObjectResponse<ConditionRelation>(conditionRelation);
-    }
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	ConditionRelationValidator conditionRelationValidator;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(conditionRelationDAO);
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<ConditionRelation> update(ConditionRelation uiEntity) {
+		ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelation(uiEntity, true);
+		return new ObjectResponse<ConditionRelation>(conditionRelationDAO.persist(dbEntity));
+	}
+	
+	public ObjectResponse<ConditionRelation> validate(ConditionRelation uiEntity) {
+		ConditionRelation conditionRelation = conditionRelationValidator.validateConditionRelation(uiEntity, true);
+		return new ObjectResponse<ConditionRelation>(conditionRelation);
+	}
 }

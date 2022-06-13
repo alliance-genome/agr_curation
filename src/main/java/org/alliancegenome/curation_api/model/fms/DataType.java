@@ -4,6 +4,6 @@ import lombok.*;
 
 @Getter @Setter
 public class DataType {
-    private String name;
-    private String fileExtension;
+	private String name;
+	private String fileExtension;
 }

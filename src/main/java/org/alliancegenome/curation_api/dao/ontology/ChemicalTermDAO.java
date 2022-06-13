@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 @ApplicationScoped
 public class ChemicalTermDAO extends BaseSQLDAO<ChemicalTerm> {
 
-    protected ChemicalTermDAO() {
-        super(ChemicalTerm.class);
-    }
-    
+	protected ChemicalTermDAO() {
+		super(ChemicalTerm.class);
+	}
+	
 }

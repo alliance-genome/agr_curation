@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.FBdvTerm;
 @RequestScoped
 public class FbdvTermService extends BaseOntologyTermService<FBdvTerm, FbdvTermDAO> {
 
-    @Inject FbdvTermDAO fbdvTermDAO;
+	@Inject FbdvTermDAO fbdvTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(fbdvTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(fbdvTermDAO);
+	}
+	
 }

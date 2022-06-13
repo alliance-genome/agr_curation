@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.BaseGeneratedEntity;
+import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
@@ -19,13 +19,13 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicEntities"})
-public class Synonym extends BaseGeneratedEntity {
+public class Synonym extends GeneratedAuditedObject {
 
-    @FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-    @JsonView({View.FieldsOnly.class})
-    private String name;
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@JsonView({View.FieldsOnly.class})
+	private String name;
 
-    @ManyToMany(mappedBy="synonyms")
-    private List<GenomicEntity> genomicEntities;
+	@ManyToMany(mappedBy="synonyms")
+	private List<GenomicEntity> genomicEntities;
 
 }

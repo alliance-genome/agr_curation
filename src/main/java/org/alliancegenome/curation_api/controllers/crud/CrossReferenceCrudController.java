@@ -12,12 +12,12 @@ import org.alliancegenome.curation_api.services.CrossReferenceService;
 @RequestScoped
 public class CrossReferenceCrudController extends BaseCrudController<CrossReferenceService, CrossReference, CrossReferenceDAO> implements CrossReferenceCrudInterface {
 
-    @Inject CrossReferenceService crossReferenceService;
+	@Inject CrossReferenceService crossReferenceService;
 
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setService(crossReferenceService);
-    }
+	@Override
+	@PostConstruct
+	protected void init() {
+		setService(crossReferenceService);
+	}
 }

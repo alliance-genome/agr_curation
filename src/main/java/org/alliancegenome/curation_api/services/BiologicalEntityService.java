@@ -11,13 +11,13 @@ import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 @RequestScoped
 public class BiologicalEntityService extends BaseCrudService<BiologicalEntity, BiologicalEntityDAO> {
 
-    @Inject
-    BiologicalEntityDAO biologicalEntityDAO;
-    
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(biologicalEntityDAO);
-    }
-    
+	@Inject
+	BiologicalEntityDAO biologicalEntityDAO;
+	
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(biologicalEntityDAO);
+	}
+	
 }

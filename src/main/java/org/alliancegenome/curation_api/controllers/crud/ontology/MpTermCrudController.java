@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.services.ontology.MpTermService;
 @RequestScoped
 public class MpTermCrudController extends BaseOntologyTermController<MpTermService, MPTerm, MpTermDAO> implements MpTermCrudInterface {
 
-    @Inject MpTermService mpTermService;
+	@Inject MpTermService mpTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setLoadOnlyIRIPrefix("MP");
-        setService(mpTermService, MPTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setLoadOnlyIRIPrefix("MP");
+		setService(mpTermService, MPTerm.class, config);
+	}
 
 }

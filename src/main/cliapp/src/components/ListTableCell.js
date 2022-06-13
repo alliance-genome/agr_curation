@@ -1,13 +1,16 @@
 import React from 'react';
 
-export const ListTableCell = ({ template, listData }) => {
-  return (
-    <ul className='pl-0 list-none'>
-      {listData?.map((item, index) =>
-        <li key={index}>
-          {template(item)}
-        </li>
-      )}
-    </ul>
-  );
+export const ListTableCell = ({ template, listData, showBullets }) => {
+	let suppress = 'list-none'
+	if(showBullets)
+		suppress = ''
+	return (
+		<ul className={`pl-0 ${suppress}`}>
+			{listData?.map((item, index) =>
+				<li key={index}>
+					{template(item)}
+				</li>
+			)}
+		</ul>
+	);
 }

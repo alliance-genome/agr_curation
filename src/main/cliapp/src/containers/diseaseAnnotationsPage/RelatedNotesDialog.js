@@ -12,189 +12,297 @@ import { ValidationService } from '../../service/ValidationService';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 
 export const RelatedNotesDialog = ({
-  relatedNotesData,
-  setRelatedNotesData,
-  relatedNotesRef,
-  authState
-}) => {
-  const { relatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = relatedNotesData;
-  const [editingRows, setEditingRows] = useState({});
-  const [errorMessages, setErrorMessages] = useState([]);
-  const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-  const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
-  const validationService = new ValidationService(authState);
+													originalRelatedNotesData,
+													setOriginalRelatedNotesData,
+													errorMessagesMainRow,
+													setErrorMessagesMainRow
+												}) => {
+	const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
+	const [localRelateNotes, setLocalRelateNotes] = useState(null) ;
+	const [editingRows, setEditingRows] = useState({});
+	const [errorMessages, setErrorMessages] = useState([]);
+	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
+	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
+	const validationService = new ValidationService();
+	const tableRef = useRef(null);
+	const rowsInEdit = useRef(0);
+	const hasEdited = useRef(false);
 
-  const tableRef = useRef(null);
+	const showDialogHandler = () => {
+		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
+		setLocalRelateNotes(_localRelatedNotes);
 
-  const showDialogHandler = () => {
-    if (isInEdit) {
-      let rowsObject = {};
+		if(isInEdit){
+			let rowsObject = {};
+			if(_localRelatedNotes) {
+				_localRelatedNotes.forEach((note) => {
+					rowsObject[`${note.dataKey}`] = true;
+				});
+			}
+			setEditingRows(rowsObject);
+			rowsInEdit.current++;
+		}else{
+			setEditingRows({});
+		}
+		hasEdited.current = false;
+	};
 
-      relatedNotes.forEach((note) => {
-        rowsObject[`${note.id}`] = true;
-      });
+	const onRowEditChange = (e) => {
+		setEditingRows(e.data);
+	}
 
-      setEditingRows(rowsObject);
-    } else {
-      setEditingRows({});
-    }
-  };
+	const onRowEditCancel = (event) => {
+		console.log(editingRows);
+		rowsInEdit.current--;
+		let _editingRows = { ...editingRows };
+		delete _editingRows[event.index];
+		setEditingRows(_editingRows);
+		let _localRelateNotes = [...localRelateNotes];//add new note support
+		if(originalRelatedNotes && originalRelatedNotes[event.index]){
+			let dataKey = _localRelateNotes[event.index].dataKey;
+			_localRelateNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
+			_localRelateNotes[event.index].dataKey = dataKey;
+			setLocalRelateNotes(_localRelateNotes);
+		}else{
 
-  const onRowEditChange = (e) => {
-    setEditingRows(e.data);
-  }
+		}
+		const errorMessagesCopy = errorMessages;
+		errorMessagesCopy[event.index] = {};
+		setErrorMessages(errorMessagesCopy);
+		if(hasEdited && hasEdited.current === false)
+			compareChangesInNotes(event.data,event.index);
+	};
 
-  const hideDialog = () => {
-    setErrorMessages([]);
-    setRelatedNotesData((relatedNotesData) => {
-      return {
-        ...relatedNotesData,
-        dialog: false,
-      };
-    });
-  };
+	const compareChangesInNotes = (data,index) => {
+		if(originalRelatedNotes && originalRelatedNotes[index]) {
+			if (data.noteType.name !== originalRelatedNotes[index].noteType.name) {
+				hasEdited.current = true;
+			}
+			if (data.internal !== originalRelatedNotes[index].internal) {
+				hasEdited.current = true;
+			}
+			if (data.freeText !== originalRelatedNotes[index].freeText) {
+				hasEdited.current = true;
+			}
+		}
+	};
 
-  const validateNotes = async (notes) => {
-    const validationResultsArray = [];
-    for (const note of notes) {
-      const result = await validationService.validate('note', note);
-      validationResultsArray.push(result);
-    }
-    return validationResultsArray;
-  };
+	const onRowEditSave = (event) => {
+		rowsInEdit.current--;
+		let _localRelateNotes = [...localRelateNotes];
+		_localRelateNotes[event.index] = event.data;
+		setLocalRelateNotes(_localRelateNotes);
+		compareChangesInNotes(event.data,event.index);
+	};
 
-  const saveDataHandler = async () => {
-    const resultsArray = await validateNotes(relatedNotesRef.current);
-    const errorMessagesCopy = [...errorMessages];
-    let keepDialogOpen = false;
-    let anyErrors = false;
+	const hideDialog = () => {
+		setErrorMessages([]);
+		setOriginalRelatedNotesData((originalRelatedNotesData) => {
+			return {
+				...originalRelatedNotesData,
+				dialog: false,
+			};
+		});
+		let _localRelatedNotes = [];
+		setLocalRelateNotes(_localRelatedNotes);
+	};
 
-    resultsArray.forEach((result, index) => {
-      const { isError, data } = result;
-      if (isError) {
-        errorMessagesCopy[index] = {};
-        Object.keys(data).forEach((field) => {
-          let messageObject = {
-            severity: "error",
-            message: data[field]
-          };
-          errorMessagesCopy[index][field] = messageObject;
-          setErrorMessages(errorMessagesCopy);
-          keepDialogOpen = true;
-          anyErrors = true;
-        });
-      }
-    });
+	const validateNotes = async (notes) => {
+		const validationResultsArray = [];
+		let _notes = global.structuredClone(notes);
+		for (const note of _notes) {
+			delete note.dataKey;
+			const result = await validationService.validate('note', note);
+			validationResultsArray.push(result);
+		}
+		return validationResultsArray;
+	};
 
-    if (!anyErrors) {
-      setErrorMessages([]);
-      mainRowProps.rowData.relatedNotes = relatedNotesRef.current;
-      let updatedAnnotations = [...mainRowProps.props.value];
-      updatedAnnotations[rowIndex].relatedNotes = relatedNotesRef.current;
-      keepDialogOpen = false;
-    };
+	const cloneNotes = (clonableNotes) => {
+		let _clonableNotes = global.structuredClone(clonableNotes);
+		if(_clonableNotes) {
+			let counter = 0 ;
+			_clonableNotes.forEach((note) => {
+				note.dataKey = counter++;
+			});
+		} else {
+			_clonableNotes = [];
+		};
+		return _clonableNotes;
+	};
 
-    setRelatedNotesData((relatedNotesData) => {
-      return {
-        ...relatedNotesData,
-        dialog: keepDialogOpen,
-      }
-    }
-    );
-  };
+	const createNewNoteHandler = (event) => {
+		let cnt = localRelateNotes ? localRelateNotes.length : 0;
+		localRelateNotes.push({
+			dataKey : cnt,
+			noteType: {
+				name : ""
+			}
+		});
+		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+		setEditingRows(_editingRows);
+		rowsInEdit.current++;
+		hasEdited.current = true;
+	};
 
-  const internalTemplate = (rowData) => {
-    return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
-  };
+	const saveDataHandler = async () => {
+		const resultsArray = await validateNotes(localRelateNotes);
+		const errorMessagesCopy = [...errorMessages];
+		let keepDialogOpen = false;
+		let anyErrors = false;
 
-  const textTemplate = (rowData) => {
-    return <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
-  };
+		resultsArray.forEach((result, index) => {
+			const { isError, data } = result;
+			if (isError) {
+				errorMessagesCopy[index] = {};
+				Object.keys(data).forEach((field) => {
+					let messageObject = {
+						severity: "error",
+						message: data[field]
+					};
+					errorMessagesCopy[index][field] = messageObject;
+					setErrorMessages(errorMessagesCopy);
+					keepDialogOpen = true;
+					anyErrors = true;
+				});
+			}
+		});
 
+		if (!anyErrors) {
+			setErrorMessages([]);
+			for (const note of localRelateNotes) {
+				delete note.dataKey;
+			}
+			mainRowProps.rowData.relatedNotes = localRelateNotes;
+			let updatedAnnotations = [...mainRowProps.props.value];
+			updatedAnnotations[rowIndex].relatedNotes = localRelateNotes;
+			keepDialogOpen = false;
 
-  const onInternalEditorValueChange = (props, event) => {
-    relatedNotesRef.current[props.rowIndex].internal = event.value.name;
-  }
+			if(hasEdited.current){
+				const errorMessagesCopy = errorMessagesMainRow;
+				let messageObject = {
+					severity: "warn",
+					message: "Pending Edits!"
+				};
+				errorMessagesCopy[mainRowProps.rowIndex] = {};
+				errorMessagesCopy[mainRowProps.rowIndex]["relatedNotes.freeText"] = messageObject;
+				setErrorMessagesMainRow({...errorMessagesCopy});
+			}
+		};
 
-  const internalEditor = (props) => {
-    return (
-      <>
-        <TrueFalseDropdown
-          options={booleanTerms}
-          editorChange={onInternalEditorValueChange}
-          props={props}
-          field={"internal"}
-        />
-        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
-      </>
-    );
-  };
+		setOriginalRelatedNotesData((originalRelatedNotesData) => {
+				return {
+					...originalRelatedNotesData,
+					dialog: keepDialogOpen,
+				}
+			}
+		);
+	};
 
+	const noteTypeTemplate = (rowData) => {
+		return <EllipsisTableCell>{rowData.noteType.name}</EllipsisTableCell>;
+	};
 
-  const onNoteTypeEditorValueChange = (props, event) => {
-    relatedNotesRef.current[props.rowIndex].noteType = event.value;
-  };
+	const internalTemplate = (rowData) => {
+		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
+	};
 
-  const noteTypeEditor = (props) => {
-    return (
-      <>
-        <ControlledVocabularyDropdown
-          field="noteType"
-          options={noteTypeTerms}
-          editorChange={onNoteTypeEditorValueChange}
-          props={props}
-          showClear={false}
-        />
-        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
-      </>
-    );
-  };
+	const textTemplate = (rowData) => {
+		return <EllipsisTableCell>{rowData.freeText}</EllipsisTableCell>;
+	};
 
-  const freeTextEditor = (props, fieldname, setRelatedNotesData, errorMessages, relatedNotesRef) => {
-    if (errorMessages) {
-      errorMessages.severity = "error";
-    }
-    return (
-      <>
-        <InputTextAreaEditor
-          rowProps={props}
-          fieldName={fieldname}
-          setRelatedNotesData={setRelatedNotesData}
-          relatedNotesRef={relatedNotesRef}
-        />
-        <ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldname} />
-      </>
-    );
-  };
+	const onInternalEditorValueChange = (props, event) => {
+		let _localRelateNotes = [...localRelateNotes];
+		_localRelateNotes[props.rowIndex].internal = event.value.name;
+	}
 
-  const footerTemplate = () => {
-    if (!isInEdit) {
-      return null;
-    };
-    return (
-      <div>
-        <Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-        <Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} />
-      </div>
-    );
-  }
+	const internalEditor = (props) => {
+		return (
+			<>
+				<TrueFalseDropdown
+					options={booleanTerms}
+					editorChange={onInternalEditorValueChange}
+					props={props}
+					field={"internal"}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+			</>
+		);
+	};
 
-  return (
-    <Dialog visible={dialog} className='w-6' modal onHide={hideDialog}
-      closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
-      <h3>Related Notes</h3>
-      <DataTable value={relatedNotes} dataKey="id" showGridlines editMode='row'
-        editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}
-      >
-        <Column editor={noteTypeEditor} field="noteType.name" header="Note Type" />
-        <Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} />
-        <Column
-          editor={(props) => freeTextEditor(props, "freeText", setRelatedNotesData, errorMessages, relatedNotesRef)}
-          field="freeText"
-          header="Text"
-          body={textTemplate}
-        />
-      </DataTable>
-    </Dialog>
-  );
+	const onNoteTypeEditorValueChange = (props, event) => {
+		let _localRelateNotes = [...localRelateNotes];
+		_localRelateNotes[props.rowIndex].noteType = event.value;
+	};
+
+	const noteTypeEditor = (props) => {
+		return (
+			<>
+				<ControlledVocabularyDropdown
+					field="noteType"
+					options={noteTypeTerms}
+					editorChange={onNoteTypeEditorValueChange}
+					props={props}
+					showClear={false}
+					dataKey='id'
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
+			</>
+		);
+	};
+
+	const onFreeTextEditorValueChange = (event, props) => {
+		let _localRelateNotes = [...localRelateNotes];
+		_localRelateNotes[props.rowIndex].freeText = event.target.value;
+	};
+
+	const freeTextEditor = (props, fieldName, errorMessages) => {
+		if (errorMessages) {
+			errorMessages.severity = "error";
+		}
+		return (
+			<>
+				<InputTextAreaEditor
+					initalValue={props.value}
+					editorChange={(e) => onFreeTextEditorValueChange(e, props)}
+					rows={5}
+					columns={30}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
+			</>
+		);
+	};
+
+	const footerTemplate = () => {
+		if (!isInEdit) {
+			return null;
+		};
+		return (
+			<div>
+				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
+				<Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
+			</div>
+		);
+	}
+
+	return (
+		<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
+			<h3>Related Notes</h3>
+			<DataTable value={localRelateNotes} dataKey="dataKey" showGridlines editMode='row'
+							editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
+				<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
+							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
+				<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
+				<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
+				<Column
+					editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
+					field="freeText"
+					header="Text"
+					body={textTemplate}
+					headerClassName='surface-0'
+				/>
+			</DataTable>
+		</Dialog>
+	);
 };

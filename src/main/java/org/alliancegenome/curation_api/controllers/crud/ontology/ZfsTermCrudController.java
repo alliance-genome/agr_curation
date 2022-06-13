@@ -13,13 +13,13 @@ import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
 @RequestScoped
 public class ZfsTermCrudController extends BaseOntologyTermController<ZfsTermService, ZFSTerm, ZfsTermDAO> implements ZfsTermCrudInterface {
 
-    @Inject
-    ZfsTermService zfsTermService;
+	@Inject
+	ZfsTermService zfsTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        setService(zfsTermService, ZFSTerm.class);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		setService(zfsTermService, ZFSTerm.class);
+	}
 
 }

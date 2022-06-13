@@ -19,7 +19,7 @@ import lombok.*;
 @JsonTypeName
 public class BulkManualLoad extends BulkLoad {
 
-    @JsonView({View.FieldsOnly.class})
-    @Enumerated(EnumType.STRING)
-    private BackendBulkDataType dataType;
+	@JsonView({View.FieldsOnly.class})
+	@Enumerated(EnumType.STRING)
+	private BackendBulkDataType dataType;
 }

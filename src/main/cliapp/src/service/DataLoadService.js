@@ -1,98 +1,92 @@
-import axios from 'axios';
 import { BaseAuthService } from './BaseAuthService';
 
 export class DataLoadService extends BaseAuthService {
-    //eslint-disable-next-line
-    constructor(authState) {
-      super(authState);
-    }
+		createGroup(newGroup) {
+				return this.api.post(`/bulkloadgroup`, newGroup);
+		}
 
-    createGroup(newGroup) {
-        return axios.post(`api/bulkloadgroup`, newGroup, this.apiAuthHeader);
-    }
+		deleteGroup(id) {
+				return this.api.delete(`/bulkloadgroup/${id}`);
+		}
 
-    deleteGroup(id) {
-        return axios.delete(`api/bulkloadgroup/${id}`, this.apiAuthHeader);
-    }
+		createLoad(newLoad) {
+				let endpoint = newLoad.type.toLowerCase();
 
-    createLoad(newLoad) {
-        let endpoint = newLoad.type.toLowerCase();
+				newLoad.group = { id: newLoad.group };
+				for (const objectKey in newLoad) {
+						if (!newLoad[objectKey]) {
+								delete newLoad[objectKey];
+						}
+				}
+				console.log("Creating: ");
+				console.log(newLoad);
+				return this.api.post(`/${endpoint}`, newLoad);
+		}
 
-        newLoad.group = { id: newLoad.group };
-        for (const objectKey in newLoad) {
-            if (!newLoad[objectKey]) {
-                delete newLoad[objectKey];
-            }
-        }
-        console.log("Creating: ");
-        console.log(newLoad);
-        return axios.post(`api/${endpoint}`, newLoad, this.apiAuthHeader);
-    }
+		updateLoad(newLoad) {
 
-    updateLoad(newLoad) {
+				let endpoint = newLoad.type.toLowerCase();
 
-        let endpoint = newLoad.type.toLowerCase();
+				newLoad.group = { id: newLoad.group };
+				for (const objectKey in newLoad) {
+						if (!newLoad[objectKey]) {
+								delete newLoad[objectKey];
+						}
+				}
+				delete newLoad["loadFiles"];
+				console.log("Saving: ");
+				console.log(newLoad);
+				return this.api.put(`/${endpoint}`, newLoad);
+		}
 
-        newLoad.group = { id: newLoad.group };
-        for (const objectKey in newLoad) {
-            if (!newLoad[objectKey]) {
-                delete newLoad[objectKey];
-            }
-        }
-        delete newLoad["loadFiles"];
-        console.log("Saving: ");
-        console.log(newLoad);
-        return axios.put(`api/${endpoint}`, newLoad, this.apiAuthHeader);
-    }
+		deleteLoad(loadType, id) {
+				let endpoint = loadType.toLowerCase();
+				return this.api.delete(`/${endpoint}/${id}`);
+		}
 
-    deleteLoad(loadType, id) {
-        let endpoint = loadType.toLowerCase();
-        return axios.delete(`api/${endpoint}/${id}`, this.apiAuthHeader);
-    }
+		restartLoad(loadType, id) {
+				let endpoint = loadType.toLowerCase();
+				return this.api.get(`/${endpoint}/restart/${id}`);
+		}
 
-    restartLoad(loadType, id) {
-        let endpoint = loadType.toLowerCase();
-        return axios.get(`api/${endpoint}/restart/${id}`, this.apiAuthHeader);
-    }
+		restartLoadFile(id) {
+			return this.api.get(`/bulkloadfile/restart/${id}`);
+		}
 
-    restartLoadFile(id) {
-      return axios.get(`api/bulkloadfile/restart/${id}`, this.apiAuthHeader);
-    }
+		getFileHistoryFile(id) {
+			return this.api.get(`/bulkloadfilehistory/${id}`);
+		}
 
-    getFileHistoryFile(id) {
-      return axios.get(`api/bulkloadfilehistory/${id}`);
-    }
+		deleteLoadFile(id) {
+			return this.api.delete(`/bulkloadfile/${id}`);
+		}
 
-    deleteLoadFile(id) {
-      return axios.delete(`api/bulkloadfile/${id}`, this.apiAuthHeader);
-    }
+		getBackendBulkLoadTypes(loadType) {
+				const bulkLoadTypes = {
+						BulkFMSLoad: ["MOLECULE"],
+						BulkURLLoad: ["ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
+						BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
+				};
+				return bulkLoadTypes[loadType];
+		}
 
-    getBackendBulkLoadTypes(loadType) {
-        const bulkLoadTypes = {
-            BulkFMSLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "MOLECULE"],
-            BulkURLLoad: ["GENE_DTO", "ALLELE_DTO", "AGM_DTO", "DISEASE_ANNOTATION_DTO", "ONTOLOGY", "GENE", "ALLELE", "AGM", "DISEASE_ANNOTATION"],
-            BulkManualLoad: ["FULL_INGEST", "DISEASE_ANNOTATION", "GENE_DISEASE_ANNOTATION", "ALLELE_DISEASE_ANNOTATION", "AGM_DISEASE_ANNOTATION", "GENE", "ALLELE", "AGM" ]
-        };
-        return bulkLoadTypes[loadType];
-    }
+		getLoadTypes() {
+				return [
+						"BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
+				];
+		}
 
-    getLoadTypes() {
-        return [
-            "BulkFMSLoad", "BulkURLLoad", "BulkManualLoad"
-        ];
-    }
+		getOntologyTypes() {
+				return [
+						"ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO"
+				];
+		}
 
-    getOntologyTypes() {
-        return [
-            "ECO", "ZFA", "DO", "MA", "CHEBI", "XCO", "MP", "DAO", "ZECO", "WBBT", "EMAPA", "GO", "SO", "WBLS", "FBDV", "MMUSDV", "ZFS", "XBA_XBS", "XPO", "XBED", "XSMO"
-        ];
-    }
-
-    getDataTypes() {
-        return [
-            "RGD", "MGI", "SGD", "HUMAN", "ZFIN", "FB", "WB"
-        ];
-    }
+		getDataTypes() {
+				return [
+						"RGD", "MGI", "SGD", "HUMAN", "ZFIN", "FB", "WB"
+				];
+		}
 
 
 }

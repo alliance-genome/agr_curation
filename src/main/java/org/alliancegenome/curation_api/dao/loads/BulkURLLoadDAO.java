@@ -7,7 +7,7 @@ import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 
 @ApplicationScoped
 public class BulkURLLoadDAO extends BaseSQLDAO<BulkURLLoad> {
-    protected BulkURLLoadDAO() {
-        super(BulkURLLoad.class);
-    }
+	protected BulkURLLoadDAO() {
+		super(BulkURLLoad.class);
+	}
 }

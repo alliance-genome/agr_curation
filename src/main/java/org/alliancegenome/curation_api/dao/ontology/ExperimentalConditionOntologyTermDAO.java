@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalCondi
 @ApplicationScoped
 public class ExperimentalConditionOntologyTermDAO extends BaseSQLDAO<ExperimentalConditionOntologyTerm> {
 
-    protected ExperimentalConditionOntologyTermDAO() {
-        super(ExperimentalConditionOntologyTerm.class);
-    }
-    
+	protected ExperimentalConditionOntologyTermDAO() {
+		super(ExperimentalConditionOntologyTerm.class);
+	}
+	
 }

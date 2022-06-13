@@ -12,68 +12,69 @@ import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator {
-    
-    @Inject
-    AlleleDAO alleleDAO;
-    
-    public Allele validateAnnotation(Allele uiEntity) {
-        response = new ObjectResponse<>(uiEntity);
-        
-        String curie = validateCurie(uiEntity);
-        if (curie == null) {
-            throw new ApiErrorException(response);
-        }
-        
-        Allele dbEntity = alleleDAO.find(curie);
-        if (dbEntity == null) {
-            addMessageResponse("Could not find allele with curie: [" + curie + "]");
-            throw new ApiErrorException(response);
-        }
-        
+	
+	@Inject
+	AlleleDAO alleleDAO;
+	
+	public Allele validateAnnotation(Allele uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		
+		String curie = validateCurie(uiEntity);
+		if (curie == null) {
+			throw new ApiErrorException(response);
+		}
+		
+		Allele dbEntity = alleleDAO.find(curie);
+		if (dbEntity == null) {
+			addMessageResponse("Could not find allele with curie: [" + curie + "]");
+			throw new ApiErrorException(response);
+		}
 
-        String errorTitle = "Could not update allele [" + curie + "]";
-        
-        NCBITaxonTerm taxon = validateTaxon(uiEntity);
-        if (taxon != null) dbEntity.setTaxon(taxon);
-        
-        String symbol = validateSymbol(uiEntity);
-        if (symbol != null) dbEntity.setSymbol(symbol);
-        
-        if (uiEntity.getSynonyms() != null) {
-            dbEntity.setSynonyms(uiEntity.getSynonyms());
-        }
+		String errorTitle = "Could not update allele [" + curie + "]";
+		
+		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity);
 
-        if (uiEntity.getSecondaryIdentifiers() != null) {
-            dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
-        }
+		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		if (taxon != null) dbEntity.setTaxon(taxon);
+		
+		String symbol = validateSymbol(uiEntity);
+		if (symbol != null) dbEntity.setSymbol(symbol);
+		
+		if (uiEntity.getSynonyms() != null) {
+			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		}
 
-        if (uiEntity.getCrossReferences() != null) {
-            dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-        }
-        
-        if (uiEntity.getGenomicLocations() != null) {
-            dbEntity.setGenomicLocations(uiEntity.getGenomicLocations());
-        }
-        
-        if (uiEntity.getDescription() != null) {
-            dbEntity.setDescription(uiEntity.getDescription());
-        }
-        
-        if (response.hasErrors()) {
-            response.setErrorMessage(errorTitle);
-            throw new ApiErrorException(response);
-        }
-        
-        return dbEntity;
-    }
-    
-    private String validateSymbol(Allele uiEntity) {
-        String symbol = uiEntity.getSymbol();
-        if (StringUtils.isEmpty(symbol)) {
-            addMessageResponse("symbol", requiredMessage);
-            return null;
-        }
-        return symbol;
-    }
+		if (uiEntity.getSecondaryIdentifiers() != null) {
+			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
+		}
+
+		if (uiEntity.getCrossReferences() != null) {
+			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
+		}
+		
+		if (uiEntity.getGenomicLocations() != null) {
+			dbEntity.setGenomicLocations(uiEntity.getGenomicLocations());
+		}
+		
+		if (uiEntity.getDescription() != null) {
+			dbEntity.setDescription(uiEntity.getDescription());
+		}
+		
+		if (response.hasErrors()) {
+			response.setErrorMessage(errorTitle);
+			throw new ApiErrorException(response);
+		}
+		
+		return dbEntity;
+	}
+	
+	private String validateSymbol(Allele uiEntity) {
+		String symbol = uiEntity.getSymbol();
+		if (StringUtils.isEmpty(symbol)) {
+			addMessageResponse("symbol", requiredMessage);
+			return null;
+		}
+		return symbol;
+	}
 
 }

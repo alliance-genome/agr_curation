@@ -8,5 +8,5 @@ import org.alliancegenome.curation_api.model.entities.CrossReference;
 @ApplicationScoped
 public class CrossReferenceDAO extends BaseSQLDAO<CrossReference> {
 
-    protected CrossReferenceDAO(){ super(CrossReference.class); }
+	protected CrossReferenceDAO(){ super(CrossReference.class); }
 }

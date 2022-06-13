@@ -11,12 +11,12 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 @RequestScoped
 public class SoTermService extends BaseOntologyTermService<SOTerm, SoTermDAO> {
 
-    @Inject SoTermDAO soTermDAO;
+	@Inject SoTermDAO soTermDAO;
 
-    @Override
-    @PostConstruct
-    protected void init() {
-        setSQLDao(soTermDAO);
-    }
-    
+	@Override
+	@PostConstruct
+	protected void init() {
+		setSQLDao(soTermDAO);
+	}
+	
 }

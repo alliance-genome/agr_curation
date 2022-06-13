@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.auth.Secured;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Molecule;
 import org.alliancegenome.curation_api.model.ingest.fms.dto.MoleculeMetaDataFmsDTO;
@@ -20,9 +18,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface MoleculeCrudInterface extends BaseCurieCrudInterface<Molecule> {
 
-    @POST @Secured
-    @Path("/bulk/moleculefile")
-    @JsonView(View.FieldsAndLists.class)
-    public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData);
-    
+	@POST
+	@Path("/bulk/moleculefile")
+	@JsonView(View.FieldsAndLists.class)
+	public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData);
+	
 }

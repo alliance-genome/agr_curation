@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 @ApplicationScoped
 public class DiseaseAnnotationDAO extends BaseSQLDAO<DiseaseAnnotation> {
 
-    protected DiseaseAnnotationDAO() {
-        super(DiseaseAnnotation.class);
-    }
+	protected DiseaseAnnotationDAO() {
+		super(DiseaseAnnotation.class);
+	}
 
 }

@@ -8,8 +8,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 @ApplicationScoped
 public class OntologyTermDAO extends BaseSQLDAO<OntologyTerm> {
 
-    protected OntologyTermDAO() {
-        super(OntologyTerm.class);
-    }
-    
+	protected OntologyTermDAO() {
+		super(OntologyTerm.class);
+	}
+	
 }

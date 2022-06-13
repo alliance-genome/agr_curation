@@ -18,9 +18,9 @@ import lombok.*;
 @JsonTypeName
 public class BulkFMSLoad extends BulkScheduledLoad {
 
-    @JsonView({View.FieldsOnly.class})
-    private String dataType;
-    @JsonView({View.FieldsOnly.class})
-    private String dataSubType;
+	@JsonView({View.FieldsOnly.class})
+	private String dataType;
+	@JsonView({View.FieldsOnly.class})
+	private String dataSubType;
 
 }

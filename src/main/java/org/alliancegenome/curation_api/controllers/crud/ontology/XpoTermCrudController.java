@@ -14,14 +14,14 @@ import org.alliancegenome.curation_api.services.ontology.XpoTermService;
 @RequestScoped
 public class XpoTermCrudController extends BaseOntologyTermController<XpoTermService, XPOTerm, XpoTermDAO> implements XpoTermCrudInterface {
 
-    @Inject XpoTermService xpoTermService;
+	@Inject XpoTermService xpoTermService;
 
-    @Override
-    @PostConstruct
-    public void init() {
-        GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
-        config.setLoadOnlyIRIPrefix("XPO");
-        setService(xpoTermService, XPOTerm.class, config);
-    }
+	@Override
+	@PostConstruct
+	public void init() {
+		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
+		config.setLoadOnlyIRIPrefix("XPO");
+		setService(xpoTermService, XPOTerm.class, config);
+	}
 
 }
