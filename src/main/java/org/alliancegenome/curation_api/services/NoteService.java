@@ -66,6 +66,7 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
 		}
 		note.setFreeText(dto.getFreeText());
 		note.setInternal(dto.getInternal());
+		note.setObsolete(dto.getObsolete());
 		
 		VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
 		if (noteType == null) {
@@ -99,7 +100,6 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
 			note.setModifiedBy(modifiedBy);
 		}
 		
-		note.setInternal(dto.getInternal());
 
 		if (dto.getDateUpdated() != null) {
 			OffsetDateTime dateLastModified;

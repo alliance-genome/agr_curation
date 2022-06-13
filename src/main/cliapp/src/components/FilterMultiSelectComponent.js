@@ -62,7 +62,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 			placeholder="Select"
 			display="chip"
 			optionLabel="optionLabel"
-			style={{ width: '100%' }}
+			style={{ width: '100%', display: 'inline-flex' }}
 			itemTemplate={itemTemplate}
 			filter className={"multiselect-custom"}
 			panelFooterTemplate={panelFooterTemplate}
