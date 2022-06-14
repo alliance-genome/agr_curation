@@ -92,7 +92,6 @@ export const useGenericDataTable = ({
 			setTotalRecords(data.totalResults);
 		},
 		onError: (error) => {
-			console.log(error);
 			toast_topleft.current.show([
 				{ severity: 'error', summary: 'Error', detail: error.message, sticky: true }
 			])
