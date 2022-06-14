@@ -9,6 +9,7 @@ public class View {
 
 	public static class VocabularyTermView extends FieldsAndLists { }
 	public static class VocabularyView extends FieldsOnly { }
+	public static class VocabularyTermUpdate extends FieldsOnly { }
 	
 	public static class BulkLoadFileHistory extends FieldsOnly { }
 	public static class ReportHistory extends FieldsOnly { }
