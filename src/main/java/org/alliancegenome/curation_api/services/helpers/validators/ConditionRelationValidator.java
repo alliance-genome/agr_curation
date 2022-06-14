@@ -96,7 +96,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			singleRefFiltermap.put("handleFilter", getFilterMap("handle", getQueryStringMap(uiEntity.getHandle())));
 
 			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(), Map.of("searchFilters", singleRefFiltermap));
-			if (CollectionUtils.isNotEmpty(response.getResults())) {
+			if (response.getTotalResults() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 			}
 		}
@@ -104,6 +104,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	private HashMap<String, Object> getQueryStringMap(String value) {
 		LinkedHashMap<String, Object> singleRef = new LinkedHashMap<>();
+		// use exact matches
+		singleRef.put("useKeywordFields", true);
 		singleRef.put("queryString", value);
 		return singleRef;
 	}

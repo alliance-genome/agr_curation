@@ -17,8 +17,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
@@ -105,7 +104,28 @@ public class ConditionRelationITCase {
 
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
-		assertTrue(response.getErrorMessages().get("handle").startsWith("Required field is empty"));
+		assertEquals(response.getErrorMessages().get("handle"), "Required field is empty");
+	}
+
+	@Test
+	@Order(4)
+	public void updateConditionRelationSameHandleRef() {
+
+		// change handle to empty
+		conditionRelation2.setHandle("fructose");
+		ObjectResponse response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelation2).
+			when().
+			put("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("handle"), "Handle / Pub combination already exists");
 	}
 
 
