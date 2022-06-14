@@ -100,7 +100,7 @@ public class ConditionRelationITCase {
 			then().
 			// error: cannot update a non-empty handle to an empty one
 				statusCode(400).
-				extract().body().as(getObjectResponseTypeRefConditionRelation());
+				extract().body().as(getObjectResponseTypeRef());
 
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
@@ -121,7 +121,7 @@ public class ConditionRelationITCase {
 			then().
 			// error: cannot update to an handle that already exists under the same reference.
 				statusCode(400).
-				extract().body().as(getObjectResponseTypeRefConditionRelation());
+				extract().body().as(getObjectResponseTypeRef());
 
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
@@ -266,6 +266,11 @@ public class ConditionRelationITCase {
 	}
 
 	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
+		return new TypeRef<>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse> getObjectResponseTypeRef() {
 		return new TypeRef<>() {
 		};
 	}
