@@ -31,7 +31,7 @@ export function FilterComponentDropDown({ isEnabled, field, tokenOperator= "OR" 
 						showClear
 						optionLabel={optionField}
 						placeholder="Select"
-						style={{ width: '100%' }}
+						style={{ width: '100%', display: 'inline-flex' }}
 						onChange={(e) => {
 								console.log(e.target.value);
 								setFilterValue(e.target.value);

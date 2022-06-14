@@ -1,6 +1,6 @@
 import React from 'react';
 import { InputText } from 'primereact/inputtext';
-import { CronFields } from './CronFields';
+import { CronFields } from '../../components/CronFields';
 import { Dropdown } from "primereact/dropdown";
 import { DataLoadService } from '../../service/DataLoadService';
 
@@ -29,7 +29,7 @@ export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableF
 												</div>
 										}
 										<CronFields
-												newBulkLoad={newBulkLoad}
+												newItem={newBulkLoad}
 												onChange={onChange}
 										/>
 										<div className="field">

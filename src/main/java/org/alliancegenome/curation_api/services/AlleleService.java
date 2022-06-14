@@ -127,6 +127,7 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 		}
 		
 		allele.setInternal(dto.getInternal());
+		allele.setObsolete(dto.getObsolete());
 
 		if (dto.getDateUpdated() != null) {
 			OffsetDateTime dateLastModified;
