@@ -13,20 +13,20 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons } = props; 
+	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons } = props;
 
-	const { 
-		setSelectedColumnNames, 
-		defaultColumnNames, 
-		tableState, 
-		resetTableState, 
-		onFilter, 
-		setColumnList, 
-		columnWidths, 
-		entity, 
-		dataTable, 
-		editingRows, 
-		onRowEditInit, 
+	const {
+		setSelectedColumnNames,
+		defaultColumnNames,
+		tableState,
+		resetTableState,
+		onFilter,
+		setColumnList,
+		columnWidths,
+		entity,
+		dataTable,
+		editingRows,
+		onRowEditInit,
 		onRowEditCancel,
 		onRowEditSave,
 		onRowEditChange,
@@ -103,22 +103,25 @@ export const GenericDataTable = (props) => {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [tableState, isEnabled, columnWidths]);
 
+	const rowEditorFilterNameHeader = (options) => {
+		return <div className="p-column-header-content"><span className="p-column-title">Filters</span></div>
+	}
 
 	return (
 			<div className="card">
-				<DataTable dataKey='id' value={entity} header={header}	ref={dataTable}	 
-					filterDisplay="row" scrollHeight="62vh" scrollable= {true} tableClassName='p-datatable-md' 
-					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel} 
-					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange} 
+				<DataTable dataKey='id' value={entity} header={header}	ref={dataTable}
+					filterDisplay="row" scrollHeight="62vh" scrollable= {true} tableClassName='p-datatable-md'
+					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
+					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}
 					sortMode="multiple" removableSort={true} onSort={onSort} multiSortMeta={tableState.multiSortMeta}
-					onColReorder={colReorderHandler} reorderableColumns= {true} 
-					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd} 
+					onColReorder={colReorderHandler} reorderableColumns= {true}
+					resizableColumns= {true} columnResizeMode="expand" showGridlines= {true} onColumnResizeEnd={handleColumnResizeEnd}
 					paginator= {true} totalRecords={totalRecords} onPage={onLazyLoad} lazy= {true} first={tableState.first}
-					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown" 
-					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}" 
+					paginatorTemplate="CurrentPageReport FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink RowsPerPageDropdown"
+					currentPageReportTemplate="Showing {first} to {last} of {totalRecords}"
 					rows={tableState.rows} rowsPerPageOptions={[10, 20, 50, 100, 250, 1000]} >
-					{props.isEditable && 
-						<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} 
+					{props.isEditable &&
+						<Column field='rowEditor' rowEditor style={{maxWidth: '7rem', minWidth: '7rem'}} filter filterElement={rowEditorFilterNameHeader} showFilterMenu={false}
 							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
 					}
 					{columnList}
