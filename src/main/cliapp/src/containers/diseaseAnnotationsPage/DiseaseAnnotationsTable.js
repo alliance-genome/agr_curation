@@ -152,6 +152,12 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const obsoleteTemplate = (rowData) => {
+		if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
+			return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>;
+		}
+	};
+
 	const relatedNotesTemplate = (rowData) => {
 		if (rowData?.relatedNotes) {
 			return (
@@ -383,6 +389,27 @@ export const DiseaseAnnotationsTable = () => {
 					field={"internal"}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+			</>
+		);
+	};
+
+	const onObsoleteEditorValueChange = (props, event) => {
+		let updatedAnnotations = [...props.props.value];
+		if (event.value || event.value === '') {
+			updatedAnnotations[props.rowIndex].obsolete = JSON.parse(event.value.name);
+		}
+	};
+
+	const obsoleteEditor = (props) => {
+		return (
+			<>
+				<TrueFalseDropdown
+					options={booleanTerms}
+					editorChange={onObsoleteEditorValueChange}
+					props={props}
+					field={"obsolete"}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
 			</>
 		);
 	};
@@ -833,6 +860,15 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: isEnabled,
 		editor: (props) => internalEditor(props)
 	},
+	{
+		field: "obsolete",
+		header: "Obsolete",
+		body: obsoleteTemplate,
+		filter: true,
+		filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: ["obsolete"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		sortable: isEnabled,
+		editor: (props) => obsoleteEditor(props)
+	}
 	];
 
 
