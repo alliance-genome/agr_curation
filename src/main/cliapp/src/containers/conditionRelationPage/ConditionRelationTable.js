@@ -369,7 +369,7 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			filterElement: filterComponentInputTextTemplate("singleReferenceFilter", ["singleReference.curie"]),
-			editor: (props) => referenceEditorTemplate(props)
+			//editor: (props) => referenceEditorTemplate(props)
 		},
 		{
 			field: "conditionRelationType.name",
