@@ -23,7 +23,7 @@ import static org.junit.Assert.*;
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Order(10)
+@Order(11)
 public class ConditionRelationITCase {
 
 	private Vocabulary conditionRelationTypeVocabulary;
@@ -35,7 +35,7 @@ public class ConditionRelationITCase {
 
 	private void createRequiredObjects() {
 
-		testReference = createReference("PMID:112133");
+		testReference = createReference("PMID:11213376");
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		experimentalCondition = createExperimentalCondition();
 		conditionRelation = createConditionRelation("fructose", testReference, conditionRelationType);
@@ -206,11 +206,23 @@ public class ConditionRelationITCase {
 		return null;
 	}
 
+	private ZecoTerm getZecoTerm(String curie) {
+		ObjectResponse<ZecoTerm> response =
+			given().
+				when().
+				get("/api/zecoterm/" + curie).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefZecoTerm());
+
+		return response.getEntity();
+	}
+
 	private ExperimentalCondition createExperimentalCondition() {
 		ExperimentalCondition condition = new ExperimentalCondition();
-		condition.setConditionClass(createZecoTerm("ZECO:da001"));
-		condition.setConditionStatement("Statement");
-		condition.setUniqueId("Statement");
+		condition.setConditionClass(createZecoTerm("ZECO:da00001"));
+		condition.setConditionStatement("Statement1");
+		condition.setUniqueId("Statement1");
 
 		ObjectResponse<ExperimentalCondition> response = given().
 			contentType("application/json").
@@ -266,6 +278,11 @@ public class ConditionRelationITCase {
 	}
 
 	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
+		return new TypeRef<>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<ZecoTerm>> getObjectResponseTypeRefZecoTerm() {
 		return new TypeRef<>() {
 		};
 	}

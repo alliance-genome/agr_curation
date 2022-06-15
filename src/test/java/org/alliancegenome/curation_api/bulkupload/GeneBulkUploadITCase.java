@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.is;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -71,8 +73,8 @@ public class GeneBulkUploadITCase {
 			body("results[0].obsolete", is(true)).
 			body("results[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("results[0].modifiedBy.uniqueId", is("GENETEST:Person0002")).
-			body("results[0].dateCreated", is("2022-03-09T22:10:12Z")).
-			body("results[0].dateUpdated", is("2022-03-09T22:10:12Z"));
+			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
 	
 	@Test
