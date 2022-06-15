@@ -191,6 +191,27 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
+	const referenceEditorTemplate = (props) => {
+		return (
+			<>
+				<AutocompleteEditor
+					autocompleteFields={["curie", "cross_reference.curie"]}
+					rowProps={props}
+					searchService={searchService}
+					endpoint='literature-reference'
+					filterName='curieFilter'
+					isWith={true}
+					fieldName='singleReference'
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessages[props.rowIndex]}
+					errorField={"reference"}
+				/>
+			</>
+		);
+	};
+
+
 	const conditionTemplate = (rowData) => {
 		if (rowData.conditions) {
 			const listTemplate = (condition) => {
