@@ -84,20 +84,22 @@ export const GenericDataTable = (props) => {
 		const orderedColumns = orderColumns(filteredColumns, tableState.selectedColumnNames);
 		setColumnList(
 			orderedColumns.map((col) => {
-				return <Column
-					style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
-					headerClassName='surface-0'
-					columnKey={col.field}
-					key={col.field}
-					field={col.field}
-					header={col.header}
-					body={col.body}
-					sortable={isEnabled}
-					filter
-					editor={col.editor}
-					showFilterMenu={false}
-					filterElement={() => filterComponentTemplate(col.filterElement)}
-				/>;
+				if(col){
+					return <Column
+						style={{'minWidth':`${columnWidths[col.field]}vw`, 'maxWidth': `${columnWidths[col.field]}vw`}}
+						headerClassName='surface-0'
+						columnKey={col.field}
+						key={col.field}
+						field={col.field}
+						header={col.header}
+						body={col.body}
+						sortable={isEnabled}
+						filter
+						editor={col.editor}
+						showFilterMenu={false}
+						filterElement={() => filterComponentTemplate(col.filterElement)}
+					/>;
+				}
 			})
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
