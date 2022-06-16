@@ -3,6 +3,7 @@ import {useMutation} from 'react-query';
 import {Toast} from 'primereact/toast';
 import {SearchService} from '../../service/SearchService';
 import {Messages} from 'primereact/messages';
+import {getRefID} from '../../utils/utils';
 import {ControlledVocabularyDropdown} from "../../components/ControlledVocabularySelector";
 import {ErrorMessageComponent} from "../../components/ErrorMessageComponent";
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
@@ -65,6 +66,10 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
+	const singleValueReferenceSelector = (referenceItem) => {
+		return getRefID(referenceItem)
+	}
+
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
@@ -74,8 +79,9 @@ export const ConditionRelationTable = () => {
 					searchService={searchService}
 					endpoint='literature-reference'
 					filterName='curieFilter'
-					isWith={true}
+					isSubject={true}
 					fieldName='singleReference'
+					valueSelector={singleValueReferenceSelector}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -152,7 +158,7 @@ export const ConditionRelationTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
-			//editor: (props) => referenceEditorTemplate(props)
+			editor: (props) => referenceEditorTemplate(props)
 		},
 		{
 			field: "conditionRelationType.name",
