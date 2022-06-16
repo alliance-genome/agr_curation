@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
@@ -17,8 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RequestScoped
 public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
@@ -53,6 +53,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			throw new ApiErrorException(response);
 		}
 
+		validateConditionRelationHandlePubUnique(uiEntity, dbEntity);
+
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
 
 		VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
@@ -66,6 +68,10 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		if (StringUtils.isNotEmpty(uiEntity.getHandle())) {
 			dbEntity.setHandle(uiEntity.getHandle());
 		}
+		// You cannot move from a condition-relation with handle to one without.
+		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isEmpty(uiEntity.getHandle())) {
+			addMessageResponse("handle", requiredMessage);
+		}
 
 		if (response.hasErrors()) {
 			if (throwError) {
@@ -78,6 +84,42 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		return dbEntity;
 	}
+
+	// check that pub-handle combination is unique
+	private void validateConditionRelationHandlePubUnique(ConditionRelation uiEntity, ConditionRelation dbEntity) {
+		if (StringUtils.isEmpty(uiEntity.getHandle()))
+			return;
+		// if handle / pub combination has changed check that the new key is not already taken in the database
+		if (!getUniqueKey(uiEntity).equals(getUniqueKey(dbEntity))) {
+			HashMap<String, HashMap<String, Object>> singleRefFiltermap = new LinkedHashMap<>();
+			singleRefFiltermap.put("singleReferenceFilter", getFilterMap("singleReference.curie", getQueryStringMap(uiEntity.getSingleReference().getCurie())));
+			singleRefFiltermap.put("handleFilter", getFilterMap("handle", getQueryStringMap(uiEntity.getHandle())));
+
+			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(), Map.of("searchFilters", singleRefFiltermap));
+			if (response.getTotalResults() > 0) {
+				addMessageResponse("handle", "Handle / Pub combination already exists");
+			}
+		}
+	}
+
+	private HashMap<String, Object> getQueryStringMap(String value) {
+		LinkedHashMap<String, Object> singleRef = new LinkedHashMap<>();
+		// use exact matches
+		singleRef.put("useKeywordFields", true);
+		singleRef.put("queryString", value);
+		return singleRef;
+	}
+
+	private HashMap<String, Object> getFilterMap(String parameterName, HashMap<String, Object> value) {
+		HashMap<String, Object> parameterMap = new HashMap<>();
+		parameterMap.put(parameterName, value);
+		return parameterMap;
+	}
+
+	private String getUniqueKey(ConditionRelation relation) {
+		return relation.getHandle() + relation.getSingleReference().getCurie();
+	}
+
 
 	private void validateReferenceField(ConditionRelation uiEntity, ConditionRelation dbEntity) {
 		if (uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {

@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.crud.controllers;
 import static org.hamcrest.Matchers.is;
 
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -330,7 +331,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.conditionRelations[0].conditions[0].conditionStatement", is("Statement")).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
-				body("entity.dateCreated".toString(), is("2022-03-09T22:10:12Z")).
+				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
@@ -392,7 +393,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.dateCreated".toString(), is("2022-03-09T22:10:12Z"));
+				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 
 	}
 	
@@ -453,7 +454,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.dateCreated".toString(), is("2022-03-09T22:10:12Z"));
+    			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 
 	}
 
