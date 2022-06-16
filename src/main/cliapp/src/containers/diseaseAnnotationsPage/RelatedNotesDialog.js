@@ -3,6 +3,9 @@ import { Dialog } from 'primereact/dialog';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
+import { ColumnGroup } from 'primereact/columngroup';
+import { Row } from 'primereact/row';
 import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
@@ -27,6 +30,7 @@ export const RelatedNotesDialog = ({
 	const tableRef = useRef(null);
 	const rowsInEdit = useRef(0);
 	const hasEdited = useRef(false);
+	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
@@ -184,8 +188,8 @@ export const RelatedNotesDialog = ({
 					severity: "warn",
 					message: "Pending Edits!"
 				};
-				errorMessagesCopy[mainRowProps.rowIndex] = {};
-				errorMessagesCopy[mainRowProps.rowIndex]["relatedNotes.freeText"] = messageObject;
+				errorMessagesCopy[rowIndex] = {};
+				errorMessagesCopy[rowIndex]["relatedNotes.freeText"] = messageObject;
 				setErrorMessagesMainRow({...errorMessagesCopy});
 			}
 		};
@@ -286,23 +290,50 @@ export const RelatedNotesDialog = ({
 		);
 	}
 
+	const confirmDeleteRelatedNote = (event, props) => {
+		let _localRelateNotes = [...localRelateNotes];
+		_localRelateNotes.splice(props.rowIndex, 1);
+		setLocalRelateNotes(_localRelateNotes);
+		hasEdited.current = true;
+	}
+
+	const deleteAction = (props) => {
+		return (
+			<Button icon="pi pi-trash" className="p-button-text"
+					onClick={(event) => { confirmDeleteRelatedNote(event, props) }}/>
+		);
+	}
+
+	let headerGroup = 	<ColumnGroup>
+						<Row>
+							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
+							<Column header="Note Type" />
+							<Column header="Internal" />
+							<Column header="Text" />
+						</Row>
+						</ColumnGroup>;
+
 	return (
-		<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
-			<h3>Related Notes</h3>
-			<DataTable value={localRelateNotes} dataKey="dataKey" showGridlines editMode='row'
-							editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
-				<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0'/>
-				<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
-				<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-				<Column
-					editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
-					field="freeText"
-					header="Text"
-					body={textTemplate}
-					headerClassName='surface-0'
-				/>
-			</DataTable>
-		</Dialog>
+		<div>
+			<Toast ref={toast_topright} position="top-right" />
+			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
+				<h3>Related Notes</h3>
+				<DataTable value={localRelateNotes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
+					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
+								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
+					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
+					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
+					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
+					<Column
+						editor={(props) => freeTextEditor(props, "freeText", errorMessages)}
+						field="freeText"
+						header="Text"
+						body={textTemplate}
+						headerClassName='surface-0'
+					/>
+				</DataTable>
+			</Dialog>
+		</div>
 	);
 };
