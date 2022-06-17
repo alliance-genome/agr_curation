@@ -13,7 +13,9 @@ export const useGenericDataTable = ({
 	columns,	
 	aggregationFields,
 	curieFields,
+	idFields,
 	sortMapping,
+	nonNullFields,
 	mutation,
 	setIsEnabled,
 	toasts,
@@ -85,7 +87,7 @@ export const useGenericDataTable = ({
 	);
 
 	useQuery([tableState.tableKeyName, tableState],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
+		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFields), {
 		onSuccess: (data) => {
 			setIsEnabled(true);
 			setEntity(data.results);
@@ -186,6 +188,16 @@ export const useGenericDataTable = ({
 				}
 			});
 		};
+
+		if(idFields){
+			idFields.forEach((field) => {
+				if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
+					const id = event.data[field].id;
+					updatedRow[field] = {};
+					updatedRow[field].id = id;
+				}
+			})
+		}
 
 		mutation.mutate(updatedRow, {
 			onSuccess: (response, variables, context) => {

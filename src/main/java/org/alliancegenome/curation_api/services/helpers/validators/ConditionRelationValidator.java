@@ -1,18 +1,16 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -30,7 +28,11 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	@Inject
 	LiteratureReferenceDAO literatureReferenceDAO;
 	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
 	ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject
+	ReferenceService referenceService;
 
 	public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
 		ConditionRelation conditionRelation = validateConditionRelation(uiEntity, false);
@@ -72,6 +74,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isEmpty(uiEntity.getHandle())) {
 			addMessageResponse("handle", requiredMessage);
 		}
+
+		validateReferenceField(uiEntity, dbEntity);
 
 		if (response.hasErrors()) {
 			if (throwError) {
@@ -122,17 +126,20 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 
 	private void validateReferenceField(ConditionRelation uiEntity, ConditionRelation dbEntity) {
-		if (uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
+		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
 			addMessageResponse("reference", requiredMessage);
 			return;
 		}
+		String curie = uiEntity.getSingleReference().getCurie();
 
-		LiteratureReference reference = literatureReferenceDAO.find(uiEntity.getSingleReference().getCurie());
-		if (reference != null) {
-			dbEntity.setSingleReference(uiEntity.getSingleReference());
-			return;
+		Reference reference = referenceDAO.find(curie);
+		if (reference == null) {
+			reference = referenceService.retrieveFromLiteratureService(curie);
+			if (reference == null) {
+				addMessageResponse("reference", "Invalid publication ID: " + curie);
+			}
 		}
-		addMessageResponse("reference", invalidMessage);
+		dbEntity.setSingleReference(reference);
 	}
 
 	public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {
