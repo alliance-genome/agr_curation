@@ -1427,10 +1427,11 @@ public class DiseaseAnnotationITCase {
 	private ConditionRelation createConditionRelation(VocabularyTerm conditionRelationType, ExperimentalCondition condition) {
 		ConditionRelation conditionRelation = new ConditionRelation();
 		conditionRelation.setConditionRelationType(conditionRelationType);
-		List<ExperimentalCondition> conditions = new ArrayList<ExperimentalCondition>();
+		List<ExperimentalCondition> conditions = new ArrayList<>();
 		conditions.add(condition);
 		conditionRelation.addExperimentCondition(condition);
 		conditionRelation.setConditions(conditions);
+		conditionRelation.setSingleReference(testReference);
 		
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
