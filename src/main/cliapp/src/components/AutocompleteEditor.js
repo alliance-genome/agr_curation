@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {trimWhitespace} from '../utils/utils';
+import {getRefID, trimWhitespace} from '../utils/utils';
 import {Tooltip} from "primereact/tooltip";
 
 export const AutocompleteEditor = (
@@ -17,6 +17,7 @@ export const AutocompleteEditor = (
 		isWith = false,
 		isMultiple = false,
 		isSgdStrainBackground = false,
+		valueSelector
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -65,7 +66,6 @@ export const AutocompleteEditor = (
 			setFieldValue('');
 			return;
 		}
-		;
 
 		if (isMultiple) {
 			updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
@@ -76,15 +76,19 @@ export const AutocompleteEditor = (
 		updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
 
 		if (typeof event.target.value === "object") {
-			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
+			if (valueSelector) {
+				updatedRows[rowProps.rowIndex][fieldName].curie = valueSelector(event.target.value);
+				setFieldValue(valueSelector(event.target.value));
+			} else {
+				updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			}
 		} else {
 			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
+			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 		}
 
-		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
-
 	};
-
 
 	const onSelectionOver = (event, item) => {
 		setAutocompleteSelectedItem(item);
@@ -146,6 +150,12 @@ export const AutocompleteEditor = (
 						 dangerouslySetInnerHTML={{__html: item.conditionSummary + ' (' + item.id + ') '}}/>
 				</div>
 			);
+		} else if (item.abstract) {
+			return (
+				<div>
+					<div onMouseOver={(event) => onSelectionOver(event, item)}>{getRefID(item) + ' (' + item.curie + ') '}</div>
+				</div>
+			)
 		} else {
 			return (
 				<div>
@@ -154,6 +164,7 @@ export const AutocompleteEditor = (
 			);
 		}
 	};
+
 	return (
 		<div>
 			<AutoComplete
