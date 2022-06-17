@@ -270,7 +270,7 @@ public class DiseaseAnnotationITCase {
 	@Order(4)
 	public void editGeneDiseaseAnnotation() {
 		
-		List<ConditionRelation> conditionRelations= new ArrayList<ConditionRelation>();
+		List<ConditionRelation> conditionRelations= new ArrayList<>();
 		conditionRelations.add(conditionRelation);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();

@@ -59,7 +59,6 @@ export const AutocompleteEditor = (
 	};
 
 	const onValueChange = (event) => {
-		console.log(event)
 		let updatedRows = [...rowProps.props.value];
 
 		if (!event.target.value) {
