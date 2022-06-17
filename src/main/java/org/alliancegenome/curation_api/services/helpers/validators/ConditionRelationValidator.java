@@ -126,11 +126,11 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 
 	private void validateReferenceField(ConditionRelation uiEntity, ConditionRelation dbEntity) {
-		String curie = uiEntity.getSingleReference().getCurie();
-		if (uiEntity.getSingleReference() == null || curie == null) {
+		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
 			addMessageResponse("reference", requiredMessage);
 			return;
 		}
+		String curie = uiEntity.getSingleReference().getCurie();
 
 		Reference reference = referenceDAO.find(curie);
 		if (reference == null) {
