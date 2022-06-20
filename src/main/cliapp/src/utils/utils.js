@@ -31,11 +31,11 @@ export function returnSorted(event, originalSort) {
 			return newSort;
 		}
 	}
-};
+}
 
 export function trimWhitespace(value) {
 	return value?.replace(/\s{2,}/g, ' ').trim();
-};
+}
 
 export function filterColumns(columns, selectedColumnNames) {
 	const filteredColumns = columns.filter((col) => {
@@ -74,10 +74,17 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) 
 	initalColumnOrderFields.unshift('rowEditor');
 
 	dataTable.current.state.columnOrder = initalColumnOrderFields
-};
+}
+
+export function getEntityType(entity) {
+	if (entity.curie.startsWith("AGR:AGR-Reference-")) {
+		// ToDo: Create enumeration
+		return "Literature";
+	}
+	return "Unknown Entity"
+}
 
 export function getRefID(referenceItem) {
-	console.log(referenceItem)
 	if (!referenceItem)
 		return ''
 	let pmid = ''
@@ -91,7 +98,7 @@ export function getRefID(referenceItem) {
 		referenceItem.cross_reference.forEach((entry) => {
 			if (entry.curie.startsWith('MGI:') ||
 				entry.curie.startsWith('RGD:') ||
-				entry.curie.startsWith('ZDB:') ||
+				entry.curie.startsWith('ZFIN:') ||
 				entry.curie.startsWith('WB:') ||
 				entry.curie.startsWith('FB:')) {
 				pmodid = entry.curie;
