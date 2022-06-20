@@ -76,12 +76,15 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) 
 	dataTable.current.state.columnOrder = initalColumnOrderFields
 }
 
+// ToDo: Create enumeration
 export function getEntityType(entity) {
-	if (entity.curie.startsWith("AGR:AGR-Reference-")) {
-		// ToDo: Create enumeration
-		return "Literature";
+	if (entity.curie && entity.curie.startsWith("AGR:AGR-Reference-")) {
+		return 'Literature';
 	}
-	return "Unknown Entity"
+	if (entity.conditionSummary) {
+		return 'Experiment Condition';
+	}
+	return 'Unknown Entity'
 }
 
 export function getRefID(referenceItem) {
@@ -100,7 +103,9 @@ export function getRefID(referenceItem) {
 				entry.curie.startsWith('RGD:') ||
 				entry.curie.startsWith('ZFIN:') ||
 				entry.curie.startsWith('WB:') ||
-				entry.curie.startsWith('FB:')) {
+				entry.curie.startsWith('FB:') ||
+				entry.curie.startsWith('DOI:') ||
+				entry.curie.startsWith('PMCID:')) {
 				pmodid = entry.curie;
 			}
 		})

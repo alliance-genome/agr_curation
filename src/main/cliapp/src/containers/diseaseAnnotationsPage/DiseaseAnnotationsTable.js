@@ -18,6 +18,7 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
+import {getRefID} from "../../utils/utils";
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -626,6 +627,30 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const singleValueReferenceSelector = (referenceItem) => {
+		return getRefID(referenceItem)
+	}
+
+	const referenceEditorTemplate = (props) => {
+		return (
+			<>
+				<AutocompleteEditor
+					autocompleteFields={["curie", "cross_reference.curie"]}
+					rowProps={props}
+					searchService={searchService}
+					endpoint='literature-reference'
+					filterName='curieFilter'
+					isSubject={true}
+					fieldName='singleReference'
+					valueSelector={singleValueReferenceSelector}
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessages[props.rowIndex]}
+					errorField={"reference"}
+				/>
+			</>
+		);
+	};
 
 	const uniqueIdBodyTemplate = (rowData) => {
 		return (
@@ -717,6 +742,7 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: isEnabled,
 		filter: true,
 		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
+		editor: (props) => referenceEditorTemplate(props)
 	},
 	{
 		field: "evidenceCodes.abbreviation",

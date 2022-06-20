@@ -143,7 +143,7 @@ export const AutocompleteEditor = (
 					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
 				</div>
 			);
-		} else if (item.conditionSummary) {
+		} else if (getEntityType(item) === 'Experiment Condition') {
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)}
