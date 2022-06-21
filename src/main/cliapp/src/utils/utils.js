@@ -31,11 +31,11 @@ export function returnSorted(event, originalSort) {
 			return newSort;
 		}
 	}
-};
+}
 
 export function trimWhitespace(value) {
 	return value?.replace(/\s{2,}/g, ' ').trim();
-};
+}
 
 export function filterColumns(columns, selectedColumnNames) {
 	const filteredColumns = columns.filter((col) => {
@@ -74,10 +74,20 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) 
 	initalColumnOrderFields.unshift('rowEditor');
 
 	dataTable.current.state.columnOrder = initalColumnOrderFields
-};
+}
+
+// ToDo: Create enumeration
+export function getEntityType(entity) {
+	if (entity.curie && entity.curie.startsWith("AGR:AGR-Reference-")) {
+		return 'Literature';
+	}
+	if (entity.conditionSummary) {
+		return 'Experiment Condition';
+	}
+	return 'Unknown Entity'
+}
 
 export function getRefID(referenceItem) {
-	console.log(referenceItem)
 	if (!referenceItem)
 		return ''
 	let pmid = ''
@@ -91,9 +101,11 @@ export function getRefID(referenceItem) {
 		referenceItem.cross_reference.forEach((entry) => {
 			if (entry.curie.startsWith('MGI:') ||
 				entry.curie.startsWith('RGD:') ||
-				entry.curie.startsWith('ZDB:') ||
+				entry.curie.startsWith('ZFIN:') ||
 				entry.curie.startsWith('WB:') ||
-				entry.curie.startsWith('FB:')) {
+				entry.curie.startsWith('FB:') ||
+				entry.curie.startsWith('DOI:') ||
+				entry.curie.startsWith('PMCID:')) {
 				pmodid = entry.curie;
 			}
 		})

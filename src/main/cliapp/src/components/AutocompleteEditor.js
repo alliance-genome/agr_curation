@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {getRefID, trimWhitespace} from '../utils/utils';
+import {getEntityType, getRefID, trimWhitespace} from '../utils/utils';
 import {Tooltip} from "primereact/tooltip";
 
 export const AutocompleteEditor = (
@@ -143,14 +143,14 @@ export const AutocompleteEditor = (
 					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
 				</div>
 			);
-		} else if (item.conditionSummary) {
+		} else if (getEntityType(item) === 'Experiment Condition') {
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)}
 						 dangerouslySetInnerHTML={{__html: item.conditionSummary + ' (' + item.id + ') '}}/>
 				</div>
 			);
-		} else if (item.abstract) {
+		} else if (getEntityType(item) === 'Literature') {
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)}>{getRefID(item) + ' (' + item.curie + ') '}</div>
