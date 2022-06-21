@@ -126,6 +126,10 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 
 	private void validateReferenceField(ConditionRelation uiEntity, ConditionRelation dbEntity) {
+		if((uiEntity == null || uiEntity.getSingleReference() == null) && uiEntity.getHandle() == null){
+			return;
+		}
+
 		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
 			addMessageResponse("reference", requiredMessage);
 			return;
