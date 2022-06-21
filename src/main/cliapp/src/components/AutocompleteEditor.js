@@ -202,19 +202,22 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				{autocompleteSelectedItem.symbol &&
 				<div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol}}/>
 				}
-				{autocompleteSelectedItem.synonyms &&
-				autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn.name ? syn.name : syn}`}>
+				{
+					autocompleteSelectedItem.synonyms &&
+					autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn.name ? syn.name : syn}`}>
 					Synonym: {syn.name ? syn.name : syn}</div>)
 				}
-				{autocompleteSelectedItem.crossReferences &&
-				autocompleteSelectedItem.autocompleteSelectedItem.crossReferences.crossReferences.map((ref) => <div
-					key={`crossReferences${ref.curie}`}>{ref.curie}</div>)
+				{
+					autocompleteSelectedItem.crossReferences &&
+					autocompleteSelectedItem.crossReferences.map((ref) => <div
+					key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
 				}
-				{autocompleteSelectedItem.secondaryIdentifiers &&
-				autocompleteSelectedItem.secondaryIdentifiers.map((si) => {
-					return <div key={`secondaryIdentifiers${si.name ? si.name : si}`}>Secondary
+				{
+					autocompleteSelectedItem.secondaryIdentifiers &&
+					autocompleteSelectedItem.secondaryIdentifiers.map((si) => {
+						return <div key={`secondaryIdentifiers${si.name ? si.name : si}`}>Secondary
 						Identifiers: {si.name ? si.name : si}</div>
-				})
+					})
 				}
 			</Tooltip>
 		</>
