@@ -51,7 +51,7 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.VocabularyTermView.class})
+	@JsonView({View.VocabularyTermView.class, View.VocabularyTermUpdate.class})
 	private Vocabulary vocabulary;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

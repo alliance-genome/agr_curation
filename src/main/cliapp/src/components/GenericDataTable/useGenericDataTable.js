@@ -13,7 +13,9 @@ export const useGenericDataTable = ({
 	columns,	
 	aggregationFields,
 	curieFields,
+	idFields,
 	sortMapping,
+	nonNullFields,
 	mutation,
 	setIsEnabled,
 	toasts,
@@ -65,7 +67,6 @@ export const useGenericDataTable = ({
 
 	const { errorMessages, setErrorMessages } = errorObject;
 
-	const rowsInEdit = useRef(0);
 	const dataTable = useRef(null);
 
 	const { toast_topleft, toast_topright } = toasts;
@@ -86,7 +87,7 @@ export const useGenericDataTable = ({
 	);
 
 	useQuery([tableState.tableKeyName, tableState],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, []), {
+		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFields), {
 		onSuccess: (data) => {
 			setIsEnabled(true);
 			setEntity(data.results);
@@ -148,15 +149,14 @@ export const useGenericDataTable = ({
 	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
 
 	const onRowEditInit = (event) => {
-		rowsInEdit.current++;
 		setIsEnabled(false);
 		originalRows[event.index] = { ...entity[event.index] };
 		setOriginalRows(originalRows);
 	};
 
 	const onRowEditCancel = (event) => {
-		rowsInEdit.current--;
-		if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
+		const rowsInEdit = Object.keys(editingRows).length - 1;
+		if (rowsInEdit === 0) {
 			setIsEnabled(true);
 		};
 
@@ -172,9 +172,8 @@ export const useGenericDataTable = ({
 	};
 
 	const onRowEditSave = (event) => {
-		rowsInEdit.current--;
-
-		if (rowsInEdit.current === 0) {//can editingRows be used here instead of tracking this?
+		const rowsInEdit = Object.keys(editingRows).length - 1;
+		if (rowsInEdit === 0) {
 			setIsEnabled(true);
 		}
 
@@ -190,6 +189,16 @@ export const useGenericDataTable = ({
 			});
 		};
 
+		if(idFields){
+			idFields.forEach((field) => {
+				if (event.data[field] && Object.keys(event.data[field]).length >= 1) {
+					const id = event.data[field].id;
+					updatedRow[field] = {};
+					updatedRow[field].id = id;
+				}
+			})
+		}
+
 		mutation.mutate(updatedRow, {
 			onSuccess: (response, variables, context) => {
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
@@ -202,7 +211,6 @@ export const useGenericDataTable = ({
 				setErrorMessages({ ...errorMessagesCopy });
 			},
 			onError: (error, variables, context) => {
-				rowsInEdit.current++;
 				setIsEnabled(false);
 				toast_topright.current.show([
 					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }

@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.is;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -118,11 +120,13 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].diseaseRelation.name", is("is_implicated_in")).
 			body("results[0].geneticSex.name", is("male")).
 			body("results[0].modifiedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateUpdated".toString(), is("2022-03-09T22:10:12Z")).
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateCreated".toString(), is("2022-03-09T22:10:12Z")).
+			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].conditionRelations", hasSize(1)).
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
+			body("results[0].conditionRelations[0].internal", is(false)).
+			body("results[0].conditionRelations[0].obsolete", is(false)).
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -134,8 +138,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
 			body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
+			body("results[0].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)).
 			body("results[0].negated", is(true)).
 			body("results[0].internal", is(false)).
+			body("results[0].obsolete", is(false)).
 			body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
 			body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
 			body("results[0].with", hasSize(1)).
@@ -144,6 +151,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].relatedNotes[0].freeText", is("Test note")).
 			body("results[0].relatedNotes[0].noteType.name", is("disease_summary")).
 			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].obsolete", is(false)).
 			body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
 			body("results[0].annotationType.name", is("manually_curated")).
 			body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
@@ -184,11 +192,13 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[1].diseaseRelation.name", is("is_implicated_in")).
 			body("results[1].geneticSex.name", is("male")).
 			body("results[1].modifiedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[1].dateUpdated".toString(), is("2022-03-09T22:10:12Z")).
+			body("results[0].dateUpdated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[1].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[1].dateCreated".toString(), is("2022-03-09T22:10:12Z")).
+			body("results[0].dateCreated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[1].conditionRelations", hasSize(1)).
 			body("results[1].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
+			body("results[1].conditionRelations[0].internal", is(false)).
+			body("results[1].conditionRelations[0].obsolete", is(false)).
 			body("results[1].conditionRelations[0].conditions", hasSize(1)).
 			body("results[1].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[1].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -200,8 +210,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
 			body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
 			body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
+			body("results[1].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[1].conditionRelations[0].conditions[0].obsolete", is(false)).
 			body("results[1].negated", is(true)).
 			body("results[1].internal", is(false)).
+			body("results[1].obsolete", is(false)).
 			body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
 			body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
 			body("results[1].with", hasSize(1)).
@@ -210,6 +223,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[1].relatedNotes[0].freeText", is("Test note")).
 			body("results[1].relatedNotes[0].noteType.name", is("disease_summary")).
 			body("results[1].relatedNotes[0].internal", is(false)).
+			body("results[1].relatedNotes[0].obsolete", is(false)).
 			body("results[1].relatedNotes[0].references[0].curie", is("PMID:25920554")).
 			body("results[1].annotationType.name", is("manually_curated")).
 			body("results[1].diseaseQualifiers[0].name", is("susceptibility")).
@@ -249,11 +263,13 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[2].diseaseRelation.name", is("is_model_of")).
 			body("results[2].geneticSex.name", is("male")).
 			body("results[2].modifiedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[2].dateUpdated".toString(), is("2022-03-09T22:10:12Z")).
+			body("results[2].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[2].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[2].dateCreated".toString(), is("2022-03-09T22:10:12Z")).
+			body("results[2].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[2].conditionRelations", hasSize(1)).
 			body("results[2].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
+			body("results[2].conditionRelations[0].internal", is(false)).
+			body("results[2].conditionRelations[0].obsolete", is(false)).
 			body("results[2].conditionRelations[0].conditions", hasSize(1)).
 			body("results[2].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[2].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -265,8 +281,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
 			body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
 			body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
+			body("results[2].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[2].conditionRelations[0].conditions[0].obsolete", is(false)).
 			body("results[2].negated", is(true)).
 			body("results[2].internal", is(false)).
+			body("results[2].obsolete", is(false)).
 			body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
 			body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
 			body("results[2].with", hasSize(1)).
@@ -275,6 +294,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[2].relatedNotes[0].freeText", is("Test note")).
 			body("results[2].relatedNotes[0].noteType.name", is("disease_summary")).
 			body("results[2].relatedNotes[0].internal", is(false)).
+			body("results[2].relatedNotes[0].obsolete", is(false)).
 			body("results[2].relatedNotes[0].references[0].curie", is("PMID:25920554")).
 			body("results[2].annotationType.name", is("manually_curated")).
 			body("results[2].diseaseQualifiers[0].name", is("susceptibility")).
@@ -1774,7 +1794,127 @@ public class DiseaseAnnotationBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].conditionRelations[0].internal", is(false)); //should default to false
+	}
+	
+	@Test
+	@Order(68)
+	public void diseaseAnnotationBulkUploadNoObsolete() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/68_no_obsolete.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].obsolete", is(false)); // should default to false 
+	}
+	
+	@Test
+	@Order(69)
+	public void diseaseAnnotationBulkUploadNoConditionRelationsObsolete() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/69_no_condition_relations_obsolete.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].conditionRelations[0].obsolete", is(false)); //should default to false
+	}
+	
+	@Test
+	@Order(70)
+	public void diseaseAnnotationBulkUploadNoRelatedNotesObsolete() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/70_no_related_notes_obsolete.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].relatedNotes[0].obsolete", is(false)); //should default to false
+	}
+	
+	@Test
+	@Order(71)
+	public void diseaseAnnotationBulkUploadNoConditionInternal() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/71_no_condition_internal.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
 			body("results[0].conditionRelations[0].conditions[0].internal", is(false)); //should default to false
+	}
+	
+	@Test
+	@Order(72)
+	public void diseaseAnnotationBulkUploadNoConditionObsolete() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/72_no_condition_obsolete.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)); //should default to false
 	}
 	
 	private void loadRequiredEntities() throws Exception {

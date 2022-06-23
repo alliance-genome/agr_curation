@@ -160,6 +160,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 		}
 		
 		agm.setInternal(dto.getInternal());
+		agm.setObsolete(dto.getObsolete());
 
 		if (dto.getDateUpdated() != null) {
 			OffsetDateTime dateLastModified;
