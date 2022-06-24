@@ -7,6 +7,7 @@ import javax.persistence.*;
 import org.alliancegenome.curation_api.model.bridges.*;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.*;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
@@ -57,12 +58,17 @@ public class AuditedObject extends BaseEntity {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean obsolete = false;
 
-	
-	
-	
-	
-	
-	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@KeywordField(name = "dbDateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@JsonView({View.FieldsOnly.class})
+	@CreationTimestamp
+	private OffsetDateTime dbDateCreated;
+
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@KeywordField(name = "dbDateUpdated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@JsonView(View.FieldsOnly.class)
+	@UpdateTimestamp
+	private OffsetDateTime dbDateUpdated;
 	
 	
 	
