@@ -1,19 +1,37 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.*;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -36,6 +54,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	ReferenceService referenceService;
 	@Inject
 	NoteValidator noteValidator;
+	@Inject
+	NoteService noteService;
 	@Inject
 	ConditionRelationValidator conditionRelationValidator;
 	
@@ -156,7 +176,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return uiEntity.getDiseaseGeneticModifierRelation();
 	}
 	
-	public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity) {
+	public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		List<Note> validatedNotes = new ArrayList<Note>();
 		for (Note note : uiEntity.getRelatedNotes()) {
 			ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
@@ -169,6 +189,14 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			}
 			validatedNotes.add(noteResponse.getEntity());
 		}
+		
+		List<Long> previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
+		List<Long> validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
+		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
+		for (Long id : idsToRemove) {
+			noteService.delete(id);
+		}
+		
 		return validatedNotes;
 	}
 	
@@ -261,7 +289,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		}
 		
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			List<Note> relatedNotes = validateRelatedNotes(uiEntity);
+			List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
 			if (relatedNotes != null) dbEntity.setRelatedNotes(relatedNotes);
 		}
 		

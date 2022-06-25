@@ -201,7 +201,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 		for (String id : idsToRemove) {
 			SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", id);
 			if (da != null && da.getTotalResults() == 1) {
+				List<Long> noteIdsToDelete = da.getResults().get(0).getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
 				delete(da.getResults().get(0).getId());
+				for (Long noteId : noteIdsToDelete) {
+					noteService.delete(noteId);
+				}
 			} else {
 				log.error("Failed getting annotation: " + id);
 			}
