@@ -1,10 +1,13 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.isEmptyOrNullString;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
@@ -140,6 +143,7 @@ public class DiseaseAnnotationITCase {
 		noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
 		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
 		relatedNotes.add(createNote(noteType, "Test text", false));
+		relatedNotes.add(createNote(noteType, "Test text 2", false));
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
 		conditionRelation = createConditionRelation(conditionRelationType, experimentalCondition);
@@ -326,7 +330,9 @@ public class DiseaseAnnotationITCase {
 				body("entity.diseaseQualifiers[0].name", is("severity")).
 				body("entity.with[0].curie", is("HGNC:1")).
 				body("entity.sgdStrainBackground.curie", is("SGD:da0002")).
+				body("entity.relatedNotes", hasSize(2)).
 				body("entity.relatedNotes[0].freeText", is("Test text")).
+				body("entity.relatedNotes[1].freeText", is("Test text 2")).
 				body("entity.conditionRelations[0].conditionRelationType.name", is("relation_type")).
 				body("entity.conditionRelations[0].conditions[0].conditionStatement", is("Statement")).
 				body("entity.internal", is(true)).
@@ -1122,6 +1128,60 @@ public class DiseaseAnnotationITCase {
 				put("/api/gene-disease-annotation").
 				then().
 				statusCode(400);
+	}
+	
+
+	
+	@Test
+	@Order(25)
+	public void deleteRelatedNote() {
+		
+		Long deletedNoteId = relatedNotes.get(0).getId();
+		relatedNotes.remove(0);
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene2);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(200);
+		
+		RestAssured.given().
+				when().
+				get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
+				then().
+				statusCode(200).
+				body("entity.relatedNotes", hasSize(1)).
+				body("entity.relatedNotes[0].freeText", is("Test text 2"));
+		
+		RestAssured.given().
+				when().
+				get("/api/note/" + deletedNoteId).
+				then().
+				statusCode(200).
+				body("", is(Collections.emptyMap()));
 	}
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
