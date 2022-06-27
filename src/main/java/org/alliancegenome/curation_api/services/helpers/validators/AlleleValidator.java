@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -78,7 +79,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 	private String validateSymbol(Allele uiEntity) {
 		String symbol = uiEntity.getSymbol();
 		if (StringUtils.isBlank(symbol)) {
-			addMessageResponse("symbol", requiredMessage);
+			addMessageResponse("symbol", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		return symbol;

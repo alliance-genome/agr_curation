@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -110,16 +111,16 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 	public ZecoTerm validateConditionClass(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionClass";
 		if (ObjectUtils.isEmpty(uiEntity.getConditionClass()) || StringUtils.isBlank(uiEntity.getConditionClass().getCurie())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		ZecoTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
 		if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		else if (zecoTerm.getObsolete() && !zecoTerm.getCurie().equals(dbEntity.getConditionClass().getCurie())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return zecoTerm;
@@ -132,11 +133,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		ExperimentalConditionOntologyTerm ecOntologyTerm = ecOntologyTermDAO.find(uiEntity.getConditionId().getCurie());
 		if (ecOntologyTerm == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		else if (ecOntologyTerm.getObsolete() && !ecOntologyTerm.getCurie().equals(dbEntity.getConditionId().getCurie())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return ecOntologyTerm;
@@ -149,11 +150,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		GOTerm goTerm = goTermDAO.find(uiEntity.getConditionGeneOntology().getCurie());
 		if (goTerm == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		else if (goTerm.getObsolete() && !goTerm.getCurie().equals(dbEntity.getConditionGeneOntology().getCurie())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return goTerm;
@@ -166,11 +167,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		AnatomicalTerm anatomicalTerm = anatomicalTermDAO.find(uiEntity.getConditionAnatomy().getCurie());
 		if (anatomicalTerm == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		else if (anatomicalTerm.getObsolete() && !anatomicalTerm.getCurie().equals(dbEntity.getConditionAnatomy().getCurie())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return anatomicalTerm;
@@ -183,11 +184,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		ChemicalTerm chemicalTerm = chemicalTermDAO.find(uiEntity.getConditionChemical().getCurie());
 		if (chemicalTerm == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		else if (chemicalTerm.getObsolete() != null && chemicalTerm.getObsolete() && !chemicalTerm.getCurie().equals(dbEntity.getConditionChemical().getCurie())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return chemicalTerm;
@@ -203,11 +204,11 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 			taxonTerm = ncbiTaxonTermDAO.downloadAndSave(uiEntity.getConditionTaxon().getCurie());
 		}
 		if (taxonTerm == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		else if (taxonTerm.getObsolete() && !taxonTerm.getCurie().equals(dbEntity.getConditionTaxon().getCurie())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return taxonTerm;
@@ -217,7 +218,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		String field = "conditionStatement";
 		String conditionStatement = uiEntity.getConditionStatement();
 		if (StringUtils.isBlank(conditionStatement)) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		return conditionStatement;

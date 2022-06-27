@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -89,7 +90,7 @@ public class GeneValidator extends GenomicEntityValidator {
 	private String validateSymbol(Gene uiEntity) {
 		String symbol = uiEntity.getSymbol();
 		if (StringUtils.isBlank(symbol)) {
-			addMessageResponse("symbol", requiredMessage);
+			addMessageResponse("symbol", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		return symbol;
@@ -98,11 +99,11 @@ public class GeneValidator extends GenomicEntityValidator {
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
 		SOTerm soTerm = soTermDAO.find(uiEntity.getGeneType().getCurie());
 		if (soTerm == null) {
-			addMessageResponse("geneType", invalidMessage);
+			addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		else if (soTerm.getObsolete() && !soTerm.getCurie().equals(dbEntity.getGeneType())) {
-			addMessageResponse("geneType", obsoleteMessage);
+		else if (soTerm.getObsolete() && !soTerm.getCurie().equals(dbEntity.getGeneType().getCurie())) {
+			addMessageResponse("geneType", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return soTerm;

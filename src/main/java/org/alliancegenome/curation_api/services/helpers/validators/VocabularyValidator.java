@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,7 +53,7 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 	public String validateName(Vocabulary uiEntity) {
 		String field = "name";
 		if (StringUtils.isBlank(uiEntity.getName())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		

@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,7 +62,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	public String validateName(VocabularyTerm uiEntity) {
 		String field = "name";
 		if (StringUtils.isBlank(uiEntity.getName())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
@@ -71,18 +72,18 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	public Vocabulary validateVocabulary(VocabularyTerm uiEntity, VocabularyTerm dbEntity) {
 		String field = "vocabulary";
 		if (uiEntity.getVocabulary() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		SearchResponse<Vocabulary> vocabularyResponse = vocabularyDAO.findByField("name", uiEntity.getVocabulary().getName());
 		if (vocabularyResponse == null || vocabularyResponse.getSingleResult() == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		
 		Vocabulary vocabulary = vocabularyResponse.getSingleResult();
 		if (vocabulary.getObsolete() && !vocabulary.getName().equals(dbEntity.getVocabulary().getName())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		

@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -46,7 +47,7 @@ public class SynonymValidator extends AuditedObjectValidator<Synonym> {
 	public String validateName(Synonym uiEntity) {
 		String field = "name";
 		if (StringUtils.isBlank(uiEntity.getName())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		

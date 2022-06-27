@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,12 +62,12 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
-			addMessageResponse("subject", requiredMessage);
+			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getCurie());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", invalidMessage);
+			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		return subjectEntity;
@@ -76,14 +77,14 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity) {
 		String field = "diseaseRelation";
 		if (uiEntity.getDiseaseRelation() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
 		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
 
 		if(relation == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		

@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 
 public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 
@@ -16,12 +17,12 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
 		String taxonCurie = uiEntity.getTaxon().getCurie();
 		if (StringUtils.isBlank(taxonCurie)) {
-			addMessageResponse("taxon", requiredMessage);
+			addMessageResponse("taxon", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(taxonCurie);
 		if (taxon.getEntity() == null) {
-			addMessageResponse("taxon", invalidMessage);
+			addMessageResponse("taxon", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		return taxon.getEntity();
@@ -30,7 +31,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 	public String validateName(GenomicEntity uiEntity) {
 		String name = uiEntity.getName();
 		if (StringUtils.isBlank(name)) {
-			addMessageResponse("name", requiredMessage);
+			addMessageResponse("name", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		return name;

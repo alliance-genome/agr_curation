@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,12 +67,12 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
-			addMessageResponse("subject", requiredMessage);
+			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getCurie());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", invalidMessage);
+			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		return subjectEntity;
@@ -81,14 +82,14 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
 		String field = "diseaseRelation";
 		if (uiEntity.getDiseaseRelation() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
 		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
 
 		if(relation == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		
@@ -102,7 +103,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		
 		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
-			addMessageResponse("sgdStrainBackground", invalidMessage);
+			addMessageResponse("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		

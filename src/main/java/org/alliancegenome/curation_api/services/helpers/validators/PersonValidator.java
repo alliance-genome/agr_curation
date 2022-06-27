@@ -7,6 +7,7 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -66,7 +67,7 @@ public class PersonValidator extends AuditedObjectValidator<Person>{
 	public String validateUniqueId(Person uiEntity) {
 		String field = "uniqueId";
 		if (StringUtils.isBlank(uiEntity.getUniqueId())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		

@@ -24,6 +24,7 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -83,7 +84,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		}
 		// You cannot move from a condition-relation with handle to one without.
 		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isBlank(uiEntity.getHandle())) {
-			addMessageResponse("handle", requiredMessage);
+			addMessageResponse("handle", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		validateReferenceField(uiEntity, dbEntity);
@@ -142,7 +143,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		}
 
 		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
-			addMessageResponse("reference", requiredMessage);
+			addMessageResponse("reference", ValidationConstants.REQUIRED_MESSAGE);
 			return;
 		}
 		String curie = uiEntity.getSingleReference().getCurie();
@@ -160,7 +161,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {
 		String field = "conditionRelationType";
 		if (uiEntity.getConditionRelationType() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
@@ -174,12 +175,12 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 					VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 		}
 		if (conditionRelationType == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
 		if (conditionRelationType.getObsolete() && !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
@@ -189,7 +190,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	public List<ExperimentalCondition> validateConditions(ConditionRelation uiEntity) {
 		String field = "conditions";
 		if (CollectionUtils.isEmpty(uiEntity.getConditions())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
@@ -198,7 +199,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			SearchResponse<ExperimentalCondition> conditionResponse =
 				experimentalConditionDAO.findByField("uniqueId", condition.getUniqueId());
 			if (conditionResponse == null || conditionResponse.getSingleResult() == null) {
-				addMessageResponse(field, invalidMessage);
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 			conditions.add(condition);
