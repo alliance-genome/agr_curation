@@ -4,11 +4,17 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.*;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
@@ -55,13 +61,13 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private AffectedGenomicModel validateSubject(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isEmpty(uiEntity.getSubject().getCurie())) {
-			addMessageResponse("subject", requiredMessage);
+		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
+			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		AffectedGenomicModel subjectEntity = affectedGenomicModelDAO.find(uiEntity.getSubject().getCurie());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", invalidMessage);
+			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		return subjectEntity;
@@ -71,14 +77,14 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	private VocabularyTerm validateDiseaseRelation(AGMDiseaseAnnotation uiEntity) {
 		String field = "diseaseRelation";
 		if (uiEntity.getDiseaseRelation() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
 		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
 
 		if(relation == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		

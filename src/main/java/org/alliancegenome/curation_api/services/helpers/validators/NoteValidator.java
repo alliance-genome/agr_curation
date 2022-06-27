@@ -3,10 +3,14 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,7 +43,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		}else {
 			dbEntity = new Note();
 		}
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Note) validateAuditedObjectFields(uiEntity, dbEntity);
 
 		VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
 		dbEntity.setNoteType(noteType);
@@ -66,7 +70,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularyName) {
 		String field = "noteType";
 		if (uiEntity.getNoteType() == null ) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
@@ -74,20 +78,20 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		if (noteVocabularyName == null) {
 			SearchResponse<VocabularyTerm> vtSearchResponse = vocabularyTermDAO.findByField("name", uiEntity.getNoteType().getName());
 			if (vtSearchResponse == null || vtSearchResponse.getSingleResult() == null) {
-				addMessageResponse(field, invalidMessage);
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 			noteType = vtSearchResponse.getSingleResult();
 		} else {
 			noteType = vocabularyTermDAO.getTermInVocabulary(uiEntity.getNoteType().getName(), noteVocabularyName);
 			if (noteType == null) {
-				addMessageResponse(field, invalidMessage);
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 		}
 
 		if (noteType.getObsolete() && !noteType.getName().equals(dbEntity.getNoteType().getName())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return noteType;
@@ -96,7 +100,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	public String validateFreeText(Note uiEntity) {
 		String field = "freeText";
 		if (!StringUtils.isNotBlank(uiEntity.getFreeText())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 		}
 		return uiEntity.getFreeText();
 	}

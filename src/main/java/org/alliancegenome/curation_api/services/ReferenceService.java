@@ -15,8 +15,6 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
-import lombok.extern.jbosslog.JBossLog;
-
 @RequestScoped
 public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 

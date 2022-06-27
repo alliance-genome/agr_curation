@@ -8,6 +8,8 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -40,25 +42,31 @@ public class AlleleValidator extends GenomicEntityValidator {
 		String symbol = validateSymbol(uiEntity);
 		if (symbol != null) dbEntity.setSymbol(symbol);
 		
-		if (uiEntity.getSynonyms() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
 			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		} else {
+			dbEntity.setSynonyms(null);
 		}
 
-		if (uiEntity.getSecondaryIdentifiers() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
+		} else {
+			dbEntity.setSecondaryIdentifiers(null);
 		}
 
-		if (uiEntity.getCrossReferences() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
 			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
+		} else {
+			dbEntity.setCrossReferences(null);
 		}
 		
-		if (uiEntity.getGenomicLocations() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getGenomicLocations())) {
 			dbEntity.setGenomicLocations(uiEntity.getGenomicLocations());
+		} else {
+			dbEntity.setGenomicLocations(null);
 		}
-		
-		if (uiEntity.getDescription() != null) {
-			dbEntity.setDescription(uiEntity.getDescription());
-		}
+	
+		dbEntity.setDescription(handleStringField(uiEntity.getDescription()));		
 		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorTitle);
@@ -70,8 +78,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	
 	private String validateSymbol(Allele uiEntity) {
 		String symbol = uiEntity.getSymbol();
-		if (StringUtils.isEmpty(symbol)) {
-			addMessageResponse("symbol", requiredMessage);
+		if (StringUtils.isBlank(symbol)) {
+			addMessageResponse("symbol", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		return symbol;
