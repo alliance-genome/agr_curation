@@ -7,7 +7,8 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.lang3.StringUtils;
 
@@ -87,7 +88,7 @@ public class GeneValidator extends GenomicEntityValidator {
 	
 	private String validateSymbol(Gene uiEntity) {
 		String symbol = uiEntity.getSymbol();
-		if (StringUtils.isEmpty(symbol)) {
+		if (StringUtils.isBlank(symbol)) {
 			addMessageResponse("symbol", requiredMessage);
 			return null;
 		}

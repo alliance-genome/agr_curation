@@ -3,10 +3,13 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.VocabularyDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -17,12 +20,6 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
 	VocabularyDAO vocabularyDAO;
-	
-	protected String invalidMessage = "Not a valid entry";
-	protected String obsoleteMessage = "Obsolete term specified";
-	protected String requiredMessage = "Required field is empty";
-	
-	protected ObjectResponse<VocabularyTerm> response;
 	
 	public VocabularyTerm validateVocabularyTerm(VocabularyTerm uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
@@ -39,31 +36,13 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 			throw new ApiErrorException(response);
 		}
 		
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (VocabularyTerm) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
 		
-		if (!StringUtils.isBlank(uiEntity.getAbbreviation())) {
-			dbEntity.setAbbreviation(uiEntity.getAbbreviation());
-		} else {
-			dbEntity.setAbbreviation(null);
-		}
-		
-		if (!StringUtils.isBlank(uiEntity.getDefinition())) {
-			dbEntity.setDefinition(uiEntity.getDefinition());
-		} else {
-			dbEntity.setDefinition(null);
-		}
-		
-		if (uiEntity.getObsolete() == null) {
-			dbEntity.setObsolete(false);
-		} else {
-			dbEntity.setObsolete(uiEntity.getObsolete());
-		}
-		
-		if (uiEntity.getInternal() != null)
-			dbEntity.setInternal(uiEntity.getInternal());
+		dbEntity.setAbbreviation(handleStringField(uiEntity.getAbbreviation()));
+		dbEntity.setDefinition(handleStringField(uiEntity.getDefinition()));
 		
 		Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
 		dbEntity.setVocabulary(vocabulary);
@@ -109,12 +88,5 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 		
 		return vocabulary;
 	}
-	
-	protected void addMessageResponse(String message) {
-		response.setErrorMessage(message);
-	}
-	
-	protected void addMessageResponse(String fieldName, String message) {
-		response.addErrorMessage(fieldName, message);
-	}
+
 }

@@ -3,15 +3,20 @@ package org.alliancegenome.curation_api.services;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.helpers.validators.VocabularyValidator;
 
 @RequestScoped
 public class VocabularyService extends BaseCrudService<Vocabulary, VocabularyDAO> {
 
 	@Inject VocabularyDAO vocabularyDAO;
+	@Inject VocabularyValidator vocabularyValidator;
 
 	@Override
 	@PostConstruct
@@ -19,4 +24,10 @@ public class VocabularyService extends BaseCrudService<Vocabulary, VocabularyDAO
 		setSQLDao(vocabularyDAO);
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<Vocabulary> update(Vocabulary uiEntity) {
+		Vocabulary dbEntity = vocabularyValidator.validateVocabulary(uiEntity);
+		return new ObjectResponse<>(vocabularyDAO.persist(dbEntity));
+	}
 }

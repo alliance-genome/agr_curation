@@ -3,10 +3,13 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,7 +42,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		}else {
 			dbEntity = new Note();
 		}
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Note) validateAuditedObjectFields(uiEntity, dbEntity);
 
 		VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
 		dbEntity.setNoteType(noteType);
