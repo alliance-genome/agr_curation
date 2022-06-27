@@ -13,6 +13,7 @@ quarkus.datasource.password=postgres
 quarkus.datasource.jdbc.max-size=64
 
 quarkus.hibernate-orm.database.generation=validate
+%dev.quarkus.hibernate-orm.database.generation=update
 
 quarkus.flyway.sql-migration-prefix=v
 quarkus.flyway.default-schema=public
