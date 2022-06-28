@@ -635,7 +635,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["curie", "cross_reference.curie"]}
+					autocompleteFields={["curie", "cross_reference.curie", "title"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
@@ -646,7 +646,7 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
+					errorField={"singleReference"}
 				/>
 			</>
 		);
@@ -737,11 +737,11 @@ export const DiseaseAnnotationsTable = () => {
 		body: diseaseBodyTemplate
 	},
 	{
-		field: "singleReference.curie",
+		field: "singleReference.displayXref",
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.displayXref", "singleReference.curie", "singleReference.title"]},
 		editor: (props) => referenceEditorTemplate(props)
 	},
 	{

@@ -30,14 +30,14 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	}
 	
 	@Transactional
-	public Reference retrieveFromLiteratureService(String curie) {
+	public Reference retrieveFromLiteratureService(String xrefCurie) {
 		Pagination pagination = new Pagination();
 		pagination.setPage(0);
 		pagination.setLimit(2);
 		
 		HashMap<String, String> searchDetails = new HashMap<>();
 		searchDetails.put("tokenOperator", "AND");
-		searchDetails.put("queryString", curie);
+		searchDetails.put("queryString", xrefCurie);
 		
 		HashMap<String, Object> searchField = new HashMap<>();
 		searchField.put("cross_reference.curie", searchDetails);
@@ -53,8 +53,12 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		if (response == null || response.getResults().size() != 1)
 			return null;
 		
+		LiteratureReference litRef = response.getSingleResult();
+		
 		Reference reference = new Reference();
-		reference.setCurie(curie);
+		reference.setDisplayXref(xrefCurie);
+		reference.setCurie(litRef.getCurie());
+		reference.setLiteratureCrossReferences(litRef.getCross_reference());
 		return referenceDAO.persist(reference);
 	}
 }
