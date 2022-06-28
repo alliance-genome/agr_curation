@@ -103,6 +103,7 @@ export function getRefID(referenceItem) {
 				entry.curie.startsWith('RGD:') ||
 				entry.curie.startsWith('ZFIN:') ||
 				entry.curie.startsWith('WB:') ||
+				entry.curie.startsWith('SGD:') ||
 				entry.curie.startsWith('FB:') ||
 				entry.curie.startsWith('DOI:') ||
 				entry.curie.startsWith('PMCID:')) {

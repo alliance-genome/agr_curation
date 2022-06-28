@@ -646,7 +646,7 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
+					errorField={"singleReference"}
 				/>
 			</>
 		);
