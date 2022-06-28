@@ -59,6 +59,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		reference.setDisplayXref(xrefCurie);
 		reference.setCurie(litRef.getCurie());
 		reference.setLiteratureCrossReferences(litRef.getCross_reference());
+		
 		return referenceDAO.persist(reference);
 	}
 }
