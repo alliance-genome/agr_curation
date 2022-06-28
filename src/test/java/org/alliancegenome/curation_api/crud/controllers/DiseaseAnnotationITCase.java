@@ -1182,6 +1182,24 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(200).
 				body("", is(Collections.emptyMap()));
+		
+		Long nextDeletedNoteId = relatedNotes.get(0).getId();
+		editedDiseaseAnnotation.setRelatedNotes(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(editedDiseaseAnnotation).
+			when().
+			put("/api/gene-disease-annotation").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/note/" + nextDeletedNoteId).
+			then().
+			statusCode(200).
+			body("", is(Collections.emptyMap()));
 	}
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
