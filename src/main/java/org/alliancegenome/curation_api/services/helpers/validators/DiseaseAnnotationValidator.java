@@ -168,16 +168,18 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	
 	public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		List<Note> validatedNotes = new ArrayList<Note>();
-		for (Note note : uiEntity.getRelatedNotes()) {
-			ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-			if (noteResponse.getEntity() == null) {
-				Map<String, String> errors = noteResponse.getErrorMessages();
-				for (String field : errors.keySet()) {
-					addMessageResponse("relatedNotes", field + " - " + errors.get(field));
+		if (uiEntity.getRelatedNotes() != null) {
+			for (Note note : uiEntity.getRelatedNotes()) {
+				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+				if (noteResponse.getEntity() == null) {
+					Map<String, String> errors = noteResponse.getErrorMessages();
+					for (String field : errors.keySet()) {
+						addMessageResponse("relatedNotes", field + " - " + errors.get(field));
+					}
+					return null;
 				}
-				return null;
+				validatedNotes.add(noteResponse.getEntity());
 			}
-			validatedNotes.add(noteResponse.getEntity());
 		}
 		
 		List<Long> previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
@@ -186,6 +188,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		for (Long id : idsToRemove) {
 			noteService.delete(id);
 		}
+		
+		if (CollectionUtils.isEmpty(validatedNotes))
+			return null;
 		
 		return validatedNotes;
 	}
@@ -277,10 +282,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			dbEntity.setConditionRelations(conditionRelations);
 		}
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
-			List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-			if (relatedNotes != null) dbEntity.setRelatedNotes(relatedNotes);
-		}
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
+		dbEntity.setRelatedNotes(relatedNotes);
 		
 		if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
 			dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());

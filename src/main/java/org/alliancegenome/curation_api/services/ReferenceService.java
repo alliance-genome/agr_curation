@@ -72,14 +72,13 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 						reference.setCrossReferences(convertXrefs(result.getCross_reference()));
 						reference.setTitle(result.getTitle());
 						
-						return referenceDAO.persist(reference);
+						return referenceDAO.persist(reference);		
 					}
 				}
 			}
 		}
 		
 		return null;
-		
 	}
 	
 	protected List<CrossReference> convertXrefs (List<LiteratureCrossReference> litXrefs) {

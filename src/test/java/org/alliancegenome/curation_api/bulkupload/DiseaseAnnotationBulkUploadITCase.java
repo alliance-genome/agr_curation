@@ -77,7 +77,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	private String requiredNoteType = "disease_summary";
 	private String requiredConditionRelationType = "exacerbated_by";
 	private String requiredReference = "PMID:25920554";
-	private ArrayList<String> requiredXrefs = new ArrayList<String>(Arrays.asList("DOI:10.1038/ejhg.2015.86", "PMCID:PMC4717208", "RGD:11553546", requiredReference));
+	// private ArrayList<String> requiredXrefs = new ArrayList<String>(Arrays.asList("DOI:10.1038/ejhg.2015.86", "PMCID:PMC4717208", "RGD:11553546", requiredReference));
 	
 
 	
@@ -1971,24 +1971,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 	}
 	
 	private void loadReference() throws Exception {
-		CrossReference xref = new CrossReference();
-		xref.setCurie(requiredReference);
-		xref = RestAssured.given().
-				contentType("application/json").
-				body(xref).
-				when().
-				post("/api/cross-reference").
-				then().	
-				statusCode(200).
-				extract().body().
-				as(getObjectResponseTypeRefCrossReference()).
-				getEntity();
-			
-		List<CrossReference> xrefs = Collections.singletonList(xref);
 			
 		Reference reference = new Reference();
 		reference.setCurie(requiredReference);
-		reference.setCrossReferences(xrefs);
+		reference.setDisplayXref(requiredReference);
 		reference.setObsolete(false);
 		
 		RestAssured.given().

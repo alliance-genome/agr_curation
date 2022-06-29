@@ -1196,13 +1196,6 @@ public class DiseaseAnnotationITCase {
 
 		RestAssured.given().
 			when().
-			get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
-			then().
-			statusCode(200).
-			body("entity.relatedNotes", is(null));
-
-		RestAssured.given().
-			when().
 			get("/api/note/" + nextDeletedNoteId).
 			then().
 			statusCode(200).
