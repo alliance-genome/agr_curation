@@ -1,26 +1,24 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-
-import org.alliancegenome.curation_api.constants.OntologyConstants;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZfaTerm;
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
-import org.junit.jupiter.api.*;
-
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
@@ -48,6 +46,7 @@ public class VocabularyTermITCase {
 		vocabularyTerm.setName("Test vocabulary term");
 		vocabularyTerm.setObsolete(true);
 		vocabularyTerm.setVocabulary(testVocabulary);
+		vocabularyTerm.setInternal(false);
 		
 		RestAssured.given().
 				contentType("application/json").
