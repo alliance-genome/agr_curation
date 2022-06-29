@@ -91,4 +91,13 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		return curationXrefs;
 	}
+
+	@Transactional
+	public void synchroniseReferences() {
+		
+		SearchResponse<Reference> response = referenceDAO.findAll(null);
+		for (Reference reference : response.getResults()) {
+			retrieveFromLiteratureService(reference.getCurie());
+		}
+	}
 }

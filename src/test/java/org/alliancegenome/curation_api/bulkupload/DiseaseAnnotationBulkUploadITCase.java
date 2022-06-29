@@ -9,7 +9,6 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
@@ -77,8 +76,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 	private String requiredNoteType = "disease_summary";
 	private String requiredConditionRelationType = "exacerbated_by";
 	private String requiredReference = "PMID:25920554";
-	// private ArrayList<String> requiredXrefs = new ArrayList<String>(Arrays.asList("DOI:10.1038/ejhg.2015.86", "PMCID:PMC4717208", "RGD:11553546", requiredReference));
-	
 
 	
 	@BeforeEach
