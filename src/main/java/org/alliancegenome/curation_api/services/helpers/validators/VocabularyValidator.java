@@ -17,9 +17,9 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 	@Inject
 	VocabularyDAO vocabularyDAO;
 	
-	public Vocabulary validateVocabulary(Vocabulary uiEntity) {
+	public Vocabulary validateVocabularyUpdate(Vocabulary uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update Vocabulary: [" + uiEntity.getId() + "]";
+		response.setErrorMessage("Could not update Vocabulary: [" + uiEntity.getId() + "]");
 		
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -32,6 +32,19 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 			throw new ApiErrorException(response);
 		}
 		
+		return validateVocabulary(uiEntity, dbEntity);
+	}
+	
+	public Vocabulary validateVocabularyCreate(Vocabulary uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		response.setErrorMessage("Could not create Vocabulary: [" + uiEntity.getName() + "]");
+		
+		Vocabulary dbEntity = new Vocabulary();
+		
+		return validateVocabulary(uiEntity, dbEntity);
+	}
+	
+	public Vocabulary validateVocabulary(Vocabulary uiEntity, Vocabulary dbEntity) {
 		dbEntity = (Vocabulary) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		String name = validateName(uiEntity);
@@ -39,11 +52,13 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 		
 		dbEntity.setVocabularyDescription(handleStringField(uiEntity.getVocabularyDescription()));
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getMemberTerms()))
+		if (CollectionUtils.isNotEmpty(uiEntity.getMemberTerms())) {
 			dbEntity.setMemberTerms(uiEntity.getMemberTerms());
+		} else {
+			dbEntity.setMemberTerms(null);
+		}
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
 			throw new ApiErrorException(response);
 		}
 		

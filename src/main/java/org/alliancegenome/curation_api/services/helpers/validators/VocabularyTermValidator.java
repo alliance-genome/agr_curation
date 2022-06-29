@@ -42,7 +42,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	
 	public VocabularyTerm validateVocabularyTermCreate(VocabularyTerm uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		response.setErrorMessage("Could not create VocabularyTerm: [" + uiEntity.getId() + "]");
+		response.setErrorMessage("Could not create VocabularyTerm: [" + uiEntity.getName() + "]");
 		
 		VocabularyTerm dbEntity = new VocabularyTerm();
 		
@@ -61,8 +61,11 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 		Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
 		dbEntity.setVocabulary(vocabulary);
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getTextSynonyms()))
+		if (CollectionUtils.isNotEmpty(uiEntity.getTextSynonyms())) {
 			dbEntity.setTextSynonyms(uiEntity.getTextSynonyms());
+		} else {
+			dbEntity.setTextSynonyms(null);
+		}
 		
 		if (response.hasErrors()) {
 			throw new ApiErrorException(response);

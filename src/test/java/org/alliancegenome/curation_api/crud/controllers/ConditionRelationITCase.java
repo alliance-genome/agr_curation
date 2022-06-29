@@ -171,6 +171,7 @@ public class ConditionRelationITCase {
 		vocabularyTerm.setName(name);
 		vocabularyTerm.setVocabulary(vocabulary);
 		vocabularyTerm.setObsolete(obsolete);
+		vocabularyTerm.setInternal(false);
 
 		ObjectResponse<VocabularyTerm> response =
 			given().
