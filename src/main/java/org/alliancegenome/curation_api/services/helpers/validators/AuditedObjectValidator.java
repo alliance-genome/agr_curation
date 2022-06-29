@@ -34,13 +34,11 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	
 	public E validateAuditedObjectFields(E uiEntity, E dbEntity) {
 		Boolean internal = validateInternal(uiEntity);
-		if (internal != null) dbEntity.setInternal(internal);
+		dbEntity.setInternal(internal);
 		
-		if (uiEntity.getObsolete() != null)
-			dbEntity.setObsolete(uiEntity.getObsolete());
+		dbEntity.setObsolete(uiEntity.getObsolete());
 		
-		if (uiEntity.getDateCreated() != null)
-			dbEntity.setDateCreated(uiEntity.getDateCreated());
+		dbEntity.setDateCreated(uiEntity.getDateCreated());
 		
 		if (uiEntity.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
