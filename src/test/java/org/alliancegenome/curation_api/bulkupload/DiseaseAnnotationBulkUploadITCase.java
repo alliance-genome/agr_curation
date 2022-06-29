@@ -9,12 +9,14 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -75,6 +77,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	private String requiredNoteType = "disease_summary";
 	private String requiredConditionRelationType = "exacerbated_by";
 	private String requiredReference = "PMID:25920554";
+	private ArrayList<String> requiredXrefs = new ArrayList<String>(Arrays.asList("DOI:10.1038/ejhg.2015.86", "PMCID:PMC4717208", "RGD:11553546", requiredReference));
 	
 
 	
@@ -1968,8 +1971,24 @@ public class DiseaseAnnotationBulkUploadITCase {
 	}
 	
 	private void loadReference() throws Exception {
+		CrossReference xref = new CrossReference();
+		xref.setCurie(requiredReference);
+		xref = RestAssured.given().
+				contentType("application/json").
+				body(xref).
+				when().
+				post("/api/cross-reference").
+				then().	
+				statusCode(200).
+				extract().body().
+				as(getObjectResponseTypeRefCrossReference()).
+				getEntity();
+			
+		List<CrossReference> xrefs = Collections.singletonList(xref);
+			
 		Reference reference = new Reference();
 		reference.setCurie(requiredReference);
+		reference.setCrossReferences(xrefs);
 		reference.setObsolete(false);
 		
 		RestAssured.given().
@@ -2189,4 +2208,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		return new TypeRef<ObjectResponse <Vocabulary>>() { };
 	}
 	
+	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
+		return new TypeRef<ObjectResponse <CrossReference>>() { };
+	}
 }

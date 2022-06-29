@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
@@ -25,9 +26,9 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -212,8 +213,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getCurie());
-		if (singleReference == null) {
+		SearchResponse<Reference> singleReferenceResponse = referenceDAO.findByField("displayXref", uiEntity.getSingleReference().getCurie());
+		Reference singleReference;
+		if (singleReferenceResponse != null && singleReferenceResponse.getResults().size() == 1) {
+			singleReference = singleReferenceResponse.getSingleResult();
+		} else {
 			singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
 			if (singleReference == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

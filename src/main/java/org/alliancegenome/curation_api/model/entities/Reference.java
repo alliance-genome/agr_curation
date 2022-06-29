@@ -9,7 +9,6 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 
 import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
-import org.alliancegenome.curation_api.model.document.LiteratureCrossReference;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -54,6 +53,6 @@ public class Reference extends CurieAuditedObject {
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "reference_curie"))
 	@JsonView({View.FieldsAndLists.class})
-	private List<LiteratureCrossReference> literatureCrossReferences;
+	private List<CrossReference> crossReferences;
 	
 }
