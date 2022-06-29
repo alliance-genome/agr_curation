@@ -2128,6 +2128,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	private Vocabulary createVocabulary(String name) {
 		Vocabulary vocabulary = new Vocabulary();
 		vocabulary.setName(name);
+		vocabulary.setInternal(false);
 		
 		ObjectResponse<Vocabulary> response = 
 			RestAssured.given().
@@ -2162,6 +2163,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		VocabularyTerm vocabularyTerm = new VocabularyTerm();
 		vocabularyTerm.setName(name);
 		vocabularyTerm.setVocabulary(vocabulary);
+		vocabularyTerm.setInternal(false);
 		
 		RestAssured.given().
 				contentType("application/json").

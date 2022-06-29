@@ -35,14 +35,12 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity);
 
 		String name = validateName(uiEntity);
-		if (name != null) dbEntity.setName(name);
+		dbEntity.setName(name);
 		
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
-		if (taxon != null) dbEntity.setTaxon(taxon);
+		dbEntity.setTaxon(taxon);
 		
-		if (uiEntity.getSubtype() != null) {
-			dbEntity.setSubtype(uiEntity.getSubtype());
-		}
+		dbEntity.setSubtype(uiEntity.getSubtype());
 		
 		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
 			dbEntity.setSynonyms(uiEntity.getSynonyms());

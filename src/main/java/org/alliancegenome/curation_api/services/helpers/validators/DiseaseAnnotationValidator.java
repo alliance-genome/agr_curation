@@ -245,13 +245,17 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			dbEntity.setModEntityId(uiEntity.getModEntityId());
 
 		DOTerm term = validateObject(uiEntity, dbEntity);
-		if(term != null) dbEntity.setObject(term);
+		dbEntity.setObject(term);
 
 		List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
-		if(terms != null) dbEntity.setEvidenceCodes(terms);
+		dbEntity.setEvidenceCodes(terms);
 
-		List<Gene> genes = validateWith(uiEntity);
-		if(genes != null) dbEntity.setWith(genes);
+		if (CollectionUtils.isNotEmpty(uiEntity.getWith())) {
+			List<Gene> genes = validateWith(uiEntity);	
+			dbEntity.setWith(genes);
+		} else {
+			dbEntity.setWith(null);
+		}
 
 		if(uiEntity.getNegated() != null) {
 			dbEntity.setNegated(uiEntity.getNegated());
@@ -259,38 +263,38 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			dbEntity.setNegated(false);
 		}
 		
-		if (uiEntity.getAnnotationType() != null)
-			dbEntity.setAnnotationType(uiEntity.getAnnotationType());
+		dbEntity.setAnnotationType(uiEntity.getAnnotationType());
 
-		if (uiEntity.getGeneticSex() != null)
-			dbEntity.setGeneticSex(uiEntity.getGeneticSex());
+		dbEntity.setGeneticSex(uiEntity.getGeneticSex());
 
 		String dataProvider = validateDataProvider(uiEntity);
-		if (dataProvider != null) dbEntity.setDataProvider(dataProvider);
+		dbEntity.setDataProvider(dataProvider);
 
 		dbEntity.setSecondaryDataProvider(handleStringField(uiEntity.getSecondaryDataProvider()));
 	
 		BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity);
 		VocabularyTerm dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity);
-		if (diseaseGeneticModifier != null && dgmRelation != null) {
-			dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
-			dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
-		}
+		dbEntity.setDiseaseGeneticModifier(diseaseGeneticModifier);
+		dbEntity.setDiseaseGeneticModifierRelation(dgmRelation);
 		
 		if (CollectionUtils.isNotEmpty(uiEntity.getConditionRelations())) {
 			List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity);
-			dbEntity.setConditionRelations(conditionRelations);
+			dbEntity.setConditionRelations(conditionRelations);	
+		} else {
+			dbEntity.setConditionRelations(null);
 		}
 		
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
 		dbEntity.setRelatedNotes(relatedNotes);
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers()))
+		if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers())) {
 			dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
+		} else {
+			dbEntity.setDiseaseQualifiers(null);
+		}
 		
 		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
-		if (singleReference != null)
-			dbEntity.setSingleReference(singleReference);
+		dbEntity.setSingleReference(singleReference);
 		
 		return dbEntity;
 	}

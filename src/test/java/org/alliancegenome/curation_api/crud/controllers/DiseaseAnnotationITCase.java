@@ -1353,6 +1353,7 @@ public class DiseaseAnnotationITCase {
 	private Vocabulary createVocabulary(String name) {
 		Vocabulary vocabulary = new Vocabulary();
 		vocabulary.setName(name);
+		vocabulary.setInternal(false);
 		
 		ObjectResponse<Vocabulary> response = 
 			RestAssured.given().
@@ -1405,6 +1406,7 @@ public class DiseaseAnnotationITCase {
 		vocabularyTerm.setName(name);
 		vocabularyTerm.setVocabulary(vocabulary);
 		vocabularyTerm.setObsolete(obsolete);
+		vocabularyTerm.setInternal(false);
 		
 		ObjectResponse<VocabularyTerm> response = 
 			RestAssured.given().
