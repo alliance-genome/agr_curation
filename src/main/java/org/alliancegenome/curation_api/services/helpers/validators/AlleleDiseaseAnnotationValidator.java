@@ -45,10 +45,10 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		}		
 		
 		Allele subject = validateSubject(uiEntity, dbEntity);
-		if(subject != null) dbEntity.setSubject(subject);
+		dbEntity.setSubject(subject);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
-		if(relation != null) dbEntity.setDiseaseRelation(relation);
+		dbEntity.setDiseaseRelation(relation);
 
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		

@@ -47,13 +47,13 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}		
 
 		Gene subject = validateSubject(uiEntity, dbEntity);
-		if(subject != null) dbEntity.setSubject(subject);
+		dbEntity.setSubject(subject);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
-		if(relation != null) dbEntity.setDiseaseRelation(relation);
+		dbEntity.setDiseaseRelation(relation);
 
 		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
-		if (sgdStrainBackground != null) dbEntity.setSgdStrainBackground(uiEntity.getSgdStrainBackground());
+		dbEntity.setSgdStrainBackground(sgdStrainBackground);
 		
 		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
@@ -97,9 +97,8 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 	
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity) {
-		if (uiEntity.getSgdStrainBackground() == null) {
+		if (uiEntity.getSgdStrainBackground() == null)
 			return null;
-		}
 		
 		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {

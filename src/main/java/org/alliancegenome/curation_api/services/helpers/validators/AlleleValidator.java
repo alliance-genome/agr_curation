@@ -37,10 +37,10 @@ public class AlleleValidator extends GenomicEntityValidator {
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity);
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
-		if (taxon != null) dbEntity.setTaxon(taxon);
+		dbEntity.setTaxon(taxon);
 		
 		String symbol = validateSymbol(uiEntity);
-		if (symbol != null) dbEntity.setSymbol(symbol);
+		dbEntity.setSymbol(symbol);
 		
 		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
 			dbEntity.setSynonyms(uiEntity.getSynonyms());
