@@ -35,6 +35,21 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	
 	@Transactional
 	public Reference retrieveFromLiteratureService(String xrefCurie) {
+		
+		LiteratureReference litRef = fetchLiteratureServiceReference(xrefCurie);
+
+		if (litRef != null) {
+			Reference ref = new Reference();
+			ref.setDisplayXref(xrefCurie);
+			ref = copyLiteratureReferenceFields(litRef, ref);
+		
+			return referenceDAO.persist(ref);
+		}
+		
+		return null;
+	}
+	
+	protected LiteratureReference fetchLiteratureServiceReference(String xrefCurie) {
 		Pagination pagination = new Pagination();
 		pagination.setPage(0);
 		pagination.setLimit(2);
@@ -59,20 +74,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 			for (LiteratureReference result : response.getResults()) {
 				for (LiteratureCrossReference xref : result.getCross_reference()) {
 					if (xref.getCurie().equals(xrefCurie)) {
-						SearchResponse<Reference> referenceResponse = referenceDAO.findByField("displayXref", result.getCurie());
-						Reference reference;
-						if (referenceResponse == null) {
-							reference = new Reference();
-						} else {
-							reference = referenceResponse.getSingleResult();
-						}
-						
-						reference.setDisplayXref(xrefCurie);
-						reference.setCurie(result.getCurie());
-						reference.setCrossReferences(convertXrefs(result.getCross_reference()));
-						reference.setTitle(result.getTitle());
-						
-						return referenceDAO.persist(reference);		
+						return result;
 					}
 				}
 			}
@@ -82,6 +84,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	}
 	
 	protected List<CrossReference> convertXrefs (List<LiteratureCrossReference> litXrefs) {
+		
 		ArrayList<CrossReference> curationXrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litXrefs) {
 			CrossReference curationXref = new CrossReference();
@@ -91,13 +94,27 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		return curationXrefs;
 	}
+	
+	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
+		
+		ref.setCurie(litRef.getCurie());
+		ref.setCrossReferences(convertXrefs(litRef.getCross_reference()));
+		ref.setTitle(litRef.getTitle());
+		
+		return ref;
+	}
 
-	@Transactional
 	public void synchroniseReferences() {
 		
 		SearchResponse<Reference> response = referenceDAO.findAll(null);
-		for (Reference reference : response.getResults()) {
-			retrieveFromLiteratureService(reference.getCurie());
+		for (Reference ref : response.getResults()) {
+			LiteratureReference litRef = fetchLiteratureServiceReference(ref.getDisplayXref());
+			if (litRef == null) {
+				ref.setObsolete(true);
+			} else {
+				ref = copyLiteratureReferenceFields(litRef, ref);
+			}
+			referenceDAO.merge(ref);
 		}
 	}
 }

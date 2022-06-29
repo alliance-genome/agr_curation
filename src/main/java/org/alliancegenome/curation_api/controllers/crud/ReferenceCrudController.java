@@ -21,7 +21,6 @@ public class ReferenceCrudController extends BaseCrudController<ReferenceService
 		setService(referenceService);
 	}
 
-	@Override
 	public void synchroniseReferences() {
 		referenceService.synchroniseReferences();
 	}
