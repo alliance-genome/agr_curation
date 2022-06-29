@@ -22,9 +22,11 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	@Inject
 	VocabularyDAO vocabularyDAO;
 	
+	private String errorMessage;
+	
 	public VocabularyTerm validateVocabularyTermUpdate(VocabularyTerm uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		response.setErrorMessage("Could not update VocabularyTerm: [" + uiEntity.getId() + "]");
+		errorMessage = "Could not update VocabularyTerm: [" + uiEntity.getId() + "]";
 		
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -42,7 +44,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	
 	public VocabularyTerm validateVocabularyTermCreate(VocabularyTerm uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		response.setErrorMessage("Could not create VocabularyTerm: [" + uiEntity.getName() + "]");
+		errorMessage = "Could not create VocabularyTerm: [" + uiEntity.getName() + "]";
 		
 		VocabularyTerm dbEntity = new VocabularyTerm();
 		
@@ -68,6 +70,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 		}
 		
 		if (response.hasErrors()) {
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 		
