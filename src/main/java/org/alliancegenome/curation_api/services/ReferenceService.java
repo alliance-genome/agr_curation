@@ -54,7 +54,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		if (response != null) {
 			for (LiteratureReference result : response.getResults()) {
-				for (LiteratureCrossReference xref : result.getCross_reference()) {
+				for (LiteratureCrossReference xref : result.getCross_references()) {
 					if (xref.getCurie().equals(curie)) {
 						Reference reference = new Reference();
 						reference.setCurie(curie);
