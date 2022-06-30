@@ -26,11 +26,17 @@ import '../../assets/demo/Demos.scss';
 import '../../assets/layout/layout.scss';
 import '../../App.scss';
 
+const initialThemeState = {
+	layoutMode: "static",
+	layoutColorMode: "dark",
+	inputStyle: "outlined",
+	ripple: true,
+	scale: 14,
+	theme: "vela-blue",
+};
+
 export const SiteLayout = (props) => {
-		const [layoutMode, setLayoutMode] = useSessionStorage('layoutMode', 'static');
-		const [layoutColorMode, setLayoutColorMode] = useSessionStorage('layoutColorMode', 'dark')
-		const [inputStyle, setInputStyle] = useSessionStorage('inputStyle', 'outlined');
-		const [ripple, setRipple] = useSessionStorage('ripple', true);
+		const [themeState, setThemeState] = useSessionStorage( "themeSettings", initialThemeState);
 		const [staticMenuInactive, setStaticMenuInactive] = useState(false);
 		const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);
@@ -47,6 +53,42 @@ export const SiteLayout = (props) => {
 
 		const { children } = props;
 		let [apiService, setApiService] = useState();
+
+		const setInputStyle = (value) => {
+			let _themeState = {
+				...themeState,
+				inputStyle: value
+			};
+
+			setThemeState(_themeState);
+		}
+
+		const setRipple = (value) => {
+			let _themeState = {
+				...themeState,
+				ripple: value
+			};
+
+			setThemeState(_themeState);
+		}
+
+		const setLayoutMode = (value) => {
+			let _themeState = {
+				...themeState,
+				layoutMode: value
+			};
+
+			setThemeState(_themeState);
+		}
+
+		const setLayoutColorMode= (value) => {
+			let _themeState = {
+				...themeState,
+				layoutColorMode: value
+			};
+
+			setThemeState(_themeState);
+		}
 
 		useEffect(() => {
 			if(authState?.isAuthenticated){
@@ -143,7 +185,7 @@ export const SiteLayout = (props) => {
 				menuClick = true;
 
 				if (isDesktop()) {
-						if (layoutMode === 'overlay') {
+						if (themeState.layoutMode === 'overlay') {
 								if (mobileMenuActive === true) {
 										setOverlayMenuActive(true);
 								}
@@ -151,7 +193,7 @@ export const SiteLayout = (props) => {
 								setOverlayMenuActive((prevState) => !prevState);
 								setMobileMenuActive(false);
 						}
-						else if (layoutMode === 'static') {
+						else if (themeState.layoutMode === 'static') {
 								setStaticMenuInactive((prevState) => !prevState);
 						}
 				}
@@ -273,26 +315,26 @@ export const SiteLayout = (props) => {
 		}
 
 		const wrapperClass = classNames('layout-wrapper', {
-				'layout-overlay': layoutMode === 'overlay',
-				'layout-static': layoutMode === 'static',
-				'layout-static-sidebar-inactive': staticMenuInactive && layoutMode === 'static',
-				'layout-overlay-sidebar-active': overlayMenuActive && layoutMode === 'overlay',
+				'layout-overlay': themeState.layoutMode === 'overlay',
+				'layout-static': themeState.layoutMode === 'static',
+				'layout-static-sidebar-inactive': staticMenuInactive && themeState.layoutMode === 'static',
+				'layout-overlay-sidebar-active': overlayMenuActive && themeState.layoutMode === 'overlay',
 				'layout-mobile-sidebar-active': mobileMenuActive,
-				'p-input-filled': inputStyle === 'filled',
-				'p-ripple-disabled': ripple === false,
-				'layout-theme-light': layoutColorMode === 'light'
+				'p-input-filled': themeState.inputStyle === 'filled',
+				'p-ripple-disabled': themeState.ripple === false,
+				'layout-theme-light': themeState.layoutColorMode === 'light'
 		});
 
 		return (
 				<div className={wrapperClass} onClick={onWrapperClick}>
 						<Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={layoutColorMode}
+						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={themeState.layoutColorMode}
 								mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
 								authState={authState} logout={logout} userInfo={userInfo} />
 
 						<div className="layout-sidebar" onClick={onSidebarClick}>
-								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={layoutColorMode} />
+								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState.layoutColorMode} />
 						</div>
 
 						<div className="layout-main-container">
@@ -300,11 +342,12 @@ export const SiteLayout = (props) => {
 										{children}
 								</div>
 
-								<AppFooter layoutColorMode={layoutColorMode} />
+								<AppFooter layoutColorMode={themeState.layoutColorMode} />
 						</div>
 
-						<AppConfig rippleEffect={ripple} onRippleEffect={onRipple} inputStyle={inputStyle} onInputStyleChange={onInputStyleChange}
-								layoutMode={layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={layoutColorMode} onColorModeChange={onColorModeChange} />
+						<AppConfig rippleEffect={themeState.ripple} onRippleEffect={onRipple} inputStyle={themeState.inputStyle} onInputStyleChange={onInputStyleChange}
+								layoutMode={themeState.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState.layoutColorMode} onColorModeChange={onColorModeChange} 
+								themeState={themeState} setThemeState={setThemeState}/>
 
 						<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>
 								<div className="layout-mask p-component-overlay"></div>
