@@ -94,13 +94,14 @@ export function getRefID(referenceItem) {
 		return ''
 	let pmid = ''
 	let pmodid = ''
-	referenceItem.cross_reference.forEach((entry) => {
+	if(!referenceItem.cross_references) return;
+	referenceItem.cross_references.forEach((entry) => {
 		if (entry.curie.startsWith('PMID:')) {
 			pmid = entry.curie;
 		}
 	})
 	if (pmid === "") {
-		referenceItem.cross_reference.forEach((entry) => {
+		referenceItem.cross_references.forEach((entry) => {
 			if (entry.curie.startsWith('MGI:') ||
 				entry.curie.startsWith('RGD:') ||
 				entry.curie.startsWith('ZFIN:') ||
