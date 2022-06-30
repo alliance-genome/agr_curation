@@ -1,3 +1,5 @@
+import { confirmDialog } from 'primereact/confirmdialog';
+
 export function returnSorted(event, originalSort) {
 
 	let found = false;
@@ -113,4 +115,17 @@ export function getRefID(referenceItem) {
 	}
 	// use pmid if non-nul otherwise use pmodID
 	return pmid ? pmid : pmodid;
+}
+
+
+export function genericConfirmDialog({ header, message, accept, reject }){
+	confirmDialog({
+		message,
+		header,
+		acceptClassName: 'p-button-danger',
+		icon: 'pi pi-info-circle',
+		accept,
+		reject,
+	});
+
 }
