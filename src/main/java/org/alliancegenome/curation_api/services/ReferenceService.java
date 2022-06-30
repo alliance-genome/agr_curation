@@ -19,6 +19,9 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
@@ -72,7 +75,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		if (response != null) {
 			for (LiteratureReference result : response.getResults()) {
-				for (LiteratureCrossReference xref : result.getCross_reference()) {
+				for (LiteratureCrossReference xref : result.getCross_references()) {
 					if (xref.getCurie().equals(xrefCurie)) {
 						return result;
 					}
@@ -98,7 +101,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
 		
 		ref.setCurie(litRef.getCurie());
-		ref.setCrossReferences(convertXrefs(litRef.getCross_reference()));
+		ref.setCrossReferences(convertXrefs(litRef.getCross_references()));
 		ref.setTitle(litRef.getTitle());
 		
 		return ref;
@@ -106,15 +109,29 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
 	public void synchroniseReferences() {
 		
-		SearchResponse<Reference> response = referenceDAO.findAll(null);
-		for (Reference ref : response.getResults()) {
-			LiteratureReference litRef = fetchLiteratureServiceReference(ref.getDisplayXref());
-			if (litRef == null) {
-				ref.setObsolete(true);
-			} else {
-				ref = copyLiteratureReferenceFields(litRef, ref);
+		Pagination pagination = new Pagination();
+		pagination.setLimit(500);
+		int page = 0;
+		Boolean allSynced = false;
+		while (!allSynced) {
+			pagination.setPage(page);
+			SearchResponse<Reference> response = referenceDAO.findAll(pagination);
+			for (Reference ref : response.getResults()) {
+				LiteratureReference litRef = fetchLiteratureServiceReference(ref.getDisplayXref());
+				if (litRef == null) {
+					ref.setObsolete(true);
+				} else {
+					ref = copyLiteratureReferenceFields(litRef, ref);
+				}
+				referenceDAO.merge(ref);
 			}
-			referenceDAO.merge(ref);
+			page = page + 1;
+			int nrSynced = 100 * page;
+			if (nrSynced > response.getTotalResults().intValue()) {
+				nrSynced = response.getTotalResults().intValue();
+				allSynced = true;
+			}
+			log.info("Synchronised " + nrSynced + " of " + response.getTotalResults() + " Reference objects");
 		}
 	}
 }
