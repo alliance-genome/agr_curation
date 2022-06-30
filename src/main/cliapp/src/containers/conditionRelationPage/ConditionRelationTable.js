@@ -74,7 +74,7 @@ export const ConditionRelationTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["curie", "cross_reference.curie"]}
+					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
