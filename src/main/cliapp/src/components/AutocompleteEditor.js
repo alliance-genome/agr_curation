@@ -115,10 +115,10 @@ export const AutocompleteEditor = (
 				}
 			}
 		}
-		if (autocompleteSelectedItem.cross_reference?.length > 0) {
-			for (let i in autocompleteSelectedItem.cross_reference) {
-				if (autocompleteSelectedItem.cross_reference[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
-					delete autocompleteSelectedItem.cross_reference[i];
+		if (autocompleteSelectedItem.cross_references?.length > 0) {
+			for (let i in autocompleteSelectedItem.cross_references) {
+				if (autocompleteSelectedItem.cross_references[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
+					delete autocompleteSelectedItem.cross_references[i];
 				}
 			}
 		}
@@ -219,8 +219,8 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 					key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
 				}
 				{
-					autocompleteSelectedItem.cross_reference &&
-					autocompleteSelectedItem.cross_reference.map((ref) => <div
+					autocompleteSelectedItem.cross_references &&
+					autocompleteSelectedItem.cross_references.map((ref) => <div
 						key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
 				}
 				{
