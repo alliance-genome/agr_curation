@@ -8,7 +8,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.interfaces.person.LoggedInPersonInterface;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
-import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;
 
@@ -30,5 +29,10 @@ public class LoggedInPersonController implements LoggedInPersonInterface {
 	@Override
 	public LoggedInPerson getLoggedInPerson() {
 		return authenticatedPerson;
+	}
+
+	@Override
+	public LoggedInPerson regenApiToken() {
+		return loggedInPersonService.regenApiToken();
 	}
 }
