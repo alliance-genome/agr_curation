@@ -4,9 +4,9 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 import { useOktaAuth } from '@okta/okta-react';
-import { Button } from 'primereact/button';
 import { resetThemes } from '../../service/useSessionStorage';
-import { genericConfirmDialog } from '../../utils/utils';
+
+import { ConfirmButton } from '../../components/ConfirmButton';
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -36,19 +36,12 @@ export const ProfileComponent = () => {
 		window.location.reload();
 	};
 
-	const globalConfirm = () => {
-		genericConfirmDialog({
-			header: "Global State Reset",
-			message: "Are you sure? This will reset the local state of all the data tables and your theme settings.",
-			accept: globalResetHandler
-		});
-	}
-
-	const themeConfirm = () => {
-		genericConfirmDialog({
-			header: "Theme State Reset",
-			message: "Are you sure? This will reset your theme settings.",
-			accept: themeResetHandler
+	const regenApiTokenr = () => {
+		console.log("RegenToken");
+		loggedInPersonService.regenApiToken().then((data) => {
+			setLocalUserInfo(data);
+		}).catch((err) => {
+			console.log(err);
 		});
 	}
 
@@ -66,26 +59,57 @@ export const ProfileComponent = () => {
 
 	const userInfos = [
 		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName },
-		{ name: "Email", value: localUserInfo.email },
+		{ name: "Okta Email", value: localUserInfo.oktaEmail },
 		{ name: "Okta Token", value: oktaToken.accessToken.accessToken },
 		{ name: "Curation API Token", value: localUserInfo.apiToken },
 	];
 
-	const header = () => {
+	const valueTemplate = (props) => {
+		console.log(props);
 		return (
-			<div className='card' style={{textAlign: "right"}}>
-				<Button onClick={globalConfirm} className="p-button-danger mr-3">Global State Reset</Button>
-				<Button onClick={themeConfirm}>Reset Themes</Button>
-			</div>
-		)
-	};
+			<p style={{ wordBreak: "break-all" }}>{ props.value }</p>
+		);
+	}
 
 	return (
-		<Card title="User Profile" subTitle="">
-			<DataTable value={userInfos} header={header}>
-				 <Column field="name" header="Name" />
-				 <Column field="value" header="Value" />
-			</DataTable>
-		</Card>
+		<div className="grid">
+			<div className="col-12">
+				<Card title="User Profile" subTitle="">
+					<DataTable value={userInfos} style={{ width: "100%"}}>
+						<Column field="name" header="Name" />
+						<Column field="value" header="Value" body={valueTemplate} />
+					</DataTable>
+				</Card>
+			</div>
+			<div className="col-6">
+				<div className="grid">
+					<div className="col-5">
+						<ConfirmButton
+							buttonText="Regenerate Curation API Token"
+							headerText="Regenerate Curation API Token"
+							messageText="Are you sure you want to regenerate the API token? This will immediately invalidate the prior token and it can't be used again."
+							acceptHandler={regenApiTokenr}
+						/>
+					</div>
+					<div className="col-4">
+						<ConfirmButton
+							buttonText="Global State Reset"
+							headerText="Global State Reset"
+							buttonClassName="p-button-danger mr-3"
+							messageText="Are you sure? This will reset the local state of all the data tables and your theme settings."
+							acceptHandler={globalResetHandler}
+						/>
+					</div>
+					<div className="col-3">
+						<ConfirmButton
+							buttonText="Reset Themes"
+							headerText="Reset Themes"
+							messageText="Are you sure? This will reset your theme settings."
+							acceptHandler={themeResetHandler}
+						/>
+					</div>
+				</div>
+			</div>
+		</div>
 	);
 };

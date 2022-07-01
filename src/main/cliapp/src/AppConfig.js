@@ -77,7 +77,6 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 		}
 
 		useEffect(() => {
-				console.log(themeState.scale);
 				document.documentElement.style.fontSize = themeState.scale + 'px';
 		}, [themeState.scale])
 
