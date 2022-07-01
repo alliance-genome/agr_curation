@@ -61,8 +61,11 @@ The three permanent branches in this repository represent the code to be deploye
       > git push origin feature/${JIRA-TICKET-NR}_short-description
       ```
 
-   -  Once coding and testing completed, submit a pull request in github to merge back to alpha.
-      Deployment to alpha will automatically trigger once the PR is approved and merged.
+   -  Once coding and testing completed, submit a pull request in github to merge back to alpha.  
+      If this PR does not require deployment (because it only concerns files like the README, or to
+      batch multiple fast-consecutive PRs into a single deployment), apply the `no-deploy` GitHub label
+      to the PR (on creation) to skip automatic deployment. Otherwise, deployment to alpha will
+      automatically trigger once the PR is approved and merged.
 
 *  To make fixes to the version currently deployed on the beta environment:
 
