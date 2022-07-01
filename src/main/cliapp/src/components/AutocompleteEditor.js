@@ -91,7 +91,8 @@ export const AutocompleteEditor = (
 	};
 
 	const onSelectionOver = (event, item) => {
-		setAutocompleteSelectedItem(item);
+		let itemCopy = global.structuredClone(item);
+		setAutocompleteSelectedItem(itemCopy);
 		op.current.show(event);
 	};
 
