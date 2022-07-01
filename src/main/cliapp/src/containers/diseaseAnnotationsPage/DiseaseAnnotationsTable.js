@@ -2,7 +2,10 @@ import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { AutocompleteEditor } from '../../components/AutocompleteEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
@@ -456,6 +459,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='subjectFilter'
 					fieldName='subject'
 					isSubject={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -476,6 +481,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
 					isSgdStrainBackground={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -496,6 +503,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='geneticModifierFilter'
 					fieldName='diseaseGeneticModifier'
 					isSubject={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -543,6 +552,8 @@ export const DiseaseAnnotationsTable = () => {
 					fieldName='with'
 					isWith={true}
 					isMultiple={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -574,7 +585,10 @@ export const DiseaseAnnotationsTable = () => {
 								queryString: "agr_eco_terms"
 							}
 						}
-					}} />
+					}} 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+			/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
 					errorField="evidence"
@@ -669,6 +683,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='curieFilter'
 					isReference={true}
 					fieldName='singleReference'
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
