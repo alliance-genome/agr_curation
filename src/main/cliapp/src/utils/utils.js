@@ -1,3 +1,5 @@
+import { confirmDialog } from 'primereact/confirmdialog';
+
 export function returnSorted(event, originalSort) {
 
 	let found = false;
@@ -92,17 +94,19 @@ export function getRefID(referenceItem) {
 		return ''
 	let pmid = ''
 	let pmodid = ''
-	referenceItem.cross_reference.forEach((entry) => {
+	if(!referenceItem.cross_references) return;
+	referenceItem.cross_references.forEach((entry) => {
 		if (entry.curie.startsWith('PMID:')) {
 			pmid = entry.curie;
 		}
 	})
 	if (pmid === "") {
-		referenceItem.cross_reference.forEach((entry) => {
+		referenceItem.cross_references.forEach((entry) => {
 			if (entry.curie.startsWith('MGI:') ||
 				entry.curie.startsWith('RGD:') ||
 				entry.curie.startsWith('ZFIN:') ||
 				entry.curie.startsWith('WB:') ||
+				entry.curie.startsWith('SGD:') ||
 				entry.curie.startsWith('FB:') ||
 				entry.curie.startsWith('DOI:') ||
 				entry.curie.startsWith('PMCID:')) {
@@ -112,4 +116,17 @@ export function getRefID(referenceItem) {
 	}
 	// use pmid if non-nul otherwise use pmodID
 	return pmid ? pmid : pmodid;
+}
+
+
+export function genericConfirmDialog({ header, message, accept, reject }){
+	confirmDialog({
+		message,
+		header,
+		acceptClassName: 'p-button-danger',
+		icon: 'pi pi-info-circle',
+		accept,
+		reject,
+	});
+
 }

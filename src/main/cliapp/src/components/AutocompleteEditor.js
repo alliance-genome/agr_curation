@@ -115,7 +115,13 @@ export const AutocompleteEditor = (
 				}
 			}
 		}
-
+		if (autocompleteSelectedItem.cross_references?.length > 0) {
+			for (let i in autocompleteSelectedItem.cross_references) {
+				if (autocompleteSelectedItem.cross_references[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
+					delete autocompleteSelectedItem.cross_references[i];
+				}
+			}
+		}
 		if (autocompleteSelectedItem.secondaryIdentifiers?.length > 0) {
 			for (let i in autocompleteSelectedItem.secondaryIdentifiers) {
 				if (autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue) < 0) {
@@ -211,6 +217,11 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 					autocompleteSelectedItem.crossReferences &&
 					autocompleteSelectedItem.crossReferences.map((ref) => <div
 					key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
+				}
+				{
+					autocompleteSelectedItem.cross_references &&
+					autocompleteSelectedItem.cross_references.map((ref) => <div
+						key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
 				}
 				{
 					autocompleteSelectedItem.secondaryIdentifiers &&

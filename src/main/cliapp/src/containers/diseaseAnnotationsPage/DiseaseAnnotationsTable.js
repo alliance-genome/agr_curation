@@ -635,7 +635,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["curie", "cross_reference.curie"]}
+					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
@@ -646,7 +646,7 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
+					errorField={"singleReference"}
 				/>
 			</>
 		);
