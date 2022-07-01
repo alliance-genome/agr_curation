@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
@@ -34,25 +35,29 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity);
 
 		String name = validateName(uiEntity);
-		if (name != null) dbEntity.setName(name);
+		dbEntity.setName(name);
 		
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
-		if (taxon != null) dbEntity.setTaxon(taxon);
+		dbEntity.setTaxon(taxon);
 		
-		if (uiEntity.getSubtype() != null) {
-			dbEntity.setSubtype(uiEntity.getSubtype());
-		}
+		dbEntity.setSubtype(uiEntity.getSubtype());
 		
-		if (uiEntity.getSynonyms() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
 			dbEntity.setSynonyms(uiEntity.getSynonyms());
+		} else {
+			dbEntity.setSynonyms(null);
 		}
 
-		if (uiEntity.getSecondaryIdentifiers() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
+		} else {
+			dbEntity.setSecondaryIdentifiers(null);
 		}
 
-		if (uiEntity.getCrossReferences() != null) {
+		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
 			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
+		} else {
+			dbEntity.setCrossReferences(null);
 		}
 		
 		if (response.hasErrors()) {

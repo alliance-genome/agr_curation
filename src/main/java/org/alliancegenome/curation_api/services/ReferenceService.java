@@ -10,12 +10,11 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.model.document.LiteratureCrossReference;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
-
-import lombok.extern.jbosslog.JBossLog;
 
 @RequestScoped
 public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
@@ -52,11 +51,20 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		params.put("searchFilters", filter);		
 		
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-		if (response == null || response.getResults().size() != 1)
-			return null;
 		
-		Reference reference = new Reference();
-		reference.setCurie(curie);
-		return referenceDAO.persist(reference);
+		if (response != null) {
+			for (LiteratureReference result : response.getResults()) {
+				for (LiteratureCrossReference xref : result.getCross_references()) {
+					if (xref.getCurie().equals(curie)) {
+						Reference reference = new Reference();
+						reference.setCurie(curie);
+						return referenceDAO.persist(reference);
+					}
+				}
+			}
+		}
+		
+		return null;
+		
 	}
 }

@@ -1,7 +1,20 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
+import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -11,12 +24,9 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import java.util.*;
 
 @RequestScoped
 public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
@@ -55,6 +65,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			throw new ApiErrorException(response);
 		}
 
+		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity);
+		
 		validateConditionRelationHandlePubUnique(uiEntity, dbEntity);
 
 		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
@@ -71,8 +83,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			dbEntity.setHandle(uiEntity.getHandle());
 		}
 		// You cannot move from a condition-relation with handle to one without.
-		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isEmpty(uiEntity.getHandle())) {
-			addMessageResponse("handle", requiredMessage);
+		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isBlank(uiEntity.getHandle())) {
+			addMessageResponse("handle", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
 		validateReferenceField(uiEntity, dbEntity);
@@ -91,7 +103,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	// check that pub-handle combination is unique
 	private void validateConditionRelationHandlePubUnique(ConditionRelation uiEntity, ConditionRelation dbEntity) {
-		if (StringUtils.isEmpty(uiEntity.getHandle()))
+		if (StringUtils.isBlank(uiEntity.getHandle()))
 			return;
 		// if handle / pub combination has changed check that the new key is not already taken in the database
 		if (!getUniqueKey(uiEntity).equals(getUniqueKey(dbEntity))) {
@@ -131,7 +143,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		}
 
 		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
-			addMessageResponse("reference", requiredMessage);
+			addMessageResponse("reference", ValidationConstants.REQUIRED_MESSAGE);
 			return;
 		}
 		String curie = uiEntity.getSingleReference().getCurie();
@@ -149,7 +161,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {
 		String field = "conditionRelationType";
 		if (uiEntity.getConditionRelationType() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
@@ -163,12 +175,12 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 					VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 		}
 		if (conditionRelationType == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
 		if (conditionRelationType.getObsolete() && !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
@@ -178,7 +190,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	public List<ExperimentalCondition> validateConditions(ConditionRelation uiEntity) {
 		String field = "conditions";
 		if (CollectionUtils.isEmpty(uiEntity.getConditions())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
@@ -187,7 +199,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			SearchResponse<ExperimentalCondition> conditionResponse =
 				experimentalConditionDAO.findByField("uniqueId", condition.getUniqueId());
 			if (conditionResponse == null || conditionResponse.getSingleResult() == null) {
-				addMessageResponse(field, invalidMessage);
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 			conditions.add(condition);

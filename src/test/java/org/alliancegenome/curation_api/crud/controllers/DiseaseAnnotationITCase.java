@@ -1182,6 +1182,24 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(200).
 				body("", is(Collections.emptyMap()));
+		
+		Long nextDeletedNoteId = relatedNotes.get(0).getId();
+		editedDiseaseAnnotation.setRelatedNotes(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(editedDiseaseAnnotation).
+			when().
+			put("/api/gene-disease-annotation").
+			then().
+			statusCode(200);
+
+		RestAssured.given().
+			when().
+			get("/api/note/" + nextDeletedNoteId).
+			then().
+			statusCode(200).
+			body("", is(Collections.emptyMap()));
 	}
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
@@ -1335,6 +1353,7 @@ public class DiseaseAnnotationITCase {
 	private Vocabulary createVocabulary(String name) {
 		Vocabulary vocabulary = new Vocabulary();
 		vocabulary.setName(name);
+		vocabulary.setInternal(false);
 		
 		ObjectResponse<Vocabulary> response = 
 			RestAssured.given().
@@ -1386,6 +1405,7 @@ public class DiseaseAnnotationITCase {
 		vocabularyTerm.setName(name);
 		vocabularyTerm.setVocabulary(vocabulary);
 		vocabularyTerm.setObsolete(obsolete);
+		vocabularyTerm.setInternal(false);
 		
 		ObjectResponse<VocabularyTerm> response = 
 			RestAssured.given().

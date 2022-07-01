@@ -3,10 +3,14 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.VocabularyDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,15 +22,11 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	@Inject
 	VocabularyDAO vocabularyDAO;
 	
-	protected String invalidMessage = "Not a valid entry";
-	protected String obsoleteMessage = "Obsolete term specified";
-	protected String requiredMessage = "Required field is empty";
+	private String errorMessage;
 	
-	protected ObjectResponse<VocabularyTerm> response;
-	
-	public VocabularyTerm validateVocabularyTerm(VocabularyTerm uiEntity) {
+	public VocabularyTerm validateVocabularyTermUpdate(VocabularyTerm uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update VocabularyTerm: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update VocabularyTerm: [" + uiEntity.getId() + "]";
 		
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -39,40 +39,38 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 			throw new ApiErrorException(response);
 		}
 		
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
+		return validateVocabularyTerm(uiEntity, dbEntity);
+	}
+	
+	public VocabularyTerm validateVocabularyTermCreate(VocabularyTerm uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create VocabularyTerm: [" + uiEntity.getName() + "]";
+		
+		VocabularyTerm dbEntity = new VocabularyTerm();
+		
+		return validateVocabularyTerm(uiEntity, dbEntity);
+	}
+	
+	public VocabularyTerm validateVocabularyTerm(VocabularyTerm uiEntity, VocabularyTerm dbEntity) {
+		dbEntity = (VocabularyTerm) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
 		
-		if (!StringUtils.isBlank(uiEntity.getAbbreviation())) {
-			dbEntity.setAbbreviation(uiEntity.getAbbreviation());
-		} else {
-			dbEntity.setAbbreviation(null);
-		}
-		
-		if (!StringUtils.isBlank(uiEntity.getDefinition())) {
-			dbEntity.setDefinition(uiEntity.getDefinition());
-		} else {
-			dbEntity.setDefinition(null);
-		}
-		
-		if (uiEntity.getObsolete() == null) {
-			dbEntity.setObsolete(false);
-		} else {
-			dbEntity.setObsolete(uiEntity.getObsolete());
-		}
-		
-		if (uiEntity.getInternal() != null)
-			dbEntity.setInternal(uiEntity.getInternal());
+		dbEntity.setAbbreviation(handleStringField(uiEntity.getAbbreviation()));
+		dbEntity.setDefinition(handleStringField(uiEntity.getDefinition()));
 		
 		Vocabulary vocabulary = validateVocabulary(uiEntity, dbEntity);
 		dbEntity.setVocabulary(vocabulary);
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getTextSynonyms()))
+		if (CollectionUtils.isNotEmpty(uiEntity.getTextSynonyms())) {
 			dbEntity.setTextSynonyms(uiEntity.getTextSynonyms());
+		} else {
+			dbEntity.setTextSynonyms(null);
+		}
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 		
@@ -82,7 +80,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	public String validateName(VocabularyTerm uiEntity) {
 		String field = "name";
 		if (StringUtils.isBlank(uiEntity.getName())) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
@@ -92,29 +90,22 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 	public Vocabulary validateVocabulary(VocabularyTerm uiEntity, VocabularyTerm dbEntity) {
 		String field = "vocabulary";
 		if (uiEntity.getVocabulary() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		SearchResponse<Vocabulary> vocabularyResponse = vocabularyDAO.findByField("name", uiEntity.getVocabulary().getName());
 		if (vocabularyResponse == null || vocabularyResponse.getSingleResult() == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		
 		Vocabulary vocabulary = vocabularyResponse.getSingleResult();
 		if (vocabulary.getObsolete() && !vocabulary.getName().equals(dbEntity.getVocabulary().getName())) {
-			addMessageResponse(field, obsoleteMessage);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		
 		return vocabulary;
 	}
-	
-	protected void addMessageResponse(String message) {
-		response.setErrorMessage(message);
-	}
-	
-	protected void addMessageResponse(String fieldName, String message) {
-		response.addErrorMessage(fieldName, message);
-	}
+
 }
