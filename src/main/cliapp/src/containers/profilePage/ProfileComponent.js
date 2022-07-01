@@ -36,7 +36,7 @@ export const ProfileComponent = () => {
 		window.location.reload();
 	};
 
-	const regenApiTokenr = () => {
+	const regenApiToken = () => {
 		console.log("RegenToken");
 		loggedInPersonService.regenApiToken().then((data) => {
 			setLocalUserInfo(data);
@@ -88,7 +88,7 @@ export const ProfileComponent = () => {
 							buttonText="Regenerate Curation API Token"
 							headerText="Regenerate Curation API Token"
 							messageText="Are you sure you want to regenerate the API token? This will immediately invalidate the prior token and it can't be used again."
-							acceptHandler={regenApiTokenr}
+							acceptHandler={regenApiToken}
 						/>
 					</div>
 					<div className="col-4">
