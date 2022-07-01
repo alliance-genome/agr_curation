@@ -23,7 +23,9 @@ These instructions will get you a copy of the project and the API up and running
 -  [Releasing and Deploying](#releasing-and-deploying)
    *  [Deployment environments](#deployment-environments)
    *  [Promoting code versions](#promoting-code-versions)
-   *  [Deploying to beta or production](#deploying-to-beta-or-production)
+      -  [Promoting code from alpha to beta](#promoting-code-from-alpha-to-beta)
+      -  [Promoting code from beta to production](#promoting-code-from-beta-to-production)
+   *  [Additional deployment steps](#additional-deployment-steps)
    *  [Release versioning](#release-versioning)
    *  [Release Creation](#release-creation)
 -  [Loading Data](#loading-data)
@@ -78,7 +80,7 @@ The three permanent branches in this repository represent the code to be deploye
       ```
 
    -  Once coding and testing completed, submit a pull request in github to merge back to beta.
-      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
+      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#additional-deployment-steps).
 
 *  To make fixes to the version currently deployed on the production environment:
 
@@ -96,7 +98,7 @@ The three permanent branches in this repository represent the code to be deploye
       ```
 
    -  Once coding and testing completed, submit a pull request in github to merge back to production.
-      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
+      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#additional-deployment-steps).
 
 ### Data structure changes
 When making code changes which change any of the data structures, the supporting database schema needs to reflect these changes
@@ -332,8 +334,7 @@ The general flow from coding to a production release goes something like this:
 
 As the code goes through the different stages, it becomes more and more stable as it gets closer to production.
 
-In order to promote changes from alpha to beta:
-
+#### Promoting code from alpha to beta
 1. Decide on a proper release version number to be used for the new prerelease
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for beta (pre)releases that means either
@@ -352,7 +353,7 @@ In order to promote changes from alpha to beta:
    git push origin release/vx.y.z-rca
    ```
 3. Create a pull request to merge this release branch in beta
-4. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+4. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the beta environment.
 5. After prerelease creation and deployment, merge the beta branch back to alpha and push to github
    There are two ways you can do this:
@@ -378,6 +379,7 @@ In order to promote changes from alpha to beta:
 
 In order to promote changes from beta to production:
 
+#### Promoting code from beta to production
 1. Decide on a proper release version number to be used for the new release
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for production (full) releases that means removing the release-candidate extension
@@ -396,7 +398,7 @@ In order to promote changes from beta to production:
    git push origin release/vx.y.z
    ```
 5. Create a pull request to merge this release branch in production
-6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+6. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the production environment.
 7. After release creation and deployment, the production branch must be merged back to beta,
    in order to make the release tag reachable from beta (and report the correct version number through `git describe --tags`).
@@ -421,7 +423,7 @@ In order to promote changes from beta to production:
          This must be prevented at all times, as we do not want release candidate code still under evaluation to get
          merged into the production branch.
 
-### Deploying to beta or production
+### Additional deployment steps
 In order to successfully deploy to the beta or production environment, as few additional steps need to be taken
 to ensure the new version of the application can function in a consistent state upon and after deployment.
 
@@ -504,7 +506,7 @@ To create a new (pre-)release and deploy to beta or production, do the following
 
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
-continue the remaining steps described in the [deployment section](#Deploying-to-beta-or-production).
+continue the remaining steps described in the [additional deployment steps section](#additional-deployment-steps).
 
 ## Loading Data
 
