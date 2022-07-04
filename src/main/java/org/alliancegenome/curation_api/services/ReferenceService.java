@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -15,9 +14,9 @@ import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.document.LiteratureCrossReference;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -92,7 +91,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		ArrayList<String> otherXrefs = new ArrayList<String>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
-			if (litRef.getCurie().startsWith("PMID:")) {
+			if (litXref.getCurie().startsWith("PMID:")) {
 				ref.setPrimaryCrossReference(litXref.getCurie());
 			} else {
 				otherXrefs.add(litXref.getCurie());	
@@ -132,7 +131,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	}
 	
 	@Transactional
-	public void synchroniseReference(String primaryXref) {
+	public ObjectResponse<Reference> synchroniseReference(String primaryXref) {
 		Reference originalRef = referenceDAO.find(primaryXref);
 		Reference updatedRef = originalRef;
 		LiteratureReference litRef = fetchLiteratureServiceReference(primaryXref);
@@ -153,6 +152,10 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 				updatedRef.setObsolete(true);
 			}
 		}
-		referenceDAO.merge(updatedRef);
+		
+		updatedRef = referenceDAO.persist(updatedRef);
+		ObjectResponse<Reference> response = new ObjectResponse<>();
+		response.setEntity(updatedRef);
+		return response;
 	}
 }
