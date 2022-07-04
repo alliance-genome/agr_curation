@@ -1,16 +1,21 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -21,6 +26,8 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	NoteDAO noteDAO;
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
+	@Inject
+	ReferenceService referenceService;
 
 	public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularyName) {
 		Note note = validateNote(uiEntity, noteVocabularyName, false);
@@ -51,10 +58,23 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		String freeText = validateFreeText(uiEntity);
 		dbEntity.setFreeText(freeText);
 
-		// TODO: add validation for references
-		if (CollectionUtils.isNotEmpty(uiEntity.getReferences()))
-			dbEntity.setReferences(uiEntity.getReferences());
-
+		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
+			List<Reference> references = new ArrayList<Reference>();
+			for (Reference uiReference : uiEntity.getReferences()) {
+				Reference reference = referenceService.retrieveFromLiteratureService(uiReference.getPrimaryCrossReference());
+				if (reference == null) {
+					addMessageResponse("references", ValidationConstants.INVALID_MESSAGE);
+				} else if (reference.getObsolete()) {
+					addMessageResponse("references", ValidationConstants.OBSOLETE_MESSAGE);
+				} else {
+					references.add(reference);
+				}
+			}
+			dbEntity.setReferences(references);
+		} else {
+			dbEntity.setReferences(null);
+		}
+		
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);

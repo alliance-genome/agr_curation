@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -43,8 +44,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
 		if (litRef != null) {
 			Reference ref = new Reference();
-			ref.setDisplayXref(xrefCurie);
-			ref = copyLiteratureReferenceFields(litRef, ref);
+			ref = copyLiteratureReferenceFields(litRef, ref, xrefCurie);
 		
 			return referenceDAO.persist(ref);
 		}
@@ -62,7 +62,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		searchDetails.put("queryString", xrefCurie);
 		
 		HashMap<String, Object> searchField = new HashMap<>();
-		searchField.put("cross_reference.curie", searchDetails);
+		searchField.put("cross_references.curie", searchDetails);
 		searchField.put("curie", searchDetails);
 
 		HashMap<String, Object> filter = new HashMap<>();
@@ -86,23 +86,24 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		return null;
 	}
 	
-	protected List<CrossReference> convertXrefs (List<LiteratureCrossReference> litXrefs) {
-		
-		ArrayList<CrossReference> curationXrefs = new ArrayList<CrossReference>();
-		for (LiteratureCrossReference litXref : litXrefs) {
-			CrossReference curationXref = new CrossReference();
-			curationXref.setCurie(litXref.getCurie());
-			curationXrefs.add(curationXref);
-		}
-		
-		return curationXrefs;
-	}
-	
-	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
+	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref, String searchCurie) {
 		
 		ref.setCurie(litRef.getCurie());
-		ref.setCrossReferences(convertXrefs(litRef.getCross_references()));
-		ref.setTitle(litRef.getTitle());
+		
+		ArrayList<String> otherXrefs = new ArrayList<String>();
+		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
+			if (litRef.getCurie().startsWith("PMID:")) {
+				ref.setPrimaryCrossReference(litXref.getCurie());
+			} else {
+				otherXrefs.add(litXref.getCurie());	
+			} 
+		}
+		
+		Collections.sort(otherXrefs);	
+		if (ref.getPrimaryCrossReference() == null)
+			ref.setPrimaryCrossReference(otherXrefs.remove(0));
+		
+		ref.setSecondaryCrossReferences(otherXrefs);
 		
 		return ref;
 	}
@@ -110,28 +111,48 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	public void synchroniseReferences() {
 		
 		Pagination pagination = new Pagination();
-		pagination.setLimit(500);
+		int limit = 500;
+		pagination.setLimit(limit);
 		int page = 0;
 		Boolean allSynced = false;
 		while (!allSynced) {
 			pagination.setPage(page);
 			SearchResponse<Reference> response = referenceDAO.findAll(pagination);
 			for (Reference ref : response.getResults()) {
-				LiteratureReference litRef = fetchLiteratureServiceReference(ref.getDisplayXref());
-				if (litRef == null) {
-					ref.setObsolete(true);
-				} else {
-					ref = copyLiteratureReferenceFields(litRef, ref);
-				}
-				referenceDAO.merge(ref);
+				synchroniseReference(ref.getPrimaryCrossReference());
 			}
 			page = page + 1;
-			int nrSynced = 100 * page;
+			int nrSynced = limit * page;
 			if (nrSynced > response.getTotalResults().intValue()) {
 				nrSynced = response.getTotalResults().intValue();
 				allSynced = true;
 			}
 			log.info("Synchronised " + nrSynced + " of " + response.getTotalResults() + " Reference objects");
 		}
+	}
+	
+	@Transactional
+	public void synchroniseReference(String primaryXref) {
+		Reference originalRef = referenceDAO.find(primaryXref);
+		Reference updatedRef = originalRef;
+		LiteratureReference litRef = fetchLiteratureServiceReference(primaryXref);
+		
+		if (litRef == null) {
+			// Set as obsolete if no longer in Literature Service
+			updatedRef.setObsolete(true);
+		} else {
+			updatedRef = copyLiteratureReferenceFields(litRef, updatedRef, primaryXref);
+		
+			if (!updatedRef.getPrimaryCrossReference().equals(primaryXref) &&
+					referenceDAO.find(updatedRef.getPrimaryCrossReference()) != null) {
+				// Set as obsolete if another Reference object exists with the same AGR curie.
+				// This occurs if multiple Reference entries were created with different xrefs
+				// of the same LiteratureReference entity used as curies prior to the implementation
+				// of this code.
+				updatedRef = originalRef;
+				updatedRef.setObsolete(true);
+			}
+		}
+		referenceDAO.merge(updatedRef);
 	}
 }

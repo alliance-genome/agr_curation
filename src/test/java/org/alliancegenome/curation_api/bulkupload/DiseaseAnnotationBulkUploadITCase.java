@@ -1586,7 +1586,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("totalResults", is(0)); 
 	}
 	
-	// TODO: update count once validation for references is in place
 	@Test
 	@Order(59)
 	public void diseaseAnnotationBulkUploadInvalidRelatedNoteReference() throws Exception {
@@ -1607,7 +1606,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			post("/api/disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -1971,7 +1970,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			
 		Reference reference = new Reference();
 		reference.setCurie(requiredReference);
-		reference.setDisplayXref(requiredReference);
+		reference.setPrimaryCrossReference(requiredReference);
 		reference.setObsolete(false);
 		
 		RestAssured.given().

@@ -77,8 +77,6 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		List<ExperimentalCondition> conditions = validateConditions(uiEntity);
 		dbEntity.setConditions(conditions);
 
-		//validateReferenceField(uiEntity, dbEntity);
-
 		if (StringUtils.isNotEmpty(uiEntity.getHandle())) {
 			dbEntity.setHandle(uiEntity.getHandle());
 		}
@@ -87,7 +85,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			addMessageResponse("handle", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
-		validateReferenceField(uiEntity, dbEntity);
+		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+		dbEntity.setSingleReference(singleReference);
 
 		if (response.hasErrors()) {
 			if (throwError) {
@@ -137,25 +136,33 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	}
 
 
-	private void validateReferenceField(ConditionRelation uiEntity, ConditionRelation dbEntity) {
+	private Reference validateSingleReference(ConditionRelation uiEntity, ConditionRelation dbEntity) {
+		String field = "singleReference";
 		if((uiEntity == null || uiEntity.getSingleReference() == null) && uiEntity.getHandle() == null){
-			return;
+			return null;
 		}
 
 		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
-			addMessageResponse("reference", ValidationConstants.REQUIRED_MESSAGE);
-			return;
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
 		}
 		String curie = uiEntity.getSingleReference().getCurie();
 
 		Reference reference = referenceDAO.find(curie);
-		if (reference == null) {
+		if (reference == null || reference.getObsolete()) {
 			reference = referenceService.retrieveFromLiteratureService(curie);
 			if (reference == null) {
-				addMessageResponse("reference", "Invalid publication ID: " + curie);
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
 			}
 		}
-		dbEntity.setSingleReference(reference);
+		
+		if (reference.getObsolete() && !reference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return reference;
 	}
 
 	public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {

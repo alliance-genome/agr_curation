@@ -1373,7 +1373,7 @@ public class DiseaseAnnotationITCase {
 	private Reference createReference(String curie) {
 		Reference reference = new Reference();
 		reference.setCurie(curie);
-		reference.setDisplayXref(curie);
+		reference.setPrimaryCrossReference(curie);
 		
 		ObjectResponse<Reference> response = RestAssured.given().
 			contentType("application/json").

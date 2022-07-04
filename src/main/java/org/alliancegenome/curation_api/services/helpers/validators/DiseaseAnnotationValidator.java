@@ -218,11 +218,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		SearchResponse<Reference> singleReferenceResponse = referenceDAO.findByField("displayXref", uiEntity.getSingleReference().getCurie());
-		Reference singleReference;
-		if (singleReferenceResponse != null && singleReferenceResponse.getResults().size() == 1) {
-			singleReference = singleReferenceResponse.getSingleResult();
-		} else {
+		Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getPrimaryCrossReference());
+		if (singleReference == null || singleReference.getObsolete()) {
 			singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
 			if (singleReference == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

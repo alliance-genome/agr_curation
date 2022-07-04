@@ -37,6 +37,8 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
 	@Inject
 	ReferenceDAO referenceDAO;
 	@Inject
+	ReferenceService referenceService;
+	@Inject
 	NoteValidator noteValidator;
 	@Inject
 	PersonService personService;
@@ -78,12 +80,11 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
 			for (String publicationId : dto.getReferences()) {
 				Reference reference = referenceDAO.find(publicationId);
-				if (reference == null) {
-					reference = new Reference();
-					reference.setCurie(publicationId);
-					//log("Reference: " + reference.toString());
-					// ToDo: need this until references are loaded separately
-					// raise an error when reference cannot be found?
+				if (reference == null || reference.getObsolete()) {
+					reference = referenceService.retrieveFromLiteratureService(publicationId);
+					if (reference == null) {
+						throw new ObjectValidationException(dto, "Invalid reference attached to note: " + publicationId);
+					}
 					referenceDAO.persist(reference);
 				}
 				noteReferences.add(reference);

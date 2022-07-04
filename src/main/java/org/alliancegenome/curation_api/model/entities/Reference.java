@@ -2,12 +2,11 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
-import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 
 import org.alliancegenome.curation_api.base.entity.AuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -41,7 +40,6 @@ public class Reference extends AuditedObject {
 	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	@Column(unique = true)
 	private String curie;
 	
 	@Id @DocumentId
@@ -49,19 +47,13 @@ public class Reference extends AuditedObject {
 	@KeywordField(name = "displayXref_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	private String displayXref;
-	
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "title_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
-	@EqualsAndHashCode.Include
-	private String title;
-	
+	private String primaryCrossReference;
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "reference_displayxref"))
+	@ElementCollection
+	@JoinTable(indexes = @Index(columnList = "reference_primarycrossreference"))
 	@JsonView({View.FieldsAndLists.class})
-	private List<CrossReference> crossReferences;
+	private List<String> secondaryCrossReferences;
 	
 }
