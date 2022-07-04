@@ -132,6 +132,18 @@ export const DiseaseAnnotationsTable = () => {
 			);
 		}
 	};
+	
+	const singleReferenceBodyTemplate = (rowData) => {
+		if (rowData && rowData.singleReference) {
+			let xrefs = [];
+			if (rowData.singleReference.secondaryCrossReferences) {
+				xrefs = rowData.singleReference.secondaryCrossReferences;
+			}
+			xrefs.push(rowData.singleReference.curie);
+			let xrefString = rowData.singleReference.primaryCrossReference + ' (' + xrefs.join("|") + ')';
+			return <EllipsisTableCell>{xrefString}</EllipsisTableCell>
+		}	
+	};
 
 	const diseaseQualifiersBodyTemplate = (rowData) => {
 		if (rowData && rowData.diseaseQualifiers) {
@@ -636,7 +648,7 @@ export const DiseaseAnnotationsTable = () => {
 			<>
 				<AutocompleteEditor
 
-					autocompleteFields={["curie", "cross_references.curie"]}
+					autocompleteFields={["curie", "cross_references.curie", "title"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
@@ -738,12 +750,13 @@ export const DiseaseAnnotationsTable = () => {
 		body: diseaseBodyTemplate
 	},
 	{
-		field: "singleReference.displayXref",
+		field: "singleReference.primaryCrossReference",
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.displayXref", "singleReference.curie", "singleReference.title"]},
-		editor: (props) => referenceEditorTemplate(props)
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference"]},
+		editor: (props) => referenceEditorTemplate(props),
+		body: singleReferenceBodyTemplate
 	},
 	{
 		field: "evidenceCodes.abbreviation",

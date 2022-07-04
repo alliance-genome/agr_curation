@@ -85,7 +85,7 @@ export const ConditionRelationTable = () => {
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
+					errorField={"singleReference"}
 				/>
 			</>
 		);
@@ -153,11 +153,11 @@ export const ConditionRelationTable = () => {
 			editor: (props) => handleEditor(props)
 		},
 		{
-			field: "singleReference.curie",
+			field: "singleReference.primaryCrossReference",
 			header: "Reference",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
+			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference"]},
 			editor: (props) => referenceEditorTemplate(props)
 		},
 		{
@@ -190,7 +190,7 @@ export const ConditionRelationTable = () => {
 				tableName="Condition Relations Handles"
 				columns={columns}
 				aggregationFields={aggregationFields}
-				nonNullFields={['handle', 'singleReference.curie']}
+				nonNullFields={['handle', 'singleReference.primaryCrossReference']}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}
