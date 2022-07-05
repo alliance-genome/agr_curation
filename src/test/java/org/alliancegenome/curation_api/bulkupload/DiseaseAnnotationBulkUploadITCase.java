@@ -1970,7 +1970,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			
 		Reference reference = new Reference();
 		reference.setCurie(requiredReference);
-		reference.setPrimaryCrossReference(requiredReference);
+		reference.setSubmittedCrossReference(requiredReference);
 		reference.setObsolete(false);
 		
 		RestAssured.given().

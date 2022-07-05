@@ -77,13 +77,13 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		List<ExperimentalCondition> conditions = validateConditions(uiEntity);
 		dbEntity.setConditions(conditions);
-
-		dbEntity.setHandle(handleStringField(uiEntity.getHandle()));
 		
 		// You cannot move from a condition-relation with handle to one without.
-		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isBlank(uiEntity.getHandle())) {
+		if (!StringUtils.isBlank(dbEntity.getHandle()) && StringUtils.isBlank(uiEntity.getHandle())) {
 			addMessageResponse("handle", ValidationConstants.REQUIRED_MESSAGE);
 		}
+		
+		dbEntity.setHandle(handleStringField(uiEntity.getHandle()));
 
 		Reference singleReference = validateSingleReference(uiEntity);
 		dbEntity.setSingleReference(singleReference);
@@ -142,7 +142,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			return null;
 		}
 
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getPrimaryCrossReference())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getSubmittedCrossReference())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}

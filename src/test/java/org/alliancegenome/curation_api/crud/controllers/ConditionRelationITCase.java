@@ -154,7 +154,7 @@ public class ConditionRelationITCase {
 	private Reference createReference(String curie) {
 		Reference reference = new Reference();
 		reference.setCurie(curie);
-		reference.setPrimaryCrossReference(curie);
+		reference.setSubmittedCrossReference(curie);
 
 		ObjectResponse<Reference> response = given().
 			contentType("application/json").
