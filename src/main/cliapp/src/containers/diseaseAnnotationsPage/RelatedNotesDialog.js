@@ -290,9 +290,13 @@ export const RelatedNotesDialog = ({
 		);
 	}
 
-	const confirmDeleteRelatedNote = (event, props) => {
-		let _localRelateNotes = [...localRelateNotes];
-		_localRelateNotes.splice(props.rowIndex, 1);
+	const handleDeleteRelatedNote = (event, props) => {
+		let _localRelateNotes = global.structuredClone(localRelateNotes); 
+		if(props.dataKey){
+			_localRelateNotes.splice(props.dataKey, 1);
+		}else {
+			_localRelateNotes.splice(props.rowIndex, 1);
+		}
 		setLocalRelateNotes(_localRelateNotes);
 		hasEdited.current = true;
 	}
@@ -300,7 +304,7 @@ export const RelatedNotesDialog = ({
 	const deleteAction = (props) => {
 		return (
 			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={(event) => { confirmDeleteRelatedNote(event, props) }}/>
+					onClick={(event) => { handleDeleteRelatedNote(event, props) }}/>
 		);
 	}
 
@@ -337,3 +341,4 @@ export const RelatedNotesDialog = ({
 		</div>
 	);
 };
+
