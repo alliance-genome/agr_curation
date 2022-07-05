@@ -3,12 +3,12 @@ import {useMutation} from 'react-query';
 import {Toast} from 'primereact/toast';
 import {SearchService} from '../../service/SearchService';
 import {Messages} from 'primereact/messages';
-import {getRefID} from '../../utils/utils';
 import {ControlledVocabularyDropdown} from "../../components/ControlledVocabularySelector";
 import {ErrorMessageComponent} from "../../components/ErrorMessageComponent";
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
 import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
+import {Tooltip} from 'primereact/tooltip';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
 import {AutocompleteEditor} from "../../components/AutocompleteEditor";
 import {InputTextEditor} from "../../components/InputTextEditor";
@@ -66,10 +66,6 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-	const singleValueReferenceSelector = (referenceItem) => {
-		return getRefID(referenceItem)
-	}
-
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
@@ -79,9 +75,8 @@ export const ConditionRelationTable = () => {
 					searchService={searchService}
 					endpoint='literature-reference'
 					filterName='curieFilter'
-					isSubject={true}
+					isReference={true}
 					fieldName='singleReference'
-					valueSelector={singleValueReferenceSelector}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -141,6 +136,34 @@ export const ConditionRelationTable = () => {
 			</>
 		);
 	};
+	
+	const singleReferenceBodyTemplate = (rowData) => {
+		if (rowData && rowData.singleReference) {
+			let xrefString = '';
+			if (rowData.singleReference.secondaryCrossReferences) {
+				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.secondaryCrossReferences.join("|") + '|' + rowData.singleReference.curie + ')';
+			} else {
+				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.curie + ')';
+			
+			}
+			return (
+				<>
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}
+						dangerouslySetInnerHTML={{
+							__html: xrefString
+						}}
+					/>
+					<Tooltip target={`.a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}>
+						<div dangerouslySetInnerHTML={{
+							__html: xrefString
+						}}
+						/>
+					</Tooltip>
+				</>
+			);
+			
+		}	
+	};
 
 	const columns = [
 		{
@@ -153,12 +176,13 @@ export const ConditionRelationTable = () => {
 			editor: (props) => handleEditor(props)
 		},
 		{
-			field: "singleReference.primaryCrossReference",
+			field: "singleReference.submittedCrossReference",
 			header: "Reference",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference"]},
-			editor: (props) => referenceEditorTemplate(props)
+			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference", "singleReference.secondaryCrossReferences"]},
+			editor: (props) => referenceEditorTemplate(props),
+			body: singleReferenceBodyTemplate
 		},
 		{
 			field: "conditionRelationType.name",
@@ -190,7 +214,7 @@ export const ConditionRelationTable = () => {
 				tableName="Condition Relations Handles"
 				columns={columns}
 				aggregationFields={aggregationFields}
-				nonNullFields={['handle', 'singleReference.primaryCrossReference']}
+				nonNullFields={['handle', 'singleReference']}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}

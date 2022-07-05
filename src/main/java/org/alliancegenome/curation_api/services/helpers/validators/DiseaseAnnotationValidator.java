@@ -54,6 +54,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	@Inject
 	ReferenceService referenceService;
 	@Inject
+	ReferenceValidator referenceValidator;
+	@Inject
 	NoteValidator noteValidator;
 	@Inject
 	NoteService noteService;
@@ -211,28 +213,23 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return validatedConditionRelations;
 	}
 	
-	public Reference validateSingleReference(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+	public Reference validateSingleReference(DiseaseAnnotation uiEntity) {
 		String field = "singleReference";
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isEmpty(uiEntity.getSingleReference().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getPrimaryCrossReference())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
-		Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getPrimaryCrossReference());
-		if (singleReference == null || singleReference.getObsolete()) {
-			singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
-			if (singleReference == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
+		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
+		if (singleRefResponse.getEntity() == null) {
+			Map<String, String> errors = singleRefResponse.getErrorMessages();
+			for (String refField : errors.keySet()) {
+				addMessageResponse(field, refField + " - " + errors.get(refField));
 			}
-		}
-		
-		if (singleReference.getObsolete() && !singleReference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		
-		return singleReference;
+		return singleRefResponse.getEntity();
 	}
 	
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -290,7 +287,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			dbEntity.setDiseaseQualifiers(null);
 		}
 		
-		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+		Reference singleReference = validateSingleReference(uiEntity);
 		dbEntity.setSingleReference(singleReference);
 		
 		return dbEntity;

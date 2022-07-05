@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {getEntityType, getRefID, trimWhitespace} from '../utils/utils';
+import {getEntityType, getRefID, getRefObject, trimWhitespace} from '../utils/utils';
 import {Tooltip} from "primereact/tooltip";
 
 export const AutocompleteEditor = (
@@ -16,6 +16,7 @@ export const AutocompleteEditor = (
 		isSubject = false,
 		isWith = false,
 		isMultiple = false,
+		isReference = false,
 		isSgdStrainBackground = false,
 		valueSelector
 	}
@@ -37,7 +38,7 @@ export const AutocompleteEditor = (
 		autocompleteFields.forEach(field => {
 			filter[field] = {
 				queryString: event.query,
-				...((isSubject || isWith) && {tokenOperator: "AND"})
+				...((isSubject || isWith || isReference) && {tokenOperator: "AND"})
 			}
 		});
 
@@ -46,6 +47,15 @@ export const AutocompleteEditor = (
 				if (data.results?.length > 0) {
 					if (isWith) {
 						setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
+					} else if (isReference) {
+						let transformed = [];
+						if(data.results) {
+							data.results.forEach((result) => {
+								let refObj = getRefObject(result);
+								transformed.push(refObj);
+							});
+						}
+						setFiltered(transformed);
 					} else if (isSgdStrainBackground) {
 						setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
 					} else {
@@ -76,7 +86,10 @@ export const AutocompleteEditor = (
 		updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
 
 		if (typeof event.target.value === "object") {
-			if (valueSelector) {
+			if (isReference) {
+				updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName].primaryCrossReference);
+			} else if (valueSelector) {
 				updatedRows[rowProps.rowIndex][fieldName].curie = valueSelector(event.target.value);
 				setFieldValue(valueSelector(event.target.value));
 			} else {
@@ -157,11 +170,16 @@ export const AutocompleteEditor = (
 				</div>
 			);
 		} else if (getEntityType(item) === 'Literature') {
+			let otherIdsString = '';
+			if (item["secondaryCrossReferences"]) {
+				otherIdsString = item["secondaryCrossReferences"].join('|');
+			}
+			otherIdsString = otherIdsString + item["curie"];
 			return (
 				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}>{getRefID(item) + ' (' + item.curie + ') '}</div>
+					<div onMouseOver={(event) => onSelectionOver(event, item)}>{item["primaryCrossReference"] + ' (' + otherIdsString + ') '}</div>
 				</div>
-			)
+			);
 		} else {
 			return (
 				<div>
@@ -212,16 +230,16 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 					autocompleteSelectedItem.synonyms &&
 					autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn.name ? syn.name : syn}`}>
 					Synonym: {syn.name ? syn.name : syn}</div>)
+				}{
+					autocompleteSelectedItem.primaryCrossReference &&
+					<div>Cross Reference: {autocompleteSelectedItem.primaryCrossReference}
+						<br/>
+					</div>
 				}
 				{
-					autocompleteSelectedItem.crossReferences &&
-					autocompleteSelectedItem.crossReferences.map((ref) => <div
-					key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
-				}
-				{
-					autocompleteSelectedItem.cross_references &&
-					autocompleteSelectedItem.cross_references.map((ref) => <div
-						key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
+					autocompleteSelectedItem.secondaryCrossReferences &&
+					autocompleteSelectedItem.secondaryCrossReferences.forEach((ref) => <div
+						key={`crossReferences${ref}`}>Cross Reference: {ref}</div>)
 				}
 				{
 					autocompleteSelectedItem.secondaryIdentifiers &&

@@ -6,8 +6,6 @@ export function returnSorted(event, originalSort) {
 	let replace = false;
 	let newSort = [...originalSort];
 
-	// console.log(event);
-	// console.log(newSort);
 	if (event.multiSortMeta.length > 0) {
 		newSort.forEach((o) => {
 			if (o.field === event.multiSortMeta[0].field) {
@@ -116,6 +114,36 @@ export function getRefID(referenceItem) {
 	}
 	// use pmid if non-nul otherwise use pmodID
 	return pmid ? pmid : pmodid;
+}
+
+
+export function getRefObject(referenceItem) {
+	if (!referenceItem)
+		return;
+	const curationDbRef = {};
+	let primaryXref = '';
+	const secondaryXrefs = [];
+	
+	for (const xref of referenceItem.cross_references) {
+		if (xref.curie.startsWith('PMID:')) {
+			primaryXref = xref.curie;
+		} else {
+			secondaryXrefs.push(xref.curie);
+		}
+	}
+
+	secondaryXrefs.sort();
+	if (!primaryXref) {
+		primaryXref = secondaryXrefs.shift();
+	}
+
+	curationDbRef.curie = referenceItem.curie;
+	curationDbRef.primaryCrossReference = primaryXref;
+	curationDbRef.submittedCrossReference = primaryXref;
+	if (secondaryXrefs && secondaryXrefs.length > 0)
+		curationDbRef.secondaryCrossReferences = secondaryXrefs.slice(0);
+	
+	return curationDbRef;
 }
 
 

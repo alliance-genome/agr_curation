@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
@@ -24,8 +25,8 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -43,6 +44,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	ExperimentalConditionDAO experimentalConditionDAO;
 	@Inject
 	ReferenceService referenceService;
+	@Inject
+	ReferenceValidator referenceValidator;
 
 	public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
 		ConditionRelation conditionRelation = validateConditionRelation(uiEntity, false);
@@ -69,23 +72,20 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		
 		validateConditionRelationHandlePubUnique(uiEntity, dbEntity);
 
-		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity);
-
 		VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
 		dbEntity.setConditionRelationType(conditionRelationType);
 
 		List<ExperimentalCondition> conditions = validateConditions(uiEntity);
 		dbEntity.setConditions(conditions);
 
-		if (StringUtils.isNotEmpty(uiEntity.getHandle())) {
-			dbEntity.setHandle(uiEntity.getHandle());
-		}
+		dbEntity.setHandle(handleStringField(uiEntity.getHandle()));
+		
 		// You cannot move from a condition-relation with handle to one without.
 		if (StringUtils.isNotEmpty(dbEntity.getHandle()) && StringUtils.isBlank(uiEntity.getHandle())) {
 			addMessageResponse("handle", ValidationConstants.REQUIRED_MESSAGE);
 		}
 
-		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+		Reference singleReference = validateSingleReference(uiEntity);
 		dbEntity.setSingleReference(singleReference);
 
 		if (response.hasErrors()) {
@@ -136,33 +136,27 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	}
 
 
-	private Reference validateSingleReference(ConditionRelation uiEntity, ConditionRelation dbEntity) {
+	private Reference validateSingleReference(ConditionRelation uiEntity) {
 		String field = "singleReference";
 		if((uiEntity == null || uiEntity.getSingleReference() == null) && uiEntity.getHandle() == null){
 			return null;
 		}
 
-		if(uiEntity == null || uiEntity.getSingleReference() == null || uiEntity.getSingleReference().getCurie() == null) {
+		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getPrimaryCrossReference())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		String curie = uiEntity.getSingleReference().getCurie();
-
-		Reference reference = referenceDAO.find(curie);
-		if (reference == null || reference.getObsolete()) {
-			reference = referenceService.retrieveFromLiteratureService(curie);
-			if (reference == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-		}
 		
-		if (reference.getObsolete() && !reference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
+		if (singleRefResponse.getEntity() == null) {
+			Map<String, String> errors = singleRefResponse.getErrorMessages();
+			for (String refField : errors.keySet()) {
+				addMessageResponse(field, refField + " - " + errors.get(refField));
+			}
 			return null;
 		}
 		
-		return reference;
+		return singleRefResponse.getEntity();
 	}
 
 	public VocabularyTerm validateConditionRelationType(ConditionRelation uiEntity, ConditionRelation dbEntity) {

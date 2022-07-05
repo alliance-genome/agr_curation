@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -13,9 +14,9 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,6 +29,8 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 	VocabularyTermDAO vocabularyTermDAO;
 	@Inject
 	ReferenceService referenceService;
+	@Inject
+	ReferenceValidator referenceValidator;
 
 	public ObjectResponse<Note> validateNote(Note uiEntity, String noteVocabularyName) {
 		Note note = validateNote(uiEntity, noteVocabularyName, false);
@@ -61,12 +64,8 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
 			List<Reference> references = new ArrayList<Reference>();
 			for (Reference uiReference : uiEntity.getReferences()) {
-				Reference reference = referenceService.retrieveFromLiteratureService(uiReference.getPrimaryCrossReference());
-				if (reference == null) {
-					addMessageResponse("references", ValidationConstants.INVALID_MESSAGE);
-				} else if (reference.getObsolete()) {
-					addMessageResponse("references", ValidationConstants.OBSOLETE_MESSAGE);
-				} else {
+				Reference reference = validateReference(uiReference);
+				if (reference != null) {
 					references.add(reference);
 				}
 			}
@@ -85,6 +84,19 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		}
 
 		return dbEntity;
+	}
+	
+	private Reference validateReference (Reference uiEntity) {
+		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
+		if (singleRefResponse.getEntity() == null) {
+			Map<String, String> errors = singleRefResponse.getErrorMessages();
+			for (String refField : errors.keySet()) {
+				addMessageResponse("references", refField + " - " + errors.get(refField));
+			}
+			return null;
+		}
+		
+		return singleRefResponse.getEntity();
 	}
 
 	public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularyName) {

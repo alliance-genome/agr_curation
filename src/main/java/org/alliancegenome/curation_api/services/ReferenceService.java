@@ -43,6 +43,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
 		if (litRef != null) {
 			Reference ref = new Reference();
+			ref.setSubmittedCrossReference(xrefCurie);
 			ref = copyLiteratureReferenceFields(litRef, ref, xrefCurie);
 		
 			return referenceDAO.persist(ref);
@@ -118,7 +119,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 			pagination.setPage(page);
 			SearchResponse<Reference> response = referenceDAO.findAll(pagination);
 			for (Reference ref : response.getResults()) {
-				synchroniseReference(ref.getPrimaryCrossReference());
+				synchroniseReference(ref.getSubmittedCrossReference());
 			}
 			page = page + 1;
 			int nrSynced = limit * page;
@@ -131,31 +132,20 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	}
 	
 	@Transactional
-	public ObjectResponse<Reference> synchroniseReference(String primaryXref) {
-		Reference originalRef = referenceDAO.find(primaryXref);
-		Reference updatedRef = originalRef;
-		LiteratureReference litRef = fetchLiteratureServiceReference(primaryXref);
+	public ObjectResponse<Reference> synchroniseReference(String submittedXref) {
+		Reference ref = referenceDAO.find(submittedXref);
+		LiteratureReference litRef = fetchLiteratureServiceReference(submittedXref);
 		
 		if (litRef == null) {
 			// Set as obsolete if no longer in Literature Service
-			updatedRef.setObsolete(true);
+			ref.setObsolete(true);
 		} else {
-			updatedRef = copyLiteratureReferenceFields(litRef, updatedRef, primaryXref);
-		
-			if (!updatedRef.getPrimaryCrossReference().equals(primaryXref) &&
-					referenceDAO.find(updatedRef.getPrimaryCrossReference()) != null) {
-				// Set as obsolete if another Reference object exists with the same AGR curie.
-				// This occurs if multiple Reference entries were created with different xrefs
-				// of the same LiteratureReference entity used as curies prior to the implementation
-				// of this code.
-				updatedRef = originalRef;
-				updatedRef.setObsolete(true);
-			}
+			ref = copyLiteratureReferenceFields(litRef, ref, submittedXref);
 		}
 		
-		updatedRef = referenceDAO.persist(updatedRef);
+		ref = referenceDAO.merge(ref);
 		ObjectResponse<Reference> response = new ObjectResponse<>();
-		response.setEntity(updatedRef);
+		response.setEntity(ref);
 		return response;
 	}
 }
