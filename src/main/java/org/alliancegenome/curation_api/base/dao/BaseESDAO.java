@@ -39,6 +39,14 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 		log.debug("MeterRegistry: " + registry);
 	}
 
+	public SearchResponse<E> searchAllCount() {
+		Pagination pagination = new Pagination();
+		pagination.setLimit(0);
+		pagination.setPage(0);
+		Map<String, Object> params = new HashMap<String, Object>();
+		return searchByParams(pagination, params);
+	}
+
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		//log.info("BaseESDAO: searching with: " + params);
 
@@ -63,24 +71,24 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 							//.autoGenerateSynonymsPhraseQuery(false)
 							//.fuzzyTranspositions(false)
 							.boost(value >=1 ? value : 1);
-					
+
 					innerBool.should().add(simple);
 					boost++;
 				}
-				
+
 				bool.must().add(innerBool);
 			}
 		}
-		
+
 		SearchSourceBuilder query = searchSourceBuilder.query(bool);
 
 		if(params.containsKey("sortOrders")) {
 			ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
 			if(sortOrders != null) {
-				
+
 				for(HashMap<String, Object> map: sortOrders) {
 					String key = (String)map.get("field");
-					
+
 					int value = (int)map.get("order");
 					if(value == 1) {
 						query.sort(new FieldSortBuilder(key + ".keyword").order(SortOrder.ASC));
@@ -97,10 +105,10 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 		searchSourceBuilder = searchSourceBuilder.trackTotalHits(true);
 
 		log.debug(searchSourceBuilder);
-		
+
 		SearchRequest searchRequest = new SearchRequest(esIndex); 
 		searchRequest.source(searchSourceBuilder);
-		
+
 		// TODO implement aggregations
 
 		try {

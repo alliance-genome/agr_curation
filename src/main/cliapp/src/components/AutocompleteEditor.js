@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react';
-import { AutoComplete } from "primereact/autocomplete";
-import { trimWhitespace } from '../utils/utils';
-import { Tooltip } from "primereact/tooltip";
+import React, {useRef, useState} from 'react';
+import {AutoComplete} from "primereact/autocomplete";
+import {getEntityType, getRefID, trimWhitespace} from '../utils/utils';
+import {Tooltip} from "primereact/tooltip";
 
 export const AutocompleteEditor = (
 	{
@@ -17,15 +17,16 @@ export const AutocompleteEditor = (
 		isWith = false,
 		isMultiple = false,
 		isSgdStrainBackground = false,
+		valueSelector
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
-		return isMultiple ?
-			rowProps.rowData[fieldName] :
-			rowProps.rowData[fieldName]?.curie
-	}
+			return isMultiple ?
+				rowProps.rowData[fieldName] :
+				rowProps.rowData[fieldName]?.curie
+		}
 	);
 
 	const op = useRef(null);
@@ -36,22 +37,21 @@ export const AutocompleteEditor = (
 		autocompleteFields.forEach(field => {
 			filter[field] = {
 				queryString: event.query,
-				...((isSubject || isWith) && { tokenOperator: "AND" })
+				...((isSubject || isWith) && {tokenOperator: "AND"})
 			}
 		});
 
-		searchService.search(endpoint, 15, 0, [], { [filterName]: filter, ...otherFilters })
+		searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters})
 			.then((data) => {
 				if (data.results?.length > 0) {
 					if (isWith) {
 						setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-					}
-					else if (isSgdStrainBackground) {
+					} else if (isSgdStrainBackground) {
 						setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
-					}
-					else {
+					} else {
 						setFiltered(data.results);
-					};
+					}
+					;
 				} else {
 					setFiltered([]);
 				}
@@ -65,7 +65,7 @@ export const AutocompleteEditor = (
 			updatedRows[rowProps.rowIndex][fieldName] = null;
 			setFieldValue('');
 			return;
-		};
+		}
 
 		if (isMultiple) {
 			updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
@@ -76,15 +76,19 @@ export const AutocompleteEditor = (
 		updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
 
 		if (typeof event.target.value === "object") {
-			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
+			if (valueSelector) {
+				updatedRows[rowProps.rowIndex][fieldName].curie = valueSelector(event.target.value);
+				setFieldValue(valueSelector(event.target.value));
+			} else {
+				updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			}
 		} else {
 			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
+			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 		}
 
-		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
-
 	};
-
 
 	const onSelectionOver = (event, item) => {
 		setAutocompleteSelectedItem(item);
@@ -111,7 +115,13 @@ export const AutocompleteEditor = (
 				}
 			}
 		}
-
+		if (autocompleteSelectedItem.cross_references?.length > 0) {
+			for (let i in autocompleteSelectedItem.cross_references) {
+				if (autocompleteSelectedItem.cross_references[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
+					delete autocompleteSelectedItem.cross_references[i];
+				}
+			}
+		}
 		if (autocompleteSelectedItem.secondaryIdentifiers?.length > 0) {
 			for (let i in autocompleteSelectedItem.secondaryIdentifiers) {
 				if (autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue) < 0) {
@@ -122,21 +132,36 @@ export const AutocompleteEditor = (
 		if (item.abbreviation) {
 			return (
 				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') ' }} />
+					<div onMouseOver={(event) => onSelectionOver(event, item)}
+						 dangerouslySetInnerHTML={{__html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') '}}/>
 				</div>
 			);
 		} else if (item.symbol) {
 			return (
 				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.symbol + ' (' + item.curie + ') ' }} />
+					<div onMouseOver={(event) => onSelectionOver(event, item)}
+						 dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') '}}/>
 				</div>
 			);
 		} else if (item.name) {
 			return (
 				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{ __html: item.name + ' (' + item.curie + ') ' }} />
+					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
 				</div>
 			);
+		} else if (getEntityType(item) === 'Experiment Condition') {
+			return (
+				<div>
+					<div onMouseOver={(event) => onSelectionOver(event, item)}
+						 dangerouslySetInnerHTML={{__html: item.conditionSummary + ' (' + item.id + ') '}}/>
+				</div>
+			);
+		} else if (getEntityType(item) === 'Literature') {
+			return (
+				<div>
+					<div onMouseOver={(event) => onSelectionOver(event, item)}>{getRefID(item) + ' (' + item.curie + ') '}</div>
+				</div>
+			)
 		} else {
 			return (
 				<div>
@@ -145,11 +170,12 @@ export const AutocompleteEditor = (
 			);
 		}
 	};
+
 	return (
 		<div>
 			<AutoComplete
 				multiple={isMultiple}
-				panelStyle={{ width: '15%', display: 'flex', maxHeight: '350px' }}
+				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
 				field={subField}
 				value={fieldValue}
 				suggestions={filtered}
@@ -158,30 +184,51 @@ export const AutocompleteEditor = (
 				onHide={(e) => op.current.hide(e)}
 				onChange={(e) => onValueChange(e)}
 			/>
-			<EditorTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} dataType={fieldName} />
+			<EditorTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} dataType={fieldName}/>
 		</div>
 	)
 }
 
-const EditorTooltip = ({ op, autocompleteSelectedItem }) => {
+const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 	return (
 		<>
-			<Tooltip ref={op} style={{ width: '450px', maxWidth: '450px' }} position={'right'} mouseTrack mouseTrackLeft={30}>
-				Curie: {autocompleteSelectedItem.curie}<br />
+			<Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack
+					 mouseTrackLeft={30}>
+				{autocompleteSelectedItem.curie &&
+				<div>Curie: {autocompleteSelectedItem.curie}
+					<br/>
+				</div>
+				}
 				{autocompleteSelectedItem.name &&
-					<div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{ __html: 'Name: ' + autocompleteSelectedItem.name }} />
+				<div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
+				}
+				{autocompleteSelectedItem.conditionSummary &&
+				<div key={`name${autocompleteSelectedItem.conditionSummary}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionSummary}}/>
 				}
 				{autocompleteSelectedItem.symbol &&
-					<div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{ __html: 'Symbol: ' + autocompleteSelectedItem.symbol }} />
+				<div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol}}/>
 				}
-				{autocompleteSelectedItem.synonyms &&
-					autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn.name ? syn.name : syn}`}>Synonym: {syn.name ? syn.name : syn}</div>)
+				{
+					autocompleteSelectedItem.synonyms &&
+					autocompleteSelectedItem.synonyms.map((syn) => <div key={`synonyms${syn.name ? syn.name : syn}`}>
+					Synonym: {syn.name ? syn.name : syn}</div>)
 				}
-				{autocompleteSelectedItem.crossReferences &&
-					autocompleteSelectedItem.crossReferences.map((cr) => <div key={`crossReferences${cr.curie}`}>Cross Reference: {cr.curie}</div>)
+				{
+					autocompleteSelectedItem.crossReferences &&
+					autocompleteSelectedItem.crossReferences.map((ref) => <div
+					key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
 				}
-				{autocompleteSelectedItem.secondaryIdentifiers &&
-					autocompleteSelectedItem.secondaryIdentifiers.map((si) => { return <div key={`secondaryIdentifiers${si.name ? si.name : si}`}>Secondary Identifiers: {si.name ? si.name : si}</div> })
+				{
+					autocompleteSelectedItem.cross_references &&
+					autocompleteSelectedItem.cross_references.map((ref) => <div
+						key={`crossReferences${ref.curie}`}>Cross Reference: {ref.curie}</div>)
+				}
+				{
+					autocompleteSelectedItem.secondaryIdentifiers &&
+					autocompleteSelectedItem.secondaryIdentifiers.map((si) => {
+						return <div key={`secondaryIdentifiers${si.name ? si.name : si}`}>Secondary
+						Identifiers: {si.name ? si.name : si}</div>
+					})
 				}
 			</Tooltip>
 		</>

@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { Button } from 'primereact/button';
 
-export function DataTableHeaderFooterTemplate({title, tableState, multiselectComponent, buttons, onclickEvent, isEnabled}){
+export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, onclickEvent, isEnabled}){
 
 		return (
 						<Card>

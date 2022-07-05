@@ -2,20 +2,31 @@ package org.alliancegenome.curation_api.base.entity;
 
 import java.time.OffsetDateTime;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.ManyToOne;
+import javax.persistence.MappedSuperclass;
 
-import org.alliancegenome.curation_api.model.bridges.*;
+import org.alliancegenome.curation_api.model.bridges.BooleanValueBridge;
+import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.quarkus.logging.Log;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
@@ -57,61 +68,15 @@ public class AuditedObject extends BaseEntity {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean obsolete = false;
 
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	////////////////////////////////////////////////////////////////////////////////
-	////////////////////////////////////////////////////////////////////////////////
-	
-	// Handle updating the dates
-	// The idea here is if this is a new object and the dates are null these methods will
-	// set the date to "now" before saving on which ever one or both if they are null
-	
-	// If this is an existing object then it HAS to be loaded in order to make an update on it.
-	// In loading the object we save the dateUpdated to previousDateUpdated
-	// 
-	// if the caller does not set a New date then dateUpdated == previousDateUpdated and we
-	// will force an updated date otherwise the caller did set the date and we will use that instead
-	
-	@PrePersist
-	protected void onCreate() {
-		//Log.info("onCreate: dateCreated: " + getClass().getSimpleName() + " " + dateCreated);
-		//Log.info("onCreate: dateUpdated: " + getClass().getSimpleName() + " " + dateUpdated);
-		OffsetDateTime date = OffsetDateTime.now();
-		if(dateCreated == null) {
-			dateCreated = date;
-		}
-		if(dateUpdated == null) {
-			dateUpdated = date;
-		}
-	}
-	
-	@Transient
-	private transient OffsetDateTime previousDateUpdated;
-	
-	@PostLoad
-	protected void onPostLoad() {
-		previousDateUpdated = dateUpdated;
-	}
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@KeywordField(name = "dbDateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@JsonView({View.FieldsOnly.class})
+	@CreationTimestamp
+	private OffsetDateTime dbDateCreated;
 
-	@PreUpdate
-	protected void onUpdate() {
-		//Log.info("onUpdate: dateUpdated: " + getClass().getSimpleName() + " " + dateUpdated);
-		//Log.info("onUpdate: previousDateUpdated: " + getClass().getSimpleName() + " " + previousDateUpdated);
-		OffsetDateTime date = OffsetDateTime.now();
-		
-		if(dateCreated == null) {
-			dateCreated = date;
-		}
-		if(dateUpdated == null || dateUpdated.equals(previousDateUpdated)) {
-			dateUpdated = date;
-		}
-	}
-
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@KeywordField(name = "dbDateUpdated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@JsonView(View.FieldsOnly.class)
+	@UpdateTimestamp
+	private OffsetDateTime dbDateUpdated;
 }

@@ -18,6 +18,7 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
+import {getRefID} from "../../utils/utils";
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -145,10 +146,16 @@ export const DiseaseAnnotationsTable = () => {
 			return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
 		}
 	};
-	
+
 	const internalTemplate = (rowData) => {
 		if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
+		}
+	};
+
+	const obsoleteTemplate = (rowData) => {
+		if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
+			return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>;
 		}
 	};
 
@@ -365,7 +372,7 @@ export const DiseaseAnnotationsTable = () => {
 			</>
 		);
 	};
-	
+
 	const onInternalEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
 		if (event.value || event.value === '') {
@@ -383,6 +390,27 @@ export const DiseaseAnnotationsTable = () => {
 					field={"internal"}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+			</>
+		);
+	};
+
+	const onObsoleteEditorValueChange = (props, event) => {
+		let updatedAnnotations = [...props.props.value];
+		if (event.value || event.value === '') {
+			updatedAnnotations[props.rowIndex].obsolete = JSON.parse(event.value.name);
+		}
+	};
+
+	const obsoleteEditor = (props) => {
+		return (
+			<>
+				<TrueFalseDropdown
+					options={booleanTerms}
+					editorChange={onObsoleteEditorValueChange}
+					props={props}
+					field={"obsolete"}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
 			</>
 		);
 	};
@@ -599,6 +627,30 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const singleValueReferenceSelector = (referenceItem) => {
+		return getRefID(referenceItem)
+	}
+
+	const referenceEditorTemplate = (props) => {
+		return (
+			<>
+				<AutocompleteEditor
+					autocompleteFields={["curie", "cross_references.curie"]}
+					rowProps={props}
+					searchService={searchService}
+					endpoint='literature-reference'
+					filterName='curieFilter'
+					isSubject={true}
+					fieldName='singleReference'
+					valueSelector={singleValueReferenceSelector}
+				/>
+				<ErrorMessageComponent
+					errorMessages={errorMessages[props.rowIndex]}
+					errorField={"singleReference"}
+				/>
+			</>
+		);
+	};
 
 	const uniqueIdBodyTemplate = (rowData) => {
 		return (
@@ -639,15 +691,15 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: isEnabled,
 		filter: true,
 		body: uniqueIdBodyTemplate,
-		filterElement: {type: "input", filterName: "uniqueidFilter", fields: ["uniqueId"]}, 
+		filterElement: {type: "input", filterName: "uniqueidFilter", fields: ["uniqueId"]},
 	},
 	{
 		field: "modEntityId",
-		header: "MOD Entity ID",
+		header: "MOD Annotation ID",
 		sortable: isEnabled,
 		filter: true,
 		body: modEntityIdBodyTemplate,
-		filterElement: {type: "input", filterName: "modentityidFilter", fields: ["modEntityId"]}, 
+		filterElement: {type: "input", filterName: "modentityidFilter", fields: ["modEntityId"]},
 	},
 	{
 		field: "subject.symbol",
@@ -690,6 +742,7 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: isEnabled,
 		filter: true,
 		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
+		editor: (props) => referenceEditorTemplate(props)
 	},
 	{
 		field: "evidenceCodes.abbreviation",
@@ -706,7 +759,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: withTemplate,
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "withFilter", fields: ["with.symbol", "with.name", "with.curie"]}, 
+		filterElement: {type: "input", filterName: "withFilter", fields: ["with.symbol", "with.name", "with.curie"]},
 		editor: (props) => withEditorTemplate(props)
 	},
 	{
@@ -716,7 +769,7 @@ export const DiseaseAnnotationsTable = () => {
 		editor: (props) => relatedNotesEditor(props),
 		sortable: true,
 		filter: true,
-		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]}, 
+		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]},
 	},
 	{
 		field: "conditionRelations.uniqueId",
@@ -725,10 +778,10 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: true,
 		filter: true,
 		filterElement: {
-			type: "input", 
-			filterName: "conditionRelationsFilter", 
+			type: "input",
+			filterName: "conditionRelationsFilter",
 			fields: ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
-		}, 
+		},
 	},
 	{
 		field: "geneticSex.name",
@@ -752,7 +805,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "SGD Strain Background",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "sgdStrainBackgroundFilter", fields: ["sgdStrainBackground.name", "sgdStrainBackground.curie"]}, 
+		filterElement: {type: "input", filterName: "sgdStrainBackgroundFilter", fields: ["sgdStrainBackground.name", "sgdStrainBackground.curie"]},
 		editor: (props) => sgdStrainBackgroundEditorSelector(props),
 		body: sgdStrainBackgroundBodyTemplate
 	},
@@ -777,7 +830,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Genetic Modifier",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]}, 
+		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]},
 		editor: (props) => geneticModifierEditorTemplate(props),
 		body: geneticModifierBodyTemplate
 	},
@@ -786,35 +839,35 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Data Provider",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "dataProviderFilter", fields: ["dataProvider"]}, 
+		filterElement: {type: "input", filterName: "dataProviderFilter", fields: ["dataProvider"]},
 	},
 	{
 		field: "secondaryDataProvider",
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider"]}, 
+		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider"]},
 	},
 	{
 		field: "modifiedBy.uniqueId",
-		header: "Modified By",
+		header: "Updated By",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "modifiedByFilter", fields: ["modifiedBy.uniqueId"]}, 
+		filterElement: {type: "input", filterName: "modifiedByFilter", fields: ["modifiedBy.uniqueId"]},
 	},
 	{
 		field: "dateUpdated",
 		header: "Date Updated",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "dateUpdatedFilter", fields: ["dateUpdated"]}, 
+		filterElement: {type: "input", filterName: "dateUpdatedFilter", fields: ["dateUpdated"]},
 	},
 	{
 		field: "createdBy.uniqueId",
 		header: "Created By",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "createdByFilter", fields: ["createdBy.uniqueId"]}, 
+		filterElement: {type: "input", filterName: "createdByFilter", fields: ["createdBy.uniqueId"]},
 	},
 	{
 		field: "dateCreated",
@@ -822,7 +875,7 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: isEnabled,
 		filter: true,
 		filterType: "Date",
-		filterElement: {type: "input", filterName: "dateCreatedFilter", fields: ["dataCreated"]}, 
+		filterElement: {type: "input", filterName: "dateCreatedFilter", fields: ["dataCreated"]},
 	},
 	{
 		field: "internal",
@@ -833,6 +886,15 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: isEnabled,
 		editor: (props) => internalEditor(props)
 	},
+	{
+		field: "obsolete",
+		header: "Obsolete",
+		body: obsoleteTemplate,
+		filter: true,
+		filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: ["obsolete"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+		sortable: isEnabled,
+		editor: (props) => obsoleteEditor(props)
+	}
 	];
 
 
@@ -841,10 +903,10 @@ export const DiseaseAnnotationsTable = () => {
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable 
-					endpoint="disease-annotation" 
-					tableName="Disease Annotations" 
-					columns={columns}	 
+				<GenericDataTable
+					endpoint="disease-annotation"
+					tableName="Disease Annotations"
+					columns={columns}
 					aggregationFields={aggregationFields}
 					isEditable={true}
 					curieFields={["subject", "object", "diseaseGeneticModifier"]}

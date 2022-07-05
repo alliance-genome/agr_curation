@@ -20,7 +20,7 @@ export const Dashboard = () => {
 		ExperimentalCondition: { name: "Experimental Conditions", link: "/#/experimentalConditions", type: 'entity', },
 		ConditionRelation: { name: "Condition Relations", link: "/#/conditionRelations", type: 'entity', },
 		Molecule: { name: "Molecules", link: "/#/molecules", type: 'entity', },
-		Reference: { name: "Literature Relations", link: "/#/references", type: 'entity', },
+		Reference: { name: "Literature References", link: "/#/references", type: 'entity', },
 
 		DOTerm: { name: "DO", link: "/#/ontology/do", type: 'ontology', },
 		CHEBITerm: { name: "CHEBI", link: "/#/ontology/chebi", type: 'ontology', },
@@ -85,21 +85,21 @@ export const Dashboard = () => {
 	return (
 		<>
 			<div className="grid nested dashboard">
-				<div className="col-3">
+				<div className="col-4">
 					<DataTable header="Entities" value={tableData.entity} sortField="name" sortOrder={1}>
 						<Column field="name" header="Entity Name" body={nameHyperlinkTemplate}/>
 						<Column field="dbCount" header="Database Entity Count" />
 						<Column field="esCount" header="ElasticSearch Entity Count" />
 					</DataTable>
 				</div>
-				<div className="col-3">
+				<div className="col-4">
 					<DataTable header="Ontologies" value={tableData.ontology} sortField="name" sortOrder={1}>
 						<Column field="name" header="Ontology Name" body={nameHyperlinkTemplate} />
 						<Column field="dbCount" header="Database Term Count" />
 						<Column field="esCount" header="ElasticSearch Term Count" />
 					</DataTable>
 				</div>
-				<div className="col-3">
+				<div className="col-4">
 					<DataTable header="System" value={tableData.system} sortField="name" sortOrder={1}>
 						<Column field="name" header="System Name" body={nameHyperlinkTemplate} />
 						<Column field="dbCount" header="Database Object Count" />

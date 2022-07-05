@@ -148,6 +148,7 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
 		}
 		
 		gene.setInternal(dto.getInternal());
+		gene.setObsolete(dto.getObsolete());
 
 		if (dto.getDateUpdated() != null) {
 			OffsetDateTime dateLastModified;

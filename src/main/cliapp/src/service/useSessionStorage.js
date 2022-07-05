@@ -1,18 +1,44 @@
 import { useState, useEffect } from "react";
 
-function getSessionValue(key, defaultValue) {
-	const saved = sessionStorage.getItem(key);
-	const initial = JSON.parse(saved);
-	return initial || defaultValue;
+
+if(!window.sessionStorage.getItem("globalStateObject")){
+	console.log("Object not stored");
+	window.sessionStorage.setItem('globalStateObject', JSON.stringify({}));
+};
+
+export const resetThemes = (defaultThemes) => {
+	const storedObject = getSessionObject();
+	const newStateObject = {
+		...storedObject,
+		themeSettings: defaultThemes
+	};
+	sessionStorage.setItem("globalStateObject", JSON.stringify(newStateObject));
+};
+
+const getSessionObject = () => {
+	const saved = sessionStorage.getItem("globalStateObject");
+	return JSON.parse(saved);
+};
+
+const getSessionValue = (key, defaultValue) => {
+	const storedValue = getSessionObject();
+	return storedValue[key] || defaultValue;
 }
+
 
 export const useSessionStorage = (key, defaultValue) => {
 	const [value, setValue] = useState(() => {
 		return getSessionValue(key, defaultValue);
 	});
 
+
 	useEffect(() => {
-		sessionStorage.setItem(key, JSON.stringify(value));
+		const storedObject = getSessionObject();
+		const newStateObject = {
+			...storedObject,
+			[key]: value,
+		};
+		sessionStorage.setItem("globalStateObject", JSON.stringify(newStateObject));
 	}, [key, value]);
 
 	return [value, setValue];

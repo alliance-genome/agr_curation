@@ -113,6 +113,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 				ConditionRelation relation = new ConditionRelation();
 
 				relation.setInternal(conditionRelationDTO.getInternal());
+				relation.setObsolete(conditionRelationDTO.getObsolete());
 				
 				if (conditionRelationDTO.getCreatedBy() != null) {
 					Person createdBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getCreatedBy());
@@ -200,7 +201,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 		for (String id : idsToRemove) {
 			SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", id);
 			if (da != null && da.getTotalResults() == 1) {
+				List<Long> noteIdsToDelete = da.getResults().get(0).getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
 				delete(da.getResults().get(0).getId());
+				for (Long noteId : noteIdsToDelete) {
+					noteService.delete(noteId);
+				}
 			} else {
 				log.error("Failed getting annotation: " + id);
 			}
@@ -220,6 +225,7 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 		annotation.setModifiedBy(modifiedBy);
 		
 		annotation.setInternal(dto.getInternal());
+		annotation.setObsolete(dto.getObsolete());
 
 		if (dto.getDateUpdated() != null) {
 			OffsetDateTime dateLastModified;

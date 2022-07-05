@@ -41,4 +41,9 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Path("/{name}/{vocabulary}")
 	@JsonView(View.VocabularyTermView.class)
 	public ObjectResponse<VocabularyTerm> getTermInVocabulary(@PathParam("name") String name, @PathParam("vocabulary") String vocabulary);
+
+	@PUT
+	@Path("/")
+	@JsonView(View.VocabularyTermUpdate.class)
+	public ObjectResponse<VocabularyTerm> update(VocabularyTerm entity);
 }

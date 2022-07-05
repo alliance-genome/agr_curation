@@ -1,6 +1,6 @@
 import { InputText } from 'primereact/inputtext';
 import React from 'react';
-import { CronFields } from './CronFields';
+import { CronFields } from '../../components/CronFields';
 
 export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) => {
 		return (
@@ -8,7 +8,7 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) =
 						{!hideFMS.current &&
 								<>
 										<CronFields
-												newBulkLoad={newBulkLoad}
+												newItem={newBulkLoad}
 												onChange={onChange}
 										/>
 										<div className="field">

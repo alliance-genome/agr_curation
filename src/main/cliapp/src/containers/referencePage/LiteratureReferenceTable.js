@@ -16,8 +16,8 @@ export const LiteratureReferenceTable = () => {
 		const toast_topright = useRef(null);
 
 		const crossReferenceTemplate = (rowData) => {
-				if (rowData && rowData.cross_reference) {
-						const sortedCross_References= rowData.cross_reference.sort((a, b) => (a.curie > b.curie) ? 1 : -1);
+				if (rowData && rowData.cross_references) {
+						const sortedCross_References= rowData.cross_references.sort((a, b) => (a.curie > b.curie) ? 1 : -1);
 						return (<div>
 								<ul stype={{ listStypeType: 'none' }}>
 										{sortedCross_References.map((a, index) =>
@@ -72,12 +72,12 @@ export const LiteratureReferenceTable = () => {
 						filter: true,
 						filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
 				}, {
-						field: "cross_reference.curie",
+						field: "cross_references.curie",
 						header: "Cross References",
 						sortable: isEnabled,
 						body: crossReferenceTemplate,
 						filter: true,
-						filterElement: {type: "input", filterName: "cross_referenceFilter", fields: ["cross_reference.curie"]}, 
+						filterElement: {type: "input", filterName: "cross_referenceFilter", fields: ["cross_references.curie"]}, 
 				}, {
 						field: "title",
 						header: "Title",

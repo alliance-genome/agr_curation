@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Dropdown } from 'primereact/dropdown';
 import { InputText } from 'primereact/inputtext';
-import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { useControlledVocabularyService } from '../service/useControlledVocabularyService';
 import { OverlayPanel } from 'primereact/overlaypanel';
 
 export const CronFields = ({ newItem, onChange }) => {

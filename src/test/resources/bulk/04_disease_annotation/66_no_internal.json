@@ -6,6 +6,7 @@
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
     "negated": true,
+    "obsolete": false,
     "predicate": "is_implicated_in",
     "genetic_sex": "male",
     "modified_by": "DATEST:Person0001",
@@ -16,6 +17,7 @@
       {
         "condition_relation_type": "exacerbated_by",
         "internal": false,
+        "obsolete": false,
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
@@ -27,7 +29,8 @@
             "condition_taxon": "NCBITaxon:6239",
             "condition_chemical": "DATEST:ChemicalTerm0001",
             "condition_free_text": "Free text",
-            "internal": false
+            "internal": false,
+            "obsolete": false
           }
         ]
       }
@@ -43,6 +46,7 @@
         "free_text": "Test note",
         "note_type": "disease_summary",
         "internal": false,
+        "obsolete": false,
         "references": [
           "PMID:25920554"
         ]

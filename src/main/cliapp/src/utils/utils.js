@@ -1,3 +1,5 @@
+import { confirmDialog } from 'primereact/confirmdialog';
+
 export function returnSorted(event, originalSort) {
 
 	let found = false;
@@ -31,11 +33,11 @@ export function returnSorted(event, originalSort) {
 			return newSort;
 		}
 	}
-};
+}
 
 export function trimWhitespace(value) {
 	return value?.replace(/\s{2,}/g, ' ').trim();
-};
+}
 
 export function filterColumns(columns, selectedColumnNames) {
 	const filteredColumns = columns.filter((col) => {
@@ -74,4 +76,57 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) 
 	initalColumnOrderFields.unshift('rowEditor');
 
 	dataTable.current.state.columnOrder = initalColumnOrderFields
-};
+}
+
+// ToDo: Create enumeration
+export function getEntityType(entity) {
+	if (entity.curie && entity.curie.startsWith("AGR:AGR-Reference-")) {
+		return 'Literature';
+	}
+	if (entity.conditionSummary) {
+		return 'Experiment Condition';
+	}
+	return 'Unknown Entity'
+}
+
+export function getRefID(referenceItem) {
+	if (!referenceItem)
+		return ''
+	let pmid = ''
+	let pmodid = ''
+	if(!referenceItem.cross_references) return;
+	referenceItem.cross_references.forEach((entry) => {
+		if (entry.curie.startsWith('PMID:')) {
+			pmid = entry.curie;
+		}
+	})
+	if (pmid === "") {
+		referenceItem.cross_references.forEach((entry) => {
+			if (entry.curie.startsWith('MGI:') ||
+				entry.curie.startsWith('RGD:') ||
+				entry.curie.startsWith('ZFIN:') ||
+				entry.curie.startsWith('WB:') ||
+				entry.curie.startsWith('SGD:') ||
+				entry.curie.startsWith('FB:') ||
+				entry.curie.startsWith('DOI:') ||
+				entry.curie.startsWith('PMCID:')) {
+				pmodid = entry.curie;
+			}
+		})
+	}
+	// use pmid if non-nul otherwise use pmodID
+	return pmid ? pmid : pmodid;
+}
+
+
+export function genericConfirmDialog({ header, message, accept, reject }){
+	confirmDialog({
+		message,
+		header,
+		acceptClassName: 'p-button-danger',
+		icon: 'pi pi-info-circle',
+		accept,
+		reject,
+	});
+
+}
