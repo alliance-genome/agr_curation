@@ -1,5 +1,5 @@
 ALTER TABLE association
-	DROP CONSTRAINT IF EXISTS "fk36gq0macvyrb6objapp3o8bwp";
+	DROP CONSTRAINT IF EXISTS "fk4hugd4syivmg65wvbnlajtbqp";
 	
 ALTER TABLE association
 	RENAME modifiedby_id TO updatedby_id;
@@ -9,7 +9,7 @@ ALTER TABLE association
 	FOREIGN KEY (updatedby_id) REFERENCES person(id);
 
 ALTER TABLE biologicalentity
-	DROP CONSTRAINT IF EXISTS "fk4hugd4syivmg65wvbnlajtbqp";
+	DROP CONSTRAINT IF EXISTS "fk36gq0macvyrb6objapp3o8bwp";
 	
 ALTER TABLE biologicalentity
 	RENAME modifiedby_id TO updatedby_id;
