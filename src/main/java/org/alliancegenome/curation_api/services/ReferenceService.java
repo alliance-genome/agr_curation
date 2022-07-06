@@ -100,10 +100,14 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		}
 		
 		Collections.sort(otherXrefs);	
-		if (ref.getPrimaryCrossReference() == null)
-			ref.setPrimaryCrossReference(otherXrefs.remove(0));
-		
-		ref.setSecondaryCrossReferences(otherXrefs);
+		if (ref.getPrimaryCrossReference() == null || !ref.getPrimaryCrossReference().startsWith("PMID:")) {
+			if (otherXrefs.size() > 1) {
+				ref.setPrimaryCrossReference(otherXrefs.remove(0));
+				ref.setSecondaryCrossReferences(otherXrefs);
+			} else {
+				ref.setPrimaryCrossReference(otherXrefs.get(0));
+			}
+		}
 		
 		return ref;
 	}

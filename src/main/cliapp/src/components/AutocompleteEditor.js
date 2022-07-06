@@ -175,9 +175,9 @@ export const AutocompleteEditor = (
 		} else if (getEntityType(item) === 'Literature') {
 			let otherIdsString = '';
 			if (item["secondaryCrossReferences"]) {
-				otherIdsString = item["secondaryCrossReferences"].join('|');
+				otherIdsString = item["secondaryCrossReferences"].join('|') + '|';
 			}
-			otherIdsString = otherIdsString + '|' + item["curie"];
+			otherIdsString = otherIdsString + item["curie"];
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)}>{item["primaryCrossReference"] + ' (' + otherIdsString + ') '}</div>

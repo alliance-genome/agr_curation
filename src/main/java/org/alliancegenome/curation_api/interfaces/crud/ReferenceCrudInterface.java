@@ -11,7 +11,10 @@ import javax.ws.rs.core.MediaType;
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 
 @Path("/reference")
@@ -26,5 +29,6 @@ public interface ReferenceCrudInterface extends BaseCurieCrudInterface<Reference
 	
 	@GET
 	@Path("/sync/{primaryCrossReference}")
+	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<Reference> synchroniseReference(@PathParam("primaryCrossReference") String primaryCrossReference);
 }
