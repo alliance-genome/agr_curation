@@ -24,6 +24,9 @@ export const AutocompleteEditor = (
 	const [filtered, setFiltered] = useState([]);
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
+			if (isReference) {
+				return rowProps.rowData[fieldName].submittedCrossReference;
+			}
 			return isMultiple ?
 				rowProps.rowData[fieldName] :
 				rowProps.rowData[fieldName]?.curie
