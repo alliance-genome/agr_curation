@@ -69,7 +69,7 @@ ALTER TABLE diseaseannotation
 	RENAME singlereference_curie TO singlereference_submittedcrossreference;
 	
 ALTER TABLE diseaseannotation_aud
-	RENAME singlereference_curie TO singelreference_submittedcrossreference;
+	RENAME singlereference_curie TO singlereference_submittedcrossreference;
 	
 UPDATE diseaseannotation d
 	SET singlereference_submittedcrossreference = (SELECT submittedcrossreference FROM reference WHERE curie = d.singlereference_submittedcrossreference);
