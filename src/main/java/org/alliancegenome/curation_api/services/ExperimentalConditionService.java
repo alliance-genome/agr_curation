@@ -150,9 +150,9 @@ public class ExperimentalConditionService extends BaseCrudService<ExperimentalCo
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			experimentalCondition.setCreatedBy(createdBy);
 		}
-		if (dto.getModifiedBy() != null) {
-			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-			experimentalCondition.setModifiedBy(modifiedBy);
+		if (dto.getUpdatedBy() != null) {
+			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			experimentalCondition.setUpdatedBy(updatedBy);
 		}
 		
 		if (dto.getDateUpdated() != null) {

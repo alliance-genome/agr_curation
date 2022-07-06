@@ -162,7 +162,7 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testGene);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setModifiedBy(testPerson);
+		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
 
 		RestAssured.given().
@@ -187,7 +187,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
+				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
 	}
 
 	@Test
@@ -202,7 +202,7 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testAllele);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setModifiedBy(testPerson);
+		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
 
 		RestAssured.given().
@@ -227,7 +227,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
+				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
 	}
 
 	@Test
@@ -242,7 +242,7 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testAgm);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setModifiedBy(testPerson);
+		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
 
 		RestAssured.given().
@@ -267,7 +267,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.modifiedBy.uniqueId", is("TEST:Person0001"));
+				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
 	}
 
 	@Test
@@ -339,7 +339,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(true)).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test
@@ -398,7 +398,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 
 	}
@@ -459,7 +459,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.modifiedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
     			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 
 	}

@@ -119,7 +119,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].object.curie", is("DATEST:Disease0001")).
 			body("results[0].diseaseRelation.name", is("is_implicated_in")).
 			body("results[0].geneticSex.name", is("male")).
-			body("results[0].modifiedBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].updatedBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
@@ -191,10 +191,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[1].object.curie", is("DATEST:Disease0001")).
 			body("results[1].diseaseRelation.name", is("is_implicated_in")).
 			body("results[1].geneticSex.name", is("male")).
-			body("results[1].modifiedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateUpdated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[1].updatedBy.uniqueId", is("DATEST:Person0001")).
+			body("results[1].dateUpdated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[1].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateCreated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[1].dateCreated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[1].conditionRelations", hasSize(1)).
 			body("results[1].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[1].conditionRelations[0].internal", is(false)).
@@ -262,7 +262,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[2].object.curie", is("DATEST:Disease0001")).
 			body("results[2].diseaseRelation.name", is("is_model_of")).
 			body("results[2].geneticSex.name", is("male")).
-			body("results[2].modifiedBy.uniqueId", is("DATEST:Person0001")).
+			body("results[2].updatedBy.uniqueId", is("DATEST:Person0001")).
 			body("results[2].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[2].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[2].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
@@ -470,8 +470,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(11)
-	public void diseaseAnnotationBulkUploadNoModifiedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/11_no_modified_by.json"));
+	public void diseaseAnnotationBulkUploadNoUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/11_no_updated_by.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -494,7 +494,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	@Test
 	@Order(12)
 	public void diseaseAnnotationBulkUploadNoDateUpdated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/12_no_date_last_modified.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/12_no_date_updated.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -1682,7 +1682,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	@Test
 	@Order(63)
 	public void diseaseAnnotationBulkUploadInvalidDateUpdated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/63_invalid_date_last_modified.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/63_invalid_date_updated.json"));
 		
 		RestAssured.given().
 			contentType("application/json").

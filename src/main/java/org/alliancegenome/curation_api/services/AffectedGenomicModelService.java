@@ -154,9 +154,9 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			agm.setCreatedBy(createdBy);
 		}
-		if (dto.getModifiedBy() != null) {
-			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-			agm.setModifiedBy(modifiedBy);
+		if (dto.getUpdatedBy() != null) {
+			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			agm.setUpdatedBy(modifiedBy);
 		}
 		
 		agm.setInternal(dto.getInternal());
