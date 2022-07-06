@@ -87,36 +87,6 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
-export function getRefID(referenceItem) {
-	if (!referenceItem)
-		return ''
-	let pmid = ''
-	let pmodid = ''
-	if(!referenceItem.cross_references) return;
-	referenceItem.cross_references.forEach((entry) => {
-		if (entry.curie.startsWith('PMID:')) {
-			pmid = entry.curie;
-		}
-	})
-	if (pmid === "") {
-		referenceItem.cross_references.forEach((entry) => {
-			if (entry.curie.startsWith('MGI:') ||
-				entry.curie.startsWith('RGD:') ||
-				entry.curie.startsWith('ZFIN:') ||
-				entry.curie.startsWith('WB:') ||
-				entry.curie.startsWith('SGD:') ||
-				entry.curie.startsWith('FB:') ||
-				entry.curie.startsWith('DOI:') ||
-				entry.curie.startsWith('PMCID:')) {
-				pmodid = entry.curie;
-			}
-		})
-	}
-	// use pmid if non-nul otherwise use pmodID
-	return pmid ? pmid : pmodid;
-}
-
-
 export function getRefObject(referenceItem) {
 	if (!referenceItem)
 		return;

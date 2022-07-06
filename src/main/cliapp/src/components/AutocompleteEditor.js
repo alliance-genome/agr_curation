@@ -1,6 +1,6 @@
 import React, {useRef, useState} from 'react';
 import {AutoComplete} from "primereact/autocomplete";
-import {getEntityType, getRefID, getRefObject, trimWhitespace} from '../utils/utils';
+import {getEntityType, getRefObject, trimWhitespace} from '../utils/utils';
 import {Tooltip} from "primereact/tooltip";
 
 export const AutocompleteEditor = (
