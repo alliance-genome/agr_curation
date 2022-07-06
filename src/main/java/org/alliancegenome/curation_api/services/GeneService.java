@@ -142,9 +142,9 @@ public class GeneService extends BaseCrudService<Gene, GeneDAO> {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			gene.setCreatedBy(createdBy);
 		}
-		if (dto.getModifiedBy() != null) {
-			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-			gene.setModifiedBy(modifiedBy);
+		if (dto.getUpdatedBy() != null) {
+			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			gene.setUpdatedBy(updatedBy);
 		}
 		
 		gene.setInternal(dto.getInternal());

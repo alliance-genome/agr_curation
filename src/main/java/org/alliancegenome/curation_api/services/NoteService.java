@@ -96,9 +96,9 @@ public class NoteService extends BaseCrudService<Note, NoteDAO> {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			note.setCreatedBy(createdBy);
 		}
-		if (dto.getModifiedBy() != null) {
-			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-			note.setModifiedBy(modifiedBy);
+		if (dto.getUpdatedBy() != null) {
+			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			note.setUpdatedBy(updatedBy);
 		}
 		
 

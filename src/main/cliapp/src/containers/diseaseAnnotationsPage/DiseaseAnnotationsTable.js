@@ -876,11 +876,11 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider"]},
 	},
 	{
-		field: "modifiedBy.uniqueId",
+		field: "updatedBy.uniqueId",
 		header: "Updated By",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "modifiedByFilter", fields: ["modifiedBy.uniqueId"]},
+		filterElement: {type: "input", filterName: "updatedByFilter", fields: ["updatedBy.uniqueId"]},
 	},
 	{
 		field: "dateUpdated",

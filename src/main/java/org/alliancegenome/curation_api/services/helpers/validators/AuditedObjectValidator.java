@@ -45,8 +45,8 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 			dbEntity.setCreatedBy(createdBy);
 		}
 
-		LoggedInPerson modifiedBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
-		dbEntity.setModifiedBy(modifiedBy);
+		LoggedInPerson updatedBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
+		dbEntity.setUpdatedBy(updatedBy);
 		
 		dbEntity.setDateUpdated(OffsetDateTime.now());
 		

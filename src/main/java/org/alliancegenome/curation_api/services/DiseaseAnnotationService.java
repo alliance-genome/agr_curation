@@ -119,9 +119,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 					Person createdBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getCreatedBy());
 					relation.setCreatedBy(createdBy);
 				}
-				if (conditionRelationDTO.getModifiedBy() != null) {
-					Person modifiedBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getModifiedBy());
-					relation.setModifiedBy(modifiedBy);
+				if (conditionRelationDTO.getUpdatedBy() != null) {
+					Person updatedBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getUpdatedBy());
+					relation.setUpdatedBy(updatedBy);
 				}
 				
 				if (conditionRelationDTO.getDateUpdated() != null) {
@@ -215,14 +215,14 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 	public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
 		if (StringUtils.isEmpty(dto.getObject()) || StringUtils.isEmpty(dto.getDiseaseRelation()) || StringUtils.isEmpty(dto.getDataProvider()) ||
 				StringUtils.isEmpty(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
-				StringUtils.isEmpty(dto.getCreatedBy()) || StringUtils.isEmpty(dto.getModifiedBy()) || dto.getInternal() == null) {
+				dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
 		}
 		
 		Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 		annotation.setCreatedBy(createdBy);
-		Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-		annotation.setModifiedBy(modifiedBy);
+		Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+		annotation.setUpdatedBy(updatedBy);
 		
 		annotation.setInternal(dto.getInternal());
 		annotation.setObsolete(dto.getObsolete());
