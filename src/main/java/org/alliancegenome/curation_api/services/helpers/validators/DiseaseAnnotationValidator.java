@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
@@ -25,9 +26,9 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -52,6 +53,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	ReferenceDAO referenceDAO;
 	@Inject
 	ReferenceService referenceService;
+	@Inject
+	ReferenceValidator referenceValidator;
 	@Inject
 	NoteValidator noteValidator;
 	@Inject
@@ -210,28 +213,23 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return validatedConditionRelations;
 	}
 	
-	public Reference validateSingleReference(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+	public Reference validateSingleReference(DiseaseAnnotation uiEntity) {
 		String field = "singleReference";
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isEmpty(uiEntity.getSingleReference().getCurie())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getSubmittedCrossReference())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
-		Reference singleReference = referenceDAO.find(uiEntity.getSingleReference().getCurie());
-		if (singleReference == null) {
-			singleReference = referenceService.retrieveFromLiteratureService(uiEntity.getSingleReference().getCurie());
-			if (singleReference == null) {
-				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-				return null;
+		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
+		if (singleRefResponse.getEntity() == null) {
+			Map<String, String> errors = singleRefResponse.getErrorMessages();
+			for (String refField : errors.keySet()) {
+				addMessageResponse(field, refField + " - " + errors.get(refField));
 			}
-		}
-		
-		if (singleReference.getObsolete() && !singleReference.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		
-		return singleReference;
+		return singleRefResponse.getEntity();
 	}
 	
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
@@ -289,7 +287,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			dbEntity.setDiseaseQualifiers(null);
 		}
 		
-		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+		Reference singleReference = validateSingleReference(uiEntity);
 		dbEntity.setSingleReference(singleReference);
 		
 		return dbEntity;

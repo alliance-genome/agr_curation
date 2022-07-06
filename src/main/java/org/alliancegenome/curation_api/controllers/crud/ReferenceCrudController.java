@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ReferenceCrudInterface;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 
 @RequestScoped
@@ -19,5 +20,14 @@ public class ReferenceCrudController extends BaseCrudController<ReferenceService
 	@PostConstruct
 	protected void init() {
 		setService(referenceService);
+	}
+
+	public void synchroniseReferences() {
+		referenceService.synchroniseReferences();
+	}
+
+	@Override
+	public ObjectResponse<Reference> synchroniseReference(String primaryCrossReference) {
+		return referenceService.synchroniseReference(primaryCrossReference);
 	}
 }

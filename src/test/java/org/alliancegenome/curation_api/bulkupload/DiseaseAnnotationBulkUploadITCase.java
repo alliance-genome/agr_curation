@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -75,7 +76,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 	private String requiredNoteType = "disease_summary";
 	private String requiredConditionRelationType = "exacerbated_by";
 	private String requiredReference = "PMID:25920554";
-	
 
 	
 	@BeforeEach
@@ -1586,7 +1586,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("totalResults", is(0)); 
 	}
 	
-	// TODO: update count once validation for references is in place
 	@Test
 	@Order(59)
 	public void diseaseAnnotationBulkUploadInvalidRelatedNoteReference() throws Exception {
@@ -1607,7 +1606,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			post("/api/disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -1968,8 +1967,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 	}
 	
 	private void loadReference() throws Exception {
+			
 		Reference reference = new Reference();
 		reference.setCurie(requiredReference);
+		reference.setSubmittedCrossReference(requiredReference);
 		reference.setObsolete(false);
 		
 		RestAssured.given().
@@ -2191,4 +2192,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		return new TypeRef<ObjectResponse <Vocabulary>>() { };
 	}
 	
+	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
+		return new TypeRef<ObjectResponse <CrossReference>>() { };
+	}
 }

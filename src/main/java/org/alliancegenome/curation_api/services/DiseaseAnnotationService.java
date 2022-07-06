@@ -261,11 +261,12 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
 		String publicationId = dto.getSingleReference();
 		Reference reference = referenceDAO.find(publicationId);
-		if (reference == null) {
+		if (reference == null || reference.getObsolete()) {
 			reference = referenceService.retrieveFromLiteratureService(publicationId);
 			if (reference == null) {
 				throw new ObjectValidationException(dto, "Invalid publication ID in " + annotation.getUniqueId() + " - skipping annotation");
 			}
+			
 		}
 		annotation.setSingleReference(reference);
 
