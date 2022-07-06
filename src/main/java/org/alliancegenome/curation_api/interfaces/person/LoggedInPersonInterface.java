@@ -38,4 +38,8 @@ public interface LoggedInPersonInterface {
 	@Path("/savesettings")
 	public void saveSettings(@RequestBody HashMap<String, Object> settings);
 	
+	@GET
+	@Path("/regenapitoken")
+	public LoggedInPerson regenApiToken();
+	
 }

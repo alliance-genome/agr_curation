@@ -33,6 +33,7 @@ export const RelatedNotesDialog = ({
 	const rowsInEdit = useRef(0);
 	const hasEdited = useRef(false);
 	const toast_topright = useRef(null);
+<<<<<<< HEAD
 
 	let relatedNoteService = null;
 	const mutation = useMutation(deletedRelatedNote => {
@@ -41,6 +42,8 @@ export const RelatedNotesDialog = ({
 		}
 		return relatedNoteService.deleteRelatedNote(deletedRelatedNote);
 	});
+=======
+>>>>>>> alpha
 
 	const showDialogHandler = () => {
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
@@ -198,8 +201,8 @@ export const RelatedNotesDialog = ({
 					severity: "warn",
 					message: "Pending Edits!"
 				};
-				errorMessagesCopy[mainRowProps.rowIndex] = {};
-				errorMessagesCopy[mainRowProps.rowIndex]["relatedNotes.freeText"] = messageObject;
+				errorMessagesCopy[rowIndex] = {};
+				errorMessagesCopy[rowIndex]["relatedNotes.freeText"] = messageObject;
 				setErrorMessagesMainRow({...errorMessagesCopy});
 			}
 		};
@@ -300,46 +303,23 @@ export const RelatedNotesDialog = ({
 		);
 	}
 
-	const confirmDeleteRelatedNote = (props) => {
-		let deletedRelatedNote = global.structuredClone(props.rowData);
-		mutation.mutate(deletedRelatedNote, {
-			onSuccess: (response, variables, context) => {
-				toast_topright.current.show([
-					{ life: 3000, severity: 'success', summary: 'Successful ', detail: 'Related Note Deleted' , sticky: false }
-				]);
-				const errorMessagesCopy = errorMessages;
-				errorMessagesCopy[props.rowIndex] = {};
-				setErrorMessages({ ...errorMessagesCopy });
-			},
-			onError: (error, variables, context) => {
-				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
-				]);
 
-				const errorMessagesCopy = errorMessages;
-				console.log(errorMessagesCopy);
-				errorMessagesCopy[props.rowIndex] = {};
-				Object.keys(error.response.data.errorMessages).forEach((field) => {
-					let messageObject = {
-						severity: "error",
-						message: error.response.data.errorMessages[field]
-					};
-					errorMessagesCopy[props.rowIndex][field] = messageObject;
-				});
-				console.log(errorMessagesCopy);
-				setErrorMessages({ ...errorMessagesCopy });
-
-				/*let _entity = global.structuredClone(entity);
-				setEntity(_entity);
-				let _editingRows = { ...editingRows, ...{ [`${_entity[event.index].id}`]: true } };
-				setEditingRows(_editingRows);*/
-			}
-		});
+	const handleDeleteRelatedNote = (event, props) => {
+		let _localRelateNotes = global.structuredClone(localRelateNotes); 
+		if(props.dataKey){
+			_localRelateNotes.splice(props.dataKey, 1);
+		}else {
+			_localRelateNotes.splice(props.rowIndex, 1);
+		}
+		setLocalRelateNotes(_localRelateNotes);
+		hasEdited.current = true;
 	}
 
 	const deleteAction = (props) => {
 		return (
-			<Button icon="pi pi-trash" className="p-button-text" onClick={(props) => confirmDeleteRelatedNote(props)} /*tooltip={"Delete"}*//>
+
+			<Button icon="pi pi-trash" className="p-button-text"
+					onClick={(event) => { handleDeleteRelatedNote(event, props) }}/>
 		);
 	}
 
@@ -361,7 +341,8 @@ export const RelatedNotesDialog = ({
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column editor={deleteAction} body={deleteAction} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
+
+					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' body={noteTypeTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 					<Column
@@ -376,3 +357,4 @@ export const RelatedNotesDialog = ({
 		</div>
 	);
 };
+

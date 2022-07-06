@@ -1,4 +1,5 @@
 quarkus.http.host=0.0.0.0
+quarkus.http.cors=false
 quarkus.http.limits.max-body-size=
 quarkus.http.limits.max-body-size=1g
 quarkus.http.root-path=/
@@ -12,7 +13,8 @@ quarkus.datasource.username=postgres
 quarkus.datasource.password=postgres
 quarkus.datasource.jdbc.max-size=64
 
-quarkus.hibernate-orm.database.generation=update
+quarkus.hibernate-orm.database.generation=validate
+%dev.quarkus.hibernate-orm.database.generation=update
 
 quarkus.flyway.sql-migration-prefix=v
 quarkus.flyway.default-schema=public
