@@ -22,8 +22,13 @@ import { Tooltip } from 'primereact/tooltip';
 export const DiseaseAnnotationsTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true); //needs better name
-	const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
-	const [conditionRelations, setConditionRelations] = useState(false);
+	const [conditionRelationsData, setConditionRelationsData] = useState({
+		conditionRelations: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mailRowProps: {},
+	});
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
 		isInEdit: false,
@@ -92,9 +97,29 @@ export const DiseaseAnnotationsTable = () => {
 		}));
 	};
 
-	const handleConditionRelationsOpen = (event, rowData) => {
-		setConditionRelations(rowData.conditionRelations);
-		setConditionRelationsDialog(true);
+	const handleConditionRelationsOpen = (event, rowData, isInEdit) => {
+		let _conditionRelationsData = {};
+		_conditionRelationsData["originalConditionRelations"] = rowData.conditionRelations;
+		_conditionRelationsData["dialog"] = true;
+		_conditionRelationsData["isInEdit"] = isInEdit;
+		setConditionRelationsData(() => ({
+			..._conditionRelationsData
+		}));
+	};
+	
+	const handleConditionRelationsOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _conditionRelationsData = {};
+		_conditionRelationsData["originalConditionRelations"] = rowProps.rowData.conditionRelations;
+		_conditionRelationsData["dialog"] = true;
+		_conditionRelationsData["isInEdit"] = isInEdit;
+		_conditionRelationsData["rowIndex"] = index;
+		_conditionRelationsData["mainRowProps"] = rowProps;
+		setConditionRelationsData(() => ({
+			..._conditionRelationsData
+		}));
 	};
 
 	const withTemplate = (rowData) => {
@@ -245,17 +270,44 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsTemplate = (rowData) => {
-		if (rowData.conditionRelations) {
-				const handle = rowData.conditionRelations[0].handle
-			return <EllipsisTableCell>
-				<Button className="p-button-raised p-button-text"
+		if (rowData?.conditionRelations) {
+			const handle = rowData.conditionRelations[0].handle;
+			return (
+				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
 					<span style={{ textDecoration: 'underline' }}>
 						{!handle && `Conditions (${rowData.conditionRelations.length})`}
-							{handle && handle}
+						{handle && handle}
 					</span>
 				</Button>
-			</EllipsisTableCell>;
+			)
+		}
+	};
+
+	const conditionRelationsEditor = (props) => {
+		if (props?.rowData?.conditionRelations) {
+			const handle = props.rowData.conditionRelations[0].handle;
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleConditionRelationsOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{!handle && `Conditions (${props.rowData.conditionRelations.length})`}
+							{handle && handle}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+						</span>
+					</Button>
+				</div>
+					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelations.uniqueId"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return null;
 		}
 	};
 
@@ -802,6 +854,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "conditionRelations.uniqueId",
 		header: "Experimental Conditions",
 		body: conditionRelationsTemplate,
+		editor: (props) => conditionRelationsEditor(props),
 		sortable: true,
 		filter: true,
 		filterElement: {
@@ -953,9 +1006,10 @@ export const DiseaseAnnotationsTable = () => {
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<ConditionRelationsDialog
-				conditonRelations={conditionRelations}
-				conditionRelationsDialog={conditionRelationsDialog}
-				setConditionRelationsDialog={setConditionRelationsDialog}
+				originalConditionRelationsData={conditionRelationsData}
+				setOriginalConditionRelationsData={setConditionRelationsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
 			/>
 		</>
 	);
