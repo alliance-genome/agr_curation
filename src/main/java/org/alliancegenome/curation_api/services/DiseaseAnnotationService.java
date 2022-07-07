@@ -146,17 +146,17 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 				
 				String conditionRelationType = conditionRelationDTO.getConditionRelationType();
 				if (conditionRelationType == null) {
-					throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
+					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
 				}
 				VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 				if (conditionRelationTypeTerm == null) {
-					throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
+					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
 				} else {
 					relation.setConditionRelationType(conditionRelationTypeTerm);
 				}
 
 				if (CollectionUtils.isEmpty(conditionRelationDTO.getConditions())) {
-					throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
+					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
 				}
 				for (ExperimentalConditionDTO experimentalConditionDTO : conditionRelationDTO.getConditions()) {
 					ExperimentalCondition experimentalCondition = experimentalConditionService.validateExperimentalConditionDTO(experimentalConditionDTO);

@@ -78,12 +78,12 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
 	private AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {
 		AGMDiseaseAnnotation annotation;
 		if (dto.getSubject() == null) {
-			throw new ObjectUpdateException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
+			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
 		}
 		
 		AffectedGenomicModel agm = agmDAO.find(dto.getSubject());
 		if (agm == null) {
-			throw new ObjectUpdateException(dto, "AGM " + dto.getSubject() + " not found in database - skipping annotation");
+			throw new ObjectValidationException(dto, "AGM " + dto.getSubject() + " not found in database - skipping annotation");
 		}
 		
 		String annotationId = dto.getModEntityId();
@@ -104,7 +104,7 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
 		
 		VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
 		if (diseaseRelation == null) {
-			throw new ObjectUpdateException(dto, "Invalid AGM disease relation for " + annotationId + " - skipping");
+			throw new ObjectValidationException(dto, "Invalid AGM disease relation for " + annotationId + " - skipping");
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 		
