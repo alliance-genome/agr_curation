@@ -92,7 +92,7 @@ export const ConditionRelationsDialog = ({
 				hasEdited.current = true;
 			} else {
 				for (var i = 0; i < data.conditions.length; i++) {
-					if (data.conditions[i].conditionStatement !== originalConditionRelations[index].conditions[i].conditionStatement) {
+					if (data.conditions[i].conditionSummary !== originalConditionRelations[index].conditions[i].conditionSummary) {
 						hasEdited.current = true;
 					}
 				}
@@ -100,13 +100,13 @@ export const ConditionRelationsDialog = ({
 		}
 	};
 	
-	const onRowEditSave = (event) => {
+	/*const onRowEditSave = (event) => {
 		rowsInEdit.current--;
 		let _localConditionRelations = [...localConditionRelations];
 		_localConditionRelations[event.index] = event.data;
 		setLocalConditionRelations(_localConditionRelations);
 		compareChangesInRelations(event.data,event.index);
-	};
+	};*/
 
 	const hideDialog = () => {
 		setErrorMessages([]);
@@ -120,7 +120,7 @@ export const ConditionRelationsDialog = ({
 		setLocalConditionRelations(_localConditionRelations);
 	};
 	
-	const validateRelations = async (relations) => {
+	/*const validateRelations = async (relations) => {
 		const validationResultsArray = [];
 		let _relations = global.structuredClone(relations);
 		for (const relation of _relations) {
@@ -129,6 +129,13 @@ export const ConditionRelationsDialog = ({
 			validationResultsArray.push(result);
 		}
 		return validationResultsArray;
+	};*/
+	
+	const validateRelation = async (relation) => {
+		let _relation = global.structuredClone(relation);
+		delete relation.dataKey;
+		const result = await validationService.validate('condition-relation', relation);
+		return result;
 	};
 	
 	const cloneRelations = (clonableRelations) => {
@@ -144,15 +151,81 @@ export const ConditionRelationsDialog = ({
 		return _clonableRelations;
 	};
 	
+	const onRowEditSave = async(event) => {
+		const result = await validateRelation(localConditionRelations[event.index]);
+		const errorMessagesCopy = [...errorMessages];
+
+		let errorField = null;
+		console.log(result);
+		console.log(rowsInEdit)
+		if (result.isError) {
+			console.log('Here');
+			Object.keys(result.data).forEach((field) => {
+				errorField = field;
+				errorMessagesCopy[event.index] = {};
+				let messageObject = {
+					severity: "error",
+					message: result.data[field]
+				};
+				errorMessagesCopy[event.index][field] = messageObject;
+				setErrorMessages(errorMessagesCopy);
+				toast_topright.current.show([
+					{ life: 7000, severity: 'error', summary: 'Update error: ',
+					detail: 'Could not update condition relation [' + localConditionRelations[event.index].id + ']', sticky: false }
+				]);
+			});
+			
+		} else {
+			rowsInEdit.current--;
+			let _localConditionRelations = [...localConditionRelations];
+			_localConditionRelations[event.index] = event.data;
+			setLocalConditionRelations(_localConditionRelations);
+			compareChangesInRelations(event.data,event.index);
+		}
+		
+		return <ErrorMessageComponent errorMessages={result.data} errorField={errorField} style={{ 'fontSize': '1em' }}/>;
+	};
+	
 	const saveDataHandler = async () => {
+		
+		setErrorMessages([]);
+		for (const relation of localConditionRelations) {
+			delete relation.dataKey;
+		}
+		mainRowProps.rowData.conditionRelations = localConditionRelations;
+		let updatedAnnotations = [...mainRowProps.props.value];
+		updatedAnnotations[rowIndex].conditionRelations = localConditionRelations;
+		
+		if(hasEdited.current){
+			const errorMessagesCopy = errorMessagesMainRow;
+			let messageObject = {
+				severity: "warn",
+				message: "Pending Edits!"
+			};
+			errorMessagesCopy[rowIndex] = {};
+			errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
+			setErrorMessagesMainRow({...errorMessagesCopy});
+		}
+		
+		setOriginalConditionRelationsData((originalConditionRelationsData) => {
+				return {
+					...originalConditionRelationsData,
+					dialog: false,
+				}
+			}
+		);
+	};
+	
+	/*const saveDataHandler = async () => {
 		const resultsArray = await validateRelations(localConditionRelations);
 		const errorMessagesCopy = [...errorMessages];
 		let keepDialogOpen = false;
 		let anyErrors = false;
-
+		let crWithErrorIds = [];
 		resultsArray.forEach((result, index) => {
 			const { isError, data } = result;
 			if (isError) {
+				crWithErrorIds.push(localConditionRelations[index]["id"]);
 				errorMessagesCopy[index] = {};
 				Object.keys(data).forEach((field) => {
 					let messageObject = {
@@ -184,9 +257,16 @@ export const ConditionRelationsDialog = ({
 					message: "Pending Edits!"
 				};
 				errorMessagesCopy[rowIndex] = {};
-				errorMessagesCopy[rowIndex]["conditionRelations.uniqueId"] = messageObject;
+				errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
 				setErrorMessagesMainRow({...errorMessagesCopy});
 			}
+		} else {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'error', summary: 'Update error: ',
+				detail: 'Could not update condition relation(s) [' + crWithErrorIds.join('|') + ']', sticky: false }
+			]);
+			console.log(errorMessages);
+			return <ErrorMessageComponent errorMessages={errorMessages[0]} errorField={errorMessages[0]} style={{ 'fontSize': '1em' }}/>
 		};
 
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
@@ -196,7 +276,7 @@ export const ConditionRelationsDialog = ({
 				}
 			}
 		);
-	};
+	};*/
 	
 	const internalTemplate = (rowData) => {
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
@@ -222,7 +302,7 @@ export const ConditionRelationsDialog = ({
 	};
 	
 	const conditionRelationTypeTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.conditoinRelationType.name}</EllipsisTableCell>;
+		return <EllipsisTableCell>{rowData.conditionRelationType.name}</EllipsisTableCell>;
 	};
 	
 	const onConditionRelationTypeEditorValueChange = (props, event) => {
@@ -241,37 +321,46 @@ export const ConditionRelationsDialog = ({
 					showClear={false}
 					dataKey='id'
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelaitonType"} />
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType"} />
 			</>
 		);
 	};
 
 	const conditionsTemplate = (rowData) => {
-		const listTemplate = (item) => {
+		console.log(rowData);
+		if (rowData && rowData.conditions) {
+			const sortedConditionSummaries = rowData.conditions.sort((a,b) => (a.conditionSummary > b.conditionSummary) ? 1 : -1);
+			console.log(sortedConditionSummaries);
+			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
-						{item.conditionStatement}
+						{item.conditionSummary}
 					</EllipsisTableCell>
 				);
 			};
-		return <ListTableCell template={listTemplate} listData={rowData.conditions} />
+			return <ListTableCell template={listTemplate} listData={sortedConditionSummaries} />
+		}
 	};
 	
 	const conditionsEditorTemplate = (props) => {
+		
+			console.log(errorMessages);
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+					autocompleteFields={["conditionSummary"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='experimental-condition'
-					filterName='conditionStatementFilter'
-					fieldName='conditionStatement'
+					filterName='conditionSummaryFilter'
+					fieldName='conditions'
+					subField='conditionSummary'
+					isConditionSummary={true}
 					isMultiple={true}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
-					errorField="conditions"
+					errorField={"conditions"}
 				/>
 			</>
 		);
@@ -294,7 +383,7 @@ export const ConditionRelationsDialog = ({
 							<Column header="Actions" style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Handle" />
 							<Column header="Relation" />
-							<Column header="Statement" />
+							<Column header="Conditions" />
 							<Column header="Internal" />
 						</Row>
 						</ColumnGroup>;
@@ -310,7 +399,7 @@ export const ConditionRelationsDialog = ({
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column field="handle" header="Handle"></Column>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' body={conditionRelationTypeTemplate}/>
-					<Column editor={conditionsEditorTemplate} field="conditions.conditionStatement" header="Statement" headerClassName='surface-0' body={conditionsTemplate}/>
+					<Column editor={conditionsEditorTemplate} field="conditions.conditionSummary" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>

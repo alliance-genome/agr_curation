@@ -18,6 +18,7 @@ export const AutocompleteEditor = (
 		isMultiple = false,
 		isReference = false,
 		isSgdStrainBackground = false,
+		isConditionSummary = false,
 		valueSelector
 	}
 ) => {
@@ -112,6 +113,7 @@ export const AutocompleteEditor = (
 	};
 
 	const itemTemplate = (item) => {
+		
 		let inputValue = trimWhitespace(query.toLowerCase());
 		if (autocompleteSelectedItem.synonyms?.length > 0) {
 			for (let i in autocompleteSelectedItem.synonyms) {
@@ -163,6 +165,13 @@ export const AutocompleteEditor = (
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
+				</div>
+			);
+		} else if (isConditionSummary) {
+			return (
+				<div>
+					<div onMouseOver={(event) => onSelectionOver(event, item)}
+						 dangerouslySetInnerHTML={{__html: item.conditionSummary}}/>
 				</div>
 			);
 		} else if (getEntityType(item) === 'Experiment Condition') {

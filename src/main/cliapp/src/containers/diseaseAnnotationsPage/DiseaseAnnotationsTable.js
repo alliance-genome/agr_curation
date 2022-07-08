@@ -285,6 +285,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsEditor = (props) => {
+			console.log(props);
 		if (props?.rowData?.conditionRelations) {
 			const handle = props.rowData.conditionRelations[0].handle;
 			return (
@@ -860,7 +861,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
+			fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
 		},
 	},
 	{
