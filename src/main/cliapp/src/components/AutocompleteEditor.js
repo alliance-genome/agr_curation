@@ -25,7 +25,7 @@ export const AutocompleteEditor = (
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
 			if (isReference) {
-				return rowProps.rowData[fieldName].submittedCrossReference;
+				return rowProps.rowData[fieldName]?.submittedCrossReference;
 			}
 			return isMultiple ?
 				rowProps.rowData[fieldName] :
