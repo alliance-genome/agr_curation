@@ -43,7 +43,8 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		HashMap<String, Object> searchField = new HashMap<>();
 		searchField.put("cross_reference.curie", searchDetails);
-		
+		searchField.put("curie", searchDetails);
+
 		HashMap<String, Object> filter = new HashMap<>();
 		filter.put("cross_referenceFilter", searchField);
 		

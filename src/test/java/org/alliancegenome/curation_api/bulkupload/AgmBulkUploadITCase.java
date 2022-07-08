@@ -5,6 +5,8 @@ import static org.hamcrest.Matchers.is;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,10 +69,11 @@ public class AgmBulkUploadITCase {
 			body("results[0].name", is("TestAgm1")).
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
+			body("results[0].obsolete", is(true)).
 			body("results[0].createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("results[0].modifiedBy.uniqueId", is("AGMTEST:Person0002")).
-			body("results[0].dateCreated", is("2022-03-09T22:10:12Z")).
-			body("results[0].dateUpdated", is("2022-03-09T22:10:12Z"));
+			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
 	
 	@Test
@@ -375,5 +378,33 @@ public class AgmBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(13)
+	public void agmBulkUploadNoObsolete() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/13_no_obsolete_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].curie", is("AGMTEST:Agm0013")).
+			body("results[0].obsolete", is(false));
 	}
 }
