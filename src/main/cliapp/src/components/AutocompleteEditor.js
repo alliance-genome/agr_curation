@@ -216,7 +216,6 @@ export const AutocompleteEditor = (
 }
 
 const EditorTooltip = ({op, autocompleteSelectedItem}) => {
-	console.log(autocompleteSelectedItem);
 	return (
 		<>
 			<Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack
