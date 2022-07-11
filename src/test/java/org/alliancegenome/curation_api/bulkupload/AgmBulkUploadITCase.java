@@ -71,7 +71,7 @@ public class AgmBulkUploadITCase {
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
 			body("results[0].createdBy.uniqueId", is("AGMTEST:Person0001")).
-			body("results[0].modifiedBy.uniqueId", is("AGMTEST:Person0002")).
+			body("results[0].updatedBy.uniqueId", is("AGMTEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
@@ -217,8 +217,8 @@ public class AgmBulkUploadITCase {
 	
 	@Test
 	@Order(7)
-	public void agmBulkUploadNoModifiedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/07_no_modified_by_agm.json"));
+	public void agmBulkUploadNoUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/07_no_updated_by_agm.json"));
 		
 		// upload file
 		RestAssured.given().

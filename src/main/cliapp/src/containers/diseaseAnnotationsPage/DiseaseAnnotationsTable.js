@@ -18,7 +18,6 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import {getRefID} from "../../utils/utils";
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -79,11 +78,14 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
 		let _relatedNotesData = {};
 		_relatedNotesData["originalRelatedNotes"] = rowProps.rowData.relatedNotes;
 		_relatedNotesData["dialog"] = true;
 		_relatedNotesData["isInEdit"] = isInEdit;
-		_relatedNotesData["rowIndex"] = rowProps.rowIndex;
+		_relatedNotesData["rowIndex"] = index;
 		_relatedNotesData["mainRowProps"] = rowProps;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
@@ -131,6 +133,34 @@ export const DiseaseAnnotationsTable = () => {
 				</>
 			);
 		}
+	};
+	
+	const singleReferenceBodyTemplate = (rowData) => {
+		if (rowData && rowData.singleReference) {
+			let xrefString = '';
+			if (rowData.singleReference.secondaryCrossReferences) {
+				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.secondaryCrossReferences.join("|") + '|' + rowData.singleReference.curie + ')';
+			} else {
+				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.curie + ')';
+			
+			}
+			return (
+				<>
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}
+						dangerouslySetInnerHTML={{
+							__html: xrefString
+						}}
+					/>
+					<Tooltip target={`.a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}>
+						<div dangerouslySetInnerHTML={{
+							__html: xrefString
+						}}
+						/>
+					</Tooltip>
+				</>
+			);
+			
+		}	
 	};
 
 	const diseaseQualifiersBodyTemplate = (rowData) => {
@@ -627,26 +657,22 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const singleValueReferenceSelector = (referenceItem) => {
-		return getRefID(referenceItem)
-	}
-
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["curie", "cross_reference.curie"]}
+
+					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
 					filterName='curieFilter'
-					isSubject={true}
+					isReference={true}
 					fieldName='singleReference'
-					valueSelector={singleValueReferenceSelector}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
+					errorField={"singleReference"}
 				/>
 			</>
 		);
@@ -737,12 +763,13 @@ export const DiseaseAnnotationsTable = () => {
 		body: diseaseBodyTemplate
 	},
 	{
-		field: "singleReference.curie",
+		field: "singleReference.submittedCrossReference",
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
-		editor: (props) => referenceEditorTemplate(props)
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference", "singleReference.secondaryCrossReferences"]},
+		editor: (props) => referenceEditorTemplate(props),
+		body: singleReferenceBodyTemplate
 	},
 	{
 		field: "evidenceCodes.abbreviation",
@@ -849,11 +876,11 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider"]},
 	},
 	{
-		field: "modifiedBy.uniqueId",
+		field: "updatedBy.uniqueId",
 		header: "Updated By",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "modifiedByFilter", fields: ["modifiedBy.uniqueId"]},
+		filterElement: {type: "input", filterName: "updatedByFilter", fields: ["updatedBy.uniqueId"]},
 	},
 	{
 		field: "dateUpdated",

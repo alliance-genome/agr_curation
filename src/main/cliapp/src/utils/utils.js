@@ -1,11 +1,11 @@
+import { confirmDialog } from 'primereact/confirmdialog';
+
 export function returnSorted(event, originalSort) {
 
 	let found = false;
 	let replace = false;
 	let newSort = [...originalSort];
 
-	// console.log(event);
-	// console.log(newSort);
 	if (event.multiSortMeta.length > 0) {
 		newSort.forEach((o) => {
 			if (o.field === event.multiSortMeta[0].field) {
@@ -87,29 +87,44 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
-export function getRefID(referenceItem) {
+export function getRefObject(referenceItem) {
 	if (!referenceItem)
-		return ''
-	let pmid = ''
-	let pmodid = ''
-	referenceItem.cross_reference.forEach((entry) => {
-		if (entry.curie.startsWith('PMID:')) {
-			pmid = entry.curie;
+		return;
+	const curationDbRef = {};
+	let primaryXref = '';
+	const secondaryXrefs = [];
+	
+	for (const xref of referenceItem.cross_references) {
+		if (xref.curie.startsWith('PMID:')) {
+			primaryXref = xref.curie;
+		} else {
+			secondaryXrefs.push(xref.curie);
 		}
-	})
-	if (pmid === "") {
-		referenceItem.cross_reference.forEach((entry) => {
-			if (entry.curie.startsWith('MGI:') ||
-				entry.curie.startsWith('RGD:') ||
-				entry.curie.startsWith('ZFIN:') ||
-				entry.curie.startsWith('WB:') ||
-				entry.curie.startsWith('FB:') ||
-				entry.curie.startsWith('DOI:') ||
-				entry.curie.startsWith('PMCID:')) {
-				pmodid = entry.curie;
-			}
-		})
 	}
-	// use pmid if non-nul otherwise use pmodID
-	return pmid ? pmid : pmodid;
+
+	secondaryXrefs.sort();
+	if (!primaryXref) {
+		primaryXref = secondaryXrefs.shift();
+	}
+
+	curationDbRef.curie = referenceItem.curie;
+	curationDbRef.primaryCrossReference = primaryXref;
+	curationDbRef.submittedCrossReference = primaryXref;
+	if (secondaryXrefs && secondaryXrefs.length > 0)
+		curationDbRef.secondaryCrossReferences = secondaryXrefs.slice(0);
+	
+	return curationDbRef;
+}
+
+
+export function genericConfirmDialog({ header, message, accept, reject }){
+	confirmDialog({
+		message,
+		header,
+		acceptClassName: 'p-button-danger',
+		icon: 'pi pi-info-circle',
+		accept,
+		reject,
+	});
+
 }

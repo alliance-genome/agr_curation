@@ -36,6 +36,7 @@ public class ConditionRelationITCase {
 	private void createRequiredObjects() {
 
 		testReference = createReference("PMID:11213376");
+		conditionRelationTypeVocabulary = createVocabulary("Condition relation type vocabulary");
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		experimentalCondition = createExperimentalCondition();
 		conditionRelation = createConditionRelation("fructose", testReference, conditionRelationType);
@@ -153,6 +154,7 @@ public class ConditionRelationITCase {
 	private Reference createReference(String curie) {
 		Reference reference = new Reference();
 		reference.setCurie(curie);
+		reference.setSubmittedCrossReference(curie);
 
 		ObjectResponse<Reference> response = given().
 			contentType("application/json").
@@ -171,6 +173,7 @@ public class ConditionRelationITCase {
 		vocabularyTerm.setName(name);
 		vocabularyTerm.setVocabulary(vocabulary);
 		vocabularyTerm.setObsolete(obsolete);
+		vocabularyTerm.setInternal(false);
 
 		ObjectResponse<VocabularyTerm> response =
 			given().
@@ -185,6 +188,26 @@ public class ConditionRelationITCase {
 		vocabularyTerm = response.getEntity();
 
 		return vocabularyTerm;
+	}
+	
+	private Vocabulary createVocabulary(String name) {
+		Vocabulary vocabulary = new Vocabulary();
+		vocabulary.setName(name);
+		vocabulary.setInternal(false);
+		
+		ObjectResponse<Vocabulary> response = 
+			RestAssured.given().
+				contentType("application/json").
+				body(vocabulary).
+				when().
+				post("/api/vocabulary").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVocabulary());
+		
+		vocabulary = response.getEntity();
+		
+		return vocabulary;
 	}
 
 	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {

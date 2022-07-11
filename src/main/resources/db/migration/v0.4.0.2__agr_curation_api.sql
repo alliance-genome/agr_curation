@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS loggedinperson (
 	id bigint PRIMARY KEY,
 	oktaemail varchar(255),
 	oktaid varchar(255),
-	apitoken varchar(255)
+	apitoken varchar(255),
+usersettings jsonb
 	);
 	
 INSERT INTO loggedinperson (id)
@@ -43,8 +44,6 @@ ALTER TABLE biologicalentity
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE bulkload
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -59,8 +58,6 @@ ALTER TABLE bulkload
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE bulkloadfile
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -75,8 +72,6 @@ ALTER TABLE bulkloadfile
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE bulkloadfileexception
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -91,8 +86,6 @@ ALTER TABLE bulkloadfileexception
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE bulkloadfilehistory
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -107,8 +100,6 @@ ALTER TABLE bulkloadfilehistory
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE bulkloadgroup
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -125,7 +116,11 @@ ALTER TABLE bulkloadgroup
 ALTER TABLE conditionrelation
 	DROP COLUMN IF EXISTS created,
 	DROP COLUMN IF EXISTS lastupdated;
-	
+
+ALTER TABLE conditionrelation
+	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
+	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
+		
 ALTER TABLE crossreference
 	DROP COLUMN IF EXISTS created,
 	DROP COLUMN IF EXISTS lastupdated;
@@ -144,9 +139,7 @@ UPDATE diseaseannotation
 
 ALTER TABLE diseaseannotation
 	DROP COLUMN IF EXISTS datelastmodified,
-	DROP COLUMN IF EXISTS creationdate,
-	DROP COLUMN IF EXISTS created,
-	DROP COLUMN IF EXISTS lastupdated;
+	DROP COLUMN IF EXISTS creationdate;
 	
 ALTER TABLE experimentalcondition
 	DROP COLUMN IF EXISTS created,
@@ -161,8 +154,6 @@ ALTER TABLE ontologyterm
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE person
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -177,8 +168,6 @@ ALTER TABLE person
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE reference
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -195,10 +184,12 @@ ALTER TABLE reference
 ALTER TABLE synonym
 	DROP COLUMN IF EXISTS created,
 	DROP COLUMN IF EXISTS lastupdated;
+
+ALTER TABLE synonym
+	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
+	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
 ALTER TABLE vocabulary
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -213,8 +204,6 @@ ALTER TABLE vocabulary
 	DROP COLUMN IF EXISTS lastupdated;
 	
 ALTER TABLE vocabularyterm
-	ADD COLUMN IF NOT EXISTS created timestamp without time zone,
-	ADD COLUMN IF NOT EXISTS lastupdated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS datecreated timestamp without time zone,
 	ADD COLUMN IF NOT EXISTS dateupdated timestamp without time zone;
 	
@@ -228,3 +217,21 @@ ALTER TABLE vocabularyterm
 	DROP COLUMN IF EXISTS created,
 	DROP COLUMN IF EXISTS lastupdated;
 	
+
+ALTER TABLE ONLY public.loggedinperson
+    ADD CONSTRAINT uk_1x2yi78pxpi1vnjh8kp6jknbj UNIQUE (oktaid);
+ALTER TABLE ONLY public.loggedinperson
+    ADD CONSTRAINT uk_783vgdwg0048goe9pkt9npvqt UNIQUE (oktaemail);
+ALTER TABLE ONLY public.diseaseannotation
+    ADD CONSTRAINT uk_2ea912q3hgfs30y1wo2c868wx UNIQUE (modentityid);
+ALTER TABLE ONLY public.person
+    ADD CONSTRAINT uk_eqlixdg38sapqqrm25vt079jb UNIQUE (uniqueid);
+ALTER TABLE ONLY public.person
+    ADD CONSTRAINT uk_mh8bc6koyamm7yav5132wje7j UNIQUE (orcid);
+ALTER TABLE ONLY public.person
+    ADD CONSTRAINT uk_9omqedixfrwkqq9bdts63g65u UNIQUE (modentityid);
+ALTER TABLE ONLY public.diseaseannotation_note
+    ADD CONSTRAINT uk_f3o1apeoj9un48jw6qmiihpjc UNIQUE (relatednotes_id);
+
+ALTER TABLE ONLY public.loggedinperson
+    ADD CONSTRAINT fk6f4fytsv6sfgyggjjaq7s7wuw FOREIGN KEY (id) REFERENCES public.person(id);

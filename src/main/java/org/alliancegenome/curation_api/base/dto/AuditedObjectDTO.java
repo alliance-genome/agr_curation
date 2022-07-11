@@ -23,8 +23,8 @@ public class AuditedObjectDTO {
 	private String createdBy;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("modified_by")
-	private String modifiedBy;
+	@JsonProperty("updated_by")
+	private String updatedBy;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("date_created")

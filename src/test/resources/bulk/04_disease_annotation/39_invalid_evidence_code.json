@@ -10,7 +10,7 @@
     "negated": true,
     "predicate": "is_implicated_in",
     "genetic_sex": "male",
-    "modified_by": "DATEST:Person0001",
+    "updated_by": "DATEST:Person0001",
     "evidence_codes": [
       "DATEST:Evidence0002"
     ],

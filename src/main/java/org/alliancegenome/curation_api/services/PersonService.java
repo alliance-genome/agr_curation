@@ -8,13 +8,16 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.validators.PersonValidator;
 
 @RequestScoped
 public class PersonService extends BaseCrudService<Person, PersonDAO> {
 
 	@Inject
 	PersonDAO personDAO;
+	@Inject PersonValidator personValidator;
 	
 	@Override
 	@PostConstruct
@@ -33,7 +36,6 @@ public class PersonService extends BaseCrudService<Person, PersonDAO> {
 		return personDAO.persist(person);
 	}
 	
-	
 	public Person findPersonByEmail(String email) {
 		SearchResponse<Person> resp = personDAO.findByField("email", email);
 		if (resp != null && resp.getTotalResults() == 1) {
@@ -41,5 +43,12 @@ public class PersonService extends BaseCrudService<Person, PersonDAO> {
 		}
 		
 		return null;
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<Person> update(Person uiEntity) {
+		Person dbEntity = personValidator.validatePerson(uiEntity);
+		return new ObjectResponse<>(personDAO.persist(dbEntity));
 	}
 }
