@@ -90,7 +90,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	}
 		
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref, String searchCurie) {
-		log.info(litRef);
 		ref.setCurie(litRef.getCurie());
 		
 		ArrayList<String> otherXrefs = new ArrayList<String>();
@@ -101,8 +100,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 				otherXrefs.add(litXref.getCurie());	
 			} 
 		}
-		log.info(ref.getPrimaryCrossReference());
-		log.info(otherXrefs);
 		Collections.sort(otherXrefs);	
 		if (ref.getPrimaryCrossReference() == null || !ref.getPrimaryCrossReference().startsWith("PMID:")) {
 			if (otherXrefs.size() > 1) {
@@ -114,7 +111,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		} else {
 			ref.setSecondaryCrossReferences(otherXrefs);
 		}
-		log.info(ref);
 		return ref;
 	}
 
