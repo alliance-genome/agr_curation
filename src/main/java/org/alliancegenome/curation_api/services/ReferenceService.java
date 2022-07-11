@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,8 +36,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	protected void init() {
 		setSQLDao(referenceDAO);
 	}
-	
-	@Transactional
+
 	public Reference retrieveFromLiteratureService(String xrefCurie) {
 		
 		LiteratureReference litRef = fetchLiteratureServiceReference(xrefCurie);
@@ -68,35 +68,27 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchFilters", filter);		
 		
-		log.info("searching");
 		Pagination pagination = new Pagination();
-		int limit = 100;
+		int limit = 50;
 		pagination.setLimit(limit);
 		int page = 0;
-		Boolean allChecked = false;
-		while(!allChecked) {
-			pagination.setPage(0);
-			SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-			if (response != null) {
-				for (LiteratureReference result : response.getResults()) {
-					for (LiteratureCrossReference xref : result.getCross_references()) {
-						if (xref.getCurie().equals(xrefCurie)) {
-							return result;
-						}
+		pagination.setPage(page);
+		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
+		if (response != null) {
+			for (LiteratureReference result : response.getResults()) {
+				for (LiteratureCrossReference xref : result.getCross_references()) {
+					if (xref.getCurie().equals(xrefCurie)) {
+						return result;
 					}
-				}
-				page = page + 1;
-				if ((page * limit) > response.getTotalResults())
-					allChecked = true;
-			} else {
-				return null;
+				}	
 			}
+		} else {
+			return null;
 		}
-		log.info("complete");
 		
 		return null;
 	}
-	
+		
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref, String searchCurie) {
 		log.info(litRef);
 		ref.setCurie(litRef.getCurie());
