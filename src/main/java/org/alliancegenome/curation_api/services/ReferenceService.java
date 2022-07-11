@@ -53,9 +53,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	}
 	
 	protected LiteratureReference fetchLiteratureServiceReference(String xrefCurie) {
-		Pagination pagination = new Pagination();
-		pagination.setPage(0);
-		pagination.setLimit(2);
 		
 		HashMap<String, String> searchDetails = new HashMap<>();
 		searchDetails.put("tokenOperator", "AND");
@@ -71,23 +68,37 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchFilters", filter);		
 		
-		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
-		
-		if (response != null) {
-			for (LiteratureReference result : response.getResults()) {
-				for (LiteratureCrossReference xref : result.getCross_references()) {
-					if (xref.getCurie().equals(xrefCurie)) {
-						return result;
+		log.info("searching");
+		Pagination pagination = new Pagination();
+		int limit = 100;
+		pagination.setLimit(limit);
+		int page = 0;
+		Boolean allChecked = false;
+		while(!allChecked) {
+			pagination.setPage(0);
+			SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
+			if (response != null) {
+				for (LiteratureReference result : response.getResults()) {
+					for (LiteratureCrossReference xref : result.getCross_references()) {
+						if (xref.getCurie().equals(xrefCurie)) {
+							return result;
+						}
 					}
 				}
+				page = page + 1;
+				if ((page * limit) > response.getTotalResults())
+					allChecked = true;
+			} else {
+				return null;
 			}
 		}
+		log.info("complete");
 		
 		return null;
 	}
 	
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref, String searchCurie) {
-		
+		log.info(litRef);
 		ref.setCurie(litRef.getCurie());
 		
 		ArrayList<String> otherXrefs = new ArrayList<String>();
@@ -98,7 +109,8 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 				otherXrefs.add(litXref.getCurie());	
 			} 
 		}
-		
+		log.info(ref.getPrimaryCrossReference());
+		log.info(otherXrefs);
 		Collections.sort(otherXrefs);	
 		if (ref.getPrimaryCrossReference() == null || !ref.getPrimaryCrossReference().startsWith("PMID:")) {
 			if (otherXrefs.size() > 1) {
@@ -107,8 +119,10 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 			} else {
 				ref.setPrimaryCrossReference(otherXrefs.get(0));
 			}
+		} else {
+			ref.setSecondaryCrossReferences(otherXrefs);
 		}
-		
+		log.info(ref);
 		return ref;
 	}
 

@@ -91,7 +91,7 @@ export const AutocompleteEditor = (
 		if (typeof event.target.value === "object") {
 			if (isReference) {
 				updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
-				setFieldValue(updatedRows[rowProps.rowIndex][fieldName].primaryCrossReference);
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName].submittedCrossReference);
 			} else if (valueSelector) {
 				updatedRows[rowProps.rowIndex][fieldName].curie = valueSelector(event.target.value);
 				setFieldValue(valueSelector(event.target.value));
@@ -100,8 +100,13 @@ export const AutocompleteEditor = (
 				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 			}
 		} else {
-			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
-			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			if (isReference) {
+				updatedRows[rowProps.rowIndex][fieldName].submittedCrossReference = event.target.value;
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.submittedCrossReference);
+			} else {
+				updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			}
 		}
 
 	};
