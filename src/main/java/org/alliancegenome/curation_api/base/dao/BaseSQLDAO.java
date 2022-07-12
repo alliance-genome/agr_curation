@@ -199,7 +199,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				});
 		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(900);
+		indexer.transactionTimeout(7200);
 		if(indexAmount > 0){
 			indexer.limitIndexedObjectsTo(indexAmount);
 		}
@@ -253,7 +253,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				});
 		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(900);
+		indexer.transactionTimeout(7200);
 		if(indexAmount > 0){
 			indexer.limitIndexedObjectsTo(indexAmount);
 		}
