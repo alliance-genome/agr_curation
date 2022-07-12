@@ -14,17 +14,15 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
+
+import java.util.List;
 
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDAO> {
@@ -75,6 +73,19 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
 		return annotation;
 	}
 	
+	@Transactional
+	public ObjectResponse<AGMDiseaseAnnotation> upsertDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException {
+		AGMDiseaseAnnotation annotation = validateAGMDiseaseAnnotationDTO(dto);
+		if (annotation == null) throw new ObjectUpdateException(dto, "Validation Failed");
+
+		annotation = (AGMDiseaseAnnotation) diseaseAnnotationService.upsert(annotation, dto);
+		if (annotation != null) {
+			agmDiseaseAnnotationDAO.persist(annotation);
+		}
+		List<CrossReference> refs = annotation.getObject().getCrossReferences();
+		return new ObjectResponse<>(annotation);
+	}
+
 	private AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {
 		AGMDiseaseAnnotation annotation;
 		if (dto.getSubject() == null) {

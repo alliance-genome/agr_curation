@@ -39,8 +39,8 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 
 	@POST
 	@Path("/create")
-	@JsonView(View.FieldsAndLists.class)
-	AGMDiseaseAnnotation createAgmDiseaseAnnotation(AGMDiseaseAnnotationDTO annotationData) throws ObjectUpdateException;
+	@JsonView(View.DiseaseAnnotationUpdate.class)
+	ObjectResponse<AGMDiseaseAnnotation> createAgmDiseaseAnnotation(AGMDiseaseAnnotationDTO annotationData) throws ObjectUpdateException;
 
 	@POST
 	@Path("/bulk/zfinAnnotationFile")
