@@ -7,6 +7,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
@@ -35,6 +36,11 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 	@Path("/bulk/{taxonID}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateAgmDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AGMDiseaseAnnotationDTO> annotationData);
+
+	@POST
+	@Path("/create")
+	@JsonView(View.FieldsAndLists.class)
+	AGMDiseaseAnnotation createAgmDiseaseAnnotation(AGMDiseaseAnnotationDTO annotationData) throws ObjectUpdateException;
 
 	@POST
 	@Path("/bulk/zfinAnnotationFile")

@@ -8,6 +8,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.interfaces.crud.AGMDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
@@ -41,6 +42,11 @@ public class AGMDiseaseAnnotationCrudController extends BaseCrudController<AGMDi
 	@Override
 	public APIResponse updateAgmDiseaseAnnotations(String taxonID, List<AGMDiseaseAnnotationDTO> annotations) {
 		return agmDiseaseAnnotationExecutor.runLoad(taxonID, annotations);
+	}
+
+	@Override
+	public AGMDiseaseAnnotation createAgmDiseaseAnnotation(AGMDiseaseAnnotationDTO annotation) throws ObjectUpdateException {
+		return annotationService.upsert(annotation);
 	}
 
 	@Override
