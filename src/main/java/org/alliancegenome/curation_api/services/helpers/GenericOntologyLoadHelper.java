@@ -34,12 +34,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		this.clazz = clazz;
 		this.config = new GenericOntologyLoadConfig();
 	}
-	
+
 	public GenericOntologyLoadHelper(Class<T> clazz, GenericOntologyLoadConfig config) {
 		this.clazz = clazz;
 		this.config = config;
 	}
-	
+
 	public Map<String, T> load(String fullText) throws Exception {
 		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
 		log.info("Input data size: " + fullText.length());
@@ -51,13 +51,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		outfile.delete();
 		return ret;
 	}
-	
+
 	public Map<String, T> load(InputStream inStream) throws Exception {
 
 		log.info("Loading Ontology File");
 		ontology = manager.loadOntologyFromOntologyDocument(inStream);
 		log.info("Loading Ontology File Finished");
-		
+
 		ontology.annotations().forEach(a -> {
 			String key = a.getProperty().getIRI().getShortForm();
 			log.info(key + ": " + getString(a.getValue()));
@@ -72,7 +72,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				requiredNamespaces.add(defaultNamespace);
 			}
 		}
-		
+
 		OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
 		log.info("Ontology Loaded...");
@@ -85,13 +85,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		log.info("Traversing Ontology");
 		traverse(root, 0, requiredNamespaces);
 		log.info("Finished Traversing Ontology");
-		
+
 		return allNodes;
 
 	}
-	
+
 	public Boolean hasChebiXref(T term) {
-		
+
 		if (CollectionUtils.isNotEmpty(term.getSynonyms())) {
 			for (String synonym : term.getSynonyms()) {
 				if (synonym.startsWith("CHEBI:")) {
@@ -99,7 +99,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				}
 			}
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(term.getCrossReferences())) {
 			for (CrossReference xref : term.getCrossReferences()) {
 				if (xref.getCurie().startsWith("CHEBI:")) {
@@ -107,7 +107,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				}
 			}
 		}
-		
+
 		return false;
 	}
 
@@ -118,19 +118,19 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		if (reasoner.isSatisfiable(parent)) {
 
 			termParent = getOntologyTerm(parent);
-	
+
 			if(
-				(
-					(termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||	
-					(config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_"))
-				) && (
-					!config.getIgnoreEntitiesWithChebiXref() || !hasChebiXref(termParent)
-				)
-			) {
+					(
+							(termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||	
+							(config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_"))
+							) && (
+									!config.getIgnoreEntitiesWithChebiXref() || !hasChebiXref(termParent)
+									)
+					) {
 				//System.out.println(termParent);
 
 				if(allNodes.containsKey(termParent.getCurie())) {
-						return allNodes.get(termParent.getCurie());
+					return allNodes.get(termParent.getCurie());
 				} else {
 					if(termParent.getCurie() != null) {
 						allNodes.put(termParent.getCurie(), termParent);
@@ -143,34 +143,33 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				if (!child.equals(parent)) {
 					try {
 						T childTerm = traverse(child, depth + 1, requiredNamespaces);
-							
-//							TODO LinkML to define the following ontology relationship fields
-//							if(childTerm != null) {
-//								
-//								termParent.addChild(childTerm);
-//								if(termParent.getCurie() != null) {
-//									childTerm.addParent(termParent);
-//								}
-//
-//								childTerm.addAncestor(termParent);
-//								if(termParent.getAncestors() != null) {
-//									for(OntologyTerm a: termParent.getAncestors()) {
-//										if(!childTerm.getAncestors().contains(a)) {
-//											childTerm.addAncestor(a);
-//										}
-//									}
-//								}
-//								termParent.addDescendant(childTerm);
-//								if(childTerm.getDescendants() != null) {
-//									for(OntologyTerm d: childTerm.getDescendants()) {
-//										if(!termParent.getDescendants().contains(d)) {
-//											termParent.addDescendant(d);
-//										}
-//									}
-//								}
-//								
-//							}
-						
+
+						if(childTerm != null) {
+
+							termParent.addChild(childTerm);
+							if(termParent.getCurie() != null) {
+								childTerm.addParent(termParent);
+							}
+
+							childTerm.addAncestor(termParent);
+							if(termParent.getAncestors() != null) {
+								for(OntologyTerm a: termParent.getAncestors()) {
+									if(!childTerm.getAncestors().contains(a)) {
+										childTerm.addAncestor(a);
+									}
+								}
+							}
+							termParent.addDescendant(childTerm);
+							if(childTerm.getDescendants() != null) {
+								for(OntologyTerm d: childTerm.getDescendants()) {
+									if(!termParent.getDescendants().contains(d)) {
+										termParent.addDescendant(d);
+									}
+								}
+							}
+
+						}
+
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
@@ -181,7 +180,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return termParent;
 
 	}
-	
+
 	public String getIRIShortForm(OWLAnnotationValue owlAnnotationValue) {
 		if(owlAnnotationValue.isIRI())
 			return ((IRI)owlAnnotationValue).getShortForm();
@@ -204,8 +203,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		T term = clazz.getDeclaredConstructor().newInstance();
 		term.setObsolete(false);
-		
-		
+
+
 		EntitySearcher.getAnnotationObjects(node, ontology).forEach(annotation -> {
 			String key = annotation.getProperty().getIRI().getShortForm();
 			if(key.equals("id")) {
@@ -264,7 +263,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 
 		});
-		
+
 		if (term.getCurie() == null && EntitySearcher.getAnnotationObjects(node, ontology).count() > 0) {
 			term.setCurie(node.getIRI().getFragment().replaceFirst("_", ":"));	
 		}
@@ -273,7 +272,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	}
 
-	
-	
+
+
 
 }

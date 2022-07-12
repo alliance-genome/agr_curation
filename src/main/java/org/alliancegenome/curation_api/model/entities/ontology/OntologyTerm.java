@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -79,43 +79,42 @@ public class OntologyTerm extends CurieAuditedObject {
 	@JsonView({View.FieldsAndLists.class})
 	private List<CrossReference> crossReferences;
 
-//	TODO LinkML to define the following ontology relationship fields
-//	@ManyToMany
-//	@JoinTable(name = "ontologyterm_parent_children", indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
-//	private Set<OntologyTerm> parents;
-//
-//	@ManyToMany(mappedBy = "parents")
-//	private Set<OntologyTerm> children;
-//
-//	@ManyToMany
-//	@JoinTable(name = "ontologyterm_ancestor_descendant", indexes = { @Index( columnList = "ancestors_curie"), @Index( columnList = "descendants_curie")})
-//	private Set<OntologyTerm> ancestors;
-//
-//	@ManyToMany(mappedBy = "ancestors")
-//	private Set<OntologyTerm> descendants;
-//
-//	@Transient
-//	public void addChild(OntologyTerm term) {
-//		if(children == null) children = new HashSet<OntologyTerm>();
-//		children.add(term);
-//	}
-//
-//	@Transient
-//	public void addParent(OntologyTerm term) {
-//		if(parents == null) parents = new HashSet<OntologyTerm>();
-//		parents.add(term);
-//	}
-//
-//	@Transient
-//	public void addDescendant(OntologyTerm term) {
-//		if(descendants == null) descendants = new HashSet<OntologyTerm>();
-//		descendants.add(term);
-//	}
-//
-//	@Transient
-//	public void addAncestor(OntologyTerm term) {
-//		if(ancestors == null) ancestors = new HashSet<OntologyTerm>();
-//		ancestors.add(term);
-//	}
+	@ManyToMany
+	@JoinTable(name = "ontologyterm_parent_children", indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
+	private Set<OntologyTerm> parents;
+
+	@ManyToMany(mappedBy = "parents")
+	private Set<OntologyTerm> children;
+
+	@ManyToMany
+	@JoinTable(name = "ontologyterm_ancestor_descendant", indexes = { @Index( columnList = "ancestors_curie"), @Index( columnList = "descendants_curie")})
+	private Set<OntologyTerm> ancestors;
+
+	@ManyToMany(mappedBy = "ancestors")
+	private Set<OntologyTerm> descendants;
+
+	@Transient
+	public void addChild(OntologyTerm term) {
+		if(children == null) children = new HashSet<OntologyTerm>();
+		children.add(term);
+	}
+
+	@Transient
+	public void addParent(OntologyTerm term) {
+		if(parents == null) parents = new HashSet<OntologyTerm>();
+		parents.add(term);
+	}
+
+	@Transient
+	public void addDescendant(OntologyTerm term) {
+		if(descendants == null) descendants = new HashSet<OntologyTerm>();
+		descendants.add(term);
+	}
+
+	@Transient
+	public void addAncestor(OntologyTerm term) {
+		if(ancestors == null) ancestors = new HashSet<OntologyTerm>();
+		ancestors.add(term);
+	}
 	
 }
