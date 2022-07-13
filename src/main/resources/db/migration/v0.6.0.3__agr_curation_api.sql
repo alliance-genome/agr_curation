@@ -110,7 +110,7 @@ ALTER TABLE reference_crossreference
 
 ALTER TABLE reference_crossreference
 	ADD CONSTRAINT reference_crossreference_crossreferences_curie_fk
-	FOREIGN KEY (crossreferences_curie) REFERENCE crossreference(curie);
+	FOREIGN KEY (crossreferences_curie) REFERENCES crossreference(curie);
 
 CREATE TABLE reference_crossreference_aud (
 	rev integer,
