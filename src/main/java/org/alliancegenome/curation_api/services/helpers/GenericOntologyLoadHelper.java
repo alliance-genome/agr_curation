@@ -118,17 +118,15 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		if (reasoner.isSatisfiable(parent)) {
 
 			termParent = getOntologyTerm(parent);
+			
+			boolean condition1 = termParent.getNamespace() != null;
+			boolean condition2 = requiredNamespaces.contains(termParent.getNamespace());
+			boolean condition3 = config.getLoadOnlyIRIPrefix() != null;
+			boolean condition4 = parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_");
+			boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
+			boolean condition6 = !hasChebiXref(termParent);
 
-			if(
-					(
-							(termParent.getNamespace() != null && requiredNamespaces.contains(termParent.getNamespace())) ||	
-							(config.getLoadOnlyIRIPrefix() != null && parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_"))
-							) && (
-									!config.getIgnoreEntitiesWithChebiXref() || !hasChebiXref(termParent)
-									)
-					) {
-				//System.out.println(termParent);
-
+			if(((condition1 && condition2) || (condition3 && condition4)) && (condition5 || condition6)) {
 				if(allNodes.containsKey(termParent.getCurie())) {
 					return allNodes.get(termParent.getCurie());
 				} else {
