@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToMany;
 
 import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -29,8 +29,8 @@ public class Reference extends CurieAuditedObject {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany
-	@JsonView({View.FieldsAndLists.class, View.FieldsAndLists.class})
+	@ManyToMany
+	@JsonView({View.FieldsAndLists.class})
 	private List<CrossReference> crossReferences;
 	
 }

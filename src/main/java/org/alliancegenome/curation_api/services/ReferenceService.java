@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -11,6 +10,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.document.LiteratureCrossReference;
@@ -32,6 +32,8 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	ReferenceDAO referenceDAO;
 	@Inject
 	LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 	
 	@Override
 	@PostConstruct
@@ -96,8 +98,14 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 		List<CrossReference> xrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
-			CrossReference xref = new CrossReference();
-			xref.setCurie(litXref.getCurie());
+			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
+			if (xref == null) {
+				xref = new CrossReference();
+				xref.setCurie(litXref.getCurie());
+				xref.setInternal(false);
+				xref.setObsolete(false);
+				xref = crossReferenceDAO.persist(xref);
+			} 
 			xrefs.add(xref);
 		}
 		if (CollectionUtils.isNotEmpty(xrefs)) {
