@@ -63,7 +63,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		if (curie.startsWith("AGR")) {
 			searchField.put("curie", searchDetails);
 		} else {
-			searchField.put("cross_references.curie", searchField);
+			searchField.put("cross_references.curie", searchDetails);
 		}
 			
 		HashMap<String, Object> filter = new HashMap<>();
