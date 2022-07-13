@@ -96,7 +96,7 @@ export function getRefString(referenceItem) {
 		
 	let xrefs = referenceItem.cross_references ? referenceItem.cross_references : referenceItem.crossReferences;
 		
-	if (xrefs.length == 1)
+	if (xrefs.length === 1)
 		return xrefs[0].curie + ' (' + referenceItem.curie + ')';
 	
 	let primaryXref = '';
