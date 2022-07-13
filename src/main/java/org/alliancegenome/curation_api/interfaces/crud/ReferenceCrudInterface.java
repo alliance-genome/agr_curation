@@ -24,16 +24,12 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ReferenceCrudInterface extends BaseCurieCrudInterface<Reference> {
 	
-	@Override
-	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<Reference> get(@PathParam("submittedCrossReference") String submittedCrossReference);
-	
 	@GET
 	@Path("/sync")
 	public void synchroniseReferences();
 	
 	@GET
-	@Path("/sync/{primaryCrossReference}")
+	@Path("/sync/{curie}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<Reference> synchroniseReference(@PathParam("submittedCrossReference") String submittedCrossReference);
+	public ObjectResponse<Reference> synchroniseReference(@PathParam("curie") String curie);
 }

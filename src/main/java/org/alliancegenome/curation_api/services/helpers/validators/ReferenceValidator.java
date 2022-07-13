@@ -36,17 +36,16 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update Reference: [" + uiEntity.getCurie() + "]";
 
-		String submittedXref = uiEntity.getSubmittedCrossReference();
-		if (submittedXref == null) {
+		if (uiEntity.getCurie() == null) {
 			addMessageResponse("No reference submitted");
 			throw new ApiErrorException(response);
 		}
 		
-		Reference dbEntity = referenceDAO.find(submittedXref);
+		Reference dbEntity = referenceDAO.find(uiEntity.getCurie());
 		if (dbEntity == null || dbEntity.getObsolete()) {
-			dbEntity = referenceService.retrieveFromLiteratureService(uiEntity.getSubmittedCrossReference());
+			dbEntity = referenceService.retrieveFromLiteratureService(uiEntity.getCurie());
 			if (dbEntity == null) {
-				addMessageResponse("submittedCrossReference", ValidationConstants.INVALID_MESSAGE);
+				addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
 		}
@@ -68,8 +67,8 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		
 		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity);
 		
-		if (dbEntity.getObsolete() && !uiEntity.getCurie().equals(dbEntity.getSubmittedCrossReference())) {
-			addMessageResponse("submittedCrossReference", ValidationConstants.OBSOLETE_MESSAGE);
+		if (dbEntity.getObsolete() && !uiEntity.getCurie().equals(dbEntity.getCurie())) {
+			addMessageResponse("curie", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		

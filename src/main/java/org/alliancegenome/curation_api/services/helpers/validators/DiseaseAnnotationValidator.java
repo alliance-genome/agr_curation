@@ -215,7 +215,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	
 	public Reference validateSingleReference(DiseaseAnnotation uiEntity) {
 		String field = "singleReference";
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getSubmittedCrossReference())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}

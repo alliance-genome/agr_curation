@@ -87,33 +87,50 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
-export function getRefObject(referenceItem) {
+export function getRefString(referenceItem) {
 	if (!referenceItem)
 		return;
-	const curationDbRef = {};
+	
+	if (!referenceItem.cross_references && !referenceItem.crossReferences)
+		return referenceItem.curie;	
+		
+	let xrefs = referenceItem.cross_references ? referenceItem.cross_references : referenceItem.crossReferences;
+		
+	if (xrefs.length == 1)
+		return xrefs[0].curie + ' (' + referenceItem.curie + ')';
+	
 	let primaryXref = '';
+	
 	const secondaryXrefs = [];
+	xrefs.forEach((x, i) => secondaryXrefs.push(x.curie));
 	
-	for (const xref of referenceItem.cross_references) {
-		if (xref.curie.startsWith('PMID:')) {
-			primaryXref = xref.curie;
-		} else {
-			secondaryXrefs.push(xref.curie);
-		}
+	if (secondaryXrefs.indexOf('PMID:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('PMID:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('PMID:'), 1);
+	} else if (secondaryXrefs.indexOf('FB:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('FB:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('FB:'), 1);
+	} else if (secondaryXrefs.indexOf('MGI:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('MGI:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('MGI:'), 1);
+	} else if (secondaryXrefs.indexOf('RGD:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('RGD:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('RGD:'), 1);
+	} else if (secondaryXrefs.indexOf('SGD:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('SGD:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('SGD:'), 1);
+	} else if (secondaryXrefs.indexOf('WB:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('WB:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('WB:'), 1);
+	} else if (secondaryXrefs.indexOf('ZFIN:') > -1) {
+		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('ZFIN:')];
+		secondaryXrefs.splice(secondaryXrefs.indexOf('ZFIN:'), 1);
+	} else {
+		primaryXref = secondaryXrefs[0];
+		secondaryXrefs.splice(0, 1);
 	}
-
-	secondaryXrefs.sort();
-	if (!primaryXref) {
-		primaryXref = secondaryXrefs.shift();
-	}
-
-	curationDbRef.curie = referenceItem.curie;
-	curationDbRef.primaryCrossReference = primaryXref;
-	curationDbRef.submittedCrossReference = primaryXref;
-	if (secondaryXrefs && secondaryXrefs.length > 0)
-		curationDbRef.secondaryCrossReferences = secondaryXrefs.slice(0);
 	
-	return curationDbRef;
+	return primaryXref + ' (' + secondaryXrefs.join('|') + '|' + referenceItem.curie + ')';
 }
 
 

@@ -13,6 +13,7 @@ import {ConditionRelationService} from "../../service/ConditionRelationService";
 import {AutocompleteEditor} from "../../components/AutocompleteEditor";
 import {InputTextEditor} from "../../components/InputTextEditor";
 import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
+import {getRefString} from '../../utils/utils';
 
 
 export const ConditionRelationTable = () => {
@@ -139,23 +140,17 @@ export const ConditionRelationTable = () => {
 	
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
-			let xrefString = '';
-			if (rowData.singleReference.secondaryCrossReferences) {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.secondaryCrossReferences.join("|") + '|' + rowData.singleReference.curie + ')';
-			} else {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.curie + ')';
-			
-			}
+			let refString = getRefString(rowData.singleReference);
 			return (
 				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.curie.replace(':', '')}`}
 						dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 					/>
-					<Tooltip target={`.a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}>
+					<Tooltip target={`.a${rowData.singleReference.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 						/>
 					</Tooltip>

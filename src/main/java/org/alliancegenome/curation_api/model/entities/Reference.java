@@ -2,25 +2,16 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Index;
-import javax.persistence.JoinTable;
+import javax.persistence.OneToMany;
 
-import org.alliancegenome.curation_api.base.entity.AuditedObject;
+import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.DocumentId;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -34,33 +25,12 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 @Schema(name="Reference", description="POJO that represents the Reference")
-public class Reference extends AuditedObject {
+public class Reference extends CurieAuditedObject {
 	
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
-	@EqualsAndHashCode.Include
-	private String curie;
-	
-	@Id @DocumentId
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "submittedCrossReference_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
-	@EqualsAndHashCode.Include
-	private String submittedCrossReference;
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "primaryCrossReference_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
-	@EqualsAndHashCode.Include
-	private String primaryCrossReference;
-
-	
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "secondaryCrossReferences_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@ElementCollection
-	@JoinTable(indexes = @Index(columnList = "reference_submittedcrossreference"))
-	@JsonView({View.FieldsAndLists.class})
-	private List<String> secondaryCrossReferences;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany
+	@JsonView({View.FieldsAndLists.class, View.FieldsAndLists.class})
+	private List<CrossReference> crossReferences;
 	
 }
