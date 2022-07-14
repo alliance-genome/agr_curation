@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AutoComplete } from "primereact/autocomplete";
-import { onSelectionOver } from '../../utils/utils';
+import { onSelectionOver, getRefString } from '../../utils/utils';
 import { Tooltip } from "primereact/tooltip";
 
 export const AutocompleteEditor = (
@@ -25,6 +25,8 @@ export const AutocompleteEditor = (
 	const [filtered, setFiltered] = useState([]);
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
+			if (isReference)
+				return getRefString(rowProps.rowData[fieldName]);
 			return isMultiple ?
 				rowProps.rowData[fieldName] :
 				rowProps.rowData[fieldName]?.curie
