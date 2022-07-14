@@ -21,6 +21,7 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
+import {getRefString} from '../../utils/utils';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -140,23 +141,17 @@ export const DiseaseAnnotationsTable = () => {
 	
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
-			let xrefString = '';
-			if (rowData.singleReference.secondaryCrossReferences) {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.secondaryCrossReferences.join("|") + '|' + rowData.singleReference.curie + ')';
-			} else {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.curie + ')';
-			
-			}
+			let refString = getRefString(rowData.singleReference);
 			return (
 				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.curie.replace(':', '')}`}
 						dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 					/>
-					<Tooltip target={`.a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}>
+					<Tooltip target={`.a${rowData.singleReference.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 						/>
 					</Tooltip>
@@ -779,11 +774,11 @@ export const DiseaseAnnotationsTable = () => {
 		body: diseaseBodyTemplate
 	},
 	{
-		field: "singleReference.submittedCrossReference",
+		field: "singleReference.curie",
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference", "singleReference.secondaryCrossReferences"]},
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences"]},
 		editor: (props) => referenceEditorTemplate(props),
 		body: singleReferenceBodyTemplate
 	},

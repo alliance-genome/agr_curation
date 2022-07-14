@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AutoComplete } from "primereact/autocomplete";
-import { onSelectionOver, getRefObject } from '../../utils/utils';
+import { onSelectionOver, getRefString } from '../../utils/utils';
 import { Tooltip } from "primereact/tooltip";
 
 export const AutocompleteEditor = (
@@ -25,9 +25,8 @@ export const AutocompleteEditor = (
 	const [filtered, setFiltered] = useState([]);
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
-			if (isReference) {
-				return rowProps.rowData[fieldName]?.submittedCrossReference;
-			}
+			if (isReference)
+				return getRefString(rowProps.rowData[fieldName]);
 			return isMultiple ?
 				rowProps.rowData[fieldName] :
 				rowProps.rowData[fieldName]?.curie
@@ -35,7 +34,7 @@ export const AutocompleteEditor = (
 	);
 
 	const op = useRef(null);
-	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
+	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});		
 	const search = (event) => {
 		setQuery(event.query);
 		let filter = {};
@@ -51,21 +50,11 @@ export const AutocompleteEditor = (
 				if (data.results?.length > 0) {
 					if (isWith) {
 						setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-					} else if (isReference) {
-						let transformed = [];
-						if(data.results) {
-							data.results.forEach((result) => {
-								let refObj = getRefObject(result);
-								transformed.push(refObj);
-							});
-						}
-						setFiltered(transformed);
 					} else if (isSgdStrainBackground) {
 						setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
 					} else {
 						setFiltered(data.results);
 					}
-					;
 				} else {
 					setFiltered([]);
 				}
@@ -90,10 +79,7 @@ export const AutocompleteEditor = (
 		updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
 
 		if (typeof event.target.value === "object") {
-			if (isReference) {
-				updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
-				setFieldValue(updatedRows[rowProps.rowIndex][fieldName].primaryCrossReference);
-			} else if (valueSelector) {
+			if (valueSelector) {
 				updatedRows[rowProps.rowIndex][fieldName].curie = valueSelector(event.target.value);
 				setFieldValue(valueSelector(event.target.value));
 			} else {
@@ -102,7 +88,7 @@ export const AutocompleteEditor = (
 			}
 		} else {
 			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
-			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 		}
 	};
 
@@ -162,15 +148,10 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 					autocompleteSelectedItem.crossReferences.map((crossReference) => <div key={`crossReferences${crossReference.curie}`}>
 					Cross Reference: {crossReference.curie}</div>)
 				}
+
 				{
-					autocompleteSelectedItem.primaryCrossReference &&
-					<div key={`crossReferences${autocompleteSelectedItem.primaryCrossReference}`}>Cross Reference: {autocompleteSelectedItem.primaryCrossReference}
-						<br/>
-					</div>
-				}
-				{
-					autocompleteSelectedItem.secondaryCrossReferences &&
-					autocompleteSelectedItem.secondaryCrossReferences.map((xref) => <div key={`crossReferences${xref}`}>Cross Reference: {xref}</div>)
+					autocompleteSelectedItem.cross_references &&
+					autocompleteSelectedItem.cross_references.map((xref) => <div key={`cross_references${xref.curie}`}>Cross Reference: {xref.curie}</div>)
 				}
 				{
 					autocompleteSelectedItem.secondaryIdentifiers &&

@@ -56,7 +56,6 @@ export const RelatedNotesDialog = ({
 	}
 
 	const onRowEditCancel = (event) => {
-		console.log(editingRows);
 		rowsInEdit.current--;
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];

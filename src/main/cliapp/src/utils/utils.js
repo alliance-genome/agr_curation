@@ -87,33 +87,53 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
-export function getRefObject(referenceItem) {
+export function getRefString(referenceItem) {
 	if (!referenceItem)
 		return;
-	const curationDbRef = {};
-	let primaryXref = '';
-	const secondaryXrefs = [];
 	
-	for (const xref of referenceItem.cross_references) {
-		if (xref.curie.startsWith('PMID:')) {
-			primaryXref = xref.curie;
-		} else {
-			secondaryXrefs.push(xref.curie);
+	if (!referenceItem.cross_references && !referenceItem.crossReferences)
+		return referenceItem.curie;	
+		
+	let xrefCuries = [];
+	if (referenceItem.cross_references) {
+		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
+	} else {
+		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.curie));
+	}
+	
+	if (xrefCuries.length === 1)
+		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
+	let primaryXrefCurie = '';
+	
+	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) { 
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1);
+	} else {
+		primaryXrefCurie = xrefCuries.splice(0, 1);
+	}
+	
+	return primaryXrefCurie + ' (' + xrefCuries.join('|') + '|' + referenceItem.curie + ')';
+}
+
+function indexWithPrefix(array, prefix) {
+		
+	for (var i = 0; i < array.length; i++) {
+		if (array[i].startsWith(prefix)) {
+			return i;
 		}
 	}
-
-	secondaryXrefs.sort();
-	if (!primaryXref) {
-		primaryXref = secondaryXrefs.shift();
-	}
-
-	curationDbRef.curie = referenceItem.curie;
-	curationDbRef.primaryCrossReference = primaryXref;
-	curationDbRef.submittedCrossReference = primaryXref;
-	if (secondaryXrefs && secondaryXrefs.length > 0)
-		curationDbRef.secondaryCrossReferences = secondaryXrefs.slice(0);
-	
-	return curationDbRef;
+	return -1;
 }
 
 
