@@ -1,5 +1,23 @@
+## v0.6.0
 # AGR curation release notes
-
+* New Features
+		* SCRUM-1537 make condition relation handle table editable by @cmpich in #491
+		* SCRUM-1537 validate null handle, disallow same handle/pub combination by @cmpich in #511
+		* SCRUM-1537 add auto-complete on reference column on condition-relation-handle-table by @cmpich in #518
+		* Filters icon added to Genric Data Table Component by @kthorat-prog in #505
+		* Filters Label added on Roweditor frozen column by @kthorat-prog in #513
+		* Obsolete Column added to disease annotations table by @kthorat-prog in #514
+* Data Load
+		* SCRUM-1609, SCRUM-1611, SCRUM-1612 Loading and testing of obsolete field by @markquintontulloch in #503
+* Maintenance
+		* Misc refactors by @adamgibs in #504
+		* Column header names changed for 2 columns by @kthorat-prog in #508
+		* SCRUM-1603 added VocabularyTermUpdate view to return vocabulary field by @adamgibs in #510
+		* SCRUM-1598 Added DiseaseAnnotationUpdate view to conditions by @adamgibs in #512
+		* null check added to col variable in useEffect by @kthorat-prog in #517
+		* fixed autocomplete hover bug by @adamgibs in #520
+		* SCRUM-516 SCRUM 1537 create getEntityType() method to select and display the auto-complete list, auto-complete for DA table by @cmpich in #519
+		* SCRUM-1675 added check for conditions with no handle or reference by @adamgibs in #521
 ## v0.4.0
 * Data loading
    * SCRUM-1205 Anatomy stage ontologies by @markquintontulloch in #3117

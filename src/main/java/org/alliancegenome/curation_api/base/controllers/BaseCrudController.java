@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.base.controllers;
 
 import java.util.*;
 
+import javax.ws.rs.*;
+
 import org.alliancegenome.curation_api.base.dao.BaseEntityDAO;
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
 import org.alliancegenome.curation_api.base.interfaces.*;
@@ -64,12 +66,12 @@ public abstract class BaseCrudController<S extends BaseCrudService<E, D>, E exte
 		return service.searchByParams(pagination, params);
 	}
 
-	public void reindex(Integer threads, Integer indexAmount, Integer batchSize) {
-		service.reindex(threads, indexAmount, batchSize);
+	public void reindex(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		service.reindex(threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
 
-	public void reindexEverything(Integer threads, Integer indexAmount, Integer batchSize) {
-		service.reindexEverything(threads, indexAmount, batchSize);
+	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		service.reindexEverything(threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
 
 }
