@@ -15,8 +15,8 @@ public class SystemController implements SystemControllerInterface {
 	@Inject SystemSQLDAO systemSQLDAO;
 	
 	@Override
-	public void reindexEverything(Integer threads, Integer indexAmount, Integer batchSize) {
-		systemSQLDAO.reindexEverything(threads, indexAmount, batchSize);
+	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		systemSQLDAO.reindexEverything(threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
 	
 	@Override
