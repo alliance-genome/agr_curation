@@ -188,7 +188,6 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		
 		List<Long> previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
 		List<Long> validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
-		List<Long> idsToPersist = ListUtils.subtract(validatedNoteIds, previousNoteIds);
 		for (Note validatedNote: validatedNotes) {
 			if (!previousNoteIds.contains(validatedNote.getId())) {
 				noteDAO.persist(validatedNote);
