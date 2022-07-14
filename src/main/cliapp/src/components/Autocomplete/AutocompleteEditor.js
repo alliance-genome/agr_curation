@@ -1,7 +1,7 @@
-import React, {useRef, useState} from 'react';
-import {AutoComplete} from "primereact/autocomplete";
-import {getEntityType, getRefString, trimWhitespace} from '../utils/utils';
-import {Tooltip} from "primereact/tooltip";
+import React, { useRef, useState } from 'react';
+import { AutoComplete } from "primereact/autocomplete";
+import { onSelectionOver } from '../../utils/utils';
+import { Tooltip } from "primereact/tooltip";
 
 export const AutocompleteEditor = (
 	{
@@ -18,7 +18,8 @@ export const AutocompleteEditor = (
 		isMultiple = false,
 		isReference = false,
 		isSgdStrainBackground = false,
-		valueSelector
+		valueSelector,
+		valueDisplay,
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -87,91 +88,16 @@ export const AutocompleteEditor = (
 			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
 				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 		}
-
-	};
-
-	const onSelectionOver = (event, item) => {
-		setAutocompleteSelectedItem(item);
-		op.current.show(event);
 	};
 
 	const itemTemplate = (item) => {
-		let inputValue = trimWhitespace(query.toLowerCase());
-		if (isReference) {
-			let refDisplayString = getRefString(item);
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}
-						 dangerouslySetInnerHTML={{__html: refDisplayString}}/>
-				</div>
-			);
-		}
-		if (autocompleteSelectedItem.synonyms?.length > 0) {
-			for (let i in autocompleteSelectedItem.synonyms) {
-
-				let selectedItem = isSubject || isWith ? autocompleteSelectedItem.synonyms[i].name.toString().toLowerCase() :
-					autocompleteSelectedItem.synonyms[i].toString().toLowerCase();
-
-				if (selectedItem.indexOf(inputValue) < 0) {
-					delete autocompleteSelectedItem.synonyms[i];
-				}
-			}
-		}
-		if (autocompleteSelectedItem.crossReferences?.length > 0) {
-			for (let i in autocompleteSelectedItem.crossReferences) {
-				if (autocompleteSelectedItem.crossReferences[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
-					delete autocompleteSelectedItem.crossReferences[i];
-				}
-			}
-		}
-		if (autocompleteSelectedItem.cross_references?.length > 0) {
-			for (let i in autocompleteSelectedItem.cross_references) {
-				if (autocompleteSelectedItem.cross_references[i].curie.toString().toLowerCase().indexOf(inputValue) < 0) {
-					delete autocompleteSelectedItem.cross_references[i];
-				}
-			}
-		}
-		if (autocompleteSelectedItem.secondaryIdentifiers?.length > 0) {
-			for (let i in autocompleteSelectedItem.secondaryIdentifiers) {
-				if (autocompleteSelectedItem.secondaryIdentifiers[i].toString().toLowerCase().indexOf(inputValue) < 0) {
-					delete autocompleteSelectedItem.secondaryIdentifiers[i];
-				}
-			}
-		}
-		if (item.abbreviation) {
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}
-						 dangerouslySetInnerHTML={{__html: item.abbreviation + ' - ' + item.name + ' (' + item.curie + ') '}}/>
-				</div>
-			);
-		} else if (item.symbol) {
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}
-						 dangerouslySetInnerHTML={{__html: item.symbol + ' (' + item.curie + ') '}}/>
-				</div>
-			);
-		} else if (item.name) {
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
-				</div>
-			);
-		} else if (getEntityType(item) === 'Experiment Condition') {
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}
-						 dangerouslySetInnerHTML={{__html: item.conditionSummary + ' (' + item.id + ') '}}/>
-				</div>
-			);
-		} else {
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}>{item.curie}</div>
-				</div>
-			);
-		}
+		if(valueDisplay) return valueDisplay(item, setAutocompleteSelectedItem, op, query);
+		return (
+			<div>
+				<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteSelectedItem)} 
+					dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
+			</div>
+		);
 	};
 
 	return (
@@ -195,8 +121,7 @@ export const AutocompleteEditor = (
 const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 	return (
 		<>
-			<Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack
-					 mouseTrackLeft={30}>
+			<Tooltip ref={op} style={{width: '450px', maxWidth: '450px'}} position={'right'} mouseTrack mouseTrackLeft={30}>
 				{autocompleteSelectedItem.curie &&
 				<div>Curie: {autocompleteSelectedItem.curie}
 					<br/>
@@ -218,8 +143,10 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				}
 				{
 					autocompleteSelectedItem.crossReferences &&
-					autocompleteSelectedItem.crossReferences.map((xref) => <div key={`crossReferences${xref.curie}`}>Cross Reference: {xref.curie}</div>)
+					autocompleteSelectedItem.crossReferences.map((crossReference) => <div key={`crossReferences${crossReference.curie}`}>
+					Cross Reference: {crossReference.curie}</div>)
 				}
+
 				{
 					autocompleteSelectedItem.cross_references &&
 					autocompleteSelectedItem.cross_references.map((xref) => <div key={`cross_references${xref.curie}`}>Cross Reference: {xref.curie}</div>)

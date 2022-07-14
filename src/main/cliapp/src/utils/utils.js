@@ -148,3 +148,48 @@ export function genericConfirmDialog({ header, message, accept, reject }){
 	});
 
 }
+
+export function filterDropDownObject(inputValue, object){
+	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
+	let _object = global.structuredClone(object);
+
+	if (_object.synonyms?.length > 0) {
+		const { synonyms } = _object;
+		const filteredSynonyms = synonyms.filter((synonym) => {
+			let selectedItem = synonym.name ? synonym.name.toString().toLowerCase() : synonym.toString().toLowerCase();
+			return selectedItem.indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, synonyms: filteredSynonyms }
+	}
+
+	if (_object.crossReferences?.length > 0) {
+		const { crossReferences } = _object;
+		const filteredCrossReferences = crossReferences.filter((crossReference) => {
+			return crossReference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, crossReferences: filteredCrossReferences }
+	}
+
+	if (_object.cross_references?.length > 0) {
+		const { cross_references } = _object;
+		const filteredCrossReferences = cross_references.filter((cross_reference) => {
+			return cross_reference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, cross_references: filteredCrossReferences }
+	}
+	if (_object.secondaryIdentifiers?.length > 0) {
+		const { secondaryIdentifiers } = _object;
+		const filteredSecondaryIdentifiers = secondaryIdentifiers.filter((secondaryIdentifier) => {
+			return secondaryIdentifier.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, secondaryIdentifiers: filteredSecondaryIdentifiers }
+	}
+
+	return _object;
+}
+
+export function onSelectionOver(event, item, query, op, setAutocompleteSelectedItem) {
+	const _item = filterDropDownObject(query, item)
+	setAutocompleteSelectedItem(_item);
+	op.current.show(event);
+};

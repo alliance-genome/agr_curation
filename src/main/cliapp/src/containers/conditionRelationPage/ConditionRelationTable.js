@@ -10,7 +10,9 @@ import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
-import {AutocompleteEditor} from "../../components/AutocompleteEditor";
+import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import {InputTextEditor} from "../../components/InputTextEditor";
 import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
 import {getRefString} from '../../utils/utils';
@@ -78,6 +80,8 @@ export const ConditionRelationTable = () => {
 					filterName='curieFilter'
 					isReference={true}
 					fieldName='singleReference'
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -117,6 +121,8 @@ export const ConditionRelationTable = () => {
 					fieldName='conditions'
 					subField='conditionSummary'
 					isMultiple={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
