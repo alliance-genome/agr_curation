@@ -94,43 +94,46 @@ export function getRefString(referenceItem) {
 	if (!referenceItem.cross_references && !referenceItem.crossReferences)
 		return referenceItem.curie;	
 		
-	let xrefs = referenceItem.cross_references ? referenceItem.cross_references : referenceItem.crossReferences;
-		
-	if (xrefs.length === 1)
-		return xrefs[0].curie + ' (' + referenceItem.curie + ')';
-	
-	let primaryXref = '';
-	
-	const secondaryXrefs = [];
-	xrefs.forEach((x, i) => secondaryXrefs.push(x.curie));
-	
-	if (secondaryXrefs.indexOf('PMID:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('PMID:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('PMID:'), 1);
-	} else if (secondaryXrefs.indexOf('FB:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('FB:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('FB:'), 1);
-	} else if (secondaryXrefs.indexOf('MGI:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('MGI:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('MGI:'), 1);
-	} else if (secondaryXrefs.indexOf('RGD:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('RGD:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('RGD:'), 1);
-	} else if (secondaryXrefs.indexOf('SGD:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('SGD:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('SGD:'), 1);
-	} else if (secondaryXrefs.indexOf('WB:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('WB:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('WB:'), 1);
-	} else if (secondaryXrefs.indexOf('ZFIN:') > -1) {
-		primaryXref = secondaryXrefs[secondaryXrefs.indexOf('ZFIN:')];
-		secondaryXrefs.splice(secondaryXrefs.indexOf('ZFIN:'), 1);
+	let xrefCuries = [];
+	if (referenceItem.cross_references) {
+		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
 	} else {
-		primaryXref = secondaryXrefs[0];
-		secondaryXrefs.splice(0, 1);
+		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.curie));
 	}
 	
-	return primaryXref + ' (' + secondaryXrefs.join('|') + '|' + referenceItem.curie + ')';
+	if (xrefCuries.length === 1)
+		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
+	let primaryXrefCurie = '';
+	
+	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) { 
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1);
+	} else {
+		primaryXrefCurie = xrefCuries.splice(0, 1);
+	}
+	
+	return primaryXrefCurie + ' (' + xrefCuries.join('|') + '|' + referenceItem.curie + ')';
+}
+
+function indexWithPrefix(array, prefix) {
+		
+	for (var i = 0; i < array.length; i++) {
+		if (array[i].startsWith(prefix)) {
+			return i;
+		}
+	}
+	return -1;
 }
 
 

@@ -31,7 +31,7 @@ export const AutocompleteEditor = (
 	);
 
 	const op = useRef(null);
-	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
+	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});		
 	const search = (event) => {
 		setQuery(event.query);
 		let filter = {};
@@ -52,7 +52,6 @@ export const AutocompleteEditor = (
 					} else {
 						setFiltered(data.results);
 					}
-					;
 				} else {
 					setFiltered([]);
 				}
@@ -98,6 +97,15 @@ export const AutocompleteEditor = (
 
 	const itemTemplate = (item) => {
 		let inputValue = trimWhitespace(query.toLowerCase());
+		if (isReference) {
+			let refDisplayString = getRefString(item);
+			return (
+				<div>
+					<div onMouseOver={(event) => onSelectionOver(event, item)}
+						 dangerouslySetInnerHTML={{__html: refDisplayString}}/>
+				</div>
+			);
+		}
 		if (autocompleteSelectedItem.synonyms?.length > 0) {
 			for (let i in autocompleteSelectedItem.synonyms) {
 
@@ -157,14 +165,6 @@ export const AutocompleteEditor = (
 						 dangerouslySetInnerHTML={{__html: item.conditionSummary + ' (' + item.id + ') '}}/>
 				</div>
 			);
-		} else if (isReference) {
-			
-			let displayString = getRefString(item);
-			return (
-				<div>
-					<div onMouseOver={(event) => onSelectionOver(event, item)}>{displayString}</div>
-				</div>
-			);
 		} else {
 			return (
 				<div>
@@ -218,11 +218,11 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				}
 				{
 					autocompleteSelectedItem.crossReferences &&
-					autocompleteSelectedItem.crossReferences.map((xref) => <div key={`crossReferences${xref}`}>Cross Reference: {xref}</div>)
+					autocompleteSelectedItem.crossReferences.map((xref) => <div key={`crossReferences${xref.curie}`}>Cross Reference: {xref.curie}</div>)
 				}
 				{
 					autocompleteSelectedItem.cross_references &&
-					autocompleteSelectedItem.cross_references.map((xref) => <div key={`cross_references${xref}`}>Cross Reference: {xref}</div>)
+					autocompleteSelectedItem.cross_references.map((xref) => <div key={`cross_references${xref.curie}`}>Cross Reference: {xref.curie}</div>)
 				}
 				{
 					autocompleteSelectedItem.secondaryIdentifiers &&

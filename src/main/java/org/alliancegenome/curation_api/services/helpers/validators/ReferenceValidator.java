@@ -42,6 +42,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		}
 		
 		Reference dbEntity = referenceDAO.find(uiEntity.getCurie());
+		
 		if (dbEntity == null || dbEntity.getObsolete()) {
 			dbEntity = referenceService.retrieveFromLiteratureService(uiEntity.getCurie());
 			if (dbEntity == null) {

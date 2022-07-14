@@ -30,7 +30,7 @@ public class Reference extends CurieAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({View.FieldsOnly.class})
 	private List<CrossReference> crossReferences;
 	
 }

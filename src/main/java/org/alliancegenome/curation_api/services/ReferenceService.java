@@ -20,6 +20,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.validators.ReferenceValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -30,6 +31,8 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 
 	@Inject
 	ReferenceDAO referenceDAO;
+	@Inject
+	ReferenceValidator referenceValidator;
 	@Inject
 	LiteratureReferenceDAO literatureReferenceDAO;
 	@Inject
@@ -49,14 +52,13 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 			Reference ref = new Reference();
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		
-			return referenceDAO.persist(ref);
+			return referenceDAO.merge(ref);
 		}
 		
 		return null;
 	}
 	
 	protected LiteratureReference fetchLiteratureServiceReference(String curie) {
-		
 		HashMap<String, String> searchDetails = new HashMap<>();
 		searchDetails.put("tokenOperator", "AND");
 		searchDetails.put("queryString", curie);
@@ -82,9 +84,12 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
 		if (response != null) {
 			for (LiteratureReference result : response.getResults()) {
-				if (result.getCurie().equals(curie)) {
+				if (result.getCurie().equals(curie))
+					return result;
+				for (LiteratureCrossReference resultXref : result.getCross_references()) {
+					if (resultXref.getCurie().equals(curie))
 						return result;
-				}	
+				}
 			}
 		} else {
 			return null;
@@ -153,7 +158,8 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	@Transactional
 	public ObjectResponse<Reference> synchroniseReference(String curie) {
 		Reference ref = referenceDAO.find(curie);
-		if (ref == null) return null;
+		ObjectResponse<Reference> response = new ObjectResponse<>();
+		if (ref == null) return response;
 		
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 		if (litRef == null) {
@@ -163,8 +169,9 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		}
 		
 		ref = referenceDAO.merge(ref);
-		ObjectResponse<Reference> response = new ObjectResponse<>();
+		
 		response.setEntity(ref);
+		
 		return response;
 	}
 }
