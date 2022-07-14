@@ -42,8 +42,7 @@ export const ConditionRelationsDialog = ({
 			let rowsObject = {};
 			if(_localConditionRelations) {
 				_localConditionRelations.forEach((relation) => {
-					if (!relation.handle)
-						rowsObject[`${relation.dataKey}`] = true;
+					rowsObject[`${relation.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
@@ -287,7 +286,6 @@ export const ConditionRelationsDialog = ({
 	let headerGroup = 	<ColumnGroup>
 						<Row>
 							<Column header="Actions" style={{display: isInEdit ? 'visible' : 'none'}}/>
-							<Column header="Handle" />
 							<Column header="Relation" />
 							<Column header="Conditions" />
 							<Column header="Internal" />
@@ -303,7 +301,6 @@ export const ConditionRelationsDialog = ({
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
-					<Column field="handle" header="Handle"></Column>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' body={conditionRelationTypeTemplate}/>
 					<Column editor={conditionsEditorTemplate} field="conditions.conditionStatement" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
