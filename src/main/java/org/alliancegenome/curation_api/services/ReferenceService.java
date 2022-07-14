@@ -98,28 +98,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		return null;
 	}
 		
-	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
-		ref.setCurie(litRef.getCurie());
-		
-		List<CrossReference> xrefs = new ArrayList<CrossReference>();
-		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
-			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
-			if (xref == null) {
-				xref = new CrossReference();
-				xref.setCurie(litXref.getCurie());
-				xref.setInternal(false);
-				xref.setObsolete(false);
-				xref = crossReferenceDAO.persist(xref);
-			} 
-			xrefs.add(xref);
-		}
-		if (CollectionUtils.isNotEmpty(xrefs)) {
-			ref.setCrossReferences(xrefs);
-		}
-		
-		return ref;
-	}
-
 	public void synchroniseReferences() {
 		
 		Pagination pagination = new Pagination();
@@ -143,19 +121,49 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		}
 	}
 	
-	@Transactional
+	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
+		String originalCurie = ref.getCurie();
+		if (!litRef.getCurie().equals(originalCurie)) {
+			ref = new Reference();
+			ref.setCurie(litRef.getCurie());
+		}
+		
+		List<CrossReference> xrefs = new ArrayList<CrossReference>();
+		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
+			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
+			if (xref == null) {
+				xref = new CrossReference();
+				xref.setCurie(litXref.getCurie());
+				xref.setInternal(false);
+				xref.setObsolete(false);
+				xref = crossReferenceDAO.persist(xref);
+			} 
+			xrefs.add(xref);
+		}
+		if (CollectionUtils.isNotEmpty(xrefs))
+			ref.setCrossReferences(xrefs);
+		
+		Reference existingRef = referenceDAO.find(ref.getCurie());
+		if (existingRef == null)
+			ref = referenceDAO.merge(ref);
+		if (!ref.getCurie().equals(originalCurie)) {
+			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
+			referenceDAO.remove(originalCurie);
+		}
+		
+		return ref;
+	}
+	
 	public void synchroniseReference(Reference ref) {
 		LiteratureReference litRef = fetchLiteratureServiceReference(ref.getCurie());
 		if (litRef == null) {
 			ref.setObsolete(true);
-		} else {
-			ref = copyLiteratureReferenceFields(litRef, ref);
+			referenceDAO.merge(ref);
+		} else {	
+			copyLiteratureReferenceFields(litRef, ref);
 		}
-		
-		referenceDAO.merge(ref);
 	}
 	
-	@Transactional
 	public ObjectResponse<Reference> synchroniseReference(String curie) {
 		Reference ref = referenceDAO.find(curie);
 		ObjectResponse<Reference> response = new ObjectResponse<>();
@@ -164,11 +172,10 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 		if (litRef == null) {
 			ref.setObsolete(true);
+			ref = referenceDAO.merge(ref);
 		} else {
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		}
-		
-		ref = referenceDAO.merge(ref);
 		
 		response.setEntity(ref);
 		
