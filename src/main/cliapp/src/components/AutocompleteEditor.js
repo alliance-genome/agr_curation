@@ -18,7 +18,7 @@ export const AutocompleteEditor = (
 		isMultiple = false,
 		isReference = false,
 		isSgdStrainBackground = false,
-		isConditionSummary = false,
+		isConditionStatement = false,
 		valueSelector
 	}
 ) => {
@@ -167,18 +167,18 @@ export const AutocompleteEditor = (
 					<div onMouseOver={(event) => onSelectionOver(event, item)} dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
 				</div>
 			);
-		} else if (isConditionSummary) {
+		} else if (isConditionStatement) {
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)}
-						 dangerouslySetInnerHTML={{__html: item.conditionSummary}}/>
+						 dangerouslySetInnerHTML={{__html: item.conditionStatement}}/>
 				</div>
 			);
 		} else if (getEntityType(item) === 'Experiment Condition') {
 			return (
 				<div>
 					<div onMouseOver={(event) => onSelectionOver(event, item)}
-						 dangerouslySetInnerHTML={{__html: item.conditionSummary + ' (' + item.id + ') '}}/>
+						 dangerouslySetInnerHTML={{__html: item.conditionStatement + ' (' + item.id + ') '}}/>
 				</div>
 			);
 		} else if (getEntityType(item) === 'Literature') {
@@ -232,8 +232,8 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				{autocompleteSelectedItem.name &&
 				<div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
 				}
-				{autocompleteSelectedItem.conditionSummary &&
-				<div key={`name${autocompleteSelectedItem.conditionSummary}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionSummary}}/>
+				{autocompleteSelectedItem.conditionStatement &&
+				<div key={`name${autocompleteSelectedItem.conditionStatement}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionStatement}}/>
 				}
 				{autocompleteSelectedItem.symbol &&
 				<div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol}}/>

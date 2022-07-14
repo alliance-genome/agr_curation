@@ -38,12 +38,12 @@ export const ConditionRelationsDialog = ({
 	const showDialogHandler = () => {
 		let _localConditionRelations = cloneRelations(originalConditionRelations);
 		setLocalConditionRelations(_localConditionRelations);
-
 		if(isInEdit){
 			let rowsObject = {};
 			if(_localConditionRelations) {
 				_localConditionRelations.forEach((relation) => {
-					rowsObject[`${relation.dataKey}`] = true;
+					if (!relation.handle)
+						rowsObject[`${relation.dataKey}`] = true;
 				});
 			}
 			setEditingRows(rowsObject);
@@ -59,7 +59,6 @@ export const ConditionRelationsDialog = ({
 	}
 	
 	const onRowEditCancel = (event) => {
-		console.log(editingRows);
 		rowsInEdit.current--;
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
@@ -92,7 +91,7 @@ export const ConditionRelationsDialog = ({
 				hasEdited.current = true;
 			} else {
 				for (var i = 0; i < data.conditions.length; i++) {
-					if (data.conditions[i].conditionSummary !== originalConditionRelations[index].conditions[i].conditionSummary) {
+					if (data.conditions[i].conditionStatement !== originalConditionRelations[index].conditions[i].conditionStatement) {
 						hasEdited.current = true;
 					}
 				}
@@ -100,14 +99,6 @@ export const ConditionRelationsDialog = ({
 		}
 	};
 	
-	/*const onRowEditSave = (event) => {
-		rowsInEdit.current--;
-		let _localConditionRelations = [...localConditionRelations];
-		_localConditionRelations[event.index] = event.data;
-		setLocalConditionRelations(_localConditionRelations);
-		compareChangesInRelations(event.data,event.index);
-	};*/
-
 	const hideDialog = () => {
 		setErrorMessages([]);
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
@@ -119,17 +110,6 @@ export const ConditionRelationsDialog = ({
 		let _localConditionRelations = [];
 		setLocalConditionRelations(_localConditionRelations);
 	};
-	
-	/*const validateRelations = async (relations) => {
-		const validationResultsArray = [];
-		let _relations = global.structuredClone(relations);
-		for (const relation of _relations) {
-			delete relation.dataKey;
-			const result = await validationService.validate('condition-relation', relation);
-			validationResultsArray.push(result);
-		}
-		return validationResultsArray;
-	};*/
 	
 	const validateRelation = async (relation) => {
 		let _relation = global.structuredClone(relation);
@@ -155,13 +135,8 @@ export const ConditionRelationsDialog = ({
 		const result = await validateRelation(localConditionRelations[event.index]);
 		const errorMessagesCopy = [...errorMessages];
 
-		let errorField = null;
-		console.log(result);
-		console.log(rowsInEdit)
 		if (result.isError) {
-			console.log('Here');
 			Object.keys(result.data).forEach((field) => {
-				errorField = field;
 				errorMessagesCopy[event.index] = {};
 				let messageObject = {
 					severity: "error",
@@ -174,16 +149,13 @@ export const ConditionRelationsDialog = ({
 					detail: 'Could not update condition relation [' + localConditionRelations[event.index].id + ']', sticky: false }
 				]);
 			});
-			
 		} else {
 			rowsInEdit.current--;
 			let _localConditionRelations = [...localConditionRelations];
 			_localConditionRelations[event.index] = event.data;
 			setLocalConditionRelations(_localConditionRelations);
 			compareChangesInRelations(event.data,event.index);
-		}
-		
-		return <ErrorMessageComponent errorMessages={result.data} errorField={errorField} style={{ 'fontSize': '1em' }}/>;
+		}	
 	};
 	
 	const saveDataHandler = async () => {
@@ -215,68 +187,6 @@ export const ConditionRelationsDialog = ({
 			}
 		);
 	};
-	
-	/*const saveDataHandler = async () => {
-		const resultsArray = await validateRelations(localConditionRelations);
-		const errorMessagesCopy = [...errorMessages];
-		let keepDialogOpen = false;
-		let anyErrors = false;
-		let crWithErrorIds = [];
-		resultsArray.forEach((result, index) => {
-			const { isError, data } = result;
-			if (isError) {
-				crWithErrorIds.push(localConditionRelations[index]["id"]);
-				errorMessagesCopy[index] = {};
-				Object.keys(data).forEach((field) => {
-					let messageObject = {
-						severity: "error",
-						message: data[field]
-					};
-					errorMessagesCopy[index][field] = messageObject;
-					setErrorMessages(errorMessagesCopy);
-					keepDialogOpen = true;
-					anyErrors = true;
-				});
-			}
-		});
-
-		if (!anyErrors) {
-			setErrorMessages([]);
-			for (const relation of localConditionRelations) {
-				delete relation.dataKey;
-			}
-			mainRowProps.rowData.conditionRelations = localConditionRelations;
-			let updatedAnnotations = [...mainRowProps.props.value];
-			updatedAnnotations[rowIndex].conditionRelations = localConditionRelations;
-			keepDialogOpen = false;
-
-			if(hasEdited.current){
-				const errorMessagesCopy = errorMessagesMainRow;
-				let messageObject = {
-					severity: "warn",
-					message: "Pending Edits!"
-				};
-				errorMessagesCopy[rowIndex] = {};
-				errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
-				setErrorMessagesMainRow({...errorMessagesCopy});
-			}
-		} else {
-			toast_topright.current.show([
-				{ life: 7000, severity: 'error', summary: 'Update error: ',
-				detail: 'Could not update condition relation(s) [' + crWithErrorIds.join('|') + ']', sticky: false }
-			]);
-			console.log(errorMessages);
-			return <ErrorMessageComponent errorMessages={errorMessages[0]} errorField={errorMessages[0]} style={{ 'fontSize': '1em' }}/>
-		};
-
-		setOriginalConditionRelationsData((originalConditionRelationsData) => {
-				return {
-					...originalConditionRelationsData,
-					dialog: keepDialogOpen,
-				}
-			}
-		);
-	};*/
 	
 	const internalTemplate = (rowData) => {
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
@@ -327,35 +237,31 @@ export const ConditionRelationsDialog = ({
 	};
 
 	const conditionsTemplate = (rowData) => {
-		console.log(rowData);
 		if (rowData && rowData.conditions) {
-			const sortedConditionSummaries = rowData.conditions.sort((a,b) => (a.conditionSummary > b.conditionSummary) ? 1 : -1);
-			console.log(sortedConditionSummaries);
+			const sortedConditionStatements = rowData.conditions.sort((a,b) => (a.conditionStatement > b.conditionStatement) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
-						{item.conditionSummary}
+						{item.conditionStatement}
 					</EllipsisTableCell>
 				);
 			};
-			return <ListTableCell template={listTemplate} listData={sortedConditionSummaries} />
+			return <ListTableCell template={listTemplate} listData={sortedConditionStatements} />
 		}
 	};
 	
 	const conditionsEditorTemplate = (props) => {
-		
-			console.log(errorMessages);
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["conditionSummary"]}
+					autocompleteFields={["conditionStatement"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='experimental-condition'
-					filterName='conditionSummaryFilter'
+					filterName='conditionStatementFilter'
 					fieldName='conditions'
-					subField='conditionSummary'
-					isConditionSummary={true}
+					subField='conditionStatement'
+					isConditionStatement={true}
 					isMultiple={true}
 				/>
 				<ErrorMessageComponent
@@ -387,7 +293,7 @@ export const ConditionRelationsDialog = ({
 							<Column header="Internal" />
 						</Row>
 						</ColumnGroup>;
-	
+						
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />
@@ -399,7 +305,7 @@ export const ConditionRelationsDialog = ({
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column field="handle" header="Handle"></Column>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' body={conditionRelationTypeTemplate}/>
-					<Column editor={conditionsEditorTemplate} field="conditions.conditionSummary" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
+					<Column editor={conditionsEditorTemplate} field="conditions.conditionStatement" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>

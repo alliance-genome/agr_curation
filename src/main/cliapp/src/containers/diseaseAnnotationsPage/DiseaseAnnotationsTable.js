@@ -285,9 +285,10 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsEditor = (props) => {
-			console.log(props);
 		if (props?.rowData?.conditionRelations) {
 			const handle = props.rowData.conditionRelations[0].handle;
+			if (handle)
+				return conditionRelationsTemplate(props.rowData);
 			return (
 				<>
 				<div>
