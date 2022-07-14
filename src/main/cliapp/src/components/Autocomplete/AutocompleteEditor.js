@@ -18,7 +18,6 @@ export const AutocompleteEditor = (
 		isMultiple = false,
 		isReference = false,
 		isSgdStrainBackground = false,
-		isConditionStatement = false,
 		valueSelector,
 		valueDisplay
 	}

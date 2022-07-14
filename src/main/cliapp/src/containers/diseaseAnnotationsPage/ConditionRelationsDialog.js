@@ -13,7 +13,8 @@ import { ValidationService } from '../../service/ValidationService';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { AutocompleteEditor } from '../../components/AutocompleteEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { SearchService } from '../../service/SearchService';
 
 
@@ -260,8 +261,9 @@ export const ConditionRelationsDialog = ({
 					filterName='conditionStatementFilter'
 					fieldName='conditions'
 					subField='conditionStatement'
-					isConditionStatement={true}
 					isMultiple={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
