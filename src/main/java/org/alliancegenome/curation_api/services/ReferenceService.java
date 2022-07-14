@@ -47,6 +47,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 	public Reference retrieveFromLiteratureService(String curie) {
 		
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
+		
 
 		if (litRef != null) {
 			Reference ref = new Reference();
@@ -54,7 +55,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		
 			return referenceDAO.merge(ref);
 		}
-		
 		return null;
 	}
 	
@@ -146,7 +146,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		Reference existingRef = referenceDAO.find(ref.getCurie());
 		if (existingRef == null)
 			ref = referenceDAO.merge(ref);
-		if (!ref.getCurie().equals(originalCurie)) {
+		if (!ref.getCurie().equals(originalCurie) && originalCurie != null) {
 			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
 			referenceDAO.remove(originalCurie);
 		}
