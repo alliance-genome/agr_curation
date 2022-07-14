@@ -94,12 +94,12 @@ public abstract class BaseCrudService<E extends BaseEntity, D extends BaseEntity
 		dao.reindex();
 	}
 
-	public void reindex(int threads, int indexAmount, int batchSize) {
-		dao.reindex(threads, indexAmount, batchSize);
+	public void reindex(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		dao.reindex(threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
 
-	public void reindexEverything(int threads, int indexAmount, int batchSize) {
-		dao.reindexEverything(threads, indexAmount, batchSize);
+	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		dao.reindexEverything(threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
 
 }

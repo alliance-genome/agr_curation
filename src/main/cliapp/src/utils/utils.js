@@ -87,33 +87,53 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
-export function getRefObject(referenceItem) {
+export function getRefString(referenceItem) {
 	if (!referenceItem)
 		return;
-	const curationDbRef = {};
-	let primaryXref = '';
-	const secondaryXrefs = [];
 	
-	for (const xref of referenceItem.cross_references) {
-		if (xref.curie.startsWith('PMID:')) {
-			primaryXref = xref.curie;
-		} else {
-			secondaryXrefs.push(xref.curie);
+	if (!referenceItem.cross_references && !referenceItem.crossReferences)
+		return referenceItem.curie;	
+		
+	let xrefCuries = [];
+	if (referenceItem.cross_references) {
+		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
+	} else {
+		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.curie));
+	}
+	
+	if (xrefCuries.length === 1)
+		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
+	let primaryXrefCurie = '';
+	
+	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) { 
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'MGI:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'MGI:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'RGD:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'RGD:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'SGD:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'SGD:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'WB:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'WB:'), 1);
+	} else if (indexWithPrefix(xrefCuries, 'ZFIN:') > -1) {
+		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'ZFIN:'), 1);
+	} else {
+		primaryXrefCurie = xrefCuries.splice(0, 1);
+	}
+	
+	return primaryXrefCurie + ' (' + xrefCuries.join('|') + '|' + referenceItem.curie + ')';
+}
+
+function indexWithPrefix(array, prefix) {
+		
+	for (var i = 0; i < array.length; i++) {
+		if (array[i].startsWith(prefix)) {
+			return i;
 		}
 	}
-
-	secondaryXrefs.sort();
-	if (!primaryXref) {
-		primaryXref = secondaryXrefs.shift();
-	}
-
-	curationDbRef.curie = referenceItem.curie;
-	curationDbRef.primaryCrossReference = primaryXref;
-	curationDbRef.submittedCrossReference = primaryXref;
-	if (secondaryXrefs && secondaryXrefs.length > 0)
-		curationDbRef.secondaryCrossReferences = secondaryXrefs.slice(0);
-	
-	return curationDbRef;
+	return -1;
 }
 
 
@@ -128,3 +148,48 @@ export function genericConfirmDialog({ header, message, accept, reject }){
 	});
 
 }
+
+export function filterDropDownObject(inputValue, object){
+	const trimmedValue = trimWhitespace(inputValue.toLowerCase());
+	let _object = global.structuredClone(object);
+
+	if (_object.synonyms?.length > 0) {
+		const { synonyms } = _object;
+		const filteredSynonyms = synonyms.filter((synonym) => {
+			let selectedItem = synonym.name ? synonym.name.toString().toLowerCase() : synonym.toString().toLowerCase();
+			return selectedItem.indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, synonyms: filteredSynonyms }
+	}
+
+	if (_object.crossReferences?.length > 0) {
+		const { crossReferences } = _object;
+		const filteredCrossReferences = crossReferences.filter((crossReference) => {
+			return crossReference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, crossReferences: filteredCrossReferences }
+	}
+
+	if (_object.cross_references?.length > 0) {
+		const { cross_references } = _object;
+		const filteredCrossReferences = cross_references.filter((cross_reference) => {
+			return cross_reference.curie.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, cross_references: filteredCrossReferences }
+	}
+	if (_object.secondaryIdentifiers?.length > 0) {
+		const { secondaryIdentifiers } = _object;
+		const filteredSecondaryIdentifiers = secondaryIdentifiers.filter((secondaryIdentifier) => {
+			return secondaryIdentifier.toString().toLowerCase().indexOf(trimmedValue) !== -1;
+		});
+		_object = { ..._object, secondaryIdentifiers: filteredSecondaryIdentifiers }
+	}
+
+	return _object;
+}
+
+export function onSelectionOver(event, item, query, op, setAutocompleteSelectedItem) {
+	const _item = filterDropDownObject(query, item)
+	setAutocompleteSelectedItem(_item);
+	op.current.show(event);
+};

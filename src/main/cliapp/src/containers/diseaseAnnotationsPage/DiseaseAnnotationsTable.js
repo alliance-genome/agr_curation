@@ -2,7 +2,10 @@ import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { AutocompleteEditor } from '../../components/AutocompleteEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
@@ -18,6 +21,7 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
+import {getRefString} from '../../utils/utils';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -137,23 +141,17 @@ export const DiseaseAnnotationsTable = () => {
 	
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
-			let xrefString = '';
-			if (rowData.singleReference.secondaryCrossReferences) {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.secondaryCrossReferences.join("|") + '|' + rowData.singleReference.curie + ')';
-			} else {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.curie + ')';
-			
-			}
+			let refString = getRefString(rowData.singleReference);
 			return (
 				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.curie.replace(':', '')}`}
 						dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 					/>
-					<Tooltip target={`.a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}>
+					<Tooltip target={`.a${rowData.singleReference.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 						/>
 					</Tooltip>
@@ -456,6 +454,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='subjectFilter'
 					fieldName='subject'
 					isSubject={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -476,6 +476,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
 					isSgdStrainBackground={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -496,6 +498,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='geneticModifierFilter'
 					fieldName='diseaseGeneticModifier'
 					isSubject={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -543,6 +547,8 @@ export const DiseaseAnnotationsTable = () => {
 					fieldName='with'
 					isWith={true}
 					isMultiple={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -574,7 +580,10 @@ export const DiseaseAnnotationsTable = () => {
 								queryString: "agr_eco_terms"
 							}
 						}
-					}} />
+					}} 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+			/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
 					errorField="evidence"
@@ -669,6 +678,8 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='curieFilter'
 					isReference={true}
 					fieldName='singleReference'
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -763,11 +774,11 @@ export const DiseaseAnnotationsTable = () => {
 		body: diseaseBodyTemplate
 	},
 	{
-		field: "singleReference.submittedCrossReference",
+		field: "singleReference.curie",
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference", "singleReference.secondaryCrossReferences"]},
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences"]},
 		editor: (props) => referenceEditorTemplate(props),
 		body: singleReferenceBodyTemplate
 	},

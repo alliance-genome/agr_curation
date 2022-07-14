@@ -142,11 +142,6 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			return null;
 		}
 
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getSubmittedCrossReference())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
 		if (singleRefResponse.getEntity() == null) {
 			Map<String, String> errors = singleRefResponse.getErrorMessages();

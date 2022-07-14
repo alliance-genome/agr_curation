@@ -25,7 +25,7 @@ public class CrossReference extends CurieAuditedObject {
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JoinTable(indexes = @Index( columnList = "crossreference_curie"))
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsAndLists.class})
 	private List<String> pageAreas;
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)

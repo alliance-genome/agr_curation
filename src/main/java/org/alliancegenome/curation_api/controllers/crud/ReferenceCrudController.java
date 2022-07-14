@@ -26,8 +26,7 @@ public class ReferenceCrudController extends BaseCrudController<ReferenceService
 		referenceService.synchroniseReferences();
 	}
 
-	@Override
-	public ObjectResponse<Reference> synchroniseReference(String primaryCrossReference) {
-		return referenceService.synchroniseReference(primaryCrossReference);
+	public ObjectResponse<Reference> synchroniseReference(String curie) {
+		return referenceService.synchroniseReference(curie);
 	}
 }
