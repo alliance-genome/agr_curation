@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
@@ -26,7 +27,6 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
@@ -59,6 +59,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	NoteValidator noteValidator;
 	@Inject
 	NoteService noteService;
+	@Inject
+	NoteDAO noteDAO;
 	@Inject
 	ConditionRelationValidator conditionRelationValidator;
 	
@@ -186,6 +188,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		
 		List<Long> previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
 		List<Long> validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
+		for (Note validatedNote: validatedNotes) {
+			if (!previousNoteIds.contains(validatedNote.getId())) {
+				noteDAO.persist(validatedNote);
+			}
+		}
 		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
 		for (Long id : idsToRemove) {
 			noteService.delete(id);
