@@ -19,7 +19,7 @@ export const AutocompleteEditor = (
 		isReference = false,
 		isSgdStrainBackground = false,
 		valueSelector,
-		valueDisplay,
+		valueDisplay
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -132,8 +132,8 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				{autocompleteSelectedItem.name &&
 				<div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
 				}
-				{autocompleteSelectedItem.conditionSummary &&
-				<div key={`name${autocompleteSelectedItem.conditionSummary}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionSummary}}/>
+				{autocompleteSelectedItem.conditionStatement &&
+				<div key={`name${autocompleteSelectedItem.conditionStatement}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionStatement}}/>
 				}
 				{autocompleteSelectedItem.symbol &&
 				<div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol}}/>
