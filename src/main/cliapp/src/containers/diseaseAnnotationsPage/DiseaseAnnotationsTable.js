@@ -308,7 +308,7 @@ export const DiseaseAnnotationsTable = () => {
 						</span>
 					</Button>
 				</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelations.uniqueId"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		} else {
