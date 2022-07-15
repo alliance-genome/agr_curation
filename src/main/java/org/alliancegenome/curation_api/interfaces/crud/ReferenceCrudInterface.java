@@ -9,6 +9,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -28,7 +29,7 @@ public interface ReferenceCrudInterface extends BaseCurieCrudInterface<Reference
 	public void synchroniseReferences();
 	
 	@GET
-	@Path("/sync/{primaryCrossReference}")
+	@Path("/sync/{curie}")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<Reference> synchroniseReference(@PathParam("primaryCrossReference") String primaryCrossReference);
+	public ObjectResponse<Reference> synchroniseReference(@PathParam("curie") String curie);
 }

@@ -1100,7 +1100,6 @@ public class DiseaseAnnotationITCase {
 		
 		Reference invalidReference = new Reference();
 		invalidReference.setCurie("Invalid");
-		invalidReference.setSubmittedCrossReference("Invalid");	
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
 		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
@@ -1424,7 +1423,6 @@ public class DiseaseAnnotationITCase {
 	private Reference createReference(String curie) {
 		Reference reference = new Reference();
 		reference.setCurie(curie);
-		reference.setSubmittedCrossReference(curie);
 		
 		ObjectResponse<Reference> response = RestAssured.given().
 			contentType("application/json").
