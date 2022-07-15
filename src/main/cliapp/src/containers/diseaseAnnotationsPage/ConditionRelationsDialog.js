@@ -10,7 +10,7 @@ import { ListTableCell } from '../../components/ListTableCell';
 import { Toast } from 'primereact/toast';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ValidationService } from '../../service/ValidationService';
-import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
@@ -69,18 +69,46 @@ export const ConditionRelationsDialog = ({
 			_localConditionRelations[event.index] = global.structuredClone(originalConditionRelations[event.index]);
 			_localConditionRelations[event.index].dataKey = dataKey;
 			setLocalConditionRelations(_localConditionRelations);
-		}else{
-
 		}
+		
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		if(hasEdited && hasEdited.current === false)
+		compareChangesInRelations(event.data,event.index);
+	};
+	
+	const onRowEditSave = async(event) => {
+		const result = await validateRelation(localConditionRelations[event.index]);
+		const errorMessagesCopy = [...errorMessages];
+		errorMessagesCopy[event.index] = {};
+		let _editingRows = { ...editingRows };
+		if (result.isError) {
+			Object.keys(result.data).forEach((field) => {
+				let messageObject = {
+					severity: "error",
+					message: result.data[field]
+				};
+				errorMessagesCopy[event.index][field] = messageObject;
+				toast_topright.current.show([
+					{ life: 7000, severity: 'error', summary: 'Update error: ',
+					detail: 'Could not update condition relation [' + localConditionRelations[event.index].id + ']', sticky: false }
+				]);
+			});
+		} else {
+			delete _editingRows[event.index];
+		}
+		setErrorMessages(errorMessagesCopy);
+		let _localConditionRelations = [...localConditionRelations];
+		_localConditionRelations[event.index] = event.data;
+			setEditingRows(_editingRows);	
 			compareChangesInRelations(event.data,event.index);
+		setLocalConditionRelations(_localConditionRelations);
+		
 	};
 	
 	const compareChangesInRelations = (data,index) => {
 		if(originalConditionRelations && originalConditionRelations[index]) {
+			hasEdited.current = false;
 			if (data.conditionRelationType.name !== originalConditionRelations[index].conditionRelationType.name) {
 				hasEdited.current = true;
 			}
@@ -113,8 +141,8 @@ export const ConditionRelationsDialog = ({
 	
 	const validateRelation = async (relation) => {
 		let _relation = global.structuredClone(relation);
-		delete relation.dataKey;
-		const result = await validationService.validate('condition-relation', relation);
+		delete _relation.dataKey;
+		const result = await validationService.validate('condition-relation', _relation);
 		return result;
 	};
 	
@@ -129,33 +157,6 @@ export const ConditionRelationsDialog = ({
 			_clonableRelations = [];
 		};
 		return _clonableRelations;
-	};
-	
-	const onRowEditSave = async(event) => {
-		const result = await validateRelation(localConditionRelations[event.index]);
-		const errorMessagesCopy = [...errorMessages];
-
-		if (result.isError) {
-			Object.keys(result.data).forEach((field) => {
-				errorMessagesCopy[event.index] = {};
-				let messageObject = {
-					severity: "error",
-					message: result.data[field]
-				};
-				errorMessagesCopy[event.index][field] = messageObject;
-				setErrorMessages(errorMessagesCopy);
-				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ',
-					detail: 'Could not update condition relation [' + localConditionRelations[event.index].id + ']', sticky: false }
-				]);
-			});
-		} else {
-			rowsInEdit.current--;
-			let _localConditionRelations = [...localConditionRelations];
-			_localConditionRelations[event.index] = event.data;
-			setLocalConditionRelations(_localConditionRelations);
-			compareChangesInRelations(event.data,event.index);
-		}	
 	};
 	
 	const saveDataHandler = async () => {
@@ -206,7 +207,7 @@ export const ConditionRelationsDialog = ({
 					props={props}
 					field={"internal"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
 			</>
 		);
 	};
@@ -231,7 +232,7 @@ export const ConditionRelationsDialog = ({
 					showClear={false}
 					dataKey='id'
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType"} />
 			</>
 		);
 	};
@@ -265,7 +266,7 @@ export const ConditionRelationsDialog = ({
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
 						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
-				<ErrorMessageComponent
+				<DialogErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
 					errorField={"conditions"}
 				/>
