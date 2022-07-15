@@ -67,8 +67,8 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
 			@DefaultValue("1") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
 			@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel,
 			@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
-			@DefaultValue("20000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
-			@DefaultValue("200") @QueryParam("idFetchSize") Integer idFetchSize,
+			@DefaultValue("200") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
+			@DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
 			@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout
 	);
 
