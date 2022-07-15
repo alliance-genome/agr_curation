@@ -11,15 +11,13 @@ import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.*;
 import org.hibernate.search.engine.search.query.*;
-import org.hibernate.search.engine.search.query.dsl.*;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
@@ -149,16 +147,16 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	public void commit() {
 		entityManager.getTransaction().commit();
 	}
-
+	
 	public void reindex() {
-		reindex(myClass, 4, 0, 1000);
+		reindex(myClass, 4, 1, 0, 1000, 10000, 7200);
 	}
 
-	public void reindex(int threads, int indexAmount, int batchSize) {
-		reindex(myClass, threads, indexAmount, batchSize);
+	public void reindex(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		reindex(myClass, threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
 
-	public void reindexEverything(int threads, int indexAmount, int batchSize) {
+	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
@@ -168,11 +166,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		MassIndexer indexer =
 				searchSession
 				.massIndexer(annotatedClasses)
-				.batchSizeToLoadObjects(batchSize)
+				.batchSizeToLoadObjects(batchSizeToLoadObjects)
+				.idFetchSize(idFetchSize)
 				.dropAndCreateSchemaOnStart(true)
 				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(threads)
-				.threadsToLoadObjects(threads)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
 				.monitor(new MassIndexingMonitor() {
 
 					@Override
@@ -199,24 +198,27 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				});
 		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(900);
-		if(indexAmount > 0){
-			indexer.limitIndexedObjectsTo(indexAmount);
+		indexer.transactionTimeout(transactionTimeout);
+		if(limitIndexedObjectsTo > 0){
+			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
 
 	}
-
-	public void reindex(Class<?> objectClass, int threads, int indexAmount, int batchSize) {
+	
+	public void reindex(Class<?> objectClass, Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+		
+		
 		log.debug("Starting Index for: " + objectClass);
 		MassIndexer indexer =
 				searchSession
 				.massIndexer(objectClass)
-				.batchSizeToLoadObjects(batchSize)
+				.batchSizeToLoadObjects(batchSizeToLoadObjects)
+				.idFetchSize(idFetchSize)
 				.dropAndCreateSchemaOnStart(true)
 				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(threads)
-				.threadsToLoadObjects(threads)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
 				.monitor(new MassIndexingMonitor() {
 
 					ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
@@ -253,9 +255,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				});
 		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(900);
-		if(indexAmount > 0){
-			indexer.limitIndexedObjectsTo(indexAmount);
+		indexer.transactionTimeout(transactionTimeout);
+		if(limitIndexedObjectsTo > 0){
+			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
 	}
