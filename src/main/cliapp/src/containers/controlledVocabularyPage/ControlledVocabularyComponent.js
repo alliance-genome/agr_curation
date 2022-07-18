@@ -27,6 +27,8 @@ export const ControlledVocabularyComponent = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [errorMessages, setErrorMessages] = useState({});
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [vocabularies, setVocabularies] = useState(null);
@@ -90,7 +92,7 @@ export const ControlledVocabularyComponent = () => {
 									rowProps={props}
 									fieldName={'name'}
 							/>
-							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"name"} />
+							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"name"} />
 					</>
 			);
 	};
@@ -110,7 +112,7 @@ export const ControlledVocabularyComponent = () => {
 									rowProps={props}
 									fieldName={'abbreviation'}
 							/>
-							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"abbreviation"} />
+							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"abbreviation"} />
 					</>
 			);
 	};
@@ -123,7 +125,6 @@ export const ControlledVocabularyComponent = () => {
 		};
 
 	const vocabularyEditorTemplate = (props) => {
-		console.log(props);
 			return (
 					<>
 							<ControlledVocabularyDropdown
@@ -132,7 +133,7 @@ export const ControlledVocabularyComponent = () => {
 									props={props}
 									placeholderText={props.rowData.vocabulary.name}
 							/>
-							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"vocabulary.name"} />
+							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"vocabulary.name"} />
 					</>
 			);
 	};
@@ -152,7 +153,7 @@ export const ControlledVocabularyComponent = () => {
 									rowProps={props}
 									fieldName={'definition'}
 							/>
-							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"definition"} />
+							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"definition"} />
 					</>
 			);
 	};
@@ -172,7 +173,7 @@ export const ControlledVocabularyComponent = () => {
 									editorChange={onObsoleteEditorValueChange}
 									props={props}
 							/>
-							<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
+							<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
 					</>
 			);
 	};

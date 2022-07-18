@@ -206,7 +206,7 @@ export const useGenericDataTable = ({
 				let _entity = global.structuredClone(entity);
 				_entity[event.index] = response.data.entity;
 				setEntity(_entity);
-				const errorMessagesCopy = errorMessages;
+				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[event.index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
 			},
@@ -218,7 +218,7 @@ export const useGenericDataTable = ({
 
 				let _entity = global.structuredClone(entity);
 
-				const errorMessagesCopy = errorMessages;
+				const errorMessagesCopy = global.structuredClone(errorMessages);
 
 				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};

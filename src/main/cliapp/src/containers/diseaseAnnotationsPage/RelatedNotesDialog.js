@@ -175,7 +175,7 @@ export const RelatedNotesDialog = ({
 		updatedAnnotations[rowIndex].relatedNotes = localRelatedNotes;
 
 		if(hasEdited.current){
-			const errorMessagesCopy = errorMessagesMainRow;
+			const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 			let messageObject = {
 				severity: "warn",
 				message: "Pending Edits!"
@@ -184,7 +184,6 @@ export const RelatedNotesDialog = ({
 			errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
 			setErrorMessagesMainRow({...errorMessagesCopy});
 		}
-
 		setOriginalRelatedNotesData((originalRelatedNotesData) => {
 				return {
 					...originalRelatedNotesData,

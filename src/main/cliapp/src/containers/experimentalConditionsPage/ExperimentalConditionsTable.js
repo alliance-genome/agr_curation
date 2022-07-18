@@ -22,6 +22,8 @@ export const ExperimentalConditionsTable = () => {
 	const searchService = new SearchService();
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	let experimentalConditionService = null;
 
@@ -43,7 +45,7 @@ export const ExperimentalConditionsTable = () => {
 					rowProps={props}
 					fieldName={fieldname}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldname} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
 			</>
 		);
 	};
@@ -150,7 +152,7 @@ export const ExperimentalConditionsTable = () => {
 					props={props}
 					field={"internal"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"internal"} />
 			</>
 		);
 	};
@@ -180,7 +182,7 @@ export const ExperimentalConditionsTable = () => {
 				}}
 			/>
 			<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField='conditionClass'
 				/>
 			</>
@@ -207,7 +209,7 @@ export const ExperimentalConditionsTable = () => {
 					}}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={fieldname}
 				/>
 			</>
