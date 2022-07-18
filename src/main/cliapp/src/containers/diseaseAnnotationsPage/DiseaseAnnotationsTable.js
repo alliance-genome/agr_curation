@@ -15,6 +15,7 @@ import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
@@ -268,14 +269,12 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsTemplate = (rowData) => {
-		if (rowData?.conditionRelations) {
-			const handle = rowData.conditionRelations[0].handle;
+		if (rowData?.conditionRelations && !rowData.conditionRelations[0].handle) {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
 					<span style={{ textDecoration: 'underline' }}>
-						{!handle && `Conditions (${rowData.conditionRelations.length})`}
-						{handle && handle}
+						{`Conditions (${rowData.conditionRelations.length})`}
 					</span>
 				</Button>
 			)
@@ -283,7 +282,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsEditor = (props) => {
-		if (props?.rowData?.conditionRelations) {
+		if (props.rowData?.conditionRelations && !props.rowData.conditionRelations[0].handle) {
 			const handle = props.rowData.conditionRelations[0].handle;
 			if (handle)
 				return conditionRelationsTemplate(props.rowData);
@@ -306,11 +305,46 @@ export const DiseaseAnnotationsTable = () => {
 					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
-		} else {
-			return null;
 		}
 	};
 
+	const conditionRelationHandleTemplate = (rowData) => {
+		if (rowData?.conditionRelations && rowData.conditionRelations[0].handle) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`a${rowData.conditionRelations[0].handle}`}>{rowData.conditionRelations[0].handle}</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.conditionRelations[0].handle}`} content={`${rowData.conditionRelations[0].handle}`} />
+				</>
+			)
+		}
+	};
+	
+	const conditionRelationHandleEditor = (props) => {
+		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0].handle) {
+			return (
+			<>
+				<ConditionRelationHandleDropdown
+					field="conditionRelationHandle"
+					editorChange={onConditionRelationHandleEditorValueChange}
+					props={props}
+					showClear={false}
+					placeholderText={props.rowData.conditionRelations[0].handle}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationHandle"} />
+			</>
+		);
+		}
+	};
+	
+	const onConditionRelationHandleEditorValueChange = (props, event) => {
+		let updatedAnnotations = [...props.props.value];
+		if (typeof event.value === "object") {
+			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
+		} else {
+			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
+		}
+	};
+	
 	const diseaseBodyTemplate = (rowData) => {
 		if (rowData.object) {
 			return (
@@ -862,6 +896,19 @@ export const DiseaseAnnotationsTable = () => {
 		sortable: true,
 		filter: true,
 		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]},
+	},
+	{
+		field: "conditionRelationHandle",
+		header: "Experiments",
+		body: conditionRelationHandleTemplate,
+		editor: (props) => conditionRelationHandleEditor(props),
+		sortable: true,
+		filter: true,
+		filterElement: {
+			type: "input",
+			filterName: "conditionRelationHandleFilter",
+			fields: ["conditionRelations.handle"]
+		},
 	},
 	{
 		field: "conditionRelations.uniqueId",

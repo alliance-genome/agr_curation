@@ -41,7 +41,7 @@ export const AutocompleteEditor = (
 		autocompleteFields.forEach(field => {
 			filter[field] = {
 				queryString: event.query,
-				...((isSubject || isWith || isReference) && {tokenOperator: "AND"})
+				...((isSubject || isWith || isReference ) && {tokenOperator: "AND"})
 			}
 		});
 
@@ -131,6 +131,9 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				}
 				{autocompleteSelectedItem.name &&
 				<div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
+				}
+				{autocompleteSelectedItem.handle &&
+				<div key={`name${autocompleteSelectedItem.handle}`} dangerouslySetInnerHTML={{__html: 'Handle: ' + autocompleteSelectedItem.handle + '(' + autocompleteSelectedItem.singleReference + ')'}}/>
 				}
 				{autocompleteSelectedItem.conditionStatement &&
 				<div key={`name${autocompleteSelectedItem.conditionStatement}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionStatement}}/>
