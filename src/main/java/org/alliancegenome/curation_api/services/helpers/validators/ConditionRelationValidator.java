@@ -102,7 +102,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	// check that pub-handle combination is unique
 	private void validateConditionRelationHandlePubUnique(ConditionRelation uiEntity, ConditionRelation dbEntity) {
-		if (StringUtils.isBlank(uiEntity.getHandle()))
+		if (StringUtils.isBlank(uiEntity.getHandle()) || uiEntity.getSingleReference() == null
+				|| StringUtils.isBlank(uiEntity.getSingleReference().getCurie()))
 			return;
 		// if handle / pub combination has changed check that the new key is not already taken in the database
 		if (!getUniqueKey(uiEntity).equals(getUniqueKey(dbEntity))) {
@@ -138,7 +139,12 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	private Reference validateSingleReference(ConditionRelation uiEntity) {
 		String field = "singleReference";
-		if((uiEntity == null || uiEntity.getSingleReference() == null) && uiEntity.getHandle() == null){
+		if(StringUtils.isBlank(uiEntity.getHandle())) {
+			return null; // Reference only required if handle present
+		}
+				
+		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
