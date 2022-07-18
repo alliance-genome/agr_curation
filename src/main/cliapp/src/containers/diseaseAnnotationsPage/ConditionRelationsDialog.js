@@ -174,7 +174,7 @@ export const ConditionRelationsDialog = ({
 		updatedAnnotations[rowIndex].conditionRelations = localConditionRelations;
 		
 		if(hasEdited.current){
-			const errorMessagesCopy = errorMessagesMainRow;
+			const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 			let messageObject = {
 				severity: "warn",
 				message: "Pending Edits!"
