@@ -83,25 +83,29 @@ export const ConditionRelationsDialog = ({
 		errorMessagesCopy[event.index] = {};
 		let _editingRows = { ...editingRows };
 		if (result.isError) {
+			let reported = false;
 			Object.keys(result.data).forEach((field) => {
 				let messageObject = {
 					severity: "error",
 					message: result.data[field]
 				};
 				errorMessagesCopy[event.index][field] = messageObject;
-				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ',
-					detail: 'Could not update condition relation [' + localConditionRelations[event.index].id + ']', sticky: false }
-				]);
+				if (!reported) {
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ',
+						detail: 'Could not update condition relation [' + localConditionRelations[event.index].id + ']', sticky: false }
+					]);
+					reported = true;
+				}
 			});
 		} else {
-			delete _editingRows[event.index];
+			delete _editingRows[event.index];	
+			compareChangesInRelations(event.data,event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
 		let _localConditionRelations = [...localConditionRelations];
 		_localConditionRelations[event.index] = event.data;
-			setEditingRows(_editingRows);	
-			compareChangesInRelations(event.data,event.index);
+		setEditingRows(_editingRows);
 		setLocalConditionRelations(_localConditionRelations);
 		
 	};
