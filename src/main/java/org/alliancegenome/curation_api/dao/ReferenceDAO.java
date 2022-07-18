@@ -42,30 +42,5 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		Query jpqlQuery = entityManager.createNativeQuery("DELETE FROM " + table + " WHERE " + column + " = '" + originalCurie + "'");
 		jpqlQuery.executeUpdate();
 	}
-	
-	public SearchResponse<String> findAllCuries(Pagination pagination) {
-		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Reference> findQuery = cb.createQuery(myClass);
-		Root<Reference> rootEntry = findQuery.from(myClass);
-		CriteriaQuery<Reference> all = findQuery.select(rootEntry);
-
-		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
-		countQuery.select(cb.count(countQuery.from(myClass)));
-		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
-
-		TypedQuery<Reference> allQuery = entityManager.createQuery(all);
-		if(pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
-			int first = pagination.getPage() * pagination.getLimit();
-			if(first < 0) first = 0;
-			allQuery.setFirstResult(first);
-			allQuery.setMaxResults(pagination.getLimit());
-		}
-		SearchResponse<String> results = new SearchResponse<String>();
-		
-		List<String> resultCuries = allQuery.getResultStream().map(Reference::getCurie).collect(Collectors.toList());
-		results.setResults(resultCuries);
-		results.setTotalResults(totalResults);
-		return results;
-	}
 
 }

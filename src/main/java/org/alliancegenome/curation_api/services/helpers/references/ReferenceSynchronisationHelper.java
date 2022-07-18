@@ -92,7 +92,7 @@ public class ReferenceSynchronisationHelper {
 		Boolean allSynced = false;
 		while (!allSynced) {
 			pagination.setPage(page);
-			SearchResponse<String> response = referenceDAO.findAllCuries(pagination);
+			SearchResponse<String> response = referenceDAO.findAllIds(pagination);
 			for (String refCurie : response.getResults()) {
 				synchroniseReference(refCurie);
 			}
