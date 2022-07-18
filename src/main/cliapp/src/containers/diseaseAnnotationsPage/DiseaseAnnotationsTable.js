@@ -50,6 +50,8 @@ export const DiseaseAnnotationsTable = () => {
 	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
 	const [errorMessages, setErrorMessages] = useState({});
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
 
@@ -143,7 +145,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
 	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.evidenceCodes) {
+		if (rowData && rowData.evidenceCodes.length > 0) {
 			const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
@@ -243,7 +245,7 @@ export const DiseaseAnnotationsTable = () => {
 						</span>
 					</Button>
 				</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		} else {
@@ -262,7 +264,7 @@ export const DiseaseAnnotationsTable = () => {
 							</span>
 						</Button>
 					</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		}
@@ -302,7 +304,7 @@ export const DiseaseAnnotationsTable = () => {
 						</span>
 					</Button>
 				</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		}
@@ -377,7 +379,7 @@ export const DiseaseAnnotationsTable = () => {
 					showClear={false}
 					placeholderText={props.rowData.diseaseRelation.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseRelation"} />
 			</>
 		);
 	};
@@ -397,7 +399,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"geneticSex"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"geneticSex"} />
 			</>
 		);
 	};
@@ -417,7 +419,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"annotationType"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"annotationType"} />
 			</>
 		);
 	};
@@ -437,7 +439,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
 			</>
 		);
 	};
@@ -466,7 +468,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					placeholderText={placeholderText}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseQualifiers"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseQualifiers"} />
 			</>
 		);
 	};
@@ -487,7 +489,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					field={"negated"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"negated"} />
 			</>
 		);
 	};
@@ -508,7 +510,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					field={"internal"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"internal"} />
 			</>
 		);
 	};
@@ -529,7 +531,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					field={"obsolete"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
 			</>
 		);
 	};
@@ -549,7 +551,7 @@ export const DiseaseAnnotationsTable = () => {
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"subject"}
 				/>
 			</>
@@ -571,7 +573,7 @@ export const DiseaseAnnotationsTable = () => {
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"sgdStrainBackground"}
 				/>
 			</>
@@ -593,7 +595,7 @@ export const DiseaseAnnotationsTable = () => {
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"diseaseGeneticModifier"}
 				/>
 			</>
@@ -619,7 +621,7 @@ export const DiseaseAnnotationsTable = () => {
 					}}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"object"}
 				/>
 			</>
@@ -642,7 +644,7 @@ export const DiseaseAnnotationsTable = () => {
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="with"
 				/>
 			</>
@@ -676,7 +678,7 @@ export const DiseaseAnnotationsTable = () => {
 						<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 			/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="evidence"
 				/>
 			</>
@@ -773,7 +775,7 @@ export const DiseaseAnnotationsTable = () => {
 						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"singleReference"}
 				/>
 			</>
@@ -895,7 +897,7 @@ export const DiseaseAnnotationsTable = () => {
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
 		body: relatedNotesTemplate,
-		editor: (props) => relatedNotesEditor(props),
+		editor: relatedNotesEditor,
 		sortable: true,
 		filter: true,
 		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]},

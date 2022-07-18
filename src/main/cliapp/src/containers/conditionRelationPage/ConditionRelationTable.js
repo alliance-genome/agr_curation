@@ -27,6 +27,8 @@ export const ConditionRelationTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [errorMessages, setErrorMessages] = useState({});
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 
 	let conditionRelationService = null;
@@ -64,7 +66,7 @@ export const ConditionRelationTable = () => {
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType.name"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationType.name"}/>
 			</>
 		);
 	};
@@ -84,7 +86,7 @@ export const ConditionRelationTable = () => {
 						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"singleReference"}
 				/>
 			</>
@@ -125,7 +127,7 @@ export const ConditionRelationTable = () => {
 						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="conditions"
 				/>
 			</>
@@ -139,7 +141,7 @@ export const ConditionRelationTable = () => {
 					rowProps={props}
 					fieldName={'handle'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"handle"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"handle"}/>
 			</>
 		);
 	};
