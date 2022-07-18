@@ -7,7 +7,7 @@ import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
 import { InputTextAreaEditor } from '../../components/InputTextAreaEditor';
-import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
+import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
@@ -21,7 +21,7 @@ export const RelatedNotesDialog = ({
 													setErrorMessagesMainRow
 												}) => {
 	const { originalRelatedNotes, isInEdit, dialog, rowIndex, mainRowProps } = originalRelatedNotesData;
-	const [localRelateNotes, setLocalRelateNotes] = useState(null) ;
+	const [localRelatedNotes, setLocalRelatedNotes] = useState(null) ;
 	const [editingRows, setEditingRows] = useState({});
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
@@ -34,7 +34,7 @@ export const RelatedNotesDialog = ({
 
 	const showDialogHandler = () => {
 		let _localRelatedNotes = cloneNotes(originalRelatedNotes);
-		setLocalRelateNotes(_localRelatedNotes);
+		setLocalRelatedNotes(_localRelatedNotes);
 
 		if(isInEdit){
 			let rowsObject = {};
@@ -60,24 +60,22 @@ export const RelatedNotesDialog = ({
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
-		let _localRelateNotes = [...localRelateNotes];//add new note support
+		let _localRelatedNotes = [...localRelatedNotes];//add new note support
 		if(originalRelatedNotes && originalRelatedNotes[event.index]){
-			let dataKey = _localRelateNotes[event.index].dataKey;
-			_localRelateNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
-			_localRelateNotes[event.index].dataKey = dataKey;
-			setLocalRelateNotes(_localRelateNotes);
-		}else{
-
+			let dataKey = _localRelatedNotes[event.index].dataKey;
+			_localRelatedNotes[event.index] = global.structuredClone(originalRelatedNotes[event.index]);
+			_localRelatedNotes[event.index].dataKey = dataKey;
+			setLocalRelatedNotes(_localRelatedNotes);
 		}
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		if(hasEdited && hasEdited.current === false)
-			compareChangesInNotes(event.data,event.index);
+		compareChangesInNotes(event.data,event.index);
 	};
 
 	const compareChangesInNotes = (data,index) => {
 		if(originalRelatedNotes && originalRelatedNotes[index]) {
+			hasEdited.current = false;
 			if (data.noteType.name !== originalRelatedNotes[index].noteType.name) {
 				hasEdited.current = true;
 			}
@@ -90,12 +88,36 @@ export const RelatedNotesDialog = ({
 		}
 	};
 
-	const onRowEditSave = (event) => {
-		rowsInEdit.current--;
-		let _localRelateNotes = [...localRelateNotes];
-		_localRelateNotes[event.index] = event.data;
-		setLocalRelateNotes(_localRelateNotes);
-		compareChangesInNotes(event.data,event.index);
+	const onRowEditSave = async(event) => {
+		const result = await validateNote(localRelatedNotes[event.index]);
+		const errorMessagesCopy = [...errorMessages];
+		errorMessagesCopy[event.index] = {};
+		let _editingRows = { ...editingRows };
+		if (result.isError) {
+			let reported = false;
+			Object.keys(result.data).forEach((field) => {
+				let messageObject = {
+					severity: "error",
+					message: result.data[field]
+				};
+				errorMessagesCopy[event.index][field] = messageObject;
+				if(!reported) {
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ',
+						detail: 'Could not update note [' + localRelatedNotes[event.index].id + ']', sticky: false }
+					]);
+					reported = true;
+				}
+			});
+		} else {
+			delete _editingRows[event.index];
+			compareChangesInNotes(event.data,event.index);
+		}
+		setErrorMessages(errorMessagesCopy);
+		let _localRelatedNotes = [...localRelatedNotes];
+		_localRelatedNotes[event.index] = event.data;
+		setEditingRows(_editingRows);
+		setLocalRelatedNotes(_localRelatedNotes);
 	};
 
 	const hideDialog = () => {
@@ -107,18 +129,14 @@ export const RelatedNotesDialog = ({
 			};
 		});
 		let _localRelatedNotes = [];
-		setLocalRelateNotes(_localRelatedNotes);
+		setLocalRelatedNotes(_localRelatedNotes);
 	};
 
-	const validateNotes = async (notes) => {
-		const validationResultsArray = [];
-		let _notes = global.structuredClone(notes);
-		for (const note of _notes) {
-			delete note.dataKey;
-			const result = await validationService.validate('note', note);
-			validationResultsArray.push(result);
-		}
-		return validationResultsArray;
+	const validateNote = async (note) => {
+		let _note = global.structuredClone(note);
+		delete _note.dataKey;
+		const result = await validationService.validate('note', _note);
+		return result;
 	};
 
 	const cloneNotes = (clonableNotes) => {
@@ -135,8 +153,8 @@ export const RelatedNotesDialog = ({
 	};
 
 	const createNewNoteHandler = (event) => {
-		let cnt = localRelateNotes ? localRelateNotes.length : 0;
-		localRelateNotes.push({
+		let cnt = localRelatedNotes ? localRelatedNotes.length : 0;
+		localRelatedNotes.push({
 			dataKey : cnt,
 			noteType: {
 				name : ""
@@ -145,58 +163,32 @@ export const RelatedNotesDialog = ({
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
 		rowsInEdit.current++;
-		hasEdited.current = true;
 	};
 
 	const saveDataHandler = async () => {
-		const resultsArray = await validateNotes(localRelateNotes);
-		const errorMessagesCopy = [...errorMessages];
-		let keepDialogOpen = false;
-		let anyErrors = false;
+		setErrorMessages([]);
+		for (const note of localRelatedNotes) {
+			delete note.dataKey;
+		}
+		mainRowProps.rowData.relatedNotes = localRelatedNotes;
+		let updatedAnnotations = [...mainRowProps.props.value];
+		updatedAnnotations[rowIndex].relatedNotes = localRelatedNotes;
 
-		resultsArray.forEach((result, index) => {
-			const { isError, data } = result;
-			if (isError) {
-				errorMessagesCopy[index] = {};
-				Object.keys(data).forEach((field) => {
-					let messageObject = {
-						severity: "error",
-						message: data[field]
-					};
-					errorMessagesCopy[index][field] = messageObject;
-					setErrorMessages(errorMessagesCopy);
-					keepDialogOpen = true;
-					anyErrors = true;
-				});
-			}
-		});
-
-		if (!anyErrors) {
-			setErrorMessages([]);
-			for (const note of localRelateNotes) {
-				delete note.dataKey;
-			}
-			mainRowProps.rowData.relatedNotes = localRelateNotes;
-			let updatedAnnotations = [...mainRowProps.props.value];
-			updatedAnnotations[rowIndex].relatedNotes = localRelateNotes;
-			keepDialogOpen = false;
-
-			if(hasEdited.current){
-				const errorMessagesCopy = errorMessagesMainRow;
-				let messageObject = {
-					severity: "warn",
-					message: "Pending Edits!"
-				};
-				errorMessagesCopy[rowIndex] = {};
-				errorMessagesCopy[rowIndex]["relatedNotes.freeText"] = messageObject;
-				setErrorMessagesMainRow({...errorMessagesCopy});
-			}
-		};
+		if(hasEdited.current){
+			const errorMessagesCopy = errorMessagesMainRow;
+			let messageObject = {
+				severity: "warn",
+				message: "Pending Edits!"
+			};
+			errorMessagesCopy[rowIndex] = {};
+			errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
+			setErrorMessagesMainRow({...errorMessagesCopy});
+		}
 
 		setOriginalRelatedNotesData((originalRelatedNotesData) => {
 				return {
 					...originalRelatedNotesData,
-					dialog: keepDialogOpen,
+					dialog: false,
 				}
 			}
 		);
@@ -215,8 +207,8 @@ export const RelatedNotesDialog = ({
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		let _localRelateNotes = [...localRelateNotes];
-		_localRelateNotes[props.rowIndex].internal = event.value.name;
+		let _localRelatedNotes = [...localRelatedNotes];
+		_localRelatedNotes[props.rowIndex].internal = event.value.name;
 	}
 
 	const internalEditor = (props) => {
@@ -228,14 +220,14 @@ export const RelatedNotesDialog = ({
 					props={props}
 					field={"internal"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
 			</>
 		);
 	};
 
 	const onNoteTypeEditorValueChange = (props, event) => {
-		let _localRelateNotes = [...localRelateNotes];
-		_localRelateNotes[props.rowIndex].noteType = event.value;
+		let _localRelatedNotes = [...localRelatedNotes];
+		_localRelatedNotes[props.rowIndex].noteType = event.value;
 	};
 
 	const noteTypeEditor = (props) => {
@@ -249,14 +241,14 @@ export const RelatedNotesDialog = ({
 					showClear={false}
 					dataKey='id'
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"noteType"} />
 			</>
 		);
 	};
 
 	const onFreeTextEditorValueChange = (event, props) => {
-		let _localRelateNotes = [...localRelateNotes];
-		_localRelateNotes[props.rowIndex].freeText = event.target.value;
+		let _localRelatedNotes = [...localRelatedNotes];
+		_localRelatedNotes[props.rowIndex].freeText = event.target.value;
 	};
 
 	const freeTextEditor = (props, fieldName, errorMessages) => {
@@ -271,7 +263,7 @@ export const RelatedNotesDialog = ({
 					rows={5}
 					columns={30}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
+				<DialogErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldName} />
 			</>
 		);
 	};
@@ -290,13 +282,13 @@ export const RelatedNotesDialog = ({
 	}
 
 	const handleDeleteRelatedNote = (event, props) => {
-		let _localRelateNotes = global.structuredClone(localRelateNotes); 
+		let _localRelatedNotes = global.structuredClone(localRelatedNotes); 
 		if(props.dataKey){
-			_localRelateNotes.splice(props.dataKey, 1);
+			_localRelatedNotes.splice(props.dataKey, 1);
 		}else {
-			_localRelateNotes.splice(props.rowIndex, 1);
+			_localRelatedNotes.splice(props.rowIndex, 1);
 		}
-		setLocalRelateNotes(_localRelateNotes);
+		setLocalRelatedNotes(_localRelatedNotes);
 		hasEdited.current = true;
 	}
 
@@ -321,7 +313,7 @@ export const RelatedNotesDialog = ({
 			<Toast ref={toast_topright} position="top-right" />
 			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
 				<h3>Related Notes</h3>
-				<DataTable value={localRelateNotes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
+				<DataTable value={localRelatedNotes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
