@@ -207,6 +207,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	public List<ConditionRelation> validateConditionRelations(DiseaseAnnotation uiEntity) {
 		List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
 		for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
+			if (uiEntity.getSingleReference() != null && !StringUtils.isBlank(uiEntity.getSingleReference().getCurie()) &&
+					conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie()) &&
+					!conditionRelation.getSingleReference().getCurie().equals(uiEntity.getSingleReference().getCurie())) {
+				addMessageResponse("conditionRelationHandle", ValidationConstants.INVALID_MESSAGE);
+			}
 			ObjectResponse<ConditionRelation> crResponse = conditionRelationValidator.validateConditionRelation(conditionRelation);
 			if (crResponse.getEntity() == null) {
 				Map<String, String> errors = crResponse.getErrorMessages();
