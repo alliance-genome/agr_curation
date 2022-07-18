@@ -335,7 +335,7 @@ export const DiseaseAnnotationsTable = () => {
 					showClear={false}
 					placeholderText={props.rowData.conditionRelations[0].handle}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationHandle"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationHandle"} />
 			</>
 		);
 		}
