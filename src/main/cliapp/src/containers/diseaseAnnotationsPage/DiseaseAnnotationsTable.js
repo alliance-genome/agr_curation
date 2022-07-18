@@ -310,11 +310,14 @@ export const DiseaseAnnotationsTable = () => {
 
 	const conditionRelationHandleTemplate = (rowData) => {
 		if (rowData?.conditionRelations && rowData.conditionRelations[0].handle) {
+			let handle = rowData.conditionRelations[0].handle;
 			return (
-				<>
-					<EllipsisTableCell otherClasses={`a${rowData.conditionRelations[0].handle}`}>{rowData.conditionRelations[0].handle}</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.conditionRelations[0].handle}`} content={`${rowData.conditionRelations[0].handle}`} />
-				</>
+				<Button className="p-button-text"
+					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
+					<span style={{ textDecoration: 'underline' }}>
+						{handle && handle}
+					</span>
+				</Button>
 			)
 		}
 	};
@@ -898,7 +901,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]},
 	},
 	{
-		field: "conditionRelationHandle",
+		field: "conditionRelations.handle",
 		header: "Experiments",
 		body: conditionRelationHandleTemplate,
 		editor: (props) => conditionRelationHandleEditor(props),
