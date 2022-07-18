@@ -243,7 +243,7 @@ export const DiseaseAnnotationsTable = () => {
 						</span>
 					</Button>
 				</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		} else {
@@ -262,7 +262,7 @@ export const DiseaseAnnotationsTable = () => {
 							</span>
 						</Button>
 					</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		}

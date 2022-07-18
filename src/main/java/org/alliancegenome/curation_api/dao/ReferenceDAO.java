@@ -1,11 +1,20 @@
 package org.alliancegenome.curation_api.dao;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.ApplicationScoped;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.dao.BaseSQLDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.SearchResponse;
 
 @ApplicationScoped
 public class ReferenceDAO extends BaseSQLDAO<Reference> {
