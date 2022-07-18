@@ -41,7 +41,7 @@ export const AutocompleteEditor = (
 		autocompleteFields.forEach(field => {
 			filter[field] = {
 				queryString: event.query,
-				...((isSubject || isWith || isReference ) && {tokenOperator: "AND"})
+				...((isSubject || isWith || isReference) && {tokenOperator: "AND"})
 			}
 		});
 
