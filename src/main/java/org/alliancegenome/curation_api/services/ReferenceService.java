@@ -107,9 +107,9 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		Boolean allSynced = false;
 		while (!allSynced) {
 			pagination.setPage(page);
-			SearchResponse<Reference> response = referenceDAO.findAll(pagination);
-			for (Reference ref : response.getResults()) {
-				synchroniseReference(ref);
+			SearchResponse<String> response = referenceDAO.findAllCuries(pagination);
+			for (String refCurie : response.getResults()) {
+				synchroniseReference(refCurie);
 			}
 			page = page + 1;
 			int nrSynced = limit * page;
@@ -154,16 +154,7 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		return ref;
 	}
 	
-	public void synchroniseReference(Reference ref) {
-		LiteratureReference litRef = fetchLiteratureServiceReference(ref.getCurie());
-		if (litRef == null) {
-			ref.setObsolete(true);
-			referenceDAO.merge(ref);
-		} else {	
-			copyLiteratureReferenceFields(litRef, ref);
-		}
-	}
-	
+	@Transactional
 	public ObjectResponse<Reference> synchroniseReference(String curie) {
 		Reference ref = referenceDAO.find(curie);
 		ObjectResponse<Reference> response = new ObjectResponse<>();
@@ -172,7 +163,6 @@ public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 		if (litRef == null) {
 			ref.setObsolete(true);
-			ref = referenceDAO.merge(ref);
 		} else {
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		}

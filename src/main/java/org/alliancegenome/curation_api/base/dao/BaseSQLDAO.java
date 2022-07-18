@@ -103,7 +103,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		results.setTotalResults(totalResults);
 		return results;
 	}
-
+	
 	@Transactional
 	public E merge(E entity) {
 		log.debug("SqlDAO: merge: " + entity);
