@@ -151,12 +151,12 @@ export const ConditionRelationTable = () => {
 			let refString = getRefString(rowData.singleReference);
 			return (
 				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.curie.replace(':', '')}`}
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
 						dangerouslySetInnerHTML={{
 							__html: refString
 						}}
 					/>
-					<Tooltip target={`.a${rowData.singleReference.curie.replace(':', '')}`}>
+					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{
 							__html: refString
 						}}

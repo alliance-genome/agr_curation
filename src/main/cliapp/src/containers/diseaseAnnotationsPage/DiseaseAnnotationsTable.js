@@ -172,12 +172,12 @@ export const DiseaseAnnotationsTable = () => {
 			let refString = getRefString(rowData.singleReference);
 			return (
 				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.curie.replace(':', '')}`}
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
 						dangerouslySetInnerHTML={{
 							__html: refString
 						}}
 					/>
-					<Tooltip target={`.a${rowData.singleReference.curie.replace(':', '')}`}>
+					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{
 							__html: refString
 						}}
@@ -354,8 +354,8 @@ export const DiseaseAnnotationsTable = () => {
 		if (rowData.object) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`a${rowData.object.curie.replace(':', '')}`}>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.object.curie.replace(':', '')}`} content={`${rowData.object.name} (${rowData.object.curie})`} />
+					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.object.curie.replace(':', '')}`}>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.object.curie.replace(':', '')}`} content={`${rowData.object.name} (${rowData.object.curie})`} />
 				</>
 			)
 		}
@@ -690,12 +690,12 @@ export const DiseaseAnnotationsTable = () => {
 			if (rowData.subject.symbol) {
 				return (
 					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.subject.curie.replace(':', '')}`}
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
 								__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
 							}}
 						/>
-						<Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
 								__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
 							}}
@@ -706,12 +706,12 @@ export const DiseaseAnnotationsTable = () => {
 			} else if (rowData.subject.name) {
 				return (
 					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.subject.curie.replace(':', '')}`}
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
 								__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
 							}}
 						/>
-						<Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
 								__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
 								}}
