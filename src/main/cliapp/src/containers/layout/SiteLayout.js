@@ -281,7 +281,8 @@ export const SiteLayout = (props) => {
 								{
 										label: 'Controlled Vocabularies', icon: 'pi pi-fw pi-sitemap',
 										items: [
-												{ label: 'Terms', icon: 'pi pi-fw pi-home', to: '/vocabterms' }
+												{ label: 'Terms', icon: 'pi pi-fw pi-home', to: '/vocabterms' },
+												{ label: 'Vocabularies', icon: 'pi pi-fw pi-home', to: '/vocabularies' }
 										]
 								},
 								{

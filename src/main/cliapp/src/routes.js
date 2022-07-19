@@ -18,6 +18,7 @@ import { ProfilePage } from './containers/profilePage';
 import { MoleculesPage } from './containers/moleculesPage';
 import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
+import { VocabulariesPage } from './containers/vocabularyPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { MetricsComponent } from './components/MetricsComponent';
@@ -59,8 +60,9 @@ export default (
 		<SecureRoute path="/genes" component={GenesPage} />
 		<SecureRoute path="/alleles" component={AllelesPage} />
 		<SecureRoute path="/molecules" component={MoleculesPage} />
-				<SecureRoute path="/references" component={ReferencePage} />
+		<SecureRoute path="/references" component={ReferencePage} />
 		<SecureRoute path="/vocabterms" component={ControlledVocabularyPage} />
+		<SecureRoute path="/vocabularies" component={VocabulariesPage} />
 		<SecureRoute path="/ontology/chebi" component={CHEBIOntologyComponent} />
 		<SecureRoute path="/ontology/do" component={DiseaseOntologyComponent} />
 		<SecureRoute path="/ontology/eco" component={ECOOntologyComponent} />
