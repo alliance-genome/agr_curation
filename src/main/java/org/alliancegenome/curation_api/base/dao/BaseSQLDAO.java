@@ -181,7 +181,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 	
 	public void reindex() {
-		reindex(myClass, 4, 1, 0, 1000, 10000, 7200);
+		reindex(myClass, 1000, 10000, 0, 4, 7200, 1);
 	}
 
 	public void reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
