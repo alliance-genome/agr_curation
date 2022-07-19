@@ -81,8 +81,8 @@ export const ExperimentalConditionsTable = () => {
 		if (rowData.conditionClass) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={rowData.conditionClass.curie.replace(':', '')}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
-					<Tooltip target={`.${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
+					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
 				</>
 			)
 		}
@@ -92,8 +92,8 @@ export const ExperimentalConditionsTable = () => {
 		if (rowData.conditionId) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={rowData.conditionId.curie.replace(':', '')}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
-					<Tooltip target={`.${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
+					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
 				</>
 			)
 		}
@@ -121,10 +121,10 @@ export const ExperimentalConditionsTable = () => {
 		if (rowData.conditionTaxon) {
 			return (
 					<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}>
 							{rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 					</>
 			);
 		}
