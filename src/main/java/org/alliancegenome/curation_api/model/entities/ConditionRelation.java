@@ -35,7 +35,7 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	@JsonView({View.FieldsOnly.class})
 	private String handle;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
