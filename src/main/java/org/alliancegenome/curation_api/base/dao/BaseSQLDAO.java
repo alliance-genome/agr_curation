@@ -8,11 +8,9 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.*;
-import javax.persistence.metamodel.Metamodel;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
-import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -137,7 +135,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		results.setTotalResults(totalResults);
 		return results;
 	}
-	
+
 	@Transactional
 	public E merge(E entity) {
 		log.debug("SqlDAO: merge: " + entity);
@@ -183,14 +181,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 	
 	public void reindex() {
-		reindex(myClass, 1, 1, 0, 1000, 200, 7200);
+		reindex(myClass, 1000, 10000, 0, 4, 7200, 1);
 	}
 
-	public void reindex(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
-		reindex(myClass, threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
+	public void reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+		reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 

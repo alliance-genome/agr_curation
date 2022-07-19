@@ -64,12 +64,12 @@ public interface BaseCurieCrudInterface<E extends BaseEntity> {
 	@Path("/reindex")
 	@Tag(name = "Reindex Endpoints")
 	public void reindex(
-			@DefaultValue("1") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
-			@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel,
-			@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
-			@DefaultValue("20000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
-			@DefaultValue("200") @QueryParam("idFetchSize") Integer idFetchSize,
-			@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout
+		@DefaultValue("1000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
+		@DefaultValue("10000") @QueryParam("idFetchSize") Integer idFetchSize,
+		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
+		@DefaultValue("4") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
+		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout,
+		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel
 	);
 
 }
