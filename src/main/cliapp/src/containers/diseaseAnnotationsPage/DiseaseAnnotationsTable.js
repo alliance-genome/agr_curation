@@ -871,7 +871,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences"]},
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.curie"]},
 		editor: (props) => referenceEditorTemplate(props),
 		body: singleReferenceBodyTemplate
 	},

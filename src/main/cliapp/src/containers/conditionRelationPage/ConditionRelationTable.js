@@ -179,11 +179,11 @@ export const ConditionRelationTable = () => {
 			editor: (props) => handleEditor(props)
 		},
 		{
-			field: "singleReference.submittedCrossReference",
+			field: "singleReference.curie",
 			header: "Reference",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference", "singleReference.secondaryCrossReferences"]},
+			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.curie"]},
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
 		},
