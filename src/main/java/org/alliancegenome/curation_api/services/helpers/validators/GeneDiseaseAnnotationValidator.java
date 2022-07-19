@@ -4,11 +4,19 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.*;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
@@ -39,13 +47,13 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}		
 
 		Gene subject = validateSubject(uiEntity, dbEntity);
-		if(subject != null) dbEntity.setSubject(subject);
+		dbEntity.setSubject(subject);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
-		if(relation != null) dbEntity.setDiseaseRelation(relation);
+		dbEntity.setDiseaseRelation(relation);
 
 		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
-		if (sgdStrainBackground != null) dbEntity.setSgdStrainBackground(uiEntity.getSgdStrainBackground());
+		dbEntity.setSgdStrainBackground(sgdStrainBackground);
 		
 		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
@@ -58,13 +66,13 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isEmpty(uiEntity.getSubject().getCurie())) {
-			addMessageResponse("subject", requiredMessage);
+		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
+			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getCurie());
 		if (subjectEntity == null) {
-			addMessageResponse("subject", invalidMessage);
+			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		return subjectEntity;
@@ -74,14 +82,14 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
 		String field = "diseaseRelation";
 		if (uiEntity.getDiseaseRelation() == null) {
-			addMessageResponse(field, requiredMessage);
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 		
 		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
 
 		if(relation == null) {
-			addMessageResponse(field, invalidMessage);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		
@@ -89,13 +97,12 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 	
 	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity) {
-		if (uiEntity.getSgdStrainBackground() == null) {
+		if (uiEntity.getSgdStrainBackground() == null)
 			return null;
-		}
 		
 		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
-			addMessageResponse("sgdStrainBackground", invalidMessage);
+			addMessageResponse("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		

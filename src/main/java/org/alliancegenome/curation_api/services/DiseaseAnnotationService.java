@@ -119,9 +119,9 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 					Person createdBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getCreatedBy());
 					relation.setCreatedBy(createdBy);
 				}
-				if (conditionRelationDTO.getModifiedBy() != null) {
-					Person modifiedBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getModifiedBy());
-					relation.setModifiedBy(modifiedBy);
+				if (conditionRelationDTO.getUpdatedBy() != null) {
+					Person updatedBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getUpdatedBy());
+					relation.setUpdatedBy(updatedBy);
 				}
 				
 				if (conditionRelationDTO.getDateUpdated() != null) {
@@ -146,17 +146,17 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 				
 				String conditionRelationType = conditionRelationDTO.getConditionRelationType();
 				if (conditionRelationType == null) {
-					throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
+					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
 				}
 				VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 				if (conditionRelationTypeTerm == null) {
-					throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
+					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " contains invalid conditionRelationType " + conditionRelationType + " - skipping annotation");
 				} else {
 					relation.setConditionRelationType(conditionRelationTypeTerm);
 				}
 
 				if (CollectionUtils.isEmpty(conditionRelationDTO.getConditions())) {
-					throw new ObjectUpdateException(annotationDTO, "Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
+					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " missing conditions for " + conditionRelationType + " - skipping annotation");
 				}
 				for (ExperimentalConditionDTO experimentalConditionDTO : conditionRelationDTO.getConditions()) {
 					ExperimentalCondition experimentalCondition = experimentalConditionService.validateExperimentalConditionDTO(experimentalConditionDTO);
@@ -201,7 +201,11 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 		for (String id : idsToRemove) {
 			SearchResponse<DiseaseAnnotation> da = diseaseAnnotationDAO.findByField("uniqueId", id);
 			if (da != null && da.getTotalResults() == 1) {
+				List<Long> noteIdsToDelete = da.getResults().get(0).getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
 				delete(da.getResults().get(0).getId());
+				for (Long noteId : noteIdsToDelete) {
+					noteService.delete(noteId);
+				}
 			} else {
 				log.error("Failed getting annotation: " + id);
 			}
@@ -211,14 +215,14 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 	public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
 		if (StringUtils.isEmpty(dto.getObject()) || StringUtils.isEmpty(dto.getDiseaseRelation()) || StringUtils.isEmpty(dto.getDataProvider()) ||
 				StringUtils.isEmpty(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
-				StringUtils.isEmpty(dto.getCreatedBy()) || StringUtils.isEmpty(dto.getModifiedBy()) || dto.getInternal() == null) {
+				dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
 		}
 		
 		Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 		annotation.setCreatedBy(createdBy);
-		Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-		annotation.setModifiedBy(modifiedBy);
+		Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+		annotation.setUpdatedBy(updatedBy);
 		
 		annotation.setInternal(dto.getInternal());
 		annotation.setObsolete(dto.getObsolete());
@@ -257,11 +261,12 @@ public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation,
 
 		String publicationId = dto.getSingleReference();
 		Reference reference = referenceDAO.find(publicationId);
-		if (reference == null) {
+		if (reference == null || reference.getObsolete()) {
 			reference = referenceService.retrieveFromLiteratureService(publicationId);
 			if (reference == null) {
 				throw new ObjectValidationException(dto, "Invalid publication ID in " + annotation.getUniqueId() + " - skipping annotation");
 			}
+			
 		}
 		annotation.setSingleReference(reference);
 

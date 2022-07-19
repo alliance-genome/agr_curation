@@ -23,7 +23,9 @@ These instructions will get you a copy of the project and the API up and running
 -  [Releasing and Deploying](#releasing-and-deploying)
    *  [Deployment environments](#deployment-environments)
    *  [Promoting code versions](#promoting-code-versions)
-   *  [Deploying to beta or production](#deploying-to-beta-or-production)
+      -  [Promoting code from alpha to beta](#promoting-code-from-alpha-to-beta)
+      -  [Promoting code from beta to production](#promoting-code-from-beta-to-production)
+   *  [Additional deployment steps](#additional-deployment-steps)
    *  [Release versioning](#release-versioning)
    *  [Release Creation](#release-creation)
 -  [Loading Data](#loading-data)
@@ -59,8 +61,11 @@ The three permanent branches in this repository represent the code to be deploye
       > git push origin feature/${JIRA-TICKET-NR}_short-description
       ```
 
-   -  Once coding and testing completed, submit a pull request in github to merge back to alpha.
-      Deployment to alpha will automatically trigger once the PR is approved and merged.
+   -  Once coding and testing completed, submit a pull request in github to merge back to alpha.  
+      If this PR does not require deployment (because it only concerns files like the README, or to
+      batch multiple fast-consecutive PRs into a single deployment), apply the `no-deploy` GitHub label
+      to the PR (on creation) to skip automatic deployment. Otherwise, deployment to alpha will
+      automatically trigger once the PR is approved and merged.
 
 *  To make fixes to the version currently deployed on the beta environment:
 
@@ -78,7 +83,7 @@ The three permanent branches in this repository represent the code to be deploye
       ```
 
    -  Once coding and testing completed, submit a pull request in github to merge back to beta.
-      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
+      For deployment to beta, extra steps need to be taken after PR approval and merge, which are described [here](#additional-deployment-steps).
 
 *  To make fixes to the version currently deployed on the production environment:
 
@@ -96,7 +101,7 @@ The three permanent branches in this repository represent the code to be deploye
       ```
 
    -  Once coding and testing completed, submit a pull request in github to merge back to production.
-      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#deploying-to-beta-or-production).
+      For deployment to production, extra steps need to be taken after PR approval and merge, which are described [here](#additional-deployment-steps).
 
 ### Data structure changes
 When making code changes which change any of the data structures, the supporting database schema needs to reflect these changes
@@ -332,8 +337,7 @@ The general flow from coding to a production release goes something like this:
 
 As the code goes through the different stages, it becomes more and more stable as it gets closer to production.
 
-In order to promote changes from alpha to beta:
-
+#### Promoting code from alpha to beta
 1. Decide on a proper release version number to be used for the new prerelease
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for beta (pre)releases that means either
@@ -352,32 +356,28 @@ In order to promote changes from alpha to beta:
    git push origin release/vx.y.z-rca
    ```
 3. Create a pull request to merge this release branch in beta
-4. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+4. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the beta environment.
-5. After prerelease creation and deployment, merge the beta branch back to alpha and push to github
-   There are two ways you can do this:
-      * Merge locally and push the changes directly to github
-         ```bash
-         git pull
-         git checkout alpha
-         git merge beta
-         git push
-         ```
-      * Create a dedicated merging branch and open a PR in github to merge in
-         ```bash
-         git checkout beta
-         git pull
-         git checkout -b PRmerge/beta
-         git push origin PRmerge/beta
-         ```
-         Now create a PR in github to merge the `PRmerge/beta` branch into the `alpha` branch.
-         This dedicated merge branch is required when using github PRs, as Github's Pull Request merge strategy
-         is to merge the target branch (alpha) into the source branch (beta) first, before doing the opposite.
-         This must be prevented at all times, as we do not want code under active development to get
-         merged into the beta (release-candidate) branch.
+5. After prerelease creation and deployment, merge the beta branch back to alpha,
+   to make the (pre)release tag reachable from alpha (and report the correct version number through `git describe --tags`).
 
-In order to promote changes from beta to production:
+   To do so, create a dedicated merging branch and open a PR
+   in github to merge back into alpha:
 
+   ```bash
+   git checkout beta
+   git pull
+   git checkout -b PRmerge/beta
+   git push origin PRmerge/beta
+   ```
+   Now create a PR in github to merge the `PRmerge/beta` branch into the `alpha` branch.
+
+   This dedicated merge branch is required when using github PRs to merge back, as Github's Pull Request merge strategy
+   merges the target branch (alpha) into the source branch (beta) first, before doing the opposite.
+   This must be prevented at all times, as we do not want code under active development to get
+   merged into the beta (release-candidate) branch.
+
+#### Promoting code from beta to production
 1. Decide on a proper release version number to be used for the new release
    that will be created as a result of this promotion (see [Release versioning](#release-versioning)).  
    Generally speaking, for production (full) releases that means removing the release-candidate extension
@@ -396,34 +396,31 @@ In order to promote changes from beta to production:
    git push origin release/vx.y.z
    ```
 5. Create a pull request to merge this release branch in production
-6. After PR approval and merge, do the necessary [deployment steps](#deploying-to-beta-or-production)
+6. After PR approval and merge, do the necessary [additional deployment steps](#additional-deployment-steps)
    to deploy this code successfully to the production environment.
-7. After release creation and deployment, the production branch must be merged back to beta,
-   in order to make the release tag reachable from beta (and report the correct version number through `git describe --tags`).
-   There are two ways you can do this:
-      * Merge locally and push the changes directly to github
-         ```bash
-         git checkout beta
-         git pull
-         git merge production
-         git push
-         ```
-      * Create a dedicated merging branch and open a PR in github to merge in
-         ```bash
-         git checkout production
-         git pull
-         git checkout -b PRmerge/production
-         git push origin PRmerge/production
-         ```
-         Now create a PR in github to merge the `PRmerge/production` branch into the `beta` branch.
-         This dedicated merge branch is required when using github PRs, as Github's Pull Request merge strategy
-         is to merge the target branch (beta) into the source branch (production) first, before doing the opposite.
-         This must be prevented at all times, as we do not want release candidate code still under evaluation to get
-         merged into the production branch.
+7. After release creation and deployment, merge the production branch back to alpha,
+   to make the release tag reachable from alpha (and report the correct version number through `git describe --tags`).
 
-### Deploying to beta or production
+   To do so, create a dedicated merging branch and open a PR
+   in github to merge back into alpha:
+
+   ```bash
+   git checkout production
+   git pull
+   git checkout -b PRmerge/production
+   git push origin PRmerge/production
+   ```
+   Now create a PR in github to merge the `PRmerge/production` branch into the `alpha` branch.
+
+   This dedicated merge branch is required when using github PRs to merge back, as Github's Pull Request merge strategy
+   merges the target branch (alpha) into the source branch (production) first, before doing the opposite.
+   This must be prevented at all times, as we do not want code under active development to get
+   merged into the production branch.
+
+### Additional deployment steps
 In order to successfully deploy to the beta or production environment, as few additional steps need to be taken
-to ensure the new version of the application can function in a consistent state upon and after deployment.
+after merging into the respective branch to trigger deployment and to ensure
+the new version of the application can function in a consistent state upon and after deployment.
 
 1. Compare the environment variables set in the Elastic Beanstalk environment between the environment you want to deploy to and from (e.g. compare curation-beta to curation-alpha for deployment to beta, or curation-production to curation-beta for deployment to production). This can be done through the [EB console](https://console.aws.amazon.com/elasticbeanstalk/home?region=us-east-1#/application/overview?applicationName=curation-app), or by using the `eb printenv` CLI. Scan for relevant change:
    *  New variables should be added to the environment to be deployed to, **before** initiating the deployment
@@ -432,26 +429,31 @@ to ensure the new version of the application can function in a consistent state 
    *  Removed variables should be cleaned up **after** successfull deployment
 2. Connect to the Environment's Elastic search domain by entering its domain endpoint in Cerebro, and delete all indexes.
    The domain endpoint URL can be found through the [Amazon OpenSearch console](https://console.aws.amazon.com/esv3/home?region=us-east-1#opensearch/domains), the cerebro UI is available on the application server through HTTP at port 9000.
-3. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
-4. Compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
+3. When wanting to deploy a prerelease to the beta environment, reset the beta postgres DB and roll down the latest production DB backup
+   (see the [agr_db_backups README](https://github.com/alliance-genome/agr_db_backups#manual-invocation)).  
+   This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
+   before the code causing it would get deployed to the production environment.
+4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
+5. Compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
    data if needed where schema changes were not automatically propagated correctly upon application launch.  
    The DB schema can be obtained through the CLI by using pg_dump like so:
    ```bash
    pg_dump -s -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER | tee curation_DB_schema.sql
    ```
-5. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
+6. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
    This can be achieved by terminating the environment's running EC2 instance or (more quickly)
    by connecting into the server as admin through ssh, and restarting the docker container:
    ```bash
    cd /var/app/current/
    sudo docker-compose restart
    ```
-6. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
+7. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
    and follow-up through log server to ensure reindexing completed successfully before executing the next.
-7. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
+8. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
    and if no new file (with a new md5sum) got loaded then click the play button at file level for the most recently loaded file,
    to ensure all data gets reloaded, including any new features that may have been implemented in the release just deployed
    (new code does not automatically trigger old files to get reloaded).
+9. After completing all above steps successfullly, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
 
 
 ### Release versioning
@@ -504,7 +506,7 @@ To create a new (pre-)release and deploy to beta or production, do the following
 
 Once published, github actions kicks in and the release will get deployed to the appropriate environments.
 Completion of these deployments is reported in the #a-team-code slack channel. After receiving a successful deployment notification,
-continue the remaining steps described in the [deployment section](#Deploying-to-beta-or-production).
+continue the remaining steps described in the [additional deployment steps section](#additional-deployment-steps).
 
 ## Loading Data
 

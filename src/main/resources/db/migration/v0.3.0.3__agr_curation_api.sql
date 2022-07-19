@@ -8,7 +8,6 @@ ALTER TABLE diseaseannotation
   ADD COLUMN geneticsex_id BIGINT;
 
 ALTER TABLE conditionRelation
-  ADD COLUMN IF NOT EXISTS conditionrelationtype VARCHAR (255),
   ADD COLUMN conditionrelationtype_id BIGINT;
 
 UPDATE diseaseannotation
@@ -74,3 +73,16 @@ ALTER TABLE diseaseannotation
 
 ALTER TABLE conditionRelation
   DROP COLUMN conditionrelationtype;
+
+ALTER TABLE ONLY public.diseaseannotation
+    ADD CONSTRAINT fk9xjbpkdh1ffv0568wb8op838n FOREIGN KEY (annotationtype_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.diseaseannotation
+    ADD CONSTRAINT fkgtlivor9244ndobm9w5c0lxff FOREIGN KEY (diseaserelation_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.diseaseannotation
+    ADD CONSTRAINT fklns1tn5kseoys0xvq0f26h2vl FOREIGN KEY (geneticsex_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.conditionrelation
+    ADD CONSTRAINT fkn8t4joy3iheftpbxt0omvxl52 FOREIGN KEY (conditionrelationtype_id) REFERENCES public.vocabularyterm(id);
+ALTER TABLE ONLY public.diseaseannotation
+    ADD CONSTRAINT fknagkqf0yu1qib0wkp8s0n60hn FOREIGN KEY (diseasegeneticmodifierrelation_id) REFERENCES public.vocabularyterm(id);
+
+
