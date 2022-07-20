@@ -72,7 +72,7 @@ public class GeneBulkUploadITCase {
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
 			body("results[0].createdBy.uniqueId", is("GENETEST:Person0001")).
-			body("results[0].modifiedBy.uniqueId", is("GENETEST:Person0002")).
+			body("results[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
@@ -241,8 +241,8 @@ public class GeneBulkUploadITCase {
 	
 	@Test
 	@Order(8)
-	public void geneBulkUploadNoModifiedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/08_no_modified_by_gene.json"));
+	public void geneBulkUploadNoUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/08_no_updated_by_gene.json"));
 		
 		// upload file
 		RestAssured.given().

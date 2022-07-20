@@ -121,9 +121,9 @@ public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			allele.setCreatedBy(createdBy);
 		}
-		if (dto.getModifiedBy() != null) {
-			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-			allele.setModifiedBy(modifiedBy);
+		if (dto.getUpdatedBy() != null) {
+			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			allele.setUpdatedBy(updatedBy);
 		}
 		
 		allele.setInternal(dto.getInternal());

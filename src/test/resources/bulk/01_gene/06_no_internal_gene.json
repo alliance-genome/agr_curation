@@ -6,7 +6,7 @@
     "taxon": "NCBITaxon:6239",
     "obsolete": true,
     "created_by": "GENETEST:Person0001",
-    "modified_by": "GENETEST:Person0002",
+    "updated_by": "GENETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00"
   }

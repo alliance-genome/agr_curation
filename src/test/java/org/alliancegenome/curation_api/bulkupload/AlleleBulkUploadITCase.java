@@ -72,7 +72,7 @@ public class AlleleBulkUploadITCase {
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
 			body("results[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("results[0].modifiedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("results[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
@@ -246,8 +246,8 @@ public class AlleleBulkUploadITCase {
 	
 	@Test
 	@Order(8)
-	public void alleleBulkUploadNoModifiedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/08_no_modified_by_allele.json"));
+	public void alleleBulkUploadNoUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/08_no_updated_by_allele.json"));
 		
 		// upload file
 		RestAssured.given().

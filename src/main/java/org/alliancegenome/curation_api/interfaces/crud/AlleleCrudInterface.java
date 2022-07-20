@@ -3,11 +3,7 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
@@ -34,5 +30,18 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele> {
 	@Override
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
+
+	@Override
+	@GET
+	@Path("/reindex")
+	@Tag(name = "Reindex Endpoints")
+	public void reindex(
+		@DefaultValue("50") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
+		@DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
+		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
+		@DefaultValue("1") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
+		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout,
+		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel
+	);
 
 }
