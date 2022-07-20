@@ -119,6 +119,9 @@ CREATE TABLE reference_crossreference_aud (
 	revtype smallint
 );
 
+ALTER TABLE ONLY public.reference_crossreference_aud
+    ADD CONSTRAINT fkbe9p60b4cghc6anvlj618ec3d FOREIGN KEY (rev) REFERENCES public.revinfo(rev);
+
 ALTER TABLE diseaseannotation
 	ADD CONSTRAINT diseaseannotation_singlereference_curie_fk
 	FOREIGN KEY (singlereference_curie) REFERENCES reference(curie);
@@ -135,3 +138,72 @@ ALTER TABLE note_reference
 	ADD CONSTRAINT note_reference_references_curie_fk
 	FOREIGN KEY (references_curie) REFERENCES reference(curie);
 	
+ALTER TABLE ONLY public.diseaseannotation
+    ADD CONSTRAINT uk_2ea912q3hgfs30y1wo2c868wx UNIQUE (modentityid);
+
+
+-- Added DB auto updated fields
+
+ALTER TABLE public.association
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.biologicalentity
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.bulkload
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.bulkloadfile
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.bulkloadfileexception
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.bulkloadfilehistory
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.bulkloadgroup
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.conditionrelation
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.crossreference
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.curationreport
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.curationreportgroup
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.curationreporthistory
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.experimentalcondition
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.genegenomiclocation
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.note
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.ontologyterm
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.person
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.reference
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.synonym
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.vocabularyterm
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;
+ALTER TABLE public.vocabulary
+   ADD COLUMN IF NOT EXISTS dbdatecreated timestamp without time zone,
+   ADD COLUMN IF NOT EXISTS dbdateupdated timestamp without time zone;

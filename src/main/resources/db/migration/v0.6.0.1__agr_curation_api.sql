@@ -29,18 +29,6 @@ ALTER TABLE reference_secondarycrossreferences
 	ADD CONSTRAINT reference_secondarycrossreferences_submittedcrossreference_fk
 	FOREIGN KEY (reference_submittedcrossreference) REFERENCES reference(submittedcrossreference);
 	
-CREATE TABLE IF NOT EXISTS note_reference (
-	note_id bigint,
-	references_curie varchar (255)
-	);
-
-CREATE TABLE IF NOT EXISTS note_reference_aud (
-	rev integer,
-	note_id bigint,
-	references_curie varchar (255),
-	revtype smallint
-	);
-	
 ALTER TABLE note_reference
 	DROP CONSTRAINT IF EXISTS "fkpjpycg6lduif89o5ahp4d8u8";
 
@@ -57,15 +45,6 @@ ALTER TABLE diseaseannotation
 	DROP CONSTRAINT IF EXISTS "fkk6hg8sfqhqhlsdjmyex63bvo7";
 
 ALTER TABLE diseaseannotation
-	DROP CONSTRAINT IF EXISTS "fk77fmab327prjh1sb7gk6na6ak";
-
-ALTER TABLE diseaseannotation
-	DROP COLUMN IF EXISTS reference_curie;
-	
-ALTER TABLE diseaseannotation_aud
-	DROP COLUMN IF EXISTS reference_curie;
-
-ALTER TABLE diseaseannotation
 	RENAME singlereference_curie TO singlereference_submittedcrossreference;
 	
 ALTER TABLE diseaseannotation_aud
@@ -80,12 +59,6 @@ ALTER TABLE diseaseannotation
 	
 ALTER TABLE conditionrelation	
 	DROP CONSTRAINT IF EXISTS "fkq7oftj89x5jfekjhhc0lah3j3";
-
-ALTER TABLE conditionrelation
-	ADD COLUMN IF NOT EXISTS singlereference_curie varchar (255);
-	
-ALTER TABLE conditionrelation_aud
-	ADD COLUMN IF NOT EXISTS singlereference_curie varchar (255);
 
 ALTER TABLE conditionrelation
 	RENAME singlereference_curie TO singlereference_submittedcrossreference;
@@ -111,9 +84,6 @@ CREATE TABLE IF NOT EXISTS paperhandle_aud (
 	reference_curie varchar (255),
 	revtype smallint
 	);
-	
-ALTER TABLE paperhandle
-	DROP CONSTRAINT IF EXISTS "fkb11h1yvb7lchgw07wxspntpsc";
 	
 ALTER TABLE paperhandle
 	RENAME reference_curie TO reference_submittedcrossreference;
