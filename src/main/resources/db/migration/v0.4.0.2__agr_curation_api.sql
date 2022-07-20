@@ -222,8 +222,6 @@ ALTER TABLE ONLY public.loggedinperson
     ADD CONSTRAINT uk_1x2yi78pxpi1vnjh8kp6jknbj UNIQUE (oktaid);
 ALTER TABLE ONLY public.loggedinperson
     ADD CONSTRAINT uk_783vgdwg0048goe9pkt9npvqt UNIQUE (oktaemail);
-ALTER TABLE ONLY public.diseaseannotation
-    ADD CONSTRAINT uk_2ea912q3hgfs30y1wo2c868wx UNIQUE (modentityid);
 ALTER TABLE ONLY public.person
     ADD CONSTRAINT uk_eqlixdg38sapqqrm25vt079jb UNIQUE (uniqueid);
 ALTER TABLE ONLY public.person
