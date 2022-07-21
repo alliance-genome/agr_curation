@@ -4,6 +4,8 @@ import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
+
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
 import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
@@ -114,7 +116,7 @@ public class ConditionRelationITCase {
 
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
-		assertEquals(response.getErrorMessages().get("handle"), "Required field is empty");
+		assertEquals(response.getErrorMessages().get("handle"), ValidationConstants.REQUIRED_MESSAGE);
 	}
 
 	@Test
@@ -180,7 +182,202 @@ public class ConditionRelationITCase {
 		assertEquals(response.getErrorMessages().get("handle"), "Invalid without value for singleReference");
 	}
 
+	@Test
+	@Order(7)
+	public void createConditionRelationWithNoRelationType() {
+		ConditionRelation conditionRelation = new ConditionRelation();
+		conditionRelation.setHandle("no_relation_type");
+		conditionRelation.setSingleReference(testReference);
+		conditionRelation.setConditions(List.of(experimentalCondition));
 
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelation).
+			when().
+			post("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not create ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditionRelationType"), ValidationConstants.REQUIRED_MESSAGE);
+	}
+
+	@Test
+	@Order(8)
+	public void createConditionRelationWithNoConditions() {
+		ConditionRelation conditionRelation = new ConditionRelation();
+		conditionRelation.setHandle("no_conditions");
+		conditionRelation.setSingleReference(testReference);
+		conditionRelation.setConditionRelationType(conditionRelationType);
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelation).
+			when().
+			post("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not create ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditions"), ValidationConstants.REQUIRED_MESSAGE);
+	}
+
+	@Test
+	@Order(9)
+	public void updateConditionRelationWithNoRelationType() {
+		conditionRelationHandle2.setHandle("no_relation_type");
+		conditionRelationHandle2.setConditionRelationType(null);
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelationHandle2).
+			when().
+			put("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditionRelationType"), ValidationConstants.REQUIRED_MESSAGE);
+	}
+
+	@Test
+	@Order(10)
+	public void updateConditionRelationWithNoConditions() {
+		conditionRelationHandle2.setHandle("no_conditions");
+		conditionRelationHandle2.setConditionRelationType(conditionRelationType);
+		conditionRelationHandle2.setConditions(null);
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelationHandle2).
+			when().
+			put("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditions"), ValidationConstants.REQUIRED_MESSAGE);
+	}
+
+	@Test
+	@Order(11)
+	public void createConditionRelationWithInvalidRelationType() {
+		VocabularyTerm nonPersistedRelationType = new VocabularyTerm();
+		nonPersistedRelationType.setName("Invalid term");
+		
+		ConditionRelation conditionRelation = new ConditionRelation();
+		conditionRelation.setHandle("invalid_relation_type");
+		conditionRelation.setSingleReference(testReference);
+		conditionRelation.setConditions(List.of(experimentalCondition));
+		conditionRelation.setConditionRelationType(nonPersistedRelationType);
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelation).
+			when().
+			post("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not create ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditionRelationType"), ValidationConstants.INVALID_MESSAGE);
+	}
+
+	@Test
+	@Order(12)
+	public void createConditionRelationWithInvalidCondition() {
+		ExperimentalCondition nonPersistedCondition = new ExperimentalCondition();
+		nonPersistedCondition.setConditionClass(getZecoTerm("ZECO:da00001"));
+		nonPersistedCondition.setConditionStatement("Statement2");
+		nonPersistedCondition.setUniqueId("Statement2");
+		
+		ConditionRelation conditionRelation = new ConditionRelation();
+		conditionRelation.setHandle("invalid_condition");
+		conditionRelation.setSingleReference(testReference);
+		conditionRelation.setConditionRelationType(conditionRelationType);
+		conditionRelation.setConditions(List.of(nonPersistedCondition));
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelation).
+			when().
+			post("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not create ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditions"), ValidationConstants.INVALID_MESSAGE);
+	}
+
+	@Test
+	@Order(13)
+	public void updateConditionRelationWithInvalidRelationType() {
+		VocabularyTerm nonPersistedRelationType = new VocabularyTerm();
+		nonPersistedRelationType.setName("Invalid term");
+		conditionRelationHandle2.setHandle("invalid_relation_type");
+		conditionRelationHandle2.setConditionRelationType(nonPersistedRelationType);
+		conditionRelationHandle2.setConditions(List.of(experimentalCondition));
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelationHandle2).
+			when().
+			put("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditionRelationType"), ValidationConstants.INVALID_MESSAGE);
+	}
+
+	@Test
+	@Order(14)
+	public void updateConditionRelationWithInvalidCondition() {
+		ExperimentalCondition nonPersistedCondition = new ExperimentalCondition();
+		nonPersistedCondition.setConditionClass(getZecoTerm("ZECO:da00001"));
+		nonPersistedCondition.setConditionStatement("Statement2");
+		nonPersistedCondition.setUniqueId("Statement2");
+		
+		conditionRelationHandle2.setHandle("invalid_conditions");
+		conditionRelationHandle2.setConditionRelationType(conditionRelationType);
+		conditionRelationHandle2.setConditions(List.of(nonPersistedCondition));
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelationHandle2).
+			when().
+			put("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("conditions"), ValidationConstants.INVALID_MESSAGE);
+	}
+	
 	private ConditionRelation createConditionRelation(String handle, Reference reference, VocabularyTerm relationType, List<ExperimentalCondition> conditions) {
 		ConditionRelation conditionRelation = new ConditionRelation();
 		conditionRelation.setHandle(handle);
