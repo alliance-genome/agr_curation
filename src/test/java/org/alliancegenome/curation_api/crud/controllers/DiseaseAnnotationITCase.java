@@ -96,6 +96,7 @@ public class DiseaseAnnotationITCase {
 	private ExperimentalCondition experimentalCondition;
 	private ConditionRelation conditionRelation;
 	private Reference testReference;
+	private Reference testReference2;
 	
 	private void createRequiredObjects() {
 		testEcoTerms = new ArrayList<EcoTerm>();
@@ -106,6 +107,7 @@ public class DiseaseAnnotationITCase {
 		relatedNotes = new ArrayList<Note>();
 		
 		testReference = createReference("PMID:14978094");
+		testReference2 = createReference("PMID:14978095");
 		testDoTerm = createDiseaseTerm("DOID:da0001", false);
 		testDoTerm2 = createDiseaseTerm("DOID:da0002", false);
 		testObsoleteDoTerm = createDiseaseTerm("DOID:da0003", true);
@@ -1251,6 +1253,48 @@ public class DiseaseAnnotationITCase {
 				body("entity.relatedNotes[0].freeText", is("Test text 3"));
 		
 	}
+	
+	@Test
+	@Order(27)
+	public void updateConditionRelationWithNonMatchingReference() {
+		
+		conditionRelation.setHandle("handle");
+		conditionRelation.setSingleReference(testReference2);
+		List<ConditionRelation> conditionRelations= new ArrayList<>();
+		conditionRelations.add(conditionRelation);
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene2);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		editedDiseaseAnnotation.setConditionRelations(conditionRelations);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(400);
+		
+	}
+
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
 		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
