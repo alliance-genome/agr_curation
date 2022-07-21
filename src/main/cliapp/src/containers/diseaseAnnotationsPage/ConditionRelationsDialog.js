@@ -32,8 +32,7 @@ export const ConditionRelationsDialog = ({
 	const validationService = new ValidationService();
 	const searchService = new SearchService();
 	const tableRef = useRef(null);
-	const rowsInEdit = useRef(0);
-	const hasEdited = useRef(false);
+	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
@@ -47,11 +46,10 @@ export const ConditionRelationsDialog = ({
 				});
 			}
 			setEditingRows(rowsObject);
-			rowsInEdit.current++;
 		}else{
 			setEditingRows({});
 		}
-		hasEdited.current = false;
+		rowsEdited.current = 0;
 	};
 	
 	const onRowEditChange = (e) => {
@@ -59,7 +57,6 @@ export const ConditionRelationsDialog = ({
 	}
 	
 	const onRowEditCancel = (event) => {
-		rowsInEdit.current--;
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
@@ -74,7 +71,6 @@ export const ConditionRelationsDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInRelations(event.data,event.index);
 	};
 	
 	const onRowEditSave = async(event) => {
@@ -107,27 +103,30 @@ export const ConditionRelationsDialog = ({
 		_localConditionRelations[event.index] = event.data;
 		setEditingRows(_editingRows);
 		setLocalConditionRelations(_localConditionRelations);
-		
+
 	};
 	
 	const compareChangesInRelations = (data,index) => {
 		if(originalConditionRelations && originalConditionRelations[index]) {
-			hasEdited.current = false;
 			if (data.conditionRelationType.name !== originalConditionRelations[index].conditionRelationType.name) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
 			if (data.internal !== originalConditionRelations[index].internal) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
 			if (data.conditions.length !== originalConditionRelations[index].conditions.length) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			} else {
 				for (var i = 0; i < data.conditions.length; i++) {
 					if (data.conditions[i].conditionStatement !== originalConditionRelations[index].conditions[i].conditionStatement) {
-						hasEdited.current = true;
+						rowsEdited.current++;
 					}
 				}
 			}
+		}
+		//if a new relation has been added or there were no condition relations to begin with
+		if((localConditionRelations.length > originalConditionRelations?.length) || !originalConditionRelations){
+			rowsEdited.current++;
 		}
 	};
 	
@@ -162,8 +161,19 @@ export const ConditionRelationsDialog = ({
 		};
 		return _clonableRelations;
 	};
+
+	const createNewRelationHandler = (event) => {
+		let cnt = localConditionRelations ? localConditionRelations.length : 0;
+		const _localConditionRelations = global.structuredClone(localConditionRelations);
+		_localConditionRelations.push({
+			dataKey : cnt,
+		});
+		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+		setEditingRows(_editingRows);
+		setLocalConditionRelations(_localConditionRelations);
+	};
 	
-	const saveDataHandler = async () => {
+	const saveDataHandler = () => {
 		
 		setErrorMessages([]);
 		for (const relation of localConditionRelations) {
@@ -173,16 +183,14 @@ export const ConditionRelationsDialog = ({
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex].conditionRelations = localConditionRelations;
 		
-		if(hasEdited.current){
-			const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
-			let messageObject = {
-				severity: "warn",
-				message: "Pending Edits!"
-			};
-			errorMessagesCopy[rowIndex] = {};
-			errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
-			setErrorMessagesMainRow({...errorMessagesCopy});
-		}
+		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
+		let messageObject = {
+			severity: "warn",
+			message: "Pending Edits!"
+		};
+		errorMessagesCopy[rowIndex] = {};
+		errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
+		setErrorMessagesMainRow({...errorMessagesCopy});
 		
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
 				return {
@@ -217,7 +225,7 @@ export const ConditionRelationsDialog = ({
 	};
 	
 	const conditionRelationTypeTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.conditionRelationType.name}</EllipsisTableCell>;
+		return <EllipsisTableCell>{rowData.conditionRelationType?.name}</EllipsisTableCell>;
 	};
 	
 	const onConditionRelationTypeEditorValueChange = (props, event) => {
@@ -285,7 +293,8 @@ export const ConditionRelationsDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
+				<Button label="New Relation" icon="pi pi-plus" onClick={createNewRelationHandler}/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
 			</div>
 		);
 	}
