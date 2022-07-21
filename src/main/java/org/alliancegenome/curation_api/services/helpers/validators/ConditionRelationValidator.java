@@ -47,15 +47,22 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	@Inject
 	ReferenceValidator referenceValidator;
 
+	private String errorMessage;
+	
 	public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
-		ConditionRelation conditionRelation = validateConditionRelation(uiEntity, false);
+		ConditionRelation conditionRelation;
+		if (uiEntity.getId() == null) {
+			conditionRelation = validateConditionRelationCreate(uiEntity, false);
+		} else {
+			conditionRelation = validateConditionRelationUpdate(uiEntity, false);
+		}
 		response.setEntity(conditionRelation);
 		return response;
 	}
 
-	public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, Boolean throwError) {
+	public ConditionRelation validateConditionRelationUpdate(ConditionRelation uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update ConditionRelation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update ConditionRelation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -67,7 +74,20 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			addMessageResponse("Could not find ConditionRelation with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 		}
-
+		
+		return validateConditionRelation(uiEntity, dbEntity, throwError);
+	}
+	
+	public ConditionRelation validateConditionRelationCreate(ConditionRelation uiEntity, Boolean throwError) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create ConditionRelation";
+		
+		ConditionRelation dbEntity = new ConditionRelation();
+		
+		return validateConditionRelation(uiEntity, dbEntity, throwError);
+	}
+	
+	public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, ConditionRelation dbEntity, Boolean throwError) {
 		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		validateConditionRelationHandlePubUnique(uiEntity, dbEntity);
@@ -90,7 +110,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		if (response.hasErrors()) {
 			if (throwError) {
-				response.setErrorMessage(errorTitle);
+				response.setErrorMessage(errorMessage);
 				throw new ApiErrorException(response);
 			} else {
 				return null;
