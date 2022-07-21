@@ -29,8 +29,9 @@ public class ConditionRelationITCase {
 	private Vocabulary conditionRelationTypeVocabulary;
 	private VocabularyTerm conditionRelationType;
 	private ExperimentalCondition experimentalCondition;
-	private ConditionRelation conditionRelation;
-	private ConditionRelation conditionRelation2;
+	private ConditionRelation conditionRelationNoHandle;
+	private ConditionRelation conditionRelationHandle1;
+	private ConditionRelation conditionRelationHandle2;
 	private Reference testReference;
 
 	private void createRequiredObjects() {
@@ -39,8 +40,9 @@ public class ConditionRelationITCase {
 		conditionRelationTypeVocabulary = createVocabulary("Condition relation type vocabulary");
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		experimentalCondition = createExperimentalCondition();
-		conditionRelation = createConditionRelation("fructose", testReference, conditionRelationType);
-		conditionRelation2 = createConditionRelation("vasilin", testReference, conditionRelationType);
+		conditionRelationNoHandle = createConditionRelation(null, null, conditionRelationType, List.of(experimentalCondition));
+		conditionRelationHandle1 = createConditionRelation("fructose", testReference, conditionRelationType, List.of(experimentalCondition));
+		conditionRelationHandle2 = createConditionRelation("vasilin", testReference, conditionRelationType, List.of(experimentalCondition));
 
 	}
 
@@ -51,7 +53,14 @@ public class ConditionRelationITCase {
 
 		given().
 			when().
-			get("/api/condition-relation/" + conditionRelation.getId()).
+			get("/api/condition-relation/" + conditionRelationNoHandle.getId()).
+			then().
+			statusCode(200).
+			body("entity.conditionRelationType.name", is("relation_type"));
+		
+		given().
+			when().
+			get("/api/condition-relation/" + conditionRelationHandle1.getId()).
 			then().
 			statusCode(200).
 			body("entity.handle", is("fructose")).
@@ -60,7 +69,7 @@ public class ConditionRelationITCase {
 
 		given().
 			when().
-			get("/api/condition-relation/" + conditionRelation2.getId()).
+			get("/api/condition-relation/" + conditionRelationHandle2.getId()).
 			then().
 			statusCode(200).
 			body("entity.handle", is("vasilin")).
@@ -73,10 +82,10 @@ public class ConditionRelationITCase {
 	public void updateConditionRelation() {
 
 		// change handle
-		conditionRelation2.setHandle("butane");
+		conditionRelationHandle2.setHandle("butane");
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelation2).
+			body(conditionRelationHandle2).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -92,16 +101,16 @@ public class ConditionRelationITCase {
 	public void updateConditionRelationNullHandle() {
 
 		// change handle to empty
-		conditionRelation2.setHandle("");
-		ObjectResponse response = RestAssured.given().
+		conditionRelationHandle2.setHandle("");
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelation2).
+			body(conditionRelationHandle2).
 			when().
 			put("/api/condition-relation").
 			then().
 			// error: cannot update a non-empty handle to an empty one
 				statusCode(400).
-				extract().body().as(getObjectResponseTypeRef());
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
 
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
@@ -113,29 +122,71 @@ public class ConditionRelationITCase {
 	public void updateConditionRelationSameHandleRef() {
 
 		// change handle to empty
-		conditionRelation2.setHandle("fructose");
-		ObjectResponse response = RestAssured.given().
+		conditionRelationHandle2.setHandle("fructose");
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelation2).
+			body(conditionRelationHandle2).
 			when().
 			put("/api/condition-relation").
 			then().
 			// error: cannot update to an handle that already exists under the same reference.
 				statusCode(400).
-				extract().body().as(getObjectResponseTypeRef());
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
 
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
 		assertEquals(response.getErrorMessages().get("handle"), "Handle / Pub combination already exists");
 	}
+	
+	@Test
+	@Order(5)
+	public void updateConditionRelationWithHandleWithoutReference() {
+		conditionRelationHandle2.setSingleReference(null);
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelationHandle2).
+			when().
+			put("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("handle"), "Invalid without value for singleReference");
+	}
+	
+	@Test
+	@Order(6)
+	public void createConditionRelationWithHandleWithoutReference() {
+		ConditionRelation conditionRelation = new ConditionRelation();
+		conditionRelation.setHandle("handle");
+		conditionRelation.setConditionRelationType(conditionRelationType);
+		conditionRelation.setConditions(List.of(experimentalCondition));
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(conditionRelation).
+			when().
+			post("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertTrue(response.getErrorMessage().startsWith("Could not create ConditionRelation"));
+		assertEquals(response.getErrorMessages().get("handle"), "Invalid without value for singleReference");
+	}
 
 
-	private ConditionRelation createConditionRelation(String handle, Reference reference, VocabularyTerm relationType) {
+	private ConditionRelation createConditionRelation(String handle, Reference reference, VocabularyTerm relationType, List<ExperimentalCondition> conditions) {
 		ConditionRelation conditionRelation = new ConditionRelation();
 		conditionRelation.setHandle(handle);
 		conditionRelation.setSingleReference(reference);
 		conditionRelation.setConditionRelationType(relationType);
-		conditionRelation.setConditions(List.of(experimentalCondition));
+		conditionRelation.setConditions(conditions);
 
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").

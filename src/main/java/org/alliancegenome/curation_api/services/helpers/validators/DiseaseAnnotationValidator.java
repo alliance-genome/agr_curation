@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
@@ -63,6 +64,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	NoteDAO noteDAO;
 	@Inject
 	ConditionRelationValidator conditionRelationValidator;
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
 	
 	public DOTerm validateObject(DiseaseAnnotation	uiEntity, DiseaseAnnotation	 dbEntity) {
 		String field = "object";
@@ -219,6 +222,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 					addMessageResponse("conditionRelations", field + " - " + errors.get(field));
 				}
 				return null;
+			}
+			if (crResponse.getEntity().getId() == null) {
+				conditionRelationDAO.persist(crResponse.getEntity());
 			}
 			validatedConditionRelations.add(crResponse.getEntity());
 		}
