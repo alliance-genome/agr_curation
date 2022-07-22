@@ -60,11 +60,6 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
 				noteDAO.persist(note);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
-			for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
-				conditionRelationDAO.persist(conditionRelation);
-			}
-		}
 		
 		alleleDiseaseAnnotationDAO.persist(dbEntity);
 		

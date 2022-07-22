@@ -94,7 +94,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		if (!uniqueId.equals(uiEntity.getUniqueId())) {
 			SearchResponse<ExperimentalCondition> dbSearchResponse = experimentalConditionDAO.findByField("uniqueId", uniqueId);
 			if (dbSearchResponse != null) {
-				addMessageResponse("uniqueId", "ExperimentalCondition with uniqueId " + uniqueId + " already exists");
+				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
 			} else {
 				dbEntity.setUniqueId(uniqueId);
 			}

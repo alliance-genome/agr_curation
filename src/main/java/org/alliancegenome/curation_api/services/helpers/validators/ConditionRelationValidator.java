@@ -25,8 +25,8 @@ import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -52,15 +52,15 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 	public ObjectResponse<ConditionRelation> validateConditionRelation(ConditionRelation uiEntity) {
 		ConditionRelation conditionRelation;
 		if (uiEntity.getId() == null) {
-			conditionRelation = validateConditionRelationCreate(uiEntity, false);
+			conditionRelation = validateConditionRelationCreate(uiEntity, false, false);
 		} else {
-			conditionRelation = validateConditionRelationUpdate(uiEntity, false);
+			conditionRelation = validateConditionRelationUpdate(uiEntity, false, false);
 		}
 		response.setEntity(conditionRelation);
 		return response;
 	}
 
-	public ConditionRelation validateConditionRelationUpdate(ConditionRelation uiEntity, Boolean throwError) {
+	public ConditionRelation validateConditionRelationUpdate(ConditionRelation uiEntity, Boolean throwError, Boolean checkUniqueness) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update ConditionRelation: [" + uiEntity.getId() + "]";
 
@@ -75,19 +75,19 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			throw new ApiErrorException(response);
 		}
 		
-		return validateConditionRelation(uiEntity, dbEntity, throwError);
+		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
 	
-	public ConditionRelation validateConditionRelationCreate(ConditionRelation uiEntity, Boolean throwError) {
+	public ConditionRelation validateConditionRelationCreate(ConditionRelation uiEntity, Boolean throwError, Boolean checkUniqueness) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not create ConditionRelation";
 		
 		ConditionRelation dbEntity = new ConditionRelation();
 		
-		return validateConditionRelation(uiEntity, dbEntity, throwError);
+		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
 	
-	public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, ConditionRelation dbEntity, Boolean throwError) {
+	public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, ConditionRelation dbEntity, Boolean throwError, Boolean checkUniqueness) {
 		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		String handle = validateHandle(uiEntity, dbEntity);
@@ -101,6 +101,18 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 		Reference singleReference = validateSingleReference(uiEntity);
 		dbEntity.setSingleReference(singleReference);
+		
+		String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dbEntity);
+		if (checkUniqueness && !uniqueId.equals(dbEntity.getUniqueId())) {
+			SearchResponse<ConditionRelation> crSearchResponse = conditionRelationDAO.findByField("uniqueId", uniqueId);
+			if (crSearchResponse != null) {
+				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
+			} else {
+				dbEntity.setUniqueId(uniqueId);
+			}
+		} else {
+			dbEntity.setUniqueId(uniqueId);
+		}
 
 		if (response.hasErrors()) {
 			if (throwError) {

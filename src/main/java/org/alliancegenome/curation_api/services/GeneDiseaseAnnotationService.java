@@ -70,11 +70,6 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
 				noteDAO.persist(note);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
-			for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
-				conditionRelationDAO.persist(conditionRelation);
-			}
-		}
 		
 		geneDiseaseAnnotationDAO.persist(dbEntity);
 		
