@@ -1,25 +1,35 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
-
-import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.junit.jupiter.api.*;
-
-import java.util.List;
-
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.List;
+
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
+
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestElasticSearchResource.Initializer.class)
@@ -82,12 +92,13 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(2)
 	public void updateConditionRelation() {
-
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
 		// change handle
-		conditionRelationHandle2.setHandle("butane");
+		cr.setHandle("butanol");
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -95,18 +106,19 @@ public class ConditionRelationITCase {
 			extract().body().as(getObjectResponseTypeRefConditionRelation());
 
 		ConditionRelation conditionRel = response.getEntity();
-		assertThat(conditionRel.getHandle(), equalTo("butane"));
+		assertThat(conditionRel.getHandle(), equalTo("butanol"));
 	}
 
 	@Test
 	@Order(3)
 	public void updateConditionRelationNullHandle() {
-
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
 		// change handle to empty
-		conditionRelationHandle2.setHandle("");
+		cr.setHandle("");
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -122,12 +134,13 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(4)
 	public void updateConditionRelationSameHandleRef() {
-
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
 		// change handle to empty
-		conditionRelationHandle2.setHandle("fructose");
+		cr.setHandle("fructose");
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -143,10 +156,12 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(5)
 	public void updateConditionRelationWithHandleWithoutReference() {
-		conditionRelationHandle2.setSingleReference(null);
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
+		cr.setSingleReference(null);
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -231,12 +246,14 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(9)
 	public void updateConditionRelationWithNoRelationType() {
-		conditionRelationHandle2.setHandle("no_relation_type");
-		conditionRelationHandle2.setConditionRelationType(null);
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
+		cr.setHandle("no_relation_type");
+		cr.setConditionRelationType(null);
 
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -252,13 +269,14 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(10)
 	public void updateConditionRelationWithNoConditions() {
-		conditionRelationHandle2.setHandle("no_conditions");
-		conditionRelationHandle2.setConditionRelationType(conditionRelationType);
-		conditionRelationHandle2.setConditions(null);
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
+		cr.setHandle("no_conditions");
+		cr.setConditions(null);
 
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -330,15 +348,16 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(13)
 	public void updateConditionRelationWithInvalidRelationType() {
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
 		VocabularyTerm nonPersistedRelationType = new VocabularyTerm();
 		nonPersistedRelationType.setName("Invalid term");
-		conditionRelationHandle2.setHandle("invalid_relation_type");
-		conditionRelationHandle2.setConditionRelationType(nonPersistedRelationType);
-		conditionRelationHandle2.setConditions(List.of(experimentalCondition));
-
+		cr.setHandle("invalid_relation_type");
+		cr.setConditionRelationType(nonPersistedRelationType);
+		
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -354,18 +373,19 @@ public class ConditionRelationITCase {
 	@Test
 	@Order(14)
 	public void updateConditionRelationWithInvalidCondition() {
+		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
+		
 		ExperimentalCondition nonPersistedCondition = new ExperimentalCondition();
 		nonPersistedCondition.setConditionClass(getZecoTerm("ZECO:da00001"));
 		nonPersistedCondition.setConditionStatement("Statement2");
 		nonPersistedCondition.setUniqueId("Statement2");
 		
-		conditionRelationHandle2.setHandle("invalid_conditions");
-		conditionRelationHandle2.setConditionRelationType(conditionRelationType);
-		conditionRelationHandle2.setConditions(List.of(nonPersistedCondition));
+		cr.setHandle("invalid_conditions");
+		cr.setConditions(List.of(nonPersistedCondition));
 
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
-			body(conditionRelationHandle2).
+			body(cr).
 			when().
 			put("/api/condition-relation").
 			then().
@@ -376,6 +396,30 @@ public class ConditionRelationITCase {
 		assertNotNull(response);
 		assertTrue(response.getErrorMessage().startsWith("Could not update ConditionRelation"));
 		assertEquals(response.getErrorMessages().get("conditions"), ValidationConstants.INVALID_MESSAGE);
+	}
+	
+	@Test
+	@Order(15)
+	public void createNonUniqueConditionRelation() {
+		ConditionRelation cr = new ConditionRelation();
+		
+		cr.setConditions(conditionRelationNoHandle.getConditions());
+		cr.setConditionRelationType(conditionRelationNoHandle.getConditionRelationType());
+		cr.setSingleReference(conditionRelationNoHandle.getSingleReference());
+
+		ObjectResponse<ConditionRelation> response = RestAssured.given().
+			contentType("application/json").
+			body(cr).
+			when().
+			post("/api/condition-relation").
+			then().
+			// error: cannot update to an handle that already exists under the same reference.
+				statusCode(400).
+				extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+		assertNotNull(response);
+		assertEquals(response.getErrorMessage(), "Could not create ConditionRelation");
+		assertEquals(response.getErrorMessages().get("uniqueId"), ValidationConstants.NON_UNIQUE_MESSAGE);
 	}
 	
 	private ConditionRelation createConditionRelation(String handle, Reference reference, VocabularyTerm relationType, List<ExperimentalCondition> conditions) {
@@ -398,6 +442,17 @@ public class ConditionRelationITCase {
 		return response.getEntity();
 	}
 
+	private ConditionRelation getConditionRelation(Long id) {
+		ObjectResponse<ConditionRelation> response =
+				given().
+					when().
+					get("/api/condition-relation/" + id).
+					then().
+					statusCode(200).
+					extract().body().as(getObjectResponseTypeRefConditionRelation());
+
+			return response.getEntity();
+	}
 
 	private Reference createReference(String curie) {
 		Reference reference = new Reference();
@@ -557,9 +612,5 @@ public class ConditionRelationITCase {
 		};
 	}
 
-	private TypeRef<ObjectResponse> getObjectResponseTypeRef() {
-		return new TypeRef<>() {
-		};
-	}
 
 }

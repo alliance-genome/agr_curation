@@ -28,6 +28,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.NoteService;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.apache.commons.collections.CollectionUtils;
@@ -35,9 +36,6 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
 	@Inject
@@ -216,15 +214,21 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 				addMessageResponse("conditionRelationHandle", ValidationConstants.INVALID_MESSAGE);
 			}
 			ObjectResponse<ConditionRelation> crResponse = conditionRelationValidator.validateConditionRelation(conditionRelation);
-			if (crResponse.getEntity() == null) {
+			conditionRelation = crResponse.getEntity();
+			if (conditionRelation == null) {
 				Map<String, String> errors = crResponse.getErrorMessages();
 				for (String field : errors.keySet()) {
 					addMessageResponse("conditionRelations", field + " - " + errors.get(field));
 				}
 				return null;
 			}
-			if (crResponse.getEntity().getId() == null) {
-				conditionRelationDAO.persist(crResponse.getEntity());
+			
+			// reuse existing condition relation
+			SearchResponse<ConditionRelation> crSearchResponse = conditionRelationDAO.findByField("uniqueId", conditionRelation.getUniqueId());
+			if (crSearchResponse != null && crSearchResponse.getSingleResult() != null) {
+				conditionRelation = crSearchResponse.getSingleResult();
+			} else if (conditionRelation.getId() == null) {
+				conditionRelation = conditionRelationDAO.persist(crResponse.getEntity());
 			}
 			validatedConditionRelations.add(crResponse.getEntity());
 		}

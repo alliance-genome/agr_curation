@@ -28,23 +28,23 @@ public class ConditionRelationService extends BaseCrudService<ConditionRelation,
     @Override
     @Transactional
     public ObjectResponse<ConditionRelation> update(ConditionRelation uiEntity) {
-        ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true);
+    	ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true, true);
         return new ObjectResponse<>(conditionRelationDAO.persist(dbEntity));
     }
     
     @Override
     @Transactional
     public ObjectResponse<ConditionRelation> create(ConditionRelation uiEntity) {
-        ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelationCreate(uiEntity, true);
+    	ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelationCreate(uiEntity, true, true);
         return new ObjectResponse<>(conditionRelationDAO.persist(dbEntity));
     }
 
     public ObjectResponse<ConditionRelation> validate(ConditionRelation uiEntity) {
     	ConditionRelation conditionRelation;
     	if (uiEntity.getId() == null ) {
-    		conditionRelation = conditionRelationValidator.validateConditionRelationCreate(uiEntity, true);
+    		conditionRelation = conditionRelationValidator.validateConditionRelationCreate(uiEntity, true, false);
     	} else {
-    		conditionRelation = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true);
+    		conditionRelation = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true, false);
     	}
     	return new ObjectResponse<>(conditionRelation);
     }

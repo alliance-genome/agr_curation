@@ -20,7 +20,8 @@ public abstract class DiseaseAnnotationCurie {
 
 	public static String getConditionRelationUnique(ConditionRelation relation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		curie.add(relation.getConditionRelationType().getName());
+		if (relation.getConditionRelationType() != null)
+			curie.add(relation.getConditionRelationType().getName());
 		curie.add(relation.getHandle());
 		if (relation.getSingleReference() != null)
 			curie.add(relation.getSingleReference().getCurie());
