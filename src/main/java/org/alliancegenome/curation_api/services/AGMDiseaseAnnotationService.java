@@ -52,11 +52,6 @@ public class AGMDiseaseAnnotationService extends BaseCrudService<AGMDiseaseAnnot
 				noteDAO.persist(note);
 			}
 		}
-		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
-			for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
-				conditionRelationDAO.persist(conditionRelation);
-			}
-		}
 		agmDiseaseAnnotationDAO.persist(dbEntity);
 		
 		// TODO this return needs to be changed back to the dbEntity in order for new items (notes) to be created properly 

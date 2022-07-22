@@ -36,6 +36,7 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
 	@Inject
@@ -204,7 +205,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		
 		return validatedNotes;
 	}
-	
+
 	public List<ConditionRelation> validateConditionRelations(DiseaseAnnotation uiEntity) {
 		List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
 		for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
@@ -226,7 +227,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			// reuse existing condition relation
 			SearchResponse<ConditionRelation> crSearchResponse = conditionRelationDAO.findByField("uniqueId", conditionRelation.getUniqueId());
 			if (crSearchResponse != null && crSearchResponse.getSingleResult() != null) {
-				conditionRelation = crSearchResponse.getSingleResult();
+				conditionRelation.setId(crSearchResponse.getSingleResult().getId());
+				conditionRelation = conditionRelationDAO.merge(conditionRelation);
 			} else if (conditionRelation.getId() == null) {
 				conditionRelation = conditionRelationDAO.persist(crResponse.getEntity());
 			}
