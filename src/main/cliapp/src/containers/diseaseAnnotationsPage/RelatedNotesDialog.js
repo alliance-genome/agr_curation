@@ -28,8 +28,7 @@ export const RelatedNotesDialog = ({
 	const noteTypeTerms = useControlledVocabularyService('Disease annotation note types');
 	const validationService = new ValidationService();
 	const tableRef = useRef(null);
-	const rowsInEdit = useRef(0);
-	const hasEdited = useRef(false);
+	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
@@ -44,11 +43,10 @@ export const RelatedNotesDialog = ({
 				});
 			}
 			setEditingRows(rowsObject);
-			rowsInEdit.current++;
 		}else{
 			setEditingRows({});
 		}
-		hasEdited.current = false;
+		rowsEdited.current = 0;
 	};
 
 	const onRowEditChange = (e) => {
@@ -56,7 +54,6 @@ export const RelatedNotesDialog = ({
 	}
 
 	const onRowEditCancel = (event) => {
-		rowsInEdit.current--;
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
@@ -75,16 +72,19 @@ export const RelatedNotesDialog = ({
 
 	const compareChangesInNotes = (data,index) => {
 		if(originalRelatedNotes && originalRelatedNotes[index]) {
-			hasEdited.current = false;
 			if (data.noteType.name !== originalRelatedNotes[index].noteType.name) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
 			if (data.internal !== originalRelatedNotes[index].internal) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
 			if (data.freeText !== originalRelatedNotes[index].freeText) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
+		}
+		
+		if((localRelatedNotes.length > originalRelatedNotes?.length) || !originalRelatedNotes){
+			rowsEdited.current++;
 		}
 	};
 
@@ -162,10 +162,9 @@ export const RelatedNotesDialog = ({
 		});
 		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
 		setEditingRows(_editingRows);
-		rowsInEdit.current++;
 	};
 
-	const saveDataHandler = async () => {
+	const saveDataHandler = () => {
 		setErrorMessages([]);
 		for (const note of localRelatedNotes) {
 			delete note.dataKey;
@@ -174,16 +173,15 @@ export const RelatedNotesDialog = ({
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex].relatedNotes = localRelatedNotes;
 
-		if(hasEdited.current){
-			const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
-			let messageObject = {
-				severity: "warn",
-				message: "Pending Edits!"
-			};
-			errorMessagesCopy[rowIndex] = {};
-			errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
-			setErrorMessagesMainRow({...errorMessagesCopy});
-		}
+		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
+		let messageObject = {
+			severity: "warn",
+			message: "Pending Edits!"
+		};
+		errorMessagesCopy[rowIndex] = {};
+		errorMessagesCopy[rowIndex]["relatedNotes"] = messageObject;
+		setErrorMessagesMainRow({...errorMessagesCopy});
+		
 		setOriginalRelatedNotesData((originalRelatedNotesData) => {
 				return {
 					...originalRelatedNotesData,
@@ -275,7 +273,7 @@ export const RelatedNotesDialog = ({
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
 				<Button label="New Note" icon="pi pi-plus" onClick={createNewNoteHandler}/>
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
 			</div>
 		);
 	}
@@ -288,7 +286,7 @@ export const RelatedNotesDialog = ({
 			_localRelatedNotes.splice(props.rowIndex, 1);
 		}
 		setLocalRelatedNotes(_localRelatedNotes);
-		hasEdited.current = true;
+		rowsEdited.current++;
 	}
 
 	const deleteAction = (props) => {
