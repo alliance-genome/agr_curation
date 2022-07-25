@@ -293,7 +293,7 @@ export const ConditionRelationsDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="New Relation" icon="pi pi-plus" onClick={createNewRelationHandler}/>
+				<Button label="New Condition" icon="pi pi-plus" onClick={createNewRelationHandler}/>
 				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
 			</div>
 		);
