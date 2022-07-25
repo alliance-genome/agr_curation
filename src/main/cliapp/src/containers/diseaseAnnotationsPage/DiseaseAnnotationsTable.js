@@ -323,7 +323,6 @@ export const DiseaseAnnotationsTable = () => {
 							</span>
 						</Button>
 					</div>
-					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 
