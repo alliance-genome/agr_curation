@@ -8,8 +8,10 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -46,6 +48,12 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		
 		Allele subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
+		
+		Gene inferredGene = validateInferredGene(uiEntity);
+		dbEntity.setInferredGene(inferredGene);
+		
+		Gene assertedGene = validateAssertedGene(uiEntity);
+		dbEntity.setAssertedGene(assertedGene);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
 		dbEntity.setDiseaseRelation(relation);
@@ -72,6 +80,32 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		}
 		return subjectEntity;
 
+	}
+	
+	private Gene validateInferredGene(AlleleDiseaseAnnotation uiEntity) {
+		if (uiEntity.getInferredGene() == null)
+			return null;
+		
+		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getCurie());
+		if (inferredGene == null) {
+			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		return inferredGene;
+	}
+
+	private Gene validateAssertedGene(AlleleDiseaseAnnotation uiEntity) {
+		if (uiEntity.getAssertedGene() == null)
+			return null;
+		
+		Gene assertedGene = geneDAO.find(uiEntity.getAssertedGene().getCurie());
+		if (assertedGene == null) {
+			addMessageResponse("assertedGene", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		return assertedGene;
 	}
 	
 	private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity) {
