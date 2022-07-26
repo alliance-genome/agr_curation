@@ -12,7 +12,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
+import org.alliancegenome.curation_api.base.services.*;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
@@ -32,7 +32,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class GeneService extends BaseEntityCrudService<Gene, GeneDAO> {
+public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
 	@Inject
 	GeneDAO geneDAO;
