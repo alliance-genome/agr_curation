@@ -319,7 +319,7 @@ export const ConditionRelationsDialog = ({
 	
 	let headerGroup = 	<ColumnGroup>
 						<Row>
-							<Column header="Actions" style={{display: isInEdit ? 'visible' : 'none'}}/>
+							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Relation" />
 							<Column header="Conditions" />
 							<Column header="Internal" />
