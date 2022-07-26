@@ -150,7 +150,7 @@ export const useGenericDataTable = ({
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
-		let _originalRows = [];
+		let _originalRows = global.structuredClone(originalRows);
 		_originalRows[event.index] = global.structuredClone(entity[event.index]);
 		setOriginalRows(_originalRows);
 	};
