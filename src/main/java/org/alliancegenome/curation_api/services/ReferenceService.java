@@ -4,14 +4,14 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.references.ReferenceSynchronisationHelper;
 
 @RequestScoped
-public class ReferenceService extends BaseCrudService<Reference, ReferenceDAO> {
+public class ReferenceService extends BaseEntityCrudService<Reference, ReferenceDAO> {
 
 	@Inject
 	ReferenceDAO referenceDAO;

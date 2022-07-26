@@ -10,7 +10,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
@@ -28,7 +28,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class NoteService extends BaseCrudService<Note, NoteDAO> {
+public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 
 	@Inject
 	NoteDAO noteDAO;

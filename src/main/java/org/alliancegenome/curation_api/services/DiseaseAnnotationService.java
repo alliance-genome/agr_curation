@@ -11,7 +11,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
@@ -54,7 +54,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
+public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;

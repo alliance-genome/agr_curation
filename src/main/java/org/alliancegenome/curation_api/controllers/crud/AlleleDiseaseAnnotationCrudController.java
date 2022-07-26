@@ -6,7 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
+import org.alliancegenome.curation_api.base.controllers.BaseDTOCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleDiseaseAnnotationCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
@@ -16,7 +16,7 @@ import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
 
 @RequestScoped
-public class AlleleDiseaseAnnotationCrudController extends BaseCrudController<AlleleDiseaseAnnotationService, AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> implements AlleleDiseaseAnnotationCrudInterface {
+public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController<AlleleDiseaseAnnotationService, AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> implements AlleleDiseaseAnnotationCrudInterface {
 
 	@Inject AlleleDiseaseAnnotationService annotationService;
 	@Inject AlleleDiseaseAnnotationExecutor alleleDiseaseAnnotationExecutor;
