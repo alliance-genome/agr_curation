@@ -108,7 +108,7 @@ public class DiseaseAnnotation extends Association {
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
 	private List<Gene> with;
 	
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})

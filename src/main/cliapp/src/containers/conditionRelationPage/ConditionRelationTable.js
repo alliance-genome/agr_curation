@@ -10,9 +10,12 @@ import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
-import {AutocompleteEditor} from "../../components/AutocompleteEditor";
+import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import {InputTextEditor} from "../../components/InputTextEditor";
 import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
+import {getRefString} from '../../utils/utils';
 
 
 export const ConditionRelationTable = () => {
@@ -24,6 +27,8 @@ export const ConditionRelationTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 	const [errorMessages, setErrorMessages] = useState({});
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 
 	let conditionRelationService = null;
@@ -61,7 +66,7 @@ export const ConditionRelationTable = () => {
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"conditionRelationType.name"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationType.name"}/>
 			</>
 		);
 	};
@@ -77,9 +82,11 @@ export const ConditionRelationTable = () => {
 					filterName='curieFilter'
 					isReference={true}
 					fieldName='singleReference'
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"singleReference"}
 				/>
 			</>
@@ -116,9 +123,11 @@ export const ConditionRelationTable = () => {
 					fieldName='conditions'
 					subField='conditionSummary'
 					isMultiple={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="conditions"
 				/>
 			</>
@@ -132,30 +141,24 @@ export const ConditionRelationTable = () => {
 					rowProps={props}
 					fieldName={'handle'}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"handle"}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"handle"}/>
 			</>
 		);
 	};
 	
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
-			let xrefString = '';
-			if (rowData.singleReference.secondaryCrossReferences) {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.secondaryCrossReferences.join("|") + '|' + rowData.singleReference.curie + ')';
-			} else {
-				xrefString = rowData.singleReference.primaryCrossReference + ' (' + rowData.singleReference.curie + ')';
-			
-			}
+			let refString = getRefString(rowData.singleReference);
 			return (
 				<>
-					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
 						dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 					/>
-					<Tooltip target={`.a${rowData.singleReference.submittedCrossReference.replace(':', '')}`}>
+					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
 						<div dangerouslySetInnerHTML={{
-							__html: xrefString
+							__html: refString
 						}}
 						/>
 					</Tooltip>
@@ -176,11 +179,11 @@ export const ConditionRelationTable = () => {
 			editor: (props) => handleEditor(props)
 		},
 		{
-			field: "singleReference.submittedCrossReference",
+			field: "singleReference.curie",
 			header: "Reference",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.primaryCrossReference", "singleReference.secondaryCrossReferences"]},
+			filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.curie"]},
 			editor: (props) => referenceEditorTemplate(props),
 			body: singleReferenceBodyTemplate
 		},

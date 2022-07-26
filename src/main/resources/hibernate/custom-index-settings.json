@@ -2,5 +2,5 @@
   "number_of_shards": "4",
   "number_of_replicas": "0",
   "max_ngram_diff": "20",
-  "max_result_window": 500000
+  "max_result_window": 3000000
 }

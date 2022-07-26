@@ -17,9 +17,12 @@ public interface SystemControllerInterface {
 	@GET
 	@Path("/reindexeverything")
 	public void reindexEverything(
-		@DefaultValue("1") @QueryParam("threads") Integer threads,
-		@DefaultValue("0") @QueryParam("indexAmount") Integer indexAmount,
-		@DefaultValue("20000") @QueryParam("batchSize") Integer batchSize
+		@DefaultValue("1000") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
+		@DefaultValue("10000") @QueryParam("idFetchSize") Integer idFetchSize,
+		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
+		@DefaultValue("4") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
+		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout,
+		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel
 	);
 
 	@GET

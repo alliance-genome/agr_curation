@@ -11,15 +11,13 @@ import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.base.entity.BaseEntity;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.*;
 import org.hibernate.search.engine.search.query.*;
-import org.hibernate.search.engine.search.query.dsl.*;
+import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
 import org.hibernate.search.mapper.orm.search.loading.dsl.SearchLoadingOptionsStep;
@@ -80,6 +78,38 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			log.debug("Input Param is null: " + id);
 			return null;
 		}
+	}
+	
+	
+	public SearchResponse<String> findAllIds(Pagination pagination) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
+		Root<E> rootEntry = findQuery.from(myClass);
+		CriteriaQuery<E> all = findQuery.select(rootEntry);
+
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		countQuery.select(cb.count(countQuery.from(myClass)));
+		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+
+		TypedQuery<E> allQuery = entityManager.createQuery(all);
+		if(pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
+			int first = pagination.getPage() * pagination.getLimit();
+			if(first < 0) first = 0;
+			allQuery.setFirstResult(first);
+			allQuery.setMaxResults(pagination.getLimit());
+		}
+		SearchResponse<String> results = new SearchResponse<String>();
+
+		List<String> primaryKeys = new ArrayList<>();
+
+		for(E entity: allQuery.getResultList()) {
+			// TODO if this cast to string fails then we should try to cast to a long.
+			primaryKeys.add((String)entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
+		}
+
+		results.setResults(primaryKeys);
+		results.setTotalResults(totalResults);
+		return results;
 	}
 
 	public SearchResponse<E> findAll(Pagination pagination) {
@@ -149,16 +179,16 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	public void commit() {
 		entityManager.getTransaction().commit();
 	}
-
+	
 	public void reindex() {
-		reindex(myClass, 4, 0, 1000);
+		reindex(myClass, 1000, 10000, 0, 4, 7200, 1);
 	}
 
-	public void reindex(int threads, int indexAmount, int batchSize) {
-		reindex(myClass, threads, indexAmount, batchSize);
+	public void reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+		reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(int threads, int indexAmount, int batchSize) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
@@ -168,11 +198,12 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		MassIndexer indexer =
 				searchSession
 				.massIndexer(annotatedClasses)
-				.batchSizeToLoadObjects(batchSize)
+				.batchSizeToLoadObjects(batchSizeToLoadObjects)
+				.idFetchSize(idFetchSize)
 				.dropAndCreateSchemaOnStart(true)
 				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(threads)
-				.threadsToLoadObjects(threads)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
 				.monitor(new MassIndexingMonitor() {
 
 					@Override
@@ -199,24 +230,26 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				});
 		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(900);
-		if(indexAmount > 0){
-			indexer.limitIndexedObjectsTo(indexAmount);
+		indexer.transactionTimeout(transactionTimeout);
+		if(limitIndexedObjectsTo > 0){
+			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
 
 	}
+	
+	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 
-	public void reindex(Class<?> objectClass, int threads, int indexAmount, int batchSize) {
 		log.debug("Starting Index for: " + objectClass);
 		MassIndexer indexer =
 				searchSession
 				.massIndexer(objectClass)
-				.batchSizeToLoadObjects(batchSize)
+				.batchSizeToLoadObjects(batchSizeToLoadObjects)
+				.idFetchSize(idFetchSize)
 				.dropAndCreateSchemaOnStart(true)
 				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(threads)
-				.threadsToLoadObjects(threads)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
 				.monitor(new MassIndexingMonitor() {
 
 					ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
@@ -253,9 +286,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 				});
 		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(900);
-		if(indexAmount > 0){
-			indexer.limitIndexedObjectsTo(indexAmount);
+		indexer.transactionTimeout(transactionTimeout);
+		if(limitIndexedObjectsTo > 0){
+			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
 	}

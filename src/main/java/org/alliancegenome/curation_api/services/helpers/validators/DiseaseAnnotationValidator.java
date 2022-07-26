@@ -11,7 +11,9 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
@@ -34,9 +36,7 @@ import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
 
-@JBossLog
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
 	@Inject
@@ -60,7 +60,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	@Inject
 	NoteService noteService;
 	@Inject
+	NoteDAO noteDAO;
+	@Inject
 	ConditionRelationValidator conditionRelationValidator;
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
 	
 	public DOTerm validateObject(DiseaseAnnotation	uiEntity, DiseaseAnnotation	 dbEntity) {
 		String field = "object";
@@ -186,6 +190,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		
 		List<Long> previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
 		List<Long> validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
+		for (Note validatedNote: validatedNotes) {
+			if (!previousNoteIds.contains(validatedNote.getId())) {
+				noteDAO.persist(validatedNote);
+			}
+		}
 		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
 		for (Long id : idsToRemove) {
 			noteService.delete(id);
@@ -196,17 +205,32 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		
 		return validatedNotes;
 	}
-	
+
 	public List<ConditionRelation> validateConditionRelations(DiseaseAnnotation uiEntity) {
 		List<ConditionRelation> validatedConditionRelations = new ArrayList<ConditionRelation>();
 		for (ConditionRelation conditionRelation : uiEntity.getConditionRelations()) {
+			if (uiEntity.getSingleReference() != null && !StringUtils.isBlank(uiEntity.getSingleReference().getCurie()) &&
+					conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie()) &&
+					!conditionRelation.getSingleReference().getCurie().equals(uiEntity.getSingleReference().getCurie())) {
+				addMessageResponse("conditionRelationHandle", ValidationConstants.INVALID_MESSAGE);
+			}
 			ObjectResponse<ConditionRelation> crResponse = conditionRelationValidator.validateConditionRelation(conditionRelation);
-			if (crResponse.getEntity() == null) {
+			conditionRelation = crResponse.getEntity();
+			if (conditionRelation == null) {
 				Map<String, String> errors = crResponse.getErrorMessages();
 				for (String field : errors.keySet()) {
 					addMessageResponse("conditionRelations", field + " - " + errors.get(field));
 				}
 				return null;
+			}
+			
+			// reuse existing condition relation
+			SearchResponse<ConditionRelation> crSearchResponse = conditionRelationDAO.findByField("uniqueId", conditionRelation.getUniqueId());
+			if (crSearchResponse != null && crSearchResponse.getSingleResult() != null) {
+				conditionRelation.setId(crSearchResponse.getSingleResult().getId());
+				conditionRelation = conditionRelationDAO.merge(conditionRelation);
+			} else if (conditionRelation.getId() == null) {
+				conditionRelation = conditionRelationDAO.persist(crResponse.getEntity());
 			}
 			validatedConditionRelations.add(crResponse.getEntity());
 		}
@@ -215,7 +239,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	
 	public Reference validateSingleReference(DiseaseAnnotation uiEntity) {
 		String field = "singleReference";
-		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getSubmittedCrossReference())) {
+		if (ObjectUtils.isEmpty(uiEntity.getSingleReference()) || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}

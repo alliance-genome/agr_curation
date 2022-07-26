@@ -150,8 +150,9 @@ export const useGenericDataTable = ({
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
-		originalRows[event.index] = { ...entity[event.index] };
-		setOriginalRows(originalRows);
+		let _originalRows = [];
+		_originalRows[event.index] = global.structuredClone(entity[event.index]);
+		setOriginalRows(_originalRows);
 	};
 
 	const onRowEditCancel = (event) => {
@@ -206,7 +207,7 @@ export const useGenericDataTable = ({
 				let _entity = global.structuredClone(entity);
 				_entity[event.index] = response.data.entity;
 				setEntity(_entity);
-				const errorMessagesCopy = errorMessages;
+				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[event.index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
 			},
@@ -218,7 +219,7 @@ export const useGenericDataTable = ({
 
 				let _entity = global.structuredClone(entity);
 
-				const errorMessagesCopy = errorMessages;
+				const errorMessagesCopy = global.structuredClone(errorMessages);
 
 				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};
