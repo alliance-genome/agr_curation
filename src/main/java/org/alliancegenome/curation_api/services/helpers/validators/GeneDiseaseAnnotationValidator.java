@@ -49,10 +49,10 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		Gene subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
 
-		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
+		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
 		dbEntity.setDiseaseRelation(relation);
 
-		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity);
+		AffectedGenomicModel sgdStrainBackground = validateSgdStrainBackground(uiEntity, dbEntity);
 		dbEntity.setSgdStrainBackground(sgdStrainBackground);
 		
 		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
@@ -70,16 +70,23 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
+		
 		Gene subjectEntity = geneDAO.find(uiEntity.getSubject().getCurie());
 		if (subjectEntity == null) {
 			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
+		
+		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
 		return subjectEntity;
 
 	}
 	
-	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity) {
+	private VocabularyTerm validateDiseaseRelation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 		String field = "diseaseRelation";
 		if (uiEntity.getDiseaseRelation() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -93,16 +100,26 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
+		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
 		return relation;
 	}
 	
-	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity) {
+	private AffectedGenomicModel validateSgdStrainBackground(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 		if (uiEntity.getSgdStrainBackground() == null)
 			return null;
 		
 		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
 		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
 			addMessageResponse("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		if (sgdStrainBackground.getObsolete() && !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie())) {
+			addMessageResponse("sgdStrainBackground", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		
