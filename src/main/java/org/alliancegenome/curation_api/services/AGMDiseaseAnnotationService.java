@@ -61,19 +61,6 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 		return annotation;
 	}
-	
-	@Transactional
-	public ObjectResponse<AGMDiseaseAnnotation> upsertDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException {
-		AGMDiseaseAnnotation annotation = validateAGMDiseaseAnnotationDTO(dto);
-		if (annotation == null) throw new ObjectUpdateException(dto, "Validation Failed");
-
-		annotation = (AGMDiseaseAnnotation) diseaseAnnotationService.upsert(annotation, dto);
-		if (annotation != null) {
-			agmDiseaseAnnotationDAO.persist(annotation);
-		}
-		List<CrossReference> refs = annotation.getObject().getCrossReferences();
-		return new ObjectResponse<>(annotation);
-	}
 
 	private AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {
 		AGMDiseaseAnnotation annotation;

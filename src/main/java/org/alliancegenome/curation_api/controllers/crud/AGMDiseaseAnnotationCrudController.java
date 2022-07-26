@@ -47,11 +47,6 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 	}
 
 	@Override
-	public ObjectResponse<AGMDiseaseAnnotation> createAgmDiseaseAnnotation(AGMDiseaseAnnotationDTO annotation) throws ObjectUpdateException {
-		return annotationService.upsertDTO(annotation);
-	}
-
-	@Override
 	public APIResponse updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
 		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
 	}
