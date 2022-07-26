@@ -144,24 +144,24 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 						if(childTerm != null) {
 
-							termParent.addChild(childTerm);
+							termParent.addIsaChild(childTerm);
 							if(termParent.getCurie() != null) {
-								childTerm.addParent(termParent);
+								childTerm.addIsaParent(termParent);
 							}
 
-							childTerm.addAncestor(termParent);
-							if(termParent.getAncestors() != null) {
-								for(OntologyTerm a: termParent.getAncestors()) {
-									if(!childTerm.getAncestors().contains(a)) {
-										childTerm.addAncestor(a);
+							childTerm.addIsaAncestor(termParent);
+							if(termParent.getIsaAncestors() != null) {
+								for(OntologyTerm a: termParent.getIsaAncestors()) {
+									if(!childTerm.getIsaAncestors().contains(a)) {
+										childTerm.addIsaAncestor(a);
 									}
 								}
 							}
-							termParent.addDescendant(childTerm);
-							if(childTerm.getDescendants() != null) {
-								for(OntologyTerm d: childTerm.getDescendants()) {
-									if(!termParent.getDescendants().contains(d)) {
-										termParent.addDescendant(d);
+							termParent.addIsaDescendant(childTerm);
+							if(childTerm.getIsaDescendants() != null) {
+								for(OntologyTerm d: childTerm.getIsaDescendants()) {
+									if(!termParent.getIsaDescendants().contains(d)) {
+										termParent.addIsaDescendant(d);
 									}
 								}
 							}

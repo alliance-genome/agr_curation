@@ -80,41 +80,41 @@ public class OntologyTerm extends CurieAuditedObject {
 	private List<CrossReference> crossReferences;
 
 	@ManyToMany
-	@JoinTable(name = "ontologyterm_parent_children", indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
-	private Set<OntologyTerm> parents;
+	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = { @Index( columnList = "isaparents_curie"), @Index( columnList = "isachildren_curie")})
+	private Set<OntologyTerm> isaParents;
 
-	@ManyToMany(mappedBy = "parents")
-	private Set<OntologyTerm> children;
+	@ManyToMany(mappedBy = "isaParents")
+	private Set<OntologyTerm> isaChildren;
 
 	@ManyToMany
-	@JoinTable(name = "ontologyterm_ancestor_descendant", indexes = { @Index( columnList = "ancestors_curie"), @Index( columnList = "descendants_curie")})
-	private Set<OntologyTerm> ancestors;
+	@JoinTable(name = "ontologyterm_isa_ancestor_descendant", indexes = { @Index( columnList = "isaancestors_curie"), @Index( columnList = "isadescendants_curie")})
+	private Set<OntologyTerm> isaAncestors;
 
-	@ManyToMany(mappedBy = "ancestors")
-	private Set<OntologyTerm> descendants;
+	@ManyToMany(mappedBy = "isaAncestors")
+	private Set<OntologyTerm> isaDescendants;
 
 	@Transient
-	public void addChild(OntologyTerm term) {
-		if(children == null) children = new HashSet<OntologyTerm>();
-		children.add(term);
+	public void addIsaChild(OntologyTerm term) {
+		if(isaChildren == null) isaChildren = new HashSet<OntologyTerm>();
+		isaChildren.add(term);
 	}
 
 	@Transient
-	public void addParent(OntologyTerm term) {
-		if(parents == null) parents = new HashSet<OntologyTerm>();
-		parents.add(term);
+	public void addIsaParent(OntologyTerm term) {
+		if(isaParents == null) isaParents = new HashSet<OntologyTerm>();
+		isaParents.add(term);
 	}
 
 	@Transient
-	public void addDescendant(OntologyTerm term) {
-		if(descendants == null) descendants = new HashSet<OntologyTerm>();
-		descendants.add(term);
+	public void addIsaDescendant(OntologyTerm term) {
+		if(isaDescendants == null) isaDescendants = new HashSet<OntologyTerm>();
+		isaDescendants.add(term);
 	}
 
 	@Transient
-	public void addAncestor(OntologyTerm term) {
-		if(ancestors == null) ancestors = new HashSet<OntologyTerm>();
-		ancestors.add(term);
+	public void addIsaAncestor(OntologyTerm term) {
+		if(isaAncestors == null) isaAncestors = new HashSet<OntologyTerm>();
+		isaAncestors.add(term);
 	}
 	
 }
