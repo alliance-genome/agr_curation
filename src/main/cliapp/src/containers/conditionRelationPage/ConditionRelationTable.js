@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useRef, useState } from 'react';
 import {useMutation} from 'react-query';
 import {Toast} from 'primereact/toast';
 import {SearchService} from '../../service/SearchService';
@@ -9,10 +9,13 @@ import {useControlledVocabularyService} from "../../service/useControlledVocabul
 import {EllipsisTableCell} from "../../components/EllipsisTableCell";
 import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
+import { Button } from 'primereact/button';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import { NewRelationForm } from './NewRelationForm';
+import { useNewRelationReducer } from './useNewRelationReducer';
 import {InputTextEditor} from "../../components/InputTextEditor";
 import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
 import {getRefString} from '../../utils/utils';
@@ -21,6 +24,7 @@ import {getRefString} from '../../utils/utils';
 export const ConditionRelationTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true);
+	const { newRelationState, newRelationDispatch } = useNewRelationReducer(); 
 
 	const searchService = new SearchService();
 	const errorMessage = useRef(null);
@@ -29,6 +33,7 @@ export const ConditionRelationTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
 
 
 	let conditionRelationService = null;
@@ -41,6 +46,10 @@ export const ConditionRelationTable = () => {
 		}
 		return conditionRelationService.saveConditionRelation(updatedRelation);
 	});
+
+	const handleNewRelationOpen = () => {
+		newRelationDispatch({type: "OPEN_DIALOG"})
+	};
 
 
 	const aggregationFields = [
@@ -207,6 +216,14 @@ export const ConditionRelationTable = () => {
 
 	];
 
+	const headerButtons = () => {
+		return (
+			<>
+				<Button label="New Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 		<div className="card">
 			<Toast ref={toast_topleft} position="top-left"/>
@@ -226,7 +243,16 @@ export const ConditionRelationTable = () => {
 				setIsEnabled={setIsEnabled}
 				toasts={{toast_topleft, toast_topright }}
 				initialColumnWidth={10}
-				errorObject = {{errorMessages, setErrorMessages}}
+				errorObject={{errorMessages, setErrorMessages}}
+				headerButtons={headerButtons}
+			/>
+			<NewRelationForm
+				newRelationState={newRelationState}
+				newRelationDispatch={newRelationDispatch}
+				searchService={searchService}
+				conditionRelationService={conditionRelationService}
+				conditionRelationTypeTerms={conditionRelationTypeTerms}
+				onConditionRelationValueChange={onConditionRelationValueChange}
 			/>
 		</div>
 	)
