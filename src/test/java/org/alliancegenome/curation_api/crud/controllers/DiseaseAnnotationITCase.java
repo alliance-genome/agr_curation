@@ -122,7 +122,7 @@ public class DiseaseAnnotationITCase {
 		testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
 		testAgm2 = createModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
 		testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
-		experimentalCondition = createExperimentalCondition();
+		experimentalCondition = createExperimentalCondition("ZECO:da001", "Statement");
 		geneDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
 		alleleDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
 		agmDiseaseRelationVocabulary = getVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
@@ -1294,6 +1294,90 @@ public class DiseaseAnnotationITCase {
 				statusCode(400);
 		
 	}
+	
+	@Test
+	@Order(28)
+	public void deleteConditionRelation() {
+		
+		ExperimentalCondition newEc = createExperimentalCondition("ZECO:da002", "Another_statement");
+		ConditionRelation newCr = createConditionRelation(conditionRelationType, newEc);
+		newCr.setHandle("first_cr");
+		newCr.setSingleReference(testReference);
+		conditionRelation.setHandle("second_cr");
+		conditionRelation.setSingleReference(testReference);
+		List<ConditionRelation> conditionRelations= new ArrayList<>();
+		conditionRelations.add(newCr);
+		conditionRelations.add(conditionRelation);
+		
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene2);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setModEntityId("TEST:Mod0001");
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setRelatedNotes(relatedNotes);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		editedDiseaseAnnotation.setConditionRelations(conditionRelations);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(200);
+		
+		RestAssured.given().
+				when().
+				get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
+				then().
+				statusCode(200).
+				body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
+				body("entity.conditionRelations", hasSize(2)).
+				body("entity.conditionRelations[0].handle", is("first_cr")).
+				body("entity.conditionRelations[1].handle", is("second_cr"));
+		
+		conditionRelations.remove(0);
+		editedDiseaseAnnotation.setConditionRelations(conditionRelations);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(200);
+
+		RestAssured.given().
+				when().
+				get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
+				then().
+				statusCode(200).
+				body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
+				body("entity.conditionRelations", hasSize(1)).
+				body("entity.conditionRelations[0].handle", is("second_cr"));
+		
+		// Check CR itself has not been deleted
+		RestAssured.given().
+			when().
+			get("/api/condition-relation/" + newCr.getId()).
+			then().
+			statusCode(200).
+			body("entity.handle", is("first_cr"));
+	}
 
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
@@ -1564,12 +1648,11 @@ public class DiseaseAnnotationITCase {
 		return response.getEntity();
 	}
 	
-	private ExperimentalCondition createExperimentalCondition() {
+	private ExperimentalCondition createExperimentalCondition(String conditionClass, String statement) {
 		ExperimentalCondition condition = new ExperimentalCondition();
-		condition.setConditionClass(createZecoTerm("ZECO:da001"));
-		condition.setConditionStatement("Statement");
-		condition.setUniqueId("Statement");
-		
+		condition.setConditionClass(createZecoTerm(conditionClass));
+		condition.setConditionStatement(statement);
+		condition.setUniqueId(statement);
 		ObjectResponse<ExperimentalCondition> response = RestAssured.given().
 			contentType("application/json").
 			body(condition).
