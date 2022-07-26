@@ -6,10 +6,10 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.base.interfaces.*;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.dto.*;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - AGM Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation> {
+public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation>, BaseDTOCrudControllerInterface<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> {
 
 	@GET
 	@Path("/findBy/{uniqueId}")
@@ -36,11 +36,6 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 	@Path("/bulk/{taxonID}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateAgmDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AGMDiseaseAnnotationDTO> annotationData);
-
-	@POST
-	@Path("/create")
-	@JsonView(View.DiseaseAnnotationUpdate.class)
-	ObjectResponse<AGMDiseaseAnnotation> createAgmDiseaseAnnotation(AGMDiseaseAnnotationDTO annotationData) throws ObjectUpdateException;
 
 	@POST
 	@Path("/bulk/zfinAnnotationFile")
