@@ -6,7 +6,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
+import org.alliancegenome.curation_api.base.controllers.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.interfaces.crud.AlleleCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
@@ -16,7 +16,7 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.AlleleService;
 
 @RequestScoped
-public class AlleleCrudController extends BaseCrudController<AlleleService, Allele, AlleleDAO> implements AlleleCrudInterface {
+public class AlleleCrudController extends BaseEntityCrudController<AlleleService, Allele, AlleleDAO> implements AlleleCrudInterface {
 
 	@Inject AlleleService alleleService;
 	

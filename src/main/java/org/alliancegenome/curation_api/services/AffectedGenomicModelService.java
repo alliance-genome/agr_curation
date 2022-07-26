@@ -12,7 +12,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
@@ -34,7 +34,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomicModel, AffectedGenomicModelDAO> {
+public class AffectedGenomicModelService extends BaseEntityCrudService<AffectedGenomicModel, AffectedGenomicModelDAO> {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;

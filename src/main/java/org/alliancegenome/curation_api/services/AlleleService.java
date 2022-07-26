@@ -12,7 +12,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
@@ -31,7 +31,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class AlleleService extends BaseCrudService<Allele, AlleleDAO> {
+public class AlleleService extends BaseEntityCrudService<Allele, AlleleDAO> {
 
 	@Inject AlleleDAO alleleDAO;
 	@Inject AlleleValidator alleleValidator;

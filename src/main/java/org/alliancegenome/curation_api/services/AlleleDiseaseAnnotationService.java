@@ -5,7 +5,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
+import org.alliancegenome.curation_api.base.services.BaseEntityCrudService;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
@@ -27,7 +27,7 @@ import org.alliancegenome.curation_api.services.helpers.validators.AlleleDisease
 import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped
-public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
+public class AlleleDiseaseAnnotationService extends BaseEntityCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDAO> {
 
 	@Inject
 	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
