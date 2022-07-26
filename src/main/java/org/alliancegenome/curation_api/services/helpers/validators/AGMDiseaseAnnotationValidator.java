@@ -62,7 +62,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		Allele inferredAllele = validateInferredAllele(uiEntity);
 		dbEntity.setInferredAllele(inferredAllele);
 		
-		Allele assertedAllele = validateInferredAllele(uiEntity);
+		Allele assertedAllele = validateAssertedAllele(uiEntity);
 		dbEntity.setAssertedAllele(assertedAllele);
 		
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
