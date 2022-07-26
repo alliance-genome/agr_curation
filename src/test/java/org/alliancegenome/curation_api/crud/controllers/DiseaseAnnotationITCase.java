@@ -1299,7 +1299,7 @@ public class DiseaseAnnotationITCase {
 	@Order(28)
 	public void deleteConditionRelation() {
 		
-		ExperimentalCondition newEc = createExperimentalCondition("ZECO:da002", "Statement2");
+		ExperimentalCondition newEc = createExperimentalCondition("ZECO:da002", "Another_statement");
 		ConditionRelation newCr = createConditionRelation(conditionRelationType, newEc);
 		newCr.setHandle("first_cr");
 		newCr.setSingleReference(testReference);
