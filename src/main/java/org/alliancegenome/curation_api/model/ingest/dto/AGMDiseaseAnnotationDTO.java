@@ -24,7 +24,7 @@ public class AGMDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 	private String assertedGene;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("inferred_allele")
+	@JsonProperty("asserted_allele")
 	private String assertedAllele;
 	
 }
