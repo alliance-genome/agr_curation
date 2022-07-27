@@ -8,8 +8,10 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
@@ -46,8 +48,14 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		
 		Allele subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
+		
+		Gene inferredGene = validateInferredGene(uiEntity, dbEntity);
+		dbEntity.setInferredGene(inferredGene);
+		
+		Gene assertedGene = validateAssertedGene(uiEntity, dbEntity);
+		dbEntity.setAssertedGene(assertedGene);
 
-		VocabularyTerm relation = validateDiseaseRelation(uiEntity);
+		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
 		dbEntity.setDiseaseRelation(relation);
 
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
@@ -65,16 +73,58 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
+		
 		Allele subjectEntity = alleleDAO.find(uiEntity.getSubject().getCurie());
 		if (subjectEntity == null) {
 			addMessageResponse("subject", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return subjectEntity;
 
 	}
 	
-	private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity) {
+	private Gene validateInferredGene(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
+		if (uiEntity.getInferredGene() == null)
+			return null;
+		
+		Gene inferredGene = geneDAO.find(uiEntity.getInferredGene().getCurie());
+		if (inferredGene == null) {
+			addMessageResponse("inferredGene", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		if (inferredGene.getObsolete() && !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie())) {
+			addMessageResponse("inferredGene", ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return inferredGene;
+	}
+
+	private Gene validateAssertedGene(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
+		if (uiEntity.getAssertedGene() == null)
+			return null;
+		
+		Gene assertedGene = geneDAO.find(uiEntity.getAssertedGene().getCurie());
+		if (assertedGene == null) {
+			addMessageResponse("assertedGene", ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		if (assertedGene.getObsolete() && !assertedGene.getCurie().equals(dbEntity.getAssertedGene().getCurie())) {
+			addMessageResponse("assertedGene", ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return assertedGene;
+	}
+	
+	private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 		String field = "diseaseRelation";
 		if (uiEntity.getDiseaseRelation() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -85,6 +135,11 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 
 		if(relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		
+		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		

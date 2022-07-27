@@ -1,14 +1,14 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0002",
+    "mod_entity_id": "DATEST:Annot0082",
     "internal": false,
     "obsolete": false,
-    "subject": "DATEST:Allele0001",
+    "subject": "DATEST:AGM0001",
     "object": "DATEST:Disease0001",
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
     "negated": true,
-    "predicate": "is_implicated_in",
+    "predicate": "is_model_of",
     "genetic_sex": "male",
     "updated_by": "DATEST:Person0001",
     "evidence_codes": [
@@ -61,6 +61,8 @@
       "susceptibility"
     ],
     "inferred_gene": "DATEST:Gene0001",
-    "asserted_gene": "DATEST:Gene0001"
+    "asserted_gene": "INVALID:Gene0001",
+    "inferred_allele": "DATEST:Allele0001",
+    "asserted_allele": "DATEST:Allele0001"
   }
 ]

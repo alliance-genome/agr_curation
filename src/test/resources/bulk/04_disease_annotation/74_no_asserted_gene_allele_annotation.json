@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0002",
+    "mod_entity_id": "DATEST:Annot0074",
     "internal": false,
     "obsolete": false,
     "subject": "DATEST:Allele0001",
@@ -60,7 +60,6 @@
     "disease_qualifiers": [
       "susceptibility"
     ],
-    "inferred_gene": "DATEST:Gene0001",
-    "asserted_gene": "DATEST:Gene0001"
+    "inferred_gene": "DATEST:Gene0001"
   }
 ]

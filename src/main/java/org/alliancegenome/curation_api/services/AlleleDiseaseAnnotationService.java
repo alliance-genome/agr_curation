@@ -10,13 +10,14 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
@@ -33,6 +34,8 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
 	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject
 	AlleleDAO alleleDAO;
+	@Inject
+	GeneDAO geneDAO;
 	@Inject
 	NoteDAO noteDAO;
 	@Inject
@@ -111,6 +114,19 @@ public class AlleleDiseaseAnnotationService extends BaseCrudService<AlleleDiseas
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 		
+		if (dto.getInferredGene() != null) {
+			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+			if (inferredGene == null)
+				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
+			annotation.setInferredGene(inferredGene);
+		}
+
+		if (dto.getAssertedGene() != null) {
+			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+			if (assertedGene == null)
+				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+			annotation.setAssertedGene(assertedGene);
+		}
 		
 		return annotation;
 	}

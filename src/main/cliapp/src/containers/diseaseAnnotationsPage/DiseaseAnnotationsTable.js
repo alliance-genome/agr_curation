@@ -188,6 +188,122 @@ export const DiseaseAnnotationsTable = () => {
 			
 		}	
 	};
+	
+	const inferredGeneBodyTemplate = (rowData) => {
+		if (rowData && rowData.inferredGene) {
+			return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ig${rowData.id}${rowData.inferredGene.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.inferredGene.symbol + ' (' + rowData.inferredGene.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ig${rowData.id}${rowData.inferredGene.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.inferredGene.symbol + ' (' + rowData.inferredGene.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+		}
+	};
+	
+	const assertedGeneBodyTemplate = (rowData) => {
+		if (rowData && rowData.assertedGene) {
+			return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ag${rowData.id}${rowData.assertedGene.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.assertedGene.symbol + ' (' + rowData.assertedGene.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ag${rowData.id}${rowData.assertedGene.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.assertedGene.symbol + ' (' + rowData.assertedGene.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+		}
+	};
+	
+	const inferredAlleleBodyTemplate = (rowData) => {
+		if (rowData && rowData.inferredAllele) {
+			if (rowData.inferredAllele.symbol) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.symbol + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.symbol + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			} else {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.name + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.name + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			}
+		} 
+	};
+	
+	const assertedAlleleBodyTemplate = (rowData) => {
+		if (rowData && rowData.assertedAllele) {
+			if (rowData.assertedAllele.symbol) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.symbol + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.symbol + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			} else {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.name + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.name + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			}
+		} 
+	};
 
 	const diseaseQualifiersBodyTemplate = (rowData) => {
 		if (rowData && rowData.diseaseQualifiers) {
@@ -623,6 +739,58 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	const assertedGeneEditorTemplate = (props) => {
+		if (props.rowData.type === "GeneDiseaseAnnotation") {
+			return null;
+		} else {
+			return (
+				<>
+					<AutocompleteEditor
+						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+						rowProps={props}
+						searchService={searchService}
+						endpoint='gene'
+						filterName='assertedGeneFilter'
+						fieldName='assertedGene'
+						isSubject={true}
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					/>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={"assertedGene"}
+					/>
+				</>
+			);
+		}
+	};
+
+	const assertedAlleleEditorTemplate = (props) => {
+		if (props.rowData.type === "AGMDiseaseAnnotation") {
+			return (
+				<>
+					<AutocompleteEditor
+						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+						rowProps={props}
+						searchService={searchService}
+						endpoint='allele'
+						filterName='assertedAlleleFilter'
+						fieldName='assertedAllele'
+						isSubject={true}
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					/>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={"assertedAllele"}
+					/>
+				</>
+			);
+		} else {
+			return null;
+		}
+	};
+
 	const diseaseEditorTemplate = (props) => {
 		return (
 			<>
@@ -999,6 +1167,40 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]},
 		editor: (props) => geneticModifierEditorTemplate(props),
 		body: geneticModifierBodyTemplate
+	},
+	{
+		field: "inferredGene.symbol",
+		header: "Inferred Gene",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "inferredGeneFilter", fields: ["inferredGene.symbol", "inferredGene.curie"]},
+		body: inferredGeneBodyTemplate
+	},
+	{
+		field: "assertedGene.symbol",
+		header: "Asserted Gene",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "assertedGeneFilter", fields: ["assertedGene.symbol", "assertedGene.curie"]},
+		editor: (props) => assertedGeneEditorTemplate(props),
+		body: assertedGeneBodyTemplate
+	},
+	{
+		field: "inferredAllele.symbol",
+		header: "Inferred Allele",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "inferredAlleleFilter", fields: ["inferredAllele.symbol", "inferredAllele.name", "inferredAllele.curie"]},
+		body: inferredAlleleBodyTemplate
+	},
+	{
+		field: "assertedAllele.symbol",
+		header: "Asserted Allele",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "assertedAlleleFilter", fields: ["assertedAllele.symbol", "assertedAllele.name", "assertedAllele.curie"]},
+		editor: (props) => assertedAlleleEditorTemplate(props),
+		body: assertedAlleleBodyTemplate
 	},
 	{
 		field: "dataProvider",
