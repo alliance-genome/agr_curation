@@ -59,6 +59,10 @@
     "annotation_type": "manually_curated",
     "disease_qualifiers": [
       "susceptibility"
-    ]
+    ],
+    "inferred_gene": "DATEST:Gene0001",
+    "asserted_gene": "DATEST:Gene0001",
+    "inferred_allele": "DATEST:Allele0001",
+    "asserted_allele": "DATEST:Allele0001"
   }
 ]

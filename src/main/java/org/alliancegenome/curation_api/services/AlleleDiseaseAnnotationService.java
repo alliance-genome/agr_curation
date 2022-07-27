@@ -24,6 +24,8 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
+	GeneDAO geneDAO;
+	@Inject
 	NoteDAO noteDAO;
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
@@ -101,6 +103,19 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 		
+		if (dto.getInferredGene() != null) {
+			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+			if (inferredGene == null)
+				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
+			annotation.setInferredGene(inferredGene);
+		}
+
+		if (dto.getAssertedGene() != null) {
+			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+			if (assertedGene == null)
+				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+			annotation.setAssertedGene(assertedGene);
+		}
 		
 		return annotation;
 	}

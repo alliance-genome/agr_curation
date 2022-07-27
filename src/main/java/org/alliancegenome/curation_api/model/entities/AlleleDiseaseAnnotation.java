@@ -45,4 +45,11 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({View.FieldsOnly.class})
 	private Gene inferredGene;
 	
+
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Gene assertedGene;
+	
 }

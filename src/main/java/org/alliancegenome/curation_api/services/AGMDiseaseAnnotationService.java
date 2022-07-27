@@ -24,6 +24,8 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	@Inject AffectedGenomicModelDAO agmDAO;
+	@Inject GeneDAO geneDAO;
+	@Inject AlleleDAO alleleDAO;
 	@Inject NoteDAO noteDAO;
 	@Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
@@ -95,7 +97,33 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 		
+		if (dto.getInferredGene() != null) {
+			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+			if (inferredGene == null)
+				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
+			annotation.setInferredGene(inferredGene);
+		}
+
+		if (dto.getAssertedGene() != null) {
+			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+			if (assertedGene == null)
+				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+			annotation.setAssertedGene(assertedGene);
+		}
 		
+		if (dto.getInferredAllele() != null) {
+			Allele inferredAllele = alleleDAO.find(dto.getInferredAllele());
+			if (inferredAllele == null)
+				throw new ObjectValidationException(dto, "Invalid inferred allele for " + annotationId + " - skipping");
+			annotation.setInferredAllele(inferredAllele);
+		}
+
+		if (dto.getAssertedAllele() != null) {
+			Allele assertedAllele = alleleDAO.find(dto.getAssertedAllele());
+			if (assertedAllele == null)
+				throw new ObjectValidationException(dto, "Invalid asserted allele for " + annotationId + " - skipping");
+			annotation.setAssertedAllele(assertedAllele);
+		}
 		return annotation;
 	}
 

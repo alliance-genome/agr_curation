@@ -51,4 +51,16 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({View.FieldsOnly.class})
 	private Allele inferredAllele;
 	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Gene assertedGene;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Allele assertedAllele;
+	
 }
