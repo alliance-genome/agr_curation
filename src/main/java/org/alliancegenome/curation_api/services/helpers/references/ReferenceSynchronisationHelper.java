@@ -1,23 +1,16 @@
 package org.alliancegenome.curation_api.services.helpers.references;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.model.document.LiteratureCrossReference;
-import org.alliancegenome.curation_api.model.document.LiteratureReference;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.model.document.*;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.*;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;

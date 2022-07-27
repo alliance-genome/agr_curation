@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.model.entities.bulkloads;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
-import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
+import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
