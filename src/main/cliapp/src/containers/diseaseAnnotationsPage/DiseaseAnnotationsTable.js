@@ -387,7 +387,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsTemplate = (rowData) => {
-		if (rowData?.conditionRelations && !rowData.conditionRelations[0].handle) {
+		if (rowData?.conditionRelations && !rowData.conditionRelations[0]?.handle) {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
@@ -400,10 +400,12 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsEditor = (props) => {
-		if (props.rowData?.conditionRelations && !props.rowData.conditionRelations[0].handle) {
-			const handle = props.rowData.conditionRelations[0].handle;
-			if (handle)
-				return conditionRelationsTemplate(props.rowData);
+
+		if (props.rowData?.conditionRelations) {
+			const handle = props.rowData.conditionRelations[0]?.handle;
+
+			if (handle) return conditionRelationsTemplate(props.rowData);
+
 			return (
 				<>
 				<div>
@@ -446,7 +448,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationHandleTemplate = (rowData) => {
-		if (rowData?.conditionRelations && rowData.conditionRelations[0].handle) {
+		if (rowData?.conditionRelations && rowData.conditionRelations[0]?.handle) {
 			let handle = rowData.conditionRelations[0].handle;
 			return (
 				<Button className="p-button-text"
@@ -460,7 +462,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 	
 	const conditionRelationHandleEditor = (props) => {
-		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0].handle) {
+		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0]?.handle) {
 			return (
 			<>
 				<ConditionRelationHandleDropdown

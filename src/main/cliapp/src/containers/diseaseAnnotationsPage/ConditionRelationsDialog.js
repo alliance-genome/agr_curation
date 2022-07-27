@@ -299,9 +299,27 @@ export const ConditionRelationsDialog = ({
 		);
 	}
 	
+	const handleDeleteConditionRelation = (event, props) => {
+		let _localConditionRelations = global.structuredClone(localConditionRelations); 
+		if(props.dataKey){
+			_localConditionRelations.splice(props.dataKey, 1);
+		}else {
+			_localConditionRelations.splice(props.rowIndex, 1);
+		}
+		setLocalConditionRelations(_localConditionRelations);
+		rowsEdited.current++;
+	}
+
+	const deleteAction = (props) => {
+		return (
+			<Button icon="pi pi-trash" className="p-button-text"
+					onClick={(event) => { handleDeleteConditionRelation(event, props) }}/>
+		);
+	}
+	
 	let headerGroup = 	<ColumnGroup>
 						<Row>
-							<Column header="Actions" style={{display: isInEdit ? 'visible' : 'none'}}/>
+							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Relation" />
 							<Column header="Conditions" />
 							<Column header="Internal" />
@@ -317,6 +335,7 @@ export const ConditionRelationsDialog = ({
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
+					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' body={conditionRelationTypeTemplate}/>
 					<Column editor={conditionsEditorTemplate} field="conditions.conditionStatement" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
