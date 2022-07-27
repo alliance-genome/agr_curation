@@ -1167,7 +1167,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: geneticModifierBodyTemplate
 	},
 	{
-		field: "inferredGene.curie",
+		field: "inferredGene.symbol",
 		header: "Inferred Gene",
 		sortable: isEnabled,
 		filter: true,
@@ -1175,7 +1175,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: inferredGeneBodyTemplate
 	},
 	{
-		field: "assertedGene.curie",
+		field: "assertedGene.symbol",
 		header: "Asserted Gene",
 		sortable: isEnabled,
 		filter: true,
@@ -1184,7 +1184,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: assertedGeneBodyTemplate
 	},
 	{
-		field: "inferredAllele.curie",
+		field: "inferredAllele.symbol",
 		header: "Inferred Allele",
 		sortable: isEnabled,
 		filter: true,
@@ -1192,7 +1192,7 @@ export const DiseaseAnnotationsTable = () => {
 		body: inferredAlleleBodyTemplate
 	},
 	{
-		field: "assertedAllele.curie",
+		field: "assertedAllele.symbol",
 		header: "Asserted Allele",
 		sortable: isEnabled,
 		filter: true,
