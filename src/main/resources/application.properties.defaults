@@ -26,8 +26,10 @@ quarkus.flyway.clean-disabled=true
 
 quarkus.elasticsearch.hosts = localhost:9200
 quarkus.elasticsearch.protocol = http
+quarkus.elasticsearch.devservices.enabled = false
+quarkus.devservices.enabled = false
 
-quarkus.hibernate-search-orm.elasticsearch.version=7.10.2
+quarkus.hibernate-search-orm.elasticsearch.version=opensearch:1.2
 quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.elasticsearch.read-timeout=600S
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
