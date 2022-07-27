@@ -1,12 +1,10 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import javax.persistence.*;
+import javax.persistence.MappedSuperclass;
 
-import org.alliancegenome.curation_api.base.entity.UniqueIdAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)

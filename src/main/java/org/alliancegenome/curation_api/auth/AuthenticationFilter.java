@@ -1,7 +1,6 @@
 package org.alliancegenome.curation_api.auth;
 
 import java.io.IOException;
-import java.util.Base64;
 import java.util.UUID;
 
 import javax.annotation.Priority;
@@ -9,15 +8,11 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerRequestFilter;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.container.*;
+import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
 
 import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
-import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
-import org.alliancegenome.curation_api.interfaces.okta.OktaUserInfo;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;
@@ -26,13 +21,11 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import com.okta.jwt.*;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.Client;
-import com.okta.sdk.client.Clients;
+import com.okta.sdk.client.*;
 import com.okta.sdk.resource.user.User;
 
 import io.quarkus.logging.Log;
 import lombok.extern.jbosslog.JBossLog;
-import si.mazi.rescu.RestProxyFactory;
 
 @JBossLog
 @Provider

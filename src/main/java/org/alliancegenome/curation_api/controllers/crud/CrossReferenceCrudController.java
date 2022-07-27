@@ -3,7 +3,7 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.controllers.BaseEntityCrudController;
+import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.interfaces.crud.CrossReferenceCrudInterface;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
