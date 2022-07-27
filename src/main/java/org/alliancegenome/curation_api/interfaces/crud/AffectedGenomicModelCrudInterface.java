@@ -10,7 +10,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.interfaces.BaseCurieCrudInterface;
+import org.alliancegenome.curation_api.base.interfaces.*;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - Affected Genomic Models")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterface<AffectedGenomicModel> {
+public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterface<AffectedGenomicModel>, BaseDTOCrudControllerInterface<AffectedGenomicModel, AffectedGenomicModelDTO> {
 
 	@Override
 	@JsonView(View.FieldsAndLists.class)

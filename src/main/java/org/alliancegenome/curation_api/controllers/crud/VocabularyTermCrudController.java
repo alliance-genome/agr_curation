@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers.crud;
 
-import org.alliancegenome.curation_api.base.controllers.BaseCrudController;
+import org.alliancegenome.curation_api.base.controllers.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.interfaces.crud.VocabularyTermCrudInterface;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
 
 @RequestScoped
-public class VocabularyTermCrudController extends BaseCrudController<VocabularyTermService, VocabularyTerm, VocabularyTermDAO> implements VocabularyTermCrudInterface {
+public class VocabularyTermCrudController extends BaseEntityCrudController<VocabularyTermService, VocabularyTerm, VocabularyTermDAO> implements VocabularyTermCrudInterface {
 
 	@Inject
 	VocabularyTermService vocabularyTermService;
