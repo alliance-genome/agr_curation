@@ -42,6 +42,10 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		term.setNamespace(inTerm.getNamespace());
 		term.setDefinition(inTerm.getDefinition());
 		
+		// TODO figure out issues with ontologies
+		//term.setIsaParents(inTerm.getIsaParents());
+		//term.setIsaAncestors(inTerm.getIsaAncestors());
+		
 		handleSubsets(term, inTerm);
 		handleDefinitionUrls(term, inTerm);
 		handleSecondaryIds(term, inTerm);
@@ -210,4 +214,5 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		});
 
 	}
+
 }

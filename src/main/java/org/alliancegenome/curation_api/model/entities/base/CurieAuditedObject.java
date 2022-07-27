@@ -21,6 +21,6 @@ public class CurieAuditedObject extends AuditedObject {
 	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	private String curie;
+	protected String curie;
 
 }

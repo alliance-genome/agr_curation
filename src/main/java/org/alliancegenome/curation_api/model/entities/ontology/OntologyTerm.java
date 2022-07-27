@@ -21,7 +21,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@ToString(exclude = {/* "parents", "children", "ancesters", "descendants", */ "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
+@ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
 public class OntologyTerm extends CurieAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

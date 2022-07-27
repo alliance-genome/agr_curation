@@ -29,6 +29,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private Class<T> clazz;
 
 	private HashMap<String, T> allNodes = new HashMap<>();
+	private Stack<T> traversalStack = new Stack<T>();
 
 	public GenericOntologyLoadHelper(Class<T> clazz) {
 		this.clazz = clazz;
@@ -119,15 +120,25 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 			termParent = getOntologyTerm(parent);
 			
+			for(OntologyTerm a: traversalStack) {
+				termParent.addIsaAncestor(a);
+			}
+			if(termParent.getCurie() != null) {
+				traversalStack.push(termParent);
+			}
+			
 			boolean condition1 = termParent.getNamespace() != null;
 			boolean condition2 = requiredNamespaces.contains(termParent.getNamespace());
 			boolean condition3 = config.getLoadOnlyIRIPrefix() != null;
 			boolean condition4 = parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_");
 			boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
 			boolean condition6 = !hasChebiXref(termParent);
-
+			
+			//printStack(traversalStack, depth, termParent.getCurie());
+			
 			if(((condition1 && condition2) || (condition3 && condition4)) && (condition5 || condition6)) {
 				if(allNodes.containsKey(termParent.getCurie())) {
+					traversalStack.pop();
 					return allNodes.get(termParent.getCurie());
 				} else {
 					if(termParent.getCurie() != null) {
@@ -143,40 +154,36 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 						T childTerm = traverse(child, depth + 1, requiredNamespaces);
 
 						if(childTerm != null) {
-
-							termParent.addIsaChild(childTerm);
 							if(termParent.getCurie() != null) {
 								childTerm.addIsaParent(termParent);
 							}
-
-							childTerm.addIsaAncestor(termParent);
-							if(termParent.getIsaAncestors() != null) {
-								for(OntologyTerm a: termParent.getIsaAncestors()) {
-									if(!childTerm.getIsaAncestors().contains(a)) {
-										childTerm.addIsaAncestor(a);
-									}
-								}
-							}
-							termParent.addIsaDescendant(childTerm);
-							if(childTerm.getIsaDescendants() != null) {
-								for(OntologyTerm d: childTerm.getIsaDescendants()) {
-									if(!termParent.getIsaDescendants().contains(d)) {
-										termParent.addIsaDescendant(d);
-									}
-								}
-							}
-
 						}
-
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}
+			if(termParent.getCurie() != null) {
+				traversalStack.pop();
+			}
+			
 		}
 
 		return termParent;
 
+	}
+	
+	public void printStack(Stack<T> stack, int depth, String message) {
+		String tabs = "";
+		for(int i = 0; i < depth; i++) {
+			tabs += "\t";
+		}
+		String nodes = "";
+		for(OntologyTerm term: stack) {
+			nodes += term.getCurie() + " ";
+		}
+		
+		log.info(tabs + message + " <-- " + nodes);
 	}
 
 	public String getIRIShortForm(OWLAnnotationValue owlAnnotationValue) {
