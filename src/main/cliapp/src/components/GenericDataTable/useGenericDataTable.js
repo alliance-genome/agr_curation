@@ -4,6 +4,8 @@ import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 import { useSessionStorage } from '../../service/useSessionStorage';
 
+import { DeletionService } from '../../service/DeletionService';
+
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 
@@ -45,6 +47,9 @@ export const useGenericDataTable = ({
 		initialTableState
 	);
 
+	
+	const deletionService = new DeletionService();
+	
 	//probably should be plural
 	const [entity, setEntity] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -240,6 +245,50 @@ export const useGenericDataTable = ({
 			},
 		});
 	};
+	
+	
+	
+	const handleDeletion = async (props) => {
+		console.log(props);
+		let idToDelete = props.rowData ? props.rowData.id : props.id;
+		const result = await deletionService.delete(endpoint, idToDelete);
+		console.log(props);
+		if (result.isError) {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'error', summary: 'Update error: ',
+					detail: 'Could not delete ' + endpoint + ' [' + idToDelete + ']', sticky: false }
+			]);
+		} else {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
+					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+			]);
+			let _entity = global.structuredClone(entity);
+			
+			if (editingRows[idToDelete]) {
+				let _editingRows = { ...editingRows};
+				delete _editingRows[idToDelete];
+				setEditingRows(_editingRows);
+				
+				const rowsInEdit = Object.keys(editingRows).length;
+				if (rowsInEdit === 0) {
+					setIsEnabled(true);
+				};
+			}
+			
+			_entity.splice(props.rowIndex, 1);
+			setEntity(_entity);
+			let _tableState = {
+				...tableState,
+				rows: tableState.rows - 1
+			}
+			
+			setTableState(_tableState);
+			setTotalRecords(totalRecords - 1);
+			
+			
+		}
+	}
 
 
 	const onRowEditChange = (event) => {
@@ -312,5 +361,6 @@ export const useGenericDataTable = ({
 		totalRecords,
 		onLazyLoad,
 		columnList,
+		handleDeletion,
 	};
 };

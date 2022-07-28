@@ -1101,7 +1101,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle"]
+			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"]
 		},
 	},
 	{
@@ -1114,7 +1114,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
+			fields: ["conditionRelations.conditions.conditionSummary" ]
 		},
 	},
 	{
@@ -1284,7 +1284,7 @@ export const DiseaseAnnotationsTable = () => {
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
-					errorObject = {{errorMessages, setErrorMessages}}
+					errorObject={{errorMessages, setErrorMessages}}
 				/>
 			</div>
 			<RelatedNotesDialog

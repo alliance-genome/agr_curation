@@ -20,6 +20,9 @@ export const FilterComponent = ({
 
 	switch(type){
 		case "input":
+			if (tableState.filters.conditionRelationsFilter) {
+				console.log(tableState.filters)
+			}
 			return (
 				<>
 				<FilterComponentInputText
