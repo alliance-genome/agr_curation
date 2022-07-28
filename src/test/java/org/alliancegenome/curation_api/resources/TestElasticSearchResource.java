@@ -15,7 +15,7 @@ public class TestElasticSearchResource {
 		
 		@Override
 		public Map<String, String> start() {
-			container = new ElasticsearchContainer("docker.elastic.co/opensearchproject/opensearch:1.2");
+			container = new ElasticsearchContainer("opensearchproject/opensearch:1.2.0");
 			container.start();
 
 			return getConfig();
