@@ -43,6 +43,8 @@ export const GenericDataTable = (props) => {
 	
 	const toast_topright = useRef(null);
 	const [deleteDialog, setDeleteDialog] = useState(false);	
+	const [idToDelete, setIdToDelete] = useState(null);
+	const [ixToDelete, setIxToDelete] = useState(null);
 
 
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
@@ -106,7 +108,10 @@ export const GenericDataTable = (props) => {
 						showFilterMenu={false}
 						filterElement={() => filterComponentTemplate(col.filterElement)}
 					/>;
+				} else {
+					return null;
 				}
+				
 			})
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,10 +121,22 @@ export const GenericDataTable = (props) => {
 		return <div className="p-column-header-content"><span className="p-column-title">Filters</span></div>
 	}
 	
+	const showDeleteDialog = (props) => {
+		let _idToDelete = props.rowData ? props.rowData.id : props.id;
+		setIdToDelete(_idToDelete);
+		setIxToDelete(props.rowIndex);
+		setDeleteDialog(true);	
+	}
+	
+	const deleteRow = (idToDelete, ixToDelete) => {
+		setDeleteDialog(false);
+		handleDeletion(idToDelete, ixToDelete);
+	}
+	
 	const deleteAction = (props) => {
 		return (
 			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={() => { handleDeletion(props) }}/>
+					onClick={() => showDeleteDialog(props)}/>
 		);
 	}
 	
@@ -127,16 +144,16 @@ export const GenericDataTable = (props) => {
 		setDeleteDialog(false);	
 	};
 	
-	const deleteDialogFooter = (
+	const deleteDialogFooter = () => {
+		console.log(props);
+		return (
         <React.Fragment>
             <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
-            <Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={hideDeleteDialog} />
+            <Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, ixToDelete)} />
         </React.Fragment>
-    );
+    	);
+	}
 
-	console.log(editingRows);
-	console.log(props);
-	console.log(tableState);
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />

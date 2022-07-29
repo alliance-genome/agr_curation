@@ -53,7 +53,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorTitle);	
 			throw new ApiErrorException(response);
 		}
 

@@ -248,15 +248,13 @@ export const useGenericDataTable = ({
 	
 	
 	
-	const handleDeletion = async (props) => {
-		console.log(props);
-		let idToDelete = props.rowData ? props.rowData.id : props.id;
+	const handleDeletion = async (idToDelete, ixToDelete) => {
+		console.log(idToDelete);
 		const result = await deletionService.delete(endpoint, idToDelete);
-		console.log(props);
 		if (result.isError) {
 			toast_topright.current.show([
-				{ life: 7000, severity: 'error', summary: 'Update error: ',
-					detail: 'Could not delete ' + endpoint + ' [' + idToDelete + ']', sticky: false }
+				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
+					' [' + idToDelete + ']: ' + result.message, sticky: false }
 			]);
 		} else {
 			toast_topright.current.show([
@@ -276,7 +274,7 @@ export const useGenericDataTable = ({
 				};
 			}
 			
-			_entity.splice(props.rowIndex, 1);
+			_entity.splice(ixToDelete, 1);
 			setEntity(_entity);
 			let _tableState = {
 				...tableState,
@@ -285,8 +283,6 @@ export const useGenericDataTable = ({
 			
 			setTableState(_tableState);
 			setTotalRecords(totalRecords - 1);
-			
-			
 		}
 	}
 

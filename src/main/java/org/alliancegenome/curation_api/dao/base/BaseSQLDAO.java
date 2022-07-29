@@ -2,21 +2,36 @@ package org.alliancegenome.curation_api.dao.base;
 
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
-import javax.persistence.*;
-import javax.persistence.criteria.*;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
 import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
-import org.hibernate.search.engine.search.common.*;
-import org.hibernate.search.engine.search.query.*;
+import org.hibernate.search.engine.search.common.BooleanOperator;
+import org.hibernate.search.engine.search.common.ValueConvert;
+import org.hibernate.search.engine.search.query.SearchQuery;
+import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
 import org.hibernate.search.engine.search.sort.dsl.CompositeSortComponentsStep;
 import org.hibernate.search.mapper.orm.massindexing.MassIndexer;
@@ -26,7 +41,8 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 import org.reflections.Reflections;
 
-import io.micrometer.core.instrument.*;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
@@ -147,7 +163,13 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	public E remove(String id) {
 		log.debug("SqlDAO: remove: " + id);
 		E entity = find(id);
-		entityManager.remove(entity);
+
+		try {
+			entityManager.remove(entity);
+			entityManager.flush();
+		} catch (PersistenceException e) {
+			handlePersistenceException(entity, e);
+		}
 		return entity;
 	}
 
@@ -155,8 +177,25 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	public E remove(Long id) {
 		log.debug("SqlDAO: remove: " + id);
 		E entity = find(id);
-		entityManager.remove(entity);
+
+		try {
+			entityManager.remove(entity);
+			entityManager.flush();
+		} catch (PersistenceException e) {
+			handlePersistenceException(entity, e);
+		}
 		return entity;
+	}
+	
+	private void handlePersistenceException(E entity, Exception e) {
+		ObjectResponse<E> response = new ObjectResponse<E>(entity);
+		if (e.getCause() instanceof ConstraintViolationException) {
+			ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
+			response.setErrorMessage("Violates database constraint " + cve.getConstraintName());
+		} else {
+			response.setErrorMessage(e.getCause().getMessage());
+		}
+		throw new ApiErrorException(response);
 	}
 	
 	// DB Count
