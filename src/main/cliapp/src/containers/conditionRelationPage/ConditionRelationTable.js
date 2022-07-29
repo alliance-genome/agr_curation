@@ -24,6 +24,7 @@ import {getRefString} from '../../utils/utils';
 export const ConditionRelationTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true);
+	const [newConditionRelation, setNewConditionRelation] = useState(null);
 	const { newRelationState, newRelationDispatch } = useNewRelationReducer(); 
 
 	const searchService = new SearchService();
@@ -219,7 +220,7 @@ export const ConditionRelationTable = () => {
 	const headerButtons = () => {
 		return (
 			<>
-				<Button label="New Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
+				<Button label="New Handle" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
 			</>
 		);
 	};
@@ -245,6 +246,7 @@ export const ConditionRelationTable = () => {
 				initialColumnWidth={10}
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}
+				newEntity={newConditionRelation}
 			/>
 			<NewRelationForm
 				newRelationState={newRelationState}
@@ -253,6 +255,7 @@ export const ConditionRelationTable = () => {
 				conditionRelationService={conditionRelationService}
 				conditionRelationTypeTerms={conditionRelationTypeTerms}
 				onConditionRelationValueChange={onConditionRelationValueChange}
+				setNewConditionRelation={setNewConditionRelation}
 			/>
 		</div>
 	)
