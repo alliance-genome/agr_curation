@@ -145,12 +145,11 @@ export const GenericDataTable = (props) => {
 	};
 	
 	const deleteDialogFooter = () => {
-		console.log(props);
 		return (
-        <React.Fragment>
-            <Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
-            <Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, ixToDelete)} />
-        </React.Fragment>
+        	<React.Fragment>
+            	<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+            	<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, ixToDelete)} />
+        	</React.Fragment>
     	);
 	}
 

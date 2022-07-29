@@ -226,7 +226,6 @@ export const useGenericDataTable = ({
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 
-				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};
 				Object.keys(error.response.data.errorMessages).forEach((field) => {
 					let messageObject = {
@@ -236,7 +235,6 @@ export const useGenericDataTable = ({
 					errorMessagesCopy[event.index][field] = messageObject;
 				});
 
-				console.log(errorMessagesCopy);
 				setErrorMessages({ ...errorMessagesCopy });
 
 				setEntity(_entity);
@@ -245,11 +243,8 @@ export const useGenericDataTable = ({
 			},
 		});
 	};
-	
-	
-	
+
 	const handleDeletion = async (idToDelete, ixToDelete) => {
-		console.log(idToDelete);
 		const result = await deletionService.delete(endpoint, idToDelete);
 		if (result.isError) {
 			toast_topright.current.show([
@@ -286,12 +281,10 @@ export const useGenericDataTable = ({
 		}
 	}
 
-
 	const onRowEditChange = (event) => {
 		setEditingRows(event.data);
 	};
  
-
 	const resetTableState = () => {
 		let _tableState = {
 			...initialTableState,
