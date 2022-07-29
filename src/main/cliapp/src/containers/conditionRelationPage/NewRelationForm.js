@@ -19,6 +19,7 @@ export const NewRelationForm = ({
 	searchService, 
 	conditionRelationService,
 	conditionRelationTypeTerms,
+	setNewConditionRelation,
 }) => {
 	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
@@ -42,6 +43,7 @@ export const NewRelationForm = ({
 		newRelationDispatch({type: "SUBMIT"});
 		mutation.mutate(newRelation, {
 			onSuccess: (data) => {
+				setNewConditionRelation(data.data.entity);
 				queryClient.invalidateQueries('ConditionRelationHandles');
 				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Relation Added'});
 				newRelationDispatch({type: "RESET"});
