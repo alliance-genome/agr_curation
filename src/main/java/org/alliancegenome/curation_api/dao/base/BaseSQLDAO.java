@@ -189,11 +189,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	
 	private void handlePersistenceException(E entity, Exception e) {
 		ObjectResponse<E> response = new ObjectResponse<E>(entity);
-		if (e.getCause() instanceof ConstraintViolationException) {
-			ConstraintViolationException cve = (ConstraintViolationException) e.getCause();
+		Throwable rootCause = e.getCause();
+		while (rootCause.getCause() != null) 
+			rootCause = rootCause.getCause();
+		if (rootCause instanceof ConstraintViolationException) {
+			ConstraintViolationException cve = (ConstraintViolationException) rootCause;
 			response.setErrorMessage("Violates database constraint " + cve.getConstraintName());
 		} else {
-			response.setErrorMessage(e.getCause().getMessage());
+			response.setErrorMessage(rootCause.getMessage());
 		}
 		throw new ApiErrorException(response);
 	}
