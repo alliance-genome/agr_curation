@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.bulkupload.fms;
 import java.io.IOException;
 import java.nio.file.*;
 
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.*;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -17,7 +17,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.hasItem;
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("05 - Molecule bulk upload - FMS")

@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.bulkupload.ontology;
 import java.nio.file.*;
 import java.util.concurrent.TimeUnit;
 
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.*;
 
 import io.quarkus.test.common.QuarkusTestResource;
@@ -16,7 +16,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("DO term bulk upload")
