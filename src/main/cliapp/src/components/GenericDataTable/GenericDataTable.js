@@ -25,7 +25,7 @@ export const GenericDataTable = (props) => {
 		onFilter,
 		setColumnList,
 		columnWidths,
-		entity,
+		entities,
 		dataTable,
 		editingRows,
 		onRowEditInit,
@@ -156,7 +156,7 @@ export const GenericDataTable = (props) => {
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
-				<DataTable dataKey='id' value={entity} header={header}	ref={dataTable}
+				<DataTable dataKey='id' value={entities} header={header} ref={dataTable}
 					filterDisplay="row" scrollHeight="62vh" scrollable= {true} tableClassName='p-datatable-md'
 					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
 					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { SearchService } from '../../service/SearchService';
@@ -23,7 +23,8 @@ export const useGenericDataTable = ({
 	toasts,
 	initialColumnWidth,
 	errorObject,
-	defaultVisibleColumns
+	defaultVisibleColumns,
+	newEntity,
 }) => {
 
 	const defaultColumnNames = columns.map((col) => {
@@ -47,11 +48,9 @@ export const useGenericDataTable = ({
 		initialTableState
 	);
 
-	
 	const deletionService = new DeletionService();
-	
-	//probably should be plural
-	const [entity, setEntity] = useState(null);
+
+	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [originalRows, setOriginalRows] = useState([]);
 	const [columnList, setColumnList] = useState([]);
@@ -95,7 +94,7 @@ export const useGenericDataTable = ({
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFields), {
 		onSuccess: (data) => {
 			setIsEnabled(true);
-			setEntity(data.results);
+			setEntities(data.results);
 			setTotalRecords(data.totalResults);
 		},
 		onError: (error) => {
@@ -106,6 +105,22 @@ export const useGenericDataTable = ({
 		keepPreviousData: true,
 		refetchOnWindowFocus: false
 	});
+
+	useEffect(() => {
+		if (
+			Object.keys(tableState.filters).length > 0
+			|| tableState.multiSortMeta.length > 0
+			|| tableState.page > 0
+			|| !newEntity
+		) return;
+
+		setEntities((previousEntities) => {
+			const newEntities = previousEntities;
+			newEntities.unshift(newEntity);
+			return newEntities;
+		})
+	// eslint-disable-next-line react-hooks/exhaustive-deps	
+	}, [newEntity])
 
 	const setIsFirst = (value) => {
 		let _tableState = {
@@ -156,7 +171,7 @@ export const useGenericDataTable = ({
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
 		let _originalRows = global.structuredClone(originalRows);
-		_originalRows[event.index] = global.structuredClone(entity[event.index]);
+		_originalRows[event.index] = global.structuredClone(entities[event.index]);
 		setOriginalRows(_originalRows);
 	};
 
@@ -166,11 +181,11 @@ export const useGenericDataTable = ({
 			setIsEnabled(true);
 		};
 
-		let _entity = [...entity];
-		_entity[event.index] = originalRows[event.index];
+		let _entities = [...entities];
+		_entities[event.index] = originalRows[event.index];
 		delete originalRows[event.index];
 		setOriginalRows(originalRows);
-		setEntity(_entity);
+		setEntities(_entities);
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages({ ...errorMessagesCopy });
@@ -209,9 +224,9 @@ export const useGenericDataTable = ({
 			onSuccess: (response, variables, context) => {
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
-				let _entity = global.structuredClone(entity);
-				_entity[event.index] = response.data.entity;
-				setEntity(_entity);
+				let _entities = global.structuredClone(entities);
+				_entities[event.index] = response.data.entity;
+				setEntities(_entities);
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[event.index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
@@ -222,7 +237,7 @@ export const useGenericDataTable = ({
 					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
 				]);
 
-				let _entity = global.structuredClone(entity);
+				let _entities = global.structuredClone(entities);
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 
@@ -237,8 +252,8 @@ export const useGenericDataTable = ({
 
 				setErrorMessages({ ...errorMessagesCopy });
 
-				setEntity(_entity);
-				let _editingRows = { ...editingRows, ...{ [`${_entity[event.index].id}`]: true } };
+				setEntities(_entities);
+				let _editingRows = { ...editingRows, ...{ [`${_entities[event.index].id}`]: true } };
 				setEditingRows(_editingRows);
 			},
 		});
@@ -256,7 +271,7 @@ export const useGenericDataTable = ({
 				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
 					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
 			]);
-			let _entity = global.structuredClone(entity);
+			let _entities = global.structuredClone(entities);
 			
 			if (editingRows[idToDelete]) {
 				let _editingRows = { ...editingRows};
@@ -269,8 +284,8 @@ export const useGenericDataTable = ({
 				};
 			}
 			
-			_entity.splice(ixToDelete, 1);
-			setEntity(_entity);
+			_entities.splice(ixToDelete, 1);
+			setEntities(_entities);
 			let _tableState = {
 				...tableState,
 				rows: tableState.rows - 1
@@ -337,7 +352,7 @@ export const useGenericDataTable = ({
 		onFilter, 
 		setColumnList, 
 		columnWidths, 
-		entity, 
+		entities, 
 		dataTable, 
 		editingRows, 
 		onRowEditInit, 
