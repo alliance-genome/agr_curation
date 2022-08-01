@@ -17,7 +17,7 @@ public class TestContainerResource {
 		@Override
 		public Map<String, String> start() {
 
-			container = new OpenSearchContainer("opensearchproject/opensearch:2.1.0");
+			container = new OpenSearchContainer("opensearchproject/opensearch:1.2.4");
 			pgContainer = new PostgreSQLContainer("postgres:14.2");
 			
 			pgContainer.withEnv("POSTGRES_HOST_AUTH_METHOD", "trust");
