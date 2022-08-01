@@ -17,7 +17,7 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.MethodOrderer;
@@ -32,7 +32,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(11)
