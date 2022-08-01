@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.resources;
 import java.util.*;
 
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.HttpWaitStrategy;
 
 import io.quarkus.test.common.*;
 
@@ -12,10 +13,17 @@ public class TestElasticSearchResource {
 	public static class Initializer implements QuarkusTestResourceLifecycleManager {
 
 		private GenericContainer container;
-		
+
 		@Override
 		public Map<String, String> start() {
 			container = new GenericContainer("opensearchproject/opensearch:latest");
+
+			container.withExposedPorts(9200);
+			container.setWaitStrategy((new HttpWaitStrategy()).forPort(9200).forStatusCodeMatching(response -> response == 200 || response == 401));
+			container.withEnv("discovery.type", "single-node");
+			container.withEnv("DISABLE_INSTALL_DEMO_CONFIG", "true");
+			container.withEnv("DISABLE_SECURITY_PLUGIN", "true");
+
 			container.start();
 
 			return getConfig();
