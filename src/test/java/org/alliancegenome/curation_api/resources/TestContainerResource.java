@@ -16,12 +16,12 @@ public class TestContainerResource {
 
 		@Override
 		public Map<String, String> start() {
-			//container = new OpenSea
+
 			container = new OpenSearchContainer("opensearchproject/opensearch:2.1.0");
 			pgContainer = new PostgreSQLContainer("postgres:14.2");
 			
 			pgContainer.withEnv("POSTGRES_HOST_AUTH_METHOD", "trust");
-			//pgContainer.withDatabaseName("curation");
+			pgContainer.withDatabaseName("curation");
 			pgContainer.withUsername("postgres");
 			pgContainer.withPassword("");
 
