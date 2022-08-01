@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.resources;
 
 import java.util.*;
 
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.containers.GenericContainer;
 
 import io.quarkus.test.common.*;
 
@@ -11,15 +11,16 @@ public class TestElasticSearchResource {
 
 	public static class Initializer implements QuarkusTestResourceLifecycleManager {
 
-		private ElasticsearchContainer container;
+		private GenericContainer container;
 		
 		@Override
 		public Map<String, String> start() {
-			container = new ElasticsearchContainer("opensearchproject/opensearch:latest");
+			container = new GenericContainer("opensearchproject/opensearch:latest");
 			container.start();
 
 			return getConfig();
 		}
+
 
 		private Map<String, String> getConfig() {
 			final Map<String, String> map = new HashMap<>();
