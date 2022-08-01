@@ -51,34 +51,40 @@ export const ExperimentalConditionsTable = () => {
 	};
 
 	const uniqueIdBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
-			</>
-		)
+		if (rowData) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`a${rowData.id}`}>{rowData.uniqueId}</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}`} content={rowData.uniqueId} />
+				</>
+			)
+		}
 	};
 
 	const summaryBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
-				<Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
-			</>
-		)
+		if (rowData) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`b${rowData.id}`}>{rowData.conditionSummary}</EllipsisTableCell>
+					<Tooltip target={`.b${rowData.id}`} content={rowData.conditionSummary} />
+				</>
+			)
+		}
 	};
 
 	const statementBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
-				<Tooltip target={`.c${rowData.id}`} content={rowData.conditionStatement} />
-			</>
-		)
+		if (rowData) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
+					<Tooltip target={`.c${rowData.id}`} content={rowData.conditionStatement} />
+				</>
+			)
+		}
 	};
 
 	const conditionClassBodyTemplate = (rowData) => {
-		if (rowData.conditionClass) {
+		if (rowData?.conditionClass) {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
@@ -89,7 +95,7 @@ export const ExperimentalConditionsTable = () => {
 	};
 
 	const conditionIdBodyTemplate = (rowData) => {
-		if (rowData.conditionId) {
+		if (rowData?.conditionId) {
 			return (
 				<>
 					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
@@ -100,25 +106,25 @@ export const ExperimentalConditionsTable = () => {
 	};
 
 	const conditionGeneOntologyBodyTemplate = (rowData) => {
-		if (rowData.conditionGeneOntology) {
+		if (rowData?.conditionGeneOntology) {
 			return <EllipsisTableCell>{rowData.conditionGeneOntology.name} ({rowData.conditionGeneOntology.curie})</EllipsisTableCell>;
 		}
 	};
 
 	const conditionChemicalBodyTemplate = (rowData) => {
-		if (rowData.conditionChemical) {
+		if (rowData?.conditionChemical) {
 			return <EllipsisTableCell>{rowData.conditionChemical.name} ({rowData.conditionChemical.curie})</EllipsisTableCell>;
 		}
 	};
 
 	const conditionAnatomyBodyTemplate = (rowData) => {
-		if (rowData.conditionAnatomy) {
+		if (rowData?.conditionAnatomy) {
 			return <EllipsisTableCell>{rowData.conditionAnatomy.name} ({rowData.conditionAnatomy.curie})</EllipsisTableCell>;
 		}
 	};
 
 	const conditionTaxonBodyTemplate = (rowData) => {
-		if (rowData.conditionTaxon) {
+		if (rowData?.conditionTaxon) {
 			return (
 					<>
 					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}>
@@ -342,6 +348,7 @@ export const ExperimentalConditionsTable = () => {
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
 					errorObject = {{errorMessages, setErrorMessages}}
+					deletionEnabled={true}
 				/>
 			</div>
 	)

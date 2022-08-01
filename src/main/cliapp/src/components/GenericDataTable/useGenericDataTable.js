@@ -4,6 +4,8 @@ import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 import { useSessionStorage } from '../../service/useSessionStorage';
 
+import { DeletionService } from '../../service/DeletionService';
+
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 
@@ -45,6 +47,8 @@ export const useGenericDataTable = ({
 	`${initialTableState.tableKeyName}TableSettings`, 
 		initialTableState
 	);
+
+	const deletionService = new DeletionService();
 
 	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -237,7 +241,6 @@ export const useGenericDataTable = ({
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 
-				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};
 				Object.keys(error.response.data.errorMessages).forEach((field) => {
 					let messageObject = {
@@ -247,7 +250,6 @@ export const useGenericDataTable = ({
 					errorMessagesCopy[event.index][field] = messageObject;
 				});
 
-				console.log(errorMessagesCopy);
 				setErrorMessages({ ...errorMessagesCopy });
 
 				setEntities(_entities);
@@ -257,12 +259,47 @@ export const useGenericDataTable = ({
 		});
 	};
 
+	const handleDeletion = async (idToDelete, ixToDelete) => {
+		const result = await deletionService.delete(endpoint, idToDelete);
+		if (result.isError) {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
+					' [' + idToDelete + ']: ' + result.message, sticky: false }
+			]);
+		} else {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
+					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+			]);
+			let _entities = global.structuredClone(entities);
+			
+			if (editingRows[idToDelete]) {
+				let _editingRows = { ...editingRows};
+				delete _editingRows[idToDelete];
+				setEditingRows(_editingRows);
+				
+				const rowsInEdit = Object.keys(editingRows).length;
+				if (rowsInEdit === 0) {
+					setIsEnabled(true);
+				};
+			}
+			
+			_entities.splice(ixToDelete, 1);
+			setEntities(_entities);
+			let _tableState = {
+				...tableState,
+				rows: tableState.rows - 1
+			}
+			
+			setTableState(_tableState);
+			setTotalRecords(totalRecords - 1);
+		}
+	}
 
 	const onRowEditChange = (event) => {
 		setEditingRows(event.data);
 	};
  
-
 	const resetTableState = () => {
 		let _tableState = {
 			...initialTableState,
@@ -328,5 +365,6 @@ export const useGenericDataTable = ({
 		totalRecords,
 		onLazyLoad,
 		columnList,
+		handleDeletion,
 	};
 };

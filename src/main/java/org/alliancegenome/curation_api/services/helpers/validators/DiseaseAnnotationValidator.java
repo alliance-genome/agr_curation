@@ -45,6 +45,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	ConditionRelationValidator conditionRelationValidator;
 	@Inject
 	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	DiseaseAnnotationDAO diseaseAnnotationDAO;
 	
 	public DOTerm validateObject(DiseaseAnnotation	uiEntity, DiseaseAnnotation	 dbEntity) {
 		String field = "object";
@@ -240,7 +242,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		}
 		List<Long> idsToRemove = ListUtils.subtract(previousNoteIds, validatedNoteIds);
 		for (Long id : idsToRemove) {
-			noteService.delete(id);
+			diseaseAnnotationDAO.deleteAttachedNote(id);
 		}
 		
 		if (CollectionUtils.isEmpty(validatedNotes))
