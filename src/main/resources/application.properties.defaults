@@ -1,7 +1,6 @@
 quarkus.http.host=0.0.0.0
 quarkus.http.cors=false
 quarkus.http.limits.max-body-size=
-quarkus.http.limits.max-body-size=1g
 quarkus.http.root-path=/
 quarkus.http.non-application-root-path=/
 
@@ -24,14 +23,16 @@ quarkus.flyway.baseline-version=0.3.0
 quarkus.flyway.baseline-on-migrate=true
 quarkus.flyway.clean-disabled=true
 
-quarkus.elasticsearch.hosts = localhost:9200
 quarkus.elasticsearch.protocol = http
 
-quarkus.hibernate-search-orm.elasticsearch.version=7.10.2
+quarkus.hibernate-search-orm.elasticsearch.version=opensearch:1.2.4
 quarkus.hibernate-search-orm.elasticsearch.protocol=http
 quarkus.hibernate-search-orm.elasticsearch.read-timeout=600S
 quarkus.hibernate-search-orm.schema-management.strategy=create-or-update
 quarkus.hibernate-search-orm.automatic-indexing.synchronization.strategy=write-sync
+
+quarkus.elasticsearch.devservices.enabled = false
+quarkus.devservices.enabled = false
 
 quarkus.micrometer.binder.vertx.enabled=true
 quarkus.micrometer.export.json.enabled=true
@@ -42,6 +43,7 @@ quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hib
 
 quarkus.vertx.max-worker-execute-time=PT1H
 
+%dev.quarkus.elasticsearch.hosts = localhost:9200
 %dev.quarkus.hibernate-search-orm.elasticsearch.hosts=localhost:9200
 %dev.quarkus.datasource.jdbc.url=jdbc:postgresql://localhost:5432/curation
 
