@@ -264,8 +264,10 @@ export const useGenericDataTable = ({
 		if (result.isError) {
 			toast_topright.current.show([
 				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
-					' [' + idToDelete + ']: ' + result.message, sticky: false }
+					' [' + idToDelete + ']', sticky: false }
 			]);
+			let deletionErrorMessage = result?.message ? result.message : null;
+			return deletionErrorMessage;
 		} else {
 			toast_topright.current.show([
 				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
@@ -293,6 +295,7 @@ export const useGenericDataTable = ({
 			
 			setTableState(_tableState);
 			setTotalRecords(totalRecords - 1);
+			return null;
 		}
 	}
 
