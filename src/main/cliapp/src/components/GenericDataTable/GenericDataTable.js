@@ -205,9 +205,13 @@ export const GenericDataTable = (props) => {
             </Dialog>
 			<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
                 <div className="error-message-dialog">
-                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {<span>{deletionErrorMessage}</span>}
+                    <i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+                    {<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
                 </div>
+				<hr/>
+				<div className="error-message-detail">
+					{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
+				</div>
             </Dialog>
 			</div>
 	)
