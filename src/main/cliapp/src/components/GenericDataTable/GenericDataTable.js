@@ -42,9 +42,11 @@ export const GenericDataTable = (props) => {
 	} = useGenericDataTable(props);
 	
 	const toast_topright = useRef(null);
-	const [deleteDialog, setDeleteDialog] = useState(false);	
+	const [deleteDialog, setDeleteDialog] = useState(false);
+	const [errorDialog, setErrorDialog] = useState(false);	
 	const [idToDelete, setIdToDelete] = useState(null);
 	const [ixToDelete, setIxToDelete] = useState(null);
+	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 
 
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
@@ -128,9 +130,13 @@ export const GenericDataTable = (props) => {
 		setDeleteDialog(true);	
 	}
 	
-	const deleteRow = (idToDelete, ixToDelete) => {
+	const deleteRow = async (idToDelete, ixToDelete) => {
 		setDeleteDialog(false);
-		handleDeletion(idToDelete, ixToDelete);
+		let _deletionErrorMessage = await handleDeletion(idToDelete, ixToDelete);
+		setDeletionErrorMessage(_deletionErrorMessage);
+		if (_deletionErrorMessage !== null) { 
+			setErrorDialog(true);
+		}
 	}
 	
 	const deleteAction = (props) => {
@@ -144,12 +150,24 @@ export const GenericDataTable = (props) => {
 		setDeleteDialog(false);	
 	};
 	
+	const hideErrorDialog = () => {
+		setErrorDialog(false);	
+	};
+	
 	const deleteDialogFooter = () => {
 		return (
         	<React.Fragment>
             	<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
             	<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, ixToDelete)} />
         	</React.Fragment>
+    	);
+	}
+	
+	const errorDialogFooter = () => {
+		return (
+        	<React.Fragment>
+            	<Button label="OK" icon="pi pi-times" className="p-button-text" onClick={hideErrorDialog} />
+            </React.Fragment>
     	);
 	}
 
@@ -179,10 +197,16 @@ export const GenericDataTable = (props) => {
 					{columnList}
 				</DataTable>
 				
-			 <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+			 <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
                     {<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
+                </div>
+            </Dialog>
+			<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
+                <div className="error-message-dialog">
+                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+                    {<span>{deletionErrorMessage}</span>}
                 </div>
             </Dialog>
 			</div>
