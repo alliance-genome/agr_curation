@@ -247,6 +247,7 @@ export const ConditionRelationTable = () => {
 				errorObject={{errorMessages, setErrorMessages}}
 				headerButtons={headerButtons}
 				newEntity={newConditionRelation}
+				deletionEnabled={true}
 			/>
 			<NewRelationForm
 				newRelationState={newRelationState}
