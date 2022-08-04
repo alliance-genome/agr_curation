@@ -167,7 +167,7 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
+	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
