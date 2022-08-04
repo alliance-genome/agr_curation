@@ -8,36 +8,23 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
 import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalConditionValidator;
 
 import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class ExperimentalConditionService extends BaseCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
+public class ExperimentalConditionService extends BaseEntityCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
 
 	@Inject
 	ExperimentalConditionDAO experimentalConditionDAO;

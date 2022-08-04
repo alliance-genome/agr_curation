@@ -5,31 +5,19 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
-import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneDiseaseAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped
-public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDAO> {
+public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
@@ -68,11 +56,6 @@ public class GeneDiseaseAnnotationService extends BaseCrudService<GeneDiseaseAnn
 		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
 			for (Note note : dbEntity.getRelatedNotes()) {
 				noteDAO.persist(note);
-			}
-		}
-		if (CollectionUtils.isNotEmpty(dbEntity.getConditionRelations())) {
-			for (ConditionRelation conditionRelation : dbEntity.getConditionRelations()) {
-				conditionRelationDAO.persist(conditionRelation);
 			}
 		}
 		

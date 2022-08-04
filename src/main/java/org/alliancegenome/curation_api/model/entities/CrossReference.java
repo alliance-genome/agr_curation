@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.CurieAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;

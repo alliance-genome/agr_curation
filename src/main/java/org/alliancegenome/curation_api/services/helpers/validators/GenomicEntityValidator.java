@@ -2,12 +2,12 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
 
 public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 

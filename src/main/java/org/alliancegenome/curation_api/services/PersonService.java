@@ -5,15 +5,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.PersonValidator;
 
 @RequestScoped
-public class PersonService extends BaseCrudService<Person, PersonDAO> {
+public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
 	@Inject
 	PersonDAO personDAO;

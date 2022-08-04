@@ -188,6 +188,122 @@ export const DiseaseAnnotationsTable = () => {
 			
 		}	
 	};
+	
+	const inferredGeneBodyTemplate = (rowData) => {
+		if (rowData && rowData.inferredGene) {
+			return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ig${rowData.id}${rowData.inferredGene.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.inferredGene.symbol + ' (' + rowData.inferredGene.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ig${rowData.id}${rowData.inferredGene.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.inferredGene.symbol + ' (' + rowData.inferredGene.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+		}
+	};
+	
+	const assertedGeneBodyTemplate = (rowData) => {
+		if (rowData && rowData.assertedGene) {
+			return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ag${rowData.id}${rowData.assertedGene.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.assertedGene.symbol + ' (' + rowData.assertedGene.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ag${rowData.id}${rowData.assertedGene.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.assertedGene.symbol + ' (' + rowData.assertedGene.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+		}
+	};
+	
+	const inferredAlleleBodyTemplate = (rowData) => {
+		if (rowData && rowData.inferredAllele) {
+			if (rowData.inferredAllele.symbol) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.symbol + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.symbol + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			} else {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.name + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.ia${rowData.id}${rowData.inferredAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.inferredAllele.name + ' (' + rowData.inferredAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			}
+		} 
+	};
+	
+	const assertedAlleleBodyTemplate = (rowData) => {
+		if (rowData && rowData.assertedAllele) {
+			if (rowData.assertedAllele.symbol) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.symbol + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.symbol + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			} else {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.name + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.aa${rowData.id}${rowData.assertedAllele.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.assertedAllele.name + ' (' + rowData.assertedAllele.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			}
+		} 
+	};
 
 	const diseaseQualifiersBodyTemplate = (rowData) => {
 		if (rowData && rowData.diseaseQualifiers) {
@@ -271,7 +387,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsTemplate = (rowData) => {
-		if (rowData?.conditionRelations && !rowData.conditionRelations[0].handle) {
+		if (rowData?.conditionRelations && !rowData.conditionRelations[0]?.handle) {
 			return (
 				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
@@ -284,10 +400,12 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const conditionRelationsEditor = (props) => {
-		if (props.rowData?.conditionRelations && !props.rowData.conditionRelations[0].handle) {
-			const handle = props.rowData.conditionRelations[0].handle;
-			if (handle)
-				return conditionRelationsTemplate(props.rowData);
+
+		if (props.rowData?.conditionRelations) {
+			const handle = props.rowData.conditionRelations[0]?.handle;
+
+			if (handle) return conditionRelationsTemplate(props.rowData);
+
 			return (
 				<>
 				<div>
@@ -307,11 +425,30 @@ export const DiseaseAnnotationsTable = () => {
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleConditionRelationsOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Condition
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+							</span>
+						</Button>
+					</div>
+				</>
+			)
+
 		}
 	};
 
 	const conditionRelationHandleTemplate = (rowData) => {
-		if (rowData?.conditionRelations && rowData.conditionRelations[0].handle) {
+		if (rowData?.conditionRelations && rowData.conditionRelations[0]?.handle) {
 			let handle = rowData.conditionRelations[0].handle;
 			return (
 				<Button className="p-button-text"
@@ -325,7 +462,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 	
 	const conditionRelationHandleEditor = (props) => {
-		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0].handle) {
+		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0]?.handle) {
 			return (
 			<>
 				<ConditionRelationHandleDropdown
@@ -600,6 +737,58 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 			</>
 		);
+	};
+
+	const assertedGeneEditorTemplate = (props) => {
+		if (props.rowData.type === "GeneDiseaseAnnotation") {
+			return null;
+		} else {
+			return (
+				<>
+					<AutocompleteEditor
+						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+						rowProps={props}
+						searchService={searchService}
+						endpoint='gene'
+						filterName='assertedGeneFilter'
+						fieldName='assertedGene'
+						isSubject={true}
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					/>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={"assertedGene"}
+					/>
+				</>
+			);
+		}
+	};
+
+	const assertedAlleleEditorTemplate = (props) => {
+		if (props.rowData.type === "AGMDiseaseAnnotation") {
+			return (
+				<>
+					<AutocompleteEditor
+						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+						rowProps={props}
+						searchService={searchService}
+						endpoint='allele'
+						filterName='assertedAlleleFilter'
+						fieldName='assertedAllele'
+						isSubject={true}
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					/>
+					<ErrorMessageComponent
+						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={"assertedAllele"}
+					/>
+				</>
+			);
+		} else {
+			return null;
+		}
 	};
 
 	const diseaseEditorTemplate = (props) => {
@@ -912,7 +1101,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle"]
+			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"]
 		},
 	},
 	{
@@ -925,7 +1114,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
+			fields: ["conditionRelations.conditions.conditionSummary" ]
 		},
 	},
 	{
@@ -978,6 +1167,40 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "geneticModifierFilter", fields: ["diseaseGeneticModifier.symbol", "diseaseGeneticModifier.name", "diseaseGeneticModifier.curie"]},
 		editor: (props) => geneticModifierEditorTemplate(props),
 		body: geneticModifierBodyTemplate
+	},
+	{
+		field: "inferredGene.symbol",
+		header: "Inferred Gene",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "inferredGeneFilter", fields: ["inferredGene.symbol", "inferredGene.curie"]},
+		body: inferredGeneBodyTemplate
+	},
+	{
+		field: "assertedGene.symbol",
+		header: "Asserted Gene",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "assertedGeneFilter", fields: ["assertedGene.symbol", "assertedGene.curie"]},
+		editor: (props) => assertedGeneEditorTemplate(props),
+		body: assertedGeneBodyTemplate
+	},
+	{
+		field: "inferredAllele.symbol",
+		header: "Inferred Allele",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "inferredAlleleFilter", fields: ["inferredAllele.symbol", "inferredAllele.name", "inferredAllele.curie"]},
+		body: inferredAlleleBodyTemplate
+	},
+	{
+		field: "assertedAllele.symbol",
+		header: "Asserted Allele",
+		sortable: isEnabled,
+		filter: true,
+		filterElement: {type: "input", filterName: "assertedAlleleFilter", fields: ["assertedAllele.symbol", "assertedAllele.name", "assertedAllele.curie"]},
+		editor: (props) => assertedAlleleEditorTemplate(props),
+		body: assertedAlleleBodyTemplate
 	},
 	{
 		field: "dataProvider",
@@ -1061,7 +1284,7 @@ export const DiseaseAnnotationsTable = () => {
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
-					errorObject = {{errorMessages, setErrorMessages}}
+					errorObject={{errorMessages, setErrorMessages}}
 				/>
 			</div>
 			<RelatedNotesDialog

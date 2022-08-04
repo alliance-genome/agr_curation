@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.Entity;
 
-import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.hibernate.envers.Audited;
 
 import lombok.*;

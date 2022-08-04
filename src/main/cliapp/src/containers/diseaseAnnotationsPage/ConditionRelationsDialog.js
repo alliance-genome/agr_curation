@@ -32,8 +32,7 @@ export const ConditionRelationsDialog = ({
 	const validationService = new ValidationService();
 	const searchService = new SearchService();
 	const tableRef = useRef(null);
-	const rowsInEdit = useRef(0);
-	const hasEdited = useRef(false);
+	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
 
 	const showDialogHandler = () => {
@@ -47,11 +46,10 @@ export const ConditionRelationsDialog = ({
 				});
 			}
 			setEditingRows(rowsObject);
-			rowsInEdit.current++;
 		}else{
 			setEditingRows({});
 		}
-		hasEdited.current = false;
+		rowsEdited.current = 0;
 	};
 	
 	const onRowEditChange = (e) => {
@@ -59,7 +57,6 @@ export const ConditionRelationsDialog = ({
 	}
 	
 	const onRowEditCancel = (event) => {
-		rowsInEdit.current--;
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
 		setEditingRows(_editingRows);
@@ -74,7 +71,6 @@ export const ConditionRelationsDialog = ({
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
-		compareChangesInRelations(event.data,event.index);
 	};
 	
 	const onRowEditSave = async(event) => {
@@ -107,27 +103,30 @@ export const ConditionRelationsDialog = ({
 		_localConditionRelations[event.index] = event.data;
 		setEditingRows(_editingRows);
 		setLocalConditionRelations(_localConditionRelations);
-		
+
 	};
 	
 	const compareChangesInRelations = (data,index) => {
 		if(originalConditionRelations && originalConditionRelations[index]) {
-			hasEdited.current = false;
 			if (data.conditionRelationType.name !== originalConditionRelations[index].conditionRelationType.name) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
 			if (data.internal !== originalConditionRelations[index].internal) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			}
 			if (data.conditions.length !== originalConditionRelations[index].conditions.length) {
-				hasEdited.current = true;
+				rowsEdited.current++;
 			} else {
 				for (var i = 0; i < data.conditions.length; i++) {
 					if (data.conditions[i].conditionStatement !== originalConditionRelations[index].conditions[i].conditionStatement) {
-						hasEdited.current = true;
+						rowsEdited.current++;
 					}
 				}
 			}
+		}
+		//if a new relation has been added or there were no condition relations to begin with
+		if((localConditionRelations.length > originalConditionRelations?.length) || !originalConditionRelations){
+			rowsEdited.current++;
 		}
 	};
 	
@@ -162,8 +161,19 @@ export const ConditionRelationsDialog = ({
 		};
 		return _clonableRelations;
 	};
+
+	const createNewRelationHandler = (event) => {
+		let cnt = localConditionRelations ? localConditionRelations.length : 0;
+		const _localConditionRelations = global.structuredClone(localConditionRelations);
+		_localConditionRelations.push({
+			dataKey : cnt,
+		});
+		let _editingRows = { ...editingRows, ...{ [`${cnt}`]: true } };
+		setEditingRows(_editingRows);
+		setLocalConditionRelations(_localConditionRelations);
+	};
 	
-	const saveDataHandler = async () => {
+	const saveDataHandler = () => {
 		
 		setErrorMessages([]);
 		for (const relation of localConditionRelations) {
@@ -173,16 +183,14 @@ export const ConditionRelationsDialog = ({
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex].conditionRelations = localConditionRelations;
 		
-		if(hasEdited.current){
-			const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
-			let messageObject = {
-				severity: "warn",
-				message: "Pending Edits!"
-			};
-			errorMessagesCopy[rowIndex] = {};
-			errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
-			setErrorMessagesMainRow({...errorMessagesCopy});
-		}
+		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
+		let messageObject = {
+			severity: "warn",
+			message: "Pending Edits!"
+		};
+		errorMessagesCopy[rowIndex] = {};
+		errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
+		setErrorMessagesMainRow({...errorMessagesCopy});
 		
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
 				return {
@@ -217,7 +225,7 @@ export const ConditionRelationsDialog = ({
 	};
 	
 	const conditionRelationTypeTemplate = (rowData) => {
-		return <EllipsisTableCell>{rowData.conditionRelationType.name}</EllipsisTableCell>;
+		return <EllipsisTableCell>{rowData.conditionRelationType?.name}</EllipsisTableCell>;
 	};
 	
 	const onConditionRelationTypeEditorValueChange = (props, event) => {
@@ -285,14 +293,33 @@ export const ConditionRelationsDialog = ({
 		return (
 			<div>
 				<Button label="Cancel" icon="pi pi-times" onClick={hideDialog} className="p-button-text" />
-				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={!hasEdited.current}/>
+				<Button label="New Condition" icon="pi pi-plus" onClick={createNewRelationHandler}/>
+				<Button label="Keep Edits" icon="pi pi-check" onClick={saveDataHandler} disabled={rowsEdited.current === 0}/>
 			</div>
+		);
+	}
+	
+	const handleDeleteConditionRelation = (event, props) => {
+		let _localConditionRelations = global.structuredClone(localConditionRelations); 
+		if(props.dataKey){
+			_localConditionRelations.splice(props.dataKey, 1);
+		}else {
+			_localConditionRelations.splice(props.rowIndex, 1);
+		}
+		setLocalConditionRelations(_localConditionRelations);
+		rowsEdited.current++;
+	}
+
+	const deleteAction = (props) => {
+		return (
+			<Button icon="pi pi-trash" className="p-button-text"
+					onClick={(event) => { handleDeleteConditionRelation(event, props) }}/>
 		);
 	}
 	
 	let headerGroup = 	<ColumnGroup>
 						<Row>
-							<Column header="Actions" style={{display: isInEdit ? 'visible' : 'none'}}/>
+							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Relation" />
 							<Column header="Conditions" />
 							<Column header="Internal" />
@@ -308,6 +335,7 @@ export const ConditionRelationsDialog = ({
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
+					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' body={conditionRelationTypeTemplate}/>
 					<Column editor={conditionsEditorTemplate} field="conditions.conditionStatement" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>

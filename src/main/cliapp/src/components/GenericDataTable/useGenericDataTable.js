@@ -1,8 +1,10 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { SearchService } from '../../service/SearchService';
 import { useSessionStorage } from '../../service/useSessionStorage';
+
+import { DeletionService } from '../../service/DeletionService';
 
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
@@ -21,7 +23,9 @@ export const useGenericDataTable = ({
 	toasts,
 	initialColumnWidth,
 	errorObject,
-	defaultVisibleColumns
+	defaultVisibleColumns,
+	newEntity,
+	deletionEnabled,
 }) => {
 
 	const defaultColumnNames = columns.map((col) => {
@@ -45,8 +49,9 @@ export const useGenericDataTable = ({
 		initialTableState
 	);
 
-	//probably should be plural
-	const [entity, setEntity] = useState(null);
+	const deletionService = new DeletionService();
+
+	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
 	const [originalRows, setOriginalRows] = useState([]);
 	const [columnList, setColumnList] = useState([]);
@@ -90,7 +95,7 @@ export const useGenericDataTable = ({
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFields), {
 		onSuccess: (data) => {
 			setIsEnabled(true);
-			setEntity(data.results);
+			setEntities(data.results);
 			setTotalRecords(data.totalResults);
 		},
 		onError: (error) => {
@@ -101,6 +106,22 @@ export const useGenericDataTable = ({
 		keepPreviousData: true,
 		refetchOnWindowFocus: false
 	});
+
+	useEffect(() => {
+		if (
+			Object.keys(tableState.filters).length > 0
+			|| tableState.multiSortMeta.length > 0
+			|| tableState.page > 0
+			|| !newEntity
+		) return;
+
+		setEntities((previousEntities) => {
+			const newEntities = previousEntities;
+			newEntities.unshift(newEntity);
+			return newEntities;
+		})
+	// eslint-disable-next-line react-hooks/exhaustive-deps	
+	}, [newEntity])
 
 	const setIsFirst = (value) => {
 		let _tableState = {
@@ -146,12 +167,13 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
+	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
-		originalRows[event.index] = { ...entity[event.index] };
-		setOriginalRows(originalRows);
+		let _originalRows = global.structuredClone(originalRows);
+		_originalRows[event.index] = global.structuredClone(entities[event.index]);
+		setOriginalRows(_originalRows);
 	};
 
 	const onRowEditCancel = (event) => {
@@ -160,11 +182,11 @@ export const useGenericDataTable = ({
 			setIsEnabled(true);
 		};
 
-		let _entity = [...entity];
-		_entity[event.index] = originalRows[event.index];
+		let _entities = [...entities];
+		_entities[event.index] = originalRows[event.index];
 		delete originalRows[event.index];
 		setOriginalRows(originalRows);
-		setEntity(_entity);
+		setEntities(_entities);
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages({ ...errorMessagesCopy });
@@ -203,9 +225,9 @@ export const useGenericDataTable = ({
 			onSuccess: (response, variables, context) => {
 				toast_topright.current.show({ severity: 'success', summary: 'Successful', detail: 'Row Updated' });
 
-				let _entity = global.structuredClone(entity);
-				_entity[event.index] = response.data.entity;
-				setEntity(_entity);
+				let _entities = global.structuredClone(entities);
+				_entities[event.index] = response.data.entity;
+				setEntities(_entities);
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[event.index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
@@ -216,11 +238,10 @@ export const useGenericDataTable = ({
 					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
 				]);
 
-				let _entity = global.structuredClone(entity);
+				let _entities = global.structuredClone(entities);
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
 
-				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};
 				Object.keys(error.response.data.errorMessages).forEach((field) => {
 					let messageObject = {
@@ -230,22 +251,59 @@ export const useGenericDataTable = ({
 					errorMessagesCopy[event.index][field] = messageObject;
 				});
 
-				console.log(errorMessagesCopy);
 				setErrorMessages({ ...errorMessagesCopy });
 
-				setEntity(_entity);
-				let _editingRows = { ...editingRows, ...{ [`${_entity[event.index].id}`]: true } };
+				setEntities(_entities);
+				let _editingRows = { ...editingRows, ...{ [`${_entities[event.index].id}`]: true } };
 				setEditingRows(_editingRows);
 			},
 		});
 	};
 
+	const handleDeletion = async (idToDelete, ixToDelete) => {
+		const result = await deletionService.delete(endpoint, idToDelete);
+		if (result.isError) {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
+					' [' + idToDelete + ']', sticky: false }
+			]);
+			let deletionErrorMessage = result?.message ? result.message : null;
+			return deletionErrorMessage;
+		} else {
+			toast_topright.current.show([
+				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
+					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+			]);
+			let _entities = global.structuredClone(entities);
+			
+			if (editingRows[idToDelete]) {
+				let _editingRows = { ...editingRows};
+				delete _editingRows[idToDelete];
+				setEditingRows(_editingRows);
+				
+				const rowsInEdit = Object.keys(editingRows).length;
+				if (rowsInEdit === 0) {
+					setIsEnabled(true);
+				};
+			}
+			
+			_entities.splice(ixToDelete, 1);
+			setEntities(_entities);
+			let _tableState = {
+				...tableState,
+				rows: tableState.rows - 1
+			}
+			
+			setTableState(_tableState);
+			setTotalRecords(totalRecords - 1);
+			return null;
+		}
+	}
 
 	const onRowEditChange = (event) => {
 		setEditingRows(event.data);
 	};
  
-
 	const resetTableState = () => {
 		let _tableState = {
 			...initialTableState,
@@ -253,7 +311,7 @@ export const useGenericDataTable = ({
 		};
 
 		setTableState(_tableState);
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -298,7 +356,7 @@ export const useGenericDataTable = ({
 		onFilter, 
 		setColumnList, 
 		columnWidths, 
-		entity, 
+		entities, 
 		dataTable, 
 		editingRows, 
 		onRowEditInit, 
@@ -311,5 +369,6 @@ export const useGenericDataTable = ({
 		totalRecords,
 		onLazyLoad,
 		columnList,
+		handleDeletion,
 	};
 };

@@ -1,8 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
-import java.io.*;
+import java.io.File;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 
@@ -13,7 +12,6 @@ import org.alliancegenome.curation_api.model.fms.DataFile;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.vertx.ConsumeEvent;

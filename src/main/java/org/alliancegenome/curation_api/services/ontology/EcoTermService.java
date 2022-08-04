@@ -7,12 +7,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
 @RequestScoped
 public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO> {

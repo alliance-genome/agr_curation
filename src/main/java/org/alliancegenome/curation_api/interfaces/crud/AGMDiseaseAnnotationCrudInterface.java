@@ -6,7 +6,7 @@ import java.util.List;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.interfaces.base.*;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.*;
@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Tag(name = "CRUD - AGM Disease Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation> {
+public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<AGMDiseaseAnnotation>, BaseDTOCrudControllerInterface<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> {
 
 	@GET
 	@Path("/findBy/{uniqueId}")

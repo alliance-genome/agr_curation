@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.*;
-import java.time.*;
+import java.time.LocalDateTime;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;

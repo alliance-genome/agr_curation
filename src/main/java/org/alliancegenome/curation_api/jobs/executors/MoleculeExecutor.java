@@ -8,7 +8,7 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
