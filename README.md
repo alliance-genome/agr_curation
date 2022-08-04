@@ -434,26 +434,27 @@ the new version of the application can function in a consistent state upon and a
    This must be done to catch any potentially problems that could be caused by new data available only on the production environment,
    before the code causing it would get deployed to the production environment.
 4. Tag and create the release in git and gitHub, as described in the [Release creation](#release-creation) section.
-5. Compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
+5. Check the logs for the environment that you're releaseing too and make sure that the migrations complete successfully.
+6. After the migrations have completed, compare the database schemas of the environments being deployed to and from, and manually ALTER/UPDATE the schema and all corresponding
    data if needed where schema changes were not automatically propagated correctly upon application launch.  
    The DB schema can be obtained through the CLI by using pg_dump like so:
    ```bash
    pg_dump -s -h $DB_HOST -p $DB_PORT -d $DB_NAME -U $DB_USER | tee curation_DB_schema.sql
    ```
-6. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
+7. If the DB schema needed manual patching, restart the application (to allow hibernate to pick up these changes).  
    This can be achieved by terminating the environment's running EC2 instance or (more quickly)
    by connecting into the server as admin through ssh, and restarting the docker container:
    ```bash
    cd /var/app/current/
    sudo docker-compose restart
    ```
-7. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
+8. Reindex all data types by calling all reindexing endpoints (as defined in the swagger UI) one at a time,
    and follow-up through log server to ensure reindexing completed successfully before executing the next.
-8. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
+9. Trigger all data loads. This must be done by clicking the play putton at the load level first, wait for that action to complete
    and if no new file (with a new md5sum) got loaded then click the play button at file level for the most recently loaded file,
    to ensure all data gets reloaded, including any new features that may have been implemented in the release just deployed
    (new code does not automatically trigger old files to get reloaded).
-9. After completing all above steps successfullly, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
+10. After completing all above steps successfullly, return to the code promoting section to complete the last step(s) ([alpha to beta](#promoting-code-from-alpha-to-beta) or [beta to production](#promoting-code-from-beta-to-production))
 
 
 ### Release versioning
