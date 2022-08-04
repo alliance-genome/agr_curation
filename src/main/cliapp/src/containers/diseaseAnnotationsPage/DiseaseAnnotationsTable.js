@@ -2,7 +2,10 @@ import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { AutocompleteEditor } from '../../components/AutocompleteEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
@@ -12,19 +15,25 @@ import { RelatedNotesDialog } from './RelatedNotesDialog';
 import { ConditionRelationsDialog } from './ConditionRelationsDialog';
 
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
+import { ConditionRelationHandleDropdown } from '../../components/ConditionRelationHandleSelector';
 import { ControlledVocabularyMultiSelectDropdown } from '../../components/ControlledVocabularyMultiSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import {getRefID} from "../../utils/utils";
+import {getRefString} from '../../utils/utils';
 
 export const DiseaseAnnotationsTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true); //needs better name
-	const [conditionRelationsDialog, setConditionRelationsDialog] = useState(false);
-	const [conditionRelations, setConditionRelations] = useState(false);
+	const [conditionRelationsData, setConditionRelationsData] = useState({
+		conditionRelations: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mailRowProps: {},
+	});
 	const [relatedNotesData, setRelatedNotesData] = useState({
 		relatedNotes: [],
 		isInEdit: false,
@@ -41,6 +50,8 @@ export const DiseaseAnnotationsTable = () => {
 	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
 	const [errorMessages, setErrorMessages] = useState({});
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	const searchService = new SearchService();
 
@@ -79,20 +90,43 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const handleRelatedNotesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
 		let _relatedNotesData = {};
 		_relatedNotesData["originalRelatedNotes"] = rowProps.rowData.relatedNotes;
 		_relatedNotesData["dialog"] = true;
 		_relatedNotesData["isInEdit"] = isInEdit;
-		_relatedNotesData["rowIndex"] = rowProps.rowIndex;
+		_relatedNotesData["rowIndex"] = index;
 		_relatedNotesData["mainRowProps"] = rowProps;
 		setRelatedNotesData(() => ({
 			..._relatedNotesData
 		}));
 	};
 
-	const handleConditionRelationsOpen = (event, rowData) => {
-		setConditionRelations(rowData.conditionRelations);
-		setConditionRelationsDialog(true);
+	const handleConditionRelationsOpen = (event, rowData, isInEdit) => {
+		let _conditionRelationsData = {};
+		_conditionRelationsData["originalConditionRelations"] = rowData.conditionRelations;
+		_conditionRelationsData["dialog"] = true;
+		_conditionRelationsData["isInEdit"] = isInEdit;
+		setConditionRelationsData(() => ({
+			..._conditionRelationsData
+		}));
+	};
+	
+	const handleConditionRelationsOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _conditionRelationsData = {};
+		_conditionRelationsData["originalConditionRelations"] = rowProps.rowData.conditionRelations;
+		_conditionRelationsData["dialog"] = true;
+		_conditionRelationsData["isInEdit"] = isInEdit;
+		_conditionRelationsData["rowIndex"] = index;
+		_conditionRelationsData["mainRowProps"] = rowProps;
+		setConditionRelationsData(() => ({
+			..._conditionRelationsData
+		}));
 	};
 
 	const withTemplate = (rowData) => {
@@ -111,7 +145,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
 	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.evidenceCodes) {
+		if (rowData && rowData.evidenceCodes.length > 0) {
 			const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
@@ -131,6 +165,28 @@ export const DiseaseAnnotationsTable = () => {
 				</>
 			);
 		}
+	};
+	
+	const singleReferenceBodyTemplate = (rowData) => {
+		if (rowData && rowData.singleReference) {
+			let refString = getRefString(rowData.singleReference);
+			return (
+				<>
+					<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}
+						dangerouslySetInnerHTML={{
+							__html: refString
+						}}
+					/>
+					<Tooltip target={`.a${rowData.id}${rowData.singleReference.curie.replace(':', '')}`}>
+						<div dangerouslySetInnerHTML={{
+							__html: refString
+						}}
+						/>
+					</Tooltip>
+				</>
+			);
+			
+		}	
 	};
 
 	const diseaseQualifiersBodyTemplate = (rowData) => {
@@ -189,7 +245,7 @@ export const DiseaseAnnotationsTable = () => {
 						</span>
 					</Button>
 				</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		} else {
@@ -208,33 +264,98 @@ export const DiseaseAnnotationsTable = () => {
 							</span>
 						</Button>
 					</div>
-					<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"relatedNotes.freeText"} style={{ 'fontSize': '1em' }}/>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		}
 	};
 
 	const conditionRelationsTemplate = (rowData) => {
-		if (rowData.conditionRelations) {
-				const handle = rowData.conditionRelations[0].handle
-			return <EllipsisTableCell>
-				<Button className="p-button-raised p-button-text"
+		if (rowData?.conditionRelations && !rowData.conditionRelations[0].handle) {
+			return (
+				<Button className="p-button-text"
 					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
 					<span style={{ textDecoration: 'underline' }}>
-						{!handle && `Conditions (${rowData.conditionRelations.length})`}
-							{handle && handle}
+						{`Conditions (${rowData.conditionRelations.length})`}
 					</span>
 				</Button>
-			</EllipsisTableCell>;
+			)
 		}
 	};
 
+	const conditionRelationsEditor = (props) => {
+		if (props.rowData?.conditionRelations && !props.rowData.conditionRelations[0].handle) {
+			const handle = props.rowData.conditionRelations[0].handle;
+			if (handle)
+				return conditionRelationsTemplate(props.rowData);
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleConditionRelationsOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{!handle && `Conditions (${props.rowData.conditionRelations.length})`}
+							{handle && handle}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+						</span>
+					</Button>
+				</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const conditionRelationHandleTemplate = (rowData) => {
+		if (rowData?.conditionRelations && rowData.conditionRelations[0].handle) {
+			let handle = rowData.conditionRelations[0].handle;
+			return (
+				<Button className="p-button-text"
+					onClick={(event) => { handleConditionRelationsOpen(event, rowData) }} >
+					<span style={{ textDecoration: 'underline' }}>
+						{handle && handle}
+					</span>
+				</Button>
+			)
+		}
+	};
+	
+	const conditionRelationHandleEditor = (props) => {
+		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0].handle) {
+			return (
+			<>
+				<ConditionRelationHandleDropdown
+					field="conditionRelationHandle"
+					editorChange={onConditionRelationHandleEditorValueChange}
+					props={props}
+					showClear={false}
+					placeholderText={props.rowData.conditionRelations[0].handle}
+				/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelationHandle"} />
+			</>
+		);
+		}
+	};
+	
+	const onConditionRelationHandleEditorValueChange = (props, event) => {
+		let updatedAnnotations = [...props.props.value];
+		if (typeof event.value === "object") {
+			updatedAnnotations[props.rowIndex].conditionRelations[0] = event.value;
+		} else {
+			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
+		}
+	};
+	
 	const diseaseBodyTemplate = (rowData) => {
 		if (rowData.object) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={`a${rowData.object.curie.replace(':', '')}`}>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>
-					<Tooltip target={`.a${rowData.object.curie.replace(':', '')}`} content={`${rowData.object.name} (${rowData.object.curie})`} />
+					<EllipsisTableCell otherClasses={`a${rowData.id}${rowData.object.curie.replace(':', '')}`}>{rowData.object.name} ({rowData.object.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.object.curie.replace(':', '')}`} content={`${rowData.object.name} (${rowData.object.curie})`} />
 				</>
 			)
 		}
@@ -258,7 +379,7 @@ export const DiseaseAnnotationsTable = () => {
 					showClear={false}
 					placeholderText={props.rowData.diseaseRelation.name}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseRelation"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseRelation"} />
 			</>
 		);
 	};
@@ -278,7 +399,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"geneticSex"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"geneticSex"} />
 			</>
 		);
 	};
@@ -298,7 +419,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"annotationType"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"annotationType"} />
 			</>
 		);
 	};
@@ -318,7 +439,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					showClear={true}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseGeneticModifierRelation"} />
 			</>
 		);
 	};
@@ -347,7 +468,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					placeholderText={placeholderText}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"diseaseQualifiers"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"diseaseQualifiers"} />
 			</>
 		);
 	};
@@ -368,7 +489,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					field={"negated"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"negated"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"negated"} />
 			</>
 		);
 	};
@@ -389,7 +510,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					field={"internal"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"internal"} />
 			</>
 		);
 	};
@@ -410,7 +531,7 @@ export const DiseaseAnnotationsTable = () => {
 					props={props}
 					field={"obsolete"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"obsolete"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"obsolete"} />
 			</>
 		);
 	};
@@ -426,9 +547,11 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='subjectFilter'
 					fieldName='subject'
 					isSubject={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"subject"}
 				/>
 			</>
@@ -446,9 +569,11 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
 					isSgdStrainBackground={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"sgdStrainBackground"}
 				/>
 			</>
@@ -466,9 +591,11 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='geneticModifierFilter'
 					fieldName='diseaseGeneticModifier'
 					isSubject={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"diseaseGeneticModifier"}
 				/>
 			</>
@@ -494,7 +621,7 @@ export const DiseaseAnnotationsTable = () => {
 					}}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"object"}
 				/>
 			</>
@@ -513,9 +640,11 @@ export const DiseaseAnnotationsTable = () => {
 					fieldName='with'
 					isWith={true}
 					isMultiple={true}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="with"
 				/>
 			</>
@@ -544,9 +673,12 @@ export const DiseaseAnnotationsTable = () => {
 								queryString: "agr_eco_terms"
 							}
 						}
-					}} />
+					}} 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+			/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="evidence"
 				/>
 			</>
@@ -558,12 +690,12 @@ export const DiseaseAnnotationsTable = () => {
 			if (rowData.subject.symbol) {
 				return (
 					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.subject.curie.replace(':', '')}`}
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
 								__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
 							}}
 						/>
-						<Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
 								__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
 							}}
@@ -574,12 +706,12 @@ export const DiseaseAnnotationsTable = () => {
 			} else if (rowData.subject.name) {
 				return (
 					<>
-						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.subject.curie.replace(':', '')}`}
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
 								__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
 							}}
 						/>
-						<Tooltip target={`.a${rowData.subject.curie.replace(':', '')}`}>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
 								__html: rowData.subject.name + ' (' + rowData.subject.curie + ')'
 								}}
@@ -627,26 +759,24 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
-	const singleValueReferenceSelector = (referenceItem) => {
-		return getRefID(referenceItem)
-	}
-
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["curie", "cross_reference.curie"]}
+
+					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='literature-reference'
 					filterName='curieFilter'
-					isSubject={true}
+					isReference={true}
 					fieldName='singleReference'
-					valueSelector={singleValueReferenceSelector}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"reference"}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField={"singleReference"}
 				/>
 			</>
 		);
@@ -741,8 +871,9 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Reference",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie"]},
-		editor: (props) => referenceEditorTemplate(props)
+		filterElement: {type: "input", filterName: "singleReferenceFilter", fields: ["singleReference.curie", "singleReference.crossReferences.curie"]},
+		editor: (props) => referenceEditorTemplate(props),
+		body: singleReferenceBodyTemplate
 	},
 	{
 		field: "evidenceCodes.abbreviation",
@@ -766,21 +897,35 @@ export const DiseaseAnnotationsTable = () => {
 		field: "relatedNotes.freeText",
 		header: "Related Notes",
 		body: relatedNotesTemplate,
-		editor: (props) => relatedNotesEditor(props),
+		editor: relatedNotesEditor,
 		sortable: true,
 		filter: true,
 		filterElement: {type: "input", filterName: "relatedNotesFilter", fields: ["relatedNotes.freeText"]},
 	},
 	{
+		field: "conditionRelations.handle",
+		header: "Experiments",
+		body: conditionRelationHandleTemplate,
+		editor: (props) => conditionRelationHandleEditor(props),
+		sortable: true,
+		filter: true,
+		filterElement: {
+			type: "input",
+			filterName: "conditionRelationHandleFilter",
+			fields: ["conditionRelations.handle"]
+		},
+	},
+	{
 		field: "conditionRelations.uniqueId",
 		header: "Experimental Conditions",
 		body: conditionRelationsTemplate,
+		editor: (props) => conditionRelationsEditor(props),
 		sortable: true,
 		filter: true,
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionStatement", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
+			fields: ["conditionRelations.conditions.conditionSummary", "conditionRelations.conditionRelationType.name", "conditionRelations.handle" ]
 		},
 	},
 	{
@@ -849,11 +994,11 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider"]},
 	},
 	{
-		field: "modifiedBy.uniqueId",
+		field: "updatedBy.uniqueId",
 		header: "Updated By",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "modifiedByFilter", fields: ["modifiedBy.uniqueId"]},
+		filterElement: {type: "input", filterName: "updatedByFilter", fields: ["updatedBy.uniqueId"]},
 	},
 	{
 		field: "dateUpdated",
@@ -926,9 +1071,10 @@ export const DiseaseAnnotationsTable = () => {
 				setErrorMessagesMainRow={setErrorMessages}
 			/>
 			<ConditionRelationsDialog
-				conditonRelations={conditionRelations}
-				conditionRelationsDialog={conditionRelationsDialog}
-				setConditionRelationsDialog={setConditionRelationsDialog}
+				originalConditionRelationsData={conditionRelationsData}
+				setOriginalConditionRelationsData={setConditionRelationsData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
 			/>
 		</>
 	);

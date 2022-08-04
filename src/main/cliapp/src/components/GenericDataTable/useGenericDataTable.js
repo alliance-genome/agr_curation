@@ -4,7 +4,7 @@ import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 import { useSessionStorage } from '../../service/useSessionStorage';
 
-import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder } from '../../utils/utils';
+import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 
 export const useGenericDataTable = ({ 
@@ -206,7 +206,7 @@ export const useGenericDataTable = ({
 				let _entity = global.structuredClone(entity);
 				_entity[event.index] = response.data.entity;
 				setEntity(_entity);
-				const errorMessagesCopy = errorMessages;
+				const errorMessagesCopy = global.structuredClone(errorMessages);
 				errorMessagesCopy[event.index] = {};
 				setErrorMessages({ ...errorMessagesCopy });
 			},
@@ -218,7 +218,7 @@ export const useGenericDataTable = ({
 
 				let _entity = global.structuredClone(entity);
 
-				const errorMessagesCopy = errorMessages;
+				const errorMessagesCopy = global.structuredClone(errorMessages);
 
 				console.log(errorMessagesCopy);
 				errorMessagesCopy[event.index] = {};
@@ -264,6 +264,14 @@ export const useGenericDataTable = ({
 		dataTable.current.el.children[1].scrollLeft = 0;
 	}
 
+	const tableStateConfirm = () => {
+		genericConfirmDialog({
+			header: `${tableName} Table State Reset`,
+			message: `Are you sure? This will reset the local state of the ${tableName} table.`,
+			accept: resetTableState
+		});
+	}
+
 	const colReorderHandler = (event) => {
 		let _columnNames = [...tableState.selectedColumnNames];
 		_columnNames = reorderArray(_columnNames, event.dragIndex, event.dropIndex);
@@ -286,7 +294,7 @@ export const useGenericDataTable = ({
 		setSelectedColumnNames, 
 		defaultColumnNames, 
 		tableState, 
-		resetTableState, 
+		tableStateConfirm,
 		onFilter, 
 		setColumnList, 
 		columnWidths, 

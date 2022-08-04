@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
-import { AutocompleteEditor } from '../../components/AutocompleteEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -22,6 +22,8 @@ export const ExperimentalConditionsTable = () => {
 	const searchService = new SearchService();
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	let experimentalConditionService = null;
 
@@ -43,7 +45,7 @@ export const ExperimentalConditionsTable = () => {
 					rowProps={props}
 					fieldName={fieldname}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={fieldname} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
 			</>
 		);
 	};
@@ -79,8 +81,8 @@ export const ExperimentalConditionsTable = () => {
 		if (rowData.conditionClass) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={rowData.conditionClass.curie.replace(':', '')}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
-					<Tooltip target={`.${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
+					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`}>{rowData.conditionClass.name} ({rowData.conditionClass.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.conditionClass.curie.replace(':', '')}`} content={`${rowData.conditionClass.name} ${rowData.conditionClass.curie}`} />
 				</>
 			)
 		}
@@ -90,8 +92,8 @@ export const ExperimentalConditionsTable = () => {
 		if (rowData.conditionId) {
 			return (
 				<>
-					<EllipsisTableCell otherClasses={rowData.conditionId.curie.replace(':', '')}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
-					<Tooltip target={`.${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
+					<EllipsisTableCell otherClasses={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`}>{rowData.conditionId.name} ({rowData.conditionId.curie})</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.id}${rowData.conditionId.curie.replace(':', '')}`} content={`${rowData.conditionId.name} ${rowData.conditionId.curie}`} />
 				</>
 			)
 		}
@@ -119,10 +121,10 @@ export const ExperimentalConditionsTable = () => {
 		if (rowData.conditionTaxon) {
 			return (
 					<>
-					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`}>
+					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`}>
 							{rowData.conditionTaxon.name} ({rowData.conditionTaxon.curie})
 					</EllipsisTableCell>
-					<Tooltip target={`.${"TAXON_NAME_"}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+					<Tooltip target={`.${"TAXON_NAME_"}${rowData.id}${rowData.conditionTaxon.curie.replace(':', '')}`} content= {`${rowData.conditionTaxon.name} (${rowData.conditionTaxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
 					</>
 			);
 		}
@@ -150,7 +152,7 @@ export const ExperimentalConditionsTable = () => {
 					props={props}
 					field={"internal"}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessages[props.rowIndex]} errorField={"internal"} />
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"internal"} />
 			</>
 		);
 	};
@@ -180,7 +182,7 @@ export const ExperimentalConditionsTable = () => {
 				}}
 			/>
 			<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField='conditionClass'
 				/>
 			</>
@@ -207,7 +209,7 @@ export const ExperimentalConditionsTable = () => {
 					}}
 				/>
 				<ErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={fieldname}
 				/>
 			</>

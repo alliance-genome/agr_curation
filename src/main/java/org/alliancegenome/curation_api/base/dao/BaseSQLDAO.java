@@ -79,6 +79,38 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			return null;
 		}
 	}
+	
+	
+	public SearchResponse<String> findAllIds(Pagination pagination) {
+		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
+		Root<E> rootEntry = findQuery.from(myClass);
+		CriteriaQuery<E> all = findQuery.select(rootEntry);
+
+		CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
+		countQuery.select(cb.count(countQuery.from(myClass)));
+		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
+
+		TypedQuery<E> allQuery = entityManager.createQuery(all);
+		if(pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
+			int first = pagination.getPage() * pagination.getLimit();
+			if(first < 0) first = 0;
+			allQuery.setFirstResult(first);
+			allQuery.setMaxResults(pagination.getLimit());
+		}
+		SearchResponse<String> results = new SearchResponse<String>();
+
+		List<String> primaryKeys = new ArrayList<>();
+
+		for(E entity: allQuery.getResultList()) {
+			// TODO if this cast to string fails then we should try to cast to a long.
+			primaryKeys.add((String)entityManager.getEntityManagerFactory().getPersistenceUnitUtil().getIdentifier(entity));
+		}
+
+		results.setResults(primaryKeys);
+		results.setTotalResults(totalResults);
+		return results;
+	}
 
 	public SearchResponse<E> findAll(Pagination pagination) {
 		log.debug("SqlDAO: findAll: " + myClass);
@@ -149,14 +181,14 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	}
 	
 	public void reindex() {
-		reindex(myClass, 4, 1, 0, 1000, 10000, 7200);
+		reindex(myClass, 1000, 10000, 0, 4, 7200, 1);
 	}
 
-	public void reindex(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
-		reindex(myClass, threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
+	public void reindex(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+		reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 

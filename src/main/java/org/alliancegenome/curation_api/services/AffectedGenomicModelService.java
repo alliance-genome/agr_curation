@@ -132,7 +132,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 	private AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
 		// Check for required fields
 		if (dto.getCurie() == null || dto.getTaxon() == null) {
-			throw new ObjectValidationException(dto, "Entry for allele " + dto.getCurie() + " missing required fields - skipping");
+			throw new ObjectValidationException(dto, "Entry for agm " + dto.getCurie() + " missing required fields - skipping");
 		}
 
 		AffectedGenomicModel agm = affectedGenomicModelDAO.find(dto.getCurie());
@@ -144,7 +144,7 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 		// Validate taxon ID
 		ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
 		if (taxonResponse.getEntity() == null) {
-			throw new ObjectValidationException(dto, "Invalid taxon ID for allele " + dto.getCurie() + " - skipping");
+			throw new ObjectValidationException(dto, "Invalid taxon ID for agm " + dto.getCurie() + " - skipping");
 		}
 		agm.setTaxon(taxonResponse.getEntity());
 		
@@ -154,9 +154,9 @@ public class AffectedGenomicModelService extends BaseCrudService<AffectedGenomic
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			agm.setCreatedBy(createdBy);
 		}
-		if (dto.getModifiedBy() != null) {
-			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getModifiedBy());
-			agm.setModifiedBy(modifiedBy);
+		if (dto.getUpdatedBy() != null) {
+			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			agm.setUpdatedBy(modifiedBy);
 		}
 		
 		agm.setInternal(dto.getInternal());

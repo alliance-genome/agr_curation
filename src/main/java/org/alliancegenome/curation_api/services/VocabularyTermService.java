@@ -27,8 +27,15 @@ public class VocabularyTermService extends BaseCrudService<VocabularyTerm, Vocab
 
 	@Override
 	@Transactional
+	public ObjectResponse<VocabularyTerm> create(VocabularyTerm uiEntity) {
+		VocabularyTerm dbEntity = vocabularyTermValidator.validateVocabularyTermCreate(uiEntity);
+		return new ObjectResponse<>(vocabularyTermDAO.persist(dbEntity));
+	}
+	
+	@Override
+	@Transactional
 	public ObjectResponse<VocabularyTerm> update(VocabularyTerm uiEntity) {
-		VocabularyTerm dbEntity = vocabularyTermValidator.validateVocabularyTerm(uiEntity);
+		VocabularyTerm dbEntity = vocabularyTermValidator.validateVocabularyTermUpdate(uiEntity);
 		return new ObjectResponse<>(vocabularyTermDAO.persist(dbEntity));
 	}
 

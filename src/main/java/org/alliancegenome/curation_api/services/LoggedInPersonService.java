@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.HashMap;
+import java.util.*;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -37,6 +37,13 @@ public class LoggedInPersonService extends BaseCrudService<LoggedInPerson, Logge
 		}
 		
 		return null;
+	}
+	
+	@Transactional
+	public LoggedInPerson regenApiToken() {
+		LoggedInPerson user = loggedInPersonDAO.find(authenticatedPerson.getId());
+		user.setApiToken(UUID.randomUUID().toString());
+		return user;
 	}
 	
 }

@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -12,8 +14,12 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.*;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Molecule;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.fms.dto.MoleculeFmsDTO;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.helpers.validators.MoleculeValidator;
 import org.apache.commons.collections4.map.HashedMap;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -24,7 +30,8 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
 
 	@Inject
 	MoleculeDAO moleculeDAO;
-	
+	@Inject
+	MoleculeValidator moleculeValidator;
 	@Inject
 	CrossReferenceService crossReferenceService;
 
@@ -43,6 +50,12 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
 		return molecule;
 	}
 	
+	@Override
+	@Transactional
+	public ObjectResponse<Molecule> update(Molecule uiEntity) {
+		Molecule dbEntity = moleculeValidator.validateMolecule(uiEntity);
+		return new ObjectResponse<>(moleculeDAO.persist(dbEntity));
+	}
 	
 	@Transactional
 	public void processUpdate(MoleculeFmsDTO molecule) throws ObjectUpdateException {
@@ -87,6 +100,7 @@ public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
 			m.setFormula(molecule.getFormula());
 			m.setSmiles(molecule.getSmiles());
 			m.setSynonyms(molecule.getSynonyms());
+			m.setNamespace("molecule");
 				
 			moleculeDAO.persist(m); 
 		
