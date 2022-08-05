@@ -116,7 +116,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 			}
 		}
 
-		if (noteType.getObsolete() && !noteType.getName().equals(dbEntity.getNoteType().getName())) {
+		if (noteType.getObsolete() && (dbEntity.getNoteType() == null || !noteType.getName().equals(dbEntity.getNoteType().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

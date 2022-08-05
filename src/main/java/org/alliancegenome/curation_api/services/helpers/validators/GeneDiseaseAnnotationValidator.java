@@ -69,7 +69,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
 			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -92,7 +92,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+		if (relation.getObsolete() && (dbEntity.getDiseaseRelation() == null || !relation.getName().equals(dbEntity.getDiseaseRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -110,7 +110,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (sgdStrainBackground.getObsolete() && !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie())) {
+		if (sgdStrainBackground.getObsolete() && (dbEntity.getSgdStrainBackground() == null || !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie()))) {
 			addMessageResponse("sgdStrainBackground", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
