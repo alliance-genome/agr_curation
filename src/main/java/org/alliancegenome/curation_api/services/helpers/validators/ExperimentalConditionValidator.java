@@ -46,11 +46,8 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 	NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	
 	
-	private String errorMessage;
-	
-	public ExperimentalCondition validateConditionUpdate(ExperimentalCondition uiEntity) {
+	public ExperimentalCondition validateCondition(ExperimentalCondition uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
 		
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -64,21 +61,9 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 			// do not continue validation for update if Disease Annotation ID has not been found
 		}
 		
-		return validateCondition(uiEntity, dbEntity);
-	}
-	
-	
-	public ExperimentalCondition validateConditionCreate(ExperimentalCondition uiEntity) {
-		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not create ExperimentalCondition: [" + uiEntity.getConditionStatement() + "]";
+		String errorTitle =  "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
 		
-		ExperimentalCondition dbEntity = new ExperimentalCondition();
 		
-		return validateCondition(uiEntity, dbEntity);
-	}
-	
-	
-	public ExperimentalCondition validateCondition(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
@@ -118,7 +103,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorMessage);
+			response.setErrorMessage(errorTitle);
 			throw new ApiErrorException(response);
 		}
 		
