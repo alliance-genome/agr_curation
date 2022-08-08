@@ -22,9 +22,11 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	
-	public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity) {
+	private String errorMessage;
+	
+	public AlleleDiseaseAnnotation validateAnnotationUpdate(AlleleDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -37,6 +39,20 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			throw new ApiErrorException(response);
 			// do not continue validation for update if Disease Annotation ID has not been found
 		}		
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AlleleDiseaseAnnotation validateAnnotationCreate(AlleleDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Cound not create Allele Disease Annotation";;
+		
+		AlleleDiseaseAnnotation dbEntity = new AlleleDiseaseAnnotation();
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 		
 		Allele subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
@@ -53,7 +69,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
@@ -72,7 +88,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 		}
 		
-		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
 			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -90,7 +106,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 		}
 		
-		if (inferredGene.getObsolete() && !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie())) {
+		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie()))) {
 			addMessageResponse("inferredGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -108,7 +124,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 		}
 		
-		if (assertedGene.getObsolete() && !assertedGene.getCurie().equals(dbEntity.getAssertedGene().getCurie())) {
+		if (assertedGene.getObsolete() && (dbEntity.getAssertedGene() == null || !assertedGene.getCurie().equals(dbEntity.getAssertedGene().getCurie()))) {
 			addMessageResponse("assertedGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -130,7 +146,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 		}
 		
-		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+		if (relation.getObsolete() && (dbEntity.getDiseaseRelation() == null || !relation.getName().equals(dbEntity.getDiseaseRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

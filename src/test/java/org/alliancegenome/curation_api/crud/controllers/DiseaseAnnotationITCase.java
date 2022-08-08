@@ -170,6 +170,7 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
 		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
+		diseaseAnnotation.setSingleReference(testReference);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -191,6 +192,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.dataProvider", is("TEST")).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
+				body("entity.singleReference.curie", is(testReference.getCurie())).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
@@ -210,6 +212,7 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
 		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
+		diseaseAnnotation.setSingleReference(testReference);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -232,6 +235,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
+				body("entity.singleReference.curie", is(testReference.getCurie())).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
 	}
@@ -250,6 +254,7 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
 		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
+		diseaseAnnotation.setSingleReference(testReference);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -272,6 +277,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
+				body("entity.singleReference.curie", is(testReference.getCurie())).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
 	}

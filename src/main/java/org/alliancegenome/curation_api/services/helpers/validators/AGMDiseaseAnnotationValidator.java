@@ -25,7 +25,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	@Inject
 	AlleleDAO alleleDAO;
 	
-	public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity) {
+	private String errorMessage;
+	
+	public AGMDiseaseAnnotation validateAnnotationUpdate(AGMDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
 
@@ -39,7 +41,21 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			addMessageResponse("Could not find AGM Disease Annotation with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 			// do not continue validation for update if Disease Annotation ID has not been found
-		}		
+		}
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AGMDiseaseAnnotation validateAnnotationCreate(AGMDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Cound not create AGM Disease Annotation";;
+		
+		AGMDiseaseAnnotation dbEntity = new AGMDiseaseAnnotation();
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
 
 		AffectedGenomicModel subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
@@ -62,7 +78,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
@@ -81,7 +97,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
 			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -100,7 +116,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (inferredGene.getObsolete() && !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie())) {
+		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie()))) {
 			addMessageResponse("inferredGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -118,7 +134,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (assertedGene.getObsolete() && !assertedGene.getCurie().equals(dbEntity.getAssertedGene().getCurie())) {
+		if (assertedGene.getObsolete() && (dbEntity.getAssertedGene() == null || !assertedGene.getCurie().equals(dbEntity.getAssertedGene().getCurie()))) {
 			addMessageResponse("assertedGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -154,7 +170,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (assertedAllele.getObsolete() && !assertedAllele.getCurie().equals(dbEntity.getAssertedAllele().getCurie())) {
+		if (assertedAllele.getObsolete() && (dbEntity.getAssertedAllele() == null || !assertedAllele.getCurie().equals(dbEntity.getAssertedAllele().getCurie()))) {
 			addMessageResponse("assertedAllele", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -176,7 +192,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+		if (relation.getObsolete() && (dbEntity.getDiseaseRelation() == null || !relation.getName().equals(dbEntity.getDiseaseRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

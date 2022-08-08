@@ -46,17 +46,15 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation uiEntity) {
-		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotation(uiEntity);
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
-			for (Note note : dbEntity.getRelatedNotes()) {
-				noteDAO.persist(note);
-			}
-		}
-		
-		alleleDiseaseAnnotationDAO.persist(dbEntity);
-		
-		// TODO this return needs to be changed back to the dbEntity in order for new items (notes) to be created properly 
-		return new ObjectResponse<>(dbEntity);
+		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationUpdate(uiEntity);
+		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation uiEntity) {
+		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationCreate(uiEntity);
+		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
 	@Transactional

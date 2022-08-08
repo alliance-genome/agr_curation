@@ -233,7 +233,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			}
 		}
 		
-		List<Long> previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
+		List<Long> previousNoteIds = new ArrayList<Long>();
+		if (dbEntity.getRelatedNotes() != null) {
+			previousNoteIds = dbEntity.getRelatedNotes().stream().map(Note::getId).collect(Collectors.toList());
+		}
 		List<Long> validatedNoteIds = validatedNotes.stream().map(Note::getId).collect(Collectors.toList());
 		for (Note validatedNote: validatedNotes) {
 			if (!previousNoteIds.contains(validatedNote.getId())) {

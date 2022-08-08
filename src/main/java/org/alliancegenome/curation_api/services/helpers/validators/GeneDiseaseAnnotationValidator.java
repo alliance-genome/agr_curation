@@ -3,13 +3,24 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.*;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.*;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
@@ -22,9 +33,11 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	
-	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity) {
+	private String errorMessage;
+	
+	public GeneDiseaseAnnotation validateAnnotationUpdate(GeneDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -37,6 +50,20 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			throw new ApiErrorException(response);
 			// do not continue validation for update if Disease Annotation ID has not been found
 		}		
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public GeneDiseaseAnnotation validateAnnotationCreate(GeneDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Cound not create Gene Disease Annotation";;
+		
+		GeneDiseaseAnnotation dbEntity = new GeneDiseaseAnnotation();
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 
 		Gene subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
@@ -50,7 +77,8 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
+			log.info(response.getErrorMessages());
 			throw new ApiErrorException(response);
 		}
 
@@ -69,7 +97,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
 			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -92,7 +120,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+		if (relation.getObsolete() && (dbEntity.getDiseaseRelation() == null || !relation.getName().equals(dbEntity.getDiseaseRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -110,7 +138,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (sgdStrainBackground.getObsolete() && !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie())) {
+		if (sgdStrainBackground.getObsolete() && (dbEntity.getSgdStrainBackground() == null || !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie()))) {
 			addMessageResponse("sgdStrainBackground", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
