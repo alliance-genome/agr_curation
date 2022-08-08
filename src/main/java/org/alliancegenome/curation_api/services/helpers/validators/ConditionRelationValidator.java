@@ -208,7 +208,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			return null;
 		}
 
-		if (conditionRelationType.getObsolete() && !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName())) {
+		if (conditionRelationType.getObsolete() && (dbEntity.getConditionRelationType() == null || !conditionRelationType.getName().equals(dbEntity.getConditionRelationType().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
