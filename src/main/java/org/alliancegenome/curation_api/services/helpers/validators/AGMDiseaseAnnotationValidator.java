@@ -3,12 +3,23 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.*;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.*;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
@@ -76,6 +87,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		dbEntity.setDiseaseRelation(relation);
 
 		dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
+		
+		String uniqueId = validateUniqueId(uiEntity, dbEntity);
+		dbEntity.setUniqueId(uniqueId);
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
@@ -83,6 +97,25 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}
 
 		return dbEntity;
+	}
+	
+	private String validateUniqueId(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
+		if (!StringUtils.isBlank(uiEntity.getModEntityId()))
+			return uiEntity.getModEntityId();
+		
+		if (uiEntity.getSubject() == null)
+			return null;
+		
+		String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubject().getTaxon().getCurie()).getCurieID(uiEntity);
+		if (dbEntity.getUniqueId() != null) {
+			SearchResponse<AGMDiseaseAnnotation> response = agmDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
+			if (response != null && !uniqueId.equals(response.getSingleResult().getUniqueId())) {
+				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
+				return null;
+			}
+		}
+		
+		return uniqueId;
 	}
 
 	private AffectedGenomicModel validateSubject(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {

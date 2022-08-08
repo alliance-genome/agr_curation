@@ -8,6 +8,8 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -68,12 +70,34 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
+		String uniqueId = validateUniqueId(uiEntity, dbEntity);
+		dbEntity.setUniqueId(uniqueId);
+		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
 		return dbEntity;
+	}
+	
+	private String validateUniqueId(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
+		if (!StringUtils.isBlank(uiEntity.getModEntityId()))
+			return uiEntity.getModEntityId();
+		
+		if (uiEntity.getSubject() == null)
+			return null;
+		
+		String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubject().getTaxon().getCurie()).getCurieID(uiEntity);
+		if (dbEntity.getUniqueId() != null) {
+			SearchResponse<AlleleDiseaseAnnotation> response = alleleDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
+			if (response != null && !uniqueId.equals(response.getSingleResult().getUniqueId())) {
+				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
+				return null;
+			}
+		}
+		
+		return uniqueId;
 	}
 
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {

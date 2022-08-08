@@ -10,11 +10,15 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,6 +80,9 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		
 		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
+		String uniqueId = validateUniqueId(uiEntity, dbEntity);
+		dbEntity.setUniqueId(uniqueId);
+		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			log.info(response.getErrorMessages());
@@ -83,6 +90,25 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		}
 
 		return dbEntity;
+	}
+	
+	private String validateUniqueId(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
+		if (!StringUtils.isBlank(uiEntity.getModEntityId()))
+			return uiEntity.getModEntityId();
+		
+		if (uiEntity.getSubject() == null)
+			return null;
+		
+		String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubject().getTaxon().getCurie()).getCurieID(uiEntity);
+		if (dbEntity.getUniqueId() != null) {
+			SearchResponse<GeneDiseaseAnnotation> response = geneDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
+			if (response != null && !uniqueId.equals(response.getSingleResult().getUniqueId())) {
+				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
+				return null;
+			}
+		}
+		
+		return uniqueId;
 	}
 
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {

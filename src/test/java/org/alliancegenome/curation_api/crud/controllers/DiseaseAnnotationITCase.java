@@ -162,13 +162,12 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
-		diseaseAnnotation.setUniqueId(GENE_DISEASE_ANNOTATION);
+		diseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setNegated(false);
 		diseaseAnnotation.setObject(testDoTerm);
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testGene);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
 		diseaseAnnotation.setSingleReference(testReference);
 
@@ -185,6 +184,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(200).
 				body("entity.uniqueId", is(GENE_DISEASE_ANNOTATION)).
+				body("entity.modEntityId", is(GENE_DISEASE_ANNOTATION)).
 				body("entity.subject.curie", is("GENE:da0001")).
 				body("entity.object.curie", is("DOID:da0001")).
 				body("entity.diseaseRelation.name", is("is_implicated_in")).
@@ -195,7 +195,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.singleReference.curie", is(testReference.getCurie())).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test
@@ -204,13 +204,12 @@ public class DiseaseAnnotationITCase {
 
 		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
-		diseaseAnnotation.setUniqueId(ALLELE_DISEASE_ANNOTATION);
+		diseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setNegated(false);
 		diseaseAnnotation.setObject(testDoTerm);
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testAllele);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
 		diseaseAnnotation.setSingleReference(testReference);
 
@@ -227,6 +226,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(200).
 				body("entity.uniqueId", is(ALLELE_DISEASE_ANNOTATION)).
+				body("entity.modEntityId", is(ALLELE_DISEASE_ANNOTATION)).
 				body("entity.subject.curie", is("ALLELE:da0001")).
 				body("entity.object.curie", is("DOID:da0001")).
 				body("entity.diseaseRelation.name", is("is_implicated_in")).
@@ -237,7 +237,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.singleReference.curie", is(testReference.getCurie())).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test
@@ -246,13 +246,12 @@ public class DiseaseAnnotationITCase {
 
 		AGMDiseaseAnnotation diseaseAnnotation = new AGMDiseaseAnnotation();
 		diseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
-		diseaseAnnotation.setUniqueId(AGM_DISEASE_ANNOTATION);
+		diseaseAnnotation.setModEntityId(AGM_DISEASE_ANNOTATION);
 		diseaseAnnotation.setNegated(false);
 		diseaseAnnotation.setObject(testDoTerm);
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testAgm);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setUpdatedBy(testPerson);
 		diseaseAnnotation.setCreatedBy(testPerson);
 		diseaseAnnotation.setSingleReference(testReference);
 
@@ -269,6 +268,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(200).
 				body("entity.uniqueId", is(AGM_DISEASE_ANNOTATION)).
+				body("entity.modEntityId", is(AGM_DISEASE_ANNOTATION)).
 				body("entity.subject.curie", is("MODEL:da0001")).
 				body("entity.object.curie", is("DOID:da0001")).
 				body("entity.diseaseRelation.name", is("is_model_of")).
@@ -279,7 +279,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.singleReference.curie", is(testReference.getCurie())).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
-				body("entity.updatedBy.uniqueId", is("TEST:Person0001"));
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test

@@ -3,7 +3,12 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,5 +48,42 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> conditions, String associationType) {
 		return super.getCurieID(subject, object, reference, null, conditions, associationType);
+	}
+
+	@Override
+	public String getCurieID(GeneDiseaseAnnotation annotation) {
+		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
+	}
+
+	@Override
+	public String getCurieID(AlleleDiseaseAnnotation annotation) {
+		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
+	}
+
+	@Override
+	public String getCurieID(AGMDiseaseAnnotation annotation) {
+		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
+	}
+		
+	private String getDiseaseAnnotationCurieID(String subjectCurie, DiseaseAnnotation annotation) {	
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		curie.add(subjectCurie);
+		curie.add(annotation.getObject().getCurie());
+		curie.add(annotation.getSingleReference().getCurie());
+		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(EcoTerm::getCurie).collect(Collectors.toList()), "::"));
+		
+		if(CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
+			curie.add(annotation.getConditionRelations().stream()
+				.map(condition -> {
+					CurieGeneratorHelper gen = new CurieGeneratorHelper();
+					gen.add(condition.getConditionRelationType().getName());
+					gen.add(condition.getConditions().stream()
+							.map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
+					);
+					return gen.getCurie();
+				}).collect(Collectors.joining(DELIMITER))
+			);
+		}
+		return curie.getCurie();
 	}
 }

@@ -2,7 +2,11 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
@@ -28,4 +32,27 @@ public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		return super.getCurieID(subject, object, reference, null,null, null);
 	}
 
+	@Override
+	public String getCurieID(GeneDiseaseAnnotation annotation) {
+		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
+	}
+
+	@Override
+	public String getCurieID(AlleleDiseaseAnnotation annotation) {
+		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
+	}
+
+	@Override
+	public String getCurieID(AGMDiseaseAnnotation annotation) {
+		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
+	}
+	
+	private String getDiseaseAnnotationCurieID(String subjectCurie, DiseaseAnnotation annotationDTO) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		curie.add(subjectCurie);
+		curie.add(annotationDTO.getObject().getCurie());
+		curie.add(annotationDTO.getSingleReference().getCurie());
+		
+		return curie.getCurie();	
+	}
 }
