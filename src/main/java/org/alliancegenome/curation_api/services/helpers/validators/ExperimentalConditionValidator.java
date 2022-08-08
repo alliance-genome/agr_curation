@@ -31,23 +31,36 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 	@Inject
 	NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	
+	private String errorMessage;
 	
-	public ExperimentalCondition validateCondition(ExperimentalCondition uiEntity) {
+	public ExperimentalCondition validateExperimentalConditionUpdate(ExperimentalCondition uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
+		errorMessage = "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
 		
 		Long id = uiEntity.getId();
 		if (id == null) {
-			addMessageResponse("No Experimental Condition ID provided");
+			addMessageResponse("No ExperimentalCondition ID provided");
 			throw new ApiErrorException(response);
 		}
 		ExperimentalCondition dbEntity = experimentalConditionDAO.find(id);
 		if (dbEntity == null) {
 			addMessageResponse("Could not find ExperimentalCondition with ID: [" + id + "]");
 			throw new ApiErrorException(response);
-			// do not continue validation for update if Disease Annotation ID has not been found
 		}
-		
+
+		return validateExperimentalCondition(uiEntity, dbEntity);
+	}
+
+	public ExperimentalCondition validateVocabularyCreate(ExperimentalCondition uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
+
+		ExperimentalCondition dbEntity = new ExperimentalCondition();
+
+		return validateExperimentalCondition(uiEntity, dbEntity);
+	}
+
+	public ExperimentalCondition validateExperimentalCondition(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
@@ -87,7 +100,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 		
