@@ -3,29 +3,16 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.OntologyConstants;
-import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.*;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.*;
 
 @RequestScoped
 public class ExperimentalConditionValidator extends AuditedObjectValidator<ExperimentalCondition> {
@@ -45,25 +32,36 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 	@Inject
 	NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	
+	private String errorMessage;
 	
-	public ExperimentalCondition validateCondition(ExperimentalCondition uiEntity) {
+	public ExperimentalCondition validateExperimentalConditionUpdate(ExperimentalCondition uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
 		
 		Long id = uiEntity.getId();
 		if (id == null) {
-			addMessageResponse("No Experimental Condition ID provided");
+			addMessageResponse("No ExperimentalCondition ID provided");
 			throw new ApiErrorException(response);
 		}
 		ExperimentalCondition dbEntity = experimentalConditionDAO.find(id);
 		if (dbEntity == null) {
 			addMessageResponse("Could not find ExperimentalCondition with ID: [" + id + "]");
 			throw new ApiErrorException(response);
-			// do not continue validation for update if Disease Annotation ID has not been found
 		}
-		
-		String errorTitle =  "Could not update ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
-		
-		
+
+		return validateExperimentalCondition(uiEntity, dbEntity);
+	}
+
+	public ExperimentalCondition validateVocabularyCreate(ExperimentalCondition uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
+
+		ExperimentalCondition dbEntity = new ExperimentalCondition();
+
+		return validateExperimentalCondition(uiEntity, dbEntity);
+	}
+
+	public ExperimentalCondition validateExperimentalCondition(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
@@ -103,7 +101,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		}
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 		
