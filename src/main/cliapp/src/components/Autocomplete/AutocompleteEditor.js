@@ -5,10 +5,12 @@ import { Tooltip } from "primereact/tooltip";
 
 export const AutocompleteEditor = (
 	{
+		name,
 		rowProps,
 		searchService,
 		autocompleteFields,
 		endpoint,
+		classNames,
 		filterName,
 		fieldName,
 		subField = "curie",
@@ -19,12 +21,14 @@ export const AutocompleteEditor = (
 		isReference = false,
 		isSgdStrainBackground = false,
 		valueSelector,
-		valueDisplay
+		valueDisplay,
+		passedOnChange,
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
+			if(!rowProps) return "";
 			if (isReference)
 				return getRefString(rowProps.rowData[fieldName]);
 			return isMultiple ?
@@ -62,6 +66,8 @@ export const AutocompleteEditor = (
 	};
 
 	const onValueChange = (event) => {
+		if(passedOnChange) return passedOnChange(event, setFieldValue);
+		
 		let updatedRows = [...rowProps.props.value];
 
 		if (!event.target.value) {
@@ -105,6 +111,7 @@ export const AutocompleteEditor = (
 	return (
 		<div>
 			<AutoComplete
+				name={name}
 				multiple={isMultiple}
 				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
 				field={subField}
@@ -114,6 +121,7 @@ export const AutocompleteEditor = (
 				completeMethod={search}
 				onHide={(e) => op.current.hide(e)}
 				onChange={(e) => onValueChange(e)}
+				className={classNames}
 			/>
 			<EditorTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} dataType={fieldName}/>
 		</div>

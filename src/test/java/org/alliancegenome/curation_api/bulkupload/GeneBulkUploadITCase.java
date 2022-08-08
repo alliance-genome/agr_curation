@@ -8,7 +8,7 @@ import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -25,7 +25,7 @@ import io.restassured.config.RestAssuredConfig;
 
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("01 - Gene bulk upload")

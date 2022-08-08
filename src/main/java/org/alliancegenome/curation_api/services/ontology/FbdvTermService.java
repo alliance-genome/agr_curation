@@ -4,9 +4,9 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.ontology.FbdvTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.FBdvTerm;
+import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
 @RequestScoped
 public class FbdvTermService extends BaseOntologyTermService<FBdvTerm, FbdvTermDAO> {

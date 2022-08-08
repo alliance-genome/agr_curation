@@ -8,7 +8,7 @@ import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.hamcrest.Matchers;
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.*;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(13)

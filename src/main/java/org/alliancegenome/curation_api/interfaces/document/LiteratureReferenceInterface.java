@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.interfaces.document;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.base.interfaces.BaseIdDocumentInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseIdDocumentInterface;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 

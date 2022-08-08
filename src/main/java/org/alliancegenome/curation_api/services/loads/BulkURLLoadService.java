@@ -5,14 +5,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkURLLoad;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
-public class BulkURLLoadService extends BaseCrudService<BulkURLLoad, BulkURLLoadDAO> {
+public class BulkURLLoadService extends BaseEntityCrudService<BulkURLLoad, BulkURLLoadDAO> {
 	
 	@Inject
 	BulkURLLoadDAO bulkURLLoadDAO;
