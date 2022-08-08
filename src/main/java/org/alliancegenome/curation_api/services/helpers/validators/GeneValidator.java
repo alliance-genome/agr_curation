@@ -104,7 +104,7 @@ public class GeneValidator extends GenomicEntityValidator {
 			addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		else if (soTerm.getObsolete() && !soTerm.getCurie().equals(dbEntity.getGeneType().getCurie())) {
+		else if (soTerm.getObsolete() && (dbEntity.getGeneType() == null || !soTerm.getCurie().equals(dbEntity.getGeneType().getCurie()))) {
 			addMessageResponse("geneType", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
