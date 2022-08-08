@@ -97,7 +97,7 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 		}
 		
 		Vocabulary vocabulary = vocabularyResponse.getSingleResult();
-		if (vocabulary.getObsolete() && !vocabulary.getName().equals(dbEntity.getVocabulary().getName())) {
+		if (vocabulary.getObsolete() && (dbEntity.getVocabulary() == null || !vocabulary.getName().equals(dbEntity.getVocabulary().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
