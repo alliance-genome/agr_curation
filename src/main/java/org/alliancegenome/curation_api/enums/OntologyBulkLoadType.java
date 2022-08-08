@@ -24,6 +24,7 @@ public enum OntologyBulkLoadType {
 	XBA(XBATerm.class),
 	XBS(XBSTerm.class),
 	XPO(XPOTerm.class),
+	ATP(ATPTerm.class),
 	XBED(XBEDTerm.class),
 	XSMO(XSMOTerm.class)
 	;
