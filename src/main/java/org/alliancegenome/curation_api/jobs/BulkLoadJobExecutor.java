@@ -228,6 +228,7 @@ public class BulkLoadJobExecutor {
 					break;
 				case ATP:
 					processTerms(bulkLoadFile, atpTermService, config);
+					config.setLoadOnlyIRIPrefix("ATP");
 					break;
 				case XBED:
 					processTerms(bulkLoadFile, xbedTermService, config);
