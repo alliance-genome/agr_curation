@@ -8,8 +8,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
@@ -566,6 +568,9 @@ public class ConditionRelationITCase {
 		zecoTerm.setCurie(curie);
 		zecoTerm.setName("Test");
 		zecoTerm.setObsolete(false);
+		List<String> subsets = new ArrayList<String>();
+		subsets.add(OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		zecoTerm.setSubsets(subsets);
 
 		given().
 			contentType("application/json").
