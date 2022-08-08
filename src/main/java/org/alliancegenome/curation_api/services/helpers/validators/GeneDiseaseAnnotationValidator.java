@@ -96,6 +96,9 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		if (!StringUtils.isBlank(uiEntity.getModEntityId()))
 			return uiEntity.getModEntityId();
 		
+		if (!StringUtils.isBlank(dbEntity.getModEntityId()))
+			return dbEntity.getModEntityId();
+		
 		if (uiEntity.getSubject() == null)
 			return null;
 		
