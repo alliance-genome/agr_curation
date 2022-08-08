@@ -25,6 +25,7 @@ export const useGenericDataTable = ({
 	errorObject,
 	defaultVisibleColumns,
 	newEntity,
+	deletionEnabled,
 }) => {
 
 	const defaultColumnNames = columns.map((col) => {
@@ -166,7 +167,7 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst);
+	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
@@ -310,7 +311,7 @@ export const useGenericDataTable = ({
 		};
 
 		setTableState(_tableState);
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames);
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
