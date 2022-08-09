@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.crud.controllers;
 
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.isEmptyOrNullString;
+import static org.hamcrest.Matchers.aMapWithSize;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -123,7 +124,7 @@ public class DiseaseAnnotationITCase {
 		testObsoleteEcoTerms.add(createEcoTerm("ECO:da0003", "Test obsolete evidence code", true));
 		testGene = createGene("GENE:da0001", "NCBITaxon:9606", false);
 		testGene2 = createGene("GENE:da0002", "NCBITaxon:9606", false);
-		testObsoleteGene = createGene("Gene:da0003", "NCBITaxon:9606", true);
+		testObsoleteGene = createGene("HGNC:da0003", "NCBITaxon:9606", true);
 		testWithGenes.add(createGene("HGNC:1", "NCBITaxon:9606", false));
 		testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606", false);
 		testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606", false);
@@ -517,7 +518,9 @@ public class DiseaseAnnotationITCase {
 			when().
 			put("/api/gene-disease-annotation").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 
 	@Test
@@ -550,7 +553,9 @@ public class DiseaseAnnotationITCase {
 			when().
 			put("/api/gene-disease-annotation").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.object", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -583,7 +588,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -616,7 +623,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -649,7 +658,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	// TODO: re-enable test response once field can be added in UI
@@ -683,7 +694,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -720,7 +733,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.subject", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -757,7 +772,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.object", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -790,7 +807,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseRelation", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -830,7 +849,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -867,7 +888,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifier", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -903,7 +926,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.with", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -940,7 +965,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.sgdStrainBackground", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	// TODO: re-enable test once field can be added in UI
@@ -973,7 +1000,9 @@ public class DiseaseAnnotationITCase {
 			when().
 			put("/api/gene-disease-annotation").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.createdBy", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -1058,7 +1087,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.relatedNotes", is("noteType - " + ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1097,7 +1128,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionRelations", is("conditionRelationType - " + ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1131,7 +1164,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.singleReference", is("curie - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 
@@ -1291,7 +1326,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionRelations", is("singleReference - " + ValidationConstants.INVALID_MESSAGE));
 		
 	}
 	
@@ -1414,7 +1451,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1453,7 +1492,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1494,7 +1535,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1535,7 +1578,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1576,7 +1621,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredAllele", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1617,7 +1664,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedAllele", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1652,7 +1701,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1687,7 +1738,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1724,7 +1777,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1761,7 +1816,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1798,7 +1855,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredAllele", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1835,7 +1894,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedAllele", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1873,7 +1934,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.subject", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1906,7 +1969,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.geneticSex", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1939,7 +2004,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.annotationType", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1972,7 +2039,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2008,7 +2077,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				put("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.with", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -2042,7 +2113,9 @@ public class DiseaseAnnotationITCase {
 			when().
 			post("/api/gene-disease-annotation").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 
 	@Test
@@ -2076,7 +2149,9 @@ public class DiseaseAnnotationITCase {
 			when().
 			post("/api/gene-disease-annotation").
 			then().
-			statusCode(400);
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.object", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -2109,7 +2184,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.subject", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -2142,7 +2219,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.object", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -2175,7 +2254,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseRelation", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	// TODO: enable test once field can be added in UI
@@ -2209,7 +2290,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.dataProvider", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -2247,7 +2330,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.subject", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2285,7 +2370,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.object", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2319,7 +2406,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseRelation", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2360,7 +2449,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2398,7 +2489,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifier", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2435,7 +2528,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.with", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2473,7 +2568,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.sgdStrainBackground", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	// TODO: enable once field can be autopopulated on create
@@ -2555,7 +2652,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.relatedNotes", is("noteType - " + ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -2596,7 +2695,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionRelations", is("conditionRelationType - " + ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -2631,7 +2732,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.singleReference", is("curie - " + ValidationConstants.INVALID_MESSAGE));
 	}	
 	
 	@Test
@@ -2671,7 +2774,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2711,7 +2816,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2753,7 +2860,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2795,7 +2904,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2837,7 +2948,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredAllele", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2879,7 +2992,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedAllele", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2915,7 +3030,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -2951,7 +3068,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/allele-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -2989,7 +3108,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3027,7 +3148,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3065,7 +3188,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.inferredAllele", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3103,7 +3228,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/agm-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.assertedAllele", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3142,7 +3269,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.subject", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3176,7 +3305,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.geneticSex", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -3210,7 +3341,9 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.annotationType", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -3244,17 +3377,55 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
 	@Order(79)
 	public void createWithObsoleteWithGene() {
 		
-		testWithGenes.add(testObsoleteGene);
+		List<Gene> withGenes = new ArrayList<Gene>();
+		withGenes.add(testObsoleteGene);
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
+		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setNegated(true);
+		newDiseaseAnnotation.setObject(testDoTerm2);
+		newDiseaseAnnotation.setDataProvider("TEST2");
+		newDiseaseAnnotation.setSubject(testGene);
+		newDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		newDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		newDiseaseAnnotation.setGeneticSex(geneticSex);
+		newDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		newDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		newDiseaseAnnotation.setAnnotationType(annotationType);
+		newDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		newDiseaseAnnotation.setWith(withGenes);
+		newDiseaseAnnotation.setCreatedBy(testPerson);
+		newDiseaseAnnotation.setDateCreated(testDate);
+		newDiseaseAnnotation.setInternal(true);
+		newDiseaseAnnotation.setObsolete(true);
+		newDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(newDiseaseAnnotation).
+				when().
+				post("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.with", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(80)
+	public void createDuplicateDiseaseAnnotation() {
+		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
+		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION);
 		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
@@ -3280,13 +3451,147 @@ public class DiseaseAnnotationITCase {
 				when().
 				post("/api/gene-disease-annotation").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
 	
 	@Test
-	@Order(80)
-	public void createDuplicateDiseaseAnnotation() {
+	@Order(81)
+	public void createDiseaseAnnotationWithModifierWithoutRelation() {
+		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
+		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
+		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setNegated(true);
+		newDiseaseAnnotation.setObject(testDoTerm2);
+		newDiseaseAnnotation.setDataProvider("TEST2");
+		newDiseaseAnnotation.setSubject(testGene);
+		newDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		newDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		newDiseaseAnnotation.setGeneticSex(geneticSex);
+		newDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		newDiseaseAnnotation.setAnnotationType(annotationType);
+		newDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		newDiseaseAnnotation.setWith(testWithGenes);
+		newDiseaseAnnotation.setCreatedBy(testPerson);
+		newDiseaseAnnotation.setDateCreated(testDate);
+		newDiseaseAnnotation.setInternal(true);
+		newDiseaseAnnotation.setObsolete(true);
+		newDiseaseAnnotation.setSingleReference(testReference);
 		
+		RestAssured.given().
+				contentType("application/json").
+				body(newDiseaseAnnotation).
+				when().
+				post("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifier", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation"));
+	}
+	
+	@Test
+	@Order(82)
+	public void createDiseaseAnnotationWithModiferRelationWithoutModifier() {
+		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
+		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
+		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setNegated(true);
+		newDiseaseAnnotation.setObject(testDoTerm2);
+		newDiseaseAnnotation.setDataProvider("TEST2");
+		newDiseaseAnnotation.setSubject(testGene);
+		newDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		newDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		newDiseaseAnnotation.setGeneticSex(geneticSex);
+		newDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		newDiseaseAnnotation.setAnnotationType(annotationType);
+		newDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		newDiseaseAnnotation.setWith(testWithGenes);
+		newDiseaseAnnotation.setCreatedBy(testPerson);
+		newDiseaseAnnotation.setDateCreated(testDate);
+		newDiseaseAnnotation.setInternal(true);
+		newDiseaseAnnotation.setObsolete(true);
+		newDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(newDiseaseAnnotation).
+				when().
+				post("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifier"));
+	}
+	
+	@Test
+	@Order(83)
+	public void editWithModifierWithoutRelation() {
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(null);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setInternal(true);
+		editedDiseaseAnnotation.setObsolete(true);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifier", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation"));
+	}
+	
+	@Test
+	@Order(83)
+	public void editWithModifierRelationWithoutModifier() {
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(null);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setInternal(true);
+		editedDiseaseAnnotation.setObsolete(true);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.diseaseGeneticModifierRelation", is(ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifier"));
 	}
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {

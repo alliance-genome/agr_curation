@@ -271,7 +271,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			if (uiEntity.getSingleReference() != null && !StringUtils.isBlank(uiEntity.getSingleReference().getCurie()) &&
 					conditionRelation.getSingleReference() != null && !StringUtils.isBlank(conditionRelation.getSingleReference().getCurie()) &&
 					!conditionRelation.getSingleReference().getCurie().equals(uiEntity.getSingleReference().getCurie())) {
-				addMessageResponse("conditionRelationHandle", ValidationConstants.INVALID_MESSAGE);
+				addMessageResponse("conditionRelations", "singleReference - " + ValidationConstants.INVALID_MESSAGE);
 			}
 			
 			if (conditionRelation.getObsolete() && !previousConditionRelationIds.contains(conditionRelation.getId())) {

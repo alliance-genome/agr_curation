@@ -85,7 +85,6 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
-			log.info(response.getErrorMessages());
 			throw new ApiErrorException(response);
 		}
 
@@ -93,19 +92,20 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	}
 	
 	private String validateUniqueId(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
-		if (!StringUtils.isBlank(uiEntity.getModEntityId()))
-			return uiEntity.getModEntityId();
-		
-		if (!StringUtils.isBlank(dbEntity.getModEntityId()))
-			return dbEntity.getModEntityId();
-		
-		if (uiEntity.getSubject() == null)
+		String uniqueId;
+		if (!StringUtils.isBlank(uiEntity.getModEntityId())) {
+			uniqueId = uiEntity.getModEntityId();
+		} else if (!StringUtils.isBlank(dbEntity.getModEntityId())) {
+			uniqueId = dbEntity.getModEntityId();
+		} else if (uiEntity.getSubject() == null) {
 			return null;
-		
-		String uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubject().getTaxon().getCurie()).getCurieID(uiEntity);
-		if (dbEntity.getUniqueId() != null) {
+		} else {
+			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubject().getTaxon().getCurie()).getCurieID(uiEntity);
+		}
+			
+		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
 			SearchResponse<GeneDiseaseAnnotation> response = geneDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
-			if (response != null && !uniqueId.equals(response.getSingleResult().getUniqueId())) {
+			if (response != null) {
 				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
 				return null;
 			}
