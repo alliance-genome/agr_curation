@@ -48,6 +48,7 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
 	@Transient
 	@Override
+	@JsonIgnore
 	public String getSubjectCurie() {
 		return subject.getCurie();
 	}

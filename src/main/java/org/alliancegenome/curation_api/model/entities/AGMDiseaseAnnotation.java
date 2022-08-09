@@ -59,6 +59,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
 	@Transient
 	@Override
+	@JsonIgnore
 	public String getSubjectCurie() {
 		return subject.getCurie();
 	}
