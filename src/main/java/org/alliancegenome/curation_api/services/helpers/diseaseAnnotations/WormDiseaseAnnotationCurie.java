@@ -47,11 +47,11 @@ public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
 	}
 	
-	private String getDiseaseAnnotationCurieID(String subjectCurie, DiseaseAnnotation annotationDTO) {
+	private String getDiseaseAnnotationCurieID(String subjectCurie, DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
 		curie.add(subjectCurie);
-		curie.add(annotationDTO.getObject().getCurie());
-		curie.add(annotationDTO.getSingleReference().getCurie());
+		curie.add(annotation.getObject().getCurie());
+		curie.add(annotation.getSingleReference().getCurie());
 		
 		return curie.getCurie();	
 	}
