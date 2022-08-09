@@ -8,7 +8,6 @@ import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useMutation, useQueryClient } from "react-query";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
-import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 
@@ -67,16 +66,6 @@ export const NewConditionForm = ({
 			value,
 		});
 		setFieldValue(event.target.value);
-	}
-
-	const onStatementChange = (event, setFieldValue) => {
-		const value = typeof event.value === "object" ? event.value.conditionStatement : event.value;
-		newConditionDispatch({
-			type: "EDIT",
-			field: event.target.name,
-			value,
-		});
-		setFieldValue(value);
 	}
 
 	const onInternalChange = (event) => {
@@ -138,25 +127,6 @@ export const NewConditionForm = ({
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionClass"}/>
 						</div>
-						<div className="field">
-							<label htmlFor="conditionStatement">Statement</label>
-								<AutocompleteEditor
-									autocompleteFields={["conditionStatement"]}
-									searchService={searchService}
-									name="conditionStatement"
-									endpoint='experimental-condition'
-									filterName='conditionStatementFilter'
-									fieldName='conditions'
-									subField='conditionStatement'
-									passedOnChange={onStatementChange}
-									classNames={classNames({'p-invalid': submitted && errorMessages.conditionStatement})}
-									valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
-										<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								/>
-								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionStatement"}/>
-							</div>
-
-		
 						<div className="field">
 							<label htmlFor="conditionId">Condition Term</label>
 							<AutocompleteEditor
