@@ -27,10 +27,7 @@ public abstract class DiseaseAnnotationCurie {
 	}
 
 	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO);
-	
-	public abstract String getCurieID(GeneDiseaseAnnotation annotation);
-	public abstract String getCurieID(AlleleDiseaseAnnotation annotation);
-	public abstract String getCurieID(AGMDiseaseAnnotation annotation);
+	public abstract String getCurieID(DiseaseAnnotation annotation);
 
 	/**
 	 * @return curie string
