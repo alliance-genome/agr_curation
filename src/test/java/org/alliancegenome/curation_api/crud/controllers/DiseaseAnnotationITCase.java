@@ -1979,7 +1979,8 @@ public class DiseaseAnnotationITCase {
 	@Order(45)
 	public void editWithObsoleteWithGene() {
 		
-		testWithGenes.add(testObsoleteGene);
+		List<Gene> withGenes = new ArrayList<Gene>();
+		withGenes.add(testObsoleteGene);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
 		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
@@ -1994,7 +1995,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 		editedDiseaseAnnotation.setAnnotationType(annotationType);
 		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
-		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setWith(withGenes);
 		editedDiseaseAnnotation.setCreatedBy(testPerson);
 		editedDiseaseAnnotation.setDateCreated(testDate);
 		editedDiseaseAnnotation.setInternal(true);
@@ -2540,12 +2541,13 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setDateCreated(testDate);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		
-		List<Note> editedNotes = new ArrayList<Note>();
-		for (Note note : newDiseaseAnnotation.getRelatedNotes()) {
-			note.setNoteType(obsoleteNoteType);
-			editedNotes.add(note);
-		}
-		newDiseaseAnnotation.setRelatedNotes(editedNotes);
+		List<Note> newNotes = new ArrayList<Note>();
+		Note newNote = new Note();
+		newNote.setFreeText("test text");
+		newNote.setNoteType(obsoleteNoteType);
+		newNotes.add(newNote);
+		
+		newDiseaseAnnotation.setRelatedNotes(newNotes);
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -2580,12 +2582,13 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setDateCreated(testDate);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		
-		List<ConditionRelation> editedConditionRelations = new ArrayList<ConditionRelation>();
-		for (ConditionRelation conditionRelation : newDiseaseAnnotation.getConditionRelations()) {
-			conditionRelation.setConditionRelationType(obsoleteConditionRelationType);
-			editedConditionRelations.add(conditionRelation);
-		}
-		newDiseaseAnnotation.setConditionRelations(editedConditionRelations);
+		List<ConditionRelation> newConditionRelations = new ArrayList<ConditionRelation>();
+		List<ExperimentalCondition> conditions = List.of(experimentalCondition);
+		ConditionRelation newConditionRelation = new ConditionRelation();
+		newConditionRelation.setConditionRelationType(obsoleteConditionRelationType);
+		newConditionRelation.setConditions(conditions);
+		newConditionRelations.add(newConditionRelation);
+		newDiseaseAnnotation.setConditionRelations(newConditionRelations);
 		
 		RestAssured.given().
 				contentType("application/json").
