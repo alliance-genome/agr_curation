@@ -41,7 +41,15 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	
 	@Transient
 	@Override
+	@JsonIgnore
 	public String getSubjectCurie() {
 		return subject.getCurie();
+	}
+
+	@Transient
+	@Override
+	@JsonIgnore
+	public String getSubjectTaxonCurie() {
+		return subject.getTaxon().getCurie();
 	}
 }

@@ -89,9 +89,6 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 
 		dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
-		String uniqueId = validateUniqueId(uiEntity, dbEntity);
-		dbEntity.setUniqueId(uniqueId);
-
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
@@ -100,29 +97,6 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		return dbEntity;
 	}
 	
-	private String validateUniqueId(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
-		String uniqueId;
-		if (!StringUtils.isBlank(uiEntity.getModEntityId())) {
-			uniqueId = uiEntity.getModEntityId();
-		} else if (!StringUtils.isBlank(dbEntity.getModEntityId())) {
-			uniqueId = dbEntity.getModEntityId();
-		} else if (uiEntity.getSubject() == null) {
-			return null;
-		} else {
-			uniqueId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(uiEntity.getSubject().getTaxon().getCurie()).getCurieID(uiEntity);
-		}
-			
-		if (dbEntity.getUniqueId() == null || !uniqueId.equals(dbEntity.getUniqueId())) {
-			SearchResponse<AGMDiseaseAnnotation> response = agmDiseaseAnnotationDAO.findByField("uniqueId", uniqueId);
-			if (response != null) {
-				addMessageResponse("uniqueId", ValidationConstants.NON_UNIQUE_MESSAGE);
-				return null;
-			}
-		}
-		
-		return uniqueId;
-	}
-
 	private AffectedGenomicModel validateSubject(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);

@@ -142,5 +142,8 @@ public abstract class DiseaseAnnotation extends Association {
 	
 	@Transient
 	public abstract String getSubjectCurie();
+	
+	@Transient
+	public abstract String getSubjectTaxonCurie();
 
 }
