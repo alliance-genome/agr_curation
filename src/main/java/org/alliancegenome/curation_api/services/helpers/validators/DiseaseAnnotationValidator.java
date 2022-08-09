@@ -59,7 +59,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		else if (diseaseTerm.getObsolete() && !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie())) {
+		else if (diseaseTerm.getObsolete() && (dbEntity.getObject() == null || !diseaseTerm.getCurie().equals(dbEntity.getObject().getCurie()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -141,7 +141,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		if (modifier.getObsolete() && !modifier.getCurie().equals(dbEntity.getDiseaseGeneticModifier().getCurie())) {
+		if (modifier.getObsolete() && (dbEntity.getDiseaseGeneticModifier() == null || !modifier.getCurie().equals(dbEntity.getDiseaseGeneticModifier().getCurie()))) {
 			addMessageResponse("diseaseGeneticModifier", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -167,7 +167,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		if (dgmRelation.getObsolete() && !dgmRelation.getName().equals(dbEntity.getDiseaseGeneticModifierRelation().getName())) {
+		if (dgmRelation.getObsolete() && (dbEntity.getDiseaseGeneticModifierRelation() == null || !dgmRelation.getName().equals(dbEntity.getDiseaseGeneticModifierRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -188,7 +188,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		if (geneticSex.getObsolete() && !geneticSex.getName().equals(dbEntity.getGeneticSex().getName())) {
+		if (geneticSex.getObsolete() && (dbEntity.getGeneticSex() == null || !geneticSex.getName().equals(dbEntity.getGeneticSex().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -209,7 +209,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		if (annotationType.getObsolete() && !annotationType.getName().equals(dbEntity.getAnnotationType().getName())) {
+		if (annotationType.getObsolete() && (dbEntity.getAnnotationType() == null || !annotationType.getName().equals(dbEntity.getAnnotationType().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -308,7 +308,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 		
-		if (singleRefResponse.getEntity().getObsolete() && !singleRefResponse.getEntity().getCurie().equals(dbEntity.getSingleReference().getCurie())) {
+		if (singleRefResponse.getEntity().getObsolete() && (dbEntity.getSingleReference() == null || !singleRefResponse.getEntity().getCurie().equals(dbEntity.getSingleReference().getCurie()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

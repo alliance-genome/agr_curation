@@ -188,7 +188,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (inferredAllele.getObsolete() && !inferredAllele.getCurie().equals(dbEntity.getInferredAllele().getCurie())) {
+		if (inferredAllele.getObsolete() && (dbEntity.getInferredAllele() == null || !inferredAllele.getCurie().equals(dbEntity.getInferredAllele().getCurie()))) {
 			addMessageResponse("inferredAllele", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

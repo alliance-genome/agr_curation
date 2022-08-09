@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -3577,6 +3578,9 @@ public class DiseaseAnnotationITCase {
 		zecoTerm.setCurie(curie);
 		zecoTerm.setName("Test");
 		zecoTerm.setObsolete(false);
+		List<String> subsets = new ArrayList<String>();
+		subsets.add(OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		zecoTerm.setSubsets(subsets);
 
 		RestAssured.given().
 				contentType("application/json").
