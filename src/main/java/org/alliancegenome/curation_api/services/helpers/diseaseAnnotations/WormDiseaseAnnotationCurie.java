@@ -26,33 +26,19 @@ public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getSingleReference());
 		return curie.getCurie();
 	}
+	
+	@Override
+	public String getCurieID(DiseaseAnnotation annotation) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		curie.add(annotation.getSubjectCurie());
+		curie.add(annotation.getObject().getCurie());
+		curie.add(annotation.getSingleReference().getCurie());
+		return curie.getCurie();
+	}
 
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
 		return super.getCurieID(subject, object, reference, null,null, null);
 	}
 
-	@Override
-	public String getCurieID(GeneDiseaseAnnotation annotation) {
-		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
-	}
-
-	@Override
-	public String getCurieID(AlleleDiseaseAnnotation annotation) {
-		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
-	}
-
-	@Override
-	public String getCurieID(AGMDiseaseAnnotation annotation) {
-		return getDiseaseAnnotationCurieID(annotation.getSubject().getCurie(), annotation);
-	}
-	
-	private String getDiseaseAnnotationCurieID(String subjectCurie, DiseaseAnnotation annotationDTO) {
-		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		curie.add(subjectCurie);
-		curie.add(annotationDTO.getObject().getCurie());
-		curie.add(annotationDTO.getSingleReference().getCurie());
-		
-		return curie.getCurie();	
-	}
 }

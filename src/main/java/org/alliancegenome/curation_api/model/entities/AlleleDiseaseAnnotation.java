@@ -45,5 +45,10 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Gene assertedGene;
-	
+
+	@Transient
+	@Override
+	public String getSubjectCurie() {
+		return subject.getCurie();
+	}
 }

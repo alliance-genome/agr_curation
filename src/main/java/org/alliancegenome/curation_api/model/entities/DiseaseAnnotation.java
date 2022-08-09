@@ -40,7 +40,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 //@ToString(exclude = {"genomicLocations"})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
-public class DiseaseAnnotation extends Association {
+public abstract class DiseaseAnnotation extends Association {
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -48,7 +48,7 @@ public class DiseaseAnnotation extends Association {
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	private String modEntityId;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -139,5 +139,8 @@ public class DiseaseAnnotation extends Association {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm diseaseGeneticModifierRelation;
+	
+	@Transient
+	public abstract String getSubjectCurie();
 
 }

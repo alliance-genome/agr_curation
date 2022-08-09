@@ -39,4 +39,9 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({View.FieldsOnly.class})
 	private AffectedGenomicModel sgdStrainBackground;
 	
+	@Transient
+	@Override
+	public String getSubjectCurie() {
+		return subject.getCurie();
+	}
 }

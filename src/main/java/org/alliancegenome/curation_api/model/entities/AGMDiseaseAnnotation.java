@@ -56,5 +56,11 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Allele assertedAllele;
-	
+
+	@Transient
+	@Override
+	public String getSubjectCurie() {
+		return subject.getCurie();
+	}
+
 }
