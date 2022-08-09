@@ -255,7 +255,6 @@ export const ConditionRelationTable = () => {
 				searchService={searchService}
 				conditionRelationService={conditionRelationService}
 				conditionRelationTypeTerms={conditionRelationTypeTerms}
-				onConditionRelationValueChange={onConditionRelationValueChange}
 				setNewConditionRelation={setNewConditionRelation}
 			/>
 		</div>

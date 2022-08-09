@@ -9,14 +9,19 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ExperimentalConditionService } from '../../service/ExperimentalConditionService';
 import { Tooltip } from 'primereact/tooltip';
+import { Button } from 'primereact/button';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
+import { NewConditionForm } from './NewConditionForm';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { useNewConditionReducer } from './useNewConditionReducer';
 
 
 export const ExperimentalConditionsTable = () => {
 
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isEnabled, setIsEnabled] = useState(true);
+	const [newExperimentalCondition, setNewExperimentalCondition] = useState(null);
+	const { newConditionState, newConditionDispatch } = useNewConditionReducer(); 
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const searchService = new SearchService();
@@ -37,6 +42,10 @@ export const ExperimentalConditionsTable = () => {
 		}
 		return experimentalConditionService.saveExperimentalCondition(updatedCondition);
 	});
+
+	const handleNewConditionOpen = () => {
+		newConditionDispatch({type: "OPEN_DIALOG"})
+	};
 
 	const freeTextEditor = (props, fieldname) => {
 		return (
@@ -331,6 +340,14 @@ export const ExperimentalConditionsTable = () => {
 	},
 	];
 
+	const headerButtons = () => {
+		return (
+			<>
+				<Button label="New Condition" icon="pi pi-plus" onClick={handleNewConditionOpen} />&nbsp;&nbsp;
+			</>
+		);
+	};
+
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
@@ -345,10 +362,20 @@ export const ExperimentalConditionsTable = () => {
 					mutation={mutation}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
+					headerButtons={headerButtons}
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
 					errorObject = {{errorMessages, setErrorMessages}}
+					newEntity={newExperimentalCondition}
 					deletionEnabled={true}
+				/>
+				<NewConditionForm
+					newConditionState={newConditionState}
+					newConditionDispatch={newConditionDispatch}
+					searchService={searchService}
+					mutation={mutation}
+					setNewExperimentalCondition={setNewExperimentalCondition}
+					curieAutocompleteFields={curieAutocompleteFields}
 				/>
 			</div>
 	)
