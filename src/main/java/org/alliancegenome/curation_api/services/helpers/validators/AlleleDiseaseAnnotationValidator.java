@@ -8,6 +8,8 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -22,9 +24,11 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	
-	public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity) {
+	private String errorMessage;
+	
+	public AlleleDiseaseAnnotation validateAnnotationUpdate(AlleleDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -37,6 +41,20 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			throw new ApiErrorException(response);
 			// do not continue validation for update if Disease Annotation ID has not been found
 		}		
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AlleleDiseaseAnnotation validateAnnotationCreate(AlleleDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Cound not create Allele Disease Annotation";;
+		
+		AlleleDiseaseAnnotation dbEntity = new AlleleDiseaseAnnotation();
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AlleleDiseaseAnnotation validateAnnotation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 		
 		Allele subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
@@ -53,13 +71,13 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		dbEntity = (AlleleDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
 		return dbEntity;
 	}
-
+	
 	private Allele validateSubject(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);

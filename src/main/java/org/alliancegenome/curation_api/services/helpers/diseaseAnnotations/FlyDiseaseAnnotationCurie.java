@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +25,17 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getSingleReference());
 		curie.add(StringUtils.join(annotationDTO.getEvidenceCodes(), "::"));
 		curie.add(annotationDTO.getDiseaseRelation());
+		return curie.getCurie();
+	}
+	
+	@Override
+	public String getCurieID(DiseaseAnnotation annotation) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		curie.add(annotation.getSubjectCurie());
+		curie.add(annotation.getObject().getCurie());
+		curie.add(annotation.getSingleReference().getCurie());
+		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(EcoTerm::getCurie).collect(Collectors.toList()), "::"));
+		curie.add(annotation.getDiseaseRelation().getName());
 		return curie.getCurie();
 	}
 

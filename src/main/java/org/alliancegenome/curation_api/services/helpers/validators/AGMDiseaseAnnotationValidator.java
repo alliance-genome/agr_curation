@@ -3,12 +3,24 @@ package org.alliancegenome.curation_api.services.helpers.validators;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.*;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.apache.commons.lang3.*;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
@@ -25,7 +37,9 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	@Inject
 	AlleleDAO alleleDAO;
 	
-	public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity) {
+	private String errorMessage;
+	
+	public AGMDiseaseAnnotation validateAnnotationUpdate(AGMDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
 
@@ -39,7 +53,21 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			addMessageResponse("Could not find AGM Disease Annotation with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 			// do not continue validation for update if Disease Annotation ID has not been found
-		}		
+		}
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AGMDiseaseAnnotation validateAnnotationCreate(AGMDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Cound not create AGM Disease Annotation";;
+		
+		AGMDiseaseAnnotation dbEntity = new AGMDiseaseAnnotation();
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public AGMDiseaseAnnotation validateAnnotation(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
 
 		AffectedGenomicModel subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
@@ -60,15 +88,15 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		dbEntity.setDiseaseRelation(relation);
 
 		dbEntity = (AGMDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
-
+		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
 		return dbEntity;
 	}
-
+	
 	private AffectedGenomicModel validateSubject(AGMDiseaseAnnotation uiEntity, AGMDiseaseAnnotation dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
@@ -100,7 +128,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null ||!inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie()))) {
+		if (inferredGene.getObsolete() && (dbEntity.getInferredGene() == null || !inferredGene.getCurie().equals(dbEntity.getInferredGene().getCurie()))) {
 			addMessageResponse("inferredGene", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
