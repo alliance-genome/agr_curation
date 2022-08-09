@@ -43,6 +43,7 @@ import { ZFSOntologyComponent } from './containers/ontologies/ZFSOntologyCompone
 import { XBAOntologyComponent } from './containers/ontologies/XBAOntologyComponent';
 import { XBSOntologyComponent } from './containers/ontologies/XBSOntologyComponent';
 import { XPOOntologyComponent } from './containers/ontologies/XPOOntologyComponent';
+import { ATPOntologyComponent } from './containers/ontologies/ATPOntologyComponent';
 import { XBEDOntologyComponent } from './containers/ontologies/XBEDOntologyComponent';
 import { XSMOOntologyComponent } from './containers/ontologies/XSMOOntologyComponent';
 import { NCBITaxonOntologyComponent } from './containers/ontologies/NCBITaxonOntologyComponent';
@@ -83,6 +84,7 @@ export default (
 		<SecureRoute path="/ontology/xba" component={XBAOntologyComponent} />
 		<SecureRoute path="/ontology/xbs" component={XBSOntologyComponent} />
 		<SecureRoute path="/ontology/xpo" component={XPOOntologyComponent} />
+		<SecureRoute path="/ontology/atp" component={ATPOntologyComponent} />
 		<SecureRoute path="/ontology/xbed" component={XBEDOntologyComponent} />
 		<SecureRoute path="/ontology/xsmo" component={XSMOOntologyComponent} />
 		<SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
