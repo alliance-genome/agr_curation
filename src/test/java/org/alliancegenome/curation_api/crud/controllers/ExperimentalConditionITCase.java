@@ -907,6 +907,50 @@ public class ExperimentalConditionITCase {
 				body("errorMessages", is(aMapWithSize(1))).
 				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
 	}
+	
+	@Test
+	@Order(31)
+	public void createDuplicateExperimentalCondition() {
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement17");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount17");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(200);
+		
+		ExperimentalCondition experimentalConditionDuplicate = new ExperimentalCondition();
+		
+		experimentalConditionDuplicate.setConditionClass(testZecoTerm);
+		experimentalConditionDuplicate.setConditionStatement("CRUD:Statement17");
+		experimentalConditionDuplicate.setConditionId(testZecoTerm3);
+		experimentalConditionDuplicate.setConditionQuantity("Amount17");
+		experimentalConditionDuplicate.setConditionAnatomy(testZfaTerm);
+		experimentalConditionDuplicate.setConditionGeneOntology(testGoTerm);
+		experimentalConditionDuplicate.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalConditionDuplicate.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalConditionDuplicate).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
+	}
 
 	private ExperimentalCondition getExperimentalCondition(String conditionStatement) {
 		ObjectResponse<ExperimentalCondition> res = RestAssured.given().
