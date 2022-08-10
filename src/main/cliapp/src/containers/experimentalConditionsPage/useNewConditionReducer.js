@@ -4,7 +4,6 @@ const initialNewConditionState = {
 	newCondition: {
     internal: null,
     obsolete: "false",
-    conditionStatement: "",
     conditionClass: {
         curie: ""
     },
