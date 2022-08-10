@@ -6,8 +6,7 @@ import java.util.*;
 
 import javax.enterprise.context.RequestScoped;
 
-import org.alliancegenome.curation_api.interfaces.APIVersionInterface;
-import org.alliancegenome.curation_api.model.entities.AGRSchemaVersion;
+import org.alliancegenome.curation_api.interfaces.*;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.reflections.Reflections;
@@ -32,17 +31,17 @@ public class APIVersionInfoController implements APIVersionInterface {
 	public APIVersionInfo get() {
 
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
-		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(AGRSchemaVersion.class).asClass(reflections.getConfiguration().getClassLoaders()));
+		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(AGRCurationSchemaVersion.class).asClass(reflections.getConfiguration().getClassLoaders()));
 		HashMap<String, String> linkMLClassVersions = new HashMap<String, String>();
 		for(Class<?> clazz: annotatedClasses) {
-			AGRSchemaVersion version = clazz.getAnnotation(AGRSchemaVersion.class);
+			AGRCurationSchemaVersion version = clazz.getAnnotation(AGRCurationSchemaVersion.class);
 			linkMLClassVersions.put(clazz.getSimpleName(), version.value());
 		}
 
 		APIVersionInfo info = new APIVersionInfo();
 		info.setVersion(version);
 		info.setName(name);
-		info.setLinkMLClassVersions(linkMLClassVersions);
+		info.setLinkmlAGRCurationSchemaVersions(linkMLClassVersions);
 		info.setEsHost(es_host);
 		info.setEnv(env);
 		return info;
