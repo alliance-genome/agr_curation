@@ -41,7 +41,7 @@ public class APIVersionInfoController implements APIVersionInterface {
 		APIVersionInfo info = new APIVersionInfo();
 		info.setVersion(version);
 		info.setName(name);
-		info.setLinkmlAGRCurationSchemaVersions(linkMLClassVersions);
+		info.setAgrCurationSchemaVersions(linkMLClassVersions);
 		info.setEsHost(es_host);
 		info.setEnv(env);
 		return info;

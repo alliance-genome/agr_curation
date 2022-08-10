@@ -16,7 +16,7 @@ public class APIVersionInfo {
 	@JsonView(View.FieldsOnly.class)
 	private String version;
 	@JsonView(View.FieldsOnly.class)
-	private Map<String, String> linkmlAGRCurationSchemaVersions;
+	private Map<String, String> agrCurationSchemaVersions;
 	@JsonView(View.FieldsOnly.class)
 	private String esHost;
 	@JsonView(View.FieldsOnly.class)
