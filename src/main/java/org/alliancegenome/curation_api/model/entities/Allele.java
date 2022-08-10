@@ -18,6 +18,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicLocations", "alleleDiseaseAnnotations"}, callSuper = true)
+@AGRSchemaVersion("1.2.1")
 public class Allele extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
