@@ -88,6 +88,8 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		dbEntity.setConditionFreeText(handleStringField(uiEntity.getConditionFreeText()));
 			
 		dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
+		if (dbEntity.getConditionStatement() == null)
+			dbEntity.setConditionStatement(dbEntity.getConditionSummary());
 		
 		String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
 		if (!uniqueId.equals(uiEntity.getUniqueId())) {
