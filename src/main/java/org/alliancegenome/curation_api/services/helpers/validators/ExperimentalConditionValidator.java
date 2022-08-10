@@ -82,8 +82,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		NCBITaxonTerm conditionTaxon = validateConditionTaxon(uiEntity, dbEntity);
 		dbEntity.setConditionTaxon(conditionTaxon);
 		
-		String conditionStatement = validateConditionStatement(uiEntity, dbEntity);
-		dbEntity.setConditionStatement(conditionStatement);
+		dbEntity.setConditionStatement(handleStringField(uiEntity.getConditionStatement()));
 		
 		dbEntity.setConditionQuantity(handleStringField(uiEntity.getConditionQuantity()));
 		dbEntity.setConditionFreeText(handleStringField(uiEntity.getConditionFreeText()));
@@ -120,7 +119,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 			return null;
 		}
 		else if (zecoTerm.getObsolete() && (dbEntity.getConditionClass() == null || !zecoTerm.getCurie().equals(dbEntity.getConditionClass().getCurie()))) {
-			addMessageResponse(ValidationConstants.OBSOLETE_MESSAGE);
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 		return zecoTerm;
@@ -212,15 +211,5 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 			return null;
 		}
 		return taxonTerm;
-	}
-	
-	public String validateConditionStatement(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
-		String field = "conditionStatement";
-		String conditionStatement = uiEntity.getConditionStatement();
-		if (StringUtils.isBlank(conditionStatement)) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		return conditionStatement;
 	}
 }

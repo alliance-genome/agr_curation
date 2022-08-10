@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -17,6 +18,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.junit.jupiter.api.*;
 
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -154,7 +156,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -178,7 +182,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -202,7 +208,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -226,7 +234,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -250,7 +260,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -274,7 +286,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -302,7 +316,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -330,7 +346,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -358,7 +376,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -386,7 +406,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -414,7 +436,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -438,7 +462,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
@@ -462,7 +488,18 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(200);
+		
+		// Reset conditionStatement as used by getExperimentalCondition() in subsequent tests
+		// TODO: delete following once conditionSummary used for findBy endpoint
+		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
+		RestAssured.given().
+			contentType("application/json").
+			body(editedExperimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -486,7 +523,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -510,7 +549,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -534,7 +575,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -558,7 +601,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -582,7 +627,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -606,7 +653,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -630,7 +679,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -658,7 +709,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -686,7 +739,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -714,7 +769,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -742,7 +799,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -770,7 +829,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -793,7 +854,9 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
@@ -816,7 +879,7 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(200);
 	}
 	
 	@Test
@@ -840,7 +903,53 @@ public class ExperimentalConditionITCase {
 				when().
 				post("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(31)
+	public void createDuplicateExperimentalCondition() {
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement17");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount17");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(200);
+		
+		ExperimentalCondition experimentalConditionDuplicate = new ExperimentalCondition();
+		
+		experimentalConditionDuplicate.setConditionClass(testZecoTerm);
+		experimentalConditionDuplicate.setConditionStatement("CRUD:Statement17");
+		experimentalConditionDuplicate.setConditionId(testZecoTerm3);
+		experimentalConditionDuplicate.setConditionQuantity("Amount17");
+		experimentalConditionDuplicate.setConditionAnatomy(testZfaTerm);
+		experimentalConditionDuplicate.setConditionGeneOntology(testGoTerm);
+		experimentalConditionDuplicate.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalConditionDuplicate.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalConditionDuplicate).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
 
 	private ExperimentalCondition getExperimentalCondition(String conditionStatement) {
