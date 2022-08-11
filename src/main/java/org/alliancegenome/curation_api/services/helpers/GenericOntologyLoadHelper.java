@@ -13,9 +13,8 @@ import org.semanticweb.owlapi.reasoner.*;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
-import lombok.extern.jbosslog.JBossLog;
+import io.quarkus.logging.Log;
 
-@JBossLog
 public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObjectVisitor {
 
 	private OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
@@ -43,7 +42,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	public Map<String, T> load(String fullText) throws Exception {
 		File outfile = new File("tmp.file2.owl"); // TODO fix so multiple loads do not overwrite each other Generate random name
-		log.info("Input data size: " + fullText.length());
+		Log.info("Input data size: " + fullText.length());
 		BufferedWriter writer = new BufferedWriter(new FileWriter(outfile));
 		writer.append(fullText);
 		writer.flush();
@@ -55,13 +54,13 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	public Map<String, T> load(InputStream inStream) throws Exception {
 
-		log.info("Loading Ontology File");
+		Log.info("Loading Ontology File");
 		ontology = manager.loadOntologyFromOntologyDocument(inStream);
-		log.info("Loading Ontology File Finished");
+		Log.info("Loading Ontology File Finished");
 
 		ontology.annotations().forEach(a -> {
 			String key = a.getProperty().getIRI().getShortForm();
-			log.info(key + ": " + getString(a.getValue()));
+			Log.info(key + ": " + getString(a.getValue()));
 			if(key.equals("default-namespace")) {
 				defaultNamespace = getString(a.getValue());
 			}
@@ -76,16 +75,16 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 		OWLClass root = manager.getOWLDataFactory().getOWLThing();
 
-		log.info("Ontology Loaded...");
-		log.info("Ontology : " + ontology.getOntologyID());
-		log.info("Default Namespace : " + defaultNamespace);
-		log.info("Format		: " + manager.getOntologyFormat(ontology));
+		Log.info("Ontology Loaded...");
+		Log.info("Ontology : " + ontology.getOntologyID());
+		Log.info("Default Namespace : " + defaultNamespace);
+		Log.info("Format		: " + manager.getOntologyFormat(ontology));
 
 		reasoner = reasonerFactory.createReasoner(ontology);
 
-		log.info("Traversing Ontology");
+		Log.info("Traversing Ontology");
 		traverse(root, 0, requiredNamespaces);
-		log.info("Finished Traversing Ontology");
+		Log.info("Finished Traversing Ontology: " + allNodes.size());
 
 		return allNodes;
 
@@ -112,78 +111,102 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return false;
 	}
 
-	public T traverse(OWLClass parent, int depth, ArrayList<String> requiredNamespaces) throws Exception {
+	public T traverse(OWLClass currentTreeNode, int depth, ArrayList<String> requiredNamespaces) throws Exception {
 
-		T termParent = null;
+		T currentTerm = null;
 
-		if (reasoner.isSatisfiable(parent)) {
+		if (reasoner.isSatisfiable(currentTreeNode)) {
 
-			termParent = getOntologyTerm(parent);
-			
-			for(OntologyTerm a: traversalStack) {
-				termParent.addIsaAncestor(a);
-			}
-			if(termParent.getCurie() != null) {
-				traversalStack.push(termParent);
-			}
-			
-			boolean condition1 = termParent.getNamespace() != null;
-			boolean condition2 = requiredNamespaces.contains(termParent.getNamespace());
-			boolean condition3 = config.getLoadOnlyIRIPrefix() != null;
-			boolean condition4 = parent.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_");
-			boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
-			boolean condition6 = !hasChebiXref(termParent);
-			
-			//printStack(traversalStack, depth, termParent.getCurie());
-			
-			if(((condition1 && condition2) || (condition3 && condition4)) && (condition5 || condition6)) {
-				if(allNodes.containsKey(termParent.getCurie())) {
-					traversalStack.pop();
-					return allNodes.get(termParent.getCurie());
+			currentTerm = getOntologyTerm(currentTreeNode);
+
+			boolean isNodeInOntology = isNodeInOntology(currentTreeNode, currentTerm, requiredNamespaces);
+
+			if(isNodeInOntology && currentTerm.getCurie() != null) {
+				if(!allNodes.containsKey(currentTerm.getCurie())) {
+					allNodes.put(currentTerm.getCurie(), currentTerm);
 				} else {
-					if(termParent.getCurie() != null) {
-						allNodes.put(termParent.getCurie(), termParent);
-					}
+					currentTerm = allNodes.get(currentTerm.getCurie());
 				}
 			}
 
-			for(OWLClass child: reasoner.getSubClasses(parent, true).entities().collect(Collectors.toList())) {
+			if(isNodeInOntology) {
+				ArrayList<OntologyTerm> ancesters = new ArrayList<OntologyTerm>();
+				traverseToRoot(currentTreeNode, depth, requiredNamespaces, ancesters);
+				if(ancesters.size() > 0) ancesters.remove(0);
+				currentTerm.setIsaAncestors(new HashSet<>(ancesters));
+				//printDepthMessage(depth, currentTerm.getCurie() + " [" + ancesters.stream().map(OntologyTerm::getCurie).collect(Collectors.joining(",")) + "]");
+			}
 
-				if (!child.equals(parent)) {
+
+			for(OWLClass childTermNode: reasoner.getSubClasses(currentTreeNode, true).entities().collect(Collectors.toList())) {
+
+				if (!childTermNode.equals(currentTreeNode)) {
 					try {
-						T childTerm = traverse(child, depth + 1, requiredNamespaces);
+						T childTerm = traverse(childTermNode, depth + 1, requiredNamespaces);
 
-						if(childTerm != null) {
-							if(termParent.getCurie() != null) {
-								childTerm.addIsaParent(termParent);
-							}
+						if(childTerm != null && currentTerm.getCurie() != null && isNodeInOntology) {
+							//printDepthMessage(depth, "Adding isa parent: " + currentTerm.getCurie());
+							childTerm.addIsaParent(currentTerm);
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 			}
-			if(termParent.getCurie() != null) {
-				traversalStack.pop();
-			}
-			
 		}
 
-		return termParent;
+		return currentTerm;
 
 	}
-	
-	public void printStack(Stack<T> stack, int depth, String message) {
+
+	private void traverseToRoot(OWLClass currentTreeNode, int depth, ArrayList<String> requiredNamespaces, ArrayList<OntologyTerm> ancesters) throws Exception {
+		List<OWLClass> parents = reasoner.getSuperClasses(currentTreeNode, true).entities().collect(Collectors.toList());
+
+		T currentTerm = null;
+
+		if (reasoner.isSatisfiable(currentTreeNode)) {
+
+			currentTerm = getOntologyTerm(currentTreeNode);
+
+			if(isNodeInOntology(currentTreeNode, currentTerm, requiredNamespaces) && currentTerm.getCurie() != null) {
+				
+				T existingNode = allNodes.get(currentTerm.getCurie());
+				
+				if(existingNode == null) {
+					allNodes.put(currentTerm.getCurie(), currentTerm);
+					existingNode = currentTerm;
+				}
+				
+				if(!ancesters.contains(existingNode)) {
+					ancesters.add(existingNode);
+				}
+			}
+
+			for(OWLClass parent: parents) {
+				traverseToRoot(parent, depth + 1, requiredNamespaces, ancesters);
+			}
+		}
+	}
+
+	private boolean isNodeInOntology(OWLClass currentTreeNode, T currentTerm, ArrayList<String> requiredNamespaces) {
+		boolean condition1 = currentTerm.getNamespace() != null;
+		boolean condition2 = requiredNamespaces.contains(currentTerm.getNamespace());
+		boolean condition3 = config.getLoadOnlyIRIPrefix() != null;
+		boolean condition4 = currentTreeNode.getIRI().getShortForm().startsWith(config.getLoadOnlyIRIPrefix() + "_");
+
+		boolean condition5 = !config.getIgnoreEntitiesWithChebiXref();
+		boolean condition6 = !hasChebiXref(currentTerm);
+
+		return ((condition1 && condition2) || (condition3 && condition4)) && (condition5 || condition6);
+	}
+
+	public void printDepthMessage(int depth, String message) {
 		String tabs = "";
 		for(int i = 0; i < depth; i++) {
 			tabs += "\t";
 		}
-		String nodes = "";
-		for(OntologyTerm term: stack) {
-			nodes += term.getCurie() + " ";
-		}
-		
-		log.info(tabs + message + " <-- " + nodes);
+
+		Log.info(tabs + message);
 	}
 
 	public String getIRIShortForm(OWLAnnotationValue owlAnnotationValue) {
