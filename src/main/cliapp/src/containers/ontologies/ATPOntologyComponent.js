@@ -43,7 +43,7 @@ export const ATPOntologyComponent = () => {
 			<Toast ref={toast_topleft} position="top-left" />
 			<Toast ref={toast_topright} position="top-right" />
 			<GenericDataTable
-				endpoint={"aptterm"}
+				endpoint={"atpterm"}
 				tableName={"ATP"}
 				columns={columns}
 				isEditable={false}
