@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.*;
@@ -28,7 +29,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	private Class<T> clazz;
 
 	private HashMap<String, T> allNodes = new HashMap<>();
-	private Stack<T> traversalStack = new Stack<T>();
+	private HashSet<String> traversedNodes = new HashSet<String>();
+	
+	private ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 
 	public GenericOntologyLoadHelper(Class<T> clazz) {
 		this.clazz = clazz;
@@ -66,7 +69,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 		});
 
-		ArrayList<String> requiredNamespaces = config.getAltNameSpaces();
+		HashSet<String> requiredNamespaces = config.getAltNameSpaces();
 		if (requiredNamespaces.isEmpty()) {
 			if (defaultNamespace != null) {
 				requiredNamespaces.add(defaultNamespace);
@@ -83,7 +86,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		reasoner = reasonerFactory.createReasoner(ontology);
 
 		Log.info("Traversing Ontology");
+		ph.startProcess("Traversing Ontology: " + clazz.getSimpleName());
 		traverse(root, 0, requiredNamespaces);
+		ph.finishProcess();
 		Log.info("Finished Traversing Ontology: " + allNodes.size());
 
 		return allNodes;
@@ -111,12 +116,12 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		return false;
 	}
 
-	public T traverse(OWLClass currentTreeNode, int depth, ArrayList<String> requiredNamespaces) throws Exception {
+	public T traverse(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces) throws Exception {
 
 		T currentTerm = null;
 
 		if (reasoner.isSatisfiable(currentTreeNode)) {
-
+			ph.progressProcess();
 			currentTerm = getOntologyTerm(currentTreeNode);
 
 			boolean isNodeInOntology = isNodeInOntology(currentTreeNode, currentTerm, requiredNamespaces);
@@ -128,11 +133,18 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 					currentTerm = allNodes.get(currentTerm.getCurie());
 				}
 			}
+			
+			if(traversedNodes.contains(currentTerm.getCurie())) {
+				return currentTerm;
+			} else {
+				traversedNodes.add(currentTerm.getCurie());
+			}
 
 			if(isNodeInOntology) {
-				ArrayList<OntologyTerm> ancesters = new ArrayList<OntologyTerm>();
+				HashSet<OntologyTerm> ancesters = new HashSet<OntologyTerm>();
 				traverseToRoot(currentTreeNode, depth, requiredNamespaces, ancesters);
-				if(ancesters.size() > 0) ancesters.remove(0);
+				ancesters.remove(currentTerm);
+				//if(ancesters.size() > 0) ancesters.remove(0);
 				currentTerm.setIsaAncestors(new HashSet<>(ancesters));
 				//printDepthMessage(depth, currentTerm.getCurie() + " [" + ancesters.stream().map(OntologyTerm::getCurie).collect(Collectors.joining(",")) + "]");
 			}
@@ -159,7 +171,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 
 	}
 
-	private void traverseToRoot(OWLClass currentTreeNode, int depth, ArrayList<String> requiredNamespaces, ArrayList<OntologyTerm> ancesters) throws Exception {
+	private void traverseToRoot(OWLClass currentTreeNode, int depth, HashSet<String> requiredNamespaces, HashSet<OntologyTerm> ancesters) throws Exception {
 		List<OWLClass> parents = reasoner.getSuperClasses(currentTreeNode, true).entities().collect(Collectors.toList());
 
 		T currentTerm = null;
@@ -188,7 +200,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 		}
 	}
 
-	private boolean isNodeInOntology(OWLClass currentTreeNode, T currentTerm, ArrayList<String> requiredNamespaces) {
+	private boolean isNodeInOntology(OWLClass currentTreeNode, T currentTerm, HashSet<String> requiredNamespaces) {
 		boolean condition1 = currentTerm.getNamespace() != null;
 		boolean condition2 = requiredNamespaces.contains(currentTerm.getNamespace());
 		boolean condition3 = config.getLoadOnlyIRIPrefix() != null;
