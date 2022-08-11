@@ -30,13 +30,20 @@ public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends B
 	public ObjectListResponse<E> getRootNodes();
 	
 	@GET
+	@Override
+	@Path("/{curie}")
+	@JsonView(View.OntologyTermView.class)
+	public ObjectResponse<E> get(@PathParam("curie") String curie);
+	
+	@GET
 	@Path("/{curie}/descendants")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<OntologyTerm> getDescendants(@PathParam("curie") String curie);
+	public ObjectListResponse<E> getDescendants(@PathParam("curie") String curie);
 	
 	@GET
 	@Path("/{curie}/children")
 	@JsonView(View.FieldsOnly.class)
-	public ObjectListResponse<OntologyTerm> getChildren(@PathParam("curie") String curie);
+	public ObjectListResponse<E> getChildren(@PathParam("curie") String curie);
+
 	
 }

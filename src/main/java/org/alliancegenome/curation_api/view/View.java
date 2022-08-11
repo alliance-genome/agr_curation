@@ -16,4 +16,6 @@ public class View {
 	
 	public static class DiseaseAnnotationUpdate extends FieldsOnly { }
 	
+	public static class OntologyTermView extends FieldsOnly { }
+	
 }

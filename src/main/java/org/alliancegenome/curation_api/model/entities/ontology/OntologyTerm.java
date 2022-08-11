@@ -12,7 +12,7 @@ import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 
 import lombok.*;
 
@@ -80,10 +80,12 @@ public class OntologyTerm extends CurieAuditedObject {
 	private List<CrossReference> crossReferences;
 
 	@ManyToMany
+	//@JsonView(View.OntologyTermView.class)
 	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = { @Index( columnList = "isaparents_curie"), @Index( columnList = "isachildren_curie")})
 	private Set<OntologyTerm> isaParents;
 
 	@ManyToMany(mappedBy = "isaParents")
+	//@JsonView(View.OntologyTermView.class)
 	private Set<OntologyTerm> isaChildren;
 
 	@ManyToMany

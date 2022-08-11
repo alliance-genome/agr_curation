@@ -52,11 +52,11 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 		return service.getRootNodes();
 	}
 	
-	public ObjectListResponse<OntologyTerm> getChildren(String curie) {
+	public ObjectListResponse<E> getChildren(String curie) {
 		return service.getChildren(curie);
 	}
 	
-	public ObjectListResponse<OntologyTerm> getDescendants(String curie) {
+	public ObjectListResponse<E> getDescendants(String curie) {
 		return service.getDescendants(curie);
 	}
 }
