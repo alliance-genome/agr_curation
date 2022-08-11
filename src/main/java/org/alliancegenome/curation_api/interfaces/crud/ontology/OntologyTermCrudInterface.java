@@ -13,4 +13,5 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface OntologyTermCrudInterface extends BaseOntologyTermCrudInterface<OntologyTerm> {
 
+	
 }

@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -94,8 +95,20 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	}
 	
+	public ObjectListResponse<E> getRootNodes() {
+		SearchResponse<E> t = dao.findByField("isaParents", null);
+		return new ObjectListResponse<E>(t.getResults());
+	}
+
+	public ObjectListResponse<OntologyTerm> getChildren(String curie) {
+		E term = dao.find(curie);
+		return new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
+	}
 	
-	
+	public ObjectListResponse<OntologyTerm> getDescendants(String curie) {
+		E term = dao.find(curie);
+		return new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
+	}
 	
 	private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentSubsets;
@@ -190,7 +203,6 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		});
 
 	}
-	
 	
 	private void handleSecondaryIds(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentIds;
