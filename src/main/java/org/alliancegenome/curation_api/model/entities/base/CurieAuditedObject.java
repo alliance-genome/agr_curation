@@ -14,7 +14,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
 @ToString(callSuper = true)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "curie")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "curie")
 public class CurieAuditedObject extends AuditedObject {
 
 	@Id @DocumentId

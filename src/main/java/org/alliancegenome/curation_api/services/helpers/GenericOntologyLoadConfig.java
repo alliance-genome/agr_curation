@@ -17,5 +17,8 @@ public class GenericOntologyLoadConfig {
 	
 	// do not load entities that have ChEBI equivalents
 	private Boolean ignoreEntitiesWithChebiXref = false;
+	
+	// Can be used to turn of loading of ancestors on large ontologies
+	private Boolean loadAncestors = true;
 
 }

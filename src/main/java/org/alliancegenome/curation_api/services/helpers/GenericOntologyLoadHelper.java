@@ -140,7 +140,7 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 				traversedNodes.add(currentTerm.getCurie());
 			}
 
-			if(isNodeInOntology) {
+			if(isNodeInOntology && config.getLoadAncestors()) {
 				HashSet<OntologyTerm> ancesters = new HashSet<OntologyTerm>();
 				traverseToRoot(currentTreeNode, depth, requiredNamespaces, ancesters);
 				ancesters.remove(currentTerm);
