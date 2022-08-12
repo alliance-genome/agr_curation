@@ -423,13 +423,19 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(10));
 			}
 		}
-
+		
 		SearchQuery<E> query = step.toQuery();
 
-		log.debug(query);
 		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
-
 		SearchResponse<E> results = new SearchResponse<E>();
+
+		if(params.containsKey("debug")) {
+			results.setDebug((String)params.get("debug"));
+			results.setEsQuery(query.toString());
+			log.info(query);
+		} else {
+			log.debug(query);
+		}
 
 		if(aggKeys.size() > 0) {
 			Map<String, Map<String, Long>> aggregations = aggKeys.stream().collect(Collectors.toMap(AggregationKey::name, result::aggregation));

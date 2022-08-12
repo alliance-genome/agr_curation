@@ -26,6 +26,12 @@ public class SearchResponse<E> extends APIResponse {
 	@JsonView({View.FieldsOnly.class})
 	private Map<String, Map<String, Long>> aggregations;
 	
+	@JsonView({View.FieldsOnly.class})
+	private String debug;
+	
+	@JsonView({View.FieldsOnly.class})
+	private String esQuery;
+	
 	public SearchResponse() {
 	}
 
