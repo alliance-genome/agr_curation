@@ -13,6 +13,7 @@ import { Button } from 'primereact/button';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
+import { ExConStatementAutocompleteTemplate } from '../../components/Autocomplete/ExConStatementAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
 import { useNewRelationReducer } from './useNewRelationReducer';
@@ -103,13 +104,12 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-
 	const conditionTemplate = (rowData) => {
 		if (rowData.conditions) {
 			const listTemplate = (condition) => {
 				return (
 					<EllipsisTableCell>
-						{condition.conditionSummary}
+						{condition.conditionStatement}
 					</EllipsisTableCell>
 				);
 			};
@@ -206,12 +206,12 @@ export const ConditionRelationTable = () => {
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
-			field: "conditions.conditionSummary",
+			field: "conditions.conditionStatement",
 			header: "Conditions",
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionSummary"]},
+			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionStatement"]},
 			editor: (props) => conditionRelationTemplate(props)
 		},
 
@@ -220,7 +220,7 @@ export const ConditionRelationTable = () => {
 	const headerButtons = () => {
 		return (
 			<>
-				<Button label="New Handle" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
+				<Button label="New Condition Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
 			</>
 		);
 	};
@@ -232,10 +232,10 @@ export const ConditionRelationTable = () => {
 			<Messages ref={errorMessage}/>
 			<GenericDataTable
 				endpoint="condition-relation"
-				tableName="Condition Relations Handles"
+				tableName="Condition Relations"
 				columns={columns}
 				aggregationFields={aggregationFields}
-				nonNullFields={['handle', 'singleReference']}
+				//nonNullFields={['handle', 'singleReference']}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}

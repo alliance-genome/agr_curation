@@ -1165,8 +1165,9 @@ public class DiseaseAnnotationITCase {
 				put("/api/gene-disease-annotation").
 				then().
 				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.singleReference", is("curie - " + ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages", is(aMapWithSize(2))).
+				body("errorMessages.singleReference", is("curie - " + ValidationConstants.INVALID_MESSAGE)).
+				body("errorMessages.conditionRelations", is("singleReference - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 

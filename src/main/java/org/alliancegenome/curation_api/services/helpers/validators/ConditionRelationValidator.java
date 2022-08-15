@@ -166,12 +166,9 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	private Reference validateSingleReference(ConditionRelation uiEntity) {
 		String field = "singleReference";
-		if(StringUtils.isBlank(uiEntity.getHandle())) {
-			return null; // Reference only required if handle present
-		}
-				
 		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			if (!StringUtils.isBlank(uiEntity.getHandle()))
+				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 
