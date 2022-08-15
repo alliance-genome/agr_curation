@@ -52,7 +52,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		return validateExperimentalCondition(uiEntity, dbEntity);
 	}
 
-	public ExperimentalCondition validateVocabularyCreate(ExperimentalCondition uiEntity) {
+	public ExperimentalCondition validateExperimentalConditionCreate(ExperimentalCondition uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not create ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
 
