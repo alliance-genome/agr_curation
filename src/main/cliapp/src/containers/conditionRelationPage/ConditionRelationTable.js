@@ -13,7 +13,6 @@ import { Button } from 'primereact/button';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
 import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
-import { ExConStatementAutocompleteTemplate } from '../../components/Autocomplete/ExConStatementAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
 import { useNewRelationReducer } from './useNewRelationReducer';
@@ -235,7 +234,6 @@ export const ConditionRelationTable = () => {
 				tableName="Condition Relations"
 				columns={columns}
 				aggregationFields={aggregationFields}
-				//nonNullFields={['handle', 'singleReference']}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}
