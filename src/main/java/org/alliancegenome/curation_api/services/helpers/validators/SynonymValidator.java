@@ -31,7 +31,7 @@ public class SynonymValidator extends AuditedObjectValidator<Synonym> {
 			throw new ApiErrorException(response);
 		}
 		
-		dbEntity = (Synonym) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Synonym) validateAuditedObjectFields(uiEntity, dbEntity, false);
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);

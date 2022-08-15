@@ -36,6 +36,8 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 			throw new ApiErrorException(response);
 		}
 		
+		dbEntity = (VocabularyTerm) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
 		return validateVocabularyTerm(uiEntity, dbEntity);
 	}
 	
@@ -44,12 +46,13 @@ public class VocabularyTermValidator extends AuditedObjectValidator<VocabularyTe
 		errorMessage = "Could not create VocabularyTerm: [" + uiEntity.getName() + "]";
 		
 		VocabularyTerm dbEntity = new VocabularyTerm();
+
+		dbEntity = (VocabularyTerm) validateAuditedObjectFields(uiEntity, dbEntity, true);
 		
 		return validateVocabularyTerm(uiEntity, dbEntity);
 	}
 	
 	public VocabularyTerm validateVocabularyTerm(VocabularyTerm uiEntity, VocabularyTerm dbEntity) {
-		dbEntity = (VocabularyTerm) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);

@@ -30,7 +30,7 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 	
 	public ObjectResponse<E> response;
 	
-	public E validateAuditedObjectFields(E uiEntity, E dbEntity) {
+	public E validateAuditedObjectFields(E uiEntity, E dbEntity, Boolean newEntity) {
 		Boolean internal = validateInternal(uiEntity);
 		dbEntity.setInternal(internal);
 		
@@ -40,6 +40,9 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		
 		if (uiEntity.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
+			dbEntity.setCreatedBy(createdBy);
+		} else if (newEntity) {
+			LoggedInPerson createdBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
 			dbEntity.setCreatedBy(createdBy);
 		}
 
