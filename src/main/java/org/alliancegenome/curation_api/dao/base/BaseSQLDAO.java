@@ -431,7 +431,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		if(params.containsKey("debug")) {
 			results.setDebug((String)params.get("debug"));
-			results.setEsQuery(query.toString());
+			results.setEsQuery(query.queryString());
 			log.info(query);
 		} else {
 			log.debug(query);
