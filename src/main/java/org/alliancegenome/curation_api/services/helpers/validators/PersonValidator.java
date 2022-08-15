@@ -32,7 +32,7 @@ public class PersonValidator extends AuditedObjectValidator<Person>{
 			throw new ApiErrorException(response);
 		}
 		
-		dbEntity = (Person) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Person) validateAuditedObjectFields(uiEntity, dbEntity, false);
 		
 		String uniqueId = validateUniqueId(uiEntity);
 		dbEntity.setUniqueId(uniqueId);

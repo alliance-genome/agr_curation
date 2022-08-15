@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -52,6 +53,17 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 		return term;
 	}
+	
+	@Transactional
+	public E processUpdateRelationships(E inTerm) {
+		// TODO: 01 - figure out issues with ontologies
+		E term = dao.find(inTerm.getCurie());
+
+		term.setIsaParents(inTerm.getIsaParents());
+		term.setIsaAncestors(inTerm.getIsaAncestors());
+		
+		return term;
+	}
 
 	private void handleDefinitionUrls(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentDefinitionUrls;
@@ -83,8 +95,20 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	}
 	
+	public ObjectListResponse<E> getRootNodes() {
+		SearchResponse<E> t = dao.findByField("isaParents", null);
+		return new ObjectListResponse<E>(t.getResults());
+	}
+
+	public ObjectListResponse<E> getChildren(String curie) {
+		E term = dao.find(curie);
+		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
+	}
 	
-	
+	public ObjectListResponse<E> getDescendants(String curie) {
+		E term = dao.find(curie);
+		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
+	}
 	
 	private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentSubsets;
@@ -180,7 +204,6 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	}
 	
-	
 	private void handleSecondaryIds(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentIds;
 		if(dbTerm.getSecondaryIdentifiers() == null) {
@@ -210,4 +233,5 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		});
 
 	}
+
 }

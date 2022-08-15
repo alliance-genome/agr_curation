@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.dao.ontology.StageTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.StageTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class StageTermService extends BaseOntologyTermService<StageTerm, StageTermDAO> {
 

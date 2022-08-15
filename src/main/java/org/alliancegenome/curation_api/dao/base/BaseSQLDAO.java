@@ -423,13 +423,19 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				step = step.aggregation(aggKey, p -> p.terms().field(aggField + "_keyword", String.class, ValueConvert.NO).maxTermCount(10));
 			}
 		}
-
+		
 		SearchQuery<E> query = step.toQuery();
 
-		log.debug(query);
 		SearchResult<E> result = query.fetch(pagination.getPage() * pagination.getLimit(), pagination.getLimit());
-
 		SearchResponse<E> results = new SearchResponse<E>();
+
+		if(params.containsKey("debug")) {
+			results.setDebug((String)params.get("debug"));
+			results.setEsQuery(query.queryString());
+			log.info(query);
+		} else {
+			log.debug(query);
+		}
 
 		if(aggKeys.size() > 0) {
 			Map<String, Map<String, Long>> aggregations = aggKeys.stream().collect(Collectors.toMap(AggregationKey::name, result::aggregation));
@@ -473,15 +479,15 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		//System.out.println("Root: " + root);
 		List<Predicate> restrictions = new ArrayList<>();
 		List<Predicate> countRestrictions = new ArrayList<>();
-		//System.out.println(params);
+		log.debug(params);
 		for(String key: params.keySet()) {
 			Path<Object> column = null;
 			Path<Object> countColumn = null;
-			//System.out.println("Key: " + key);
+			log.debug("Key: " + key);
 			if(key.contains(".")) {
 				String[] objects = key.split("\\.");
 				for(String s: objects) {
-					//System.out.println("Looking up: " + s);
+					log.debug("Looking up: " + s);
 					if(column != null) {
 						column = column.get(s);
 						countColumn = countColumn.get(s);
@@ -489,41 +495,48 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						column = root.get(s);
 						countColumn = countRoot.get(s);
 					}
-					//System.out.println(column.getAlias());
+					log.debug("Column Alias: " + column.getAlias());
+					log.debug("Count Alias: " + countColumn.getAlias());
 				}
 			} else {
 				column = root.get(key);
 				countColumn = countRoot.get(key);
 			}
 
-			//System.out.println(column.getAlias());
+			log.debug("Column Alias: " + column.getAlias());
+			log.debug("Count Alias: " + countColumn.getAlias());
 
 			Object value = params.get(key);
-			log.debug("Object Type: " + value.getClass());
-			if (value instanceof Integer) {
-				log.debug("Integer Type: " + value);
-				Integer desiredValue = (Integer) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
-			} else if(value instanceof Enum) {
-				log.debug("Enum Type: " + value);
-				restrictions.add(builder.equal(column, value));
-				countRestrictions.add(builder.equal(countColumn, value));
-			} else if(value instanceof Long) {
-				log.debug("Long Type: " + value);
-				Long desiredValue = (Long) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
-			} else if(value instanceof Boolean) {
-				log.debug("Boolean Type: " + value);
-				Boolean desiredValue = (Boolean) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
+			if(value != null) {
+				log.debug("Object Type: " + value.getClass());
+				if (value instanceof Integer) {
+					log.debug("Integer Type: " + value);
+					Integer desiredValue = (Integer) value;
+					restrictions.add(builder.equal(column, desiredValue));
+					countRestrictions.add(builder.equal(countColumn, desiredValue));
+				} else if(value instanceof Enum) {
+					log.debug("Enum Type: " + value);
+					restrictions.add(builder.equal(column, value));
+					countRestrictions.add(builder.equal(countColumn, value));
+				} else if(value instanceof Long) {
+					log.debug("Long Type: " + value);
+					Long desiredValue = (Long) value;
+					restrictions.add(builder.equal(column, desiredValue));
+					countRestrictions.add(builder.equal(countColumn, desiredValue));
+				} else if(value instanceof Boolean) {
+					log.debug("Boolean Type: " + value);
+					Boolean desiredValue = (Boolean) value;
+					restrictions.add(builder.equal(column, desiredValue));
+					countRestrictions.add(builder.equal(countColumn, desiredValue));
+				} else {
+					log.debug("String Type: " + value);
+					String desiredValue = (String) value;
+					restrictions.add(builder.equal(column, desiredValue));
+					countRestrictions.add(builder.equal(countColumn, desiredValue));
+				}
 			} else {
-				log.debug("String Type: " + value);
-				String desiredValue = (String) value;
-				restrictions.add(builder.equal(column, desiredValue));
-				countRestrictions.add(builder.equal(countColumn, desiredValue));
+				restrictions.add(builder.isEmpty(root.get(key)));
+				countRestrictions.add(builder.isEmpty(countRoot.get(key)));
 			}
 		}
 

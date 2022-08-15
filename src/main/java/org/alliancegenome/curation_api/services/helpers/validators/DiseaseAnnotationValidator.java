@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -13,10 +12,9 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.apache.commons.collections.*;
 import org.apache.commons.lang3.*;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
-
 
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
@@ -350,7 +348,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 	
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		dbEntity = (DiseaseAnnotation) validateAuditedObjectFields(uiEntity, dbEntity);
+		Boolean newEntity = false;
+		if (dbEntity.getId() == null)
+			newEntity = true;
+		dbEntity = (DiseaseAnnotation) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 		
 		if (uiEntity.getModEntityId() != null)
 			dbEntity.setModEntityId(uiEntity.getModEntityId());

@@ -62,6 +62,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			throw new ApiErrorException(response);
 		}
 		
+		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
 		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
 	
@@ -71,12 +73,12 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		
 		ConditionRelation dbEntity = new ConditionRelation();
 		
+		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		
 		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
 	
 	public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, ConditionRelation dbEntity, Boolean throwError, Boolean checkUniqueness) {
-		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity);
-		
 		String handle = validateHandle(uiEntity, dbEntity);
 		dbEntity.setHandle(handle);
 
@@ -166,12 +168,9 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 
 	private Reference validateSingleReference(ConditionRelation uiEntity) {
 		String field = "singleReference";
-		if(StringUtils.isBlank(uiEntity.getHandle())) {
-			return null; // Reference only required if handle present
-		}
-				
 		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
-			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			if (!StringUtils.isBlank(uiEntity.getHandle()))
+				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
 

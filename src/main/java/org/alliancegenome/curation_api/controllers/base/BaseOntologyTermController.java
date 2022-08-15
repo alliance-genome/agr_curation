@@ -4,6 +4,7 @@ import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
@@ -44,5 +45,18 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 			return "FAIL";
 		}
 		return "OK";
+	}
+
+	
+	public ObjectListResponse<E> getRootNodes() {
+		return service.getRootNodes();
+	}
+	
+	public ObjectListResponse<E> getChildren(String curie) {
+		return service.getChildren(curie);
+	}
+	
+	public ObjectListResponse<E> getDescendants(String curie) {
+		return service.getDescendants(curie);
 	}
 }
