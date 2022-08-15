@@ -103,13 +103,12 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
-
 	const conditionTemplate = (rowData) => {
 		if (rowData.conditions) {
 			const listTemplate = (condition) => {
 				return (
 					<EllipsisTableCell>
-						{condition.conditionSummary}
+						{condition.conditionStatement}
 					</EllipsisTableCell>
 				);
 			};
@@ -206,12 +205,12 @@ export const ConditionRelationTable = () => {
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
-			field: "conditions.conditionSummary",
+			field: "conditions.conditionStatement",
 			header: "Conditions",
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionSummary"]},
+			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionStatement"]},
 			editor: (props) => conditionRelationTemplate(props)
 		},
 
@@ -220,7 +219,7 @@ export const ConditionRelationTable = () => {
 	const headerButtons = () => {
 		return (
 			<>
-				<Button label="New Handle" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
+				<Button label="New Condition Relation" icon="pi pi-plus" onClick={handleNewRelationOpen} />&nbsp;&nbsp;
 			</>
 		);
 	};
@@ -232,10 +231,9 @@ export const ConditionRelationTable = () => {
 			<Messages ref={errorMessage}/>
 			<GenericDataTable
 				endpoint="condition-relation"
-				tableName="Condition Relations Handles"
+				tableName="Condition Relations"
 				columns={columns}
 				aggregationFields={aggregationFields}
-				nonNullFields={['handle', 'singleReference']}
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}
