@@ -79,7 +79,9 @@ public class ConditionRelationITCase {
 			statusCode(200).
 			body("entity.handle", is("fructose")).
 			body("entity.conditionRelationType.name", is("relation_type")).
-			body("entity.singleReference.curie", is(testReference.getCurie()));
+			body("entity.singleReference.curie", is(testReference.getCurie())).
+			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 
 		given().
 			when().
@@ -88,7 +90,9 @@ public class ConditionRelationITCase {
 			statusCode(200).
 			body("entity.handle", is("vasilin")).
 			body("entity.conditionRelationType.name", is("relation_type")).
-			body("entity.singleReference.curie", is(testReference.getCurie()));
+			body("entity.singleReference.curie", is(testReference.getCurie())).
+			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test

@@ -64,7 +64,9 @@ public class VocabularyTermITCase {
 				body("entity.name", is("Test vocabulary term")).
 				body("entity.obsolete", is(true)).
 				body("entity.internal", is(false)).
-				body("entity.vocabulary.name", is("VocabularyTerm test vocabulary"));
+				body("entity.vocabulary.name", is("VocabularyTerm test vocabulary")).
+				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test

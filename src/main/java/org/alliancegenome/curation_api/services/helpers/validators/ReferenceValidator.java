@@ -63,7 +63,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		
 		dbEntity.setDateUpdated(OffsetDateTime.now());
 		
-		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);
 		
 		if (dbEntity.getObsolete() && !uiEntity.getCurie().equals(dbEntity.getCurie())) {
 			addMessageResponse("curie", ValidationConstants.OBSOLETE_MESSAGE);

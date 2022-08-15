@@ -89,7 +89,9 @@ public class ExperimentalConditionITCase {
 				statusCode(200).
 				body("entity.conditionClass.curie", is("ZECO:ec0001")).
 				body("entity.conditionStatement", is("CRUD:Statement1")).
-				body("entity.internal", is(false));
+				body("entity.internal", is(false)).
+				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test

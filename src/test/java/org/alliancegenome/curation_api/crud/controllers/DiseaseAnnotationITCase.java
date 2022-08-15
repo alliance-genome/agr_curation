@@ -216,7 +216,6 @@ public class DiseaseAnnotationITCase {
 		diseaseAnnotation.setDataProvider("TEST");
 		diseaseAnnotation.setSubject(testAllele);
 		diseaseAnnotation.setEvidenceCodes(testEcoTerms);
-		diseaseAnnotation.setCreatedBy(testPerson);
 		diseaseAnnotation.setSingleReference(testReference);
 
 		RestAssured.given().
@@ -242,7 +241,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
 				body("entity.singleReference.curie", is(testReference.getCurie())).
-				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 

@@ -48,7 +48,9 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 			addMessageResponse("Could not find ExperimentalCondition with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 		}
-
+		
+		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
 		return validateExperimentalCondition(uiEntity, dbEntity);
 	}
 
@@ -57,13 +59,13 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		errorMessage = "Could not create ExperimentalCondition: [" + uiEntity.getUniqueId() + "]";
 
 		ExperimentalCondition dbEntity = new ExperimentalCondition();
-
+		
+		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		
 		return validateExperimentalCondition(uiEntity, dbEntity);
 	}
 
 	public ExperimentalCondition validateExperimentalCondition(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
-		dbEntity = (ExperimentalCondition) validateAuditedObjectFields(uiEntity, dbEntity);
-		
 		ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
 		dbEntity.setConditionClass(conditionClass);
 		

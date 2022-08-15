@@ -348,7 +348,10 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 	
 	public DiseaseAnnotation validateCommonDiseaseAnnotationFields(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		dbEntity = (DiseaseAnnotation) validateAuditedObjectFields(uiEntity, dbEntity);
+		Boolean newEntity = false;
+		if (dbEntity.getId() == null)
+			newEntity = true;
+		dbEntity = (DiseaseAnnotation) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 		
 		if (uiEntity.getModEntityId() != null)
 			dbEntity.setModEntityId(uiEntity.getModEntityId());
