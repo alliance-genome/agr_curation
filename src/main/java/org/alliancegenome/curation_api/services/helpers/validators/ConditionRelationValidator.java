@@ -62,6 +62,8 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			throw new ApiErrorException(response);
 		}
 		
+		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
 		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
 	
@@ -71,12 +73,12 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		
 		ConditionRelation dbEntity = new ConditionRelation();
 		
+		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		
 		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
 	
 	public ConditionRelation validateConditionRelation(ConditionRelation uiEntity, ConditionRelation dbEntity, Boolean throwError, Boolean checkUniqueness) {
-		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity);
-		
 		String handle = validateHandle(uiEntity, dbEntity);
 		dbEntity.setHandle(handle);
 

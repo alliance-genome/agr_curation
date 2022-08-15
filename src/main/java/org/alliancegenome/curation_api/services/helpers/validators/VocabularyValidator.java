@@ -33,6 +33,8 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 			addMessageResponse("Could not find Vocabulary with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 		}
+
+		dbEntity = (Vocabulary) validateAuditedObjectFields(uiEntity, dbEntity, false);
 		
 		return validateVocabulary(uiEntity, dbEntity);
 	}
@@ -42,12 +44,13 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 		errorMessage = "Could not create Vocabulary: [" + uiEntity.getName() + "]";
 		
 		Vocabulary dbEntity = new Vocabulary();
+
+		dbEntity = (Vocabulary) validateAuditedObjectFields(uiEntity, dbEntity, true);
 		
 		return validateVocabulary(uiEntity, dbEntity);
 	}
 	
 	public Vocabulary validateVocabulary(Vocabulary uiEntity, Vocabulary dbEntity) {
-		dbEntity = (Vocabulary) validateAuditedObjectFields(uiEntity, dbEntity);
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
