@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.entities.ontology;
 
-import java.util.List;
+import java.util.*;
 
 import javax.persistence.*;
 
@@ -12,7 +12,7 @@ import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 
 import lombok.*;
 
@@ -21,7 +21,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@ToString(exclude = {/* "parents", "children", "ancesters", "descendants", */ "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
+@ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
 public class OntologyTerm extends CurieAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -79,43 +79,44 @@ public class OntologyTerm extends CurieAuditedObject {
 	@JsonView({View.FieldsAndLists.class})
 	private List<CrossReference> crossReferences;
 
-//	TODO LinkML to define the following ontology relationship fields
-//	@ManyToMany
-//	@JoinTable(name = "ontologyterm_parent_children", indexes = { @Index( columnList = "parents_curie"), @Index( columnList = "children_curie")})
-//	private Set<OntologyTerm> parents;
-//
-//	@ManyToMany(mappedBy = "parents")
-//	private Set<OntologyTerm> children;
-//
-//	@ManyToMany
-//	@JoinTable(name = "ontologyterm_ancestor_descendant", indexes = { @Index( columnList = "ancestors_curie"), @Index( columnList = "descendants_curie")})
-//	private Set<OntologyTerm> ancestors;
-//
-//	@ManyToMany(mappedBy = "ancestors")
-//	private Set<OntologyTerm> descendants;
-//
-//	@Transient
-//	public void addChild(OntologyTerm term) {
-//		if(children == null) children = new HashSet<OntologyTerm>();
-//		children.add(term);
-//	}
-//
-//	@Transient
-//	public void addParent(OntologyTerm term) {
-//		if(parents == null) parents = new HashSet<OntologyTerm>();
-//		parents.add(term);
-//	}
-//
-//	@Transient
-//	public void addDescendant(OntologyTerm term) {
-//		if(descendants == null) descendants = new HashSet<OntologyTerm>();
-//		descendants.add(term);
-//	}
-//
-//	@Transient
-//	public void addAncestor(OntologyTerm term) {
-//		if(ancestors == null) ancestors = new HashSet<OntologyTerm>();
-//		ancestors.add(term);
-//	}
+	@ManyToMany
+	//@JsonView(View.OntologyTermView.class)
+	@JoinTable(name = "ontologyterm_isa_parent_children", indexes = { @Index( columnList = "isaparents_curie"), @Index( columnList = "isachildren_curie")})
+	private Set<OntologyTerm> isaParents;
+
+	@ManyToMany(mappedBy = "isaParents")
+	//@JsonView(View.OntologyTermView.class)
+	private Set<OntologyTerm> isaChildren;
+
+	@ManyToMany
+	@JoinTable(name = "ontologyterm_isa_ancestor_descendant", indexes = { @Index( columnList = "isaancestors_curie"), @Index( columnList = "isadescendants_curie")})
+	private Set<OntologyTerm> isaAncestors;
+
+	@ManyToMany(mappedBy = "isaAncestors")
+	private Set<OntologyTerm> isaDescendants;
+
+	@Transient
+	public void addIsaChild(OntologyTerm term) {
+		if(isaChildren == null) isaChildren = new HashSet<OntologyTerm>();
+		isaChildren.add(term);
+	}
+
+	@Transient
+	public void addIsaParent(OntologyTerm term) {
+		if(isaParents == null) isaParents = new HashSet<OntologyTerm>();
+		isaParents.add(term);
+	}
+
+	@Transient
+	public void addIsaDescendant(OntologyTerm term) {
+		if(isaDescendants == null) isaDescendants = new HashSet<OntologyTerm>();
+		isaDescendants.add(term);
+	}
+
+	@Transient
+	public void addIsaAncestor(OntologyTerm term) {
+		if(isaAncestors == null) isaAncestors = new HashSet<OntologyTerm>();
+		isaAncestors.add(term);
+	}
 	
 }

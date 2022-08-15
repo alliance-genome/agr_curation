@@ -8,6 +8,7 @@ export class DeletionService extends BaseAuthService {
 			return {
 				isSuccess: true,
 				isError: false,
+				response: response
 			}
 		} catch (error) {
 			return {

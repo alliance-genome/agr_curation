@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import java.io.FileInputStream;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.*;
@@ -263,12 +264,20 @@ public class BulkLoadJobExecutor {
 
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Database Persistance", termMap.size());
-		for (String termKey : termMap.keySet()) {
-			service.processUpdate(termMap.get(termKey));
+		ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
+		for (Entry<String, ? extends OntologyTerm> entry: termMap.entrySet()) {
+			service.processUpdate(entry.getValue());
 			ph.progressProcess();
 		}
 		ph.finishProcess();
+		
+		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
+		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
+		for (Entry<String, ? extends OntologyTerm> entry: termMap.entrySet()) {
+			service.processUpdateRelationships(entry.getValue());
+			ph1.progressProcess();
+		}
+		ph1.finishProcess();
 	}
 
 

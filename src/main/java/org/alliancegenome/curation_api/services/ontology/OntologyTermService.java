@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.dao.ontology.OntologyTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class OntologyTermService extends BaseOntologyTermService<OntologyTerm, OntologyTermDAO> {
 

@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ChemicalTermService extends BaseOntologyTermService<ChemicalTerm, ChemicalTermDAO> {
 
