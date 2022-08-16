@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.model.output;
 
-import java.util.Map;
+import java.util.TreeMap;
 
 import org.alliancegenome.curation_api.view.View;
 
@@ -16,7 +16,7 @@ public class APIVersionInfo {
 	@JsonView(View.FieldsOnly.class)
 	private String version;
 	@JsonView(View.FieldsOnly.class)
-	private Map<String, String> agrCurationSchemaVersions;
+	private TreeMap<String, String> agrCurationSchemaVersions;
 	@JsonView(View.FieldsOnly.class)
 	private String esHost;
 	@JsonView(View.FieldsOnly.class)

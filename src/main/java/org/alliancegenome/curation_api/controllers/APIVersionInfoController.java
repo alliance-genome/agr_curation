@@ -32,7 +32,7 @@ public class APIVersionInfoController implements APIVersionInterface {
 
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(AGRCurationSchemaVersion.class).asClass(reflections.getConfiguration().getClassLoaders()));
-		HashMap<String, String> linkMLClassVersions = new HashMap<String, String>();
+		TreeMap<String, String> linkMLClassVersions = new TreeMap<String, String>();
 		for(Class<?> clazz: annotatedClasses) {
 			AGRCurationSchemaVersion version = clazz.getAnnotation(AGRCurationSchemaVersion.class);
 			linkMLClassVersions.put(clazz.getSimpleName(), version.value());
