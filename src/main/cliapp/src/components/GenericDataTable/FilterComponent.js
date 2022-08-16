@@ -43,8 +43,6 @@ export const FilterComponent = ({
 				<FilterComponentDropDown
 					isEnabled={isEnabled}
 					field={fields[0]}
-					nonNullFields={nonNullFields}
-					nullFields={nullFields}
 					filterName={filterName}
 					currentFilters={tableState.filters}
 					onFilter={onFilter}
@@ -61,8 +59,6 @@ export const FilterComponent = ({
 				<FilterMultiSelectComponent
 					isEnabled={isEnabled}
 					field={fields[0]}
-					nonNullFields={nonNullFields}
-					nullFields={nullFields}
 					useKeywordFields={useKeywordFields}
 					filterName={filterName}
 					currentFilters={tableState.filters}
