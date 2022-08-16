@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -22,6 +23,7 @@ import lombok.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
+@AGRCurationSchemaVersion("1.2.1+")
 public class OntologyTerm extends CurieAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

@@ -5,6 +5,7 @@ import java.util.Map;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
@@ -22,6 +23,8 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
+//TODO: add apiToken (probably better named localAPIToken) to linkML model for full model parity.
+@AGRCurationSchemaVersion("1.2.1+")
 public class LoggedInPerson extends Person {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

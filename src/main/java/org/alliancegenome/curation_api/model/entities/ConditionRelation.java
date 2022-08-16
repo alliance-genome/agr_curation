@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -22,6 +23,7 @@ import lombok.*;
 @Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
+@AGRCurationSchemaVersion("1.2.1")
 public class ConditionRelation extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)

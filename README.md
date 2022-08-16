@@ -4,7 +4,7 @@ This repo holds the code for the API and the UI of the AGR curation system.
 
 ## Getting Started
 
-These instructions will get you a copy of the project and the API up and running locally. This includes Postgres, ElasticSearch and Cerebro.
+These instructions will get you a copy of the project and the API up and running locally. This includes Postgres, OpenSearch and Cerebro.
 
 ## Contents
 
@@ -13,7 +13,7 @@ These instructions will get you a copy of the project and the API up and running
 -  [Installing](#installing)
    *  [Docker Setup](#docker-setup)
    *  [Postgres](#postgres)
-   *  [ElasticSearch](#elastic-search)
+   *  [OpenSearch](#opensearch-elastic-search-alternative)
    *  [Cerebro](#cerebro)
 -  [Building](#building)
    *  [Building Docker Image](#building-docker-image)
@@ -167,9 +167,9 @@ The output will look something like the following:
 	}
 ```
 
-### Elastic Search
+### OpenSearch (Elastic Search alternative)
 
-[Run Elastic Search Script](docker/run_es) which will launch elasticsearch from the appropriate elastic.co docker image.
+[Run OpenSearch script](docker/run_es) which will launch OpenSearch from the official OpenSearch docker image.
 
 If you point a browser over to `http://localhost:9200` you should see something like the following:
 
@@ -199,7 +199,7 @@ If you point a browser over to `http://localhost:9200` you should see something 
 [Run Cerebro Script](docker/run_cerebro) which will launch cerebro, an ES control plane, from the appropriate docker image.
 
 Connect to this by browsing to `http://localhost:9000`, this is used to connect to the ES server, which can be accessed by
-entering `http://elasticsearch:9200` (the internal docker address) in the Node address field, while elasticsearch is directly
+entering `http://opensearch:9200` (the internal docker address) in the Node address field, while opensearch is directly
 accessible at `http://localhost:9200` on the local machine.
 
 ### Up and Running Servers
@@ -210,9 +210,9 @@ This will show all the services that are up and running.
 
 ```
 CONTAINER ID   IMAGE                                   COMMAND                  CREATED          STATUS          PORTS                                                                                                                                                                          NAMES
-4ee5641a9481   yannart/cerebro                         "./bin/cerebro"          26 minutes ago   Up 26 minutes   0.0.0.0:9000->9000/tcp, :::9000->9000/tcp                                                                                                                                      cerebro
-8e063394038e   agrdocker/agr_elasticsearch_env         "/tini -- /usr/local…"   2 days ago       Up 23 hours     0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 0.0.0.0:9300->9300/tcp, :::9300->9300/tcp                                                                                           elasticsearch
-7de3cf028e9c   postgres:13                             "docker-entrypoint.s…"   3 days ago       Up 3 days       0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                                                                                      postgres
+4ee5641a9481   yannart/cerebro                         "./bin/cerebro"          26 minutes ago   Up 26 minutes   0.0.0.0:9000->9000/tcp, :::9000->9000/tcp                                                                         cerebro
+7811ffe3c92d   opensearchproject/opensearch:1.2.4   "./opensearch-docker…"   24 minutes ago   Up 24 minutes   0.0.0.0:9200->9200/tcp, :::9200->9200/tcp, 9300/tcp, 0.0.0.0:9600->9600/tcp, :::9600->9600/tcp, 9650/tcp          opensearch
+7de3cf028e9c   postgres:13                             "docker-entrypoint.s…"   3 days ago       Up 3 days       0.0.0.0:5432->5432/tcp, :::5432->5432/tcp                                                                         postgres
 ```
 
 ## Building
