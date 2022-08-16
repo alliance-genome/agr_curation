@@ -110,6 +110,16 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
 	}
 	
+	public ObjectListResponse<E> getParents(String curie) {
+		E term = dao.find(curie);
+		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
+	}
+	
+	public ObjectListResponse<E> getAncestors(String curie) {
+		E term = dao.find(curie);
+		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
+	}
+	
 	private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
 		Set<String> currentSubsets;
 		if(dbTerm.getSubsets() == null) {
