@@ -237,7 +237,6 @@ export const ConditionRelationTable = () => {
 				isEditable={true}
 				curieFields={["singleReference"]}
 				idFields={["conditionRelationType"]}
-				nonNullFieldsTable={['handle', 'singleReference']}
 				mutation={mutation}
 				isEnabled={isEnabled}
 				setIsEnabled={setIsEnabled}
