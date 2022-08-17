@@ -102,22 +102,38 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	public ObjectListResponse<E> getChildren(String curie) {
 		E term = dao.find(curie);
-		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
+		if(term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaChildren());
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 	
 	public ObjectListResponse<E> getDescendants(String curie) {
 		E term = dao.find(curie);
-		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
+		if(term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaDescendants());
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 	
 	public ObjectListResponse<E> getParents(String curie) {
 		E term = dao.find(curie);
-		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
+		if(term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaParents());
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 	
 	public ObjectListResponse<E> getAncestors(String curie) {
 		E term = dao.find(curie);
-		return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
+		if(term != null) {
+			return (ObjectListResponse<E>) new ObjectListResponse<OntologyTerm>(term.getIsaAncestors());
+		} else {
+			return new ObjectListResponse<E>();
+		}
 	}
 	
 	private void handleSubsets(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
