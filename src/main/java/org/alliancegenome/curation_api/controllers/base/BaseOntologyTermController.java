@@ -59,4 +59,12 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 	public ObjectListResponse<E> getDescendants(String curie) {
 		return service.getDescendants(curie);
 	}
+	
+	public ObjectListResponse<E> getParents(String curie) {
+		return service.getParents(curie);
+	}
+	
+	public ObjectListResponse<E> getAncestors(String curie) {
+		return service.getAncestors(curie);
+	}
 }
