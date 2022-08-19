@@ -1,5 +1,6 @@
-## v0.6.0
 # AGR curation release notes
+
+## v0.6.0
 * New Features
 		* SCRUM-1537 make condition relation handle table editable by @cmpich in #491
 		* SCRUM-1537 validate null handle, disallow same handle/pub combination by @cmpich in #511
