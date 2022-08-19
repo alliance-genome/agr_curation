@@ -14,6 +14,21 @@
     * Append newly created condition relation handles to the top of the table (SCRUM-1801)
     * Switched search indexing from ElasticSearch to OpenSearch (SCRUM-1646, SCRUM-1647, SCRUM-1648)
 
+## v0.7.0
+ * New Features
+    * SCRUM-1743 new Vocabularies Table by @adamgibs in #566
+    * SCRUM-1555 Make existing disease annotation ‘condition relations’ editable (no handle in use) by @markquintontulloch in #554
+    * SCRUM-1556 Enable display and editing of existing disease annotation experiment handles by @markquintontulloch in #563
+    * SCRUM-1765 Bring functionality of editing of 'related notes' in Disease Annotation table in line with that of 'condition relations' by @markquintontulloch in #559
+ * Maintenance
+    * SCRUM-1712 Synchronisation of References with Literature System by @markquintontulloch in #552, #557, #561, #564
+    # SCRUM-1732 Fixed validation of references in conditionRelations #560
+    * SCRUM-1710 Fixed multiple tooltips bug by @markquintontulloch in #565
+    * SCRUM-1722 Fixed multi-line cell warnings bug by @adamgibs in #562
+    * Added indexing params to reindexing endpoints by @mluypaert in #555
+    * SCRUM-1676 Refactor of AutocompleteEditor template by @adamgibs in #547
+    SCRUM-1756 Fixed saving of notes attached to disease annotations bug by @markquintontulloch in #553
+
 ## v0.6.0
  * New Features
     * SCRUM-1537 make condition relation handle table editable by @cmpich in #491
