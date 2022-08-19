@@ -1,15 +1,16 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 
-import com.fasterxml.jackson.annotation.JsonView;
-import org.alliancegenome.curation_api.base.interfaces.BaseIdCrudInterface;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+
+import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/condition-relation")
 @Tag(name = "CRUD - ConditionRelations")
@@ -23,10 +24,17 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
 
+    @Override
     @PUT
     @Path("/")
     @JsonView(View.FieldsAndLists.class)
     public ObjectResponse<ConditionRelation> update(ConditionRelation entity);
+    
+    @Override
+    @GET
+    @Path("/{id}")
+    @JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ConditionRelation> get(@PathParam("id") Long id);
 
     @POST
     @Path("/validate")

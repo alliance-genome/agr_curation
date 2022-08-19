@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 import javax.persistence.*;
+import javax.persistence.Entity;
 
-import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
 
 import com.fasterxml.jackson.annotation.JsonView;

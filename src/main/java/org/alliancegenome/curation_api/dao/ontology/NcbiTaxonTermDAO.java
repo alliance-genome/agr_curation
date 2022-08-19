@@ -5,7 +5,7 @@ import java.util.regex.*;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.alliancegenome.curation_api.base.dao.BaseSQLDAO;
+import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
 import org.alliancegenome.curation_api.interfaces.ncbi.NCBIRESTInterface;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.NCBITaxonResponseDTO;

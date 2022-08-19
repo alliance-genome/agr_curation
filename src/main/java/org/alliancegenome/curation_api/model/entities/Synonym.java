@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.GeneratedAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;

@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
-import org.alliancegenome.curation_api.base.entity.UniqueIdAuditedObject;
+import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;

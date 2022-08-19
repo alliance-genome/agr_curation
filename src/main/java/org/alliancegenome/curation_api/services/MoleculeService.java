@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -11,14 +9,12 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Molecule;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.MoleculeFmsDTO;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.MoleculeValidator;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -26,7 +22,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class MoleculeService extends BaseCrudService<Molecule, MoleculeDAO> {
+public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO> {
 
 	@Inject
 	MoleculeDAO moleculeDAO;

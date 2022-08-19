@@ -5,14 +5,14 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
-public class CurationReportService extends BaseCrudService<CurationReport, CurationReportDAO> {
+public class CurationReportService extends BaseEntityCrudService<CurationReport, CurationReportDAO> {
 	
 	@Inject
 	CurationReportDAO curationReportDAO;

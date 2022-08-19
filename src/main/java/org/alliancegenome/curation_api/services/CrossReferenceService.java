@@ -1,8 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -10,13 +8,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.ingest.fms.dto.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
-public class CrossReferenceService extends BaseCrudService<CrossReference, CrossReferenceDAO>{
+public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO>{
 
 	@Inject CrossReferenceDAO crossReferenceDAO;
 

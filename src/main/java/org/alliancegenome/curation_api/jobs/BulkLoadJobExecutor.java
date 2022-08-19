@@ -9,16 +9,13 @@ import java.util.zip.GZIPInputStream;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.services.BaseOntologyTermService;
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
 import org.alliancegenome.curation_api.enums.*;
 import org.alliancegenome.curation_api.jobs.executors.*;
-import org.alliancegenome.curation_api.jobs.executors.AgmExecutor;
-import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
-import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.services.MoleculeService;
+import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.*;
 import org.alliancegenome.curation_api.services.ontology.*;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;

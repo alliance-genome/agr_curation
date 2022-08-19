@@ -28,7 +28,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalCondi
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,7 +47,7 @@ import io.restassured.config.RestAssuredConfig;
 
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("04 - Disease annotation bulk upload")
@@ -228,7 +228,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[1].annotationType.name", is("manually_curated")).
 			body("results[1].diseaseQualifiers[0].name", is("susceptibility")).
 			body("results[1].evidenceCodes", hasSize(1)).
-			body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
+			body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
+			body("results[1].inferredGene.curie", is("DATEST:Gene0001")).
+			body("results[1].assertedGene.curie", is("DATEST:Gene0001"));
 	}
 	
 	@Test
@@ -299,7 +301,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[2].annotationType.name", is("manually_curated")).
 			body("results[2].diseaseQualifiers[0].name", is("susceptibility")).
 			body("results[2].evidenceCodes", hasSize(1)).
-			body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
+			body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
+			body("results[2].inferredGene.curie", is("DATEST:Gene0001")).
+			body("results[2].assertedGene.curie", is("DATEST:Gene0001")).
+			body("results[2].inferredAllele.curie", is("DATEST:Allele0001")).
+			body("results[2].assertedAllele.curie", is("DATEST:Allele0001"));
 	}
 	
 	@Test
@@ -1914,6 +1920,288 @@ public class DiseaseAnnotationBulkUploadITCase {
 			statusCode(200).
 			body("totalResults", is(1)).
 			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)); //should default to false
+	}
+	
+	@Test
+	@Order(73)
+	public void diseaseAnnotationBulkUploadAlleleAnnotationNoInferredGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/73_no_inferred_gene_allele_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0073"));
+	}
+	
+	@Test
+	@Order(74)
+	public void diseaseAnnotationBulkUploadAlleleAnnotationNoAssertedGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/74_no_asserted_gene_allele_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0074"));
+	}
+	
+	@Test
+	@Order(75)
+	public void diseaseAnnotationBulkUploadAlleleAnnotationInvalidInferredGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/75_invalid_inferred_gene_allele_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(76)
+	public void diseaseAnnotationBulkUploadAlleleAnnotationInvalidAssertedGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/76_invalid_asserted_gene_allele_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(77)
+	public void diseaseAnnotationBulkUploadAgmAnnotationNoInferredGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/77_no_inferred_gene_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0077"));
+	}
+	
+	@Test
+	@Order(78)
+	public void diseaseAnnotationBulkUploadAgmAnnotationNoAssertedGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/78_no_asserted_gene_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0078"));
+	}
+	
+	@Test
+	@Order(79)
+	public void diseaseAnnotationBulkUploadAgmAnnotationNoInferredAllele() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/79_no_inferred_allele_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0079"));
+	}
+	
+	@Test
+	@Order(80)
+	public void diseaseAnnotationBulkUploadAgmAnnotationNoAssertedAllele() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/80_no_asserted_allele_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0080"));
+	}
+	
+	@Test
+	@Order(81)
+	public void diseaseAnnotationBulkUploadAgmAnnotationInvalidInferredGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/81_invalid_inferred_gene_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(82)
+	public void diseaseAnnotationBulkUploadAgmAnnotationInvalidAssertedGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/82_invalid_asserted_gene_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(83)
+	public void diseaseAnnotationBulkUploadAgmAnnotationInvalidInferredAllele() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/83_invalid_inferred_allele_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(84)
+	public void diseaseAnnotationBulkUploadAgmAnnotationInvalidAssertedAllele() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/84_invalid_asserted_allele_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
 	}
 	
 	private void loadRequiredEntities() throws Exception {

@@ -8,7 +8,7 @@ import io.restassured.common.mapper.TypeRef;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel.Subtype;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.resources.TestElasticSearchResource;
+import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.*;
 
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.*;
 import static org.hamcrest.Matchers.is;
 
 @QuarkusIntegrationTest
-@QuarkusTestResource(TestElasticSearchResource.Initializer.class)
+@QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(9)

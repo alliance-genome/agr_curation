@@ -6,22 +6,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
-import org.hibernate.search.engine.backend.types.Aggregable;
-import org.hibernate.search.engine.backend.types.Searchable;
-import org.hibernate.search.engine.backend.types.Sortable;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
-import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
+import org.hibernate.search.engine.backend.types.*;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.quarkiverse.hibernate.types.json.JsonBinaryType;
-import io.quarkiverse.hibernate.types.json.JsonTypes;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import io.quarkiverse.hibernate.types.json.*;
+import lombok.*;
 
 @Audited
 @Entity

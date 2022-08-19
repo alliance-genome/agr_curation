@@ -6,13 +6,11 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
-import org.alliancegenome.curation_api.base.entity.AuditedObject;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
-import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.LoggedInPersonService;
-import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 

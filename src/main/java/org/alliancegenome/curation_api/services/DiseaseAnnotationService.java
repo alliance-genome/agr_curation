@@ -2,8 +2,7 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -11,40 +10,15 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.base.services.BaseCrudService;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
-import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
-import org.alliancegenome.curation_api.dao.NoteDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
+import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.ingest.dto.*;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -54,7 +28,7 @@ import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @RequestScoped
-public class DiseaseAnnotationService extends BaseCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
+public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
 	@Inject
 	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;

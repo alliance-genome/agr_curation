@@ -5,7 +5,7 @@ import java.util.Map;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.base.dao.SystemSQLDAO;
+import org.alliancegenome.curation_api.dao.base.SystemSQLDAO;
 import org.alliancegenome.curation_api.interfaces.SystemControllerInterface;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 
