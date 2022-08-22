@@ -56,7 +56,14 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 	@Override
 	@Transactional
 	public ObjectResponse<ExperimentalCondition> update(ExperimentalCondition uiEntity) {
-		ExperimentalCondition dbEntity = experimentalConditionValidator.validateCondition(uiEntity);
+		ExperimentalCondition dbEntity = experimentalConditionValidator.validateExperimentalConditionUpdate(uiEntity);
+		return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
+	}
+
+	@Override
+	@Transactional
+	public ObjectResponse<ExperimentalCondition> create(ExperimentalCondition uiEntity) {
+		ExperimentalCondition dbEntity = experimentalConditionValidator.validateExperimentalConditionCreate(uiEntity);
 		return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
 	}
 	

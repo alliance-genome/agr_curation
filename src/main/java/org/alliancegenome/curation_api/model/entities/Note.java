@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -23,6 +24,7 @@ import lombok.*;
 @ToString(callSuper = true)
 @AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
 @Schema(name="Note", description="POJO that represents the Note")
+@AGRCurationSchemaVersion("1.2.1")
 public class Note extends GeneratedAuditedObject {
 		
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

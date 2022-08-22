@@ -38,16 +38,15 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	@Override
 	@Transactional
 	public ObjectResponse<AGMDiseaseAnnotation> update(AGMDiseaseAnnotation uiEntity) {
-		AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotation(uiEntity);
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
-			for (Note note : dbEntity.getRelatedNotes()) {
-				noteDAO.persist(note);
-			}
-		}
-		agmDiseaseAnnotationDAO.persist(dbEntity);
-		
-		// TODO this return needs to be changed back to the dbEntity in order for new items (notes) to be created properly 
-		return new ObjectResponse<>(dbEntity);
+		AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotationUpdate(uiEntity);
+		return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation uiEntity) {
+		AGMDiseaseAnnotation dbEntity = agmDiseaseValidator.validateAnnotationCreate(uiEntity);
+		return new ObjectResponse<>(agmDiseaseAnnotationDAO.persist(dbEntity));
 	}
 	
 	@Transactional

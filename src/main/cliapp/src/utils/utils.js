@@ -58,7 +58,7 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) {
+export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false) {
 	let initalColumnOrderObjects = [];
 	let initalColumnOrderFields = [];
 
@@ -71,6 +71,11 @@ export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions) 
 	});
 
 	initalColumnOrderFields = initalColumnOrderObjects.map(column => column.field);
+
+	if(deletionEnabled) {
+		initalColumnOrderFields.unshift('delete');
+	}
+
 	initalColumnOrderFields.unshift('rowEditor');
 
 	dataTable.current.state.columnOrder = initalColumnOrderFields

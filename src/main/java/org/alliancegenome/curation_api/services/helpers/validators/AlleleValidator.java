@@ -34,7 +34,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 		String errorTitle = "Could not update allele [" + curie + "]";
 		
-		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
 		dbEntity.setTaxon(taxon);

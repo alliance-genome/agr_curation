@@ -37,7 +37,7 @@ public class GeneValidator extends GenomicEntityValidator {
 		
 		String errorTitle = "Could not update allele [" + curie + "]";
 		
-		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
@@ -104,7 +104,7 @@ public class GeneValidator extends GenomicEntityValidator {
 			addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		else if (soTerm.getObsolete() && !soTerm.getCurie().equals(dbEntity.getGeneType().getCurie())) {
+		else if (soTerm.getObsolete() && (dbEntity.getGeneType() == null || !soTerm.getCurie().equals(dbEntity.getGeneType().getCurie()))) {
 			addMessageResponse("geneType", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

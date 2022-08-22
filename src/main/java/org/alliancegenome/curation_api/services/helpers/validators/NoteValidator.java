@@ -38,16 +38,19 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 
 		Long id = uiEntity.getId();
 		Note dbEntity = null;
+		Boolean newEntity;
 		if (id != null) {
 			dbEntity = noteDAO.find(id);
+			newEntity = false;
 			if (dbEntity == null) {
 				addMessageResponse("Could not find Note with ID: [" + id + "]");
 				throw new ApiErrorException(response);
 			}
 		}else {
 			dbEntity = new Note();
+			newEntity = true;
 		}
-		dbEntity = (Note) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Note) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
 		VocabularyTerm noteType = validateNoteType(uiEntity, dbEntity, noteVocabularyName);
 		dbEntity.setNoteType(noteType);
@@ -116,7 +119,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 			}
 		}
 
-		if (noteType.getObsolete() && !noteType.getName().equals(dbEntity.getNoteType().getName())) {
+		if (noteType.getObsolete() && (dbEntity.getNoteType() == null || !noteType.getName().equals(dbEntity.getNoteType().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

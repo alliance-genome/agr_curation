@@ -8,9 +8,6 @@ import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntolog
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ExperimentalConditionOntologyTermService extends BaseOntologyTermService<ExperimentalConditionOntologyTerm, ExperimentalConditionOntologyTermDAO> {
 

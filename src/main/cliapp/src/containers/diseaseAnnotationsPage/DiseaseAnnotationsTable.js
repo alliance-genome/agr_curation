@@ -1101,7 +1101,8 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"]
+			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
+			nonNullFields: ["conditionRelations.handle"]
 		},
 	},
 	{
@@ -1114,7 +1115,8 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionSummary" ]
+			fields: ["conditionRelations.conditions.conditionSummary" ],
+			nullFields: ["conditionRelations.handle"]
 		},
 	},
 	{

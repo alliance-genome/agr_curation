@@ -23,33 +23,11 @@ import { VocabulariesPage } from './containers/vocabularyPage';
 import { FMSComponent } from './components/FMSComponent';
 import { MetricsComponent } from './components/MetricsComponent';
 
-import { CHEBIOntologyComponent } from './containers/ontologies/CHEBIOntologyComponent';
-import { DiseaseOntologyComponent } from './containers/ontologies/DiseaseOntologyComponent';
-import { ECOOntologyComponent } from './containers/ontologies/ECOOntologyComponent';
-import { GOOntologyComponent } from './containers/ontologies/GOOntologyComponent';
-import { SOOntologyComponent } from './containers/ontologies/SOOntologyComponent';
-import { MAOntologyComponent } from './containers/ontologies/MAOntologyComponent';
-import { ZFAOntologyComponent } from './containers/ontologies/ZFAOntologyComponent';
-import { MPOntologyComponent } from './containers/ontologies/MPOntologyComponent';
-import { DAOOntologyComponent } from './containers/ontologies/DAOOntologyComponent';
-import { EMAPAOntologyComponent } from './containers/ontologies/EMAPAOntologyComponent';
-import { WBbtOntologyComponent } from './containers/ontologies/WBbtOntologyComponent';
-import { XCOOntologyComponent } from './containers/ontologies/XCOOntologyComponent';
-import { ZECOOntologyComponent } from './containers/ontologies/ZECOOntologyComponent';
-import { WBlsOntologyComponent } from './containers/ontologies/WBlsOntologyComponent';
-import { FBdvOntologyComponent } from './containers/ontologies/FBdvOntologyComponent';
-import { MmusDvOntologyComponent } from './containers/ontologies/MmusDvOntologyComponent';
-import { ZFSOntologyComponent } from './containers/ontologies/ZFSOntologyComponent';
-import { XBAOntologyComponent } from './containers/ontologies/XBAOntologyComponent';
-import { XBSOntologyComponent } from './containers/ontologies/XBSOntologyComponent';
-import { XPOOntologyComponent } from './containers/ontologies/XPOOntologyComponent';
-import { XBEDOntologyComponent } from './containers/ontologies/XBEDOntologyComponent';
-import { XSMOOntologyComponent } from './containers/ontologies/XSMOOntologyComponent';
-import { NCBITaxonOntologyComponent } from './containers/ontologies/NCBITaxonOntologyComponent';
-
+import { GeneralOntologyComponent } from './containers/ontologies/GeneralOntologyComponent';
 
 export default (
 	<>
+
 		<SecureRoute path="/" exact component={DashboardPage} />
 		<SecureRoute path="/profile" component={ProfilePage} />
 		<SecureRoute path="/dataloads" component={DataLoadsPage} />
@@ -63,29 +41,36 @@ export default (
 		<SecureRoute path="/references" component={ReferencePage} />
 		<SecureRoute path="/vocabterms" component={ControlledVocabularyPage} />
 		<SecureRoute path="/vocabularies" component={VocabulariesPage} />
-		<SecureRoute path="/ontology/chebi" component={CHEBIOntologyComponent} />
-		<SecureRoute path="/ontology/do" component={DiseaseOntologyComponent} />
-		<SecureRoute path="/ontology/eco" component={ECOOntologyComponent} />
-		<SecureRoute path="/ontology/go" component={GOOntologyComponent} />
-		<SecureRoute path="/ontology/so" component={SOOntologyComponent} />
-		<SecureRoute path="/ontology/ma" component={MAOntologyComponent} />
-		<SecureRoute path="/ontology/zfa" component={ZFAOntologyComponent} />
-		<SecureRoute path="/ontology/mp" component={MPOntologyComponent} />
-		<SecureRoute path="/ontology/dao" component={DAOOntologyComponent} />
-		<SecureRoute path="/ontology/emapa" component={EMAPAOntologyComponent} />
-		<SecureRoute path="/ontology/wbbt" component={WBbtOntologyComponent} />
-		<SecureRoute path="/ontology/xco" component={XCOOntologyComponent} />
-		<SecureRoute path="/ontology/zeco" component={ZECOOntologyComponent} />
-		<SecureRoute path="/ontology/wbls" component={WBlsOntologyComponent} />
-		<SecureRoute path="/ontology/fbdv" component={FBdvOntologyComponent} />
-		<SecureRoute path="/ontology/mmusdv" component={MmusDvOntologyComponent} />
-		<SecureRoute path="/ontology/zfs" component={ZFSOntologyComponent} />
-		<SecureRoute path="/ontology/xba" component={XBAOntologyComponent} />
-		<SecureRoute path="/ontology/xbs" component={XBSOntologyComponent} />
-		<SecureRoute path="/ontology/xpo" component={XPOOntologyComponent} />
-		<SecureRoute path="/ontology/xbed" component={XBEDOntologyComponent} />
-		<SecureRoute path="/ontology/xsmo" component={XSMOOntologyComponent} />
-		<SecureRoute path="/ontology/ncbitaxon" component={NCBITaxonOntologyComponent} />
+
+		<SecureRoute path="/ontology/eco" render={() => <GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" />} />
+
+		<SecureRoute path="/ontology/go" render={() => <GeneralOntologyComponent showNamespace={true} name="GO" endpoint="goterm" />} />
+		<SecureRoute path="/ontology/so" render={() => <GeneralOntologyComponent showNamespace={true} name="SO" endpoint="soterm" />} />
+
+		<SecureRoute path="/ontology/ncbitaxon" render={() => <GeneralOntologyComponent hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" />} />
+
+		<SecureRoute path="/ontology/chebi" render={() => <GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />} />
+		<SecureRoute path="/ontology/do" render={() => <GeneralOntologyComponent name="Diseases" endpoint="doterm" />} />
+		<SecureRoute path="/ontology/ma" render={() => <GeneralOntologyComponent name="MA" endpoint="materm" />} />
+		<SecureRoute path="/ontology/zfa" render={() => <GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />} />
+		<SecureRoute path="/ontology/mp" render={() => <GeneralOntologyComponent name="MP" endpoint="mpterm" />} />
+		<SecureRoute path="/ontology/dao" render={() => <GeneralOntologyComponent name="DAO" endpoint="daoterm" />} />
+		<SecureRoute path="/ontology/emapa" render={() => <GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />} />
+		<SecureRoute path="/ontology/wbbt" render={() => <GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />} />
+		<SecureRoute path="/ontology/xco" render={() => <GeneralOntologyComponent name="XCO" endpoint="xcoterm" />} />
+		<SecureRoute path="/ontology/zeco" render={() => <GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />} />
+		<SecureRoute path="/ontology/wbls" render={() => <GeneralOntologyComponent name="WBls" endpoint="wblsterm" />} />
+		<SecureRoute path="/ontology/fbdv" render={() => <GeneralOntologyComponent name="FBdv" endpoint="fbdvterm" />} />
+		<SecureRoute path="/ontology/mmusdv" render={() => <GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />} />
+		<SecureRoute path="/ontology/zfs" render={() => <GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />} />
+		<SecureRoute path="/ontology/xba" render={() => <GeneralOntologyComponent name="XBA" endpoint="xbaterm" />} />
+		<SecureRoute path="/ontology/xbs" render={() => <GeneralOntologyComponent name="XBS" endpoint="xbsterm" />} />
+		<SecureRoute path="/ontology/xpo" render={() => <GeneralOntologyComponent name="XPO" endpoint="xpoterm" />} />
+		<SecureRoute path="/ontology/atp" render={() => <GeneralOntologyComponent name="ATP" endpoint="atpterm" />} />
+		<SecureRoute path="/ontology/xbed" render={() => <GeneralOntologyComponent name="XBED" endpoint="xbedterm" />} />
+		<SecureRoute path="/ontology/xsmo" render={() => <GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />} />
+
+
 		<SecureRoute path="/fmspage" component={FMSComponent} />
 		<SecureRoute path="/metricspage" component={MetricsComponent} />
 		<SecureRoute path="/agms" component={AffectedGenomicModelPage} />

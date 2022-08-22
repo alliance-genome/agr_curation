@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -21,6 +22,9 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicLocations", "geneDiseaseAnnotations"})
 @Schema(name="Gene", description="POJO that represents the Gene")
+//TODO: fix class for 1.2.1 compliancy:
+// * geneSynopsis, geneSynopsisURL and automatedGeneDescription were removed in v1.2.0
+@AGRCurationSchemaVersion("1.0.0")
 public class Gene extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

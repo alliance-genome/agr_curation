@@ -245,7 +245,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Affected Genomic Models', icon: 'pi pi-fw pi-home', to: '/agms' },
 												{ label: 'Disease Annotations', icon: 'pi pi-fw pi-home', to: '/diseaseAnnotations' },
 												{ label: 'Experimental Conditions', icon: 'pi pi-fw pi-home', to: '/experimentalConditions' },
-												{ label: 'Condition Relation Handles', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
+												{ label: 'Condition Relations', icon: 'pi pi-fw pi-home', to: '/conditionRelations' },
 												{ label: 'Molecules', icon: 'pi pi-fw pi-home', to: '/molecules' },
 																								{ label: 'Literature References', icon: 'pi pi-fw pi-home', to: '/references' }
 										]
@@ -275,6 +275,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Xenopus Phenotype Ontology (XPO)', icon: 'pi pi-fw pi-home', to: '/ontology/xpo' },
 												{ label: 'Xenbase Experimantal Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' },
 												{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' },
+												{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
 												{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' }
 										]
 								},

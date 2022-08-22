@@ -71,12 +71,14 @@ export const GenericDataTable = (props) => {
 		/>
 	);
 
-	const filterComponentTemplate = ({ type, filterName, fields, options, optionField, useKeywordFields, annotationsAggregations }) => {
+	const filterComponentTemplate = ({ type, filterName, fields, nonNullFields, nullFields, options, optionField, useKeywordFields, annotationsAggregations }) => {
 		return (
 			<FilterComponent
 				type={type}
 				filterName={filterName}
 				fields={fields}
+				nonNullFields={nonNullFields}
+				nullFields={nullFields}
 				isEnabled={isEnabled}
 				onFilter={onFilter}
 				options={options}
@@ -190,7 +192,7 @@ export const GenericDataTable = (props) => {
 							headerStyle={{ width: '7rem', position: 'sticky' }} bodyStyle={{ textAlign: 'center' }} frozen headerClassName='surface-0'/>
 					}
 					{deletionEnabled &&
-						<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} filterElement={rowEditorFilterNameHeader}
+						<Column field="delete" editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} filterElement={rowEditorFilterNameHeader}
 						showFilterMenu={false} style={{maxWidth: '4rem', minWidth: '4rem', display: props.isEditable ? 'visible' : 'none' }} headerStyle={{ width: '4rem', position: 'sticky' }} bodyStyle={{textAlign: 'center'}}
 						frozen headerClassName='surface-0'/>
 					}
