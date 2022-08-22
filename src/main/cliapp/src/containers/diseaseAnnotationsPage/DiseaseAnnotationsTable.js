@@ -1279,7 +1279,7 @@ export const DiseaseAnnotationsTable = () => {
 					columns={columns}
 					aggregationFields={aggregationFields}
 					isEditable={true}
-					curieFields={["subject", "object", "diseaseGeneticModifier"]}
+					curieFields={["object", "diseaseGeneticModifier"]}
 					sortMapping={sortMapping}
 					mutation={mutation}
 					isEnabled={isEnabled}
