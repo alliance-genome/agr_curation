@@ -278,6 +278,7 @@ export const ControlledVocabularyComponent = () => {
 					initialColumnWidth={13}
 					errorObject = {{errorMessages, setErrorMessages}}
 					headerButtons={createButtons}
+					deletionEnabled={true}
 				/>
 				<NewTermForm
 					newTermDialog = {newTermDialog}
