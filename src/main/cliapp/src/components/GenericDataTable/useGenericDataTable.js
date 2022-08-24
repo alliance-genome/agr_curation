@@ -4,8 +4,6 @@ import { useQuery } from 'react-query';
 import { SearchService } from '../../service/SearchService';
 import { useSessionStorage } from '../../service/useSessionStorage';
 
-import { DeletionService } from '../../service/DeletionService';
-
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 
@@ -26,6 +24,7 @@ export const useGenericDataTable = ({
 	defaultVisibleColumns,
 	newEntity,
 	deletionEnabled,
+	deletionMethod,
 }) => {
 
 	const defaultColumnNames = columns.map((col) => {
@@ -48,8 +47,6 @@ export const useGenericDataTable = ({
 	`${initialTableState.tableKeyName}TableSettings`, 
 		initialTableState
 	);
-
-	const deletionService = new DeletionService();
 
 	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -260,8 +257,8 @@ export const useGenericDataTable = ({
 		});
 	};
 
-	const handleDeletion = async (idToDelete, ixToDelete) => {
-		const result = await deletionService.delete(endpoint, idToDelete);
+	const handleDeletion = async (idToDelete, entityToDelete) => {
+		const result = await deletionMethod(entityToDelete)
 		if (result.isError) {
 			toast_topright.current.show([
 				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
@@ -287,7 +284,6 @@ export const useGenericDataTable = ({
 				};
 			}
 			
-			_entities.splice(ixToDelete, 1);
 			setEntities(_entities);
 			let _tableState = {
 				...tableState,

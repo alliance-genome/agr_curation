@@ -1,4 +1,5 @@
 import { BaseAuthService } from './BaseAuthService';
+import { DeletionService } from './DeletionService';
 
 export class VocabularyService extends BaseAuthService {
 		saveTerm(updatedTerm) { //EDIT
@@ -15,6 +16,11 @@ export class VocabularyService extends BaseAuthService {
 
 		getVocabularies(){ //get all dropdown list of Vocabs
 				return this.api.post(`/vocabulary/find?limit=100`, {});
+		}
+
+		async deleteTerm(term) { 
+			const deletionService = new DeletionService();
+			return await deletionService.delete(`vocabularyterm`, term.id);
 		}
 }
 
