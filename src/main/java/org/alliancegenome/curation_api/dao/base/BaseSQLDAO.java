@@ -4,7 +4,9 @@ import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
+import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -227,9 +229,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
+		annotatedClasses.remove(CHEBITerm.class);
+		annotatedClasses.remove(Allele.class);
+		
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("MassIndex:");
-
+		ph.startProcess("MassIndex");
 		MassIndexer indexer =
 			searchSession
 				.massIndexer(annotatedClasses)
@@ -240,36 +244,85 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				.typesToIndexInParallel(typesToIndexInParallel)
 				.threadsToLoadObjects(threadsToLoadObjects)
 				.monitor(new MassIndexingMonitor() {
-
-					@Override
-					public void documentsAdded(long increment) {
-					}
-
-					@Override
+					public void documentsAdded(long increment) { }
+					public void entitiesLoaded(long increment) { }
+					public void addToTotalCount(long increment) { }
 					public void documentsBuilt(long increment) {
 						ph.progressProcess();
 					}
-
-					@Override
-					public void entitiesLoaded(long increment) {
-					}
-
-					@Override
-					public void addToTotalCount(long increment) {
-					}
-
-					@Override
 					public void indexingCompleted() {
 						ph.finishProcess();
 					}
-
 				});
+		
 		//indexer.dropAndCreateSchemaOnStart(true);
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
+		
+		
+		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
+		ph1.startProcess("MassIndex CHEBITerm");
+		MassIndexer indexer1 =
+			searchSession
+				.massIndexer(CHEBITerm.class)
+				.batchSizeToLoadObjects(batchSizeToLoadObjects)
+				.idFetchSize(idFetchSize)
+				.dropAndCreateSchemaOnStart(true)
+				.mergeSegmentsOnFinish(true)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
+				.monitor(new MassIndexingMonitor() {
+					public void documentsAdded(long increment) { }
+					public void entitiesLoaded(long increment) { }
+					public void addToTotalCount(long increment) { }
+					public void documentsBuilt(long increment) {
+						ph1.progressProcess();
+					}
+					public void indexingCompleted() {
+						ph1.finishProcess();
+					}
+				});
+		
+		//indexer.dropAndCreateSchemaOnStart(true);
+		indexer1.transactionTimeout(transactionTimeout);
+		if (limitIndexedObjectsTo > 0) {
+			indexer1.limitIndexedObjectsTo(limitIndexedObjectsTo);
+		}
+		indexer1.start();
+		
+		
+		ProcessDisplayHelper ph2 = new ProcessDisplayHelper(10000);
+		ph2.startProcess("MassIndex Allele");
+		MassIndexer indexer2 =
+			searchSession
+				.massIndexer(Allele.class)
+				.batchSizeToLoadObjects(50)
+				.idFetchSize(idFetchSize)
+				.dropAndCreateSchemaOnStart(true)
+				.mergeSegmentsOnFinish(true)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
+				.monitor(new MassIndexingMonitor() {
+					public void documentsAdded(long increment) { }
+					public void entitiesLoaded(long increment) { }
+					public void addToTotalCount(long increment) { }
+					public void documentsBuilt(long increment) {
+						ph2.progressProcess();
+					}
+					public void indexingCompleted() {
+						ph2.finishProcess();
+					}
+				});
+		
+		//indexer.dropAndCreateSchemaOnStart(true);
+		indexer2.transactionTimeout(transactionTimeout);
+		if (limitIndexedObjectsTo > 0) {
+			indexer2.limitIndexedObjectsTo(limitIndexedObjectsTo);
+		}
+		indexer2.start();
 
 	}
 
