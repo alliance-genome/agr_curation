@@ -23,6 +23,8 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import {getRefString} from '../../utils/utils';
+import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
+import {NewAnnotationForm} from "./NewAnnotationForm";
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -41,6 +43,7 @@ export const DiseaseAnnotationsTable = () => {
 		rowIndex: null,
 		mainRowProps: {},
 	});
+	const { newAnnotationState, newAnnotationDispatch } = useNewAnnotationReducer();
 
 	const diseaseRelationsTerms = useControlledVocabularyService('Disease Relation Vocabulary');
 	const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
@@ -49,6 +52,7 @@ export const DiseaseAnnotationsTable = () => {
 	const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
 	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
+	const [newDiseaseAnnotation, setNewDiseaseAnnotation] = useState(null);
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
@@ -75,6 +79,10 @@ export const DiseaseAnnotationsTable = () => {
 	const mutation = useMutation(updatedAnnotation => {
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
 	});
+
+	const handleNewAnnotationOpen = () => {
+		newAnnotationDispatch({type: "OPEN_DIALOG"})
+	};
 
 	const handleRelatedNotesOpen = (event, rowData, isInEdit) => {
 		let _relatedNotesData = {};
@@ -1264,6 +1272,13 @@ export const DiseaseAnnotationsTable = () => {
 	}
 	];
 
+	const headerButtons = () => {
+		return (
+			<>
+				<Button label="New Annotation" icon="pi pi-plus" onClick={handleNewAnnotationOpen} />&nbsp;&nbsp;
+			</>
+		);
+	};
 
 	return (
 		<>
@@ -1285,8 +1300,18 @@ export const DiseaseAnnotationsTable = () => {
 					errorObject={{errorMessages, setErrorMessages}}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
+					headerButtons={headerButtons}
+					newEntity={newDiseaseAnnotation}
 				/>
 			</div>
+			<NewAnnotationForm
+				newAnnotationState={newAnnotationState}
+				newAnnotationDispatch={newAnnotationDispatch}
+				searchService={searchService}
+				diseaseRelationsTerms={diseaseRelationsTerms}
+				negatedTerms={booleanTerms}
+				setNewDiseaseAnnotation={setNewDiseaseAnnotation}
+			/>
 			<RelatedNotesDialog
 				originalRelatedNotesData={relatedNotesData}
 				setOriginalRelatedNotesData={setRelatedNotesData}
