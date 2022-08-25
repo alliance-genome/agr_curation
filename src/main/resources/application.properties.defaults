@@ -39,7 +39,8 @@ quarkus.micrometer.export.json.enabled=true
 quarkus.micrometer.export.json.path=api/metrics.json
 
 quarkus.hibernate-search-orm.elasticsearch.analysis.configurer=bean:ApplicationAnalysisConfig
-quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = hibernate/custom-index-settings.json
+quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = custom-index-settings.json
+%dev.quarkus.hibernate-search-orm.elasticsearch.schema-management.settings-file = local-index-settings.json
 
 quarkus.vertx.max-worker-execute-time=PT1H
 
