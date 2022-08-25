@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -15,6 +17,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.*;
 
+@JsonTypeInfo(
+		use = JsonTypeInfo.Id.NAME,
+		include = JsonTypeInfo.As.PROPERTY,
+		property = "type")
+@JsonSubTypes({
+		@JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"),
+		@JsonSubTypes.Type(value = Allele.class, name = "Allele"),
+		@JsonSubTypes.Type(value = Gene.class, name = "Gene")
+})
 @Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -29,14 +40,14 @@ public class GenomicEntity extends BiologicalEntity {
 	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
 	private String name;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
 	@JsonView({View.FieldsAndLists.class})
 	private List<Synonym> synonyms;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
