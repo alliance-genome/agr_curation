@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.*;
@@ -23,6 +24,7 @@ import lombok.*;
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
 @JsonTypeName("GeneDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
+@AGRCurationSchemaVersion("1.2.1")
 public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -39,4 +41,17 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({View.FieldsOnly.class})
 	private AffectedGenomicModel sgdStrainBackground;
 	
+	@Transient
+	@Override
+	@JsonIgnore
+	public String getSubjectCurie() {
+		return subject.getCurie();
+	}
+
+	@Transient
+	@Override
+	@JsonIgnore
+	public String getSubjectTaxonCurie() {
+		return subject.getTaxon().getCurie();
+	}
 }

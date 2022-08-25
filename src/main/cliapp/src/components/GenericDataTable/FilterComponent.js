@@ -7,6 +7,8 @@ export const FilterComponent = ({
 	type,
 	isEnabled,
 	fields,
+	nonNullFields,
+	nullFields,
 	filterName,
 	onFilter,
 	options,
@@ -25,6 +27,8 @@ export const FilterComponent = ({
 				<FilterComponentInputText
 					isEnabled={isEnabled}
 					fields={fields}
+					nonNullFields={nonNullFields}
+					nullFields={nullFields}
 					filterName={filterName}
 					currentFilters={tableState.filters}
 					onFilter={onFilter}

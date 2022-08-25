@@ -1,12 +1,15 @@
 package org.alliancegenome.curation_api.controllers;
 
-import java.util.List;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
+import java.util.*;
 
 import javax.enterprise.context.RequestScoped;
 
-import org.alliancegenome.curation_api.interfaces.APIVersionInterface;
+import org.alliancegenome.curation_api.interfaces.*;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.reflections.Reflections;
 
 @RequestScoped
 public class APIVersionInfoController implements APIVersionInterface {
@@ -17,12 +20,6 @@ public class APIVersionInfoController implements APIVersionInterface {
 	@ConfigProperty(name = "quarkus.application.name")
 	String name;
 	
-	@ConfigProperty(name = "linkML.version")
-	String linkMLVersion;
-	
-	@ConfigProperty(name = "linkML.classes")
-	List<String> linkMLClasses;
-	
 	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
 	String es_host;
 	
@@ -32,11 +29,19 @@ public class APIVersionInfoController implements APIVersionInterface {
 
 	@Override
 	public APIVersionInfo get() {
+
+		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
+		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(AGRCurationSchemaVersion.class).asClass(reflections.getConfiguration().getClassLoaders()));
+		TreeMap<String, String> linkMLClassVersions = new TreeMap<String, String>();
+		for(Class<?> clazz: annotatedClasses) {
+			AGRCurationSchemaVersion version = clazz.getAnnotation(AGRCurationSchemaVersion.class);
+			linkMLClassVersions.put(clazz.getSimpleName(), version.value());
+		}
+
 		APIVersionInfo info = new APIVersionInfo();
 		info.setVersion(version);
 		info.setName(name);
-		info.setLinkMLVersion(linkMLVersion);
-		info.setLinkMLClasses(linkMLClasses);
+		info.setAgrCurationSchemaVersions(linkMLClassVersions);
 		info.setEsHost(es_host);
 		info.setEnv(env);
 		return info;

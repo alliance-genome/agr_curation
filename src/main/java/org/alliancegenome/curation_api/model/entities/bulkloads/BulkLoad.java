@@ -15,9 +15,9 @@ import com.fasterxml.jackson.annotation.JsonSubTypes.Type;
 import lombok.*;
 
 @JsonTypeInfo(
-		use = JsonTypeInfo.Id.NAME, 
-		include = JsonTypeInfo.As.PROPERTY, 
-		property = "type")
+	use = JsonTypeInfo.Id.NAME,
+	include = JsonTypeInfo.As.PROPERTY,
+	property = "type")
 @JsonSubTypes({ 
 	@Type(value = BulkFMSLoad.class, name = "BulkFMSLoad"), 
 	@Type(value = BulkURLLoad.class, name = "BulkURLLoad"), 

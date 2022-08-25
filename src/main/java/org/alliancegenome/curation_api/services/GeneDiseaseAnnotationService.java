@@ -52,18 +52,15 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	@Override
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation uiEntity) {
-		GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotation(uiEntity);
-		if (CollectionUtils.isNotEmpty(dbEntity.getRelatedNotes())) {
-			for (Note note : dbEntity.getRelatedNotes()) {
-				noteDAO.persist(note);
-			}
-		}
-		
-		geneDiseaseAnnotationDAO.persist(dbEntity);
-		
-		// TODO this return needs to be changed back to the dbEntity in order for new items (notes) to be created properly 
-		return new ObjectResponse<>(dbEntity);
-
+		GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotationUpdate(uiEntity);
+		return new ObjectResponse<>(geneDiseaseAnnotationDAO.persist(dbEntity));
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation uiEntity) {
+		GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotationCreate(uiEntity);
+		return new ObjectResponse<>(geneDiseaseAnnotationDAO.persist(dbEntity));
 	}
 
 	@Transactional

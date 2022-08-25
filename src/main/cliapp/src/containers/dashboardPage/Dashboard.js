@@ -44,6 +44,7 @@ export const Dashboard = () => {
 		MmusDvTerm: { name: "MmusDv", link: "/#/ontology/mmusdv", type: 'ontology', },
 		ZFSTerm: { name: "ZFS", link: "/#/ontology/zfs", type: 'ontology', },
 		XPOTerm: { name: "XPO", link: "/#/ontology/xpo", type: 'ontology', },
+		ATPTerm: { name: "ATP", link: "/#/ontology/atp", type: 'ontology', },
 		XBEDTerm: { name: "XBED", link: "/#/ontology/xbed", type: 'ontology', },
 
 		CurationReport: { name: "Curation Reports", link: "/#/reports", type: 'system', },

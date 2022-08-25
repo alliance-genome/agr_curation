@@ -6,7 +6,7 @@ import org.alliancegenome.curation_api.view.View;
 import org.hibernate.search.engine.backend.types.*;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.*;
 
 import lombok.*;
 
@@ -14,6 +14,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
 @ToString(callSuper = true)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "curie")
 public class CurieAuditedObject extends AuditedObject {
 
 	@Id @DocumentId
@@ -21,6 +22,6 @@ public class CurieAuditedObject extends AuditedObject {
 	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	private String curie;
+	protected String curie;
 
 }

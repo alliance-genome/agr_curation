@@ -7,6 +7,7 @@ import java.util.*;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.annotations.*;
@@ -22,6 +23,7 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
+@AGRCurationSchemaVersion("1.2.1")
 public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})
