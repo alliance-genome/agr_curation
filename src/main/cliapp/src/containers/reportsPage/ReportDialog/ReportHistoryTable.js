@@ -13,6 +13,7 @@ export const ReportHistoryTable = ({ history }) => {
 
 	return(
 		<DataTable value={history}>
+			<Column field="curationReportTimestamp" header="Report Run Time" />
 			<Column body={pdfBody} field="pdfUrl" header="PDF File" />
 			<Column body={xlsBody} field="xlsUrl" header="XLS File" />
 			<Column body={htmlBody} field="htmlUrl" header="HTML File" />

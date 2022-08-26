@@ -36,7 +36,7 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(EcoTerm::getCurie).collect(Collectors.toList()), "::"));
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
 		return super.getCurieID(subject, object, reference, null,null, null);

@@ -29,7 +29,7 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(getWithCuries(annotationDTO));
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
@@ -41,7 +41,7 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(getWithCuries(annotation));
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
 		return super.getCurieID(subject, object, reference, null,null, null);

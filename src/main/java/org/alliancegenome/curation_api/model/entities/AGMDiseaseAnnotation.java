@@ -34,25 +34,25 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JoinColumn(foreignKey = @ForeignKey(name="fk_agmdasubject"))
 	@JsonView({View.FieldsOnly.class})
 	private AffectedGenomicModel subject;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Gene inferredGene;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Allele inferredAllele;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Gene assertedGene;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -63,6 +63,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
+		if(subject == null) return null;
 		return subject.getCurie();
 	}
 
@@ -70,6 +71,8 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
+		if(subject == null) return null;
+		if(subject.getTaxon() == null) return null;
 		return subject.getTaxon().getCurie();
 	}
 }
