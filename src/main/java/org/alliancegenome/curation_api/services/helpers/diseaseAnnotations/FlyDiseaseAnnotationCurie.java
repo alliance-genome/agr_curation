@@ -27,7 +27,7 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getDiseaseRelation());
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();

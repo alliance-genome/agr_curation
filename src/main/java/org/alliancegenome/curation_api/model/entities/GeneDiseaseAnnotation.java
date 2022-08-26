@@ -34,17 +34,18 @@ public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 	@JoinColumn(foreignKey = @ForeignKey(name="fk_genedasubject"))
 	@JsonView({View.FieldsOnly.class})
 	private Gene subject;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private AffectedGenomicModel sgdStrainBackground;
-	
+
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
+		if(subject == null) return null;
 		return subject.getCurie();
 	}
 
