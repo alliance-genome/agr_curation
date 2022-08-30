@@ -22,7 +22,7 @@ public class MGIDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getSingleReference());
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();

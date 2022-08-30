@@ -17,7 +17,7 @@ export const useGenericDataTable = ({
 	curieFields,
 	idFields,
 	sortMapping,
-	nonNullFields,
+	nonNullFieldsTable,
 	mutation,
 	setIsEnabled,
 	toasts,
@@ -92,7 +92,7 @@ export const useGenericDataTable = ({
 	);
 
 	useQuery([tableState.tableKeyName, tableState],
-		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFields), {
+		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
 		onSuccess: (data) => {
 			setIsEnabled(true);
 			setEntities(data.results);

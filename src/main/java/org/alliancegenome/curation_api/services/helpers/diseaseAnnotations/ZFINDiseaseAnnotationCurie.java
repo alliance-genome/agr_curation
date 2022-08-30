@@ -25,7 +25,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotationDTO.getObject());
 		curie.add(annotationDTO.getSingleReference());
 		curie.add(StringUtils.join(annotationDTO.getEvidenceCodes(), "::"));
-		
+
 		if(CollectionUtils.isNotEmpty(annotationDTO.getConditionRelations())) {
 			curie.add(annotationDTO.getConditionRelations().stream()
 				.map(conditionDTO -> {
@@ -40,7 +40,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		}
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotation annotation) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
@@ -48,7 +48,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotation.getObject().getCurie());
 		curie.add(annotation.getSingleReference().getCurie());
 		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(EcoTerm::getCurie).collect(Collectors.toList()), "::"));
-		
+
 		if(CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 			curie.add(annotation.getConditionRelations().stream()
 				.map(condition -> {

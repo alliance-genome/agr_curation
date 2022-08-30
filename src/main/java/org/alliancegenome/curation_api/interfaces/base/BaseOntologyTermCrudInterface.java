@@ -39,5 +39,13 @@ public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends B
 	@JsonView(View.FieldsOnly.class)
 	public ObjectListResponse<E> getChildren(@PathParam("curie") String curie);
 
+	@GET
+	@Path("/{curie}/parents")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectListResponse<E> getParents(@PathParam("curie") String curie);
 	
+	@GET
+	@Path("/{curie}/ancestors")
+	@JsonView(View.FieldsOnly.class)
+	public ObjectListResponse<E> getAncestors(@PathParam("curie") String curie);
 }

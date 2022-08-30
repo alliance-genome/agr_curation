@@ -71,12 +71,14 @@ export const GenericDataTable = (props) => {
 		/>
 	);
 
-	const filterComponentTemplate = ({ type, filterName, fields, options, optionField, useKeywordFields, annotationsAggregations }) => {
+	const filterComponentTemplate = ({ type, filterName, fields, nonNullFields, nullFields, options, optionField, useKeywordFields, annotationsAggregations }) => {
 		return (
 			<FilterComponent
 				type={type}
 				filterName={filterName}
 				fields={fields}
+				nonNullFields={nonNullFields}
+				nullFields={nullFields}
 				isEnabled={isEnabled}
 				onFilter={onFilter}
 				options={options}

@@ -113,7 +113,7 @@ export const DiseaseAnnotationsTable = () => {
 			..._conditionRelationsData
 		}));
 	};
-	
+
 	const handleConditionRelationsOpenInEdit = (event, rowProps, isInEdit) => {
 		const { rows } = rowProps.props;
 		const { rowIndex } = rowProps;
@@ -166,7 +166,7 @@ export const DiseaseAnnotationsTable = () => {
 			);
 		}
 	};
-	
+
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
 			let refString = getRefString(rowData.singleReference);
@@ -185,10 +185,10 @@ export const DiseaseAnnotationsTable = () => {
 					</Tooltip>
 				</>
 			);
-			
-		}	
+
+		}
 	};
-	
+
 	const inferredGeneBodyTemplate = (rowData) => {
 		if (rowData && rowData.inferredGene) {
 			return (
@@ -208,7 +208,7 @@ export const DiseaseAnnotationsTable = () => {
 				)
 		}
 	};
-	
+
 	const assertedGeneBodyTemplate = (rowData) => {
 		if (rowData && rowData.assertedGene) {
 			return (
@@ -228,7 +228,7 @@ export const DiseaseAnnotationsTable = () => {
 				)
 		}
 	};
-	
+
 	const inferredAlleleBodyTemplate = (rowData) => {
 		if (rowData && rowData.inferredAllele) {
 			if (rowData.inferredAllele.symbol) {
@@ -264,9 +264,9 @@ export const DiseaseAnnotationsTable = () => {
 					</>
 				)
 			}
-		} 
+		}
 	};
-	
+
 	const assertedAlleleBodyTemplate = (rowData) => {
 		if (rowData && rowData.assertedAllele) {
 			if (rowData.assertedAllele.symbol) {
@@ -302,7 +302,7 @@ export const DiseaseAnnotationsTable = () => {
 					</>
 				)
 			}
-		} 
+		}
 	};
 
 	const diseaseQualifiersBodyTemplate = (rowData) => {
@@ -460,7 +460,7 @@ export const DiseaseAnnotationsTable = () => {
 			)
 		}
 	};
-	
+
 	const conditionRelationHandleEditor = (props) => {
 		if (props.rowData?.conditionRelations && props.rowData.conditionRelations[0]?.handle) {
 			return (
@@ -477,7 +477,7 @@ export const DiseaseAnnotationsTable = () => {
 		);
 		}
 	};
-	
+
 	const onConditionRelationHandleEditorValueChange = (props, event) => {
 		let updatedAnnotations = [...props.props.value];
 		if (typeof event.value === "object") {
@@ -486,7 +486,7 @@ export const DiseaseAnnotationsTable = () => {
 			updatedAnnotations[props.rowIndex].conditionRelations[0].handle = event.value;
 		}
 	};
-	
+
 	const diseaseBodyTemplate = (rowData) => {
 		if (rowData.object) {
 			return (
@@ -684,7 +684,7 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='subjectFilter'
 					fieldName='subject'
 					isSubject={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
@@ -706,7 +706,7 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
 					isSgdStrainBackground={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
@@ -728,7 +728,7 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='geneticModifierFilter'
 					fieldName='diseaseGeneticModifier'
 					isSubject={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
@@ -753,7 +753,7 @@ export const DiseaseAnnotationsTable = () => {
 						filterName='assertedGeneFilter'
 						fieldName='assertedGene'
 						isSubject={true}
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 					/>
 					<ErrorMessageComponent
@@ -777,7 +777,7 @@ export const DiseaseAnnotationsTable = () => {
 						filterName='assertedAlleleFilter'
 						fieldName='assertedAllele'
 						isSubject={true}
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+						valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 					/>
 					<ErrorMessageComponent
@@ -829,7 +829,7 @@ export const DiseaseAnnotationsTable = () => {
 					fieldName='with'
 					isWith={true}
 					isMultiple={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
@@ -862,8 +862,8 @@ export const DiseaseAnnotationsTable = () => {
 								queryString: "agr_eco_terms"
 							}
 						}
-					}} 
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					}}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 			/>
 				<ErrorMessageComponent
@@ -960,7 +960,7 @@ export const DiseaseAnnotationsTable = () => {
 					filterName='curieFilter'
 					isReference={true}
 					fieldName='singleReference'
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent
@@ -1101,7 +1101,8 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"]
+			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
+			nonNullFields: ["conditionRelations.handle"]
 		},
 	},
 	{
@@ -1114,7 +1115,8 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionSummary" ]
+			fields: ["conditionRelations.conditions.conditionSummary" ],
+			nullFields: ["conditionRelations.handle"]
 		},
 	},
 	{
@@ -1277,7 +1279,6 @@ export const DiseaseAnnotationsTable = () => {
 					columns={columns}
 					aggregationFields={aggregationFields}
 					isEditable={true}
-					curieFields={["subject", "object", "diseaseGeneticModifier"]}
 					sortMapping={sortMapping}
 					mutation={mutation}
 					isEnabled={isEnabled}
