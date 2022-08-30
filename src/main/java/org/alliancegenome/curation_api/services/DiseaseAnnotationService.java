@@ -1,22 +1,22 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-
+import lombok.extern.jbosslog.JBossLog;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.exceptions.*;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
-import org.alliancegenome.curation_api.model.ingest.dto.*;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
@@ -24,7 +24,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @JBossLog
 @RequestScoped
@@ -88,7 +96,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 				relation.setInternal(conditionRelationDTO.getInternal());
 				relation.setObsolete(conditionRelationDTO.getObsolete());
-				
+
 				if (conditionRelationDTO.getCreatedBy() != null) {
 					Person createdBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getCreatedBy());
 					relation.setCreatedBy(createdBy);
@@ -97,7 +105,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 					Person updatedBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getUpdatedBy());
 					relation.setUpdatedBy(updatedBy);
 				}
-				
+
 				if (conditionRelationDTO.getDateUpdated() != null) {
 					OffsetDateTime dateLastModified;
 					try {
@@ -117,7 +125,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 					}
 					relation.setDateCreated(creationDate);
 				}
-				
+
 				String conditionRelationType = conditionRelationDTO.getConditionRelationType();
 				if (conditionRelationType == null) {
 					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
@@ -143,7 +151,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 					// reference of annotation equals the reference of the experiment
 					relation.setSingleReference(annotation.getSingleReference());
 				}
-				
+
 				relation.setUniqueId(DiseaseAnnotationCurie.getConditionRelationUnique(relation));
 				// reuse existing condition relation
 				SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", relation.getUniqueId());
@@ -188,16 +196,16 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 	public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
 		if (StringUtils.isEmpty(dto.getObject()) || StringUtils.isEmpty(dto.getDiseaseRelation()) || StringUtils.isEmpty(dto.getDataProvider()) ||
-				StringUtils.isEmpty(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
-				dto.getInternal() == null) {
+			StringUtils.isEmpty(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
+			dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
 		}
-		
+
 		Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 		annotation.setCreatedBy(createdBy);
 		Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
 		annotation.setUpdatedBy(updatedBy);
-		
+
 		annotation.setInternal(dto.getInternal());
 		annotation.setObsolete(dto.getObsolete());
 
@@ -220,7 +228,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			}
 			annotation.setDateCreated(creationDate);
 		}
-		
+
 		annotation.setDataProvider(dto.getDataProvider());
 
 		if (dto.getModEntityId() != null) {
@@ -240,7 +248,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (reference == null) {
 				throw new ObjectValidationException(dto, "Invalid publication ID in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			
+
 		}
 		annotation.setSingleReference(reference);
 
@@ -291,7 +299,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (dto.getDiseaseGeneticModifier() == null || dto.getDiseaseGeneticModifierRelation() == null) {
 				throw new ObjectValidationException(dto, "Genetic modifier specified without genetic modifier relation (or vice versa) for " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			
+
 			VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 			if (diseaseGeneticModifierRelation == null) {
 				throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
@@ -341,9 +349,30 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 						throw new ObjectValidationException(dto, "Invalid Paper Handle: reference of annotation needs to be the same as the conditionRelationDto reference " + annotation.getUniqueId());
 				}
 			}
-		}	 
+		}
 
 		return annotation;
+	}
+
+	@Transactional
+	public ObjectResponse<DiseaseAnnotation> deleteNotes(Long id) {
+		SearchResponse<DiseaseAnnotation> response = dao.searchByField(new Pagination(), "id", Long.toString(id));
+		log.info(response);
+		DiseaseAnnotation singleResult = response.getSingleResult();
+		if (singleResult == null) {
+			ObjectResponse<DiseaseAnnotation> oResponse = new ObjectResponse<>();
+			oResponse.addErrorMessage("id", "Could not find Disease Annotation with id: " + id);
+			throw new ApiErrorException(oResponse);
+		}
+		// remove notes
+		if (CollectionUtils.isNotEmpty(singleResult.getRelatedNotes())) {
+			singleResult.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
+		}
+		if (singleResult.getSingleReference() != null) {
+			singleResult.setSingleReference(null);
+		}
+
+		return new ObjectResponse<>(singleResult);
 	}
 
 }

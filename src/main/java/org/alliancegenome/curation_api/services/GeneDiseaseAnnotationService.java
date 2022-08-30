@@ -121,4 +121,12 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		return annotation;
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<GeneDiseaseAnnotation> delete(Long id) {
+		diseaseAnnotationService.deleteNotes(id);
+		GeneDiseaseAnnotation object = dao.remove(id);
+		ObjectResponse<GeneDiseaseAnnotation> ret = new ObjectResponse<>();
+		return ret;
+	}
 }
