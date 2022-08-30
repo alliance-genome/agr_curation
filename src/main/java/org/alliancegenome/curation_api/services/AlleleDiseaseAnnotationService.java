@@ -118,4 +118,12 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		return annotation;
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
+		diseaseAnnotationService.deleteNotes(id);
+		AlleleDiseaseAnnotation object = dao.remove(id);
+		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
+		return ret;
+	}
 }

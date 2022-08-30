@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
+import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -354,21 +355,24 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	}
 
 	@Transactional
-	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
-		DiseaseAnnotation da = dao.find(id);
-		if (da == null) {
-			ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>();
-			response.addErrorMessage("id", "Could not find Disease Annotation with id: " + id);
-			throw new ApiErrorException(response);
+	public ObjectResponse<DiseaseAnnotation> deleteNotes(Long id) {
+		SearchResponse<DiseaseAnnotation> response = dao.searchByField(new Pagination(), "id", Long.toString(id));
+		log.info(response);
+		DiseaseAnnotation singleResult = response.getSingleResult();
+		if (singleResult == null) {
+			ObjectResponse<DiseaseAnnotation> oResponse = new ObjectResponse<>();
+			oResponse.addErrorMessage("id", "Could not find Disease Annotation with id: " + id);
+			throw new ApiErrorException(oResponse);
 		}
 		// remove notes
-		if(CollectionUtils.isNotEmpty(da.getRelatedNotes())){
-			da.getRelatedNotes().forEach(note -> noteService.delete(id));
+		if (CollectionUtils.isNotEmpty(singleResult.getRelatedNotes())) {
+			singleResult.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
+		}
+		if (singleResult.getSingleReference() != null) {
+			singleResult.setSingleReference(null);
 		}
 
-		DiseaseAnnotation object = dao.remove(id);
-		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>(object);
-		return ret;
+		return new ObjectResponse<>(singleResult);
 	}
 
 }

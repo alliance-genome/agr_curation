@@ -34,10 +34,4 @@ public class DiseaseAnnotationCrudController extends BaseEntityCrudController<Di
 		}
 	}
 
-	@Override
-	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.delete(id);
-		return null;
-	}
-
 }
