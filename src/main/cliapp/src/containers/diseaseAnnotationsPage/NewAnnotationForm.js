@@ -125,32 +125,32 @@ export const NewAnnotationForm = ({
 				<form>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationSubject">Subject</label>
+							<label htmlFor="subject">Subject</label>
 							<AutocompleteEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
-								name="annotationSubject"
+								name="subject"
 								label="Subject"
 								endpoint='biologicalentity'
 								filterName='subjectFilter'
-								fieldName='annotationSubject'
-								value={newAnnotation.annotationSubject}
+								fieldName='subject'
+								value={newAnnotation.subject}
 								passedOnChange={onObjectChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.annotationSubject})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationSubject"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationDiseaseRelation">Disease Relation</label>
+							<label htmlFor="diseaseRelation">Disease Relation</label>
 							<Dropdown
 								options={diseaseRelationsTerms}
-								value={newAnnotation.annotationDiseaseRelation}
-								name="annotationDiseaseRelation"
+								value={newAnnotation.diseaseRelation}
+								name="diseaseRelation"
 								optionLabel='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.annotationDiseaseRelation})}
+								className={classNames({'p-invalid': submitted && errorMessages.diseaseRelation})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationDiseaseRelation"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="annotationNegation">Negation</label>

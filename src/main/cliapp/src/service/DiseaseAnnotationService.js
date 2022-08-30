@@ -13,10 +13,15 @@ export class DiseaseAnnotationService extends BaseAuthService {
 		return await deletionService.delete(endpoint, updatedAnnotation.id);
 	}
 
-	createDiseaseAnnotation(newAnnotation) {
+	createDiseaseAnnotation(annotation) {
 		//newAnnotation['type'] = 'GeneDiseaseAnnotation';
 		//return this.api.post(`/gene-disease-annotation`, newAnnotation);
-		const { type } = newAnnotation.annotationSubject;
+
+		let newAnnotation = { ...annotation };
+
+		const { type } = newAnnotation.subject;
+
+		newAnnotation["type"] = subectAnnotationLookup[type];
 		let endpoint;
 		if (type in subjectTypeEndpoints) {
 			endpoint = subjectTypeEndpoints[type];
@@ -38,6 +43,12 @@ const typeEndpoints = {
 	"AGMDiseaseAnnotation": "agm",
 	"AlleleDiseaseAnnotation": "allele",
 	"GeneDiseaseAnnotation": "gene"
+}
+
+const subectAnnotationLookup = {
+	"AffectedGenomicModel": "AGMDiseaseAnnotation",
+	"Allele": "AlleleDiseaseAnnotation",
+	"Gene": "GeneDiseaseAnnotation"
 }
 
 const subjectTypeEndpoints = {
