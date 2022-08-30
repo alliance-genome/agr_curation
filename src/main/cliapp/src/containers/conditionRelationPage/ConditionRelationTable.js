@@ -37,7 +37,7 @@ export const ConditionRelationTable = () => {
 
 
 
-	let conditionRelationService = null;
+	let conditionRelationService = new ConditionRelationService();
 
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 
@@ -246,6 +246,7 @@ export const ConditionRelationTable = () => {
 				headerButtons={headerButtons}
 				newEntity={newConditionRelation}
 				deletionEnabled={true}
+				deletionMethod={conditionRelationService.deleteConditionRelation}
 			/>
 			<NewRelationForm
 				newRelationState={newRelationState}

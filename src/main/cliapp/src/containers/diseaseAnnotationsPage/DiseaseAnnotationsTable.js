@@ -58,7 +58,7 @@ export const DiseaseAnnotationsTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	let diseaseAnnotationService = null;
+	let diseaseAnnotationService = new DiseaseAnnotationService();
 
 	const sortMapping = {
 		'object.name': ['object.curie', 'object.namespace'],
@@ -73,9 +73,6 @@ export const DiseaseAnnotationsTable = () => {
 	];
 
 	const mutation = useMutation(updatedAnnotation => {
-		if (!diseaseAnnotationService) {
-			diseaseAnnotationService = new DiseaseAnnotationService();
-		}
 		return diseaseAnnotationService.saveDiseaseAnnotation(updatedAnnotation);
 	});
 
@@ -1286,6 +1283,8 @@ export const DiseaseAnnotationsTable = () => {
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
 					errorObject={{errorMessages, setErrorMessages}}
+					deletionEnabled={true}
+					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
 				/>
 			</div>
 			<RelatedNotesDialog
