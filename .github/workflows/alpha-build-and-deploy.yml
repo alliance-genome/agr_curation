@@ -59,7 +59,7 @@ jobs:
               "fields": [
                 {
                   "title": "GitHub Actions URL",
-                  "value": "${{ github.event.repository.url }}/actions/runs/${{ github.run_id }}"
+                  "value": "https://github.com/${{ github.event.org.login }}/${{ github.event.repo.name }}/actions/runs/${{ github.run_id }}"
                 }
               ]
             }
