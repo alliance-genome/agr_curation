@@ -368,6 +368,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		if (CollectionUtils.isNotEmpty(singleResult.getRelatedNotes())) {
 			singleResult.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
 		}
+		singleResult.setRelatedNotes(null);
 		if (singleResult.getSingleReference() != null) {
 			singleResult.setSingleReference(null);
 		}
