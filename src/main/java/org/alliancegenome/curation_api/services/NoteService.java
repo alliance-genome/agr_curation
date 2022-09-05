@@ -98,17 +98,17 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 			note.setReferences(noteReferences);
 		}
 		
-		if (dto.getCreatedBy() != null) {
+		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			note.setCreatedBy(createdBy);
 		}
-		if (dto.getUpdatedBy() != null) {
+		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
 			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
 			note.setUpdatedBy(updatedBy);
 		}
 		
 
-		if (dto.getDateUpdated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
 			try {
 				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
@@ -118,7 +118,7 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 			note.setDateUpdated(dateLastModified);
 		}
 
-		if (dto.getDateCreated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			OffsetDateTime creationDate;
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());

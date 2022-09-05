@@ -94,19 +94,21 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			for (ConditionRelationDTO conditionRelationDTO : annotationDTO.getConditionRelations()) {
 				ConditionRelation relation = new ConditionRelation();
 
-				relation.setInternal(conditionRelationDTO.getInternal());
-				relation.setObsolete(conditionRelationDTO.getObsolete());
+				if (relation.getInternal() != null)
+					relation.setInternal(conditionRelationDTO.getInternal());
+				if (relation.getObsolete() != null)
+					relation.setObsolete(conditionRelationDTO.getObsolete());
 
-				if (conditionRelationDTO.getCreatedBy() != null) {
+				if (StringUtils.isNotBlank(conditionRelationDTO.getCreatedBy())) {
 					Person createdBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getCreatedBy());
 					relation.setCreatedBy(createdBy);
 				}
-				if (conditionRelationDTO.getUpdatedBy() != null) {
+				if (StringUtils.isNotBlank(conditionRelationDTO.getUpdatedBy())) {
 					Person updatedBy = personService.fetchByUniqueIdOrCreate(conditionRelationDTO.getUpdatedBy());
 					relation.setUpdatedBy(updatedBy);
 				}
 
-				if (conditionRelationDTO.getDateUpdated() != null) {
+				if (StringUtils.isNotBlank(conditionRelationDTO.getDateUpdated())) {
 					OffsetDateTime dateLastModified;
 					try {
 						dateLastModified = OffsetDateTime.parse(conditionRelationDTO.getDateUpdated());
@@ -116,7 +118,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 					relation.setDateUpdated(dateLastModified);
 				}
 
-				if (conditionRelationDTO.getDateCreated() != null) {
+				if (StringUtils.isNotBlank(conditionRelationDTO.getDateCreated())) {
 					OffsetDateTime creationDate;
 					try {
 						creationDate = OffsetDateTime.parse(conditionRelationDTO.getDateCreated());
@@ -127,7 +129,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				}
 
 				String conditionRelationType = conditionRelationDTO.getConditionRelationType();
-				if (conditionRelationType == null) {
+				if (StringUtils.isBlank(conditionRelationType)) {
 					throw new ObjectValidationException(annotationDTO, "Annotation " + annotation.getUniqueId() + " has condition without relation type - skipping");
 				}
 				VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(conditionRelationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
@@ -146,7 +148,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 					relation.addExperimentCondition(experimentalCondition);
 				}
-				if (conditionRelationDTO.getHandle() != null) {
+				if (StringUtils.isNotBlank(conditionRelationDTO.getHandle())) {
 					relation.setHandle(conditionRelationDTO.getHandle());
 					// reference of annotation equals the reference of the experiment
 					relation.setSingleReference(annotation.getSingleReference());
@@ -195,21 +197,26 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	}
 
 	public DiseaseAnnotation validateAnnotationDTO(DiseaseAnnotation annotation, DiseaseAnnotationDTO dto) throws ObjectValidationException {
-		if (StringUtils.isEmpty(dto.getObject()) || StringUtils.isEmpty(dto.getDiseaseRelation()) || StringUtils.isEmpty(dto.getDataProvider()) ||
-			StringUtils.isEmpty(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
+		if (StringUtils.isBlank(dto.getObject()) || StringUtils.isBlank(dto.getDiseaseRelation()) || StringUtils.isBlank(dto.getDataProvider()) ||
+			StringUtils.isBlank(dto.getSingleReference()) || CollectionUtils.isEmpty(dto.getEvidenceCodes()) ||
 			dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing required fields - skipping");
 		}
 
-		Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
-		annotation.setCreatedBy(createdBy);
-		Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
-		annotation.setUpdatedBy(updatedBy);
+		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
+			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+			annotation.setCreatedBy(createdBy);
+		}
+		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
+			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+			annotation.setUpdatedBy(updatedBy);
+		}
 
 		annotation.setInternal(dto.getInternal());
-		annotation.setObsolete(dto.getObsolete());
+		if (dto.getObsolete() != null)
+			annotation.setObsolete(dto.getObsolete());
 
-		if (dto.getDateUpdated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
 			try {
 				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
@@ -219,7 +226,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			annotation.setDateUpdated(dateLastModified);
 		}
 
-		if (dto.getDateCreated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			OffsetDateTime creationDate;
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());
@@ -231,7 +238,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 		annotation.setDataProvider(dto.getDataProvider());
 
-		if (dto.getModEntityId() != null) {
+		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			annotation.setModEntityId(dto.getModEntityId());
 		}
 
@@ -280,7 +287,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			annotation.setWith(withGenes);
 		}
 
-		if (dto.getSecondaryDataProvider() != null)
+		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider()))
 			annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
 
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
@@ -295,8 +302,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			annotation.setDiseaseQualifiers(diseaseQualifiers);
 		}
 
-		if (dto.getDiseaseGeneticModifier() != null || dto.getDiseaseGeneticModifierRelation() != null) {
-			if (dto.getDiseaseGeneticModifier() == null || dto.getDiseaseGeneticModifierRelation() == null) {
+		if (StringUtils.isNotBlank(dto.getDiseaseGeneticModifier()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelation())) {
+			if (StringUtils.isBlank(dto.getDiseaseGeneticModifier()) || StringUtils.isBlank(dto.getDiseaseGeneticModifierRelation())) {
 				throw new ObjectValidationException(dto, "Genetic modifier specified without genetic modifier relation (or vice versa) for " + annotation.getUniqueId() + " - skipping annotation");
 			}
 
@@ -313,7 +320,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
 		}
 
-		if (dto.getAnnotationType() != null) {
+		if (StringUtils.isNotBlank(dto.getAnnotationType())) {
 			VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
 			if (annotationType == null) {
 				throw new ObjectValidationException(dto, "Invalid annotation type (" + dto.getAnnotationType() + ") in " + annotation.getUniqueId() + " - skipping annotation");
@@ -322,7 +329,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 		}
 
-		if (dto.getGeneticSex() != null) {
+		if (StringUtils.isNotBlank(dto.getGeneticSex())) {
 			VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
 			if (geneticSex == null) {
 				throw new ObjectValidationException(dto, "Invalid genetic sex (" + dto.getGeneticSex() + ") in " + annotation.getUniqueId() + " - skipping annotation");
@@ -342,7 +349,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			annotation.setRelatedNotes(notesToPersist);
 		}
 
-		if (dto.getConditionRelations() != null) {
+		if (CollectionUtils.isNotEmpty(dto.getConditionRelations())) {
 			for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelations()) {
 				if (conditionRelationDTO.getHandle() != null) {
 					if (!conditionRelationDTO.getSingleReference().equals(dto.getSingleReference()))

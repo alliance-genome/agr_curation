@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -11,12 +13,16 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Molecule;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.MoleculeValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -57,8 +63,8 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	public void processUpdate(MoleculeFmsDTO molecule) throws ObjectUpdateException {
 		log.debug("processUpdate Molecule: ");
 	
-		if (molecule.getId() == null) {
-			log.debug(molecule.getId() + " has no ID - skipping");
+		if (StringUtils.isBlank(molecule.getId())) {
+			log.debug(molecule.getName() + " has no ID - skipping");
 			throw new ObjectUpdateException(molecule, molecule.getId() + " has no ID - skipping");
 		}
 		
@@ -67,14 +73,14 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			throw new ObjectUpdateException(molecule, "Skipping processing of " + molecule.getId());
 		}
 		
-		if (molecule.getName() == null || molecule.getName().length() == 0) {
+		if (StringUtils.isBlank(molecule.getName())) {
 			log.debug(molecule.getId() + " has no name - skipping");
 			throw new ObjectUpdateException(molecule, molecule.getId() + " has no name - skipping");
 		}
 		
 		if (molecule.getCrossReferences() != null) {
 			for (CrossReferenceFmsDTO xrefDTO : molecule.getCrossReferences()) {
-				if (xrefDTO.getId() == null) {
+				if (StringUtils.isBlank(xrefDTO.getId())) {
 					log.debug("Missing xref ID for molecule " + molecule.getId() + " - skipping");
 					throw new ObjectUpdateException(molecule, "Missing xref ID for molecule " + molecule.getId() + " - skipping");
 				}
@@ -90,12 +96,18 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			}
 			
 			m.setName(molecule.getName());
-			m.setInchi(molecule.getInchi());
-			m.setInchiKey(molecule.getInchikey());
-			m.setIupac(molecule.getIupac());
-			m.setFormula(molecule.getFormula());
-			m.setSmiles(molecule.getSmiles());
-			m.setSynonyms(molecule.getSynonyms());
+			if (StringUtils.isNotBlank(molecule.getInchi()))
+				m.setInchi(molecule.getInchi());
+			if (StringUtils.isNotBlank(molecule.getInchikey()))
+				m.setInchiKey(molecule.getInchikey());
+			if (StringUtils.isNotBlank(molecule.getIupac()))
+				m.setIupac(molecule.getIupac());
+			if (StringUtils.isNotBlank(molecule.getFormula()))
+				m.setFormula(molecule.getFormula());
+			if (StringUtils.isNotBlank(molecule.getSmiles()))
+				m.setSmiles(molecule.getSmiles());
+			if (CollectionUtils.isNotEmpty(molecule.getSynonyms()))
+				m.setSynonyms(molecule.getSynonyms());
 			m.setNamespace("molecule");
 				
 			moleculeDAO.persist(m); 

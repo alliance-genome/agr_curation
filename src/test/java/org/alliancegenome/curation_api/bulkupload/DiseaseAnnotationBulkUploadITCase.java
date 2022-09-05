@@ -494,7 +494,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 			post("/api/disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(3)).
+			body("results[2].uniqueId", is("DATEST:Annot0011"));
 	}
 	
 	@Test
@@ -540,8 +541,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("{}").
 			post("/api/disease-annotation/find?limit=10&page=0").
 			then().
-			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(3)).
+			body("results[2].uniqueId", is("DATEST:Annot0013"));
 	}
 	
 	@Test
