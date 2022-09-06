@@ -44,18 +44,8 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		setSQLDao(noteDAO);
 	}
 	
-	@Override
 	@Transactional
-	public ObjectResponse<Note> update(Note uiEntity) {
-		Note dbEntity = noteValidator.validateNote(uiEntity, null, true);
-		if (dbEntity == null)
-			return null;
-		return new ObjectResponse<Note>(noteDAO.persist(dbEntity));
-	}
-	
-	@Override
-	@Transactional
-	public ObjectResponse<Note> create(Note uiEntity) {
+	public ObjectResponse<Note> upsert(Note uiEntity) {
 		Note dbEntity = noteValidator.validateNote(uiEntity, null, true);
 		if (dbEntity == null)
 			return null;
