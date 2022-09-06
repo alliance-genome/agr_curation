@@ -1,0 +1,38 @@
+{
+  "data": [
+    {
+      "crossReferences": [
+        {
+          "id": "TEST:TestMol00000011",
+          "pages": [
+            "molecule"
+          ]
+        }
+      ],
+      "formula": "C15H20O4",
+      "id": "TEST:TestMol00000011",
+      "inchi": "",
+      "inchikey": "JLIDBLDQVAYHNE-YKALOCIXSA-N",
+      "iupac": "(2Z,4E)-5-[(1S)-1-hydroxy-2,6,6-trimethyl-4-oxocyclohex-2-en-1-yl]-3-methylpenta-2,4-dienoic acid",
+      "name": "Test molecule 11",
+      "smiles": "CC(\\\\C=C\\\\[C@@]1(O)C(C)=CC(=O)CC1(C)C)=C\\\\C(O)=O",
+      "synonyms": [
+        "TM1",
+        "TestMol1"
+      ]
+    }
+  ],
+  "metaData": {
+    "dataProvider": {
+      "crossReference": {
+        "id": "TEST",
+        "pages": [
+          "homepage"
+        ]
+      },
+      "type": "curated"
+    },
+    "dateProduced": "2021-11-09T23:51:50+00:00",
+    "release": "TEST"
+  }
+}
