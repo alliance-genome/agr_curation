@@ -16,7 +16,7 @@ public class CurieGeneratorHelper extends ArrayList<String> {
 
 	@Override
 	public boolean add(String s) {
-		if (StringUtils.isNotEmpty(s)) {
+		if (StringUtils.isNotBlank(s)) {
 			return super.add(s);
 		}
 		return false;

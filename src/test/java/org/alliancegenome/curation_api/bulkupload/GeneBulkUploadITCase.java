@@ -404,7 +404,6 @@ public class GeneBulkUploadITCase {
 			body("totalResults", is(0));
 	}
 	
-	
 	@Test
 	@Order(14)
 	public void geneBulkUploadNoObsolete() throws Exception {
@@ -431,5 +430,223 @@ public class GeneBulkUploadITCase {
 			body("totalResults", is(1)).
 			body("results[0].curie", is("GENETEST:Gene0014")).
 			body("results[0].obsolete", is(false));
+	}
+	
+	@Test
+	@Order(15)
+	public void geneBulkUploadEmptyDateCreated() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/15_empty_date_created_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0015"));
+	}
+	
+	@Test
+	@Order(16)
+	public void geneBulkUploadEmptyName() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/16_empty_name_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0016"));
+	}
+	
+	@Test
+	@Order(17)
+	public void geneBulkUploadEmptyCurie() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/17_empty_curie_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(18)
+	public void geneBulkUploadEmptyCreatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/18_empty_created_by_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0018"));
+	}
+	
+	@Test
+	@Order(19)
+	public void geneBulkUploadEmptyUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/19_empty_updated_by_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0019"));
+	}
+	
+	@Test
+	@Order(20)
+	public void geneBulkUploadEmptyDateUpdated() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/20_empty_date_updated_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0020"));
+	}
+	
+	@Test
+	@Order(21)
+	public void geneBulkUploadEmptySymbol() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/21_empty_symbol_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(22)
+	public void geneBulkUploadEmptyTaxon() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/22_empty_taxon_gene.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
 	}
 }

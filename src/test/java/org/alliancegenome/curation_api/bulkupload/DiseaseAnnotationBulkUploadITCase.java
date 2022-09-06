@@ -2205,6 +2205,1000 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("totalResults", is(1));
 	}
 	
+	@Test
+	@Order(85)
+	public void diseaseAnnotationBulkUploadMissingEvidenceCodes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/85_empty_evidence_codes.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(86)
+	public void diseaseAnnotationBulkUploadEmptySecondaryDataProvider() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/86_empty_secondary_data_provider.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0086"));
+	}
+	
+	@Test
+	@Order(87)
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyInferredGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/87_empty_inferred_gene_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0087"));
+	}
+	
+	@Test
+	@Order(88)
+	public void diseaseAnnotationBulkUploadEmptySgdStrainBackground() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/88_empty_sgd_strain_background.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0088"));
+	}
+	
+	@Test
+	@Order(89)
+	public void diseaseAnnotationBulkUploadEmptyDataProvider() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/89_empty_data_provider.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(90)
+	public void diseaseAnnotationBulkUploadEmptyConditionFreeText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/90_empty_condition_free_text.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0090"));
+	}
+	
+	@Test
+	@Order(91)
+	public void diseaseAnnotationBulkUploadEmptyDateUpdated() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/91_empty_date_updated.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0091"));
+	}
+	
+	@Test
+	@Order(92)
+	public void diseaseAnnotationBulkUploadEmptyConditionQuantity() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/92_empty_condition_quantity.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0092"));
+	}
+	
+	@Test
+	@Order(93)
+	public void diseaseAnnotationBulkUploadEmptyObject() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/93_empty_object.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(94)
+	public void diseaseAnnotationBulkUploadEmptyAnnotationType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/94_empty_annotation_type.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0094"));
+	}
+	
+	@Test
+	@Order(95)
+	public void diseaseAnnotationBulkUploadEmptyModEntityId() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/95_empty_mod_id.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|PMID:25920554"));
+	}
+	
+	@Test
+	@Order(96)
+	public void diseaseAnnotationBulkUploadEmptyRelatedNoteReferences() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/96_empty_related_note_references.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0096"));
+	}
+	
+	@Test
+	@Order(97)
+	public void diseaseAnnotationBulkUploadEmptyCreationDate() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/97_empty_creation_date.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0097"));
+	}
+	
+	@Test
+	@Order(98)
+	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifierAndRelation() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/98_empty_disease_genetic_modifier_and_relation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0098"));
+	}
+	
+	@Test
+	@Order(99)
+	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifierRelation() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/99_empty_disease_genetic_modifier_relation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(100)
+	public void diseaseAnnotationBulkUploadEmptyRelatedNotes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/100_empty_related_notes.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0100"));
+	}
+	
+	@Test
+	@Order(101)
+	public void diseaseAnnotationBulkUploadEmptyRelatedNoteFreeText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/101_empty_related_note_free_text.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1));
+	}
+	
+	@Test
+	@Order(102)
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyInferredAllele() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/102_empty_inferred_allele_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0102"));
+	}
+	
+	@Test
+	@Order(103)
+	public void diseaseAnnotationBulkUploadEmptyDiseaseQualifiers() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/103_empty_disease_qualifiers.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0103"));
+	}
+	
+	@Test
+	@Order(104)
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedAllele() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/104_empty_asserted_allele_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0104"));
+	}
+	
+	@Test
+	@Order(105)
+	public void diseaseAnnotationBulkUploadEmptyGeneticSex() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/105_empty_genetic_sex.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0105"));
+	}
+	
+	@Test
+	@Order(106)
+	public void diseaseAnnotationBulkUploadEmptyConditionRelations() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/106_empty_condition_relations.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2)).
+			body("results[1].modEntityId", is("DATEST:Annot0106"));
+	}
+	
+	@Test
+	@Order(107)
+	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyInferredGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/107_empty_inferred_gene_allele_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0107"));
+	}
+	
+	@Test
+	@Order(108)
+	public void diseaseAnnotationBulkUploadEmptyCreatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/108_empty_created_by.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0108"));
+	}
+	
+	@Test
+	@Order(109)
+	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_gene_allele_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0109"));
+	}
+	
+	@Test
+	@Order(110)
+	public void diseaseAnnotationBulkUploadEmptyConditionRelationsType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/110_empty_condition_relations_type.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(111)
+	public void diseaseAnnotationBulkUploadEmptyConditionTaxon() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/111_empty_condition_taxon.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0111"));
+	}
+	
+	@Test
+	@Order(112)
+	public void diseaseAnnotationBulkUploadEmptySubject() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/112_empty_subject.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(113)
+	public void diseaseAnnotationBulkUploadEmptySingleReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/113_empty_single_reference.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(114)
+	public void diseaseAnnotationBulkUploadEmptyConditionGeneOntology() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/114_empty_condition_gene_ontology.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0114"));
+	}
+	
+	@Test
+	@Order(115)
+	public void diseaseAnnotationBulkUploadEmptyWith() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/115_empty_with.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0115"));
+	}
+	
+	@Test
+	@Order(116)
+	public void diseaseAnnotationBulkUploadEmptyConditionRelationExperimentalConditions() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/116_empty_condition_relation_experimental_conditions.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(117)
+	public void diseaseAnnotationBulkUploadEmptyConditionId() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/117_empty_condition_id.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0117"));
+	}
+	
+	@Test
+	@Order(118)
+	public void diseaseAnnotationBulkUploadEmptyConditionAnatomy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/118_empty_condition_anatomy.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0118"));
+	}
+	
+	@Test
+	@Order(119)
+	public void diseaseAnnotationBulkUploadEmptyUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/119_empty_updated_by.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0119"));
+	}
+	
+	@Test
+	@Order(120)
+	public void diseaseAnnotationBulkUploadEmptyRelatedNoteType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/120_empty_related_note_type.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(121)
+	public void diseaseAnnotationBulkUploadEmptyConditionClass() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/121_empty_condition_class.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(122)
+	public void diseaseAnnotationBulkUploadEmptyConditionChemical() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/122_empty_condition_chemical.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0122"));
+	}
+	
+	@Test
+	@Order(123)
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGene() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_gene_agm_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(3)).
+			body("results[2].modEntityId", is("DATEST:Annot0123"));
+	}
+	
+	@Test
+	@Order(124)
+	public void diseaseAnnotationBulkUploadEmptyConditionStatement() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/124_empty_condition_statement.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(125)
+	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifier() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/125_empty_disease_genetic_modifier.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
+	@Test
+	@Order(126)
+	public void diseaseAnnotationBulkUploadEmptyPredicate() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/126_empty_predicate.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
 	private void loadRequiredEntities() throws Exception {
 		loadDOTerm();
 		loadECOTerm();

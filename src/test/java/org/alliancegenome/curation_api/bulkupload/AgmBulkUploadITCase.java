@@ -407,4 +407,196 @@ public class AgmBulkUploadITCase {
 			body("results[0].curie", is("AGMTEST:Agm0013")).
 			body("results[0].obsolete", is(false));
 	}
+	
+	@Test
+	@Order(14)
+	public void agmBulkUploadEmptyDateUpdated() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/14_empty_date_updated_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0014"));
+	}
+	
+	@Test
+	@Order(15)
+	public void agmBulkUploadEmptyCreatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/15_empty_created_by_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0015"));
+	}
+	
+	@Test
+	@Order(16)
+	public void agmBulkUploadEmptyDateCreated() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/16_empty_date_created_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0016"));
+	}
+	
+	@Test
+	@Order(17)
+	public void agmBulkUploadEmptyUpdatedBy() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/17_empty_updated_by_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0017"));
+	}
+	
+	@Test
+	@Order(18)
+	public void agmBulkUploadEmptyCurie() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/18_empty_curie_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(19)
+	public void agmBulkUploadEmptyTaxon() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/19_empty_taxon_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(20)
+	public void agmBulkUploadEmptyName() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/20_empty_name_agm.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0020"));
+	}
 }
