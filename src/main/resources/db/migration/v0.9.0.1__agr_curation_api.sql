@@ -45,15 +45,20 @@ ALTER TABLE gene
 	DROP COLUMN genesynopsis,
 	DROP COLUMN genesynopsisurl;
 	
+ALTER TABLE gene_aud
+	DROP COLUMN automatedgenedescription,
+	DROP COLUMN genesynopsis,
+	DROP COLUMN genesynopsisurl;
+	
 INSERT INTO phenotypeterm
 	SELECT curie FROM mpterm;
+	
+INSERT INTO phenotypeterm_aud
+	SELECT curie, rev FROM mpterm_aud;
 
 ALTER TABLE synonym ALTER COLUMN name TYPE varchar(2000);
 
 ALTER TABLE synonym_aud ALTER COLUMN name TYPE varchar(2000);
-	
-INSERT INTO synonym (name)
-	SELECT synonyms FROM ontologyterm_synonyms;
 	
 INSERT INTO synonym (id, name)
 	SELECT nextval('hibernate_sequence'), synonyms FROM ontologyterm_synonyms;
