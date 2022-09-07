@@ -60,8 +60,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.setCrossReferences(null);
 		}
 	
-		dbEntity.setDescription(handleStringField(uiEntity.getDescription()));		
-		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorTitle);
 			throw new ApiErrorException(response);

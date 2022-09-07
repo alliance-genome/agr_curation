@@ -50,6 +50,14 @@ ALTER TABLE gene_aud
 	DROP COLUMN genesynopsis,
 	DROP COLUMN genesynopsisurl;
 	
+ALTER TABLE allele
+	DROP COLUMN description,
+	DROP COLUMN feature_type;
+	
+ALTER TABLE allele_aud
+	DROP COLUMN description,
+	DROP COLUMN feature_type;
+	
 INSERT INTO phenotypeterm
 	SELECT curie FROM mpterm;
 	
