@@ -294,4 +294,229 @@ public class MoleculeBulkUploadFmsITCase {
 				statusCode(200).
 				body("totalResults", is(8));
 	}
+	
+	@Test
+	@Order(11)
+	public void moleculeBulkUploadEmptyInchi() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/11_empty_inchi.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(9));
+	}
+	
+	@Test
+	@Order(12)
+	public void moleculeBulkUploadEmptyId() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/12_empty_id.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(9));
+	}
+	
+	@Test
+	@Order(13)
+	public void moleculeBulkUploadEmptyIupac() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/13_empty_iupac.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(10));
+	}
+	
+	@Test
+	@Order(14)
+	public void moleculeBulkUploadEmptyInchiKey() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/14_empty_inchikey.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(11));
+	}
+	
+	@Test
+	@Order(15)
+	public void moleculeBulkUploadEmptyName() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/15_empty_name.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(11));
+	}
+	
+	@Test
+	@Order(16)
+	public void moleculeBulkUploadEmptySmiles() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/16_empty_smiles.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(12));
+	}
+	
+	@Test
+	@Order(17)
+	public void moleculeBulkUploadEmptyFormula() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/17_empty_formula.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(13));
+	}
+	
+	@Test
+	@Order(18)
+	public void moleculeBulkUploadEmptyCrossReferences() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/18_empty_cross_references.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(14));
+	}
+	
+	@Test
+	@Order(19)
+	public void moleculeBulkUploadEmptySynonyms() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/fms/05_molecule/19_empty_synonyms.json"));
+
+		// upload file
+		RestAssured.given().
+				contentType("application/json").
+				body(content).
+				when().
+				post("/api/molecule/bulk/moleculefile").
+				then().
+				statusCode(200);
+
+		// check if all the fields are correctly read
+		RestAssured.given().
+				when().
+				header("Content-Type", "application/json").
+				body("{}").
+				post("/api/molecule/find?limit=20&page=0").
+				then().
+				statusCode(200).
+				body("totalResults", is(15));
+	}
 }

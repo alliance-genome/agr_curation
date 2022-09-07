@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.NoteValidator;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -43,10 +44,11 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		setSQLDao(noteDAO);
 	}
 	
-	@Override
 	@Transactional
-	public ObjectResponse<Note> update(Note uiEntity) {
+	public ObjectResponse<Note> upsert(Note uiEntity) {
 		Note dbEntity = noteValidator.validateNote(uiEntity, null, true);
+		if (dbEntity == null)
+			return null;
 		return new ObjectResponse<Note>(noteDAO.persist(dbEntity));
 	}
 	
@@ -57,7 +59,7 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 	
 	public Note validateNoteDTO(NoteDTO dto, String note_type_vocabulary) throws ObjectValidationException {
 		Note note = new Note();
-		if (dto.getFreeText() == null || dto.getNoteType() == null || dto.getInternal() == null) {
+		if (StringUtils.isBlank(dto.getFreeText()) || StringUtils.isBlank(dto.getNoteType()) || dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Note missing required fields");
 		}
 		note.setFreeText(dto.getFreeText());
@@ -86,17 +88,17 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 			note.setReferences(noteReferences);
 		}
 		
-		if (dto.getCreatedBy()!= null) {
+		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			note.setCreatedBy(createdBy);
 		}
-		if (dto.getUpdatedBy() != null) {
+		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
 			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
 			note.setUpdatedBy(updatedBy);
 		}
 		
 
-		if (dto.getDateUpdated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
 			try {
 				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
@@ -106,7 +108,7 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 			note.setDateUpdated(dateLastModified);
 		}
 
-		if (dto.getDateCreated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			OffsetDateTime creationDate;
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());

@@ -2,7 +2,9 @@ package org.alliancegenome.curation_api.services;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -10,17 +12,24 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.exceptions.*;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections4.*;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -123,7 +132,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	
 	private AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
 		// Check for required fields
-		if (dto.getCurie() == null || dto.getTaxon() == null) {
+		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon())) {
 			throw new ObjectValidationException(dto, "Entry for agm " + dto.getCurie() + " missing required fields - skipping");
 		}
 
@@ -140,21 +149,23 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		}
 		agm.setTaxon(taxonResponse.getEntity());
 		
-		if (dto.getName() != null) agm.setName(dto.getName());
+		if (StringUtils.isNotBlank(dto.getName())) agm.setName(dto.getName());
 		
-		if (dto.getCreatedBy() != null) {
+		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			agm.setCreatedBy(createdBy);
 		}
-		if (dto.getUpdatedBy() != null) {
+		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
 			Person modifiedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
 			agm.setUpdatedBy(modifiedBy);
 		}
 		
-		agm.setInternal(dto.getInternal());
-		agm.setObsolete(dto.getObsolete());
+		if (agm.getInternal() != null)
+			agm.setInternal(dto.getInternal());
+		if (agm.getObsolete() != null)
+			agm.setObsolete(dto.getObsolete());
 
-		if (dto.getDateUpdated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
 			try {
 				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
@@ -164,7 +175,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 			agm.setDateUpdated(dateLastModified);
 		}
 
-		if (dto.getDateCreated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			OffsetDateTime creationDate;
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());

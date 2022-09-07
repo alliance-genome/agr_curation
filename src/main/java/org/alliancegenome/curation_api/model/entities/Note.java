@@ -42,6 +42,6 @@ public class Note extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({View.FieldsAndLists.class, View.NoteView.class})
 	private List<Reference> references;
 }
