@@ -21,7 +21,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"agmDiseaseAnnotations"}, callSuper = true)
 @Schema(name="AffectedGenomicModel", description="POJO that represents the AGM")
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4 (partial)")
 public class AffectedGenomicModel extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

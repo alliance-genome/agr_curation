@@ -22,7 +22,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class ExperimentalCondition extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
