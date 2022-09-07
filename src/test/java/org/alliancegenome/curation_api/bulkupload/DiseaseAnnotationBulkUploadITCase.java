@@ -23,11 +23,11 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -3266,7 +3266,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 
 
 	private void loadECOTerm() throws Exception {
-		EcoTerm ecoTerm = new EcoTerm();
+		ECOTerm ecoTerm = new ECOTerm();
 		ecoTerm.setCurie(requiredEcoTerm);
 		ecoTerm.setName("Test ECOTerm");
 		ecoTerm.setObsolete(false);
@@ -3327,7 +3327,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	}
 	
 	private void loadZecoTerm(String name, String subset) throws Exception {
-		ZecoTerm zecoTerm = new ZecoTerm();
+		ZECOTerm zecoTerm = new ZECOTerm();
 		zecoTerm.setCurie(name);
 		zecoTerm.setName("Test ExperimentalConditionOntologyTerm");
 		zecoTerm.setObsolete(false);

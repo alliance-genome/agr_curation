@@ -21,7 +21,7 @@ public class BulkLoadFile extends GeneratedAuditedObject {
 	
 	@JsonView({View.FieldsOnly.class})
 	@Enumerated(EnumType.STRING)
-	private JobStatus status;
+	private JobStatus bulkloadStatus;
 
 	@JsonView({View.FieldsOnly.class})
 	@Column(unique = true)

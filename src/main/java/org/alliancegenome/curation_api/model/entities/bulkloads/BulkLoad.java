@@ -36,7 +36,7 @@ public abstract class BulkLoad extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})
 	@Enumerated(EnumType.STRING)
-	private JobStatus status = JobStatus.STOPPED;
+	private JobStatus bulkloadStatus = JobStatus.STOPPED;
 
 	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition="TEXT")

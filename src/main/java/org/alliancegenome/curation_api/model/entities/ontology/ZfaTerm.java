@@ -15,6 +15,6 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion("1.2.1")
-public class ZfaTerm extends AnatomicalTerm {
+public class ZFATerm extends AnatomicalTerm {
 
 }

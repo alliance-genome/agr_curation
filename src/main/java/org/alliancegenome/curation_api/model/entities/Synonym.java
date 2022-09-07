@@ -23,9 +23,9 @@ public class Synonym extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@JsonView({View.FieldsOnly.class})
+	@Column(length=2000)
 	private String name;
 
 	@ManyToMany(mappedBy="synonyms")
 	private List<GenomicEntity> genomicEntities;
-
 }

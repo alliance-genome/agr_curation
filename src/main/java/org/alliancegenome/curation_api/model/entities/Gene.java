@@ -20,7 +20,7 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicLocations", "geneDiseaseAnnotations"})
+@ToString(exclude = {"geneDiseaseAnnotations"})
 @Schema(name="Gene", description="POJO that represents the Gene")
 //TODO: fix class for 1.2.1 compliancy:
 // * geneSynopsis, geneSynopsisURL and automatedGeneDescription were removed in v1.2.0
@@ -32,26 +32,9 @@ public class Gene extends GenomicEntity {
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 
-	@FullTextField
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String geneSynopsis;
-
-	@KeywordField
-	@JsonView({View.FieldsOnly.class})
-	private String geneSynopsisURL;
-
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private SOTerm geneType;
-	
-	@FullTextField
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String automatedGeneDescription;
-
-	@ManyToMany
-	private List<GeneGenomicLocation> genomicLocations;
 
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;

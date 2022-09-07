@@ -15,6 +15,6 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion("1.2.1")
-public class MmusDvTerm extends StageTerm {
+public class MMUSDVTerm extends StageTerm {
 
 }

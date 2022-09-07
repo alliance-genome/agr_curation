@@ -13,7 +13,6 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-//TODO: add MPTerm to the linkML model? Currently not found!
-public class MPTerm extends OntologyTerm {
+public class MPTerm extends PhenotypeTerm {
 
 }

@@ -29,9 +29,9 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -64,9 +64,9 @@ public class DiseaseAnnotationITCase {
 	private DOTerm testDoTerm;
 	private DOTerm testDoTerm2;
 	private DOTerm testObsoleteDoTerm;
-	private List<EcoTerm> testEcoTerms;
-	private List<EcoTerm> testEcoTerms2;
-	private List<EcoTerm> testObsoleteEcoTerms;
+	private List<ECOTerm> testEcoTerms;
+	private List<ECOTerm> testEcoTerms2;
+	private List<ECOTerm> testObsoleteEcoTerms;
 	private Gene testGene;
 	private Gene testGene2;
 	private Gene testObsoleteGene;
@@ -107,9 +107,9 @@ public class DiseaseAnnotationITCase {
 	private Reference testReference2;
 	
 	private void createRequiredObjects() {
-		testEcoTerms = new ArrayList<EcoTerm>();
-		testEcoTerms2 = new ArrayList<EcoTerm>();
-		testObsoleteEcoTerms = new ArrayList<EcoTerm>();
+		testEcoTerms = new ArrayList<ECOTerm>();
+		testEcoTerms2 = new ArrayList<ECOTerm>();
+		testObsoleteEcoTerms = new ArrayList<ECOTerm>();
 		testWithGenes = new ArrayList<Gene>();
 		diseaseQualifiers = new ArrayList<VocabularyTerm>();
 		relatedNotes = new ArrayList<Note>();
@@ -815,11 +815,11 @@ public class DiseaseAnnotationITCase {
 	@Order(16)
 	public void editWithInvalidEvidenceCode() {
 		
-		EcoTerm nonPersistedEcoTerm = new EcoTerm();
+		ECOTerm nonPersistedEcoTerm = new ECOTerm();
 		nonPersistedEcoTerm.setCurie("NPECO:0001");
 		nonPersistedEcoTerm.setObsolete(false);
 		
-		List<EcoTerm> ecoTerms = new ArrayList<>();
+		List<ECOTerm> ecoTerms = new ArrayList<>();
 		ecoTerms.add(nonPersistedEcoTerm);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
@@ -2415,11 +2415,11 @@ public class DiseaseAnnotationITCase {
 	@Order(55)
 	public void createWithInvalidEvidenceCode() {
 		
-		EcoTerm nonPersistedEcoTerm = new EcoTerm();
+		ECOTerm nonPersistedEcoTerm = new ECOTerm();
 		nonPersistedEcoTerm.setCurie("NPECO:0001");
 		nonPersistedEcoTerm.setObsolete(false);
 		
-		List<EcoTerm> ecoTerms = new ArrayList<>();
+		List<ECOTerm> ecoTerms = new ArrayList<>();
 		ecoTerms.add(nonPersistedEcoTerm);
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
@@ -3804,8 +3804,8 @@ public class DiseaseAnnotationITCase {
 	}
 
 
-	private EcoTerm createEcoTerm(String curie, String name, Boolean obsolete) {
-		EcoTerm ecoTerm = new EcoTerm();
+	private ECOTerm createEcoTerm(String curie, String name, Boolean obsolete) {
+		ECOTerm ecoTerm = new ECOTerm();
 		ecoTerm.setCurie(curie);
 		ecoTerm.setName(name);
 		ecoTerm.setObsolete(obsolete);
@@ -4023,8 +4023,8 @@ public class DiseaseAnnotationITCase {
 		return response.getEntity();
 	}
 	
-	private ZecoTerm createZecoTerm(String curie) {
-		ZecoTerm zecoTerm = new ZecoTerm();
+	private ZECOTerm createZecoTerm(String curie) {
+		ZECOTerm zecoTerm = new ZECOTerm();
 		zecoTerm.setCurie(curie);
 		zecoTerm.setName("Test");
 		zecoTerm.setObsolete(false);

@@ -15,6 +15,6 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion("1.2.1")
-public class FBdvTerm extends StageTerm {
+public class FBDVTerm extends StageTerm {
 
 }

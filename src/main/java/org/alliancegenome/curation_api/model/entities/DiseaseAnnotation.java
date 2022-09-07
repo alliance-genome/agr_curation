@@ -71,7 +71,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-	private List<EcoTerm> evidenceCodes;
+	private List<ECOTerm> evidenceCodes;
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

@@ -10,7 +10,7 @@ export const ManualForm = ({ hideManual, newBulkLoad, onChange }) => {
 		<>
 			{!hideManual.current && (
 				<div className="field">
-					<label htmlFor="dataType">Data Type</label>
+					<label htmlFor="fmsDataType">FMS Data Type</label>
 					<Dropdown
 						id="dataType"
 						value={newBulkLoad.dataType}

@@ -24,7 +24,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -108,7 +108,7 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			experimentalCondition.setConditionId(term);
 		}
 		if (StringUtils.isNotBlank(dto.getConditionClass())) {
-			ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
+			ZECOTerm term = zecoTermDAO.find(dto.getConditionClass());
 			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
 				throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
 			}

@@ -63,8 +63,8 @@ public class MoleculeBulkUploadFmsITCase {
 				body("results[0].iupac", is("(2Z,4E)-5-[(1S)-1-hydroxy-2,6,6-trimethyl-4-oxocyclohex-2-en-1-yl]-3-methylpenta-2,4-dienoic acid")).
 				body("results[0].formula", is("C15H20O4")).
 				body("results[0].smiles", is("CC(\\\\C=C\\\\[C@@]1(O)C(C)=CC(=O)CC1(C)C)=C\\\\C(O)=O")).
-				body("results[0].synonyms[0]", is("TM1")).
-				body("results[0].synonyms[1]", is("TestMol1")).
+				body("results[0].synonyms[0].name", is("TM1")).
+				body("results[0].synonyms[1].name", is("TestMol1")).
 				body("results[0].synonyms", hasSize(2)).
 				body("results[0].internal", is(false)).
 				body("results[0].crossReferences[0].curie", is("TEST:TestMol00000001")).
