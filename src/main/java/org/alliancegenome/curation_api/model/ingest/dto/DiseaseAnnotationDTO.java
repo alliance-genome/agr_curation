@@ -14,6 +14,10 @@ import lombok.*;
 public class DiseaseAnnotationDTO extends UniqueIdAuditedObjectDTO {
 
 	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("alliance_curie")
+	private String allianceCurie;
+	
+	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("mod_entity_id")
 	private String modEntityId;
 
