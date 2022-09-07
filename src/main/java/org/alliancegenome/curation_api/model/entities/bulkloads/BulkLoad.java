@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.enums.*;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -29,6 +30,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"group"}, callSuper = true)
+@AGRCurationSchemaVersion("1.2.4")
 public abstract class BulkLoad extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})
