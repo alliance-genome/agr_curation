@@ -64,9 +64,11 @@ INSERT INTO phenotypeterm
 INSERT INTO phenotypeterm_aud
 	SELECT curie, rev FROM mpterm_aud;
 
-ALTER TABLE synonym ALTER COLUMN name TYPE varchar(2000);
+ALTER TABLE synonym
+	ALTER COLUMN name TYPE varchar(2000);
 
-ALTER TABLE synonym_aud ALTER COLUMN name TYPE varchar(2000);
+ALTER TABLE synonym_aud
+	ALTER COLUMN name TYPE varchar(2000);
 	
 INSERT INTO synonym (id, name)
 	SELECT nextval('hibernate_sequence'), synonyms FROM ontologyterm_synonyms;
@@ -98,4 +100,10 @@ ALTER TABLE ontologyterm_synonyms
 		
 ALTER TABLE ontologyterm_synonyms_aud
 	RENAME TO ontologyterm_synonym_aud;
+	
+ALTER TABLE diseaseannotation
+	ADD alliancecurie varchar(255);
+		
+ALTER TABLE diseaseannotation_aud
+	ADD alliancecurie varchar(255);
 	
