@@ -93,20 +93,25 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			experimentalCondition = searchResponse.getSingleResult();
 		}
 		
+		ChemicalTerm conditionChemical = null;
 		if (StringUtils.isNotBlank(dto.getConditionChemical())) {
-			ChemicalTerm term = chemicalTermDAO.find(dto.getConditionChemical());
-			if (term == null) {
+			conditionChemical = chemicalTermDAO.find(dto.getConditionChemical());
+			if (conditionChemical == null) {
 				throw new ObjectValidationException(dto, "Invalid ChemicalOntologyId - skipping annotation");
 			}
-			experimentalCondition.setConditionChemical(term);
+			
 		}
+		experimentalCondition.setConditionChemical(conditionChemical);
+		
+		ExperimentalConditionOntologyTerm conditionId = null;
 		if (StringUtils.isNotBlank(dto.getConditionId())) {
-			ExperimentalConditionOntologyTerm term = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
-			if (term == null) {
+			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
+			if (conditionId == null) {
 				throw new ObjectValidationException(dto, "Invalid ConditionId - skipping annotation");
 			}
-			experimentalCondition.setConditionId(term);
 		}
+		experimentalCondition.setConditionId(conditionId);
+
 		if (StringUtils.isNotBlank(dto.getConditionClass())) {
 			ZECOTerm term = zecoTermDAO.find(dto.getConditionClass());
 			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
@@ -118,43 +123,57 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			throw new ObjectValidationException(dto, "ConditionClassId is a required field - skipping annotation");
 		}
 		
+		AnatomicalTerm conditionAnatomy = null;
 		if (StringUtils.isNotBlank(dto.getConditionAnatomy())) {
-			AnatomicalTerm term = anatomicalTermDAO.find(dto.getConditionAnatomy());
-			if (term == null) {
+			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomy());
+			if (conditionAnatomy == null) {
 				throw new ObjectValidationException(dto, "Invalid AnatomicalOntologyId - skipping annotation");
 			}
-			experimentalCondition.setConditionAnatomy(term);
 		}
+		experimentalCondition.setConditionAnatomy(conditionAnatomy);
+		
+		NCBITaxonTerm conditionTaxon = null;
 		if (StringUtils.isNotBlank(dto.getConditionTaxon())) {
-			NCBITaxonTerm term = ncbiTaxonTermDAO.find(dto.getConditionTaxon());
-			if (term == null) {
-				term = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
+			conditionTaxon = ncbiTaxonTermDAO.find(dto.getConditionTaxon());
+			if (conditionTaxon == null) {
+				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
 			}
-			if (term == null) {
+			if (conditionTaxon == null) {
 				throw new ObjectValidationException(dto, "Invalid NCBITaxonId - skipping annotation");
 			}
-			experimentalCondition.setConditionTaxon(term);
 		}
+		experimentalCondition.setConditionTaxon(conditionTaxon);
+
+		GOTerm conditionGeneOntology = null;
 		if (StringUtils.isNotBlank(dto.getConditionGeneOntology())) {
-			GOTerm term = goTermDAO.find(dto.getConditionGeneOntology());
-			if (term == null) {
+			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntology());
+			if (conditionGeneOntology == null) {
 				throw new ObjectValidationException(dto, "Invalid GeneOntologyId - skipping annotation");
 			}
-			experimentalCondition.setConditionGeneOntology(term);
 		}
+		experimentalCondition.setConditionGeneOntology(conditionGeneOntology);
+		
+		String conditionQuantity = null;
 		if (StringUtils.isNotBlank(dto.getConditionQuantity()))
-			experimentalCondition.setConditionQuantity(dto.getConditionQuantity());
+			conditionQuantity = dto.getConditionQuantity();
+		experimentalCondition.setConditionQuantity(conditionQuantity);
+		
+		String conditionFreeText = null;
 		if (StringUtils.isNotBlank(dto.getConditionFreeText()))
-			experimentalCondition.setConditionFreeText(dto.getConditionFreeText());
+			conditionFreeText = dto.getConditionFreeText();
+		experimentalCondition.setConditionFreeText(conditionFreeText);
+		
 		if (StringUtils.isBlank(dto.getConditionStatement())) {
 			throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
 		}
 		experimentalCondition.setConditionStatement(dto.getConditionStatement());
 		
-		if (experimentalCondition.getInternal() != null)
-			experimentalCondition.setInternal(dto.getInternal());
+		experimentalCondition.setInternal(dto.getInternal());
+		
+		Boolean obsolete = false;
 		if (experimentalCondition.getObsolete() != null)
-			experimentalCondition.setObsolete(dto.getObsolete());
+			obsolete = dto.getObsolete();
+		experimentalCondition.setObsolete(obsolete);
 		
 		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());

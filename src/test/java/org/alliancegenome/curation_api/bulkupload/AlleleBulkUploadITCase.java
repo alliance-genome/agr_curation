@@ -126,9 +126,7 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0003"));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -517,9 +515,7 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0017"));
+			body("totalResults", is(0));
 	}
 	
 	@Test

@@ -213,8 +213,11 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		}
 
 		annotation.setInternal(dto.getInternal());
+		
+		Boolean obsolete = false;
 		if (dto.getObsolete() != null)
-			annotation.setObsolete(dto.getObsolete());
+			obsolete = dto.getObsolete();
+		annotation.setObsolete(obsolete);
 
 		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
@@ -240,6 +243,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			annotation.setModEntityId(dto.getModEntityId());
+		} else {
+			annotation.setModEntityId(null);
 		}
 
 		DOTerm disease = doTermDAO.find(dto.getObject());
@@ -269,8 +274,11 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		}
 		annotation.setEvidenceCodes(ecoTerms);
 
-		if (dto.getNegated() != null)
+		if (dto.getNegated() != null) {
 			annotation.setNegated(dto.getNegated());
+		} else {
+			annotation.setNegated(false);
+		}
 
 		if (CollectionUtils.isNotEmpty(dto.getWith())) {
 			List<Gene> withGenes = new ArrayList<>();
@@ -285,10 +293,15 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				withGenes.add(withGene);
 			}
 			annotation.setWith(withGenes);
+		} else {
+			annotation.setWith(null);
 		}
 
-		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider()))
-			annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
+		String secondaryDataProvider = null;
+		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider())) {
+			secondaryDataProvider = dto.getSecondaryDataProvider();
+		}
+		annotation.setSecondaryDataProvider(secondaryDataProvider);
 
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
@@ -300,43 +313,48 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				diseaseQualifiers.add(diseaseQualifier);
 			}
 			annotation.setDiseaseQualifiers(diseaseQualifiers);
+		} else {
+			annotation.setDiseaseQualifiers(null);
 		}
 
+		BiologicalEntity diseaseGeneticModifier = null;
+		VocabularyTerm diseaseGeneticModifierRelation = null;
 		if (StringUtils.isNotBlank(dto.getDiseaseGeneticModifier()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelation())) {
 			if (StringUtils.isBlank(dto.getDiseaseGeneticModifier()) || StringUtils.isBlank(dto.getDiseaseGeneticModifierRelation())) {
 				throw new ObjectValidationException(dto, "Genetic modifier specified without genetic modifier relation (or vice versa) for " + annotation.getUniqueId() + " - skipping annotation");
 			}
 
-			VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+			diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 			if (diseaseGeneticModifierRelation == null) {
 				throw new ObjectValidationException(dto, "Invalid disease genetic modifier relation (" + dto.getDiseaseGeneticModifierRelation() + ") for " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
-
-			BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifier());
+			
+			diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifier());
 			if (diseaseGeneticModifier == null) {
 				throw new ObjectValidationException(dto, "Invalid biological entity (" + dto.getDiseaseGeneticModifier() + ") in 'disease_genetic_modifier' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
 		}
+		annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
+		annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 
+		VocabularyTerm annotationType = null;
 		if (StringUtils.isNotBlank(dto.getAnnotationType())) {
-			VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+			annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
 			if (annotationType == null) {
 				throw new ObjectValidationException(dto, "Invalid annotation type (" + dto.getAnnotationType() + ") in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			annotation.setAnnotationType(annotationType);
-
 		}
-
+		annotation.setAnnotationType(annotationType);
+		
+		VocabularyTerm geneticSex = null;
 		if (StringUtils.isNotBlank(dto.getGeneticSex())) {
-			VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
+			geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
 			if (geneticSex == null) {
 				throw new ObjectValidationException(dto, "Invalid genetic sex (" + dto.getGeneticSex() + ") in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			annotation.setGeneticSex(geneticSex);
 		}
-
+		annotation.setGeneticSex(geneticSex);
+		
 		if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
 			List<Note> notesToPersist = new ArrayList<>();
 			for (NoteDTO noteDTO : dto.getRelatedNotes()) {
@@ -347,6 +365,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			}
 			notesToPersist.forEach(note -> noteDAO.persist(note));
 			annotation.setRelatedNotes(notesToPersist);
+		} else {
+			annotation.setRelatedNotes(null);
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getConditionRelations())) {
@@ -356,6 +376,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 						throw new ObjectValidationException(dto, "Invalid Paper Handle: reference of annotation needs to be the same as the conditionRelationDto reference " + annotation.getUniqueId());
 				}
 			}
+		} else {
+			annotation.setConditionRelations(null);
 		}
 
 		return annotation;

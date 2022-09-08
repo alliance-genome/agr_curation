@@ -111,19 +111,21 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 		
+		Gene inferredGene = null;
 		if (StringUtils.isNotBlank(dto.getInferredGene())) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+			inferredGene = geneDAO.find(dto.getInferredGene());
 			if (inferredGene == null)
 				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
-			annotation.setInferredGene(inferredGene);
 		}
-
+		annotation.setInferredGene(inferredGene);
+		
+		Gene assertedGene = null;
 		if (StringUtils.isNotBlank(dto.getAssertedGene())) {
-			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+			assertedGene = geneDAO.find(dto.getAssertedGene());
 			if (assertedGene == null)
 				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
-			annotation.setAssertedGene(assertedGene);
 		}
+		annotation.setAssertedGene(assertedGene);
 		
 		return annotation;
 	}
