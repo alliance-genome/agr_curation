@@ -49,9 +49,9 @@ public class BulkLoadProcessor {
 	@ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
 	public void bulkLoadFile(Message<BulkLoadFile> file) {
 		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
-		if(!bulkLoadFile.getStatus().isStarted()) {
-			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getStatus());
-			//endLoad(bulkLoadFile, "Finished ended due to status: " + bulkLoadFile.getStatus(), bulkLoadFile.getStatus());
+		if(!bulkLoadFile.getBulkloadStatus().isStarted()) {
+			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
+			//endLoad(bulkLoadFile, "Finished ended due to status: " + bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
 			return;
 		} else {
 			startLoadFile(bulkLoadFile);
@@ -99,7 +99,7 @@ public class BulkLoadProcessor {
 			} else {
 				//log.error("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setErrorMessage("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
-				bulkLoadFile.setStatus(JobStatus.FAILED);
+				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 			}
 			//log.info("Saving File: " + bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
@@ -111,7 +111,7 @@ public class BulkLoadProcessor {
 			bulkLoadFileDAO.merge(bulkLoadFile);
 		} else if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
 			bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
-			bulkLoadFile.setStatus(JobStatus.FAILED);
+			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 		}
 		log.info("Syncing with S3 Finished");
 	}
@@ -133,25 +133,25 @@ public class BulkLoadProcessor {
 			bulkLoadFile.setBulkLoad(load);
 			bulkLoadFile.setMd5Sum(md5Sum);
 			bulkLoadFile.setFileSize(inputFile.length());
-			if(load.getStatus() == JobStatus.FORCED_RUNNING) {
-				bulkLoadFile.setStatus(JobStatus.FORCED_PENDING);
+			if(load.getBulkloadStatus() == JobStatus.FORCED_RUNNING) {
+				bulkLoadFile.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			}
-			if(load.getStatus() == JobStatus.SCHEDULED_RUNNING) {
-				bulkLoadFile.setStatus(JobStatus.SCHEDULED_PENDING);
+			if(load.getBulkloadStatus() == JobStatus.SCHEDULED_RUNNING) {
+				bulkLoadFile.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
 			}
-			if(load.getStatus() == JobStatus.MANUAL_RUNNING) {
-				bulkLoadFile.setStatus(JobStatus.MANUAL_PENDING);
+			if(load.getBulkloadStatus() == JobStatus.MANUAL_RUNNING) {
+				bulkLoadFile.setBulkloadStatus(JobStatus.MANUAL_PENDING);
 			}
 			
-			log.info(load.getStatus());
+			log.info(load.getBulkloadStatus());
 			
 			bulkLoadFile.setLocalFilePath(localFilePath);
 			bulkLoadFileDAO.persist(bulkLoadFile);
-		} else if(load.getStatus().isForced()) {
+		} else if(load.getBulkloadStatus().isForced()) {
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
-			if(bulkLoadFile.getStatus().isNotRunning()) {
+			if(bulkLoadFile.getBulkloadStatus().isNotRunning()) {
 				bulkLoadFile.setLocalFilePath(localFilePath);
-				bulkLoadFile.setStatus(JobStatus.FORCED_PENDING);
+				bulkLoadFile.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			} else {
 				log.warn("Bulk File is already running: " + bulkLoadFile.getMd5Sum());
 				log.info("Cleaning up downloaded file: " + localFilePath);
@@ -176,11 +176,11 @@ public class BulkLoadProcessor {
 		log.info("Load: " + load.getName() + " is starting");
 
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
-		if(!bulkLoad.getStatus().isStarted()) {
-			log.warn("startLoad: Job is not started returning: " + bulkLoad.getStatus());
+		if(!bulkLoad.getBulkloadStatus().isStarted()) {
+			log.warn("startLoad: Job is not started returning: " + bulkLoad.getBulkloadStatus());
 			return;
 		}
-		bulkLoad.setStatus(bulkLoad.getStatus().getNextStatus());
+		bulkLoad.setBulkloadStatus(bulkLoad.getBulkloadStatus().getNextStatus());
 		bulkLoadDAO.merge(bulkLoad);
 		log.info("Load: " + bulkLoad.getName() + " is running");
 	}
@@ -188,13 +188,13 @@ public class BulkLoadProcessor {
 	protected void endLoad(BulkLoad load, String message, JobStatus status) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
-		bulkLoad.setStatus(status);
+		bulkLoad.setBulkloadStatus(status);
 		bulkLoadDAO.merge(bulkLoad);
 		log.info("Load: " + bulkLoad.getName() + " is finished");
 	}
 
 	protected void startLoadFile(BulkLoadFile bulkLoadFile) {
-		bulkLoadFile.setStatus(bulkLoadFile.getStatus().getNextStatus());
+		bulkLoadFile.setBulkloadStatus(bulkLoadFile.getBulkloadStatus().getNextStatus());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is running with file: " + bulkLoadFile.getLocalFilePath());
 	}
@@ -205,7 +205,7 @@ public class BulkLoadProcessor {
 			bulkLoadFile.setLocalFilePath(null);
 		}
 		bulkLoadFile.setErrorMessage(message);
-		bulkLoadFile.setStatus(status);
+		bulkLoadFile.setBulkloadStatus(status);
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is finished");
 	}

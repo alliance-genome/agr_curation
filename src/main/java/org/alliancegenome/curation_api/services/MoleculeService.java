@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.services;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -12,9 +13,11 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.MoleculeDAO;
+import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Molecule;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -32,6 +35,8 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 
 	@Inject
 	MoleculeDAO moleculeDAO;
+	@Inject
+	SynonymDAO synonymDAO;
 	@Inject
 	MoleculeValidator moleculeValidator;
 	@Inject
@@ -106,8 +111,16 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 				m.setFormula(molecule.getFormula());
 			if (StringUtils.isNotBlank(molecule.getSmiles()))
 				m.setSmiles(molecule.getSmiles());
-			if (CollectionUtils.isNotEmpty(molecule.getSynonyms()))
-				m.setSynonyms(molecule.getSynonyms());
+			if (CollectionUtils.isNotEmpty(molecule.getSynonyms())) {
+				List<Synonym> synonyms = new ArrayList<Synonym>();
+				for (String synonymName : molecule.getSynonyms()) {
+					Synonym synonym = new Synonym();
+					synonym.setName(synonymName);
+					synonym = synonymDAO.persist(synonym);
+					synonyms.add(synonym);
+				}
+				m.setSynonyms(synonyms);
+			}
 			m.setNamespace("molecule");
 				
 			moleculeDAO.persist(m); 

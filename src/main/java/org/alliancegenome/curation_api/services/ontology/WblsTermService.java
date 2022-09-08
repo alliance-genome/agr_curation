@@ -5,11 +5,11 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.ontology.WblsTermDAO;
-import org.alliancegenome.curation_api.model.entities.ontology.WBlsTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBLSTerm;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
 @RequestScoped
-public class WblsTermService extends BaseOntologyTermService<WBlsTerm, WblsTermDAO> {
+public class WblsTermService extends BaseOntologyTermService<WBLSTerm, WblsTermDAO> {
 
 	@Inject WblsTermDAO wblsTermDAO;
 

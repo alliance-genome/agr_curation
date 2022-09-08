@@ -33,10 +33,10 @@ export const URLForm = ({ hideURL, hideOntology, newBulkLoad, onChange, disableF
 												onChange={onChange}
 										/>
 										<div className="field">
-												<label htmlFor="url">URL</label>
+												<label htmlFor="bulkloadUrl">URL</label>
 												<InputText
-														name="url"
-														value={newBulkLoad.url}
+														name="bulkloadUrl"
+														value={newBulkLoad.bulkloadUrl}
 														onChange={onChange}
 														placeholder='Enter URL'
 												/>

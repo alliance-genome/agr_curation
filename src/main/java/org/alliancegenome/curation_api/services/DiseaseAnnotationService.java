@@ -10,7 +10,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
@@ -259,9 +259,9 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		}
 		annotation.setSingleReference(reference);
 
-		List<EcoTerm> ecoTerms = new ArrayList<>();
+		List<ECOTerm> ecoTerms = new ArrayList<>();
 		for (String ecoCurie : dto.getEvidenceCodes()) {
-			EcoTerm ecoTerm = ecoTermDAO.find(ecoCurie);
+			ECOTerm ecoTerm = ecoTermDAO.find(ecoCurie);
 			if (ecoTerm == null) {
 				throw new ObjectValidationException(dto, "Invalid evidence code in " + annotation.getUniqueId() + " - skipping annotation");
 			}

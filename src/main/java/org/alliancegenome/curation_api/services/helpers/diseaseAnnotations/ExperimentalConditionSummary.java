@@ -55,7 +55,7 @@ public class ExperimentalConditionSummary {
 		CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
 		
 		if (StringUtils.isNotBlank(conditionDto.getConditionClass())) {
-			ZecoTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClass());
+			ZECOTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClass());
 			conditionSummary.add(conditionClass.getName());
 		}
 		
