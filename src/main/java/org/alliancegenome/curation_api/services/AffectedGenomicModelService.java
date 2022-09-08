@@ -132,7 +132,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	
 	private AffectedGenomicModel validateAffectedGenomicModelDTO(AffectedGenomicModelDTO dto) throws ObjectValidationException {
 		// Check for required fields
-		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon())) {
+		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon()) || dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Entry for agm " + dto.getCurie() + " missing required fields - skipping");
 		}
 
@@ -160,11 +160,13 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 			agm.setUpdatedBy(modifiedBy);
 		}
 		
-		if (agm.getInternal() != null)
-			agm.setInternal(dto.getInternal());
+		agm.setInternal(dto.getInternal());
+		
+		Boolean obsolete = false;
 		if (agm.getObsolete() != null)
-			agm.setObsolete(dto.getObsolete());
-
+			obsolete = dto.getObsolete();
+		agm.setObsolete(obsolete);
+		
 		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
 			try {

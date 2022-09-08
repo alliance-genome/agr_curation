@@ -118,7 +118,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	
 	private Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
 		// Check for required fields
-		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon()) || StringUtils.isBlank(dto.getSymbol())) {
+		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon()) || StringUtils.isBlank(dto.getSymbol()) || dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Entry for gene " + dto.getCurie() + " missing required fields - skipping");
 		}
 
@@ -137,7 +137,10 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		
 		gene.setSymbol(dto.getSymbol());
 		
-		if (StringUtils.isNotBlank(dto.getName())) gene.setName(dto.getName());
+		String name = null;
+		if (StringUtils.isNotBlank(dto.getName())) 
+			name = dto.getName();
+		gene.setName(name);
 		
 		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
@@ -148,10 +151,12 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 			gene.setUpdatedBy(updatedBy);
 		}
 		
-		if (dto.getInternal() != null)
-			gene.setInternal(dto.getInternal());
+		gene.setInternal(dto.getInternal());
+		
+		Boolean obsolete = false;
 		if (dto.getObsolete() != null)
-			gene.setObsolete(dto.getObsolete());
+			obsolete = dto.getObsolete();
+		gene.setObsolete(obsolete);
 
 		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;

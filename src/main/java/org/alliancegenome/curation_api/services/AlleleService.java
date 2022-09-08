@@ -97,7 +97,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	
 	private Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
 		// Check for required fields
-		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon())) {
+		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon()) || StringUtils.isBlank(dto.getName()) || dto.getInternal() == null) {
 			throw new ObjectValidationException(dto, "Entry for allele " + dto.getCurie() + " missing required fields - skipping");
 		}
 
@@ -114,9 +114,12 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 		allele.setTaxon(taxonResponse.getEntity());
 		
-		if (StringUtils.isNotBlank(dto.getSymbol())) allele.setSymbol(dto.getSymbol());
+		String symbol = null;
+		if (StringUtils.isNotBlank(dto.getSymbol())) 
+			symbol = dto.getSymbol();
+		allele.setSymbol(symbol);
 		
-		if (StringUtils.isNotBlank(dto.getName())) allele.setName(dto.getName());
+		allele.setName(dto.getName());
 		
 		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
@@ -127,10 +130,12 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 			allele.setUpdatedBy(updatedBy);
 		}
 		
-		if (dto.getInternal() != null)
-			allele.setInternal(dto.getInternal());
+		allele.setInternal(dto.getInternal());
+		
+		Boolean obsolete = false;
 		if (dto.getObsolete() != null)
-			allele.setObsolete(dto.getObsolete());
+			obsolete = dto.getObsolete();
+		allele.setObsolete(obsolete);
 
 		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;

@@ -64,7 +64,11 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		}
 		note.setFreeText(dto.getFreeText());
 		note.setInternal(dto.getInternal());
-		note.setObsolete(dto.getObsolete());
+		
+		Boolean obsolete = false;
+		if (dto.getObsolete() != null)
+			obsolete = dto.getObsolete();
+		note.setObsolete(obsolete);
 		
 		VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
 		if (noteType == null) {
@@ -85,8 +89,8 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 				}
 				noteReferences.add(reference);
 			}
-			note.setReferences(noteReferences);
 		}
+		note.setReferences(noteReferences);
 		
 		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());

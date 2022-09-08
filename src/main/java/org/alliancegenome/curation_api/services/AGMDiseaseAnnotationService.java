@@ -105,33 +105,39 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 
+		Gene inferredGene = null;
 		if (StringUtils.isNotBlank(dto.getInferredGene())) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+			inferredGene = geneDAO.find(dto.getInferredGene());
 			if (inferredGene == null)
 				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
-			annotation.setInferredGene(inferredGene);
 		}
-
+		annotation.setInferredGene(inferredGene);
+		
+		Gene assertedGene = null;
 		if (StringUtils.isNotBlank(dto.getAssertedGene())) {
-			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+			assertedGene = geneDAO.find(dto.getAssertedGene());
 			if (assertedGene == null)
 				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
-			annotation.setAssertedGene(assertedGene);
 		}
-
+		annotation.setAssertedGene(assertedGene);
+		
+		Allele inferredAllele = null;
 		if (StringUtils.isNotBlank(dto.getInferredAllele())) {
-			Allele inferredAllele = alleleDAO.find(dto.getInferredAllele());
+			inferredAllele = alleleDAO.find(dto.getInferredAllele());
 			if (inferredAllele == null)
 				throw new ObjectValidationException(dto, "Invalid inferred allele for " + annotationId + " - skipping");
-			annotation.setInferredAllele(inferredAllele);
 		}
-
+		annotation.setInferredAllele(inferredAllele);
+		
+		Allele assertedAllele = null;
 		if (StringUtils.isNotBlank(dto.getAssertedAllele())) {
-			Allele assertedAllele = alleleDAO.find(dto.getAssertedAllele());
+			assertedAllele = alleleDAO.find(dto.getAssertedAllele());
 			if (assertedAllele == null)
 				throw new ObjectValidationException(dto, "Invalid asserted allele for " + annotationId + " - skipping");
-			annotation.setAssertedAllele(assertedAllele);
-		}
+		} 
+		annotation.setAssertedAllele(assertedAllele);
+		
+		
 		return annotation;
 	}
 

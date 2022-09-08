@@ -108,16 +108,17 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 			annotation = annotationList.getResults().get(0);
 		}
 		
+		AffectedGenomicModel sgdStrainBackground = null;
 		if (StringUtils.isNotBlank(dto.getSgdStrainBackground())) {
-			AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
 			if (sgdStrainBackground == null) {
 				throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
 			if (!sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
 				throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			annotation.setSgdStrainBackground(sgdStrainBackground);
 		}
+		annotation.setSgdStrainBackground(sgdStrainBackground);
 		
 		annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
 		if (annotation == null) return null;
