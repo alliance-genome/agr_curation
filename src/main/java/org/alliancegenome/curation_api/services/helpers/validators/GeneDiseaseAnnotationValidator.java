@@ -22,9 +22,11 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	@Inject
 	VocabularyTermDAO vocabularyTermDAO;
 	
-	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity) {
+	private String errorMessage;
+	
+	public GeneDiseaseAnnotation validateAnnotationUpdate(GeneDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update Gene Disease Annotation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -37,6 +39,20 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			throw new ApiErrorException(response);
 			// do not continue validation for update if Disease Annotation ID has not been found
 		}		
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public GeneDiseaseAnnotation validateAnnotationCreate(GeneDiseaseAnnotation uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Cound not create Gene Disease Annotation";;
+		
+		GeneDiseaseAnnotation dbEntity = new GeneDiseaseAnnotation();
+		
+		return validateAnnotation(uiEntity, dbEntity);
+	}
+	
+	public GeneDiseaseAnnotation validateAnnotation(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 
 		Gene subject = validateSubject(uiEntity, dbEntity);
 		dbEntity.setSubject(subject);
@@ -50,13 +66,13 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 		dbEntity = (GeneDiseaseAnnotation) validateCommonDiseaseAnnotationFields(uiEntity, dbEntity);
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
 		return dbEntity;
 	}
-
+	
 	private Gene validateSubject(GeneDiseaseAnnotation uiEntity, GeneDiseaseAnnotation dbEntity) {
 		if (ObjectUtils.isEmpty(uiEntity.getSubject()) || StringUtils.isBlank(uiEntity.getSubject().getCurie())) {
 			addMessageResponse("subject", ValidationConstants.REQUIRED_MESSAGE);
@@ -69,7 +85,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (subjectEntity.getObsolete() && !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie())) {
+		if (subjectEntity.getObsolete() && (dbEntity.getSubject() == null || !subjectEntity.getCurie().equals(dbEntity.getSubject().getCurie()))) {
 			addMessageResponse("subject", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -92,7 +108,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (relation.getObsolete() && !relation.getName().equals(dbEntity.getDiseaseRelation().getName())) {
+		if (relation.getObsolete() && (dbEntity.getDiseaseRelation() == null || !relation.getName().equals(dbEntity.getDiseaseRelation().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -110,7 +126,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		if (sgdStrainBackground.getObsolete() && !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie())) {
+		if (sgdStrainBackground.getObsolete() && (dbEntity.getSgdStrainBackground() == null || !sgdStrainBackground.getCurie().equals(dbEntity.getSgdStrainBackground().getCurie()))) {
 			addMessageResponse("sgdStrainBackground", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

@@ -2,7 +2,7 @@ import { BaseAuthService } from "./BaseAuthService";
 
 export class SearchService extends BaseAuthService {
 
-	search(endpoint, rows, page, sorts, filters, sortMapping, aggregationFields, nonNullFields) {
+	search(endpoint, rows, page, sorts, filters, sortMapping, aggregationFields, nonNullFieldsTable) {
 		const searchOptions = {};
 		if (!sorts) {
 			sorts = [];
@@ -12,14 +12,14 @@ export class SearchService extends BaseAuthService {
 		 aggregationFields = [];
 		}
 
-		if (!nonNullFields) {
-		 nonNullFields = [];
+		if (!nonNullFieldsTable) {
+		 nonNullFieldsTable = [];
 		}
 
 		searchOptions["searchFilters"] = filters;
 		searchOptions["sortOrders"] = includeSecondarySorts(sorts, sortMapping);
 		searchOptions["aggregations"] = aggregationFields;
-		searchOptions["nonNullFields"] = nonNullFields;
+		searchOptions["nonNullFieldsTable"] = nonNullFieldsTable;
 		// console.log(searchOptions);
 		return this.api.post(`/${endpoint}/search?limit=${rows}&page=${page}`, searchOptions).then(res => res.data);
 	}

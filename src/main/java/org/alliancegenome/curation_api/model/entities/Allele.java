@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.*;
@@ -18,6 +19,9 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"genomicLocations", "alleleDiseaseAnnotations"}, callSuper = true)
+//TODO: fix class before reporting SchemaVersion:
+// * feature_type and description were already removed in first published version (v1.0.0)
+//@AGRCurationSchemaVersion("1.2.1")
 public class Allele extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

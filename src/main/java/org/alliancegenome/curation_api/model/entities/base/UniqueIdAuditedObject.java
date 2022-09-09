@@ -20,6 +20,6 @@ public class UniqueIdAuditedObject extends GeneratedAuditedObject {
 	@Column(unique = true, length = 2000)
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	private String uniqueId;
+	protected String uniqueId;
 
 }

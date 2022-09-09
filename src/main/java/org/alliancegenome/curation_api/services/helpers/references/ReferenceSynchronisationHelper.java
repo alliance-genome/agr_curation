@@ -1,16 +1,24 @@
 package org.alliancegenome.curation_api.services.helpers.references;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.model.document.*;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.model.document.LiteratureCrossReference;
+import org.alliancegenome.curation_api.model.document.LiteratureReference;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -78,6 +86,7 @@ public class ReferenceSynchronisationHelper {
 		
 	public void synchroniseReferences() {
 		
+		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		Pagination pagination = new Pagination();
 		int limit = 500;
 		pagination.setLimit(limit);
@@ -86,8 +95,11 @@ public class ReferenceSynchronisationHelper {
 		while (!allSynced) {
 			pagination.setPage(page);
 			SearchResponse<String> response = referenceDAO.findAllIds(pagination);
+			if(page == 0)
+				pdh.startProcess("Reference Sync", response.getTotalResults());
 			for (String refCurie : response.getResults()) {
 				synchroniseReference(refCurie);
+				pdh.progressProcess();
 			}
 			page = page + 1;
 			int nrSynced = limit * page;
@@ -95,8 +107,8 @@ public class ReferenceSynchronisationHelper {
 				nrSynced = response.getTotalResults().intValue();
 				allSynced = true;
 			}
-			log.info("Synchronised " + nrSynced + " of " + response.getTotalResults() + " Reference objects");
 		}
+		pdh.finishProcess();
 	}
 	
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {

@@ -30,7 +30,7 @@ public class MoleculeValidator extends CurieAuditedObjectValidator{
 		
 		String errorTitle = "Could not update Molecule: [" + curie + "]";
 		
-		dbEntity = (Molecule) validateAuditedObjectFields(uiEntity, dbEntity);
+		dbEntity = (Molecule) validateAuditedObjectFields(uiEntity, dbEntity, false);
 				
 		dbEntity.setInchi(handleStringField(uiEntity.getInchi()));
 		dbEntity.setInchiKey(handleStringField(uiEntity.getInchiKey()));

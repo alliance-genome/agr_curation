@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -27,6 +29,23 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(getWithCuries(annotationDTO));
 		return curie.getCurie();
 	}
+	
+	@Override
+	public String getCurieID(DiseaseAnnotation annotation) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		curie.add(annotation.getSubjectCurie());
+		curie.add(annotation.getObject().getCurie());
+		curie.add(annotation.getSingleReference().getCurie());
+		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(EcoTerm::getCurie).collect(Collectors.toList()), "::"));
+		curie.add(annotation.getDiseaseRelation().getName());
+		curie.add(getWithCuries(annotation));
+		return curie.getCurie();
+	}
+	
+	@Override
+	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
+		return super.getCurieID(subject, object, reference, null,null, null);
+	}
 
 	public String getWithCuries(DiseaseAnnotationDTO annotationDTO) {
 		if (CollectionUtils.isEmpty(annotationDTO.getWith()))
@@ -35,10 +54,13 @@ public class SGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		generator.addAll(annotationDTO.getWith());
 		return generator.getCurie();
 	}
-	
-	@Override
-	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
-		return super.getCurieID(subject, object, reference, null,null, null);
+
+	public String getWithCuries(DiseaseAnnotation annotation) {
+		if (CollectionUtils.isEmpty(annotation.getWith()))
+			return null;
+		CurieGeneratorHelper generator = new CurieGeneratorHelper();
+		generator.addAll(annotation.getWith().stream().map(Gene::getCurie).collect(Collectors.toList()));
+		return generator.getCurie();
 	}
 
 

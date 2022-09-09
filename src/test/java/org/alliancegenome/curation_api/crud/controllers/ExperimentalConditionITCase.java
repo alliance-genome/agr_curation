@@ -6,6 +6,7 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
@@ -17,6 +18,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.junit.jupiter.api.*;
 
+import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -87,7 +89,9 @@ public class ExperimentalConditionITCase {
 				statusCode(200).
 				body("entity.conditionClass.curie", is("ZECO:ec0001")).
 				body("entity.conditionStatement", is("CRUD:Statement1")).
-				body("entity.internal", is(false));
+				body("entity.internal", is(false)).
+				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test
@@ -154,7 +158,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -178,7 +184,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -202,7 +210,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -226,7 +236,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -250,7 +262,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -274,7 +288,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -302,7 +318,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -330,7 +348,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -358,7 +378,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -386,7 +408,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -414,7 +438,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -438,7 +464,9 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 
 	@Test
@@ -462,7 +490,18 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(200);
+		
+		// Reset conditionStatement as used by getExperimentalCondition() in subsequent tests
+		// TODO: delete following once conditionSummary used for findBy endpoint
+		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
+		RestAssured.given().
+			contentType("application/json").
+			body(editedExperimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(200);
 	}
 	
 	@Test
@@ -486,7 +525,433 @@ public class ExperimentalConditionITCase {
 				when().
 				put("/api/experimental-condition").
 				then().
-				statusCode(400);
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(17)
+	public void createWithObsoleteConditionClass() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testObsoleteZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement3");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount3");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(18)
+	public void createWithObsoleteConditionId() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement4");
+		experimentalCondition.setConditionId(testObsoleteZecoTerm);
+		experimentalCondition.setConditionQuantity("Amount4");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(19)
+	public void createWithObsoleteConditionAnatomy() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement5");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount5");
+		experimentalCondition.setConditionAnatomy(testObsoleteZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(20)
+	public void createWithObsoleteConditionGeneOntology() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement6");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount6");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testObsoleteGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(21)
+	public void createWithObsoleteConditionTaxon() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement7");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount7");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testObsoleteNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(22)
+	public void createWithObsoleteConditionChemical() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement8");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount8");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testObsoleteChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
+	}
+	
+	@Test
+	@Order(23)
+	public void createWithInvalidConditionClass() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		ZecoTerm nonPersistedZecoTerm = new ZecoTerm();
+		nonPersistedZecoTerm.setCurie("NPZECO:0001");
+		nonPersistedZecoTerm.setObsolete(false);
+		
+		experimentalCondition.setConditionClass(nonPersistedZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement9");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount9");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(24)
+	public void createWithInvalidConditionId() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		ZecoTerm nonPersistedZecoTerm = new ZecoTerm();
+		nonPersistedZecoTerm.setCurie("NPZECO:0001");
+		nonPersistedZecoTerm.setObsolete(false);
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement10");
+		experimentalCondition.setConditionId(nonPersistedZecoTerm);
+		experimentalCondition.setConditionQuantity("Amount10");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(25)
+	public void createWithInvalidConditionAnatomy() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		ZfaTerm nonPersistedZfaTerm = new ZfaTerm();
+		nonPersistedZfaTerm.setCurie("NPZFA:0001");
+		nonPersistedZfaTerm.setObsolete(false);
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement11");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount11");
+		experimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(26)
+	public void createWithInvalidConditionGeneOntology() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		GOTerm nonPersistedGoTerm = new GOTerm();
+		nonPersistedGoTerm.setCurie("NPGO:0001");
+		nonPersistedGoTerm.setObsolete(false);
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement12");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount12");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(nonPersistedGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(27)
+	public void createWithInvalidConditionChemical() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		CHEBITerm nonPersistedChebiTerm = new CHEBITerm();
+		nonPersistedChebiTerm.setCurie("NPCHEBI:0001");
+		nonPersistedChebiTerm.setObsolete(false);
+		
+		experimentalCondition.setConditionClass(testZecoTerm2);
+		experimentalCondition.setConditionStatement("CRUD:Statement13");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount13");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(nonPersistedChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(28)
+	public void createWithMissingConditionClass() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionStatement("CRUD:Statement14");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount14");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@Order(29)
+	public void createWithMissingConditionStatement() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm2);
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount15");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(200);
+	}
+	
+	@Test
+	@Order(30)
+	public void createWithNonSlimConditionClass() {
+		
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testNonSlimZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement16");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount16");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(31)
+	public void createDuplicateExperimentalCondition() {
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		
+		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionStatement("CRUD:Statement17");
+		experimentalCondition.setConditionId(testZecoTerm3);
+		experimentalCondition.setConditionQuantity("Amount17");
+		experimentalCondition.setConditionAnatomy(testZfaTerm);
+		experimentalCondition.setConditionGeneOntology(testGoTerm);
+		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalCondition).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(200);
+		
+		ExperimentalCondition experimentalConditionDuplicate = new ExperimentalCondition();
+		
+		experimentalConditionDuplicate.setConditionClass(testZecoTerm);
+		experimentalConditionDuplicate.setConditionStatement("CRUD:Statement17");
+		experimentalConditionDuplicate.setConditionId(testZecoTerm3);
+		experimentalConditionDuplicate.setConditionQuantity("Amount17");
+		experimentalConditionDuplicate.setConditionAnatomy(testZfaTerm);
+		experimentalConditionDuplicate.setConditionGeneOntology(testGoTerm);
+		experimentalConditionDuplicate.setConditionTaxon(testNcbiTaxonTerm);
+		experimentalConditionDuplicate.setConditionChemical(testChebiTerm);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(experimentalConditionDuplicate).
+				when().
+				post("/api/experimental-condition").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
 
 	private ExperimentalCondition getExperimentalCondition(String conditionStatement) {

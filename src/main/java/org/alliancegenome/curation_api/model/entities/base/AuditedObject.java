@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.*;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.view.View;
@@ -20,6 +21,8 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
 @ToString(exclude = {"createdBy", "modifiedBy"})
+//TODO: add dbDateCreated and dbDateUpdated to linkML model for full model parity.
+@AGRCurationSchemaVersion("1.2.1+")
 public class AuditedObject extends BaseEntity {
 
 

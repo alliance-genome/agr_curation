@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 
-export function FilterComponentInputText({ isEnabled, fields, filterName, currentFilters, onFilter, tokenOperator="AND" }) {
+export function FilterComponentInputText({ isEnabled, fields, nonNullFields, nullFields, filterName, currentFilters, onFilter, tokenOperator="AND" }) {
 		const [filterValue, setFilterValue] = useState(currentFilters[filterName] ? currentFilters[filterName][fields[0]].queryString : '');
 
 		useEffect(() => {
@@ -22,6 +22,12 @@ export function FilterComponentInputText({ isEnabled, fields, filterName, curren
 														tokenOperator : tokenOperator
 												}
 										});
+										if(nonNullFields){
+											filter['nonNullFields'] = nonNullFields;
+										}
+										if(nullFields){
+											filter['nullFields'] = nullFields;
+										}
 								} else {
 										filter = null;
 								}
