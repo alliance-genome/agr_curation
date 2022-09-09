@@ -30,7 +30,7 @@ export const ExperimentalConditionsTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
-	let experimentalConditionService = null;
+	let experimentalConditionService = new ExperimentalConditionService();
 
 	const sortMapping = {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']
@@ -368,6 +368,7 @@ export const ExperimentalConditionsTable = () => {
 					errorObject = {{errorMessages, setErrorMessages}}
 					newEntity={newExperimentalCondition}
 					deletionEnabled={true}
+					deletionMethod={experimentalConditionService.deleteExperimentalCondition}
 				/>
 				<NewConditionForm
 					newConditionState={newConditionState}

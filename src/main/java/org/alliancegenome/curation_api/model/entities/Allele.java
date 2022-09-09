@@ -18,29 +18,14 @@ import lombok.*;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicLocations", "alleleDiseaseAnnotations"}, callSuper = true)
-//TODO: fix class before reporting SchemaVersion:
-// * feature_type and description were already removed in first published version (v1.0.0)
-//@AGRCurationSchemaVersion("1.2.1")
+@ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
+@AGRCurationSchemaVersion("1.2.1 (partial)")
 public class Allele extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "symbol_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
-	
-	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
-	private String feature_type;
-
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "description_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String description;
-
-	@ManyToMany
-	private List<GeneGenomicLocation> genomicLocations;
 	
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;

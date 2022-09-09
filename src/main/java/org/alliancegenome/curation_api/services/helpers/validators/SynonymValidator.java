@@ -22,7 +22,7 @@ public class SynonymValidator extends AuditedObjectValidator<Synonym> {
 
 		Long id = uiEntity.getId();
 		if (id == null) {
-			addMessageResponse("No Person ID provided");
+			addMessageResponse("No Synonym ID provided");
 			throw new ApiErrorException(response);
 		}
 		Synonym dbEntity = synonymDAO.find(id);

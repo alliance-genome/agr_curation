@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.lang3.StringUtils;
@@ -33,10 +33,10 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotation.getSubjectCurie());
 		curie.add(annotation.getObject().getCurie());
 		curie.add(annotation.getSingleReference().getCurie());
-		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(EcoTerm::getCurie).collect(Collectors.toList()), "::"));
+		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
 		return curie.getCurie();
 	}
-	
+
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
 		return super.getCurieID(subject, object, reference, null,null, null);

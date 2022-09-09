@@ -24,7 +24,7 @@ import lombok.*;
 @Schema(name = "Allele_Disease_Annotation", description = "Annotation class representing a allele disease annotation")
 @JsonTypeName("AlleleDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -34,13 +34,13 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@JoinColumn(foreignKey = @ForeignKey(name="fk_alleledasubject"))
 	@JsonView({View.FieldsOnly.class})
 	private Allele subject;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Gene inferredGene;
-	
+
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -52,9 +52,10 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
+		if(subject == null) return null;
 		return subject.getCurie();
 	}
-	
+
 	@Transient
 	@Override
 	@JsonIgnore

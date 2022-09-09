@@ -20,9 +20,8 @@ import lombok.*;
 
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
-@ToString(exclude = {"createdBy", "modifiedBy"})
-//TODO: add dbDateCreated and dbDateUpdated to linkML model for full model parity.
-@AGRCurationSchemaVersion("1.2.1+")
+@ToString(exclude = {"createdBy", "updatedBy"})
+@AGRCurationSchemaVersion("1.2.4")
 public class AuditedObject extends BaseEntity {
 
 

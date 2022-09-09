@@ -23,7 +23,7 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})

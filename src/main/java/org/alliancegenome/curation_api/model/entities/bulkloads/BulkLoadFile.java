@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -17,11 +18,12 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoad"})
+@AGRCurationSchemaVersion("1.2.4")
 public class BulkLoadFile extends GeneratedAuditedObject {
 	
 	@JsonView({View.FieldsOnly.class})
 	@Enumerated(EnumType.STRING)
-	private JobStatus status;
+	private JobStatus bulkloadStatus;
 
 	@JsonView({View.FieldsOnly.class})
 	@Column(unique = true)

@@ -6,15 +6,25 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.exceptions.*;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
@@ -71,7 +81,7 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	
 	private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
 		AlleleDiseaseAnnotation annotation;
-		if (dto.getSubject() == null) {
+		if (StringUtils.isBlank(dto.getSubject())) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject Allele - skipping");
 		}
 		
@@ -81,7 +91,7 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		}
 		
 		String annotationId = dto.getModEntityId();
-		if (annotationId == null) {
+		if (StringUtils.isBlank(annotationId)) {
 			annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto);
 		}
 		SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
@@ -101,21 +111,31 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 		
-		if (dto.getInferredGene() != null) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+		Gene inferredGene = null;
+		if (StringUtils.isNotBlank(dto.getInferredGene())) {
+			inferredGene = geneDAO.find(dto.getInferredGene());
 			if (inferredGene == null)
 				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
-			annotation.setInferredGene(inferredGene);
 		}
-
-		if (dto.getAssertedGene() != null) {
-			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+		annotation.setInferredGene(inferredGene);
+		
+		Gene assertedGene = null;
+		if (StringUtils.isNotBlank(dto.getAssertedGene())) {
+			assertedGene = geneDAO.find(dto.getAssertedGene());
 			if (assertedGene == null)
 				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
-			annotation.setAssertedGene(assertedGene);
 		}
+		annotation.setAssertedGene(assertedGene);
 		
 		return annotation;
 	}
 
+	@Override
+	@Transactional
+	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
+		diseaseAnnotationService.deleteNotes(id);
+		AlleleDiseaseAnnotation object = dao.remove(id);
+		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
+		return ret;
+	}
 }

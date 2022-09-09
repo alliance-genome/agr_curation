@@ -45,7 +45,7 @@ export const GenericDataTable = (props) => {
 	const [deleteDialog, setDeleteDialog] = useState(false);
 	const [errorDialog, setErrorDialog] = useState(false);	
 	const [idToDelete, setIdToDelete] = useState(null);
-	const [ixToDelete, setIxToDelete] = useState(null);
+	const [entityToDelete, setEntityToDelete] = useState(null);
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 
 
@@ -128,13 +128,13 @@ export const GenericDataTable = (props) => {
 	const showDeleteDialog = (props) => {
 		let _idToDelete = props.rowData ? props.rowData.id : props.id;
 		setIdToDelete(_idToDelete);
-		setIxToDelete(props.rowIndex);
+		setEntityToDelete(props);
 		setDeleteDialog(true);	
 	}
 	
-	const deleteRow = async (idToDelete, ixToDelete) => {
+	const deleteRow = async (idToDelete, entityToDelete) => {
 		setDeleteDialog(false);
-		let _deletionErrorMessage = await handleDeletion(idToDelete, ixToDelete);
+		let _deletionErrorMessage = await handleDeletion(idToDelete, entityToDelete);
 		setDeletionErrorMessage(_deletionErrorMessage);
 		if (_deletionErrorMessage !== null) { 
 			setErrorDialog(true);
@@ -160,7 +160,7 @@ export const GenericDataTable = (props) => {
 		return (
         	<React.Fragment>
             	<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
-            	<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, ixToDelete)} />
+            	<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete)} />
         	</React.Fragment>
     	);
 	}

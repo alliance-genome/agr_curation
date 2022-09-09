@@ -20,9 +20,9 @@ export const AutocompleteEditor = (
 		isMultiple = false,
 		isReference = false,
 		isSgdStrainBackground = false,
-		valueSelector,
 		valueDisplay,
-		passedOnChange,
+		passedOnChange
+
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -38,7 +38,7 @@ export const AutocompleteEditor = (
 	);
 
 	const op = useRef(null);
-	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});		
+	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
 	const search = (event) => {
 		setQuery(event.query);
 		let filter = {};
@@ -67,7 +67,7 @@ export const AutocompleteEditor = (
 
 	const onValueChange = (event) => {
 		if(passedOnChange) return passedOnChange(event, setFieldValue);
-		
+
 		let updatedRows = [...rowProps.props.value];
 
 		if (!event.target.value) {
@@ -82,19 +82,14 @@ export const AutocompleteEditor = (
 			return;
 		}
 
-		updatedRows[rowProps.rowIndex][fieldName] = {};//this needs to be fixed. Otherwise, we won't have access to the other subject fields
 
 		if (typeof event.target.value === "object") {
-			if (valueSelector) {
-				updatedRows[rowProps.rowIndex][fieldName].curie = valueSelector(event.target.value);
-				setFieldValue(valueSelector(event.target.value));
-			} else {
-				updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value.curie;
-				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
-			}
+			 updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
+			 setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 		} else {
-			updatedRows[rowProps.rowIndex][fieldName].curie = event.target.value;
-				setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			updatedRows[rowProps.rowIndex][fieldName] = {};
+			updatedRows[rowProps.rowIndex][fieldName]["curie"] = event.target.value;
+			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
 		}
 	};
 
@@ -102,7 +97,7 @@ export const AutocompleteEditor = (
 		if(valueDisplay) return valueDisplay(item, setAutocompleteSelectedItem, op, query);
 		return (
 			<div>
-				<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteSelectedItem)} 
+				<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteSelectedItem)}
 					dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
 			</div>
 		);

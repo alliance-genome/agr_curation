@@ -66,7 +66,7 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 	}
 
 	public ExperimentalCondition validateExperimentalCondition(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
-		ZecoTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
+		ZECOTerm conditionClass = validateConditionClass(uiEntity, dbEntity);
 		dbEntity.setConditionClass(conditionClass);
 		
 		ExperimentalConditionOntologyTerm ecOntologyTerm = validateConditionId(uiEntity, dbEntity);
@@ -111,13 +111,13 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		return dbEntity;
 	}
 	
-	public ZecoTerm validateConditionClass(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
+	public ZECOTerm validateConditionClass(ExperimentalCondition uiEntity, ExperimentalCondition dbEntity) {
 		String field = "conditionClass";
 		if (ObjectUtils.isEmpty(uiEntity.getConditionClass()) || StringUtils.isBlank(uiEntity.getConditionClass().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		ZecoTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
+		ZECOTerm zecoTerm = zecoTermDAO.find(uiEntity.getConditionClass().getCurie());
 		if (zecoTerm == null || zecoTerm.getSubsets().isEmpty() || !zecoTerm.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

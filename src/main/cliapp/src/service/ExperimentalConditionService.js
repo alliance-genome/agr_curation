@@ -1,4 +1,5 @@
 import { BaseAuthService } from './BaseAuthService';
+import { DeletionService } from './DeletionService';
 
 export class ExperimentalConditionService extends BaseAuthService {
 	saveExperimentalCondition(updatedCondition){
@@ -6,6 +7,11 @@ export class ExperimentalConditionService extends BaseAuthService {
 	}
 	createExperimentalCondition(newExperimentalCondition) { 
 		return this.api.post(`/experimental-condition`, newExperimentalCondition);
+	}
+
+	async deleteExperimentalCondition(experimentalCondition) { 
+		const deletionService = new DeletionService();
+		return await deletionService.delete(`experimental-condition`, experimentalCondition.id);
 	}
 }
 

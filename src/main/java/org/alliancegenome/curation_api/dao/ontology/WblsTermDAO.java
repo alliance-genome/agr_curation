@@ -3,13 +3,13 @@ package org.alliancegenome.curation_api.dao.ontology;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.ontology.WBlsTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.WBLSTerm;
 
 @ApplicationScoped
-public class WblsTermDAO extends BaseSQLDAO<WBlsTerm> {
+public class WblsTermDAO extends BaseSQLDAO<WBLSTerm> {
 
 	protected WblsTermDAO() {
-		super(WBlsTerm.class);
+		super(WBLSTerm.class);
 	}
 
 }
