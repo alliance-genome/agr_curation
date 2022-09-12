@@ -1,13 +1,19 @@
 package org.alliancegenome.curation_api.jobs;
 
 import java.io.File;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.loads.*;
+import org.alliancegenome.curation_api.dao.loads.BulkFMSLoadDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkManualLoadDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkURLLoadDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoad;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.fms.DataFile;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.fms.DataFileService;
@@ -206,6 +212,7 @@ public class BulkLoadProcessor {
 		}
 		bulkLoadFile.setErrorMessage(message);
 		bulkLoadFile.setBulkloadStatus(status);
+		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		log.info("Load File: " + bulkLoadFile.getMd5Sum() + " is finished");
 	}
