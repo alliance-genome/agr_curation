@@ -10,15 +10,29 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
-import org.alliancegenome.curation_api.dao.ontology.*;
+import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntologyTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.*;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
 import org.alliancegenome.curation_api.services.helpers.validators.ExperimentalConditionValidator;
+import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -79,22 +93,27 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			experimentalCondition = searchResponse.getSingleResult();
 		}
 		
-		if (dto.getConditionChemical() != null) {
-			ChemicalTerm term = chemicalTermDAO.find(dto.getConditionChemical());
-			if (term == null) {
+		ChemicalTerm conditionChemical = null;
+		if (StringUtils.isNotBlank(dto.getConditionChemical())) {
+			conditionChemical = chemicalTermDAO.find(dto.getConditionChemical());
+			if (conditionChemical == null) {
 				throw new ObjectValidationException(dto, "Invalid ChemicalOntologyId - skipping annotation");
 			}
-			experimentalCondition.setConditionChemical(term);
+			
 		}
-		if (dto.getConditionId() != null) {
-			ExperimentalConditionOntologyTerm term = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
-			if (term == null) {
+		experimentalCondition.setConditionChemical(conditionChemical);
+		
+		ExperimentalConditionOntologyTerm conditionId = null;
+		if (StringUtils.isNotBlank(dto.getConditionId())) {
+			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
+			if (conditionId == null) {
 				throw new ObjectValidationException(dto, "Invalid ConditionId - skipping annotation");
 			}
-			experimentalCondition.setConditionId(term);
 		}
-		if (dto.getConditionClass() != null) {
-			ZecoTerm term = zecoTermDAO.find(dto.getConditionClass());
+		experimentalCondition.setConditionId(conditionId);
+
+		if (StringUtils.isNotBlank(dto.getConditionClass())) {
+			ZECOTerm term = zecoTermDAO.find(dto.getConditionClass());
 			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
 				throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
 			}
@@ -104,52 +123,68 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			throw new ObjectValidationException(dto, "ConditionClassId is a required field - skipping annotation");
 		}
 		
-		if (dto.getConditionAnatomy() != null) {
-			AnatomicalTerm term = anatomicalTermDAO.find(dto.getConditionAnatomy());
-			if (term == null) {
+		AnatomicalTerm conditionAnatomy = null;
+		if (StringUtils.isNotBlank(dto.getConditionAnatomy())) {
+			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomy());
+			if (conditionAnatomy == null) {
 				throw new ObjectValidationException(dto, "Invalid AnatomicalOntologyId - skipping annotation");
 			}
-			experimentalCondition.setConditionAnatomy(term);
 		}
-		if (dto.getConditionTaxon() != null) {
-			NCBITaxonTerm term = ncbiTaxonTermDAO.find(dto.getConditionTaxon());
-			if (term == null) {
-				term = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
+		experimentalCondition.setConditionAnatomy(conditionAnatomy);
+		
+		NCBITaxonTerm conditionTaxon = null;
+		if (StringUtils.isNotBlank(dto.getConditionTaxon())) {
+			conditionTaxon = ncbiTaxonTermDAO.find(dto.getConditionTaxon());
+			if (conditionTaxon == null) {
+				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
 			}
-			if (term == null) {
+			if (conditionTaxon == null) {
 				throw new ObjectValidationException(dto, "Invalid NCBITaxonId - skipping annotation");
 			}
-			experimentalCondition.setConditionTaxon(term);
 		}
-		if (dto.getConditionGeneOntology() != null) {
-			GOTerm term = goTermDAO.find(dto.getConditionGeneOntology());
-			if (term == null) {
+		experimentalCondition.setConditionTaxon(conditionTaxon);
+
+		GOTerm conditionGeneOntology = null;
+		if (StringUtils.isNotBlank(dto.getConditionGeneOntology())) {
+			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntology());
+			if (conditionGeneOntology == null) {
 				throw new ObjectValidationException(dto, "Invalid GeneOntologyId - skipping annotation");
 			}
-			experimentalCondition.setConditionGeneOntology(term);
 		}
-		if (dto.getConditionQuantity() != null)
-			experimentalCondition.setConditionQuantity(dto.getConditionQuantity());
-		if (dto.getConditionFreeText() != null)
-			experimentalCondition.setConditionFreeText(dto.getConditionFreeText());
-		if (dto.getConditionStatement() == null) {
+		experimentalCondition.setConditionGeneOntology(conditionGeneOntology);
+		
+		String conditionQuantity = null;
+		if (StringUtils.isNotBlank(dto.getConditionQuantity()))
+			conditionQuantity = dto.getConditionQuantity();
+		experimentalCondition.setConditionQuantity(conditionQuantity);
+		
+		String conditionFreeText = null;
+		if (StringUtils.isNotBlank(dto.getConditionFreeText()))
+			conditionFreeText = dto.getConditionFreeText();
+		experimentalCondition.setConditionFreeText(conditionFreeText);
+		
+		if (StringUtils.isBlank(dto.getConditionStatement())) {
 			throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
 		}
 		experimentalCondition.setConditionStatement(dto.getConditionStatement());
 		
 		experimentalCondition.setInternal(dto.getInternal());
-		experimentalCondition.setObsolete(dto.getObsolete());
 		
-		if (dto.getCreatedBy() != null) {
+		Boolean obsolete = false;
+		if (experimentalCondition.getObsolete() != null)
+			obsolete = dto.getObsolete();
+		experimentalCondition.setObsolete(obsolete);
+		
+		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
 			experimentalCondition.setCreatedBy(createdBy);
 		}
-		if (dto.getUpdatedBy() != null) {
+		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
 			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
 			experimentalCondition.setUpdatedBy(updatedBy);
 		}
 		
-		if (dto.getDateUpdated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
 			OffsetDateTime dateLastModified;
 			try {
 				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
@@ -159,7 +194,7 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			experimentalCondition.setDateUpdated(dateLastModified);
 		}
 
-		if (dto.getDateCreated() != null) {
+		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			OffsetDateTime creationDate;
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());

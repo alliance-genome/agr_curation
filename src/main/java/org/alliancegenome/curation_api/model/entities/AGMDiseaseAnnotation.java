@@ -9,6 +9,9 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
@@ -24,7 +27,7 @@ import lombok.*;
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
 @JsonTypeName("AGMDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)

@@ -12,20 +12,20 @@ export const FMSForm = ({ hideFMS, newBulkLoad, onChange, disableFormFields }) =
 												onChange={onChange}
 										/>
 										<div className="field">
-												<label htmlFor="dataType">Data Type</label>
+												<label htmlFor="fmsDataType">FMS Data Type</label>
 												<InputText
-														name="dataType"
-														value={newBulkLoad.dataType}
+														name="fmsDataType"
+														value={newBulkLoad.fmsDataType}
 														onChange={onChange}
 														placeholder='Enter Data Type'
 														disabled={disableFormFields}
 												/>
 										</div>
 										<div className="field">
-												<label htmlFor="dataSubType">Data SubType</label>
+												<label htmlFor="fmsDataSubType">FMS Data SubType</label>
 												<InputText
-														name="dataSubType"
-														value={newBulkLoad.dataSubType}
+														name="fmsDataSubType"
+														value={newBulkLoad.fmsDataSubType}
 														onChange={onChange}
 														placeholder='Enter Data SubType'
 														disabled={disableFormFields}

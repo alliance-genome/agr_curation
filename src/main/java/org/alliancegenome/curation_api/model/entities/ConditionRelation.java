@@ -23,7 +23,7 @@ import lombok.*;
 @Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class ConditionRelation extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)

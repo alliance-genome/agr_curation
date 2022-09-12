@@ -1,5 +1,31 @@
 # AGR curation release notes
 
+## v0.9.0
+
+ * New features
+
+    * Enabled deletion of relations in Condition Relation table (SCRUM-1605)
+
+    * Enabled creation of Experimental Conditions (SCRUM-1848, SCRUM-1849, SCRUM-1850)
+
+    * Added ATP ontology (SCRUM-1840)
+
+    * Automatic population of createdBy field when creating new entries (SCRUM-1868)
+
+    * Repurposed Condition Relation Handles table for all Condition Relations, with or without handle (SCRUM-1867)
+
+    * Enabled deletion of controlled vocabulary terms (SCRUM-1889)
+
+    * Added parents, ancestors, and closure to ontologies
+
+    * Enabled per-class reporting of LinkML schema version compatibility
+
+ * Bugfixes, minor enhancements & maintenance
+
+    * API updates to enable deletion of disease annotations (SCRUM-1711)
+
+    * Improved filter functionality for Experiments and Experimental Conditions columns in Disease Annotation table (SCRUM-1816)
+
 ## v0.8.0
  * New features
     * Enabled ConditionRelation creation for disease annotation (SCRUM-1405)

@@ -21,7 +21,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"pageAreas"})
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class CrossReference extends CurieAuditedObject {
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)

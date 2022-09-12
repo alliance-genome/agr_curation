@@ -5,6 +5,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
@@ -22,5 +23,11 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 	@Path("/validate")
 	@JsonView(View.FieldsOnly.class)
 	public ObjectResponse<Note> validate(Note entity);
+	
+	@Override
+	@GET
+	@JsonView(View.NoteView.class)
+	@Path("/{id}")
+	public ObjectResponse<Note> get(@PathParam("id") Long id);
 	
 }

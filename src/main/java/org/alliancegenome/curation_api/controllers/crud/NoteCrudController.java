@@ -21,6 +21,16 @@ public class NoteCrudController extends BaseEntityCrudController<NoteService, No
 	protected void init() {
 		setService(noteService);
 	}
+	
+	@Override
+	public ObjectResponse<Note> update(Note entity) {
+		return noteService.upsert(entity);
+	}
+	
+	@Override
+	public ObjectResponse<Note> create(Note entity) {
+		return noteService.upsert(entity);
+	}
 
 	public ObjectResponse<Note> validate(Note entity) {
 		return noteService.validate(entity);

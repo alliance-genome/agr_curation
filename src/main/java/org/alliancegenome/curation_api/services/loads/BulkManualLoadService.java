@@ -26,8 +26,8 @@ public class BulkManualLoadService extends BaseEntityCrudService<BulkManualLoad,
 	@Transactional
 	public ObjectResponse<BulkManualLoad> restartLoad(Long id) {
 		BulkManualLoad load = bulkManualLoadDAO.find(id);
-		if(load.getStatus().isNotRunning()) {
-			load.setStatus(JobStatus.FORCED_PENDING);
+		if(load.getBulkloadStatus().isNotRunning()) {
+			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 		}
 		return new ObjectResponse<BulkManualLoad>(load);
 	}

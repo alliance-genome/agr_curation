@@ -11,8 +11,8 @@ import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZfaTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
@@ -31,19 +31,19 @@ import java.util.List;
 @Order(11)
 public class ExperimentalConditionITCase {
 	
-	private ZecoTerm testZecoTerm;
-	private ZecoTerm testZecoTerm2;
-	private ZecoTerm testZecoTerm3;
+	private ZECOTerm testZecoTerm;
+	private ZECOTerm testZecoTerm2;
+	private ZECOTerm testZecoTerm3;
 	private GOTerm testGoTerm;
 	private CHEBITerm testChebiTerm;
-	private ZfaTerm testZfaTerm;
+	private ZFATerm testZfaTerm;
 	private NCBITaxonTerm testNcbiTaxonTerm;
-	private ZecoTerm testObsoleteZecoTerm;
+	private ZECOTerm testObsoleteZecoTerm;
 	private GOTerm testObsoleteGoTerm;
 	private CHEBITerm testObsoleteChebiTerm;
-	private ZfaTerm testObsoleteZfaTerm;
+	private ZFATerm testObsoleteZfaTerm;
 	private NCBITaxonTerm testObsoleteNcbiTaxonTerm;
-	private ZecoTerm testNonSlimZecoTerm;
+	private ZECOTerm testNonSlimZecoTerm;
 	
 	private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRef() {
 		return new TypeRef<>() {
@@ -299,7 +299,7 @@ public class ExperimentalConditionITCase {
 		
 		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
 		
-		ZecoTerm nonPersistedZecoTerm = new ZecoTerm();
+		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
 		nonPersistedZecoTerm.setCurie("NPZECO:0001");
 		nonPersistedZecoTerm.setObsolete(false);
 		
@@ -329,7 +329,7 @@ public class ExperimentalConditionITCase {
 		
 		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
 		
-		ZecoTerm nonPersistedZecoTerm = new ZecoTerm();
+		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
 		nonPersistedZecoTerm.setCurie("NPZECO:0001");
 		nonPersistedZecoTerm.setObsolete(false);
 		
@@ -359,7 +359,7 @@ public class ExperimentalConditionITCase {
 		
 		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
 		
-		ZfaTerm nonPersistedZfaTerm = new ZfaTerm();
+		ZFATerm nonPersistedZfaTerm = new ZFATerm();
 		nonPersistedZfaTerm.setCurie("NPZFA:0001");
 		nonPersistedZfaTerm.setObsolete(false);
 		
@@ -692,7 +692,7 @@ public class ExperimentalConditionITCase {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
-		ZecoTerm nonPersistedZecoTerm = new ZecoTerm();
+		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
 		nonPersistedZecoTerm.setCurie("NPZECO:0001");
 		nonPersistedZecoTerm.setObsolete(false);
 		
@@ -722,7 +722,7 @@ public class ExperimentalConditionITCase {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
-		ZecoTerm nonPersistedZecoTerm = new ZecoTerm();
+		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
 		nonPersistedZecoTerm.setCurie("NPZECO:0001");
 		nonPersistedZecoTerm.setObsolete(false);
 		
@@ -752,7 +752,7 @@ public class ExperimentalConditionITCase {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
-		ZfaTerm nonPersistedZfaTerm = new ZfaTerm();
+		ZFATerm nonPersistedZfaTerm = new ZFATerm();
 		nonPersistedZfaTerm.setCurie("NPZFA:0001");
 		nonPersistedZfaTerm.setObsolete(false);
 		
@@ -965,8 +965,8 @@ public class ExperimentalConditionITCase {
 		return res.getEntity();
 	}
 
-	private ZecoTerm createZecoTerm(String curie, Boolean obsolete, String subset) {
-		ZecoTerm zecoTerm = new ZecoTerm();
+	private ZECOTerm createZecoTerm(String curie, Boolean obsolete, String subset) {
+		ZECOTerm zecoTerm = new ZECOTerm();
 		zecoTerm.setCurie(curie);
 		zecoTerm.setName("Test ZecoTerm");
 		List<String> subsets = new ArrayList<String>();
@@ -1020,8 +1020,8 @@ public class ExperimentalConditionITCase {
 		return chebiTerm;
 	}
 	
-	private ZfaTerm createZfaTerm(String curie, Boolean obsolete) {
-		ZfaTerm zfaTerm = new ZfaTerm();
+	private ZFATerm createZfaTerm(String curie, Boolean obsolete) {
+		ZFATerm zfaTerm = new ZFATerm();
 		zfaTerm.setCurie(curie);
 		zfaTerm.setObsolete(obsolete);
 		zfaTerm.setName("Test ZFATerm");

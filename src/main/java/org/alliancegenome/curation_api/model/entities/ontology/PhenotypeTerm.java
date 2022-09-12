@@ -12,7 +12,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class PhenotypeTerm extends OntologyTerm {
 
 }
