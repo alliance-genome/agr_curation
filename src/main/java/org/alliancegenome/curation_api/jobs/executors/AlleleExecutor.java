@@ -86,7 +86,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {
-				addException(history, new ObjectUpdateExceptionData(alleleDTO, e.getMessage()));
+				addException(history, new ObjectUpdateExceptionData(alleleDTO, e.getMessage(), e.getStackTrace()));
 			}
 				
 			ph.progressProcess();

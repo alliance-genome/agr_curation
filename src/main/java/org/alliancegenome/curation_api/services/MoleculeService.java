@@ -154,7 +154,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			handleCrossReferences(molecule, m);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ObjectUpdateException(molecule, e.getMessage());
+			throw new ObjectUpdateException(molecule, e.getMessage(), e.getStackTrace());
 		}
 	}
 	
