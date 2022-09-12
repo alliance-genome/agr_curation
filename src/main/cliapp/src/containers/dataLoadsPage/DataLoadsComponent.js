@@ -251,6 +251,22 @@ export const DataLoadsComponent = () => {
 			<Button label={rowData.bulkloadStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
 		);
 	};
+	
+	const dateLastLoadedTemplate = (rowData) => {
+		if (rowData && rowData.history && rowData.history.length > 0) {
+			const sortedHistory = rowData.history.sort((a, b) => (a.loadFinished > b.loadFinished) ? -1 : 1);
+			let dateLastLoaded = sortedHistory[0].loadFinished;
+			return (
+				<>
+					<div className={`overflow-hidden text-overflow-ellipsis ig${rowData.id}${dateLastLoaded}`}
+						dangerouslySetInnerHTML={{
+							__html: dateLastLoaded
+						}}
+					/>
+				</>
+			)
+		}
+	};
 
 	const historyTable = (file) => {
 		return (
@@ -279,7 +295,7 @@ export const DataLoadsComponent = () => {
 					<Column field="fileSize" header="Compressed File Size" />
 					<Column field="recordCount" header="Record Count" />
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
-					<Column field="dbDateUpdated" header="Last Loaded" />
+					<Column field="dateLastLoaded" body={dateLastLoadedTemplate} header="Last Loaded" />
 					<Column field="bulkloadStatus" body={bulkloadStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
