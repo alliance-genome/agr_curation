@@ -279,7 +279,7 @@ export const DataLoadsComponent = () => {
 					<Column field="fileSize" header="Compressed File Size" />
 					<Column field="recordCount" header="Record Count" />
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
-					<Column field="dateUpdated" header="Last Loaded" />
+					<Column field="dateLastLoaded" header="Last Loaded" />
 					<Column field="bulkloadStatus" body={bulkloadStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
