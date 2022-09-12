@@ -24,7 +24,7 @@ import lombok.*;
 @ToString(callSuper = true)
 @AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
 @Schema(name="Note", description="POJO that represents the Note")
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class Note extends GeneratedAuditedObject {
 		
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -42,6 +42,6 @@ public class Note extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({View.FieldsAndLists.class, View.NoteView.class})
 	private List<Reference> references;
 }

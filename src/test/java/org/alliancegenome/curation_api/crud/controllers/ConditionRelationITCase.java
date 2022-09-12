@@ -18,7 +18,7 @@ import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -537,8 +537,8 @@ public class ConditionRelationITCase {
 		return null;
 	}
 
-	private ZecoTerm getZecoTerm(String curie) {
-		ObjectResponse<ZecoTerm> response =
+	private ZECOTerm getZecoTerm(String curie) {
+		ObjectResponse<ZECOTerm> response =
 			given().
 				when().
 				get("/api/zecoterm/" + curie).
@@ -567,8 +567,8 @@ public class ConditionRelationITCase {
 		return response.getEntity();
 	}
 
-	private ZecoTerm createZecoTerm(String curie) {
-		ZecoTerm zecoTerm = new ZecoTerm();
+	private ZECOTerm createZecoTerm(String curie) {
+		ZECOTerm zecoTerm = new ZECOTerm();
 		zecoTerm.setCurie(curie);
 		zecoTerm.setName("Test");
 		zecoTerm.setObsolete(false);
@@ -616,7 +616,7 @@ public class ConditionRelationITCase {
 		};
 	}
 
-	private TypeRef<ObjectResponse<ZecoTerm>> getObjectResponseTypeRefZecoTerm() {
+	private TypeRef<ObjectResponse<ZECOTerm>> getObjectResponseTypeRefZecoTerm() {
 		return new TypeRef<>() {
 		};
 	}

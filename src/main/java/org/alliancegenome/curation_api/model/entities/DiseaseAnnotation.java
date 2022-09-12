@@ -43,6 +43,13 @@ import lombok.*;
 public abstract class DiseaseAnnotation extends Association {
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "alliancecurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@Column(unique = true)
+	@JsonView({View.FieldsOnly.class})
+	@EqualsAndHashCode.Include
+	private String allianceCurie;
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true)
 	@JsonView({View.FieldsOnly.class})
@@ -71,7 +78,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
-	private List<EcoTerm> evidenceCodes;
+	private List<ECOTerm> evidenceCodes;
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

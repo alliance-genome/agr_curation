@@ -6,15 +6,25 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.exceptions.*;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
+import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.GeneDiseaseAnnotationValidator;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
@@ -76,7 +86,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	
 	private GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) throws ObjectValidationException {
 		GeneDiseaseAnnotation annotation;
-		if (dto.getSubject() == null) {
+		if (StringUtils.isBlank(dto.getSubject())) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject Gene - skipping");
 		}
 		Gene gene = geneDAO.find(dto.getSubject());
@@ -85,7 +95,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		}
 		
 		String annotationId = dto.getModEntityId();
-		if (annotationId == null) {
+		if (StringUtils.isBlank(annotationId)) {
 			annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto);
 		}
 		
@@ -98,16 +108,17 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 			annotation = annotationList.getResults().get(0);
 		}
 		
-		if (dto.getSgdStrainBackground() != null) {
-			AffectedGenomicModel sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+		AffectedGenomicModel sgdStrainBackground = null;
+		if (StringUtils.isNotBlank(dto.getSgdStrainBackground())) {
+			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
 			if (sgdStrainBackground == null) {
 				throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
 			if (!sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
 				throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			annotation.setSgdStrainBackground(sgdStrainBackground);
 		}
+		annotation.setSgdStrainBackground(sgdStrainBackground);
 		
 		annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
 		if (annotation == null) return null;

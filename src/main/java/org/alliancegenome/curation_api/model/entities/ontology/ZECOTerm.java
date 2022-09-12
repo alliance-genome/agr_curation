@@ -14,7 +14,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion("1.2.1")
-public class XcoTerm extends ExperimentalConditionOntologyTerm {
+@AGRCurationSchemaVersion("1.2.4")
+public class ZECOTerm extends ExperimentalConditionOntologyTerm {
 
 }

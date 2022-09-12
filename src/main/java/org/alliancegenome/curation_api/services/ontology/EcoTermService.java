@@ -10,12 +10,12 @@ import javax.transaction.Transactional;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
 import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.EcoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
 @RequestScoped
-public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO> {
+public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO> {
 	
 	@Inject EcoTermDAO ecoTermDAO;
 	@Inject VocabularyDAO vocabularyDAO;
@@ -36,7 +36,7 @@ public class EcoTermService extends BaseOntologyTermService<EcoTerm, EcoTermDAO>
 		if(res != null && res.getTotalResults() == 1) {
 			List<VocabularyTerm> ecoVocabularyTerms = res.getResults().get(0).getMemberTerms();
 			ecoVocabularyTerms.forEach((ecoVocabularyTerm) -> {
-				EcoTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());
+				ECOTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());
 				if (ecoTerm != null) {
 					ecoTerm.setAbbreviation(ecoVocabularyTerm.getAbbreviation());
 					List<String> subsets = ecoTerm.getSubsets();

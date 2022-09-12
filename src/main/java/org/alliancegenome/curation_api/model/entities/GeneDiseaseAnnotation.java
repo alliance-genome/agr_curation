@@ -24,7 +24,7 @@ import lombok.*;
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
 @JsonTypeName("GeneDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)

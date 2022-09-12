@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -73,7 +74,7 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 
 	private AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {
 		AGMDiseaseAnnotation annotation;
-		if (dto.getSubject() == null) {
+		if (StringUtils.isBlank(dto.getSubject())) {
 			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject AGM - skipping");
 		}
 
@@ -83,7 +84,7 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 
 		String annotationId = dto.getModEntityId();
-		if (annotationId == null) {
+		if (StringUtils.isBlank(annotationId)) {
 			annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(agm.getTaxon().getCurie()).getCurieID(dto);
 		}
 		SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
@@ -104,33 +105,39 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 		annotation.setDiseaseRelation(diseaseRelation);
 
-		if (dto.getInferredGene() != null) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+		Gene inferredGene = null;
+		if (StringUtils.isNotBlank(dto.getInferredGene())) {
+			inferredGene = geneDAO.find(dto.getInferredGene());
 			if (inferredGene == null)
 				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
-			annotation.setInferredGene(inferredGene);
 		}
-
-		if (dto.getAssertedGene() != null) {
-			Gene assertedGene = geneDAO.find(dto.getAssertedGene());
+		annotation.setInferredGene(inferredGene);
+		
+		Gene assertedGene = null;
+		if (StringUtils.isNotBlank(dto.getAssertedGene())) {
+			assertedGene = geneDAO.find(dto.getAssertedGene());
 			if (assertedGene == null)
 				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
-			annotation.setAssertedGene(assertedGene);
 		}
-
-		if (dto.getInferredAllele() != null) {
-			Allele inferredAllele = alleleDAO.find(dto.getInferredAllele());
+		annotation.setAssertedGene(assertedGene);
+		
+		Allele inferredAllele = null;
+		if (StringUtils.isNotBlank(dto.getInferredAllele())) {
+			inferredAllele = alleleDAO.find(dto.getInferredAllele());
 			if (inferredAllele == null)
 				throw new ObjectValidationException(dto, "Invalid inferred allele for " + annotationId + " - skipping");
-			annotation.setInferredAllele(inferredAllele);
 		}
-
-		if (dto.getAssertedAllele() != null) {
-			Allele assertedAllele = alleleDAO.find(dto.getAssertedAllele());
+		annotation.setInferredAllele(inferredAllele);
+		
+		Allele assertedAllele = null;
+		if (StringUtils.isNotBlank(dto.getAssertedAllele())) {
+			assertedAllele = alleleDAO.find(dto.getAssertedAllele());
 			if (assertedAllele == null)
 				throw new ObjectValidationException(dto, "Invalid asserted allele for " + annotationId + " - skipping");
-			annotation.setAssertedAllele(assertedAllele);
-		}
+		} 
+		annotation.setAssertedAllele(assertedAllele);
+		
+		
 		return annotation;
 	}
 

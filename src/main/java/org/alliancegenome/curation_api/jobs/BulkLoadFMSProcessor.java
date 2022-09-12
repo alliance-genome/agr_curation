@@ -21,8 +21,8 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 		BulkFMSLoad bulkFMSLoad = load.body();
 		startLoad(bulkFMSLoad);
 
-		if(bulkFMSLoad.getDataType() != null && bulkFMSLoad.getDataSubType() != null) {
-			List<DataFile> files = fmsDataFileService.getDataFiles(bulkFMSLoad.getDataType(), bulkFMSLoad.getDataSubType());
+		if(bulkFMSLoad.getFmsDataType() != null && bulkFMSLoad.getFmsDataSubType() != null) {
+			List<DataFile> files = fmsDataFileService.getDataFiles(bulkFMSLoad.getFmsDataType(), bulkFMSLoad.getFmsDataSubType());
 
 			if(files.size() == 1) {
 				DataFile df = files.get(0);
@@ -33,8 +33,8 @@ public class BulkLoadFMSProcessor extends BulkLoadProcessor {
 				endLoad(bulkFMSLoad, null, JobStatus.FINISHED);
 			} else {
 				log.warn("Files: " + files);
-				log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType());
-				endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getDataType() + " " + bulkFMSLoad.getDataSubType(), JobStatus.FAILED);
+				log.warn("Issue pulling files from the FMS: " + bulkFMSLoad.getFmsDataType() + " " + bulkFMSLoad.getFmsDataSubType());
+				endLoad(bulkFMSLoad, "Issue pulling files from the FMS: " + bulkFMSLoad.getFmsDataType() + " " + bulkFMSLoad.getFmsDataSubType(), JobStatus.FAILED);
 			}
 			
 		} else {
