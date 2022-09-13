@@ -800,7 +800,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-					autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
+					autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='doterm'
