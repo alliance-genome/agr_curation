@@ -483,7 +483,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-    			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 
 	}
 
