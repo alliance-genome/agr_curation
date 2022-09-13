@@ -27,6 +27,6 @@ public class BiologicalEntity extends CurieAuditedObject {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private NCBITaxonTerm taxon;
-	
+
 }
 
