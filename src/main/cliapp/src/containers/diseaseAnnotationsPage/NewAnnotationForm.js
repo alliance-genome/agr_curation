@@ -168,7 +168,7 @@ export const NewAnnotationForm = ({
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="annotationDisease">Disease</label>
 							<AutocompleteEditor
-								autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"]}
+								autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="annotationDisease"
 								label="Disease"
