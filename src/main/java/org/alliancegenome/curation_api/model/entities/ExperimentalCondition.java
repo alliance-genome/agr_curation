@@ -22,14 +22,14 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class ExperimentalCondition extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
-	private ZecoTerm conditionClass;
+	private ZECOTerm conditionClass;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "conditionSummary_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")

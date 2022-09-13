@@ -26,8 +26,8 @@ public class BulkLoadFileService extends BaseEntityCrudService<BulkLoadFile, Bul
 	@Transactional
 	public ObjectResponse<BulkLoadFile> restartLoad(Long id) {
 		BulkLoadFile load = bulkLoadFileDAO.find(id);
-		if(load.getStatus().isNotRunning()) {
-			load.setStatus(JobStatus.FORCED_PENDING);
+		if(load.getBulkloadStatus().isNotRunning()) {
+			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 		}
 		return new ObjectResponse<BulkLoadFile>(load);
 	}

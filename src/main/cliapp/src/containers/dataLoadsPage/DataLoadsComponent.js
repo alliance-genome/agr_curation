@@ -137,10 +137,10 @@ export const DataLoadsComponent = () => {
 	const loadFileActionBodyTemplate = (rowData) => {
 		let ret = [];
 
-		if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
+		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
 			ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
 		}
-		if(!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
+		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
 			ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
 		}
 
@@ -153,7 +153,7 @@ export const DataLoadsComponent = () => {
 
 		ret.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
 
-		if (!rowData.status || rowData.status === "FINISHED" || rowData.status === "FAILED" || rowData.status === "STOPPED") {
+		if (!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
 			ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
 		}
 
@@ -178,9 +178,9 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
-	const urlBodyTemplate = (rowData) => {
-		if (rowData.url) {
-			return <a href={rowData.url}>Source Download URL</a>;
+	const bulkloadUrlBodyTemplate = (rowData) => {
+		if (rowData.bulkloadUrl) {
+			return <a href={rowData.bulkloadUrl}>Source Download URL</a>;
 		}
 	};
 
@@ -224,35 +224,35 @@ export const DataLoadsComponent = () => {
 			ret.push(<Column key="cronSchedule" field="cronSchedule" header="Cron Schedule" />);
 			ret.push(<Column key="nextRun" field="nextRun" header="Next Run" />);
 			if (showFMSLoad) {
-				ret.push(<Column key="dataType" field="dataType" header="FMS Data Type" />);
-				ret.push(<Column key="dataSubType" field="dataSubType" header="FMS Data Sub Type" />);
+				ret.push(<Column key="fmsDataType" field="fmsDataType" header="FMS Data Type" />);
+				ret.push(<Column key="fmsDataSubType" field="fmsDataSubType" header="FMS Data Sub Type" />);
 			}
 			if (showURLLoad) {
-				ret.push(<Column key="url" body={urlBodyTemplate} header="Data URL" />);
+				ret.push(<Column key="bulkloadUrl" body={bulkloadUrlBodyTemplate} header="Data URL" />);
 			}
 		}
 		if (showManualLoad) {
-			ret.push(<Column key="dataType2" field="dataType" header="Load Data Type" />);
+			ret.push(<Column key="fmsDataType2" field="fmsDataType" header="Load Data Type" />);
 		}
 
 		return ret;
 	};
 
-	const statusTemplate = (rowData) => {
+	const bulkloadStatusTemplate = (rowData) => {
 		let styleClass = 'p-button-text p-button-plain';
-		if (rowData.status === 'FAILED') { styleClass = "p-button-danger"; }
-		if (rowData.status && (
-				rowData.status.endsWith('STARTED') ||
-				rowData.status.endsWith('RUNNING') ||
-				rowData.status.endsWith('PENDING')
+		if (rowData.bulkloadStatus === 'FAILED') { styleClass = "p-button-danger"; }
+		if (rowData.bulkloadStatus && (
+				rowData.bulkloadStatus.endsWith('STARTED') ||
+				rowData.bulkloadStatus.endsWith('RUNNING') ||
+				rowData.bulkloadStatus.endsWith('PENDING')
 			)) { styleClass = "p-button-success"; }
 
 		return (
-			<Button label={rowData.status} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
+			<Button label={rowData.bulkloadStatus} tooltip={rowData.errorMessage} className={`p-button-rounded ${styleClass}`} />
 		);
 	};
 
-	const hisotryTable = (file) => {
+	const historyTable = (file) => {
 		return (
 			<div className="card">
 				<DataTable key="historyTable" value={file.history} responsiveLayout="scroll">
@@ -273,14 +273,14 @@ export const DataLoadsComponent = () => {
 			<div className="card">
 				<DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll"
 					expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
-					rowExpansionTemplate={hisotryTable} dataKey="id">
+					rowExpansionTemplate={historyTable} dataKey="id">
 					<Column expander style={{ width: '3em' }} />
 					<Column field="md5Sum" header="MD5 Sum" />
 					<Column field="fileSize" header="Compressed File Size" />
 					<Column field="recordCount" header="Record Count" />
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
-					<Column field="dateUpdated" header="Last Loaded" />
-					<Column field="status" body={statusTemplate} header="Status" />
+					<Column field="dateLastLoaded" header="Last Loaded" />
+					<Column field="bulkloadStatus" body={bulkloadStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>
@@ -298,7 +298,7 @@ export const DataLoadsComponent = () => {
 					<Column field="type" header="Bulk Load Type" />
 					<Column field="backendBulkLoadType" body={backendBulkLoadTypeTemplate} header="Backend Bulk Load Type" />
 					{dynamicColumns(group.loads)}
-					<Column field="status" body={statusTemplate} header="Status" />
+					<Column field="status" body={bulkloadStatusTemplate} header="Status" />
 					<Column key="loadAction" body={loadActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
 				</DataTable>
 			</div>

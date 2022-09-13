@@ -17,7 +17,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name="Molecule", description="POJO that represents the Molecule")
 
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class Molecule extends ChemicalTerm {
 
 }

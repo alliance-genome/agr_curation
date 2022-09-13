@@ -40,7 +40,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		
 		Reference dbEntity = referenceDAO.find(uiEntity.getCurie());
 		
-		if (dbEntity == null || dbEntity.getObsolete()) {
+		if (dbEntity == null) {
 			dbEntity = referenceService.retrieveFromLiteratureService(uiEntity.getCurie());
 			if (dbEntity == null) {
 				addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
@@ -48,27 +48,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 			}
 		}
 		
-		Boolean internal = validateInternal(uiEntity);
-		dbEntity.setInternal(internal);
-		
-		dbEntity.setDateCreated(uiEntity.getDateCreated());
-		
-		if (uiEntity.getCreatedBy() != null) {
-			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
-			dbEntity.setCreatedBy(createdBy);
-		}
-
-		LoggedInPerson updatedBy = loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail());
-		dbEntity.setUpdatedBy(updatedBy);
-		
-		dbEntity.setDateUpdated(OffsetDateTime.now());
-		
-		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);
-		
-		if (dbEntity.getObsolete() && !uiEntity.getCurie().equals(dbEntity.getCurie())) {
-			addMessageResponse("curie", ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
+		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);		
 		
 		if (response.hasErrors()) {
 			if (throwError) {

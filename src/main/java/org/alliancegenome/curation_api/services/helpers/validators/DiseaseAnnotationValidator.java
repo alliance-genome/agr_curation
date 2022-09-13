@@ -66,15 +66,15 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 
 
-	public List<EcoTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+	public List<ECOTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "evidence";
 		if (CollectionUtils.isEmpty(uiEntity.getEvidenceCodes())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		List<EcoTerm> validEvidenceCodes = new ArrayList<>();
-		for (EcoTerm ec : uiEntity.getEvidenceCodes()) {
-			EcoTerm evidenceCode = ecoTermDAO.find(ec.getCurie());
+		List<ECOTerm> validEvidenceCodes = new ArrayList<>();
+		for (ECOTerm ec : uiEntity.getEvidenceCodes()) {
+			ECOTerm evidenceCode = ecoTermDAO.find(ec.getCurie());
 			if (evidenceCode == null ) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
@@ -359,7 +359,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		DOTerm term = validateObject(uiEntity, dbEntity);
 		dbEntity.setObject(term);
 
-		List<EcoTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
+		List<ECOTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
 		dbEntity.setEvidenceCodes(terms);
 
 		List<Gene> genes = validateWith(uiEntity, dbEntity);

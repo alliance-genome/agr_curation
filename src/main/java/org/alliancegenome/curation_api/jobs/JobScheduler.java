@@ -43,19 +43,19 @@ public class JobScheduler {
 			if(g.getLoads().size() > 0) {
 				for(BulkLoad b: g.getLoads()) {
 					for(BulkLoadFile bf: b.getLoadFiles()) {
-						if(bf.getStatus() == null || bf.getStatus().isRunning() || bf.getStatus().isStarted() || bf.getLocalFilePath() != null) {
+						if(bf.getBulkloadStatus() == null || bf.getBulkloadStatus().isRunning() || bf.getBulkloadStatus().isStarted() || bf.getLocalFilePath() != null) {
 							new File(bf.getLocalFilePath()).delete();
 							bf.setLocalFilePath(null);
-							bf.setStatus(JobStatus.FAILED);
+							bf.setBulkloadStatus(JobStatus.FAILED);
 							bulkLoadFileDAO.merge(bf);
 						}
 					}
-					if(b.getStatus() == null) {
-						b.setStatus(JobStatus.STOPPED);
+					if(b.getBulkloadStatus() == null) {
+						b.setBulkloadStatus(JobStatus.STOPPED);
 						bulkLoadDAO.merge(b);
 					}
-					if(b.getStatus().isRunning()) {
-						b.setStatus(JobStatus.FAILED);
+					if(b.getBulkloadStatus().isRunning()) {
+						b.setBulkloadStatus(JobStatus.FAILED);
 						bulkLoadDAO.merge(b);
 					}
 				}
@@ -89,13 +89,13 @@ public class JobScheduler {
 										if(lastCheck.isBefore(nextExecution) && start.isAfter(nextExecution)) {
 											Log.info("Need to run Cron: " + bsl.getName());
 											bsl.setSchedulingErrorMessage(null);
-											bsl.setStatus(JobStatus.SCHEDULED_PENDING);
+											bsl.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
 											bulkLoadDAO.merge(bsl);
 										}
 									}
 								} catch (Exception e) {
 									bsl.setSchedulingErrorMessage(e.getLocalizedMessage());
-									bsl.setStatus(JobStatus.FAILED);
+									bsl.setBulkloadStatus(JobStatus.FAILED);
 									Log.error(e.getLocalizedMessage());
 									bulkLoadDAO.merge(bsl);
 								}
@@ -113,9 +113,9 @@ public class JobScheduler {
 		SearchResponse<BulkLoadGroup> groups = groupDAO.findAll(null);
 		for(BulkLoadGroup group: groups.getResults()) {
 			for(BulkLoad load: group.getLoads()) {
-				if(load.getStatus() == null) load.setStatus(JobStatus.FINISHED);
-				if(load.getStatus().isPending()) {
-					load.setStatus(load.getStatus().getNextStatus());
+				if(load.getBulkloadStatus() == null) load.setBulkloadStatus(JobStatus.FINISHED);
+				if(load.getBulkloadStatus().isPending()) {
+					load.setBulkloadStatus(load.getBulkloadStatus().getNextStatus());
 					bulkLoadDAO.merge(load);
 					bus.send(load.getClass().getSimpleName(), load);
 				}
@@ -127,9 +127,9 @@ public class JobScheduler {
 	public void runFileJobs() {
 		SearchResponse<BulkLoadFile> res = bulkLoadFileDAO.findAll(null);
 		for(BulkLoadFile file: res.getResults()) {
-			if(file.getStatus() == null) file.setStatus(JobStatus.FINISHED);
-			if(file.getStatus().isPending()) {
-				file.setStatus(file.getStatus().getNextStatus());
+			if(file.getBulkloadStatus() == null) file.setBulkloadStatus(JobStatus.FINISHED);
+			if(file.getBulkloadStatus().isPending()) {
+				file.setBulkloadStatus(file.getBulkloadStatus().getNextStatus());
 				file.setErrorMessage(null);
 				bulkLoadFileDAO.merge(file);
 				bus.send("bulkloadfile", file);
