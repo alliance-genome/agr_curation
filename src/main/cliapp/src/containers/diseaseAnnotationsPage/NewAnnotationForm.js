@@ -9,6 +9,7 @@ import { FormErrorMessageComponent } from "../../components/FormErrorMessageComp
 import { classNames } from "primereact/utils";
 import {DiseaseAnnotationService} from "../../service/DiseaseAnnotationService";
 import {Splitter, SplitterPanel} from "primereact/splitter";
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 
 export const NewAnnotationForm = ({
 									 newAnnotationState,
@@ -69,7 +70,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const onObjectChange = (event, setFieldValue) => {
-		if(event.target && event.target.value!='' & event.target.value!=null){
+		if(event.target && event.target.value!=='' & event.target.value!=null){
 			setIsEnabled(true);
 		}else{
 			setIsEnabled(false);
@@ -210,9 +211,12 @@ export const NewAnnotationForm = ({
 								endpoint='literature-reference'
 								filterName='curieFilter'
 								fieldName='singleReference'
+								isReference={true}
 								value={newAnnotation.singleReference}
 								passedOnChange={onObjectChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
+								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
 						</SplitterPanel>
