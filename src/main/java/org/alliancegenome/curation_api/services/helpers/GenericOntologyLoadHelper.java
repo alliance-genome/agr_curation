@@ -1,23 +1,39 @@
 package org.alliancegenome.curation_api.services.helpers;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
-import org.semanticweb.owlapi.model.*;
-import org.semanticweb.owlapi.reasoner.*;
+import org.semanticweb.owlapi.model.IRI;
+import org.semanticweb.owlapi.model.OWLAnnotationValue;
+import org.semanticweb.owlapi.model.OWLClass;
+import org.semanticweb.owlapi.model.OWLLiteral;
+import org.semanticweb.owlapi.model.OWLObjectVisitor;
+import org.semanticweb.owlapi.model.OWLOntology;
+import org.semanticweb.owlapi.model.OWLOntologyManager;
+import org.semanticweb.owlapi.reasoner.OWLReasoner;
+import org.semanticweb.owlapi.reasoner.OWLReasonerFactory;
 import org.semanticweb.owlapi.reasoner.structural.StructuralReasonerFactory;
 import org.semanticweb.owlapi.search.EntitySearcher;
 
 import io.quarkus.logging.Log;
 
 public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObjectVisitor {
-
+	
 	private OWLReasonerFactory reasonerFactory = new StructuralReasonerFactory();
 	//private OWLDataFactory df = OWLManager.getOWLDataFactory();
 	private OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
@@ -98,8 +114,8 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 	public Boolean hasChebiXref(T term) {
 
 		if (CollectionUtils.isNotEmpty(term.getSynonyms())) {
-			for (String synonym : term.getSynonyms()) {
-				if (synonym.startsWith("CHEBI:")) {
+			for (Synonym synonym : term.getSynonyms()) {
+				if (synonym.getName().startsWith("CHEBI:")) {
 					return true;
 				}
 			}
@@ -282,7 +298,9 @@ public class GenericOntologyLoadHelper<T extends OntologyTerm> implements OWLObj
 			}
 			else if(key.equals("hasExactSynonym") || key.equals("hasRelatedSynonym")) {
 				if(term.getSynonyms() == null) term.setSynonyms(new ArrayList<>());
-				term.getSynonyms().add(getString(annotation.getValue()));
+				Synonym synonym = new Synonym();
+				synonym.setName(getString(annotation.getValue()));
+				term.getSynonyms().add(synonym);
 			}
 			else if(key.equals("hasAlternativeId")) {
 				if(term.getSecondaryIdentifiers() == null) term.setSecondaryIdentifiers(new ArrayList<>());

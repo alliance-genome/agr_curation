@@ -18,8 +18,8 @@ public class BulkLoadURLProcessor extends BulkLoadProcessor {
 		BulkURLLoad bulkURLLoad = load.body();
 		startLoad(bulkURLLoad);
 		
-		if(bulkURLLoad.getUrl() != null && bulkURLLoad.getUrl().length() > 0) {
-			String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getUrl());
+		if(bulkURLLoad.getBulkloadUrl() != null && bulkURLLoad.getBulkloadUrl().length() > 0) {
+			String filePath = fileHelper.saveIncomingURLFile(bulkURLLoad.getBulkloadUrl());
 			String localFilePath = fileHelper.compressInputFile(filePath);
 			processFilePath(bulkURLLoad, localFilePath);
 			endLoad(bulkURLLoad, null, JobStatus.FINISHED);

@@ -1106,7 +1106,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
+			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionStatement"],
 			nonNullFields: ["conditionRelations.handle"]
 		},
 	},
@@ -1120,7 +1120,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionSummary" ],
+			fields: ["conditionRelations.conditions.conditionStatement" ],
 			nullFields: ["conditionRelations.handle"]
 		},
 	},
@@ -1298,6 +1298,8 @@ export const DiseaseAnnotationsTable = () => {
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
 					errorObject={{errorMessages, setErrorMessages}}
+					headerButtons={headerButtons}
+					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
 					headerButtons={headerButtons}

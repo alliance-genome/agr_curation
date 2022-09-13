@@ -26,8 +26,8 @@ public class BulkURLLoadService extends BaseEntityCrudService<BulkURLLoad, BulkU
 	@Transactional
 	public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
 		BulkURLLoad load = bulkURLLoadDAO.find(id);
-		if(load.getStatus().isNotRunning()) {
-			load.setStatus(JobStatus.FORCED_PENDING);
+		if(load.getBulkloadStatus().isNotRunning()) {
+			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 		}
 		return new ObjectResponse<BulkURLLoad>(load);
 	}

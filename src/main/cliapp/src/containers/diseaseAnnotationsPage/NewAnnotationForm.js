@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, {useRef, useState} from "react";
 import { Dialog } from "primereact/dialog";
 import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
@@ -9,6 +9,7 @@ import { FormErrorMessageComponent } from "../../components/FormErrorMessageComp
 import { classNames } from "primereact/utils";
 import {DiseaseAnnotationService} from "../../service/DiseaseAnnotationService";
 import {Splitter, SplitterPanel} from "primereact/splitter";
+import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 
 export const NewAnnotationForm = ({
 									 newAnnotationState,
@@ -23,6 +24,7 @@ export const NewAnnotationForm = ({
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
 	const { newAnnotation, errorMessages, submitted, newAnnotationDialog } = newAnnotationState;
+	const [isEnabled, setIsEnabled] = useState(false);
 
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
@@ -34,6 +36,7 @@ export const NewAnnotationForm = ({
 
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: "RESET" });
+		setIsEnabled(false);
 	};
 
 	const handleSubmit = (event) => {
@@ -57,14 +60,21 @@ export const NewAnnotationForm = ({
 
 	const handleClear = (event) => {
 		newAnnotationDispatch({ type: "CLEAR" });
+		setIsEnabled(false);
 	}
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event);
 		newAnnotationDispatch({ type: "CLEAR" });
+		setIsEnabled(false);
 	}
 
 	const onObjectChange = (event, setFieldValue) => {
+		if(event.target && event.target.value!=='' & event.target.value!=null){
+			setIsEnabled(true);
+		}else{
+			setIsEnabled(false);
+		}
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -107,11 +117,11 @@ export const NewAnnotationForm = ({
 			<div className="p-fluid p-formgrid p-grid">
 				<div className="p-field p-col">
 					<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
-					<Button label="Save & Add Another" icon="pi pi-check" className="p-button-text" onClick={handleSubmitAndAdd} />
+					<Button label="Save & Add Another" icon="pi pi-check" className="p-button-text" disabled={!isEnabled} onClick={handleSubmitAndAdd} />
 				</div>
 				<div className="p-field p-col">
 					<Button label="Clear" icon="pi pi-check" className="p-button-text" onClick={handleClear} />
-					<Button label="Save & Close" icon="pi pi-check" className="p-button-text" onClick={handleSubmit} />
+					<Button label="Save & Close" icon="pi pi-check" className="p-button-text" disabled={!isEnabled} onClick={handleSubmit} />
 				</div>
 			</div>
 		</>
@@ -125,7 +135,7 @@ export const NewAnnotationForm = ({
 				<form>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="subject">Subject</label>
+							<label htmlFor="subject"><font color={'red'}>*</font>Subject</label>
 							<AutocompleteEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
@@ -141,7 +151,7 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="diseaseRelation">Disease Relation</label>
+							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
 							<Dropdown
 								options={diseaseRelationsTerms}
 								value={newAnnotation.diseaseRelation}
@@ -153,28 +163,28 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationNegation">Negation</label>
+							<label htmlFor="negated">Negation</label>
 							<Dropdown
-								name="annotationNegation"
-								value={newAnnotation.annotationNegation}
+								name="negated"
+								value={newAnnotation.negated}
 								options={negatedTerms}
 								optionLabel='text'
 								optionValue='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.annotationNegation})}
+								className={classNames({'p-invalid': submitted && errorMessages.negated})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationNegation"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationDisease">Disease</label>
+							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
 							<AutocompleteEditor
 								autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
-								name="annotationDisease"
+								name="object"
 								label="Disease"
 								endpoint='doterm'
 								filterName='diseaseFilter'
-								fieldName='annotationDisease'
+								fieldName='object'
 								otherFilters={{
 									obsoleteFilter: {
 										"obsolete": {
@@ -182,64 +192,67 @@ export const NewAnnotationForm = ({
 										}
 									}
 								}}
-								value={newAnnotation.annotationDisease}
+								value={newAnnotation.object}
 								passedOnChange={onDiseaseChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.annotationDisease})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationDisease"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
 						</SplitterPanel>
 					</Splitter>
 
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationReference">Reference</label>
+							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
 							<AutocompleteEditor
 								autocompleteFields={["curie", "cross_references.curie"]}
 								searchService={searchService}
-								name="annotationReference"
+								name="singleReference"
 								label="Reference"
 								endpoint='literature-reference'
 								filterName='curieFilter'
-								fieldName='annotationReference'
-								value={newAnnotation.annotationReference}
+								fieldName='singleReference'
+								isReference={true}
+								value={newAnnotation.singleReference}
 								passedOnChange={onObjectChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.annotationReference})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
+								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationReference"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationEvidenceCode">Evidence Code</label>
+							<label htmlFor="evidence"><font color={'red'}>*</font>Evidence Code</label>
 							<AutocompleteEditor
 								autocompleteFields={["curie", "name", "abbreviation"]}
 								searchService={searchService}
-								name="annotationEvidenceCode"
+								name="evidence"
 								label="Evidence Code"
 								endpoint='ecoterm'
 								filterName='evidenceFilter'
-								fieldName='annotationEvidenceCode'
+								fieldName='evidence'
 								isMultiple={true}
-								value={newAnnotation.annotationEvidenceCode}
+								value={newAnnotation.evidence}
 								passedOnChange={onArrayFieldChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.annotationEvidenceCode})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.evidence})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationEvidenceCode"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidence"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="annotationWith">With</label>
+							<label htmlFor="with">With</label>
 							<AutocompleteEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
-								name="annotationWith"
+								name="with"
 								label="With"
 								endpoint='gene'
 								filterName='withFilter'
-								fieldName='annotationWith'
+								fieldName='with'
 								isMultiple={true}
-								value={newAnnotation.annotationWith}
+								value={newAnnotation.with}
 								passedOnChange={onArrayFieldChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.annotationWith})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationWith"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
 						</SplitterPanel>
 					</Splitter>
 				</form>

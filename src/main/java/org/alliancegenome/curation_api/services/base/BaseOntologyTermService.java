@@ -1,6 +1,10 @@
 package org.alliancegenome.curation_api.services.base;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -9,10 +13,14 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
+import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.CrossReferenceService;
 import org.apache.commons.collections4.map.HashedMap;
 
@@ -20,6 +28,8 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 
 	@Inject
 	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	SynonymDAO synonymDAO;
 	@Inject
 	CrossReferenceService crossReferenceService;
 	
@@ -201,30 +211,39 @@ public abstract class BaseOntologyTermService<E extends OntologyTerm, D extends 
 	}
 	
 	private void handleSynonyms(OntologyTerm dbTerm, OntologyTerm incomingTerm) {
-		Set<String> currentSynonyms;
+		Set<Synonym> currentSynonyms;
 		if(dbTerm.getSynonyms() == null) {
 			currentSynonyms = new HashSet<>();
 			dbTerm.setSynonyms(new ArrayList<>());
 		} else {
 			currentSynonyms = dbTerm.getSynonyms().stream().collect(Collectors.toSet());
 		}
+		List<String> currentSynonymNames = currentSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
 		
-		Set<String> newSynonyms;
+		Set<Synonym> newSynonyms;
 		if(incomingTerm.getSynonyms() == null) {
 			newSynonyms = new HashSet<>();
 		} else {
 			newSynonyms = incomingTerm.getSynonyms().stream().collect(Collectors.toSet());
 		}
+		List<String> newSynonymNames = currentSynonyms.stream().map(Synonym::getName).collect(Collectors.toList());
 		
-		newSynonyms.forEach(id -> {
-			if(!currentSynonyms.contains(id)) {
-				dbTerm.getSynonyms().add(id);
+		newSynonyms.forEach(syn -> {
+			if(!currentSynonymNames.contains(syn.getName())) {
+				SearchResponse<Synonym> response = synonymDAO.findByField("name", syn.getName());
+				Synonym synonym;
+				if (response == null) {
+					synonym = synonymDAO.persist(syn);
+				} else {
+					synonym = response.getSingleResult();
+				}
+				dbTerm.getSynonyms().add(synonym);
 			}
 		});
 		
-		currentSynonyms.forEach(id -> {
-			if(!newSynonyms.contains(id)) {
-				dbTerm.getSynonyms().remove(id);
+		currentSynonyms.forEach(syn -> {
+			if(!newSynonymNames.contains(syn.getName())) {
+				dbTerm.getSynonyms().remove(syn);
 			}
 		});
 
