@@ -47,7 +47,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 				addMessageResponse("Could not find Note with ID: [" + id + "]");
 				throw new ApiErrorException(response);
 			}
-		}else {
+		} else {
 			dbEntity = new Note();
 			newEntity = true;
 		}
