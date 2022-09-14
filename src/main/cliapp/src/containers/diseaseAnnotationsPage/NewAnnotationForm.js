@@ -42,8 +42,6 @@ export const NewAnnotationForm = ({
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
-		if(newAnnotation.negated === null)
-			newAnnotation.negated = false;
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
 				setNewDiseaseAnnotation(data.data.entity);

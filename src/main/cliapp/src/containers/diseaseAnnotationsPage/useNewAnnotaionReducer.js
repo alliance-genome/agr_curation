@@ -6,7 +6,7 @@ const initialNewAnnotationState = {
 		diseaseRelation: {},
 		singleReference : {},
 		object : {},
-		negated: null,
+		negated: false,
 		evidence : [],
 		with: []
 	},
