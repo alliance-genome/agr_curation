@@ -183,7 +183,7 @@ public class AlleleBulkUploadITCase {
 			body("totalResults", is(1)). 
 			body("results", hasSize(1)).
 			body("results[0].curie", is("ALLELETEST:Allele0004")); // Entry not loaded but existing not deleted
-			                                                                   // as different taxon ID
+																					// as different taxon ID
 	}
 	
 	@Test
@@ -352,7 +352,7 @@ public class AlleleBulkUploadITCase {
 			body("totalResults", is(1)). 
 			body("results", hasSize(1)).
 			body("results[0].curie", is("ALLELETEST:Allele0010")); // Entry not loaded but existing not deleted
-			                                                                   // as different taxon ID
+																			   // as different taxon ID
 	}
 	
 	@Test
