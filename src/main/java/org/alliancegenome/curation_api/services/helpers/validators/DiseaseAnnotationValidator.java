@@ -1,20 +1,42 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.constants.*;
-import org.alliancegenome.curation_api.dao.*;
-import org.alliancegenome.curation_api.dao.ontology.*;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
-import org.alliancegenome.curation_api.response.*;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
+import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.NoteService;
+import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
-import org.apache.commons.collections.*;
-import org.apache.commons.lang3.*;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
@@ -220,18 +242,32 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 	}
 
 	public List<Note> validateRelatedNotes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+		String field = "relatedNotes";
+		
 		List<Note> validatedNotes = new ArrayList<Note>();
 		if (CollectionUtils.isNotEmpty(uiEntity.getRelatedNotes())) {
 			for (Note note : uiEntity.getRelatedNotes()) {
 				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 				if (noteResponse.getEntity() == null) {
 					Map<String, String> errors = noteResponse.getErrorMessages();
-					for (String field : errors.keySet()) {
-						addMessageResponse("relatedNotes", field + " - " + errors.get(field));
+					for (String noteField : errors.keySet()) {
+						addMessageResponse(field, noteField + " - " + errors.get(noteField));
 					}
 					return null;
 				}
-				validatedNotes.add(noteResponse.getEntity());
+				note = noteResponse.getEntity();
+				
+				// If present, note reference should match DA reference
+				if (CollectionUtils.isNotEmpty(note.getReferences())) {
+					for (Reference noteRef : note.getReferences()) {
+						if (!noteRef.getCurie().equals(dbEntity.getSingleReference().getCurie())) {
+							addMessageResponse(field, "references - " + ValidationConstants.INVALID_MESSAGE);
+							return null;
+						}
+					}
+				}
+				
+				validatedNotes.add(note);
 			}
 		}
 
@@ -362,6 +398,9 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		List<ECOTerm> terms = validateEvidenceCodes(uiEntity, dbEntity);
 		dbEntity.setEvidenceCodes(terms);
 
+		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
+		dbEntity.setSingleReference(singleReference);
+
 		List<Gene> genes = validateWith(uiEntity, dbEntity);
 		dbEntity.setWith(genes);
 
@@ -390,17 +429,14 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);
 		dbEntity.setConditionRelations(conditionRelations);
 
-		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
-		dbEntity.setRelatedNotes(relatedNotes);
-
 		if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers())) {
 			dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
 		} else {
 			dbEntity.setDiseaseQualifiers(null);
 		}
 
-		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
-		dbEntity.setSingleReference(singleReference);
+		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
+		dbEntity.setRelatedNotes(relatedNotes);
 
 		String uniqueId = validateUniqueId(uiEntity, dbEntity);
 		dbEntity.setUniqueId(uniqueId);

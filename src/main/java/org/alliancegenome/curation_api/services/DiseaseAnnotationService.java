@@ -361,6 +361,13 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				Note relatedNote = noteService.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 				if (relatedNote == null)
 					throw new ObjectValidationException(dto, "Invalid note attached to disease annotation " + annotation.getUniqueId() + " - skipping annotation");
+				if (CollectionUtils.isNotEmpty(noteDTO.getReferences())) {
+					for (String noteRef : noteDTO.getReferences()) {
+						if (!noteRef.equals(dto.getSingleReference())) {
+							throw new ObjectValidationException(dto, "Note attached to disease annotation " + annotation.getUniqueId() + " has reference that doesn't match the annotation reference - skipping annotation");
+						}
+					}
+				}
 				notesToPersist.add(relatedNote);
 			}
 			notesToPersist.forEach(note -> noteDAO.persist(note));

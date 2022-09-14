@@ -3199,6 +3199,29 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("totalResults", is(2));
 	}
 	
+	@Test
+	@Order(127)
+	public void diseaseAnnotationMismatchedNoteReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/127_mismatched_note_reference.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(2));
+	}
+	
 	private void loadRequiredEntities() throws Exception {
 		loadDOTerm();
 		loadECOTerm();

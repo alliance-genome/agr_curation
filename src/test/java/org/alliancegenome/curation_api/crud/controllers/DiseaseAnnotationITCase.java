@@ -154,8 +154,8 @@ public class DiseaseAnnotationITCase {
 		testDate = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 		noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
 		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
-		relatedNotes.add(createNote(noteType, "Test text", false));
-		relatedNotes.add(createNote(noteType, "Test text 2", false));
+		relatedNotes.add(createNote(noteType, "Test text", false, null));
+		relatedNotes.add(createNote(noteType, "Test text 2", false, null));
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
 		conditionRelation = createConditionRelation(conditionRelationType, experimentalCondition);
@@ -3735,6 +3735,160 @@ public class DiseaseAnnotationITCase {
 				body("errorMessages", is(aMapWithSize(1))).
 				body("errorMessages.evidence", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
+	
+	@Test
+	@Order(89)
+	public void editWithMatchingNoteReference() {
+		
+		List<Note> mismatchedRefNotes = new ArrayList<Note>();
+		Note mismatchRefNote = createNote(noteType, "Test text", false, testReference);
+		mismatchedRefNotes.add(mismatchRefNote);
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setRelatedNotes(mismatchedRefNotes);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(200);
+	}
+	
+	@Test
+	@Order(90)
+	public void createWithMatchingNoteReference() {
+		
+		List<Note> mismatchedRefNotes = new ArrayList<Note>();
+		Note mismatchRefNote = createNote(noteType, "Test text", false, testReference);
+		mismatchedRefNotes.add(mismatchRefNote);
+		
+		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
+		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
+		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setNegated(true);
+		newDiseaseAnnotation.setObject(testDoTerm2);
+		newDiseaseAnnotation.setDataProvider("TEST2");
+		newDiseaseAnnotation.setSubject(testGene);
+		newDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		newDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		newDiseaseAnnotation.setGeneticSex(geneticSex);
+		newDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		newDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		newDiseaseAnnotation.setAnnotationType(annotationType);
+		newDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		newDiseaseAnnotation.setWith(testWithGenes);
+		newDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		newDiseaseAnnotation.setCreatedBy(testPerson);
+		newDiseaseAnnotation.setDateCreated(testDate);
+		newDiseaseAnnotation.setRelatedNotes(mismatchedRefNotes);
+		newDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(newDiseaseAnnotation).
+				when().
+				post("/api/gene-disease-annotation").
+				then().
+				statusCode(200);
+	}
+	
+	@Test
+	@Order(91)
+	public void editWithMismatchedNoteReference() {
+		
+		List<Note> mismatchedRefNotes = new ArrayList<Note>();
+		Note mismatchRefNote = createNote(noteType, "Test text", false, testReference2);
+		mismatchedRefNotes.add(mismatchRefNote);
+		
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setNegated(true);
+		editedDiseaseAnnotation.setObject(testDoTerm2);
+		editedDiseaseAnnotation.setDataProvider("TEST2");
+		editedDiseaseAnnotation.setSubject(testGene);
+		editedDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		editedDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		editedDiseaseAnnotation.setGeneticSex(geneticSex);
+		editedDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		editedDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		editedDiseaseAnnotation.setAnnotationType(annotationType);
+		editedDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		editedDiseaseAnnotation.setWith(testWithGenes);
+		editedDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		editedDiseaseAnnotation.setCreatedBy(testPerson);
+		editedDiseaseAnnotation.setDateCreated(testDate);
+		editedDiseaseAnnotation.setRelatedNotes(mismatchedRefNotes);
+		editedDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(editedDiseaseAnnotation).
+				when().
+				put("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.relatedNotes", is("references - " + ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(92)
+	public void createWithMismatchedNoteReference() {
+		
+		List<Note> mismatchedRefNotes = new ArrayList<Note>();
+		Note mismatchRefNote = createNote(noteType, "Test text", false, testReference2);
+		mismatchedRefNotes.add(mismatchRefNote);
+		
+		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
+		newDiseaseAnnotation.setModEntityId("TEST:MismatchRef");
+		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setNegated(true);
+		newDiseaseAnnotation.setObject(testDoTerm2);
+		newDiseaseAnnotation.setDataProvider("TEST2");
+		newDiseaseAnnotation.setSubject(testGene);
+		newDiseaseAnnotation.setEvidenceCodes(testEcoTerms2);
+		newDiseaseAnnotation.setSecondaryDataProvider("TEST3");
+		newDiseaseAnnotation.setGeneticSex(geneticSex);
+		newDiseaseAnnotation.setDiseaseGeneticModifier(testBiologicalEntity);
+		newDiseaseAnnotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
+		newDiseaseAnnotation.setAnnotationType(annotationType);
+		newDiseaseAnnotation.setDiseaseQualifiers(diseaseQualifiers);
+		newDiseaseAnnotation.setWith(testWithGenes);
+		newDiseaseAnnotation.setSgdStrainBackground(testAgm2);
+		newDiseaseAnnotation.setCreatedBy(testPerson);
+		newDiseaseAnnotation.setDateCreated(testDate);
+		newDiseaseAnnotation.setRelatedNotes(mismatchedRefNotes);
+		newDiseaseAnnotation.setSingleReference(testReference);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(newDiseaseAnnotation).
+				when().
+				post("/api/gene-disease-annotation").
+				then().
+				statusCode(400).
+				body("errorMessages", is(aMapWithSize(1))).
+				body("errorMessages.relatedNotes", is("references - " + ValidationConstants.INVALID_MESSAGE));
+	}
 
 	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
 		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
@@ -3988,11 +4142,16 @@ public class DiseaseAnnotationITCase {
 		return response.getEntity();
 	}
 
-	private Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal) {
+	private Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal, Reference reference) {
 		Note note = new Note();
 		note.setNoteType(vocabularyTerm);
 		note.setFreeText(text);
 		note.setInternal(internal);
+		if (reference != null) {
+			List<Reference> references = new ArrayList<Reference>();
+			references.add(reference);
+			note.setReferences(references);
+		}
 
 		ObjectResponse<Note> response = RestAssured.given().
 			contentType("application/json").
