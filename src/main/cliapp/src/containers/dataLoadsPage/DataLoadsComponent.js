@@ -269,9 +269,10 @@ export const DataLoadsComponent = () => {
 	};
 
 	const fileTable = (load) => {
+		const sortedLoadFiles = load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1);
 		return (
 			<div className="card">
-				<DataTable key="fileTable" value={load.loadFiles} responsiveLayout="scroll"
+				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
 					expandedRows={expandedFileRows} onRowToggle={(e) => setExpandedFileRows(e.data)}
 					rowExpansionTemplate={historyTable} dataKey="id">
 					<Column expander style={{ width: '3em' }} />
