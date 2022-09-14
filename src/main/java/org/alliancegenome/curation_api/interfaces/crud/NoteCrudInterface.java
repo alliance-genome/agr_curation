@@ -5,6 +5,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
+import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -21,7 +22,7 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 	
 	@POST
 	@Path("/validate")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(View.NoteView.class)
 	public ObjectResponse<Note> validate(Note entity);
 	
 	@Override
@@ -30,4 +31,8 @@ public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
 	@Path("/{id}")
 	public ObjectResponse<Note> get(@PathParam("id") Long id);
 	
+	@POST
+	@Path("/")
+	@JsonView(View.NoteView.class)
+	public ObjectResponse<Note> create(Note entity);
 }
