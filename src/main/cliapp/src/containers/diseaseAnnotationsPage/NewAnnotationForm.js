@@ -42,6 +42,8 @@ export const NewAnnotationForm = ({
 	const handleSubmit = (event) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
+		if(newAnnotation.negated === null)
+			newAnnotation.negated = false;
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
 				setNewDiseaseAnnotation(data.data.entity);
@@ -70,10 +72,12 @@ export const NewAnnotationForm = ({
 	}
 
 	const onObjectChange = (event, setFieldValue) => {
-		if(event.target && event.target.value!=='' & event.target.value!=null){
-			setIsEnabled(true);
-		}else{
-			setIsEnabled(false);
+		if(event.target.name == "subject") { //Save button should be enabled on subject value selection only
+			if (event.target && event.target.value !== '' & event.target.value != null) {
+				setIsEnabled(true);
+			} else {
+				setIsEnabled(false);
+			}
 		}
 		newAnnotationDispatch({
 			type: "EDIT",

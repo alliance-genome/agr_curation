@@ -1,7 +1,15 @@
 import { useImmerReducer } from "use-immer";
 
 const initialNewAnnotationState = {
-	newAnnotation: {},
+	newAnnotation: {
+		subject: {},
+		diseaseRelation: {},
+		singleReference : {},
+		object : {},
+		negated: null,
+		evidence : [],
+		with: []
+	},
 	errorMessages: {},
 	submitted: false,
 	newAnnotationDialog: false,
