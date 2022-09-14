@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import {DiseaseAnnotationService} from "../../service/DiseaseAnnotationService";
@@ -138,7 +138,7 @@ export const NewAnnotationForm = ({
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="subject"><font color={'red'}>*</font>Subject</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="subject"
@@ -178,8 +178,13 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
+<<<<<<< Updated upstream
 							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
 							<AutocompleteEditor
+=======
+							<label htmlFor="annotationDisease">Disease</label>
+							<AutocompleteRowEditor
+>>>>>>> Stashed changes
 								autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="object"
@@ -204,8 +209,13 @@ export const NewAnnotationForm = ({
 
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
+<<<<<<< Updated upstream
 							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
 							<AutocompleteEditor
+=======
+							<label htmlFor="annotationReference">Reference</label>
+							<AutocompleteRowEditor
+>>>>>>> Stashed changes
 								autocompleteFields={["curie", "cross_references.curie"]}
 								searchService={searchService}
 								name="singleReference"
@@ -223,8 +233,13 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
+<<<<<<< Updated upstream
 							<label htmlFor="evidence"><font color={'red'}>*</font>Evidence Code</label>
 							<AutocompleteEditor
+=======
+							<label htmlFor="annotationEvidenceCode">Evidence Code</label>
+							<AutocompleteRowEditor
+>>>>>>> Stashed changes
 								autocompleteFields={["curie", "name", "abbreviation"]}
 								searchService={searchService}
 								name="evidence"
@@ -240,8 +255,13 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidence"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
+<<<<<<< Updated upstream
 							<label htmlFor="with">With</label>
 							<AutocompleteEditor
+=======
+							<label htmlFor="annotationWith">With</label>
+							<AutocompleteRowEditor
+>>>>>>> Stashed changes
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="with"

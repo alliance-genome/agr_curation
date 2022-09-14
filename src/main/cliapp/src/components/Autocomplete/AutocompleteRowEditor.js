@@ -3,7 +3,7 @@ import { AutoComplete } from "primereact/autocomplete";
 import { onSelectionOver, getRefString } from '../../utils/utils';
 import { Tooltip } from "primereact/tooltip";
 
-export const AutocompleteEditor = (
+export const AutocompleteRowEditor = (
 	{
 		name,
 		rowProps,
