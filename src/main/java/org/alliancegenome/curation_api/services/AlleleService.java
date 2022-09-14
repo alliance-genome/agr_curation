@@ -12,19 +12,25 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.ReferenceDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Person;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleValidator;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,6 +48,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	@Inject PersonService personService;
+	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
 
 	@Override
 	@PostConstruct
@@ -156,6 +165,55 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 			}
 			allele.setDateCreated(creationDate);
 		}
+		
+		VocabularyTerm inheritenceMode = null;
+		if (StringUtils.isNotBlank(dto.getInheritenceMode())) {
+			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(dto.getInheritenceMode(), VocabularyConstants.ALLELE_INHERITENCE_MODE_VOCABULARY);
+			if (inheritenceMode == null) {
+				throw new ObjectValidationException(dto, "Invalid inheritence mode (" + dto.getInheritenceMode() + ") in " + allele.getCurie() + " - skipping");
+			}
+		}
+		allele.setInheritenceMode(inheritenceMode);
+		
+		VocabularyTerm inCollection = null;
+		if (StringUtils.isNotBlank(dto.getInCollection())) {
+			inCollection = vocabularyTermDAO.getTermInVocabulary(dto.getInCollection(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
+			if (inCollection == null) {
+				throw new ObjectValidationException(dto, "Invalid collection (" + dto.getInCollection() + ") in " + allele.getCurie() + " - skipping");
+			}
+		}
+		allele.setInCollection(inCollection);
+		
+		VocabularyTerm sequencingStatus = null;
+		if (StringUtils.isNotBlank(dto.getSequencingStatus())) {
+			sequencingStatus = vocabularyTermDAO.getTermInVocabulary(dto.getSequencingStatus(), VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
+			if (sequencingStatus == null) {
+				throw new ObjectValidationException(dto, "Invalid sequencing status (" + dto.getSequencingStatus() + ") in " + allele.getCurie() + " - skipping");
+			}
+		}
+		allele.setSequencingStatus(sequencingStatus);
+
+		if (allele.getIsExtinct() != null) {
+			allele.setIsExtinct(allele.getIsExtinct());
+		} else {
+			allele.setIsExtinct(false);
+		}
+		
+		List<Reference> references = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
+			for (String publicationId : dto.getReferences()) {
+				Reference reference = referenceDAO.find(publicationId);
+				if (reference == null || reference.getObsolete()) {
+					reference = referenceService.retrieveFromLiteratureService(publicationId);
+					if (reference == null) {
+						throw new ObjectValidationException(dto, "Invalid reference (" + publicationId + ") in allele " + allele.getCurie() + " - skipping");
+					}
+					referenceDAO.persist(reference);
+				}
+				references.add(reference);
+			}
+		}
+		allele.setReferences(references);
 		
 		return allele;
 	}
