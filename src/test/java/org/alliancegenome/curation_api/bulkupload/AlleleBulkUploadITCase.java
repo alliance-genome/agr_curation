@@ -41,7 +41,7 @@ public class AlleleBulkUploadITCase {
 	private String requiredInheritenceMode = "dominant";
 	private String requiredInCollection = "Million mutations project";
 	private String requiredSequencingStatus = "sequenced";
-	private String requiredReference = "PMID:25920554";
+	private String requiredReference = "PMID:25920550";
 	
 	@BeforeEach
 	public void init() {
@@ -85,8 +85,8 @@ public class AlleleBulkUploadITCase {
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
 			body("results[0].inheritenceMode.name", is("dominant")).
-			body("results[0].inCollection.name", is("Million mutation project")).
-			body("results[0].sequencingStatus.name", is("sequence")).
+			body("results[0].inCollection.name", is("Million mutations project")).
+			body("results[0].sequencingStatus.name", is("sequenced")).
 			body("results[0].isExtinct", is(false)).
 			body("results[0].references", hasSize(1)).
 			body("results[0].references[0].curie", is("PMID:25920550")).
@@ -895,7 +895,7 @@ public class AlleleBulkUploadITCase {
 	@Test
 	@Order(31)
 	public void alleleBulkUploadInvalidReference() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/30_invalid_reference_allele.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/31_invalid_reference_allele.json"));
 		
 		// upload file
 		RestAssured.given().

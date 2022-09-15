@@ -28,8 +28,11 @@ public class AlleleValidator extends GenomicEntityValidator {
 	@Inject ReferenceValidator referenceValidator;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	
-	public Allele validateAnnotation(Allele uiEntity) {
+	private String errorMessage;
+	
+	public Allele validateAlleleUpdate(Allele uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not update Allele: [" + uiEntity.getCurie() + "]";
 		
 		String curie = validateCurie(uiEntity);
 		if (curie == null) {
@@ -38,13 +41,29 @@ public class AlleleValidator extends GenomicEntityValidator {
 		
 		Allele dbEntity = alleleDAO.find(curie);
 		if (dbEntity == null) {
-			addMessageResponse("Could not find allele with curie: [" + curie + "]");
+			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
 
-		String errorTitle = "Could not update allele [" + curie + "]";
-		
 		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
+		return validateAllele(uiEntity, dbEntity);
+	}
+	
+	public Allele validateAlleleCreate(Allele uiEntity) {
+		response = new ObjectResponse<>();
+		errorMessage = "Could not create Allele: [" + uiEntity.getCurie() + "]";
+		
+		Allele dbEntity = new Allele();
+		String curie = validateCurie(uiEntity);
+		dbEntity.setCurie(curie);
+		
+		dbEntity = (Allele) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		
+		return validateAllele(uiEntity, dbEntity);
+	}		
+
+	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
 		dbEntity.setTaxon(taxon);
@@ -105,7 +124,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		}
 	
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 		

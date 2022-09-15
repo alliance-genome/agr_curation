@@ -3,12 +3,16 @@ package org.alliancegenome.curation_api.crud.controllers;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.is;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -46,6 +50,8 @@ public class AlleleITCase {
 	private List<Reference> references = new ArrayList<Reference>();
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private Person person;
+	private OffsetDateTime datetime;
 	
 	private void createRequiredObjects() {
 		inheritenceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITENCE_MODE_VOCABULARY);
@@ -54,10 +60,12 @@ public class AlleleITCase {
 		inheritenceMode = getVocabularyTerm(inheritenceModeVocabulary, "dominant");
 		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million mutations project");
 		sequencingStatus = getVocabularyTerm(sequencingStatusVocabulary, "sequenced");
-		reference = createReference("PMID:54321");
+		reference = createReference("PMID:19351");
 		references.add(reference);
 		taxon = getTaxonFromCurie("NCBITaxon:10090");
 		taxon2 = getTaxonFromCurie("NCBITaxon:9606");
+		person = createPerson("TEST:AllelePerson0001");
+		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 	}
 	
 	@Test
@@ -75,6 +83,8 @@ public class AlleleITCase {
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setCreatedBy(person);
+		allele.setDateCreated(datetime);
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -83,6 +93,7 @@ public class AlleleITCase {
 				post("/api/allele").
 				then().
 				statusCode(200);
+		
 		RestAssured.given().
 				when().
 				get("/api/allele/" + ALLELE).
@@ -98,8 +109,9 @@ public class AlleleITCase {
 				body("entity.inCollection.name", is(inCollection.getName())).
 				body("entity.sequencingStatus.name", is(sequencingStatus.getName())).
 				body("entity.isExtinct", is(false)).
-				body("entity.singleReference.curie", is(reference.getCurie())).
-				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
+				body("entity.references[0].curie", is(reference.getCurie())).
+				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+				body("entity.createdBy.uniqueId", is("TEST:AllelePerson0001")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
@@ -150,7 +162,7 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -173,7 +185,7 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -196,7 +208,7 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -219,14 +231,12 @@ public class AlleleITCase {
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
-		
-	
 
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -252,7 +262,7 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -278,7 +288,7 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -304,7 +314,7 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
@@ -316,7 +326,7 @@ public class AlleleITCase {
 	public void createAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
-		reference.setCurie("Invalid");
+		invalidReference.setCurie("Invalid");
 		invalidReferences.add(invalidReference);
 		
 		Allele allele = new Allele();
@@ -333,17 +343,18 @@ public class AlleleITCase {
 			contentType("application/json").
 			body(allele).
 			when().
-			put("/api/allele").
+			post("/api/allele").
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.references", is(ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
 	@Order(11)
 	public void editAlleleWithMissingCurie() {
 		Allele allele = getAllele();
+		allele.setCurie(null);
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
@@ -367,9 +378,9 @@ public class AlleleITCase {
 	@Order(12)
 	public void editAlleleWithMissingSymbol() {
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0004");
 		allele.setTaxon(taxon);
 		allele.setName("TestAllele");
+		allele.setSymbol(null);
 		allele.setInheritenceMode(inheritenceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
@@ -390,13 +401,13 @@ public class AlleleITCase {
 	@Order(13)
 	public void editAlleleWithMissingTaxon() {
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0005");
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
 		allele.setInheritenceMode(inheritenceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setTaxon(null);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -417,7 +428,6 @@ public class AlleleITCase {
 		nonPersistedTaxon.setName("Invalid");
 		
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0006");
 		allele.setTaxon(nonPersistedTaxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
@@ -443,7 +453,6 @@ public class AlleleITCase {
 	@Order(15)
 	public void editAlleleWithInvalidInheritenceMode() {
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0007");
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
@@ -469,7 +478,6 @@ public class AlleleITCase {
 	@Order(16)
 	public void editAlleleWithInvalidInCollection() {
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0008");
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
@@ -495,7 +503,6 @@ public class AlleleITCase {
 	@Order(17)
 	public void editAlleleWithInvalidSequencingStatus() {
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0009");
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
@@ -522,11 +529,10 @@ public class AlleleITCase {
 	public void editAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
-		reference.setCurie("Invalid");
+		invalidReference.setCurie("Invalid");
 		invalidReferences.add(invalidReference);
 		
 		Allele allele = getAllele();
-		allele.setCurie("Allele:0010");
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
@@ -543,7 +549,7 @@ public class AlleleITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.references", is(ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
 	}
 
 	@Test
@@ -627,6 +633,23 @@ public class AlleleITCase {
 			
 		return response.getEntity();
 	}
+	
+	private Person createPerson(String uniqueId) {
+		LoggedInPerson person = new LoggedInPerson();
+		person.setUniqueId(uniqueId);
+		
+		ObjectResponse<LoggedInPerson> response = RestAssured.given().
+				contentType("application/json").
+				body(person).
+				when().
+				post("/api/loggedinperson").
+				then().
+				statusCode(200).extract().
+				body().as(getObjectResponseTypeRefLoggedInPerson());
+		
+		person = response.getEntity();
+		return (Person) person;
+	}
 
 	private TypeRef<ObjectResponse<Allele>> getObjectResponseTypeRefAllele() {
 		return new TypeRef<ObjectResponse <Allele>>() { };
@@ -646,6 +669,11 @@ public class AlleleITCase {
 
 	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
 		return new TypeRef<ObjectResponse <Reference>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
+		return new TypeRef<ObjectResponse <LoggedInPerson>>() {
 		};
 	}
 

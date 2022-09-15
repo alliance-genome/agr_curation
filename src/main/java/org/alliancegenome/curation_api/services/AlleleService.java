@@ -61,7 +61,14 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
-		Allele dbEntity = alleleValidator.validateAnnotation(uiEntity);
+		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity);
+		return new ObjectResponse<Allele>(alleleDAO.persist(dbEntity));
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<Allele> create(Allele uiEntity) {
+		Allele dbEntity = alleleValidator.validateAlleleCreate(uiEntity);
 		return new ObjectResponse<Allele>(alleleDAO.persist(dbEntity));
 	}
 

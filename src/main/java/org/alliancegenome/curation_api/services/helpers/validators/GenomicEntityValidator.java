@@ -15,14 +15,15 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 	NcbiTaxonTermService ncbiTaxonTermService;
 	
 	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
-		String taxonCurie = uiEntity.getTaxon().getCurie();
-		if (StringUtils.isBlank(taxonCurie)) {
-			addMessageResponse("taxon", ValidationConstants.REQUIRED_MESSAGE);
+		String field = "taxon";
+		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie())) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(taxonCurie);
+		
+		ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(uiEntity.getTaxon().getCurie());
 		if (taxon.getEntity() == null) {
-			addMessageResponse("taxon", ValidationConstants.INVALID_MESSAGE);
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 		return taxon.getEntity();

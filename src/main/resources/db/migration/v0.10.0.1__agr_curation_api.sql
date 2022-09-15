@@ -22,18 +22,6 @@ ALTER TABLE allele_aud
 	ADD COLUMN sequencingstatus_id bigint,
 	ADD COLUMN isextinct boolean DEFAULT false;
 	
-ALTER TABLE allele_aud
-	ADD CONSTRAINT allele_aud_inheritencemode_id_fk
-		FOREIGN KEY (inheritencemode_id) REFERENCES vocabularyterm (id);
-	
-ALTER TABLE allele_aud
-	ADD CONSTRAINT allele_aud_incollection_id_fk
-		FOREIGN KEY (incollection_id) REFERENCES vocabularyterm (id);
-	
-ALTER TABLE allele_aud
-	ADD CONSTRAINT allele_aud_sequencingstatus_id_fk
-		FOREIGN KEY (sequencingstatus_id) REFERENCES vocabularyterm (id);
-	
 CREATE TABLE allele_reference (
 	allele_curie varchar(255) NOT NULL,
 	references_curie varchar(255) NOT NULL
@@ -54,13 +42,4 @@ CREATE TABLE allele_reference_aud (
 	revtype smallint,
 	CONSTRAINT allele_reference_aud_pkey PRIMARY KEY(allele_curie, references_curie, rev)
 );
-	
-ALTER TABLE allele_reference_aud
-	ADD CONSTRAINT allele_reference_aud_allele_curie_fk
-		FOREIGN KEY (allele_curie) REFERENCES allele (curie);
-	
-ALTER TABLE allele_reference_aud
-	ADD CONSTRAINT allele_reference_aud_references_curie_fk
-		FOREIGN KEY (references_curie) REFERENCES reference (curie);
-	
 	
