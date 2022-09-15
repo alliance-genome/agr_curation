@@ -14,7 +14,9 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -105,22 +107,16 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.setIsExtinct(false);
 		}
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
-			dbEntity.setSynonyms(uiEntity.getSynonyms());
-		} else {
-			dbEntity.setSynonyms(null);
-		}
+		List<Synonym> synonyms = validateSynonyms(uiEntity, dbEntity);
+		dbEntity.setSynonyms(synonyms);
 
+		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
+		dbEntity.setCrossReferences(crossReferences);
+		
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
 		} else {
 			dbEntity.setSecondaryIdentifiers(null);
-		}
-
-		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
-			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-		} else {
-			dbEntity.setCrossReferences(null);
 		}
 	
 		if (response.hasErrors()) {

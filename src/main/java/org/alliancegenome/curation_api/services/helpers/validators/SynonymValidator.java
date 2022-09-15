@@ -16,29 +16,42 @@ public class SynonymValidator extends AuditedObjectValidator<Synonym> {
 	@Inject
 	SynonymDAO synonymDAO;
 
-	public Synonym validateSynonym(Synonym uiEntity) {
+	public ObjectResponse<Synonym> validateSynonym(Synonym uiEntity) {
+		Synonym synonym = validateSynonym(uiEntity, false);
+		response.setEntity(synonym);
+		return response;
+	}
+	
+	public Synonym validateSynonym(Synonym uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update Synonym: [" + uiEntity.getId() + "]";
+		String errorTitle = "Could not create/update Synonym: [" + uiEntity.getName() + "]";
 
 		Long id = uiEntity.getId();
-		if (id == null) {
-			addMessageResponse("No Synonym ID provided");
-			throw new ApiErrorException(response);
-		}
-		Synonym dbEntity = synonymDAO.find(id);
-		if (dbEntity == null) {
-			addMessageResponse("Could not find Synonym with ID: [" + id + "]");
-			throw new ApiErrorException(response);
+		Synonym dbEntity = null;
+		Boolean newEntity;
+		if (id != null) {
+			dbEntity = synonymDAO.find(id);
+			newEntity = false;
+			if (dbEntity == null) {
+				addMessageResponse("Could not find Synonym with ID: [" + id + "]");
+				throw new ApiErrorException(response);
+			}
+		} else {
+			dbEntity = new Synonym();
+			newEntity = true;
 		}
 		
-		dbEntity = (Synonym) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		dbEntity = (Synonym) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
 		
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
-			throw new ApiErrorException(response);
+			if (throwError) {
+				response.setErrorMessage(errorTitle);
+				throw new ApiErrorException(response);
+			}
+			return null;
 		}
 		
 		return dbEntity;

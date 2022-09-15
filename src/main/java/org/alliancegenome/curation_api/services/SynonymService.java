@@ -28,7 +28,7 @@ public class SynonymService extends BaseEntityCrudService<Synonym, SynonymDAO> {
 	@Override
 	@Transactional
 	public ObjectResponse<Synonym> update(Synonym uiEntity) {
-		Synonym dbEntity = synonymValidator.validateSynonym(uiEntity);
+		Synonym dbEntity = synonymValidator.validateSynonym(uiEntity, true);
 		return new ObjectResponse<>(synonymDAO.persist(dbEntity));
 	}
 }
