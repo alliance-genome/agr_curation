@@ -4,7 +4,7 @@ import { Button } from "primereact/button";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 import {DiseaseAnnotationService} from "../../service/DiseaseAnnotationService";
@@ -69,21 +69,22 @@ export const NewAnnotationForm = ({
 		setIsEnabled(false);
 	}
 
-	const onObjectChange = (event, setFieldValue) => {
-		if(event.target && event.target.value!=='' & event.target.value!=null){
-			setIsEnabled(true);
-		}else{
-			setIsEnabled(false);
+	const onObjectChange = (event) => {
+		if(event.target.name === "subject") { //Save button should be enabled on subject value selection only
+			if (event.target && event.target.value !== '' & event.target.value != null) {
+				setIsEnabled(true);
+			} else {
+				setIsEnabled(false);
+			}
 		}
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value: event.target.value
 		});
-		setFieldValue(event.target.value);
 	}
 
-	const onDiseaseChange = (event, setFieldValue) => {
+	const onDiseaseChange = (event) => {
 		const curie = event.value.curie;
 		const stringValue = event.value;
 		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};
@@ -92,7 +93,6 @@ export const NewAnnotationForm = ({
 			field: event.target.name,
 			value,
 		});
-		setFieldValue(event.target.value);
 	}
 
 	const onDropdownFieldChange = (event) => {
@@ -103,13 +103,12 @@ export const NewAnnotationForm = ({
 		});
 	};
 
-	const onArrayFieldChange = (event, setFieldValue) => {
+	const onArrayFieldChange = (event) => {
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value: event.target.value
 		});
-		setFieldValue(event.target.value);
 	}
 
 	const dialogFooter = (
@@ -136,7 +135,7 @@ export const NewAnnotationForm = ({
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="subject"><font color={'red'}>*</font>Subject</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="subject"
@@ -145,7 +144,7 @@ export const NewAnnotationForm = ({
 								filterName='subjectFilter'
 								fieldName='subject'
 								value={newAnnotation.subject}
-								passedOnChange={onObjectChange}
+								onValueChangeHandler={onObjectChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
@@ -177,7 +176,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="object"
@@ -193,7 +192,7 @@ export const NewAnnotationForm = ({
 									}
 								}}
 								value={newAnnotation.object}
-								passedOnChange={onDiseaseChange}
+								onValueChangeHandler={onDiseaseChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
@@ -203,7 +202,7 @@ export const NewAnnotationForm = ({
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								autocompleteFields={["curie", "cross_references.curie"]}
 								searchService={searchService}
 								name="singleReference"
@@ -213,7 +212,7 @@ export const NewAnnotationForm = ({
 								fieldName='singleReference'
 								isReference={true}
 								value={newAnnotation.singleReference}
-								passedOnChange={onObjectChange}
+								onValueChangeHandler={onObjectChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
@@ -222,7 +221,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="evidence"><font color={'red'}>*</font>Evidence Code</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								autocompleteFields={["curie", "name", "abbreviation"]}
 								searchService={searchService}
 								name="evidence"
@@ -232,14 +231,14 @@ export const NewAnnotationForm = ({
 								fieldName='evidence'
 								isMultiple={true}
 								value={newAnnotation.evidence}
-								passedOnChange={onArrayFieldChange}
+								onValueChangeHandler={onArrayFieldChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.evidence})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidence"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 								searchService={searchService}
 								name="with"
@@ -249,7 +248,7 @@ export const NewAnnotationForm = ({
 								fieldName='with'
 								isMultiple={true}
 								value={newAnnotation.with}
-								passedOnChange={onArrayFieldChange}
+								onValueChangeHandler={onArrayFieldChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>

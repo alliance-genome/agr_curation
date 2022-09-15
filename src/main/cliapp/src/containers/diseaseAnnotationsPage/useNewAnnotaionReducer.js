@@ -26,6 +26,7 @@ const newAnnotationReducer = (draft, action) => {
 			break;
 		case 'OPEN_DIALOG':
 			draft.newAnnotationDialog = true;
+			draft.newAnnotation["negated"] = false;
 			break;
 		case 'CLEAR':
 			draft.newAnnotation = initialNewAnnotationState.newAnnotation;
