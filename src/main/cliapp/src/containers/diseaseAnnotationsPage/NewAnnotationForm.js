@@ -27,6 +27,7 @@ export const NewAnnotationForm = ({
 	const toast_error = useRef(null);
 	const { newAnnotation, errorMessages, submitted, newAnnotationDialog } = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
+	const [isValid, setIsValid] = useState(false);
 
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
@@ -41,7 +42,7 @@ export const NewAnnotationForm = ({
 		setIsEnabled(false);
 	};
 
-	const handleSubmit = (event) => {
+	const handleSubmit = (event, closeAfterSubmit=true) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
 		mutation.mutate(newAnnotation, {
@@ -49,12 +50,18 @@ export const NewAnnotationForm = ({
 				setNewDiseaseAnnotation(data.data.entity);
 				queryClient.invalidateQueries('DiseaseAnnotationsHandles');
 				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Annotation Added'});
-				newAnnotationDispatch({type: "RESET"});
+				setIsValid(true);
+				if (closeAfterSubmit) {
+					newAnnotationDispatch({type: "RESET"});
+				} else {
+					newAnnotationDispatch({type: "CLEAR"});
+				}
 			},
 			onError: (error) => {
 				toast_error.current.show([
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
 				]);
+				setIsValid(false);
 				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
 			}
 		});
@@ -66,9 +73,11 @@ export const NewAnnotationForm = ({
 	}
 
 	const handleSubmitAndAdd = (event) => {
-		handleSubmit(event);
-		newAnnotationDispatch({ type: "CLEAR" });
-		setIsEnabled(false);
+		handleSubmit(event, false);
+		if (isValid) {
+			newAnnotationDispatch({ type: "CLEAR" });
+			setIsEnabled(false);
+		}
 	}
 
 	const onObjectChange = (event) => {
@@ -225,17 +234,17 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="evidence"><font color={'red'}>*</font>Evidence Code</label>
+							<label htmlFor="evidenceCodes"><font color={'red'}>*</font>Evidence Code</label>
 							<AutocompleteFormEditor
 								autocompleteFields={["curie", "name", "abbreviation"]}
 								searchService={searchService}
-								name="evidence"
+								name="evidenceCodes"
 								label="Evidence Code"
 								endpoint='ecoterm'
 								filterName='evidenceFilter'
-								fieldName='evidence'
+								fieldName='evidenceCodes'
 								isMultiple={true}
-								value={newAnnotation.evidence}
+								value={newAnnotation.evidenceCodes}
 								onValueChangeHandler={onArrayFieldChange}
 								otherFilters={{
 									obsoleteFilter: {
@@ -251,9 +260,9 @@ export const NewAnnotationForm = ({
 								}}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.evidence})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidence"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>

@@ -47,7 +47,8 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(annotation.getSubjectCurie());
 		curie.add(annotation.getObject().getCurie());
 		curie.add(annotation.getSingleReference().getCurie());
-		curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
+		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))
+			curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
 
 		if(CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
 			curie.add(annotation.getConditionRelations().stream()
