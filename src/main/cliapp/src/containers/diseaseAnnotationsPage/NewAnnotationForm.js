@@ -10,6 +10,8 @@ import { classNames } from "primereact/utils";
 import {DiseaseAnnotationService} from "../../service/DiseaseAnnotationService";
 import {Splitter, SplitterPanel} from "primereact/splitter";
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
+import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
 
 export const NewAnnotationForm = ({
 									 newAnnotationState,
@@ -145,6 +147,9 @@ export const NewAnnotationForm = ({
 								fieldName='subject'
 								value={newAnnotation.subject}
 								onValueChangeHandler={onObjectChange}
+								isSubject={true}
+								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
+									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
@@ -214,7 +219,7 @@ export const NewAnnotationForm = ({
 								value={newAnnotation.singleReference}
 								onValueChangeHandler={onObjectChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
-								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
@@ -232,6 +237,20 @@ export const NewAnnotationForm = ({
 								isMultiple={true}
 								value={newAnnotation.evidence}
 								onValueChangeHandler={onArrayFieldChange}
+								otherFilters={{
+									obsoleteFilter: {
+										"obsolete": {
+											queryString: false
+										}
+									},
+									subsetFilter: {
+										"subsets": {
+											queryString: "agr_eco_terms"
+										}
+									}
+								}}
+								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
+									<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 								classNames={classNames({'p-invalid': submitted && errorMessages.evidence})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidence"}/>
@@ -247,8 +266,11 @@ export const NewAnnotationForm = ({
 								filterName='withFilter'
 								fieldName='with'
 								isMultiple={true}
+								isWith={true}
 								value={newAnnotation.with}
 								onValueChangeHandler={onArrayFieldChange}
+								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
+									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>

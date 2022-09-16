@@ -1302,8 +1302,6 @@ export const DiseaseAnnotationsTable = () => {
 					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
-					headerButtons={headerButtons}
-					newEntity={newDiseaseAnnotation}
 				/>
 			</div>
 			<NewAnnotationForm
