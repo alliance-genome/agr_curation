@@ -29,6 +29,11 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@Path("/")
 	@JsonView(View.DiseaseAnnotationUpdate.class)
 	public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation entity);
+
+	@POST
+	@Path("/")
+	@JsonView(View.DiseaseAnnotationUpdate.class)
+	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
 	
 	@POST
 	@Path("/bulk/{taxonID}/annotationFile")

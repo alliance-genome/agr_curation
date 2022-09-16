@@ -3,13 +3,21 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.List;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.interfaces.base.*;
+import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
+import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -30,6 +38,12 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	@Path("/")
 	@JsonView(View.DiseaseAnnotationUpdate.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
+	
+
+	@POST
+	@Path("/")
+	@JsonView(View.DiseaseAnnotationUpdate.class)
+	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
 	
 	@POST
 	@Path("/bulk/{taxonID}/annotationFile")

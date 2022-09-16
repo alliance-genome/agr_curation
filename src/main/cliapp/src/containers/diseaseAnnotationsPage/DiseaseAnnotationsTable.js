@@ -150,7 +150,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
 	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.evidenceCodes.length > 0) {
+		if (rowData?.evidenceCodes && rowData.evidenceCodes.length > 0) {
 			const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (

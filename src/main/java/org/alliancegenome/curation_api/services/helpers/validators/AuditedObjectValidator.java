@@ -36,7 +36,11 @@ public class AuditedObjectValidator<E extends AuditedObject> {
 		
 		dbEntity.setObsolete(uiEntity.getObsolete());
 		
-		dbEntity.setDateCreated(uiEntity.getDateCreated());
+		if (newEntity && uiEntity.getDateCreated() == null) {
+			dbEntity.setDateCreated(OffsetDateTime.now());
+		} else {
+			dbEntity.setDateCreated(uiEntity.getDateCreated());
+		}
 		
 		if (uiEntity.getCreatedBy() != null) {
 			Person createdBy = personService.fetchByUniqueIdOrCreate(uiEntity.getCreatedBy().getUniqueId());
