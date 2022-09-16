@@ -1,33 +1,53 @@
 import React, {useRef, useState} from "react";
-import { Dialog } from "primereact/dialog";
-import { Button } from "primereact/button";
-import { Dropdown } from "primereact/dropdown";
-import { Toast } from "primereact/toast";
-import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
-import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
-import { classNames } from "primereact/utils";
+import {ValidationService} from '../../service/ValidationService';
+import {Dialog} from "primereact/dialog";
+import {Button} from "primereact/button";
+import {Dropdown} from "primereact/dropdown";
+import {Toast} from "primereact/toast";
+import {useMutation, useQueryClient} from "react-query";
+import {AutocompleteFormEditor} from "../../components/Autocomplete/AutocompleteFormEditor";
+import {FormErrorMessageComponent} from "../../components/FormErrorMessageComponent";
+import {classNames} from "primereact/utils";
 import {DiseaseAnnotationService} from "../../service/DiseaseAnnotationService";
 import {Splitter, SplitterPanel} from "primereact/splitter";
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
-import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
-import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
+import {LiteratureAutocompleteTemplate} from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import {SubjectAutocompleteTemplate} from '../../components/Autocomplete/SubjectAutocompleteTemplate';
+import {EvidenceAutocompleteTemplate} from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
+import {RelatedNotesForm} from "./RelatedNotesForm";
 
 export const NewAnnotationForm = ({
-									 newAnnotationState,
-									 newAnnotationDispatch,
-									 searchService,
-									 diseaseAnnotationService,
-									  diseaseRelationsTerms,
-									  negatedTerms,
-									  setNewDiseaseAnnotation
-								 }) => {
+									newAnnotationState,
+									newAnnotationDispatch,
+									searchService,
+									diseaseAnnotationService,
+									diseaseRelationsTerms,
+									negatedTerms,
+									setNewDiseaseAnnotation
+}) => {
 	const queryClient = useQueryClient();
 	const toast_success = useRef(null);
 	const toast_error = useRef(null);
-	const { newAnnotation, errorMessages, submitted, newAnnotationDialog } = newAnnotationState;
+	const withRef = useRef(null);
+	const evidenceCodesRef = useRef(null);
+	const {
+		newAnnotation,
+		errorMessages,
+		relatedNotesErrorMessages,
+		submitted,
+		newAnnotationDialog,
+		showRelatedNotes,
+	} = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
-	const [isValid, setIsValid] = useState(false);
+	const validationService = new ValidationService();
+
+	const validateNotes = async (notes) => {
+		const validationResultsArray = [];
+		for (const note of notes) {
+			const result = await validationService.validate('note', note);
+			validationResultsArray.push(result);
+		}
+		return validationResultsArray;
+	};
 
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
@@ -42,47 +62,68 @@ export const NewAnnotationForm = ({
 		setIsEnabled(false);
 	};
 
-	const handleSubmit = (event, closeAfterSubmit=true) => {
+	const relatedNotesValidation = async () => {
+		const relatedNotesResults = await validateNotes(newAnnotation.relatedNotes);
+		const relatedNotesErrors = [];
+		let anyErrors = false;
+		relatedNotesResults.forEach((result, index) => {
+			const { isError, data } = result;
+			if (isError) {
+				relatedNotesErrors[index] = {};
+				if (!data) return;
+				Object.keys(data).forEach((field) => {
+					relatedNotesErrors[index][field] = {
+						severity: "error",
+						message: data[field]
+					};
+				});
+				anyErrors = true;
+				newAnnotationDispatch({type: "UPDATE_RELATED_NOTES_ERROR_MESSAGES", errorMessages: relatedNotesErrors});
+			}
+		});
+		return anyErrors;
+	}
+
+	const handleSubmit = async (event, closeAfterSubmit=true) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
+		const isRelatedNotesErrors = await relatedNotesValidation();
+
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
-				setNewDiseaseAnnotation(data.data.entity);
-				queryClient.invalidateQueries('DiseaseAnnotationsHandles');
-				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Annotation Added'});
-				setIsValid(true);
-				if (closeAfterSubmit) {
-					newAnnotationDispatch({type: "RESET"});
-				} else {
-					newAnnotationDispatch({type: "CLEAR"});
+				if (!isRelatedNotesErrors) {
+					setNewDiseaseAnnotation(data.data.entity);
+					queryClient.invalidateQueries('DiseaseAnnotationsHandles');
+					toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Annotation Added'});
+					if (closeAfterSubmit) {
+						newAnnotationDispatch({type: "RESET"});
+					}
 				}
 			},
 			onError: (error) => {
 				toast_error.current.show([
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
 				]);
-				setIsValid(false);
 				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
 			}
 		});
 	};
 
 	const handleClear = (event) => {
+		//manually reset the value of the input text in autocomplete fields with multiple values
+		withRef.current.inputRef.current.value = "";
+		evidenceCodesRef.current.inputRef.current.value = "";
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
 	}
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event, false);
-		if (isValid) {
-			newAnnotationDispatch({ type: "CLEAR" });
-			setIsEnabled(false);
-		}
 	}
 
 	const onObjectChange = (event) => {
 		if(event.target.name === "subject") { //Save button should be enabled on subject value selection only
-			if (event.target && event.target.value !== '' & event.target.value != null) {
+			if (event.target && event.target.value !== '' && event.target.value != null) {
 				setIsEnabled(true);
 			} else {
 				setIsEnabled(false);
@@ -159,7 +200,7 @@ export const NewAnnotationForm = ({
 								isSubject={true}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
+								classNames={classNames({'p-invalid': submitted && errorMessages?.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
 						</SplitterPanel>
@@ -171,7 +212,7 @@ export const NewAnnotationForm = ({
 								name="diseaseRelation"
 								optionLabel='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.diseaseRelation})}
+								className={classNames({'p-invalid': submitted && errorMessages?.diseaseRelation})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
 						</SplitterPanel>
@@ -184,7 +225,7 @@ export const NewAnnotationForm = ({
 								optionLabel='text'
 								optionValue='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages.negated})}
+								className={classNames({'p-invalid': submitted && errorMessages?.negated})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
 						</SplitterPanel>
@@ -207,7 +248,7 @@ export const NewAnnotationForm = ({
 								}}
 								value={newAnnotation.object}
 								onValueChangeHandler={onDiseaseChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
+								classNames={classNames({'p-invalid': submitted && errorMessages?.object})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
 						</SplitterPanel>
@@ -227,7 +268,7 @@ export const NewAnnotationForm = ({
 								isReference={true}
 								value={newAnnotation.singleReference}
 								onValueChangeHandler={onObjectChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
+								classNames={classNames({'p-invalid': submitted && errorMessages?.singleReference})}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
@@ -237,6 +278,7 @@ export const NewAnnotationForm = ({
 							<label htmlFor="evidenceCodes"><font color={'red'}>*</font>Evidence Code</label>
 							<AutocompleteFormEditor
 								autocompleteFields={["curie", "name", "abbreviation"]}
+								customRef={evidenceCodesRef}
 								searchService={searchService}
 								name="evidenceCodes"
 								label="Evidence Code"
@@ -260,7 +302,7 @@ export const NewAnnotationForm = ({
 								}}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
+								classNames={classNames({'p-invalid': submitted && errorMessages?.evidenceCodes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
 						</SplitterPanel>
@@ -268,6 +310,7 @@ export const NewAnnotationForm = ({
 							<label htmlFor="with">With</label>
 							<AutocompleteFormEditor
 								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+								customRef={withRef}
 								searchService={searchService}
 								name="with"
 								label="With"
@@ -280,9 +323,19 @@ export const NewAnnotationForm = ({
 								onValueChangeHandler={onArrayFieldChange}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
+								classNames={classNames({'p-invalid': submitted && errorMessages?.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
+						</SplitterPanel>
+					</Splitter>
+					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}}>
+							<RelatedNotesForm
+								newAnnotationDispatch={newAnnotationDispatch}
+								relatedNotes={newAnnotation.relatedNotes}
+								showRelatedNotes={showRelatedNotes}
+								errorMessages={relatedNotesErrorMessages}
+							/>
 						</SplitterPanel>
 					</Splitter>
 				</form>
