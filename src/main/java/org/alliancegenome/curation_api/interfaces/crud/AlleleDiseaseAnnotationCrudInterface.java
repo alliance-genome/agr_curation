@@ -36,13 +36,13 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	
 	@PUT
 	@Path("/")
-	@JsonView(View.DiseaseAnnotationUpdate.class)
+	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
 	
 
 	@POST
 	@Path("/")
-	@JsonView(View.DiseaseAnnotationCreate.class)
+	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
 	
 	@POST
