@@ -873,7 +873,7 @@ export const DiseaseAnnotationsTable = () => {
 			/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField="evidence"
+					errorField="evidenceCodes"
 				/>
 			</>
 		);

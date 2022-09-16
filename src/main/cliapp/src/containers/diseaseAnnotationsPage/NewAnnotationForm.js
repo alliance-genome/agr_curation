@@ -225,17 +225,17 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
-							<label htmlFor="evidence"><font color={'red'}>*</font>Evidence Code</label>
+							<label htmlFor="evidenceCodes"><font color={'red'}>*</font>Evidence Code</label>
 							<AutocompleteFormEditor
 								autocompleteFields={["curie", "name", "abbreviation"]}
 								searchService={searchService}
-								name="evidence"
+								name="evidenceCodes"
 								label="Evidence Code"
 								endpoint='ecoterm'
 								filterName='evidenceFilter'
-								fieldName='evidence'
+								fieldName='evidenceCodes'
 								isMultiple={true}
-								value={newAnnotation.evidence}
+								value={newAnnotation.evidenceCodes}
 								onValueChangeHandler={onArrayFieldChange}
 								otherFilters={{
 									obsoleteFilter: {
@@ -251,9 +251,9 @@ export const NewAnnotationForm = ({
 								}}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages.evidence})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidence"}/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>
