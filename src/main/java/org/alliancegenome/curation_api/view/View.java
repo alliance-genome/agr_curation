@@ -17,5 +17,6 @@ public class View {
 	public static class ReportHistory extends FieldsOnly { }
 	
 	public static class DiseaseAnnotationUpdate extends FieldsOnly { }
+	public static class DiseaseAnnotationCreate extends FieldsOnly { }
 
 }

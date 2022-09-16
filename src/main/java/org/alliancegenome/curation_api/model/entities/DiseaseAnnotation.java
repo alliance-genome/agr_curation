@@ -77,7 +77,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class, View.DiseaseAnnotationCreate.class})
 	private List<ECOTerm> evidenceCodes;
 	
 	@IndexedEmbedded(includeDepth = 2)
@@ -90,7 +90,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class, View.DiseaseAnnotationCreate.class})
 	private List<Gene> with;
 	
 	@IndexedEmbedded(includeDepth = 2)

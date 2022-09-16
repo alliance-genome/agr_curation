@@ -32,7 +32,7 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 
 	@POST
 	@Path("/")
-	@JsonView(View.DiseaseAnnotationUpdate.class)
+	@JsonView(View.DiseaseAnnotationCreate.class)
 	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
 	
 	@POST
