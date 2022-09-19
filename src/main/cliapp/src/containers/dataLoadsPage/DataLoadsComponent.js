@@ -271,7 +271,7 @@ export const DataLoadsComponent = () => {
 	};
 
 	const fileTable = (load) => {
-		const sortedLoadFiles = load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1);
+		const sortedLoadFiles = load.loadFiles ? load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1) : [];
 		return (
 			<div className="card">
 				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
