@@ -9,6 +9,9 @@ import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.annotations.*;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
 import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.*;
 
@@ -24,7 +27,7 @@ import lombok.*;
 @Schema(name = "AGM_Disease_Annotation", description = "Annotation class representing a agm disease annotation")
 @JsonTypeName("AGMDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -34,25 +37,25 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JoinColumn(foreignKey = @ForeignKey(name="fk_agmdasubject"))
 	@JsonView({View.FieldsOnly.class})
 	private AffectedGenomicModel subject;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Gene inferredGene;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Allele inferredAllele;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private Gene assertedGene;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -63,6 +66,7 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
+		if(subject == null) return null;
 		return subject.getCurie();
 	}
 
@@ -70,6 +74,8 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@Override
 	@JsonIgnore
 	public String getSubjectTaxonCurie() {
+		if(subject == null) return null;
+		if(subject.getTaxon() == null) return null;
 		return subject.getTaxon().getCurie();
 	}
 }

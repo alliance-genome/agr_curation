@@ -69,14 +69,14 @@ public abstract class BaseEntityCrudService<E extends BaseEntity, D extends Base
 	public ObjectResponse<E> delete(String id) {
 		//log.info("Authed Person: " + authenticatedPerson);
 		E object = dao.remove(id);
-		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
 
 	@Transactional
 	public ObjectResponse<E> delete(Long id) {
 		E object = dao.remove(id);
-		ObjectResponse<E> ret = new ObjectResponse<E>(object);
+		ObjectResponse<E> ret = new ObjectResponse<>(object);
 		return ret;
 	}
 

@@ -19,6 +19,6 @@ import lombok.*;
 public class BulkURLLoad extends BulkScheduledLoad {
 
 	@JsonView({View.FieldsOnly.class})
-	private String url;
+	private String bulkloadUrl;
 
 }

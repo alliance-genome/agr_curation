@@ -7,12 +7,12 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.controllers.base.BaseOntologyTermController;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
 import org.alliancegenome.curation_api.interfaces.crud.ontology.ZecoTermCrudInterface;
-import org.alliancegenome.curation_api.model.entities.ontology.ZecoTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 
 @RequestScoped
-public class ZecoTermCrudController extends BaseOntologyTermController<ZecoTermService, ZecoTerm, ZecoTermDAO> implements ZecoTermCrudInterface {
+public class ZecoTermCrudController extends BaseOntologyTermController<ZecoTermService, ZECOTerm, ZecoTermDAO> implements ZecoTermCrudInterface {
 
 	@Inject ZecoTermService zecoTermService;
 
@@ -21,7 +21,7 @@ public class ZecoTermCrudController extends BaseOntologyTermController<ZecoTermS
 	public void init() {
 		GenericOntologyLoadConfig config = new GenericOntologyLoadConfig();
 		config.setLoadOnlyIRIPrefix("ZECO");
-		setService(zecoTermService, ZecoTerm.class, config);
+		setService(zecoTermService, ZECOTerm.class, config);
 	}
 
 }

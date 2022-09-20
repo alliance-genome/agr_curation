@@ -3,13 +3,13 @@ package org.alliancegenome.curation_api.dao.ontology;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.dao.base.BaseSQLDAO;
-import org.alliancegenome.curation_api.model.entities.ontology.FBdvTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.FBDVTerm;
 
 @ApplicationScoped
-public class FbdvTermDAO extends BaseSQLDAO<FBdvTerm> {
+public class FbdvTermDAO extends BaseSQLDAO<FBDVTerm> {
 
 	protected FbdvTermDAO() {
-		super(FBdvTerm.class);
+		super(FBDVTerm.class);
 	}
 
 }

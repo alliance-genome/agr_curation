@@ -28,7 +28,6 @@ public class GeneITCase {
 	private final String GENE_NAME = "Gene Test 1";
 	private final String GENE_SYMBOL = "GT1";
 	private final String GENE_TYPE = "SO:0001";
-	private final String GENE_AUTO_DESC = "Test auto description";
 	private final String INVALID_TAXON = "NCBI:00001";
 	private final String INVALID_GENE_TYPE = "SO:0000";
 	private SOTerm soTerm; 
@@ -57,7 +56,6 @@ public class GeneITCase {
 				body("entity.taxon.curie", is(GENE_TAXON)).
 				body("entity.symbol", is(GENE_SYMBOL)).
 				body("entity.geneType.curie", is(GENE_TYPE)).
-				body("entity.automatedGeneDescription", is(GENE_AUTO_DESC)).
 				body("entity.internal", is(false));
 	}
 
@@ -70,7 +68,6 @@ public class GeneITCase {
 		gene.setSymbol("GT2");
 		gene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		gene.setGeneType(newSoTerm);
-		gene.setAutomatedGeneDescription("Edited auto description");
 		gene.setInternal(true);
 
 		RestAssured.given().
@@ -91,7 +88,6 @@ public class GeneITCase {
 				body("entity.taxon.curie", is("NCBITaxon:9606")).
 				body("entity.symbol", is("GT2")).
 				body("entity.geneType.curie", is("SO:0001000")).
-				body("entity.automatedGeneDescription", is("Edited auto description")).
 				body("entity.internal", is(true));
 	}
 
@@ -200,7 +196,6 @@ public class GeneITCase {
 		gene.setTaxon(getTaxonFromCurie(taxon));
 		gene.setSymbol(symbol);
 		gene.setGeneType(type);
-		gene.setAutomatedGeneDescription(GENE_AUTO_DESC);
 		
 		return gene;
 	}

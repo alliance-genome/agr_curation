@@ -6,7 +6,7 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
 import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/LiteratureAutocompleteTemplate";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
@@ -120,7 +120,7 @@ export const NewRelationForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="reference">Reference</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="singleReference"
 								autocompleteFields={["curie", "cross_references.curie"]}
 								searchService={searchService}
@@ -152,7 +152,7 @@ export const NewRelationForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="conditions">Conditions</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="conditions"
 								autocompleteFields={["conditionSummary"]}
 								searchService={searchService}

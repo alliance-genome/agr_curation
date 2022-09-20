@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -58,10 +59,13 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		String freeText = validateFreeText(uiEntity);
 		dbEntity.setFreeText(freeText);
 
+		List<String> previousReferenceCuries = new ArrayList<String>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
+			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(uiEntity.getReferences())) {
 			List<Reference> references = new ArrayList<Reference>();
 			for (Reference uiReference : uiEntity.getReferences()) {
-				Reference reference = validateReference(uiReference);
+				Reference reference = validateReference(uiReference, previousReferenceCuries);
 				if (reference != null) {
 					references.add(reference);
 				}
@@ -83,7 +87,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		return dbEntity;
 	}
 	
-	private Reference validateReference (Reference uiEntity) {
+	private Reference validateReference (Reference uiEntity, List<String> previousCuries) {
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
 		if (singleRefResponse.getEntity() == null) {
 			Map<String, String> errors = singleRefResponse.getErrorMessages();
@@ -93,12 +97,17 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 			return null;
 		}
 		
+		if (singleRefResponse.getEntity().getObsolete() && !previousCuries.contains(singleRefResponse.getEntity().getCurie())) {
+			addMessageResponse("references", "curie - " + ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
 		return singleRefResponse.getEntity();
 	}
 
 	public VocabularyTerm validateNoteType(Note uiEntity, Note dbEntity, String noteVocabularyName) {
 		String field = "noteType";
-		if (uiEntity.getNoteType() == null ) {
+		if (uiEntity.getNoteType() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
@@ -128,8 +137,9 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 
 	public String validateFreeText(Note uiEntity) {
 		String field = "freeText";
-		if (!StringUtils.isNotBlank(uiEntity.getFreeText())) {
+		if (StringUtils.isBlank(uiEntity.getFreeText())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
 		}
 		return uiEntity.getFreeText();
 	}

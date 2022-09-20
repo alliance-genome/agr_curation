@@ -23,6 +23,8 @@ import lombok.*;
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 public class BulkLoadFileException extends GeneratedAuditedObject {
 	
+	// TODO: define in LinkML once class definition matured
+	
 	@Type(type = JsonTypes.JSON_BIN)
 	@JsonView({View.BulkLoadFileHistory.class})
 	@Column(columnDefinition = JsonTypes.JSON_BIN)

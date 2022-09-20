@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.FileInputStream;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -262,6 +263,7 @@ public class BulkLoadJobExecutor {
 
 		bulkLoadFile.setRecordCount(bulkLoadFile.getRecordCount() + termMap.size());
 
+		bulkLoadFile.setDateLastLoaded(OffsetDateTime.now());
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());

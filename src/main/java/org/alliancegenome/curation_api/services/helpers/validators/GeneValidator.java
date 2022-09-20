@@ -66,18 +66,6 @@ public class GeneValidator extends GenomicEntityValidator {
 			dbEntity.setCrossReferences(null);
 		}
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getGenomicLocations())) {
-			dbEntity.setGenomicLocations(uiEntity.getGenomicLocations());
-		} else {
-			dbEntity.setGenomicLocations(null);
-		}
-		
-		dbEntity.setGeneSynopsis(handleStringField(uiEntity.getGeneSynopsis()));
-
-		dbEntity.setGeneSynopsisURL(handleStringField(uiEntity.getGeneSynopsisURL()));
-		
-		dbEntity.setAutomatedGeneDescription(handleStringField(uiEntity.getAutomatedGeneDescription()));
-		
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);
 		

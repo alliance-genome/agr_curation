@@ -59,15 +59,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		} else {
 			dbEntity.setCrossReferences(null);
 		}
-		
-		if (CollectionUtils.isNotEmpty(uiEntity.getGenomicLocations())) {
-			dbEntity.setGenomicLocations(uiEntity.getGenomicLocations());
-		} else {
-			dbEntity.setGenomicLocations(null);
-		}
 	
-		dbEntity.setDescription(handleStringField(uiEntity.getDescription()));		
-		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorTitle);
 			throw new ApiErrorException(response);
