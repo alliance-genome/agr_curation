@@ -23,7 +23,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
 import {getRefString} from '../../utils/utils';
-import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
+import {useNewAnnotationReducer} from "./useNewAnnotationReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
 
 export const DiseaseAnnotationsTable = () => {
