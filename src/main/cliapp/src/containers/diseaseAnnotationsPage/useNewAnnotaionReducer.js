@@ -1,7 +1,7 @@
 import { useImmerReducer } from "use-immer";
 
 const initialNewAnnotationState = {
-	newAnnotation: {},
+	newAnnotation: {"negated": false},
 	errorMessages: {},
 	submitted: false,
 	newAnnotationDialog: false,
@@ -26,7 +26,6 @@ const newAnnotationReducer = (draft, action) => {
 			break;
 		case 'OPEN_DIALOG':
 			draft.newAnnotationDialog = true;
-			draft.newAnnotation["negated"] = false;
 			break;
 		case 'CLEAR':
 			draft.newAnnotation = initialNewAnnotationState.newAnnotation;

@@ -27,7 +27,6 @@ export const NewAnnotationForm = ({
 	const toast_error = useRef(null);
 	const { newAnnotation, errorMessages, submitted, newAnnotationDialog } = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
-	const [isValid, setIsValid] = useState(false);
 
 	const mutation = useMutation(newAnnotation => {
 		if (!diseaseAnnotationService) {
@@ -50,18 +49,14 @@ export const NewAnnotationForm = ({
 				setNewDiseaseAnnotation(data.data.entity);
 				queryClient.invalidateQueries('DiseaseAnnotationsHandles');
 				toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Annotation Added'});
-				setIsValid(true);
 				if (closeAfterSubmit) {
 					newAnnotationDispatch({type: "RESET"});
-				} else {
-					newAnnotationDispatch({type: "CLEAR"});
 				}
 			},
 			onError: (error) => {
 				toast_error.current.show([
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
 				]);
-				setIsValid(false);
 				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
 			}
 		});
@@ -74,10 +69,6 @@ export const NewAnnotationForm = ({
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event, false);
-		if (isValid) {
-			newAnnotationDispatch({ type: "CLEAR" });
-			setIsEnabled(false);
-		}
 	}
 
 	const onObjectChange = (event) => {
