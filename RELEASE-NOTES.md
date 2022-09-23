@@ -1,29 +1,39 @@
 # AGR curation release notes
 
+## v0.10.0
+
+ * New features
+    * Enabled disease annotation deletion (through UI) (SCRUM-1890)
+    * Enabled disease annotation creation (through UI) (SCRUM-1709)
+ * Data and schema changes
+    * Synchronised curation application data model with LinkML schema v1.2.4 (SCRUM-1926)
+ * Bugfixes, minor enhancements & maintenance
+    * Enabled preventing disease-annotation save without reference/subject/object (SCRUM-1916)
+    * Added additional integration tests for required fields (SCRUM-1939)
+    * Minor indexing improvements (for the index everything endpoint)
+    * Minor deployment notification fixes
+    * Updated data validation to treat empty strings as empty values (SCRUM-1942)
+    * Updated bulk load to correctly new null values on update (SCRUM-1975)
+    * Fixed bulk load last loaded date (SCRUM-2000)
+    * Cleanup of inconsistent records in DB (SCRUM-2005)
+    * Fixed experimentalConditions UI filter (SCRUM-2003)
+    * Fixed file sorting in data loads widget (SCRUM-2010)
+    * Added additional note reference validation (SCRUM-2028)
+
 ## v0.9.0
 
  * New features
-
     * Enabled deletion of relations in Condition Relation table (SCRUM-1605)
-
     * Enabled creation of Experimental Conditions (SCRUM-1848, SCRUM-1849, SCRUM-1850)
-
     * Added ATP ontology (SCRUM-1840)
-
     * Automatic population of createdBy field when creating new entries (SCRUM-1868)
-
     * Repurposed Condition Relation Handles table for all Condition Relations, with or without handle (SCRUM-1867)
-
     * Enabled deletion of controlled vocabulary terms (SCRUM-1889)
-
     * Added parents, ancestors, and closure to ontologies
-
     * Enabled per-class reporting of LinkML schema version compatibility
 
  * Bugfixes, minor enhancements & maintenance
-
     * API updates to enable deletion of disease annotations (SCRUM-1711)
-
     * Improved filter functionality for Experiments and Experimental Conditions columns in Disease Annotation table (SCRUM-1816)
 
 ## v0.8.0
@@ -48,7 +58,7 @@
     * SCRUM-1765 Bring functionality of editing of 'related notes' in Disease Annotation table in line with that of 'condition relations' by @markquintontulloch in #559
  * Maintenance
     * SCRUM-1712 Synchronisation of References with Literature System by @markquintontulloch in #552, #557, #561, #564
-    # SCRUM-1732 Fixed validation of references in conditionRelations #560
+    * SCRUM-1732 Fixed validation of references in conditionRelations #560
     * SCRUM-1710 Fixed multiple tooltips bug by @markquintontulloch in #565
     * SCRUM-1722 Fixed multi-line cell warnings bug by @adamgibs in #562
     * Added indexing params to reindexing endpoints by @mluypaert in #555
