@@ -2,7 +2,6 @@ import React, {useRef, useState, useReducer} from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { useMutation, useQuery} from 'react-query';
 import { Toast } from 'primereact/toast';
-import {useOktaAuth} from "@okta/okta-react";
 
 import {useControlledVocabularyService} from "../../service/useControlledVocabularyService";
 import {VocabularyService} from "../../service/VocabularyService";
@@ -37,9 +36,8 @@ export const ControlledVocabularyComponent = () => {
 	const [newTerm, newTermDispatch] = useReducer(newTermReducer, {});
 
 
-	const { authState } = useOktaAuth();
 	const obsoleteTerms = useControlledVocabularyService('generic_boolean_terms');
-	let vocabularyService = new VocabularyService(authState);
+	let vocabularyService = new VocabularyService();
 
 	useQuery("vocabularies",() => vocabularyService.getVocabularies(), {
 			onSuccess: (data) => {
@@ -54,7 +52,7 @@ export const ControlledVocabularyComponent = () => {
 
 	const mutation = useMutation(updatedTerm => {
 			if (!vocabularyService) {
-					vocabularyService = new VocabularyService(authState);
+					vocabularyService = new VocabularyService();
 			}
 			return vocabularyService.saveTerm(updatedTerm);
 	});
@@ -279,6 +277,7 @@ export const ControlledVocabularyComponent = () => {
 					errorObject = {{errorMessages, setErrorMessages}}
 					headerButtons={createButtons}
 					deletionEnabled={true}
+					deletionMethod={vocabularyService.deleteTerm}
 				/>
 				<NewTermForm
 					newTermDialog = {newTermDialog}

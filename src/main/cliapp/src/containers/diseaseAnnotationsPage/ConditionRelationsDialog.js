@@ -13,7 +13,7 @@ import { ValidationService } from '../../service/ValidationService';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { SearchService } from '../../service/SearchService';
 
@@ -266,7 +266,7 @@ export const ConditionRelationsDialog = ({
 	const conditionsEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["conditionStatement"]}
 					rowProps={props}
 					searchService={searchService}

@@ -72,7 +72,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {
-				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage()));
+				addException(history, new ObjectUpdateExceptionData(annotationDTO, e.getMessage(), e.getStackTrace()));
 			}
 
 			ph.progressProcess();

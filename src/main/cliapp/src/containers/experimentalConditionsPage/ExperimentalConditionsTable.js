@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -30,7 +30,7 @@ export const ExperimentalConditionsTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
-	let experimentalConditionService = null;
+	let experimentalConditionService = new ExperimentalConditionService();
 
 	const sortMapping = {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']
@@ -175,7 +175,7 @@ export const ExperimentalConditionsTable = () => {
 	const conditionClassEditorTemplate = (props, autocomplete) => {
 		return (
 			<>
-			<AutocompleteEditor
+			<AutocompleteRowEditor
 				autocompleteFields={autocomplete}
 				rowProps={props}
 				searchService={searchService}
@@ -207,7 +207,7 @@ export const ExperimentalConditionsTable = () => {
 	const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={autocomplete}
 					rowProps={props}
 					searchService={searchService}
@@ -368,6 +368,7 @@ export const ExperimentalConditionsTable = () => {
 					errorObject = {{errorMessages, setErrorMessages}}
 					newEntity={newExperimentalCondition}
 					deletionEnabled={true}
+					deletionMethod={experimentalConditionService.deleteExperimentalCondition}
 				/>
 				<NewConditionForm
 					newConditionState={newConditionState}

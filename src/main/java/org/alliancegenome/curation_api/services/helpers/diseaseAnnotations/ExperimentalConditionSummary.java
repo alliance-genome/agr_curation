@@ -8,6 +8,7 @@ import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class ExperimentalConditionSummary {
@@ -43,7 +44,7 @@ public class ExperimentalConditionSummary {
 		if (condition.getConditionQuantity() != null)
 			conditionSummary.add(condition.getConditionQuantity());
 		
-		if (condition.getConditionFreeText() != null)
+		if (StringUtils.isNotBlank(condition.getConditionFreeText()))
 			conditionSummary.add(condition.getConditionFreeText());
 		
 		
@@ -53,40 +54,40 @@ public class ExperimentalConditionSummary {
 	public String getConditionSummary(ExperimentalConditionDTO conditionDto) {
 		CurieGeneratorHelper conditionSummary = new CurieGeneratorHelper();
 		
-		if (conditionDto.getConditionClass() != null) {
-			ZecoTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClass());
+		if (StringUtils.isNotBlank(conditionDto.getConditionClass())) {
+			ZECOTerm conditionClass = zecoTermDAO.find(conditionDto.getConditionClass());
 			conditionSummary.add(conditionClass.getName());
 		}
 		
-		if (conditionDto.getConditionId() != null) {
+		if (StringUtils.isNotBlank(conditionDto.getConditionId())) {
 			ExperimentalConditionOntologyTerm conditionId = expCondTermDAO.find(conditionDto.getConditionId());
 			conditionSummary.add(conditionId.getName());
 		}
 		
-		if (conditionDto.getConditionAnatomy() != null) {
+		if (StringUtils.isNotBlank(conditionDto.getConditionAnatomy())) {
 			AnatomicalTerm conditionAnatomy = anatomicalTermDAO.find(conditionDto.getConditionAnatomy());
 			conditionSummary.add(conditionAnatomy.getName());
 		}
 		
-		if (conditionDto.getConditionGeneOntology() != null) {
+		if (StringUtils.isNotBlank(conditionDto.getConditionGeneOntology())) {
 			GOTerm conditionGeneOntology = goTermDAO.find(conditionDto.getConditionGeneOntology());
 			conditionSummary.add(conditionGeneOntology.getName());
 		}
 
-		if (conditionDto.getConditionChemical() != null) {
+		if (StringUtils.isNotBlank(conditionDto.getConditionChemical())) {
 			ChemicalTerm conditionChemical = chemicalTermDAO.find(conditionDto.getConditionChemical());
 			conditionSummary.add(conditionChemical.getName());
 		}
 		
-		if (conditionDto.getConditionTaxon() != null) {
+		if (StringUtils.isNotBlank(conditionDto.getConditionTaxon())) {
 			NCBITaxonTerm conditionTaxon = ncbiTaxonTermDAO.find(conditionDto.getConditionTaxon());
 			conditionSummary.add(conditionTaxon.getName());
 		}
 
-		if (conditionDto.getConditionQuantity() != null)
+		if (StringUtils.isNotBlank(conditionDto.getConditionQuantity()))
 			conditionSummary.add(conditionDto.getConditionQuantity());
 		
-		if (conditionDto.getConditionFreeText() != null)
+		if (StringUtils.isNotBlank(conditionDto.getConditionFreeText()))
 			conditionSummary.add(conditionDto.getConditionFreeText());
 		
 		return conditionSummary.getSummary();

@@ -20,7 +20,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"}, callSuper = true)
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class GenomicEntity extends BiologicalEntity {
 
 	//@Analyzer(definition = "caseInsensitiveAnalyzer")
@@ -29,14 +29,14 @@ public class GenomicEntity extends BiologicalEntity {
 	@Column(columnDefinition="TEXT")
 	@JsonView({View.FieldsOnly.class})
 	private String name;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
 	@JsonView({View.FieldsAndLists.class})
 	private List<Synonym> synonyms;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany

@@ -17,7 +17,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-@AGRCurationSchemaVersion("1.2.1")
+@AGRCurationSchemaVersion("1.2.4")
 public class CurationReportGroup extends GeneratedAuditedObject {
 	
 	@JsonView({View.FieldsOnly.class})

@@ -7,7 +7,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
 
@@ -101,7 +101,7 @@ export const NewConditionForm = ({
 					<form>
 						<div className="field">
 							<label htmlFor="conditionClass">Condition Class</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								autocompleteFields={curieAutocompleteFields}
 								searchService={searchService}
 								name="conditionClass"
@@ -129,7 +129,7 @@ export const NewConditionForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="conditionId">Condition Term</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="conditionId"
 								autocompleteFields={curieAutocompleteFields}
 								searchService={searchService}
@@ -150,7 +150,7 @@ export const NewConditionForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="conditionGeneOntology">Gene Ontology</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="conditionGeneOntology"
 								autocompleteFields={curieAutocompleteFields}
 								searchService={searchService}
@@ -171,7 +171,7 @@ export const NewConditionForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="conditionChemical">Chemical</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="conditionChemical"
 								autocompleteFields={curieAutocompleteFields}
 								searchService={searchService}
@@ -192,7 +192,7 @@ export const NewConditionForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="conditionAnatomy">Anatomy</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="conditionAnatomy"
 								autocompleteFields={curieAutocompleteFields}
 								searchService={searchService}
@@ -214,7 +214,7 @@ export const NewConditionForm = ({
 		
 						<div className="field">
 							<label htmlFor="conditionTaxon">Taxon</label>
-							<AutocompleteEditor
+							<AutocompleteRowEditor
 								name="conditionTaxon"
 								autocompleteFields={curieAutocompleteFields}
 								searchService={searchService}

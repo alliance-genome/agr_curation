@@ -35,7 +35,7 @@ export const CronFields = ({ newItem, onChange }) => {
 						onMouseOver={(e) => op.current.toggle(e)}
 					></i>
 					<OverlayPanel ref={op}>
-						For more information, click this <a href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html"> link</a>
+						For more information, click this <a target="_blank" rel="noopener noreferrer" href="http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html"> link</a>
 					</OverlayPanel>
 					<InputText
 						value={newItem.cronSchedule}

@@ -14,14 +14,14 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
 	public RestDefaultObjectMapper() {
 		//log.info("Setting up Default Object Mapper");
 		mapper = new ObjectMapper();
-		
+
 		mapper.registerModule(new JavaTimeModule());
-		
-		
+
+
 		//Hibernate5Module hm = new Hibernate5Module();
 		//hm.configure(Hibernate5Module.Feature.FORCE_LAZY_LOADING, false);
 		//mapper.registerModule(new Hibernate5Module());
-		
+
 		   //.addModule(new ParameterNamesModule())
 		   //.addModule(new Jdk8Module())
 		   // and possibly other configuration, modules, then:
@@ -29,6 +29,7 @@ public class RestDefaultObjectMapper implements ContextResolver<ObjectMapper> {
 
 		//mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 		mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);

@@ -87,7 +87,7 @@ public class GeneExecutor extends LoadFileExecutor {
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {
-				addException(history, new ObjectUpdateExceptionData(geneDTO, e.getMessage()));
+				addException(history, new ObjectUpdateExceptionData(geneDTO, e.getMessage(), e.getStackTrace()));
 			}
 			
 			ph.progressProcess();

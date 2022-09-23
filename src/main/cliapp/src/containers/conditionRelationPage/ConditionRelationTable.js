@@ -11,7 +11,7 @@ import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
@@ -37,7 +37,7 @@ export const ConditionRelationTable = () => {
 
 
 
-	let conditionRelationService = null;
+	let conditionRelationService = new ConditionRelationService();
 
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
 
@@ -84,7 +84,7 @@ export const ConditionRelationTable = () => {
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
 					searchService={searchService}
@@ -123,7 +123,7 @@ export const ConditionRelationTable = () => {
 	const conditionRelationTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["conditionSummary"]}
 					rowProps={props}
 					searchService={searchService}
@@ -246,6 +246,7 @@ export const ConditionRelationTable = () => {
 				headerButtons={headerButtons}
 				newEntity={newConditionRelation}
 				deletionEnabled={true}
+				deletionMethod={conditionRelationService.deleteConditionRelation}
 			/>
 			<NewRelationForm
 				newRelationState={newRelationState}

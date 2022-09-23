@@ -11,9 +11,13 @@ public class View {
 	public static class VocabularyView extends FieldsOnly { }
 	public static class VocabularyTermUpdate extends FieldsOnly { }
 	
+	public static class NoteView extends FieldsAndLists { }
+	
 	public static class BulkLoadFileHistory extends FieldsOnly { }
 	public static class ReportHistory extends FieldsOnly { }
 	
-	public static class DiseaseAnnotationUpdate extends FieldsOnly { }
+	public static class DiseaseAnnotation extends FieldsOnly { }
+	public static class DiseaseAnnotationUpdate extends DiseaseAnnotation { }
+	public static class DiseaseAnnotationCreate extends DiseaseAnnotation { }
 
 }

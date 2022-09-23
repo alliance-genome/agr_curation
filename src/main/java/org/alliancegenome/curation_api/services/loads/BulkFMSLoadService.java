@@ -26,7 +26,7 @@ public class BulkFMSLoadService extends BaseEntityCrudService<BulkFMSLoad, BulkF
 	@Transactional
 	public ObjectResponse<BulkFMSLoad> restartLoad(Long id) {
 		BulkFMSLoad load = bulkFMSLoadDAO.find(id);
-		load.setStatus(JobStatus.FORCED_PENDING);
+		load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 		return new ObjectResponse<BulkFMSLoad>(load);
 	}
 }

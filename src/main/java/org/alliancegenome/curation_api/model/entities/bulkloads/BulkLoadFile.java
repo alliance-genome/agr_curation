@@ -1,13 +1,23 @@
 package org.alliancegenome.curation_api.model.entities.bulkloads;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 import javax.persistence.*;
 
 import org.alliancegenome.curation_api.enums.JobStatus;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.envers.Audited;
+import org.hibernate.search.engine.backend.types.Aggregable;
+import org.hibernate.search.engine.backend.types.Searchable;
+import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.bridge.mapping.annotation.ValueBridgeRef;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -17,11 +27,17 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoad"})
+@AGRCurationSchemaVersion("1.2.4")
 public class BulkLoadFile extends GeneratedAuditedObject {
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@KeywordField(name = "dateLastLoaded_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
+	@JsonView(View.FieldsOnly.class)
+	private OffsetDateTime dateLastLoaded;
 	
 	@JsonView({View.FieldsOnly.class})
 	@Enumerated(EnumType.STRING)
-	private JobStatus status;
+	private JobStatus bulkloadStatus;
 
 	@JsonView({View.FieldsOnly.class})
 	@Column(unique = true)
