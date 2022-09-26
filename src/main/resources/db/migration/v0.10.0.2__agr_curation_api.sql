@@ -3,8 +3,8 @@ ALTER TABLE diseaseannotation
 	DROP COLUMN datecreated;
 	
 ALTER TABLE diseaseannotation_aud
-	DROP COLUMN datelastmodified,
-	DROP COLUMN creationdate,
-	DROP COLUMN modifiedby,
-	DROP COLUMN createdby,
-	DROP COLUMN modid;
+	DROP COLUMN IF EXISTS datelastmodified,
+	DROP COLUMN IF EXISTS creationdate,
+	DROP COLUMN IF EXISTS modifiedby,
+	DROP COLUMN IF EXISTS createdby,
+	DROP COLUMN IF EXISTS modid;
