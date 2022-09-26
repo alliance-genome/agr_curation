@@ -62,8 +62,6 @@ public abstract class DiseaseAnnotationCurie {
 
 	public static String getExperimentalConditionCurie(ExperimentalCondition cond) {
 		CurieGeneratorHelper help = new CurieGeneratorHelper();
-		if (cond.getConditionStatement() != null)
-			help.add(cond.getConditionStatement());
 		if (cond.getConditionClass() != null)
 			help.add(cond.getConditionClass().getCurie());
 		if (cond.getConditionId() != null)
@@ -76,14 +74,13 @@ public abstract class DiseaseAnnotationCurie {
 			help.add(cond.getConditionGeneOntology().getCurie());
 		if (cond.getConditionTaxon() != null)
 			help.add(cond.getConditionTaxon().getCurie());
-		if (cond.getConditionQuantity() != null)
-			help.add(cond.getConditionQuantity());
+		help.add(cond.getConditionQuantity());
+		help.add(cond.getConditionFreeText());
 		return help.getCurie();
 	}
 
 	public static String getExperimentalConditionCurie(ExperimentalConditionDTO dto) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		curie.add(dto.getConditionStatement());
 		curie.add(dto.getConditionClass());
 		curie.add(dto.getConditionId());
 		curie.add(dto.getConditionAnatomy());
@@ -91,6 +88,7 @@ public abstract class DiseaseAnnotationCurie {
 		curie.add(dto.getConditionGeneOntology());
 		curie.add(dto.getConditionTaxon());
 		curie.add(dto.getConditionQuantity());
+		curie.add(dto.getConditionFreeText());
 		return curie.getCurie();
 	}
 
