@@ -232,37 +232,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		annotatedClasses.remove(CHEBITerm.class);
 		annotatedClasses.remove(Allele.class);
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("MassIndex");
-		MassIndexer indexer =
-			searchSession
-				.massIndexer(annotatedClasses)
-				.batchSizeToLoadObjects(batchSizeToLoadObjects)
-				.idFetchSize(idFetchSize)
-				.dropAndCreateSchemaOnStart(true)
-				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(typesToIndexInParallel)
-				.threadsToLoadObjects(threadsToLoadObjects)
-				.monitor(new MassIndexingMonitor() {
-					public void documentsAdded(long increment) { }
-					public void entitiesLoaded(long increment) { }
-					public void addToTotalCount(long increment) { }
-					public void documentsBuilt(long increment) {
-						ph.progressProcess();
-					}
-					public void indexingCompleted() {
-						ph.finishProcess();
-					}
-				});
-		
-		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer.transactionTimeout(transactionTimeout);
-		if (limitIndexedObjectsTo > 0) {
-			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
-		}
-		indexer.start();
-		
-		
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
 		ph1.startProcess("MassIndex CHEBITerm");
 		MassIndexer indexer1 =
@@ -291,9 +260,50 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer1.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
-		indexer1.start();
+		try {
+			log.info("Waiting for Chebi Indexer to finish");
+			indexer1.startAndWait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ph.startProcess("MassIndex");
+		MassIndexer indexer =
+			searchSession
+				.massIndexer(annotatedClasses)
+				.batchSizeToLoadObjects(batchSizeToLoadObjects)
+				.idFetchSize(idFetchSize)
+				.dropAndCreateSchemaOnStart(true)
+				.mergeSegmentsOnFinish(true)
+				.typesToIndexInParallel(typesToIndexInParallel)
+				.threadsToLoadObjects(threadsToLoadObjects)
+				.monitor(new MassIndexingMonitor() {
+					public void documentsAdded(long increment) { }
+					public void entitiesLoaded(long increment) { }
+					public void addToTotalCount(long increment) { }
+					public void documentsBuilt(long increment) {
+						ph.progressProcess();
+					}
+					public void indexingCompleted() {
+						ph.finishProcess();
+					}
+				});
 		
-		
+		//indexer.dropAndCreateSchemaOnStart(true);
+		indexer.transactionTimeout(transactionTimeout);
+		if (limitIndexedObjectsTo > 0) {
+			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
+		}
+		try {
+			log.info("Waiting for Full Indexer to finish");
+			indexer.startAndWait();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		ProcessDisplayHelper ph2 = new ProcessDisplayHelper(10000);
 		ph2.startProcess("MassIndex Allele");
 		MassIndexer indexer2 =
@@ -322,7 +332,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		if (limitIndexedObjectsTo > 0) {
 			indexer2.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
+		log.info("Starting Allele Indexer and not waiting for finish");
 		indexer2.start();
+
 
 	}
 
