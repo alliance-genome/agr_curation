@@ -136,10 +136,10 @@ const EditorTooltip = ({op, autocompleteSelectedItem}) => {
 				<div key={`name${autocompleteSelectedItem.name}`} dangerouslySetInnerHTML={{__html: 'Name: ' + autocompleteSelectedItem.name}}/>
 				}
 				{autocompleteSelectedItem.handle &&
-				<div key={`name${autocompleteSelectedItem.handle}`} dangerouslySetInnerHTML={{__html: 'Handle: ' + autocompleteSelectedItem.handle + '(' + autocompleteSelectedItem.singleReference + ')'}}/>
+				<div key={`name${autocompleteSelectedItem.handle}`} dangerouslySetInnerHTML={{__html: 'Handle: ' + autocompleteSelectedItem.handle + ' (' + autocompleteSelectedItem.singleReference + ')'}}/>
 				}
-				{autocompleteSelectedItem.conditionStatement &&
-				<div key={`name${autocompleteSelectedItem.conditionStatement}`} dangerouslySetInnerHTML={{__html: 'Experimental Condition: ' + autocompleteSelectedItem.conditionStatement}}/>
+				{autocompleteSelectedItem.conditionSummary &&
+				<div key={`name${autocompleteSelectedItem.conditionSummary}`} dangerouslySetInnerHTML={{__html: 'Condition: ' + autocompleteSelectedItem.conditionSummary + ' (' + autocompleteSelectedItem.uniqueId + ')'}}/>
 				}
 				{autocompleteSelectedItem.symbol &&
 				<div key={`symbol${autocompleteSelectedItem.symbol}`} dangerouslySetInnerHTML={{__html: 'Symbol: ' + autocompleteSelectedItem.symbol}}/>
