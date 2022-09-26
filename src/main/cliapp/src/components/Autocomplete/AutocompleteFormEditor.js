@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { AutoComplete } from "primereact/autocomplete";
 import { onSelectionOver } from '../../utils/utils';
 import { Tooltip } from "primereact/tooltip";
@@ -6,7 +6,6 @@ import { Tooltip } from "primereact/tooltip";
 export const AutocompleteFormEditor = (
 	{
 		name,
-		rowProps,
 		searchService,
 		autocompleteFields,
 		endpoint,
@@ -22,6 +21,7 @@ export const AutocompleteFormEditor = (
 		isSgdStrainBackground = false,
 		valueDisplayHandler,
 		value,
+		customRef,
 		onValueChangeHandler
 	}
 ) => {
@@ -68,6 +68,7 @@ export const AutocompleteFormEditor = (
 	return (
 		<div>
 			<AutoComplete
+				ref={customRef}
 				name={name}
 				multiple={isMultiple}
 				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
