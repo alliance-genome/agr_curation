@@ -104,6 +104,7 @@ export const NewAnnotationForm = ({
 				toast_error.current.show([
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
 				]);
+				if (!error.response.data) return;
 				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
 			}
 		});
@@ -200,7 +201,7 @@ export const NewAnnotationForm = ({
 								isSubject={true}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.subject})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
 						</SplitterPanel>
@@ -212,7 +213,7 @@ export const NewAnnotationForm = ({
 								name="diseaseRelation"
 								optionLabel='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages?.diseaseRelation})}
+								className={classNames({'p-invalid': submitted && errorMessages.diseaseRelation})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseRelation"}/>
 						</SplitterPanel>
@@ -225,7 +226,7 @@ export const NewAnnotationForm = ({
 								optionLabel='text'
 								optionValue='name'
 								onChange={onDropdownFieldChange}
-								className={classNames({'p-invalid': submitted && errorMessages?.negated})}
+								className={classNames({'p-invalid': submitted && errorMessages.negated})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"negated"}/>
 						</SplitterPanel>
@@ -248,7 +249,7 @@ export const NewAnnotationForm = ({
 								}}
 								value={newAnnotation.object}
 								onValueChangeHandler={onDiseaseChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.object})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
 						</SplitterPanel>
@@ -268,7 +269,7 @@ export const NewAnnotationForm = ({
 								isReference={true}
 								value={newAnnotation.singleReference}
 								onValueChangeHandler={onObjectChange}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.singleReference})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
@@ -302,7 +303,7 @@ export const NewAnnotationForm = ({
 								}}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.evidenceCodes})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
 						</SplitterPanel>
@@ -323,7 +324,7 @@ export const NewAnnotationForm = ({
 								onValueChangeHandler={onArrayFieldChange}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.with})}
+								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
 						</SplitterPanel>

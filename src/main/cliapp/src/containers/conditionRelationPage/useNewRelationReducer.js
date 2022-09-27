@@ -3,7 +3,9 @@ import { useImmerReducer } from "use-immer";
 const initialNewRelationState = {
 	newRelation: {
 		handle: "",
-		singleReference: null,
+		singleReference: {
+			curie: "",
+		},
 		conditionRelationType: {name: ""},
 		conditions: [],
 	},
@@ -32,7 +34,7 @@ const newRelationReducer = (draft, action) => {
 		case 'OPEN_DIALOG':
 			draft.newRelationDialog = true;
 			break;
-		default: 
+		default:
       throw Error('Unknown action: ' + action.type);
 	}
 };

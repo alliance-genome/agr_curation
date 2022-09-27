@@ -11,12 +11,13 @@ import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/Li
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
+import {AutocompleteFormEditor} from "../../components/Autocomplete/AutocompleteFormEditor";
 
 
 export const NewRelationForm = ({
 	newRelationState,
 	newRelationDispatch,
-	searchService, 
+	searchService,
 	conditionRelationService,
 	conditionRelationTypeTerms,
 	setNewConditionRelation,
@@ -74,14 +75,12 @@ export const NewRelationForm = ({
 		});
 	}
 
-	const onReferenceChange = (event, setFieldValue) => {
-		const curie = event.value.curie;
+	const onReferenceChange = (event) => {
 		newRelationDispatch({
 			type: "EDIT",
 			field: event.target.name,
-			value: {curie},
+			value: event.target.value
 		});
-		setFieldValue(event.target.value);
 	}
 
 	const onConditionsChange = (event, setFieldValue) => {
@@ -119,18 +118,20 @@ export const NewRelationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"handle"}/>
 						</div>
 						<div className="field">
-							<label htmlFor="reference">Reference</label>
-							<AutocompleteRowEditor
-								name="singleReference"
+							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
+							<AutocompleteFormEditor
 								autocompleteFields={["curie", "cross_references.curie"]}
 								searchService={searchService}
+								name="singleReference"
+								label="Reference"
 								endpoint='literature-reference'
 								filterName='curieFilter'
-								isReference={true}
-								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 								fieldName='singleReference'
-								passedOnChange={onReferenceChange}
-								valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+								isReference={true}
+								value={newRelation.singleReference}
+								onValueChangeHandler={onReferenceChange}
+								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
+								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
@@ -163,7 +164,7 @@ export const NewRelationForm = ({
 								isMultiple={true}
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditions})}
 								passedOnChange={onConditionsChange}
-								valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 									<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditions"}/>
