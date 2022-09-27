@@ -7,6 +7,7 @@ import java.util.*;
 import javax.persistence.*;
 import javax.persistence.Entity;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -23,7 +24,7 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE)
 public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})

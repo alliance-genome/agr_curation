@@ -41,7 +41,7 @@ import lombok.ToString;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @ToString(exclude = { "isaParents", "isaChildren", "isaAncestors", "isaDescendants", "crossReferences", "synonyms", "secondaryIdentifiers", "subsets"}, callSuper = true)
-@AGRCurationSchemaVersion("1.2.4+")
+@AGRCurationSchemaVersion(min="1.2.4", max="1.2.4")
 public class OntologyTerm extends CurieAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

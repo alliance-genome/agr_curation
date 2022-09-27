@@ -2,6 +2,7 @@ package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
@@ -22,7 +23,7 @@ import lombok.*;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @Schema(name = "ExperimentalCondition", description = "POJO that describes the Experimental Condition")
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE)
 public class ExperimentalCondition extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)

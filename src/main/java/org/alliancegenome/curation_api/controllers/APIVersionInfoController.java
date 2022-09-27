@@ -35,7 +35,11 @@ public class APIVersionInfoController implements APIVersionInterface {
 		TreeMap<String, String> linkMLClassVersions = new TreeMap<String, String>();
 		for(Class<?> clazz: annotatedClasses) {
 			AGRCurationSchemaVersion version = clazz.getAnnotation(AGRCurationSchemaVersion.class);
-			linkMLClassVersions.put(clazz.getSimpleName(), version.value());
+			if (version.min().equals(version.max())) {
+				linkMLClassVersions.put(clazz.getSimpleName(), version.min());
+			} else {
+				linkMLClassVersions.put(clazz.getSimpleName(), version.min() + " - " + version.max());
+			}
 		}
 
 		APIVersionInfo info = new APIVersionInfo();

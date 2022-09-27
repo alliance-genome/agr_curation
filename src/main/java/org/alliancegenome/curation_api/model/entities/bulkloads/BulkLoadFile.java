@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.OffsetDateTimeValueBridge;
@@ -27,7 +28,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoad"})
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.3.0", max=LinkMLSchemaConstants.LATEST_RELEASE)
 public class BulkLoadFile extends GeneratedAuditedObject {
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))

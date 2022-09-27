@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.GeneratedAuditedObject;
@@ -19,7 +20,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"curationReportGroup", "curationReportHistory"}, callSuper = true)
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE)
 public class CurationReport extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})

@@ -4,6 +4,7 @@ import java.time.OffsetDateTime;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.*;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -21,7 +22,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
 @ToString(exclude = {"createdBy", "updatedBy"})
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE)
 public class AuditedObject extends BaseEntity {
 
 

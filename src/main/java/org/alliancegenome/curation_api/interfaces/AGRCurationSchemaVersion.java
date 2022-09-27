@@ -5,6 +5,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AGRCurationSchemaVersion {
 
-	String value();
+	String min();
+	String max();
 
 }
