@@ -16,6 +16,7 @@ import { ApiVersionService } from '../../service/ApiVersionService';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
+import { SiteContext } from './SiteContext';
 
 import 'primereact/resources/primereact.css';
 import 'primeicons/primeicons.css';
@@ -36,18 +37,19 @@ const initialThemeState = {
 };
 
 export const SiteLayout = (props) => {
+
 		const [themeState, setThemeState] = useSessionStorage( "themeSettings", initialThemeState);
 		const [staticMenuInactive, setStaticMenuInactive] = useState(false);
 		const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);
 		const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
+		const [siteContext, setSiteContext] = useState({ "test": "test data" });
+
 		const [userInfo, setUserInfo] = useState(null);
 
 		const copyTooltipRef = useRef();
 		const location = useLocation();
-
-		const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
 
 		const { authState, oktaAuth } = useOktaAuth();
 
@@ -96,14 +98,15 @@ export const SiteLayout = (props) => {
 			}
 		}, [authState]);
 
-		useQuery(['getApiVersion', apiVersion],
+		useQuery(['getApiVersion'],
 			() => apiService.getApiVersion(), {
 				onSuccess: (data) => {
 					//console.log(data);
-					setApiVersion(data);
+					//setApiVersion(data);
+					setSiteContext({ ...siteContext, apiVersion: data });
 				},
 				onError: (error) => {
-				console.log(error);
+					console.log(error);
 				},
 				keepPreviousData: true,
 				refetchOnWindowFocus: false,
@@ -294,8 +297,8 @@ export const SiteLayout = (props) => {
 												{ label: 'Data Loads', icon: 'pi pi-fw pi-home', to: '/dataloads' },
 												{ label: 'Reports', icon: 'pi pi-fw pi-home', to: '/reports' },
 												{ label: 'Swagger UI', icon: 'pi pi-fw pi-home', url: '/swagger-ui', target: "_blank" },
-												{ label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${apiVersion?.esHost}`, target: "_blank" },
-												{ label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
+												{ label: 'Elastic Search UI', icon: 'pi pi-fw pi-home', url: `http://cerebro.alliancegenome.org:9000/#!/overview?host=https://${siteContext?.apiVersion?.esHost}`, target: "_blank" },
+												{ label: 'Logs Server', icon: 'pi pi-fw pi-home', url: `http://logs.alliancegenome.org:5601/app/logtrail#/?q=*&h=agr.curation.${siteContext?.apiVersion?.env}.api.server&t=Now&i=logstash*&_g=()`, target: "_blank" },
 										]
 								}
 						]
@@ -328,6 +331,7 @@ export const SiteLayout = (props) => {
 		});
 
 		return (
+			<SiteContext.Provider value={ siteContext }>
 				<div className={wrapperClass} onClick={onWrapperClick}>
 						<Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
@@ -356,5 +360,6 @@ export const SiteLayout = (props) => {
 						</CSSTransition>
 
 				</div>
+			</SiteContext.Provider>
 		);
 }
