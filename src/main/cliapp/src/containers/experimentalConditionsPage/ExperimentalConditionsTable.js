@@ -231,7 +231,7 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"];
+	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 
 	const columns = [
 		{
