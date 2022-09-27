@@ -1,7 +1,8 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -11,10 +12,15 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.ingest.dto.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.AlleleService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
@@ -40,6 +46,10 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 			if (alleles != null) {
 				bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
+				if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
+					AGRCurationSchemaVersion version = Allele.class.getAnnotation(AGRCurationSchemaVersion.class);
+					bulkLoadFile.setLinkMLSchemaVersion(version.max());
+				}
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
 				trackHistory(runLoad(taxonId, alleles), bulkLoadFile);

@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.FileInputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -10,11 +12,17 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.ingest.dto.*;
-import org.alliancegenome.curation_api.response.*;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkManualLoad;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.IngestDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.AlleleDiseaseAnnotationService;
+import org.alliancegenome.curation_api.services.DiseaseAnnotationService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -39,6 +47,10 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			if (annotations != null) {
 				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
+				if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
+					AGRCurationSchemaVersion version = AlleleDiseaseAnnotation.class.getAnnotation(AGRCurationSchemaVersion.class);
+					bulkLoadFile.setLinkMLSchemaVersion(version.max());
+				}
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
 				trackHistory(runLoad(taxonId, annotations), bulkLoadFile);

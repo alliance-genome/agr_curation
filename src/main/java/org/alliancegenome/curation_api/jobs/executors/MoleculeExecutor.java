@@ -7,9 +7,14 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.model.ingest.dto.fms.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.entities.Molecule;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeMetaDataFmsDTO;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
@@ -25,6 +30,10 @@ public class MoleculeExecutor extends LoadFileExecutor {
 		try {
 			MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
 			bulkLoadFile.setRecordCount(moleculeData.getData().size());
+			if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
+				AGRCurationSchemaVersion version = Molecule.class.getAnnotation(AGRCurationSchemaVersion.class);
+				bulkLoadFile.setLinkMLSchemaVersion(version.max());
+			}
 			bulkLoadFileDAO.merge(bulkLoadFile);
 			
 			trackHistory(runLoad(moleculeData), bulkLoadFile);

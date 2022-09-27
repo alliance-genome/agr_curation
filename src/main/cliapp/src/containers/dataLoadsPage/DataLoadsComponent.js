@@ -282,6 +282,7 @@ export const DataLoadsComponent = () => {
 					<Column field="fileSize" header="Compressed File Size" />
 					<Column field="recordCount" header="Record Count" />
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
+					<Column field="linkMLSchemaVersion" header="LinkML Schema Version" />
 					<Column field="dateLastLoaded" header="Last Loaded" />
 					<Column field="bulkloadStatus" body={bulkloadStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>

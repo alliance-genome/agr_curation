@@ -59,6 +59,9 @@ public class BulkLoadFile extends GeneratedAuditedObject {
 	@JsonView({View.FieldsOnly.class})
 	@Column(columnDefinition="TEXT")
 	private String errorMessage;
+	
+	@JsonView({View.FieldsOnly.class})
+	private String linkMLSchemaVersion;
 
 	@ManyToOne
 	private BulkLoad bulkLoad;
