@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -12,6 +12,7 @@ import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from 'react-query';
+import { SiteContext } from '../layout/SiteContext';
 
 export const DataLoadsComponent = () => {
 
@@ -27,6 +28,8 @@ export const DataLoadsComponent = () => {
 				return { ...state, [action.field]: action.value };
 		}
 	};
+
+	const { apiVersion } = useContext(SiteContext);
 
 	const [groups, setGroups] = useState({});
 	const [history, setHistory] = useState({id: 0});
@@ -309,41 +312,62 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
+	const getSchemaVersionArray = (map) => {
+		if(map) {
+			const array = [];
+			for(let item in map) {
+				array.push({ className: item, schemaVersion: map[item]});
+			}
+			return array;
+		} else {
+			return [];
+		}
+	}
+
 	return (
-		<div className="card">
-			<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
-			<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
-			<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
-			<h3>Data Loads Table</h3>
-			<Messages ref={errorMessage} />
-			<DataTable key="groupTable"
-				value={groups} className="p-datatable-sm"
-				expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
-				rowExpansionTemplate={loadTable} dataKey="id">
-				<Column expander style={{ width: '3em' }} />
-				<Column body={nameBodyTemplate} header="Group Name" />
-				<Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-			</DataTable>
-			<NewBulkLoadForm
-				bulkLoadDialog={bulkLoadDialog}
-				setBulkLoadDialog={setBulkLoadDialog}
-				newBulkLoad={newBulkLoad}
-				bulkLoadDispatch={bulkLoadDispatch}
-				groups={groups}
-				disableFormFields={disableFormFields}
-				setDisableFormFields={setDisableFormFields}
-				dataLoadService={dataLoadService}
-			/>
-			<NewBulkLoadGroupForm
-				bulkLoadGroupDialog={bulkLoadGroupDialog}
-				setBulkLoadGroupDialog={setBulkLoadGroupDialog}
-			/>
-			<HistoryDialog
-				historyDialog={historyDialog}
-				setHistoryDialog={setHistoryDialog}
-				dataLoadService={getService()}
-				history={history}
-			/>
-		</div>
+		<>
+			<div className="card">
+				<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
+				<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
+				<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
+				<h3>Data Loads Table</h3>
+				<Messages ref={errorMessage} />
+				<DataTable key="groupTable"
+					value={groups} className="p-datatable-sm"
+					expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
+					rowExpansionTemplate={loadTable} dataKey="id">
+					<Column expander style={{ width: '3em' }} />
+					<Column body={nameBodyTemplate} header="Group Name" />
+					<Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+				</DataTable>
+				<NewBulkLoadForm
+					bulkLoadDialog={bulkLoadDialog}
+					setBulkLoadDialog={setBulkLoadDialog}
+					newBulkLoad={newBulkLoad}
+					bulkLoadDispatch={bulkLoadDispatch}
+					groups={groups}
+					disableFormFields={disableFormFields}
+					setDisableFormFields={setDisableFormFields}
+					dataLoadService={dataLoadService}
+				/>
+				<NewBulkLoadGroupForm
+					bulkLoadGroupDialog={bulkLoadGroupDialog}
+					setBulkLoadGroupDialog={setBulkLoadGroupDialog}
+				/>
+				<HistoryDialog
+					historyDialog={historyDialog}
+					setHistoryDialog={setHistoryDialog}
+					dataLoadService={getService()}
+					history={history}
+				/>
+			</div>
+			<div className="card">
+				<h3>Schema Version Table</h3>
+				<DataTable key="schemaTable" value={ getSchemaVersionArray(apiVersion?.agrCurationSchemaVersions) } className="p-datatable-sm" dataKey="id">
+					<Column header="Class Name" field="className" />
+					<Column header="Curation Schema (LinkML) Version" field="schemaVersion"></Column>
+				</DataTable>
+			</div>
+		</>
 	);
 };
