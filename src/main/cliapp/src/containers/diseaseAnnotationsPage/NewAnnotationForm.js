@@ -78,9 +78,9 @@ export const NewAnnotationForm = ({
 					};
 				});
 				anyErrors = true;
-				newAnnotationDispatch({type: "UPDATE_RELATED_NOTES_ERROR_MESSAGES", errorMessages: relatedNotesErrors});
 			}
 		});
+		newAnnotationDispatch({type: "UPDATE_RELATED_NOTES_ERROR_MESSAGES", errorMessages: relatedNotesErrors});
 		return anyErrors;
 	}
 
