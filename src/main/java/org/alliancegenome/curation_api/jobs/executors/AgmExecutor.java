@@ -41,15 +41,12 @@ public class AgmExecutor extends LoadFileExecutor {
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 			
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+			bulkLoadFile.setLinkMLSchemaVersion(ingestDto.getLinkMLVersion());
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
 			
 			if (agms != null) {
 				bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
-				if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
-					AGRCurationSchemaVersion version = AffectedGenomicModel.class.getAnnotation(AGRCurationSchemaVersion.class);
-					bulkLoadFile.setLinkMLSchemaVersion(version.max());
-				}
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
 				trackHistory(runLoad(taxonId, agms), bulkLoadFile);

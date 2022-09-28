@@ -41,15 +41,12 @@ public class AlleleExecutor extends LoadFileExecutor {
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 			
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+			bulkLoadFile.setLinkMLSchemaVersion(ingestDto.getLinkMLVersion());
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
 			
 			if (alleles != null) {
 				bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
-				if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
-					AGRCurationSchemaVersion version = Allele.class.getAnnotation(AGRCurationSchemaVersion.class);
-					bulkLoadFile.setLinkMLSchemaVersion(version.max());
-				}
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
 				trackHistory(runLoad(taxonId, alleles), bulkLoadFile);

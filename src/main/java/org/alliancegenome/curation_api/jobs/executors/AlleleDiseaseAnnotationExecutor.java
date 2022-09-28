@@ -42,15 +42,13 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
+			bulkLoadFile.setLinkMLSchemaVersion(ingestDto.getLinkMLVersion());
 			List<AlleleDiseaseAnnotationDTO> annotations = ingestDto.getDiseaseAlleleIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
 
 			if (annotations != null) {
 				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-				if (bulkLoadFile.getLinkMLSchemaVersion() == null) {
-					AGRCurationSchemaVersion version = AlleleDiseaseAnnotation.class.getAnnotation(AGRCurationSchemaVersion.class);
-					bulkLoadFile.setLinkMLSchemaVersion(version.max());
-				}
+				
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
 				trackHistory(runLoad(taxonId, annotations), bulkLoadFile);
