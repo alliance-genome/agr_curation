@@ -139,9 +139,10 @@ export const DataLoadsComponent = () => {
 
 	const loadFileActionBodyTemplate = (rowData) => {
 		let ret = [];
-
 		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
-			ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
+			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.classesLoaded)) {
+				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
+			}
 		}
 		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
 			ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
@@ -204,9 +205,6 @@ export const DataLoadsComponent = () => {
 			</div>
 		);
 	};
-
-
-
 
 	const dynamicColumns = (loads) => {
 
@@ -275,6 +273,8 @@ export const DataLoadsComponent = () => {
 
 	const fileTable = (load) => {
 		const sortedLoadFiles = load.loadFiles ? load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1) : [];
+		const loadTypeClasses = getLoadTypeClasses(load.backendBulkLoadType);
+		sortedLoadFiles.forEach(file => {file.classesLoaded = loadTypeClasses});
 		return (
 			<div className="card">
 				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
@@ -322,6 +322,79 @@ export const DataLoadsComponent = () => {
 		} else {
 			return [];
 		}
+	}
+	
+	const getLoadTypeClasses = (loadType) => {
+		let classes = [];
+		switch(loadType) {
+			case "DISEASE_ANNOTATION":
+				classes = ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "ExperimentalCondition", "ConditionRelation", "Note"];
+				break;
+			case "GENE":
+				classes = ["Gene", "CrossReference", "Synonym"];
+				break;
+			case "ALLELE":
+				classes = ["Allele", "CrossReference", "Synonym"];
+				break
+			case "AGM":
+				classes = ["AffectedGenomicModel", "CrossReference", "Synonym"];
+				break;
+			default:
+				classes = [];
+		} 
+		
+		return classes;
+	}
+	
+	const fileWithinSchemaRange = (fileVersion, loadedClasses) => {
+		if (!fileVersion || !loadedClasses) return false;
+		const classVersions = apiVersion?.agrCurationSchemaVersions;
+		if (!classVersions) return false;
+		
+		const fileVersionParts = parseVersionString(fileVersion);
+		for (const loadedClass of loadedClasses) {
+			const classVersionRange = classVersions[loadedClass];
+			if (!classVersionRange) return false;
+			let minMaxVersions = classVersionRange.split(" - ");
+			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
+			let minMaxVersionParts = [];
+			minMaxVersions.forEach((version, ix) => {minMaxVersionParts[ix] = parseVersionString(version)});
+			
+			const minVersionParts = minMaxVersionParts[0];
+			if (minMaxVersions.length === 1) {
+				if (minVersionParts[0] !== fileVersionParts[0] || minVersionParts[1] !== fileVersionParts[1] || minVersionParts[2] !== fileVersionParts[2]) {
+					return false;
+				}
+			}
+			const maxVersionParts = minMaxVersionParts[1];
+			// check not lower than min version
+			if (fileVersionParts[0] < minVersionParts[0]) return false;
+			if (fileVersionParts[0] === minVersionParts[0]) {
+				if (fileVersionParts[1] < minVersionParts[1]) return false;
+				if (fileVersionParts[1] === minVersionParts[1]) {
+					if (fileVersionParts[2] < minVersionParts[2]) return false; 
+				}
+			}
+			// check not higher than max version
+			if (fileVersionParts[0] > maxVersionParts[0]) return false;
+			if (fileVersionParts[0] === maxVersionParts[0]) {
+				if (fileVersionParts[1] > maxVersionParts[1]) return false;
+				if (fileVersionParts[1] === maxVersionParts[1]) {
+					if (fileVersionParts[2] > maxVersionParts[2]) return false; 
+				}
+			}	
+		}	
+		return true;
+	};
+	
+	const parseVersionString = (version) => {
+		const regexp = /(?<major>\d+)\.(?<minor>\d+)\.?(?<patch>\d*)/;
+		const versionParts = version.match(regexp).groups;
+		const majorVersion = versionParts.major ? parseInt(versionParts.major) : 0;
+		const minorVersion = versionParts.minor ? parseInt(versionParts.minor) : 0;
+		const patchVersion = versionParts.patch ? parseInt(versionParts.patch) : 0;
+		
+		return [majorVersion, minorVersion, patchVersion];
 	}
 
 	return (

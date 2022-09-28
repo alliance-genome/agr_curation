@@ -1,11 +1,12 @@
 package org.alliancegenome.curation_api.interfaces;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
