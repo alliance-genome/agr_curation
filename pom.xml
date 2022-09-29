@@ -10,9 +10,10 @@
 	<artifactId>agr_curation_api</artifactId>
 	<name>AGR Curation :: API</name>
 	<version>0.0.0</version>
+	<description>This software is for using the curation api as a library</description>
+	<url>https://github.com/alliance-genome/agr_curation</url>
 
 	<properties>
-
 		<compiler-plugin.version>3.8.1</compiler-plugin.version>
 		<maven.compiler.parameters>true</maven.compiler.parameters>
 		<maven.compiler.source>11</maven.compiler.source>
@@ -28,16 +29,77 @@
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
 
-	<scm>
-		<developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
-		<tag>HEAD</tag>
-	</scm>
+   <scm>
+      <connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
+      <developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
+      <url>https://www.github.com/alliance-genome/agr_curation/tree/master</url>
+      <tag>HEAD</tag>
+   </scm>
+
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>http://www.opensource.org/licenses/mit-license.php</url>
+		</license>
+	</licenses>
+
+	<developers>
+		<developer>
+			<name>Olin Blodgett</name>
+			<organization>Jackson Laboratory</organization>
+			<organizationUrl>http://www.jax.org</organizationUrl>
+		</developer>
+		<developer>
+			<name>Manuel Luypaert</name>
+			<organization>EMBL-EBI</organization>
+			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Andrés Becerra</name>
+			<organization>EMBL-EBI</organization>
+			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Mark Quinton-Tulloch</name>
+			<organization>EMBL-EBI</organization>
+			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Chris Grove</name>
+			<organization>CalTech</organization>
+			<organizationUrl>https://www.caltech.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Adam Gibson</name>
+			<organization>Medical College of Wisconsin</organization>
+			<organizationUrl>https://www.mcw.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Jeff De Pons</name>
+			<organization>Medical College of Wisconsin</organization>
+			<organizationUrl>https://www.mcw.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Ketaki Thorat</name>
+			<organization>Medical College of Wisconsin</organization>
+			<organizationUrl>https://www.mcw.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Christian Pich</name>
+			<organization>University of Oregon</organization>
+			<organizationUrl>https://www.uoregon.edu/</organizationUrl>
+		</developer>
+	</developers>
 
 	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
 		<repository>
-			<id>github</id>
-			<name>GitHub</name>
-			<url>https://maven.pkg.github.com/alliance-genome/agr_curation</url>
+			<id>ossrh</id>
+			<name>Central Repository OSSRH</name>
+			<url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
 	</distributionManagement>
 
@@ -285,7 +347,7 @@
 			<artifactId>postgresql</artifactId>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.reflections</groupId>
 			<artifactId>reflections</artifactId>
@@ -299,6 +361,66 @@
 		<finalName>${project.artifactId}</finalName>
 
 		<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<version>2.2.1</version>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar-no-fork</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.9.1</version>
+				<configuration>
+					<source>8</source>
+				</configuration>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+         <plugin>
+            <groupId>org.sonatype.plugins</groupId>
+            <artifactId>nexus-staging-maven-plugin</artifactId>
+            <version>1.6.7</version>
+            <extensions>true</extensions>
+            <configuration>
+               <serverId>ossrh</serverId>
+               <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+               <autoReleaseAfterClose>true</autoReleaseAfterClose>
+            </configuration>
+         </plugin>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>1.5</version>
+            <executions>
+               <execution>
+                  <id>sign-artifacts</id>
+                  <phase>verify</phase>
+                  <goals>
+                     <goal>sign</goal>
+                  </goals>
+                  <configuration>
+                     <keyname>AGR Admin</keyname>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+
 			<plugin>
 				<groupId>${quarkus.platform.group-id}</groupId>
 				<artifactId>quarkus-maven-plugin</artifactId>
