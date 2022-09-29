@@ -49,6 +49,46 @@
 			<organization>Jackson Laboratory</organization>
 			<organizationUrl>http://www.jax.org</organizationUrl>
 		</developer>
+		<developer>
+			<name>Manuel Luypaert</name>
+			<organization>EMBL-EBI</organization>
+			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Andrés Becerra</name>
+			<organization>EMBL-EBI</organization>
+			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Mark Quinton-Tulloch</name>
+			<organization>EMBL-EBI</organization>
+			<organizationUrl>https://www.ebi.ac.uk/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Chris Grove</name>
+			<organization>CalTech</organization>
+			<organizationUrl>https://www.caltech.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Adam Gibson</name>
+			<organization>Medical College of Wisconsin</organization>
+			<organizationUrl>https://www.mcw.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Jeff De Pons</name>
+			<organization>Medical College of Wisconsin</organization>
+			<organizationUrl>https://www.mcw.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Ketaki Thorat</name>
+			<organization>Medical College of Wisconsin</organization>
+			<organizationUrl>https://www.mcw.edu/</organizationUrl>
+		</developer>
+		<developer>
+			<name>Christian Pich</name>
+			<organization>University of Oregon</organization>
+			<organizationUrl>https://www.uoregon.edu/</organizationUrl>
+		</developer>
 	</developers>
 
 	<distributionManagement>
