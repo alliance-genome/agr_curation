@@ -46,6 +46,13 @@ export const DataLoadsComponent = () => {
 	const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
 
 	const queryClient = useQueryClient();
+	
+	const loadTypeClasses = new Map([
+		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "ExperimentalCondition", "ConditionRelation", "Note"]],
+		["GENE", ["Gene", "CrossReference", "Synonym"]],
+		["ALLELE", ["Allele", "CrossReference", "Synonym"]],
+		["AGM", ["AffectedGenomicModel", "CrossReference", "Synonym"]]
+	]);
 
 	let dataLoadService = null;
 
@@ -273,8 +280,8 @@ export const DataLoadsComponent = () => {
 
 	const fileTable = (load) => {
 		const sortedLoadFiles = load.loadFiles ? load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1) : [];
-		const loadTypeClasses = getLoadTypeClasses(load.backendBulkLoadType);
-		sortedLoadFiles.forEach(file => {file.classesLoaded = loadTypeClasses});
+		const loadClasses = loadTypeClasses.has(load.backendBulkLoadType) ? loadTypeClasses.get(load.backendBulkLoadType): [];
+		sortedLoadFiles.forEach(file => {file.classesLoaded = loadClasses});
 		return (
 			<div className="card">
 				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
@@ -313,10 +320,19 @@ export const DataLoadsComponent = () => {
 	};
 
 	const getSchemaVersionArray = (map) => {
+		let submittedClasses = new Set();
+		loadTypeClasses.forEach((classes, datatype) => {
+			console.log(datatype);
+			console.log(loadTypeClasses.get(datatype));
+			classes.forEach(submittedClass => submittedClasses.add(submittedClass))
+		});
+		
 		if(map) {
 			const array = [];
 			for(let item in map) {
-				array.push({ className: item, schemaVersion: map[item]});
+				if (submittedClasses.has(item)) {
+					array.push({ className: item, schemaVersion: map[item]});
+				}
 			}
 			return array;
 		} else {
@@ -324,27 +340,7 @@ export const DataLoadsComponent = () => {
 		}
 	}
 	
-	const getLoadTypeClasses = (loadType) => {
-		let classes = [];
-		switch(loadType) {
-			case "DISEASE_ANNOTATION":
-				classes = ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "ExperimentalCondition", "ConditionRelation", "Note"];
-				break;
-			case "GENE":
-				classes = ["Gene", "CrossReference", "Synonym"];
-				break;
-			case "ALLELE":
-				classes = ["Allele", "CrossReference", "Synonym"];
-				break
-			case "AGM":
-				classes = ["AffectedGenomicModel", "CrossReference", "Synonym"];
-				break;
-			default:
-				classes = [];
-		} 
-		
-		return classes;
-	}
+	
 	
 	const fileWithinSchemaRange = (fileVersion, loadedClasses) => {
 		if (!fileVersion || !loadedClasses) return false;
