@@ -322,8 +322,6 @@ export const DataLoadsComponent = () => {
 	const getSchemaVersionArray = (map) => {
 		let submittedClasses = new Set();
 		loadTypeClasses.forEach((classes, datatype) => {
-			console.log(datatype);
-			console.log(loadTypeClasses.get(datatype));
 			classes.forEach(submittedClass => submittedClasses.add(submittedClass))
 		});
 		
