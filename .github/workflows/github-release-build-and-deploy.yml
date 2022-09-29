@@ -25,6 +25,33 @@ jobs:
       run: |
         docker build --build-arg OVERWRITE_VERSION=${{ github.event.release.tag_name }} -t $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }} .
         docker push $ECR_REGISTRY/$ECR_REPOSITORY:${{ github.event.release.tag_name }}
+  build-deploy-maven-central-package:
+    needs: [build-release-image]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Set up Maven Central Repository
+        uses: actions/setup-java@v3
+        with:
+          java-version: '11'
+          distribution: 'adopt'
+          server-id: ossrh
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
+      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
+      - name: Set Proper version
+        run: mvn versions:set -ntp -DnewVersion=${{ github.event.release.tag_name }}
+      - id: install-secret-key
+        name: Install gpg secret key
+        run: |
+          cat <(echo -e "${{ secrets.OSSRH_GPG_SECRET_KEY }}") | gpg --batch --import
+          gpg --list-secret-keys --keyid-format LONG
+      - name: Publish package
+        run: mvn --batch-mode deploy
+        env:
+          MAVEN_USERNAME: ${{ secrets.OSSRH_USERNAME }}
+          MAVEN_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
   generate-deployment-package:
     needs: [build-release-image]
     runs-on: ubuntu-20.04
