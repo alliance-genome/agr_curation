@@ -108,7 +108,7 @@ export const ConditionRelationTable = () => {
 			const listTemplate = (condition) => {
 				return (
 					<EllipsisTableCell>
-						{condition.conditionStatement}
+						{condition.conditionSummary}
 					</EllipsisTableCell>
 				);
 			};
@@ -205,12 +205,12 @@ export const ConditionRelationTable = () => {
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
-			field: "conditions.conditionStatement",
+			field: "conditions.conditionSummary",
 			header: "Conditions",
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionStatement"]},
+			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionSummary"]},
 			editor: (props) => conditionRelationTemplate(props)
 		},
 
