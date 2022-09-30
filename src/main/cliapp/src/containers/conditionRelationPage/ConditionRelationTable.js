@@ -11,21 +11,22 @@ import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
-import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
+import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
 import { useNewRelationReducer } from './useNewRelationReducer';
 import {InputTextEditor} from "../../components/InputTextEditor";
 import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
-import {getRefString} from '../../utils/utils';
+import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefString, multipleAutocompleteOnChange} from '../../utils/utils';
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 
 export const ConditionRelationTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [newConditionRelation, setNewConditionRelation] = useState(null);
-	const { newRelationState, newRelationDispatch } = useNewRelationReducer(); 
+	const { newRelationState, newRelationDispatch } = useNewRelationReducer();
 
 	const searchService = new SearchService();
 	const errorMessage = useRef(null);
@@ -57,7 +58,7 @@ export const ConditionRelationTable = () => {
 		'conditionRelationType.name'
 	];
 
-	const onConditionRelationValueChange = (props, event) => {
+	const onConditionRelationTypeValueChange = (props, event) => {
 		let updatedConditions = [...props.props.value];
 		if (event.value || event.value === '') {
 			updatedConditions[props.rowIndex].conditionRelationType = event.value;
@@ -71,7 +72,7 @@ export const ConditionRelationTable = () => {
 				<ControlledVocabularyDropdown
 					field="conditionRelationType.name"
 					options={conditionRelationTypeTerms}
-					editorChange={onConditionRelationValueChange}
+					editorChange={onConditionRelationTypeValueChange}
 					props={props}
 					showClear={false}
 					placeholderText={props.rowData.conditionRelationType.name}
@@ -81,19 +82,30 @@ export const ConditionRelationTable = () => {
 		);
 	};
 
+	const onReferenceValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "singleReference", setFieldValue);
+	};
+
+	const referenceSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["curie", "cross_references.curie"];
+		const endpoint = "literature-reference";
+		const filterName = "curieFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["curie", "cross_references.curie"]}
+				<AutocompleteEditor
+					search={referenceSearch}
+					initialValue={() => getRefString(props.rowData.singleReference)}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='literature-reference'
-					filterName='curieFilter'
-					isReference={true}
 					fieldName='singleReference'
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onReferenceValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -120,20 +132,33 @@ export const ConditionRelationTable = () => {
 		}
 	};
 
+
+	const onConditionRelationValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "conditions", setFieldValue);
+	};
+
+	const conditionRelationSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["conditionSummary"];
+		const endpoint = "experimental-condition";
+		const filterName = "experimentalConditionFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const conditionRelationTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
+				<AutocompleteMultiEditor
+					search={conditionRelationSearch}
+					initialValue={props.rowData.conditions}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='experimental-condition'
-					filterName='experimentalConditionFilter'
 					fieldName='conditions'
 					subField='conditionSummary'
-					isMultiple={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
-						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onConditionRelationValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -154,7 +179,7 @@ export const ConditionRelationTable = () => {
 			</>
 		);
 	};
-	
+
 	const singleReferenceBodyTemplate = (rowData) => {
 		if (rowData && rowData.singleReference) {
 			let refString = getRefString(rowData.singleReference);

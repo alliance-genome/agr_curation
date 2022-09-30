@@ -100,6 +100,7 @@ export const useGenericDataTable = ({
 			|| !newEntity
 		) return;
 
+		//adds new entity to the top of the table when there are no filters or sorting
 		setEntities((previousEntities) => {
 			const newEntities = previousEntities;
 			newEntities.unshift(newEntity);
@@ -180,9 +181,11 @@ export const useGenericDataTable = ({
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages({ ...errorMessagesCopy });
 
-		const uiErrorMessagesCopy = uiErrorMessages;
-		uiErrorMessagesCopy[event.index] = {};
-		setUiErrorMessages({ ...uiErrorMessagesCopy });
+		if (uiErrorMessages){
+			const uiErrorMessagesCopy = uiErrorMessages;
+			uiErrorMessagesCopy[event.index] = {};
+			setUiErrorMessages({ ...uiErrorMessagesCopy });
+		}
 
 	};
 
@@ -196,7 +199,10 @@ export const useGenericDataTable = ({
 		}
 
 		let updatedRow = global.structuredClone(event.data);//deep copy
-		validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors);
+
+		if(tableName === "Disease Annotations"){
+			validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors);
+		}
 
 		if (areUiErrors.current) {
 			closeRowRef.current[event.index] = false;

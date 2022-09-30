@@ -204,27 +204,67 @@ export function filterDropDownObject(inputValue, object){
 	return _object;
 }
 
-export function onSelectionOver(event, item, query, op, setAutocompleteSelectedItem) {
+export function onSelectionOver(event, item, query, op, setAutocompleteHoverItem) {
 	const _item = filterDropDownObject(query, item)
-	setAutocompleteSelectedItem(_item);
+	setAutocompleteHoverItem(_item);
 	op.current.show(event);
 }
 
-export function generateInitialTableState(columns, defaultVisibleColumns){
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
-	});
 
-	let initialTableState = {
-		page: 0,
-		first: 0,
-		rows: 50,
-		multiSortMeta: [],
-		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
-		filters: {},
-		isFirst: true,
+export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters={}) {
+	searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters})
+		.then((data) => {
+			if (data.results?.length > 0) {
+				 setSuggestions(data.results);
+			} else {
+				setSuggestions([]);
+			}
+		});
+}
+
+export function buildAutocompleteFilter(event, autocompleteFields) {
+	let filter = {};
+	autocompleteFields.forEach(field => {
+		filter[field] = {
+			queryString: event.query,
+			tokenOperator: "AND"
+		}
+	})
+
+	return filter;
+}
+
+export function defaultAutocompleteOnChange(rowProps, event, fieldName, setFieldValue, subField="curie") {
+
+	let updatedRows = [...rowProps.props.value];
+
+	if (!event.target.value) {
+		updatedRows[rowProps.rowIndex][fieldName] = null;
+		setFieldValue('');
+		return;
 	}
-	return { defaultColumnNames, initialTableState };
+
+	if (typeof event.target.value === "object") {
+		updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
+		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
+	} else {
+		updatedRows[rowProps.rowIndex][fieldName] = {};
+		updatedRows[rowProps.rowIndex][fieldName][subField] = event.target.value;
+		setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
+	}
+}
+
+export function multipleAutocompleteOnChange(rowProps, event, fieldName, setFieldValue) {
+	let updatedRows = [...rowProps.props.value];
+
+	if (!event.target.value) {
+		updatedRows[rowProps.rowIndex][fieldName] = null;
+		setFieldValue('');
+		return;
+	}
+
+	updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
+	setFieldValue(updatedRows[rowProps.rowIndex][fieldName]);
 }
 
 export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
