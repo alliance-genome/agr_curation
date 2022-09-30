@@ -217,7 +217,6 @@
 		<dependency>
 			<groupId>io.rest-assured</groupId>
 			<artifactId>rest-assured</artifactId>
-			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -353,9 +352,7 @@
 			<artifactId>reflections</artifactId>
 			<version>0.10.2</version>
 		</dependency>
-
-
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
