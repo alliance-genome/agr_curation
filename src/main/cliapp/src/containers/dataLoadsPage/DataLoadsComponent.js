@@ -59,7 +59,11 @@ export const DataLoadsComponent = () => {
 	};
 	
 	const loadTypeClasses = new Map([
+		["FULL_INGEST", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "Gene", "Allele", "AffectedGenomicModel"]],
 		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation"]],
+		["GENE_DISEASE_ANNOTATION", ["GeneDiseaseAnnotation"]],
+		["ALLELE_DISEASE_ANNOTATION", ["AlleleDiseaseAnnotation"]],
+		["AGM_DISEASE_ANNOTATION", ["AGMDiseaseAnnotation"]],
 		["GENE", ["Gene"]],
 		["ALLELE", ["Allele"]],
 		["AGM", ["AffectedGenomicModel"]]
