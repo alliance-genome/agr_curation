@@ -41,7 +41,7 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 //@ToString(exclude = {"genomicLocations"})
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"ConditionRelation", "Note", "Association"})
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={ConditionRelation.class, Note.class, Association.class})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public abstract class DiseaseAnnotation extends Association {
 

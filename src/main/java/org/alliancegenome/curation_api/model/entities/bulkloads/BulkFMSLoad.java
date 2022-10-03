@@ -16,7 +16,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies= {"BulkScheduledLoad"})
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies= {BulkScheduledLoad.class})
 @Schema(name="BulkFMSLoad", description="POJO that represents the BulkFMSLoad")
 @JsonTypeName
 public class BulkFMSLoad extends BulkScheduledLoad {

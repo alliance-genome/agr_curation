@@ -11,26 +11,16 @@ import javax.enterprise.context.RequestScoped;
 
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class APIVersionInfoService {
 	
 	public Boolean isPartiallyImplemented(Class<?> clazz, AGRCurationSchemaVersion version) {
 		if (version.partial()) return true;
 		
-		Set<String> dependencyClasses = getDependencyClasses(version);
-		for (String className : dependencyClasses) {
-			try {
-				String packageName = "org.alliancegenome.curation_api.model.entities.";
-				if (className.equals("AuditedObject")) packageName = packageName + "base.";
-				Class<?> dependencyClass = Class.forName(packageName + className);
-				AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
-				if (dependencyVersion.partial()) return true;
-			} catch (ClassNotFoundException e) {
-				log.error("Failed to find class: " + e.getMessage());
-			}
+		Set<Class<?>> dependencyClasses = getDependencyClasses(version);
+		for (Class<?> dependencyClass : dependencyClasses) {
+			AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
+			if (dependencyVersion.partial()) return true;
 		}
 		
 		return false;
@@ -42,18 +32,11 @@ public class APIVersionInfoService {
 		Set<String> maxVersions = new HashSet<String>();
 		maxVersions.add(version.max());
 		
-		Set<String> dependencyClasses = getDependencyClasses(version);
-		for (String className : dependencyClasses) {
-			try {
-				String packageName = "org.alliancegenome.curation_api.model.entities.";
-				if (className.equals("AuditedObject")) packageName = packageName + "base.";
-				Class<?> dependencyClass = Class.forName(packageName + className);
-				AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
-				minVersions.add(dependencyVersion.min());
-				maxVersions.add(dependencyVersion.max());
-			} catch (ClassNotFoundException e) {
-				log.error("Failed to find class: " + e.getMessage());
-			}
+		Set<Class<?>> dependencyClasses = getDependencyClasses(version);
+		for (Class<?> dependencyClass : dependencyClasses) {
+			AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
+			minVersions.add(dependencyVersion.min());
+			maxVersions.add(dependencyVersion.max());
 		}
 		
 		String minVersion = "0.0.0";
@@ -97,22 +80,15 @@ public class APIVersionInfoService {
 		return List.of(majorVersion, minorVersion, patchVersion);
 	}
 
-	private Set<String> getDependencyClasses(AGRCurationSchemaVersion version) {
-		Set<String> dependencyClasses = new HashSet<String>();
-		List<String> nextLevelDependencies = Arrays.asList(version.dependencies());
+	private Set<Class<?>> getDependencyClasses(AGRCurationSchemaVersion version) {
+		Set<Class<?>> dependencyClasses = new HashSet<Class<?>>();
+		List<Class<?>> nextLevelDependencies = Arrays.asList(version.dependencies());
 		while (nextLevelDependencies.size() > 0) {
-			Set<String> newDependencies = new HashSet<String>();
-			for (String dependency : nextLevelDependencies) {
-				dependencyClasses.add(dependency);
-				try {
-					String packageName = "org.alliancegenome.curation_api.model.entities.";
-					if (dependency.equals("AuditedObject")) packageName = packageName + "base.";
-					Class<?> dependencyClass = Class.forName(packageName + dependency);
-					AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
-					newDependencies.addAll(Arrays.asList(dependencyVersion.dependencies()));
-				} catch (Exception e) {
-					log.error("Failed to find class: " + e.getMessage());
-				}
+			Set<Class<?>> newDependencies = new HashSet<Class<?>>();
+			for (Class<?> dependencyClass : nextLevelDependencies) {
+				dependencyClasses.add(dependencyClass);
+				AGRCurationSchemaVersion dependencyVersion = dependencyClass.getAnnotation(AGRCurationSchemaVersion.class);
+				newDependencies.addAll(Arrays.asList(dependencyVersion.dependencies()));
 			}
 			nextLevelDependencies = List.copyOf(newDependencies);
 		}

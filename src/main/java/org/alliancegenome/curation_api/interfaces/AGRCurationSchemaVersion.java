@@ -8,7 +8,7 @@ public @interface AGRCurationSchemaVersion {
 
 	String min();
 	String max();
-	String[] dependencies() default {};
+	Class<?>[] dependencies() default {};
 	boolean submitted() default false;
 	boolean partial() default false;
 }

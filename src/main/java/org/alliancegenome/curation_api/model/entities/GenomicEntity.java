@@ -21,7 +21,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"BiologicalEntity"})
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BiologicalEntity.class})
 public class GenomicEntity extends BiologicalEntity {
 
 	//@Analyzer(definition = "caseInsensitiveAnalyzer")
