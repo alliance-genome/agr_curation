@@ -19,7 +19,7 @@ import lombok.*;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 //@ToString(exclude = {"loads"})
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"AuditedObject"})
 public class BulkLoadGroup extends GeneratedAuditedObject {
 	
 	@JsonView({View.FieldsOnly.class})

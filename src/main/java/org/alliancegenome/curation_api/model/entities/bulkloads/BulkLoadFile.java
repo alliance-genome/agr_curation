@@ -28,7 +28,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoad"})
-@AGRCurationSchemaVersion(min="1.3.0", max=LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min="1.3.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"AuditedObject"})
 public class BulkLoadFile extends GeneratedAuditedObject {
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -19,7 +20,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.1 (partial)", max="1.3.0 (partial)")
+@AGRCurationSchemaVersion(min="1.2.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"GenomicEntity"}, submitted=true, partial=true)
 public class Allele extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

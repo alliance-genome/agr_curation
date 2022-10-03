@@ -47,13 +47,6 @@ export const DataLoadsComponent = () => {
 
 	const queryClient = useQueryClient();
 	
-	const loadTypeClasses = new Map([
-		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "ExperimentalCondition", "ConditionRelation", "Note"]],
-		["GENE", ["Gene", "CrossReference", "Synonym"]],
-		["ALLELE", ["Allele", "CrossReference", "Synonym"]],
-		["AGM", ["AffectedGenomicModel", "CrossReference", "Synonym"]]
-	]);
-
 	let dataLoadService = null;
 
 	const handleNewBulkLoadGroupOpen = (event) => {
@@ -64,6 +57,13 @@ export const DataLoadsComponent = () => {
 		bulkLoadDispatch({ type: "RESET" });
 		setBulkLoadDialog(true);
 	};
+	
+	const loadTypeClasses = new Map([
+		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation"]],
+		["GENE", ["Gene"]],
+		["ALLELE", ["Allele"]],
+		["AGM", ["AffectedGenomicModel"]]
+		]);
 
 	useQuery(['bulkloadtable'],
 		() => searchService.find('bulkloadgroup', 100, 0, {}), {
@@ -147,7 +147,7 @@ export const DataLoadsComponent = () => {
 	const loadFileActionBodyTemplate = (rowData) => {
 		let ret = [];
 		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
-			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.classesLoaded)) {
+			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.loadType)) {
 				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
 			}
 		}
@@ -280,8 +280,7 @@ export const DataLoadsComponent = () => {
 
 	const fileTable = (load) => {
 		const sortedLoadFiles = load.loadFiles ? load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1) : [];
-		const loadClasses = loadTypeClasses.has(load.backendBulkLoadType) ? loadTypeClasses.get(load.backendBulkLoadType): [];
-		sortedLoadFiles.forEach(file => {file.classesLoaded = loadClasses});
+		sortedLoadFiles.forEach(file => {file.loadType = load.backendBulkLoadType});
 		return (
 			<div className="card">
 				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
@@ -320,17 +319,10 @@ export const DataLoadsComponent = () => {
 	};
 
 	const getSchemaVersionArray = (map) => {
-		let submittedClasses = new Set();
-		loadTypeClasses.forEach((classes, datatype) => {
-			classes.forEach(submittedClass => submittedClasses.add(submittedClass))
-		});
-		
 		if(map) {
 			const array = [];
 			for(let item in map) {
-				if (submittedClasses.has(item)) {
-					array.push({ className: item, schemaVersion: map[item]});
-				}
+				array.push({ className: item, schemaVersion: map[item]});
 			}
 			return array;
 		} else {
@@ -338,17 +330,24 @@ export const DataLoadsComponent = () => {
 		}
 	}
 	
-	
-	
-	const fileWithinSchemaRange = (fileVersion, loadedClasses) => {
-		if (!fileVersion || !loadedClasses) return false;
+	const fileWithinSchemaRange = (fileVersion, loadType) => {
+		if (!fileVersion) return false;
 		const classVersions = apiVersion?.agrCurationSchemaVersions;
 		if (!classVersions) return false;
 		
 		const fileVersionParts = parseVersionString(fileVersion);
+		
+		let loadedClasses = [];
+		if (loadTypeClasses.has(loadType)) {
+			loadedClasses = loadTypeClasses.get(loadType);
+		} else {
+			console.error("Unrecognized load type " + loadType);
+		}
+		
 		for (const loadedClass of loadedClasses) {
 			const classVersionRange = classVersions[loadedClass];
 			if (!classVersionRange) return false;
+		
 			let minMaxVersions = classVersionRange.split(" - ");
 			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
 			let minMaxVersionParts = [];

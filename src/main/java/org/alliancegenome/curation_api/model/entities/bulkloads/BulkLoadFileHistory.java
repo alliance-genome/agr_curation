@@ -24,7 +24,7 @@ import lombok.*;
 @AllArgsConstructor @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"AuditedObject"})
 public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
 	@JsonView({View.FieldsOnly.class})
