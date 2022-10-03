@@ -39,22 +39,24 @@ public class APIVersionInfoController implements APIVersionInterface {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(AGRCurationSchemaVersion.class).asClass(reflections.getConfiguration().getClassLoaders()));
 		TreeMap<String, String> linkMLClassVersions = new TreeMap<String, String>();
+		TreeMap<String, String> submittedClassVersions = new TreeMap<String, String>();
 		for(Class<?> clazz: annotatedClasses) {
 			AGRCurationSchemaVersion version = clazz.getAnnotation(AGRCurationSchemaVersion.class);
-			if (version.submitted()) {
-				String minVersion = apiVersionInfoService.getVersionRange(version).get(0);
-				String maxVersion = apiVersionInfoService.getVersionRange(version).get(1);
-				String versionRange = minVersion.equals(maxVersion) ? minVersion : minVersion + " - " + maxVersion;
-				if (apiVersionInfoService.isPartiallyImplemented(clazz, version))
-					versionRange = versionRange + " (partial)";
-				linkMLClassVersions.put(clazz.getSimpleName(), versionRange);
-			}
+			String minVersion = apiVersionInfoService.getVersionRange(version).get(0);
+			String maxVersion = apiVersionInfoService.getVersionRange(version).get(1);
+			String versionRange = minVersion.equals(maxVersion) ? minVersion : minVersion + " - " + maxVersion;
+			if (apiVersionInfoService.isPartiallyImplemented(clazz, version))
+				versionRange = versionRange + " (partial)";
+			linkMLClassVersions.put(clazz.getSimpleName(), versionRange);
+			if (version.submitted())
+				submittedClassVersions.put(clazz.getSimpleName(), versionRange);
 		}
 
 		APIVersionInfo info = new APIVersionInfo();
 		info.setVersion(version);
 		info.setName(name);
 		info.setAgrCurationSchemaVersions(linkMLClassVersions);
+		info.setSubmittedClassSchemaVersions(submittedClassVersions);
 		info.setEsHost(es_host);
 		info.setEnv(env);
 		return info;

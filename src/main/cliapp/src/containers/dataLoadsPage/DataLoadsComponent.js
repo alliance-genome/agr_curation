@@ -429,7 +429,7 @@ export const DataLoadsComponent = () => {
 			</div>
 			<div className="card">
 				<h3>Schema Version Table</h3>
-				<DataTable key="schemaTable" value={ getSchemaVersionArray(apiVersion?.agrCurationSchemaVersions) } className="p-datatable-sm" dataKey="id">
+				<DataTable key="schemaTable" value={ getSchemaVersionArray(apiVersion?.submittedClassSchemaVersions) } className="p-datatable-sm" dataKey="id">
 					<Column header="Class Name" field="className" />
 					<Column header="Curation Schema (LinkML) Version" field="schemaVersion"></Column>
 				</DataTable>
