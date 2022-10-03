@@ -25,7 +25,7 @@ import lombok.*;
 @ToString(callSuper = true)
 @AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
 @Schema(name="Note", description="POJO that represents the Note")
-@AGRCurationSchemaVersion(min="1.2.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"AuditedObject"})
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"AuditedObject"})
 public class Note extends GeneratedAuditedObject {
 		
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

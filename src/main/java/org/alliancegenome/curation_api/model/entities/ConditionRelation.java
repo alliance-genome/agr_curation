@@ -24,7 +24,7 @@ import lombok.*;
 @Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"ExperimentalCondition"})
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={"ExperimentalCondition"})
 public class ConditionRelation extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
