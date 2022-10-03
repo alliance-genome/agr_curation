@@ -121,7 +121,7 @@ public class GeneDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		
 		AffectedGenomicModel sgdStrainBackground = agmDAO.find(uiEntity.getSgdStrainBackground().getCurie());
-		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
+		if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
 			addMessageResponse("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
