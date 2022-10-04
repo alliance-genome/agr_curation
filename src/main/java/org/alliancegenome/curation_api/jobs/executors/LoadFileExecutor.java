@@ -39,4 +39,10 @@ public class LoadFileExecutor {
 		history.getExceptions().add(exception);
 		history.incrementFailed();
 	}
+	
+	protected String getVersionNumber (String versionString) {
+		if (versionString.startsWith("v"))
+			return versionString.substring(1);
+		return versionString;
+	}
 }
