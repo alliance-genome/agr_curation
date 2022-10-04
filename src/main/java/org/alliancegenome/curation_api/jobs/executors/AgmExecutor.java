@@ -41,7 +41,7 @@ public class AgmExecutor extends LoadFileExecutor {
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 			
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(ingestDto.getLinkMLVersion());
+			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
 			

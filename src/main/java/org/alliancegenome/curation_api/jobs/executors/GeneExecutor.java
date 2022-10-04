@@ -42,7 +42,7 @@ public class GeneExecutor extends LoadFileExecutor {
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 			
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
-			bulkLoadFile.setLinkMLSchemaVersion(ingestDto.getLinkMLVersion());
+			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
 			
