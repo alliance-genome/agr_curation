@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
@@ -25,8 +27,8 @@ import lombok.*;
 
 
 @JsonTypeInfo(
-  use = JsonTypeInfo.Id.NAME, 
-  include = JsonTypeInfo.As.PROPERTY, 
+  use = JsonTypeInfo.Id.NAME,
+  include = JsonTypeInfo.As.PROPERTY,
   property = "type")
 @JsonSubTypes({
 	@Type(value = AGMDiseaseAnnotation.class, name = "AGMDiseaseAnnotation"),
@@ -39,16 +41,17 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 //@ToString(exclude = {"genomicLocations"})
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={ConditionRelation.class, Note.class, Association.class})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public abstract class DiseaseAnnotation extends Association {
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "allianceCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true)
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	private String allianceCurie;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true)
@@ -61,7 +64,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private DOTerm object;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "negated_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({View.FieldsOnly.class})
@@ -77,22 +80,22 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<ECOTerm> evidenceCodes;
-	
+
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
 	private List<ConditionRelation> conditionRelations;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "diseaseannotation_id"))
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<Gene> with;
-	
+
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
@@ -104,30 +107,30 @@ public abstract class DiseaseAnnotation extends Association {
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm annotationType;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
 	private List<VocabularyTerm> diseaseQualifiers;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm geneticSex;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<Note> relatedNotes;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "dataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView(View.FieldsOnly.class)
 	private String dataProvider;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "secondaryDataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView(View.FieldsOnly.class)
@@ -136,20 +139,20 @@ public abstract class DiseaseAnnotation extends Association {
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier"))) 
+	@PropertyBinding(binder = @PropertyBinderRef(type = BiologicalEntityPropertyBinder.class, params = @Param(name = "fieldName", value = "diseaseGeneticModifier")))
 	@JsonView({View.FieldsOnly.class})
 	//@JoinColumn(name = "diseasegeneticmodifier_curie", referencedColumnName = "curie")
 	private BiologicalEntity diseaseGeneticModifier;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm diseaseGeneticModifierRelation;
-	
+
 	@Transient
 	public abstract String getSubjectCurie();
-	
+
 	@Transient
 	public abstract String getSubjectTaxonCurie();
 

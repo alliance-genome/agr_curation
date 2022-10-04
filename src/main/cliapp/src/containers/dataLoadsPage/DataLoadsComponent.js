@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState } from 'react';
+import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -12,6 +12,7 @@ import { NewBulkLoadForm } from './NewBulkLoadForm';
 import { NewBulkLoadGroupForm } from './NewBulkLoadGroupForm';
 import { HistoryDialog } from './HistoryDialog';
 import { useQueryClient } from 'react-query';
+import { SiteContext } from '../layout/SiteContext';
 
 export const DataLoadsComponent = () => {
 
@@ -28,6 +29,8 @@ export const DataLoadsComponent = () => {
 		}
 	};
 
+	const { apiVersion } = useContext(SiteContext);
+
 	const [groups, setGroups] = useState({});
 	const [history, setHistory] = useState({id: 0});
 	const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
@@ -43,7 +46,7 @@ export const DataLoadsComponent = () => {
 	const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
 
 	const queryClient = useQueryClient();
-
+	
 	let dataLoadService = null;
 
 	const handleNewBulkLoadGroupOpen = (event) => {
@@ -54,6 +57,17 @@ export const DataLoadsComponent = () => {
 		bulkLoadDispatch({ type: "RESET" });
 		setBulkLoadDialog(true);
 	};
+	
+	const loadTypeClasses = new Map([
+		["FULL_INGEST", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "Gene", "Allele", "AffectedGenomicModel"]],
+		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation"]],
+		["GENE_DISEASE_ANNOTATION", ["GeneDiseaseAnnotation"]],
+		["ALLELE_DISEASE_ANNOTATION", ["AlleleDiseaseAnnotation"]],
+		["AGM_DISEASE_ANNOTATION", ["AGMDiseaseAnnotation"]],
+		["GENE", ["Gene"]],
+		["ALLELE", ["Allele"]],
+		["AGM", ["AffectedGenomicModel"]]
+		]);
 
 	useQuery(['bulkloadtable'],
 		() => searchService.find('bulkloadgroup', 100, 0, {}), {
@@ -136,9 +150,10 @@ export const DataLoadsComponent = () => {
 
 	const loadFileActionBodyTemplate = (rowData) => {
 		let ret = [];
-
 		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
-			ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
+			if (fileWithinSchemaRange(rowData.linkMLSchemaVersion, rowData.loadType)) {
+				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoadFile(rowData)} />);
+			}
 		}
 		if(!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
 			ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoadFile(rowData)} />);
@@ -153,8 +168,10 @@ export const DataLoadsComponent = () => {
 
 		ret.push(<Button key="edit" icon="pi pi-pencil" className="p-button-rounded p-button-warning mr-2" onClick={() => editLoad(rowData)} />);
 
-		if (!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
-			ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
+		if (rowData.type !== 'BulkManualLoad') {
+			if (!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
+				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
+			}
 		}
 
 		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
@@ -199,9 +216,6 @@ export const DataLoadsComponent = () => {
 			</div>
 		);
 	};
-
-
-
 
 	const dynamicColumns = (loads) => {
 
@@ -269,7 +283,8 @@ export const DataLoadsComponent = () => {
 	};
 
 	const fileTable = (load) => {
-		const sortedLoadFiles = load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1);
+		const sortedLoadFiles = load.loadFiles ? load.loadFiles.sort((a, b) => (a.dateLastLoaded > b.dateLastLoaded) ? -1 : 1) : [];
+		sortedLoadFiles.forEach(file => {file.loadType = load.backendBulkLoadType});
 		return (
 			<div className="card">
 				<DataTable key="fileTable" value={sortedLoadFiles} responsiveLayout="scroll"
@@ -280,6 +295,7 @@ export const DataLoadsComponent = () => {
 					<Column field="fileSize" header="Compressed File Size" />
 					<Column field="recordCount" header="Record Count" />
 					<Column field="s3Url" header="S3 Url (Download)" body={urlTemplate} />
+					<Column field="linkMLSchemaVersion" header="LinkML Schema Version" />
 					<Column field="dateLastLoaded" header="Last Loaded" />
 					<Column field="bulkloadStatus" body={bulkloadStatusTemplate} header="Status" />
 					<Column body={loadFileActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
@@ -306,41 +322,122 @@ export const DataLoadsComponent = () => {
 		);
 	};
 
+	const getSchemaVersionArray = (map) => {
+		if(map) {
+			const array = [];
+			for(let item in map) {
+				array.push({ className: item, schemaVersion: map[item]});
+			}
+			return array;
+		} else {
+			return [];
+		}
+	}
+	
+	const fileWithinSchemaRange = (fileVersion, loadType) => {
+		if (!fileVersion) return false;
+		const classVersions = apiVersion?.agrCurationSchemaVersions;
+		if (!classVersions) return false;
+		
+		const fileVersionParts = parseVersionString(fileVersion);
+		
+		let loadedClasses = [];
+		if (loadTypeClasses.has(loadType)) {
+			loadedClasses = loadTypeClasses.get(loadType);
+		} else {
+			console.error("Unrecognized load type " + loadType);
+		}
+		
+		for (const loadedClass of loadedClasses) {
+			const classVersionRange = classVersions[loadedClass];
+			if (!classVersionRange) return false;
+		
+			let minMaxVersions = classVersionRange.split(" - ");
+			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
+			let minMaxVersionParts = [];
+			minMaxVersions.forEach((version, ix) => {minMaxVersionParts[ix] = parseVersionString(version)});
+			
+			const minVersionParts = minMaxVersionParts[0];
+			if (minMaxVersions.length === 1) {
+				if (minVersionParts[0] !== fileVersionParts[0] || minVersionParts[1] !== fileVersionParts[1] || minVersionParts[2] !== fileVersionParts[2]) {
+					return false;
+				}
+			}
+			const maxVersionParts = minMaxVersionParts[1];
+			// check not lower than min version
+			if (fileVersionParts[0] < minVersionParts[0]) return false;
+			if (fileVersionParts[0] === minVersionParts[0]) {
+				if (fileVersionParts[1] < minVersionParts[1]) return false;
+				if (fileVersionParts[1] === minVersionParts[1]) {
+					if (fileVersionParts[2] < minVersionParts[2]) return false; 
+				}
+			}
+			// check not higher than max version
+			if (fileVersionParts[0] > maxVersionParts[0]) return false;
+			if (fileVersionParts[0] === maxVersionParts[0]) {
+				if (fileVersionParts[1] > maxVersionParts[1]) return false;
+				if (fileVersionParts[1] === maxVersionParts[1]) {
+					if (fileVersionParts[2] > maxVersionParts[2]) return false; 
+				}
+			}	
+		}	
+		return true;
+	};
+	
+	const parseVersionString = (version) => {
+		const regexp = /(?<major>\d+)\.(?<minor>\d+)\.?(?<patch>\d*)/;
+		const versionParts = version.match(regexp).groups;
+		const majorVersion = versionParts.major ? parseInt(versionParts.major) : 0;
+		const minorVersion = versionParts.minor ? parseInt(versionParts.minor) : 0;
+		const patchVersion = versionParts.patch ? parseInt(versionParts.patch) : 0;
+		
+		return [majorVersion, minorVersion, patchVersion];
+	}
+
 	return (
-		<div className="card">
-			<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
-			<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
-			<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
-			<h3>Data Loads Table</h3>
-			<Messages ref={errorMessage} />
-			<DataTable key="groupTable"
-				value={groups} className="p-datatable-sm"
-				expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
-				rowExpansionTemplate={loadTable} dataKey="id">
-				<Column expander style={{ width: '3em' }} />
-				<Column body={nameBodyTemplate} header="Group Name" />
-				<Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
-			</DataTable>
-			<NewBulkLoadForm
-				bulkLoadDialog={bulkLoadDialog}
-				setBulkLoadDialog={setBulkLoadDialog}
-				newBulkLoad={newBulkLoad}
-				bulkLoadDispatch={bulkLoadDispatch}
-				groups={groups}
-				disableFormFields={disableFormFields}
-				setDisableFormFields={setDisableFormFields}
-				dataLoadService={dataLoadService}
-			/>
-			<NewBulkLoadGroupForm
-				bulkLoadGroupDialog={bulkLoadGroupDialog}
-				setBulkLoadGroupDialog={setBulkLoadGroupDialog}
-			/>
-			<HistoryDialog
-				historyDialog={historyDialog}
-				setHistoryDialog={setHistoryDialog}
-				dataLoadService={getService()}
-				history={history}
-			/>
-		</div>
+		<>
+			<div className="card">
+				<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
+				<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
+				<Button label="Refresh Data" icon="pi pi-plus" className="p-button-success mr-2" onClick={refresh} />
+				<h3>Data Loads Table</h3>
+				<Messages ref={errorMessage} />
+				<DataTable key="groupTable"
+					value={groups} className="p-datatable-sm"
+					expandedRows={expandedGroupRows} onRowToggle={(e) => setExpandedGroupRows(e.data)}
+					rowExpansionTemplate={loadTable} dataKey="id">
+					<Column expander style={{ width: '3em' }} />
+					<Column body={nameBodyTemplate} header="Group Name" />
+					<Column body={groupActionBodyTemplate} exportable={false} style={{ minWidth: '8rem' }}></Column>
+				</DataTable>
+				<NewBulkLoadForm
+					bulkLoadDialog={bulkLoadDialog}
+					setBulkLoadDialog={setBulkLoadDialog}
+					newBulkLoad={newBulkLoad}
+					bulkLoadDispatch={bulkLoadDispatch}
+					groups={groups}
+					disableFormFields={disableFormFields}
+					setDisableFormFields={setDisableFormFields}
+					dataLoadService={dataLoadService}
+				/>
+				<NewBulkLoadGroupForm
+					bulkLoadGroupDialog={bulkLoadGroupDialog}
+					setBulkLoadGroupDialog={setBulkLoadGroupDialog}
+				/>
+				<HistoryDialog
+					historyDialog={historyDialog}
+					setHistoryDialog={setHistoryDialog}
+					dataLoadService={getService()}
+					history={history}
+				/>
+			</div>
+			<div className="card">
+				<h3>Schema Version Table</h3>
+				<DataTable key="schemaTable" value={ getSchemaVersionArray(apiVersion?.submittedClassSchemaVersions) } className="p-datatable-sm" dataKey="id">
+					<Column header="Class Name" field="className" />
+					<Column header="Curation Schema (LinkML) Version" field="schemaVersion"></Column>
+				</DataTable>
+			</div>
+		</>
 	);
 };

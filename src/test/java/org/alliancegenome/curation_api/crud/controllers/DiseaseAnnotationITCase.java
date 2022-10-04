@@ -519,7 +519,7 @@ public class DiseaseAnnotationITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE));
+			body("errorMessages.evidenceCodes", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 
 	@Test
@@ -850,7 +850,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.evidenceCodes", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2115,7 +2115,7 @@ public class DiseaseAnnotationITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.evidence", is(ValidationConstants.OBSOLETE_MESSAGE));
+			body("errorMessages.evidenceCodes", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 
 	@Test
@@ -2451,7 +2451,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.evidence", is(ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.evidenceCodes", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -3697,7 +3697,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.evidence", is(ValidationConstants.REQUIRED_MESSAGE));
+				body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
@@ -3733,7 +3733,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.evidence", is(ValidationConstants.REQUIRED_MESSAGE));
+				body("errorMessages.evidenceCodes", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test

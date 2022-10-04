@@ -89,7 +89,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 
 
 	public List<ECOTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
-		String field = "evidence";
+		String field = "evidenceCodes";
 		if (CollectionUtils.isEmpty(uiEntity.getEvidenceCodes())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;

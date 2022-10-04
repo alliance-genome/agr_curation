@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
@@ -150,7 +150,7 @@ export const DiseaseAnnotationsTable = () => {
 
 
 	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.evidenceCodes.length > 0) {
+		if (rowData?.evidenceCodes && rowData.evidenceCodes.length > 0) {
 			const sortedEvidenceCodes = rowData.evidenceCodes.sort((a, b) => (a.abbreviation > b.abbreviation) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
@@ -681,7 +681,7 @@ export const DiseaseAnnotationsTable = () => {
 	const subjectEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 					rowProps={props}
 					searchService={searchService}
@@ -703,7 +703,7 @@ export const DiseaseAnnotationsTable = () => {
 	const sgdStrainBackgroundEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 					rowProps={props}
 					searchService={searchService}
@@ -725,7 +725,7 @@ export const DiseaseAnnotationsTable = () => {
 	const geneticModifierEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 					rowProps={props}
 					searchService={searchService}
@@ -750,7 +750,7 @@ export const DiseaseAnnotationsTable = () => {
 		} else {
 			return (
 				<>
-					<AutocompleteEditor
+					<AutocompleteRowEditor
 						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 						rowProps={props}
 						searchService={searchService}
@@ -774,7 +774,7 @@ export const DiseaseAnnotationsTable = () => {
 		if (props.rowData.type === "AGMDiseaseAnnotation") {
 			return (
 				<>
-					<AutocompleteEditor
+					<AutocompleteRowEditor
 						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 						rowProps={props}
 						searchService={searchService}
@@ -799,7 +799,7 @@ export const DiseaseAnnotationsTable = () => {
 	const diseaseEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 					rowProps={props}
 					searchService={searchService}
@@ -825,7 +825,7 @@ export const DiseaseAnnotationsTable = () => {
 	const withEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
 					rowProps={props}
 					searchService={searchService}
@@ -848,7 +848,7 @@ export const DiseaseAnnotationsTable = () => {
 	const evidenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["curie", "name", "abbreviation"]}
 					rowProps={props}
 					searchService={searchService}
@@ -873,7 +873,7 @@ export const DiseaseAnnotationsTable = () => {
 			/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
-					errorField="evidence"
+					errorField="evidenceCodes"
 				/>
 			</>
 		);
@@ -956,7 +956,7 @@ export const DiseaseAnnotationsTable = () => {
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 
 					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
@@ -1106,7 +1106,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationHandleFilter",
-			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionStatement"],
+			fields: ["conditionRelations.handle", "conditionRelations.conditions.conditionSummary"],
 			nonNullFields: ["conditionRelations.handle"]
 		},
 	},
@@ -1120,7 +1120,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {
 			type: "input",
 			filterName: "conditionRelationsFilter",
-			fields: ["conditionRelations.conditions.conditionStatement" ],
+			fields: ["conditionRelations.conditions.conditionSummary" ],
 			nullFields: ["conditionRelations.handle"]
 		},
 	},
@@ -1302,8 +1302,6 @@ export const DiseaseAnnotationsTable = () => {
 					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
-					headerButtons={headerButtons}
-					newEntity={newDiseaseAnnotation}
 				/>
 			</div>
 			<NewAnnotationForm

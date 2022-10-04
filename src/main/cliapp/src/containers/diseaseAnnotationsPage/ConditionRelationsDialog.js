@@ -13,7 +13,7 @@ import { ValidationService } from '../../service/ValidationService';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { SearchService } from '../../service/SearchService';
 
@@ -118,7 +118,7 @@ export const ConditionRelationsDialog = ({
 				rowsEdited.current++;
 			} else {
 				for (var i = 0; i < data.conditions.length; i++) {
-					if (data.conditions[i].conditionStatement !== originalConditionRelations[index].conditions[i].conditionStatement) {
+					if (data.conditions[i].conditionSummary !== originalConditionRelations[index].conditions[i].conditionSummary) {
 						rowsEdited.current++;
 					}
 				}
@@ -251,29 +251,29 @@ export const ConditionRelationsDialog = ({
 
 	const conditionsTemplate = (rowData) => {
 		if (rowData && rowData.conditions) {
-			const sortedConditionStatements = rowData.conditions.sort((a,b) => (a.conditionStatement > b.conditionStatement) ? 1 : -1);
+			const sortedConditionSummaries = rowData.conditions.sort((a,b) => (a.conditionSummary > b.conditionSummary) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
-						{item.conditionStatement}
+						{item.conditionSummary}
 					</EllipsisTableCell>
 				);
 			};
-			return <ListTableCell template={listTemplate} listData={sortedConditionStatements} />
+			return <ListTableCell template={listTemplate} listData={sortedConditionSummaries} />
 		}
 	};
 	
 	const conditionsEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
-					autocompleteFields={["conditionStatement"]}
+				<AutocompleteRowEditor
+					autocompleteFields={["conditionSummary"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='experimental-condition'
-					filterName='conditionStatementFilter'
+					filterName='conditionSummaryFilter'
 					fieldName='conditions'
-					subField='conditionStatement'
+					subField='conditionSummary'
 					isMultiple={true}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
 						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
@@ -337,7 +337,7 @@ export const ConditionRelationsDialog = ({
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' body={conditionRelationTypeTemplate}/>
-					<Column editor={conditionsEditorTemplate} field="conditions.conditionStatement" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
+					<Column editor={conditionsEditorTemplate} field="conditions.conditionSummary" header="Conditions" headerClassName='surface-0' body={conditionsTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
 				</DataTable>
 			</Dialog>

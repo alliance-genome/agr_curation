@@ -11,7 +11,7 @@ import {ListTableCell} from "../../components/ListTableCell";
 import {Tooltip} from 'primereact/tooltip';
 import { Button } from 'primereact/button';
 import {ConditionRelationService} from "../../service/ConditionRelationService";
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { NewRelationForm } from './NewRelationForm';
@@ -84,7 +84,7 @@ export const ConditionRelationTable = () => {
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["curie", "cross_references.curie"]}
 					rowProps={props}
 					searchService={searchService}
@@ -108,7 +108,7 @@ export const ConditionRelationTable = () => {
 			const listTemplate = (condition) => {
 				return (
 					<EllipsisTableCell>
-						{condition.conditionStatement}
+						{condition.conditionSummary}
 					</EllipsisTableCell>
 				);
 			};
@@ -123,7 +123,7 @@ export const ConditionRelationTable = () => {
 	const conditionRelationTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={["conditionSummary"]}
 					rowProps={props}
 					searchService={searchService}
@@ -205,12 +205,12 @@ export const ConditionRelationTable = () => {
 			editor: (props) => conditionRelationTypeEditor(props)
 		},
 		{
-			field: "conditions.conditionStatement",
+			field: "conditions.conditionSummary",
 			header: "Conditions",
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
-			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionStatement"]},
+			filterElement: {type: "input", filterName: "experimentalConditionFilter", fields: ["conditions.conditionSummary"]},
 			editor: (props) => conditionRelationTemplate(props)
 		},
 

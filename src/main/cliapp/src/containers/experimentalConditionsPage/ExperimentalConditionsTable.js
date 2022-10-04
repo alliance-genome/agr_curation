@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
-import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
+import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -175,7 +175,7 @@ export const ExperimentalConditionsTable = () => {
 	const conditionClassEditorTemplate = (props, autocomplete) => {
 		return (
 			<>
-			<AutocompleteEditor
+			<AutocompleteRowEditor
 				autocompleteFields={autocomplete}
 				rowProps={props}
 				searchService={searchService}
@@ -207,7 +207,7 @@ export const ExperimentalConditionsTable = () => {
 	const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
 		return (
 			<>
-				<AutocompleteEditor
+				<AutocompleteRowEditor
 					autocompleteFields={autocomplete}
 					rowProps={props}
 					searchService={searchService}
@@ -231,7 +231,7 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms"];
+	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 
 	const columns = [
 		{
