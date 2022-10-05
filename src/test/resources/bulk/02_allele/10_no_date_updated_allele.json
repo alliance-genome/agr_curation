@@ -10,7 +10,7 @@
     "updated_by": "ALLELETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
     "is_extinct": false,
-    "inheritence_mode": "dominant",
+    "inheritance_mode": "dominant",
     "in_collection": "Million mutations project",
     "sequencing_status": "sequenced",
     "references": [

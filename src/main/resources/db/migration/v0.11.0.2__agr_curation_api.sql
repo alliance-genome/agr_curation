@@ -1,12 +1,12 @@
 ALTER TABLE allele
-	ADD COLUMN inheritencemode_id bigint,
+	ADD COLUMN inheritancemode_id bigint,
 	ADD COLUMN incollection_id bigint,
 	ADD COLUMN sequencingstatus_id bigint,
 	ADD COLUMN isextinct boolean DEFAULT false;
 	
 ALTER TABLE allele
-	ADD CONSTRAINT allele_inheritencemode_id_fk
-		FOREIGN KEY (inheritencemode_id) REFERENCES vocabularyterm (id);
+	ADD CONSTRAINT allele_inheritancemode_id_fk
+		FOREIGN KEY (inheritancemode_id) REFERENCES vocabularyterm (id);
 	
 ALTER TABLE allele
 	ADD CONSTRAINT allele_incollection_id_fk
@@ -17,7 +17,7 @@ ALTER TABLE allele
 		FOREIGN KEY (sequencingstatus_id) REFERENCES vocabularyterm (id);
 		
 ALTER TABLE allele_aud
-	ADD COLUMN inheritencemode_id bigint,
+	ADD COLUMN inheritancemode_id bigint,
 	ADD COLUMN incollection_id bigint,
 	ADD COLUMN sequencingstatus_id bigint,
 	ADD COLUMN isextinct boolean DEFAULT false;

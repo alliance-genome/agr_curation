@@ -23,7 +23,7 @@ import lombok.*;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, submitted=true, partial=true)
+@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, submitted=true, partial=true)
 public class Allele extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -41,7 +41,7 @@ public class Allele extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})
-	private VocabularyTerm inheritenceMode;
+	private VocabularyTerm inheritanceMode;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)

@@ -92,8 +92,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.setReferences(null);
 		}
 
-		VocabularyTerm inheritenceMode = validateInheritenceMode(uiEntity, dbEntity);
-		dbEntity.setInheritenceMode(inheritenceMode);
+		VocabularyTerm inheritanceMode = validateInheritanceMode(uiEntity, dbEntity);
+		dbEntity.setInheritanceMode(inheritanceMode);
 
 		VocabularyTerm inCollection = validateInCollection(uiEntity, dbEntity);
 		dbEntity.setInCollection(inCollection);
@@ -154,23 +154,23 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return singleRefResponse.getEntity();
 	}
 
-	public VocabularyTerm validateInheritenceMode(Allele uiEntity, Allele dbEntity) {
-		String field = "inheritenceMode";
+	public VocabularyTerm validateInheritanceMode(Allele uiEntity, Allele dbEntity) {
+		String field = "inheritanceMode";
 
-		if (uiEntity.getInheritenceMode() == null)
+		if (uiEntity.getInheritanceMode() == null)
 			return null;
 		
-		VocabularyTerm inheritenceMode = vocabularyTermDAO.getTermInVocabulary(uiEntity.getInheritenceMode().getName(), VocabularyConstants.ALLELE_INHERITENCE_MODE_VOCABULARY);
-		if (inheritenceMode == null) {
+		VocabularyTerm inheritanceMode = vocabularyTermDAO.getTermInVocabulary(uiEntity.getInheritanceMode().getName(), VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
+		if (inheritanceMode == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		if (inheritenceMode.getObsolete() && (dbEntity.getInheritenceMode() == null || !inheritenceMode.getName().equals(dbEntity.getInheritenceMode().getName()))) {
+		if (inheritanceMode.getObsolete() && (dbEntity.getInheritanceMode() == null || !inheritanceMode.getName().equals(dbEntity.getInheritanceMode().getName()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		return inheritenceMode;
+		return inheritanceMode;
 	}
 
 	public VocabularyTerm validateInCollection(Allele uiEntity, Allele dbEntity) {

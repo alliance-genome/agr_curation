@@ -11,7 +11,7 @@
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00",
     "is_extinct": false,
-    "inheritence_mode": "invalid",
+    "inheritance_mode": "invalid",
     "in_collection": "Million mutations project",
     "sequencing_status": "sequenced",
     "references": [

@@ -38,7 +38,7 @@ import io.restassured.config.RestAssuredConfig;
 @Order(2)
 public class AlleleBulkUploadITCase {
 	
-	private String requiredInheritenceMode = "dominant";
+	private String requiredInheritanceMode = "dominant";
 	private String requiredInCollection = "Million mutations project";
 	private String requiredSequencingStatus = "sequenced";
 	private String requiredReference = "PMID:25920550";
@@ -84,7 +84,7 @@ public class AlleleBulkUploadITCase {
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
-			body("results[0].inheritenceMode.name", is("dominant")).
+			body("results[0].inheritanceMode.name", is("dominant")).
 			body("results[0].inCollection.name", is("Million mutations project")).
 			body("results[0].sequencingStatus.name", is("sequenced")).
 			body("results[0].isExtinct", is(false)).
@@ -675,8 +675,8 @@ public class AlleleBulkUploadITCase {
 	
 	@Test
 	@Order(23)
-	public void alleleBulkUploadNoInheritenceMode() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/23_no_inheritence_mode_allele.json"));
+	public void alleleBulkUploadNoInheritanceMode() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/23_no_inheritance_mode_allele.json"));
 		
 		// upload file
 		RestAssured.given().
@@ -816,8 +816,8 @@ public class AlleleBulkUploadITCase {
 	
 	@Test
 	@Order(28)
-	public void alleleBulkUploadInvalidInheritenceMode() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/28_invalid_inheritence_mode_allele.json"));
+	public void alleleBulkUploadInvalidInheritanceMode() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/28_invalid_inheritance_mode_allele.json"));
 		
 		// upload file
 		RestAssured.given().
@@ -921,10 +921,10 @@ public class AlleleBulkUploadITCase {
 	private void loadRequiredEntities() throws Exception {
 		loadReference();
 		
-		Vocabulary inheritenceModeVocabulary = createVocabulary(VocabularyConstants.ALLELE_INHERITENCE_MODE_VOCABULARY);
+		Vocabulary inheritanceModeVocabulary = createVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 		Vocabulary inCollectionVocabulary = createVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		Vocabulary sequencingStatusVocabulary = createVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
-		createVocabularyTerm(inheritenceModeVocabulary, requiredInheritenceMode);
+		createVocabularyTerm(inheritanceModeVocabulary, requiredInheritanceMode);
 		createVocabularyTerm(inCollectionVocabulary, requiredInCollection);
 		createVocabularyTerm(sequencingStatusVocabulary, requiredSequencingStatus);
 	}

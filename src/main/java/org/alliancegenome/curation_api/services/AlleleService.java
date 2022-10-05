@@ -174,13 +174,13 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 		
 		VocabularyTerm inheritenceMode = null;
-		if (StringUtils.isNotBlank(dto.getInheritenceMode())) {
-			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(dto.getInheritenceMode(), VocabularyConstants.ALLELE_INHERITENCE_MODE_VOCABULARY);
+		if (StringUtils.isNotBlank(dto.getInheritanceMode())) {
+			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(dto.getInheritanceMode(), VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 			if (inheritenceMode == null) {
-				throw new ObjectValidationException(dto, "Invalid inheritence mode (" + dto.getInheritenceMode() + ") in " + allele.getCurie() + " - skipping");
+				throw new ObjectValidationException(dto, "Invalid inheritance mode (" + dto.getInheritanceMode() + ") in " + allele.getCurie() + " - skipping");
 			}
 		}
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritenceMode);
 		
 		VocabularyTerm inCollection = null;
 		if (StringUtils.isNotBlank(dto.getInCollection())) {

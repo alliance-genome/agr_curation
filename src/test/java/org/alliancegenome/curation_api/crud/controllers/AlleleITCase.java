@@ -40,10 +40,10 @@ public class AlleleITCase {
 
 	private final String ALLELE = "Allele:0001";
 	
-	private Vocabulary inheritenceModeVocabulary;
+	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary inCollectionVocabulary;
 	private Vocabulary sequencingStatusVocabulary;
-	private VocabularyTerm inheritenceMode;
+	private VocabularyTerm inheritanceMode;
 	private VocabularyTerm inCollection;
 	private VocabularyTerm sequencingStatus;
 	private Reference reference;
@@ -54,10 +54,10 @@ public class AlleleITCase {
 	private OffsetDateTime datetime;
 	
 	private void createRequiredObjects() {
-		inheritenceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITENCE_MODE_VOCABULARY);
+		inheritanceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 		inCollectionVocabulary = getVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		sequencingStatusVocabulary = getVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
-		inheritenceMode = getVocabularyTerm(inheritenceModeVocabulary, "dominant");
+		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million mutations project");
 		sequencingStatus = getVocabularyTerm(sequencingStatusVocabulary, "sequenced");
 		reference = createReference("PMID:19351");
@@ -79,7 +79,7 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -105,7 +105,7 @@ public class AlleleITCase {
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.name", is("TestAllele")).
-				body("entity.inheritenceMode.name", is(inheritenceMode.getName())).
+				body("entity.inheritanceMode.name", is(inheritanceMode.getName())).
 				body("entity.inCollection.name", is(inCollection.getName())).
 				body("entity.sequencingStatus.name", is(sequencingStatus.getName())).
 				body("entity.isExtinct", is(false)).
@@ -153,7 +153,7 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -176,7 +176,7 @@ public class AlleleITCase {
 		allele.setCurie("Allele:0004");
 		allele.setTaxon(taxon);
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -199,7 +199,7 @@ public class AlleleITCase {
 		allele.setCurie("Allele:0005");
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -227,7 +227,7 @@ public class AlleleITCase {
 		allele.setTaxon(nonPersistedTaxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -245,13 +245,13 @@ public class AlleleITCase {
 
 	@Test
 	@Order(7)
-	public void createAlleleWithInvalidInheritenceMode() {
+	public void createAlleleWithInvalidInheritanceMode() {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0007");
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inCollection);
+		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -266,7 +266,7 @@ public class AlleleITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.inheritenceMode", is(ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.inheritanceMode", is(ValidationConstants.INVALID_MESSAGE));
 	}
 
 	@Test
@@ -277,8 +277,8 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
-		allele.setInCollection(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inheritanceMode);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
@@ -303,9 +303,9 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(inheritenceMode);
+		allele.setSequencingStatus(inheritanceMode);
 		allele.setReferences(references);
 		
 	
@@ -334,7 +334,7 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(invalidReferences);
@@ -358,7 +358,7 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -381,7 +381,7 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setName("TestAllele");
 		allele.setSymbol(null);
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -403,7 +403,7 @@ public class AlleleITCase {
 		Allele allele = getAllele();
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -431,7 +431,7 @@ public class AlleleITCase {
 		allele.setTaxon(nonPersistedTaxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -451,12 +451,12 @@ public class AlleleITCase {
 
 	@Test
 	@Order(15)
-	public void editAlleleWithInvalidInheritenceMode() {
+	public void editAlleleWithInvalidInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inCollection);
+		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
@@ -471,7 +471,7 @@ public class AlleleITCase {
 			then().
 			statusCode(400).
 			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.inheritenceMode", is(ValidationConstants.INVALID_MESSAGE));
+			body("errorMessages.inheritanceMode", is(ValidationConstants.INVALID_MESSAGE));
 	}
 
 	@Test
@@ -481,8 +481,8 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
-		allele.setInCollection(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inheritanceMode);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
@@ -506,9 +506,9 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(inheritenceMode);
+		allele.setSequencingStatus(inheritanceMode);
 		allele.setReferences(references);
 		
 	
@@ -536,7 +536,7 @@ public class AlleleITCase {
 		allele.setTaxon(taxon);
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
-		allele.setInheritenceMode(inheritenceMode);
+		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(invalidReferences);

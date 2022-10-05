@@ -19,8 +19,8 @@ public class AlleleDTO extends GenomicEntityDTO {
 	private List<String> references;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("inheritence_mode")
-	private String inheritenceMode;
+	@JsonProperty("inheritance_mode")
+	private String inheritanceMode;
 
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("in_collection")
