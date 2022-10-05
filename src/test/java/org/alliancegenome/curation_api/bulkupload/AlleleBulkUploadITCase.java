@@ -8,12 +8,8 @@ import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -25,7 +21,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -38,9 +33,6 @@ import io.restassured.config.RestAssuredConfig;
 @Order(2)
 public class AlleleBulkUploadITCase {
 	
-	private String requiredInheritanceMode = "dominant";
-	private String requiredInCollection = "Million mutations project";
-	private String requiredSequencingStatus = "sequenced";
 	private String requiredReference = "PMID:25920550";
 	
 	@BeforeEach
@@ -919,13 +911,6 @@ public class AlleleBulkUploadITCase {
 	
 	private void loadRequiredEntities() throws Exception {
 		loadReference();
-		
-		Vocabulary inheritanceModeVocabulary = createVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
-		Vocabulary inCollectionVocabulary = createVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
-		Vocabulary sequencingStatusVocabulary = createVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
-		createVocabularyTerm(inheritanceModeVocabulary, requiredInheritanceMode);
-		createVocabularyTerm(inCollectionVocabulary, requiredInCollection);
-		createVocabularyTerm(sequencingStatusVocabulary, requiredSequencingStatus);
 	}
 	
 	private void loadReference() throws Exception {
@@ -941,44 +926,5 @@ public class AlleleBulkUploadITCase {
 			put("/api/reference").
 			then().
 			statusCode(200);
-	}
-	
-	private Vocabulary createVocabulary(String name) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setInternal(false);
-		
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-
-	private void createVocabularyTerm(Vocabulary vocabulary, String name) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setVocabulary(vocabulary);
-		vocabularyTerm.setInternal(false);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200);
-	}
-	
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
 	}
 }
