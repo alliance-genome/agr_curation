@@ -84,6 +84,7 @@ public class AlleleITCase {
 		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setCreatedBy(person);
+		allele.setIsExtinct(false);
 		allele.setDateCreated(datetime);
 		
 		RestAssured.given().

@@ -58,8 +58,7 @@ public class Allele extends GenomicEntity {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "isExtinct_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@JsonView({View.FieldsOnly.class})
-	@Column(columnDefinition = "boolean default false", nullable = false)
-	private Boolean isExtinct = false;
+	private Boolean isExtinct;
 	
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;

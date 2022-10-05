@@ -782,8 +782,7 @@ public class AlleleBulkUploadITCase {
 			statusCode(200).
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0026")).
-			body("results[0].isExtinct", is(false));
+			body("results[0].curie", is("ALLELETEST:Allele0026"));
 	}
 	
 	@Test

@@ -2,7 +2,7 @@ ALTER TABLE allele
 	ADD COLUMN inheritancemode_id bigint,
 	ADD COLUMN incollection_id bigint,
 	ADD COLUMN sequencingstatus_id bigint,
-	ADD COLUMN isextinct boolean DEFAULT false;
+	ADD COLUMN isextinct boolean;
 	
 ALTER TABLE allele
 	ADD CONSTRAINT allele_inheritancemode_id_fk
@@ -20,7 +20,7 @@ ALTER TABLE allele_aud
 	ADD COLUMN inheritancemode_id bigint,
 	ADD COLUMN incollection_id bigint,
 	ADD COLUMN sequencingstatus_id bigint,
-	ADD COLUMN isextinct boolean DEFAULT false;
+	ADD COLUMN isextinct boolean;
 	
 CREATE TABLE allele_reference (
 	allele_curie varchar(255) NOT NULL,
