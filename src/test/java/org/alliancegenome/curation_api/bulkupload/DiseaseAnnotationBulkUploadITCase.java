@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -120,9 +119,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].diseaseRelation.name", is("is_implicated_in")).
 			body("results[0].geneticSex.name", is("male")).
 			body("results[0].updatedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].conditionRelations", hasSize(1)).
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
@@ -230,7 +229,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].evidenceCodes", hasSize(1)).
 			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
 			body("results[0].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[0].assertedGene.curie", is("DATEST:Gene0001"));
+			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001"));
 	}
 	
 	@Test
@@ -303,7 +302,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].evidenceCodes", hasSize(1)).
 			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
 			body("results[0].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[0].assertedGene.curie", is("DATEST:Gene0001")).
+			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001")).
 			body("results[0].inferredAllele.curie", is("DATEST:Allele0001")).
 			body("results[0].assertedAllele.curie", is("DATEST:Allele0001"));
 	}
@@ -2791,8 +2790,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(109)
-	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGene() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_gene_allele_annotation.json"));
+	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGenes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_genes_allele_annotation.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3121,8 +3120,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(123)
-	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGene() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_gene_agm_annotation.json"));
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGenes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_genes_agm_annotation.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3465,20 +3464,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 		return vocabulary;
 	}
 	
-	private Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		Vocabulary vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-
 	private void createVocabularyTerm(Vocabulary vocabulary, String name) {
 		VocabularyTerm vocabularyTerm = new VocabularyTerm();
 		vocabularyTerm.setName(name);
@@ -3511,9 +3496,5 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
 		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
-		return new TypeRef<ObjectResponse <CrossReference>>() { };
 	}
 }
