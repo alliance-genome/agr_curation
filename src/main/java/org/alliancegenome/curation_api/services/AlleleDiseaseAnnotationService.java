@@ -1,5 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -24,6 +27,7 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
@@ -119,13 +123,18 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 		}
 		annotation.setInferredGene(inferredGene);
 		
-		Gene assertedGene = null;
-		if (StringUtils.isNotBlank(dto.getAssertedGene())) {
-			assertedGene = geneDAO.find(dto.getAssertedGene());
-			if (assertedGene == null)
-				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+		if (CollectionUtils.isNotEmpty(dto.getAssertedGenes())) {
+			List<Gene> assertedGenes = new ArrayList<>();
+			for (String assertedGeneCurie : dto.getAssertedGenes()) {
+				Gene assertedGene = geneDAO.find(assertedGeneCurie);
+				if (assertedGene == null)
+					throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+				assertedGenes.add(assertedGene);
+			}
+			annotation.setAssertedGenes(assertedGenes);
+		} else {
+			annotation.setAssertedGenes(null);
 		}
-		annotation.setAssertedGene(assertedGene);
 		
 		return annotation;
 	}
