@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
 import java.util.ArrayList;
+import java.util.function.Predicate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -9,7 +10,6 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
-import org.alliancegenome.curation_api.dao.GenomicEntityDAO;
 import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
@@ -28,7 +28,6 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 	@Inject SynonymDAO synonymDAO;
 	@Inject CrossReferenceValidator crossReferenceValidator;
 	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject GenomicEntityDAO genomicEntityDAO;
 	
 	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
 		String field = "taxon";
@@ -83,9 +82,10 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 				synonymDAO.persist(validatedSynonym);
 		}
 		
-		List<Long> idsToRemove = ListUtils.subtract(previousIds, validatedIds);
-		for (Long id : idsToRemove) {
-			genomicEntityDAO.deleteAttachedSynonym(id);
+		if (dbEntity.getSynonyms() != null) {
+			List<Long> idsToRemove = ListUtils.subtract(previousIds, validatedIds);
+			Predicate<Synonym> removeCondition = synonym -> idsToRemove.contains(synonym.getId());
+			dbEntity.getSynonyms().removeIf(removeCondition);
 		}
 		
 		if (CollectionUtils.isEmpty(validatedSynonyms))
@@ -123,9 +123,10 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 				crossReferenceDAO.persist(validatedXref);
 		}
 		
-		List<String> curiesToRemove = ListUtils.subtract(previousCuries, validatedCuries);
-		for (String curie : curiesToRemove) {
-			genomicEntityDAO.deleteAttachedCrossReference(curie);
+		if (dbEntity.getCrossReferences() != null) {
+			List<String> curiesToRemove = ListUtils.subtract(previousCuries, validatedCuries);
+			Predicate<CrossReference> removeCondition = xref -> curiesToRemove.contains(xref.getCurie());
+			dbEntity.getCrossReferences().removeIf(removeCondition);
 		}
 		
 		if (CollectionUtils.isEmpty(validatedXrefs))
