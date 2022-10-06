@@ -92,6 +92,16 @@ export function getEntityType(entity) {
 	return 'Unknown Entity'
 }
 
+export function getRefStrings(referenceItems) {
+	if (!referenceItems)
+		return;
+	
+	let refStrings = [];
+	referenceItems.forEach((referenceItem) => {refStrings.push(getRefString(referenceItem))});
+	
+	return refStrings.sort();	
+}
+
 export function getRefString(referenceItem) {
 	if (!referenceItem)
 		return;

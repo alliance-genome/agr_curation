@@ -215,7 +215,6 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 					if (reference == null) {
 						throw new ObjectValidationException(dto, "Invalid reference (" + publicationId + ") in allele " + allele.getCurie() + " - skipping");
 					}
-					referenceDAO.persist(reference);
 				}
 				references.add(reference);
 			}
