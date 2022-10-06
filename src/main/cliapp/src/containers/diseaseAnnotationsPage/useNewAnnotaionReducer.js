@@ -18,12 +18,15 @@ const initialNewAnnotationState = {
 		evidenceCodes: [],
 		with: [],
 		relatedNotes: [],
+		conditionRelations: [],
 	},
 	errorMessages: {},
 	relatedNotesErrorMessages: [],
+	exConErrorMessages: [],
 	submitted: false,
 	newAnnotationDialog: false,
 	showRelatedNotes: false,
+	showConditionRelations: false,
 	isValid: false,
 };
 
@@ -35,11 +38,7 @@ const newAnnotationReducer = (draft, action) => {
 			draft.newAnnotation[action.field] = action.value;
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
-			draft.errorMessages = action.errorMessages;
-			draft.isValid = false;
-			break;
-		case 'UPDATE_RELATED_NOTES_ERROR_MESSAGES':
-			draft.relatedNotesErrorMessages = action.errorMessages;
+			draft[action.errorType]= action.errorMessages;
 			draft.isValid = false;
 			break;
 		case 'SUBMIT':
@@ -65,14 +64,23 @@ const newAnnotationReducer = (draft, action) => {
 			)
 			draft.showRelatedNotes = true;
 			break;
-		case 'DELETE_NOTE':
-			draft.newAnnotation.relatedNotes.splice(action.index, 1);
-			if(draft.newAnnotation.relatedNotes.length === 0){
-				draft.showRelatedNotes = false;
+		case 'ADD_NEW_RELATION':
+			draft.newAnnotation.conditionRelations.push(
+				{
+					dataKey: action.count,
+					conditions: [],
+				}
+			)
+			draft.showConditionRelations = true;
+			break;
+		case 'DELETE_ROW':
+			draft.newAnnotation[action.tableType].splice(action.index, 1);
+			if(draft.newAnnotation[action.tableType].length === 0){
+				draft[action.showType] = false;
 			}
 			break;
-		case 'EDIT_NOTE':
-			draft.newAnnotation.relatedNotes[action.index][action.field] = action.value;
+		case 'EDIT_ROW':
+			draft.newAnnotation[action.tableType][action.index][action.field] = action.value;
 			break;
 		default:
 			throw Error('Unknown action: ' + action.type);

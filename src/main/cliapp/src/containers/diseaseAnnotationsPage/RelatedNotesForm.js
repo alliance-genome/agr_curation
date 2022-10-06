@@ -31,7 +31,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onInternalEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_NOTE", field: "internal", index: props.rowIndex, value: event.value.name});
+		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "internal", index: props.rowIndex, value: event.value.name});
 	}
 
 	const internalEditor = (props) => {
@@ -49,7 +49,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onNoteTypeEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_NOTE", field: "noteType", index: props.rowIndex, value: event.target.value})
+		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
 	};
 
 	const noteTypeEditor = (props) => {
@@ -69,7 +69,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onFreeTextEditorValueChange = (event, props) => {
-		newAnnotationDispatch({type: "EDIT_NOTE", field: "freeText", index: props.rowIndex, value: event.target.value})
+		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes", field: "freeText", index: props.rowIndex, value: event.target.value})
 	};
 
 	const freeTextEditor = (props, fieldName, errorMessages) => {
@@ -87,7 +87,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const handleDeleteRelatedNote = (event, props) => {
-		newAnnotationDispatch({type: "DELETE_NOTE", index: props.rowIndex})
+		newAnnotationDispatch({type: "DELETE_ROW", tableType: "relatedNotes", showType: "showRelatedNotes", index: props.rowIndex})
 	}
 
 	const deleteAction = (props) => {
