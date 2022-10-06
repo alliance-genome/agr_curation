@@ -61,6 +61,8 @@
       "susceptibility"
     ],
     "inferred_gene": "DATEST:Gene0001",
-    "asserted_gene": "DATEST:Gene0001"
+    "asserted_genes": [
+      "DATEST:Gene0001"
+    ]
   }
 ]

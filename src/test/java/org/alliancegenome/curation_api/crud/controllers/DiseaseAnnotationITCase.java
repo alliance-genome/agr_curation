@@ -381,7 +381,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -411,7 +411,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.diseaseQualifiers[0].name", is("severity")).
 				body("entity.with[0].curie", is("HGNC:1")).
 				body("entity.inferredGene.curie", is(testGene.getCurie())).
-				body("entity.assertedGene.curie", is(testGene2.getCurie())).
+				body("entity.assertedGenes[0].curie", is(testGene2.getCurie())).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
@@ -444,7 +444,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -476,7 +476,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.diseaseQualifiers[0].name", is("severity")).
 				body("entity.with[0].curie", is("HGNC:1")).
 				body("entity.inferredGene.curie", is(testGene.getCurie())).
-				body("entity.assertedGene.curie", is(testGene2.getCurie())).
+				body("entity.assertedGenes[0].curie", is(testGene2.getCurie())).
 				body("entity.inferredAllele.curie", is(testAllele.getCurie())).
 				body("entity.assertedAllele.curie", is(testAllele2.getCurie())).
 				body("entity.internal", is(true)).
@@ -1443,7 +1443,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(nonPersistedGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -1484,7 +1484,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(nonPersistedGene);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(nonPersistedGene));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -1494,7 +1494,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1525,7 +1525,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(nonPersistedGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -1568,7 +1568,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(nonPersistedGene);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(nonPersistedGene));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -1580,7 +1580,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -1611,7 +1611,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(nonPersistedAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -1654,7 +1654,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(nonPersistedAllele);
 		
@@ -1693,7 +1693,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testObsoleteGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -1730,7 +1730,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testObsoleteGene);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testObsoleteGene));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -1740,7 +1740,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1767,7 +1767,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testObsoleteGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -1806,7 +1806,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testObsoleteGene);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testObsoleteGene));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -1818,7 +1818,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -1845,7 +1845,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(testObsoleteAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -1884,7 +1884,7 @@ public class DiseaseAnnotationITCase {
 		editedDiseaseAnnotation.setObsolete(true);
 		editedDiseaseAnnotation.setSingleReference(testReference);
 		editedDiseaseAnnotation.setInferredGene(testGene);
-		editedDiseaseAnnotation.setAssertedGene(testGene2);
+		editedDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		editedDiseaseAnnotation.setInferredAllele(testAllele);
 		editedDiseaseAnnotation.setAssertedAllele(testObsoleteAllele);
 		
@@ -2766,7 +2766,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(nonPersistedGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -2808,7 +2808,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(nonPersistedGene);
+		newDiseaseAnnotation.setAssertedGenes(List.of(nonPersistedGene));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -2818,7 +2818,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2850,7 +2850,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(nonPersistedGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		newDiseaseAnnotation.setInferredAllele(testAllele);
 		newDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -2894,7 +2894,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(nonPersistedGene);
+		newDiseaseAnnotation.setAssertedGenes(List.of(nonPersistedGene));
 		newDiseaseAnnotation.setInferredAllele(testAllele);
 		newDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -2906,7 +2906,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
@@ -2938,7 +2938,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		newDiseaseAnnotation.setInferredAllele(nonPersistedAllele);
 		newDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -2982,7 +2982,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		newDiseaseAnnotation.setInferredAllele(testAllele);
 		newDiseaseAnnotation.setAssertedAllele(nonPersistedAllele);
 		
@@ -3022,7 +3022,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testObsoleteGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -3060,7 +3060,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(testObsoleteGene);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testObsoleteGene));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -3070,7 +3070,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3098,7 +3098,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testObsoleteGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		newDiseaseAnnotation.setInferredAllele(testAllele);
 		newDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -3138,7 +3138,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(testObsoleteGene);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testObsoleteGene));
 		newDiseaseAnnotation.setInferredAllele(testAllele);
 		newDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -3150,7 +3150,7 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.assertedGene", is(ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.assertedGenes", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
@@ -3178,7 +3178,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		newDiseaseAnnotation.setInferredAllele(testObsoleteAllele);
 		newDiseaseAnnotation.setAssertedAllele(testAllele2);
 		
@@ -3218,7 +3218,7 @@ public class DiseaseAnnotationITCase {
 		newDiseaseAnnotation.setObsolete(true);
 		newDiseaseAnnotation.setSingleReference(testReference);
 		newDiseaseAnnotation.setInferredGene(testGene);
-		newDiseaseAnnotation.setAssertedGene(testGene2);
+		newDiseaseAnnotation.setAssertedGenes(List.of(testGene2));
 		newDiseaseAnnotation.setInferredAllele(testAllele);
 		newDiseaseAnnotation.setAssertedAllele(testObsoleteAllele);
 		

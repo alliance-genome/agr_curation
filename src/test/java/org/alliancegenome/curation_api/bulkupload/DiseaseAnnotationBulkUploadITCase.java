@@ -230,7 +230,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[1].evidenceCodes", hasSize(1)).
 			body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
 			body("results[1].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[1].assertedGene.curie", is("DATEST:Gene0001"));
+			body("results[1].assertedGenes[0].curie", is("DATEST:Gene0001"));
 	}
 	
 	@Test
@@ -303,7 +303,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[2].evidenceCodes", hasSize(1)).
 			body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
 			body("results[2].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[2].assertedGene.curie", is("DATEST:Gene0001")).
+			body("results[2].assertedGenes[0].curie", is("DATEST:Gene0001")).
 			body("results[2].inferredAllele.curie", is("DATEST:Allele0001")).
 			body("results[2].assertedAllele.curie", is("DATEST:Allele0001"));
 	}
@@ -2778,8 +2778,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(109)
-	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGene() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_gene_allele_annotation.json"));
+	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGenes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_genes_allele_annotation.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3108,8 +3108,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(123)
-	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGene() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_gene_agm_annotation.json"));
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGenes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_genes_agm_annotation.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
