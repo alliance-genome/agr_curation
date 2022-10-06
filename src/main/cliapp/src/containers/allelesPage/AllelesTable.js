@@ -1,20 +1,29 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
+import { ListTableCell } from '../../components/ListTableCell';
+import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
+import { getRefStrings } from '../../utils/utils';
 
 export const AllelesTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [errorMessages, setErrorMessages] = useState({});
+	const errorMessagesRef = useRef();
+	errorMessagesRef.current = errorMessages;
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
 	const symbolTemplate = (rowData) => {
 		return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+	}
+	
+	const nameTemplate = (rowData) => {
+		return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.name }} />
 	}
 
 	const taxonTemplate = (rowData) => {
@@ -29,6 +38,36 @@ export const AllelesTable = () => {
 					);
 			}
 	}
+	
+	const isExtinctTemplate = (rowData) => {
+		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
+			return <EllipsisTableCell>{JSON.stringify(rowData.isExtinct)}</EllipsisTableCell>;
+		}
+	};
+	
+	const referencesTemplate = (rowData) => {
+		if (rowData && rowData.references) {
+			const refStrings = getRefStrings(rowData.references);
+			const listTemplate = (item) => {
+				return (
+					<EllipsisTableCell>
+						{item}
+					</EllipsisTableCell>
+				);
+			};
+			return (
+				<>
+					<div className={`${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`}>
+						<ListTableCell template={listTemplate} listData={refStrings}/>
+					</div>
+					<Tooltip target={`.${rowData.curie.replace(':','')}${rowData.references[0].curie.replace(':', '')}`} style={{ width: '450px', maxWidth: '450px' }} position='left'>
+						<ListTableCell template={listTemplate} listData={refStrings}/>
+					</Tooltip>
+				</>
+			);
+
+		}
+	};
 
 	const columns = [
 		{
@@ -37,6 +76,14 @@ export const AllelesTable = () => {
 			sortable: { isEnabled },
 			filter: true,
 			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+		},
+		{
+			field: "name",
+			header: "Name",
+			body: nameTemplate,
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
 		},
 		{
 			field: "symbol",
@@ -53,6 +100,81 @@ export const AllelesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]}, 
+		},
+		{
+			field: "references.curie",
+			header: "References",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "referencesFilter", fields: ["references.curie", "references.crossReferences.curie"]},
+			body: referencesTemplate
+	},
+		{
+			field: "inheritanceMode.name",
+			header: "Inheritance Mode",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "multiselect", filterName: "inheritanceModeFilter", fields: ["inheritanceMode.name"]},
+		},
+		{
+			field: "inCollection.name",
+			header: "In Collection",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "multiselect", filterName: "inCollectionFilter", fields: ["inCollection.name"]},
+		},
+		{
+			field: "sequencingStatus.name",
+			header: "Sequencing Status",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "multiselect", filterName: "sequencingStatusFilter", fields: ["sequencingStatus.name"]},
+		},
+		{
+			field: "isExtinct",
+			header: "Is Extinct",
+			body: isExtinctTemplate,
+			filter: true,
+			filterElement: {type: "dropdown", filterName: "isExtinctFilter", fields: ["isExtinct"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			sortable: isEnabled
+		},
+		{
+			field: "dateUpdated",
+			header: "Date Updated",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "dateUpdatedFilter", fields: ["dateUpdated"]},
+		},
+		{
+			field: "createdBy.uniqueId",
+			header: "Created By",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "createdByFilter", fields: ["createdBy.uniqueId"]},
+		},
+		{
+			field: "dateCreated",
+			header: "Date Created",
+			sortable: isEnabled,
+			filter: true,
+			filterType: "Date",
+			filterElement: {type: "input", filterName: "dateCreatedFilter", fields: ["dataCreated"]},
+		},
+		{
+			field: "internal",
+			header: "Internal",
+			body: internalTemplate,
+			filter: true,
+			filterElement: {type: "dropdown", filterName: "internalFilter", fields: ["internal"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			sortable: isEnabled
+		},
+		{
+			field: "obsolete",
+			header: "Obsolete",
+			body: obsoleteTemplate,
+			filter: true,
+			filterElement: {type: "dropdown", filterName: "obsoleteFilter", fields: ["obsolete"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
+			sortable: isEnabled
 		}
 	];
 

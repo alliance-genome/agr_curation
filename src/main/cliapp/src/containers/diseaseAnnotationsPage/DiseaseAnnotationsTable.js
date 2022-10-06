@@ -25,6 +25,7 @@ import { Tooltip } from 'primereact/tooltip';
 import {getRefString} from '../../utils/utils';
 import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
+import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -324,18 +325,6 @@ export const DiseaseAnnotationsTable = () => {
 	const negatedTemplate = (rowData) => {
 		if (rowData && rowData.negated !== null && rowData.negated !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.negated)}</EllipsisTableCell>;
-		}
-	};
-
-	const internalTemplate = (rowData) => {
-		if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
-		}
-	};
-
-	const obsoleteTemplate = (rowData) => {
-		if (rowData && rowData.obsolete !== null && rowData.obsolete !== undefined) {
-			return <EllipsisTableCell>{JSON.stringify(rowData.obsolete)}</EllipsisTableCell>;
 		}
 	};
 
