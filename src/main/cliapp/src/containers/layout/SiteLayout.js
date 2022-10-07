@@ -44,9 +44,7 @@ export const SiteLayout = (props) => {
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);
 		const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
-		const [siteContext, setSiteContext] = useState({ "test": "test data" });
-
-		const [userInfo, setUserInfo] = useState(null);
+		const [siteContext, setSiteContext] = useState({});
 
 		const copyTooltipRef = useRef();
 		const location = useLocation();
@@ -114,19 +112,10 @@ export const SiteLayout = (props) => {
 			}
 		);
 
-		useEffect(() => {
-				if (!authState || !authState.isAuthenticated) {
-						setUserInfo(null);
-				} else {
-						oktaAuth.getUser().then((info) => {
-								setUserInfo(info);
-						}).catch((err) => {
-								console.error(err);
-						});
-				}
-		}, [authState, oktaAuth, setUserInfo]);
-
-		const logout = async () => await oktaAuth.signOut();
+		const logout = async () => {
+			await oktaAuth.signOut();
+			sessionStorage.removeItem("userSettings");
+		}
 
 		useEffect(() => {
 				if (!authState || !authState.isAuthenticated) {
@@ -337,7 +326,7 @@ export const SiteLayout = (props) => {
 
 						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={themeState.layoutColorMode}
 								mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
-								authState={authState} logout={logout} userInfo={userInfo} />
+								authState={authState} logout={logout} />
 
 						<div className="layout-sidebar" onClick={onSidebarClick}>
 								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState.layoutColorMode} />

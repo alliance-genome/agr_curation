@@ -4,7 +4,10 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 import { useOktaAuth } from '@okta/okta-react';
-import { resetThemes } from '../../service/useSessionStorage';
+import { Panel } from 'primereact/panel';
+import { Ripple } from 'primereact/ripple';
+import { useSessionStorage } from '../../service/useSessionStorage';
+import * as jose from 'jose'
 
 import { ConfirmButton } from '../../components/ConfirmButton';
 
@@ -19,6 +22,8 @@ const initialThemeState = {
 
 export const ProfileComponent = () => {
 
+	const [themeState, setThemeState] = useSessionStorage( "themeSettings", initialThemeState);
+
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
 
@@ -31,8 +36,9 @@ export const ProfileComponent = () => {
 		window.location.reload();
 	};
 
-	const themeResetHandler = () =>{
-		resetThemes(initialThemeState);
+	const themeResetHandler = () => {
+		console.log(themeState);
+		setThemeState(initialThemeState);
 		window.location.reload();
 	};
 
@@ -57,26 +63,64 @@ export const ProfileComponent = () => {
 			}
 	}, [authState, oktaAuth, setLocalUserInfo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const userInfos = [
-		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName },
-		{ name: "Okta Email", value: localUserInfo.oktaEmail },
-		{ name: "Okta Token", value: oktaToken.accessToken.accessToken },
-		{ name: "Curation API Token", value: localUserInfo.apiToken },
-	];
-
 	const valueTemplate = (props) => {
-		console.log(props);
+		//console.log(props.template());
+		return props.template(props);
+		//return props.template;
+	};
+
+	const textTemplate = (props) => {
 		return (
 			<p style={{ wordBreak: "break-all" }}>{ props.value }</p>
 		);
-	}
+	};
+
+
+	const headerTemplate = (options, props) => {
+        const toggleIcon = options.collapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up';
+        const className = `${options.className} justify-content-start`;
+        const titleClassName = `${options.titleClassName} pl-1`;
+
+        return (
+            <div className={className}>
+                <button className={options.togglerClassName} onClick={options.onTogglerClick}>
+                    <span className={toggleIcon}></span>
+                    <Ripple />
+                </button>
+                <span className={titleClassName}>
+                    Expand
+                </span>
+            </div>
+        )
+    };
+
+	const jsonTemplate = (props) => {
+		return (
+			<p style={{ wordBreak: "break-all" }}>
+				<Panel headerTemplate={headerTemplate} toggleable collapsed>
+					<pre>{ props.value }</pre>
+				</Panel>
+			</p>
+		);
+	};
+
+	const userInfos = [
+		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate  },
+		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate  },
+		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate  },
+		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate  },
+		{ name: "Curation API Token", value: localUserInfo.apiToken, template: textTemplate },
+		{ name: "Okta Access Token Content", value: JSON.stringify(jose.decodeJwt(oktaToken.accessToken.accessToken), null, 2), template: jsonTemplate  },
+		{ name: "Okta Id Token Content", value: JSON.stringify(jose.decodeJwt(oktaToken.idToken.idToken), null, 2), template: jsonTemplate  },
+		{ name: "User Settings", value: JSON.stringify(JSON.parse(sessionStorage.getItem("userSettings")), null, 2), template: jsonTemplate },
+	];
 
 	return (
 		<div className="grid">
 			<div className="col-12">
 				<Card title="User Profile" subTitle="">
 					<DataTable value={userInfos} style={{ width: "100%"}}>
-						<Column field="name" header="Name" />
+						<Column field="name" header="Name" style={{ minWidth: '16rem' }} />
 						<Column field="value" header="Value" body={valueTemplate} />
 					</DataTable>
 				</Card>

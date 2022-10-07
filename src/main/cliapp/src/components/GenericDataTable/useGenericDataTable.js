@@ -44,7 +44,7 @@ export const useGenericDataTable = ({
 
 	
 	const [tableState, setTableState] = useSessionStorage(
-	`${initialTableState.tableKeyName}TableSettings`, 
+		`${initialTableState.tableKeyName}TableSettings`,
 		initialTableState
 	);
 
