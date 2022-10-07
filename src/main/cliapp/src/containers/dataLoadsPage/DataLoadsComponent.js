@@ -352,7 +352,7 @@ export const DataLoadsComponent = () => {
 			const classVersionRange = classVersions[loadedClass];
 			if (!classVersionRange) return false;
 		
-			let minMaxVersions = classVersionRange.split(" - ");
+			let minMaxVersions = classVersionRange.includes("-") ? classVersionRange.split(" - ") : [classVersionRange, classVersionRange];
 			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
 			let minMaxVersionParts = [];
 			minMaxVersions.forEach((version, ix) => {minMaxVersionParts[ix] = parseVersionString(version)});
