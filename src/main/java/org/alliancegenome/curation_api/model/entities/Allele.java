@@ -31,7 +31,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 	
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsAndLists.class})
