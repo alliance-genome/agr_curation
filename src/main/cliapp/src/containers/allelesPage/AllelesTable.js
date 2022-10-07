@@ -141,6 +141,12 @@ export const AllelesTable = () => {
 			filter: true,
 			filterElement: {type: "dropdown", filterName: "isExtinctFilter", fields: ["isExtinct"], options: [{ text: "true" }, { text: "false" }], optionField: "text"},
 			sortable: isEnabled
+		},{
+			field: "updatedBy.uniqueId",
+			header: "Updated By",
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "updatedByFilter", fields: ["updatedBy.uniqueId"]},
 		},
 		{
 			field: "dateUpdated",
