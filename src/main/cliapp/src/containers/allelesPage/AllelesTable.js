@@ -18,6 +18,10 @@ export const AllelesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
+	const aggregationFields = [
+		'inCollection.name', 'sequencingStatus.name', 'inheritanceMode.name'
+	];
+	
 	const symbolTemplate = (rowData) => {
 		return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
 	}
@@ -186,6 +190,7 @@ export const AllelesTable = () => {
 					endpoint="allele" 
 					tableName="Alleles" 
 					columns={columns}	 
+					aggregationFields={aggregationFields}
 					isEditable={false}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
