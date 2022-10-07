@@ -46,11 +46,11 @@ import lombok.*;
 public abstract class DiseaseAnnotation extends Association {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "allianceCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "diseaseAnnotationCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true)
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	private String allianceCurie;
+	private String diseaseAnnotationCurie;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
