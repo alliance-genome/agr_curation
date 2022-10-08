@@ -111,7 +111,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<VocabularyTerm> diseaseQualifiers;
 
 	@IndexedEmbedded(includeDepth = 1)
