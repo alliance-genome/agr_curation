@@ -163,11 +163,6 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			conditionFreeText = dto.getConditionFreeText();
 		experimentalCondition.setConditionFreeText(conditionFreeText);
 		
-		if (StringUtils.isBlank(dto.getConditionStatement())) {
-			throw new ObjectValidationException(dto, "ConditionStatement is a required field - skipping annotation");
-		}
-		experimentalCondition.setConditionStatement(dto.getConditionStatement());
-		
 		experimentalCondition.setInternal(dto.getInternal());
 		
 		Boolean obsolete = false;

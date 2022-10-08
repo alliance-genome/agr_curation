@@ -13,11 +13,6 @@ public class ExperimentalConditionDTO extends UniqueIdAuditedObjectDTO{
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("condition_class")
 	private String conditionClass;
-	
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("condition_statement")
-	private String conditionStatement;
-	
 
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("condition_id")

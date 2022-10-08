@@ -129,7 +129,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
-			body("results[0].conditionRelations[0].conditions[0].conditionStatement", is("Condition statement")).
 			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
 			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
@@ -201,7 +200,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
-			body("results[0].conditionRelations[0].conditions[0].conditionStatement", is("Condition statement")).
 			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
 			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
@@ -274,7 +272,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
-			body("results[0].conditionRelations[0].conditions[0].conditionStatement", is("Condition statement")).
 			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
 			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
@@ -827,8 +824,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(26)
-	public void diseaseAnnotationBulkUploadNoConditionStatement() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_no_condition_statement.json"));
+	public void diseaseAnnotationMismatchedNoteReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_mismatched_note_reference.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -845,7 +842,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0)); 
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -3144,8 +3141,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(124)
-	public void diseaseAnnotationBulkUploadEmptyConditionStatement() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/124_empty_condition_statement.json"));
+	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifier() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/124_empty_disease_genetic_modifier.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3167,54 +3164,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	@Test
 	@Order(125)
-	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifier() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/125_empty_disease_genetic_modifier.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene-disease-annotation/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(126)
 	public void diseaseAnnotationBulkUploadEmptyPredicate() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/126_empty_predicate.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene-disease-annotation/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(127)
-	public void diseaseAnnotationMismatchedNoteReference() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/127_mismatched_note_reference.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/125_empty_predicate.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
