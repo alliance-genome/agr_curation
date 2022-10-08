@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +10,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
@@ -21,11 +20,11 @@ import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.SynonymDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.validators.AlleleValidator;
@@ -51,6 +50,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	@Inject ReferenceDAO referenceDAO;
 	@Inject ReferenceService referenceService;
+	@Inject AuditedObjectService<Allele, AlleleDTO> auditedObjectService;
+	@Inject BiologicalEntityService<Allele, AlleleDTO> biologicalEntityService;
+	@Inject GenomicEntityService<Allele, AlleleDTO> genomicEntityService;
 
 	@Override
 	@PostConstruct
@@ -112,72 +114,42 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 	
 	private Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
-		// Check for required fields
-		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon()) || StringUtils.isBlank(dto.getName()) || dto.getInternal() == null) {
-			throw new ObjectValidationException(dto, "Entry for allele " + dto.getCurie() + " missing required fields - skipping");
+		ObjectResponse<Allele> alleleResponse = new ObjectResponse<Allele>();
+		Allele allele = null;
+		if (StringUtils.isBlank(dto.getCurie())) {
+			alleleResponse.addErrorMessage("curie", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			allele = alleleDAO.find(dto.getCurie());
 		}
-
-		Allele allele = alleleDAO.find(dto.getCurie());
-		if (allele == null) {
-			allele = new Allele();
-			allele.setCurie(dto.getCurie());
-		} 
 		
-		// Validate taxon ID
-		ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
-		if (taxonResponse.getEntity() == null) {
-			throw new ObjectValidationException(dto, "Invalid taxon ID for allele " + dto.getCurie() + " - skipping");
-		}
-		allele.setTaxon(taxonResponse.getEntity());
+		if (allele == null)
+			allele = new Allele();
+		
+		allele.setCurie(dto.getCurie());
+		
+		ObjectResponse<Allele> aoResponse = auditedObjectService.validateAuditedObjectDTO(allele, dto);
+		ObjectResponse<Allele> beResponse = biologicalEntityService.validateBiologicalEntityDTO(aoResponse.getEntity(), dto);
+		ObjectResponse<Allele> geResponse = genomicEntityService.validateGenomicEntityDTO(beResponse.getEntity(), dto);
+		alleleResponse.addErrorMessages(aoResponse.getErrorMessages());
+		alleleResponse.addErrorMessages(beResponse.getErrorMessages());
+		alleleResponse.addErrorMessages(geResponse.getErrorMessages());
+		
+		allele = geResponse.getEntity();
+		
+		if (StringUtils.isBlank(dto.getName()))
+			alleleResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
+		allele.setName(dto.getName());
 		
 		String symbol = null;
 		if (StringUtils.isNotBlank(dto.getSymbol())) 
 			symbol = dto.getSymbol();
 		allele.setSymbol(symbol);
-		
-		allele.setName(dto.getName());
-		
-		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
-			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
-			allele.setCreatedBy(createdBy);
-		}
-		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
-			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
-			allele.setUpdatedBy(updatedBy);
-		}
-		
-		allele.setInternal(dto.getInternal());
-		
-		Boolean obsolete = false;
-		if (dto.getObsolete() != null)
-			obsolete = dto.getObsolete();
-		allele.setObsolete(obsolete);
-
-		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
-			OffsetDateTime dateLastModified;
-			try {
-				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_updated in " + allele.getCurie() + " - skipping");
-			}
-			allele.setDateUpdated(dateLastModified);
-		}
-
-		if (StringUtils.isNotBlank(dto.getDateCreated())) {
-			OffsetDateTime creationDate;
-			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_created in " + allele.getCurie() + " - skipping");
-			}
-			allele.setDateCreated(creationDate);
-		}
-		
+				
 		VocabularyTerm inheritenceMode = null;
 		if (StringUtils.isNotBlank(dto.getInheritanceMode())) {
 			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(dto.getInheritanceMode(), VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 			if (inheritenceMode == null) {
-				throw new ObjectValidationException(dto, "Invalid inheritance mode (" + dto.getInheritanceMode() + ") in " + allele.getCurie() + " - skipping");
+				alleleResponse.addErrorMessage("inheritanceMode", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
 		allele.setInheritanceMode(inheritenceMode);
@@ -186,7 +158,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		if (StringUtils.isNotBlank(dto.getInCollection())) {
 			inCollection = vocabularyTermDAO.getTermInVocabulary(dto.getInCollection(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 			if (inCollection == null) {
-				throw new ObjectValidationException(dto, "Invalid collection (" + dto.getInCollection() + ") in " + allele.getCurie() + " - skipping");
+				alleleResponse.addErrorMessage("inCollection", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
 		allele.setInCollection(inCollection);
@@ -195,16 +167,13 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		if (StringUtils.isNotBlank(dto.getSequencingStatus())) {
 			sequencingStatus = vocabularyTermDAO.getTermInVocabulary(dto.getSequencingStatus(), VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
 			if (sequencingStatus == null) {
-				throw new ObjectValidationException(dto, "Invalid sequencing status (" + dto.getSequencingStatus() + ") in " + allele.getCurie() + " - skipping");
+				alleleResponse.addErrorMessage("sequencingStatus", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
 		allele.setSequencingStatus(sequencingStatus);
 
-		if (allele.getIsExtinct() != null) {
+		if (allele.getIsExtinct() != null)
 			allele.setIsExtinct(allele.getIsExtinct());
-		} else {
-			allele.setIsExtinct(false);
-		}
 		
 		List<Reference> references = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
@@ -213,13 +182,32 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 				if (reference == null || reference.getObsolete()) {
 					reference = referenceService.retrieveFromLiteratureService(publicationId);
 					if (reference == null) {
-						throw new ObjectValidationException(dto, "Invalid reference (" + publicationId + ") in allele " + allele.getCurie() + " - skipping");
+						alleleResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
+						break;
 					}
 				}
 				references.add(reference);
 			}
 		}
 		allele.setReferences(references);
+		
+		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
+			List<Synonym> synonyms= new ArrayList<>();
+			for (SynonymDTO synonymDTO : dto.getSynonyms()) {
+				ObjectResponse<Synonym> synResponse = synonymService.validateSynonymDTO(synonymDTO);
+				if (synResponse.hasErrors()) {
+					alleleResponse.addErrorMessage("synonyms", synResponse.getErrorMessagesString());
+					break;
+				} else {
+					synonyms.add(synResponse.getEntity());
+				}
+			}
+			allele.setSynonyms(synonyms);
+		}
+		
+		if (alleleResponse.hasErrors()) {
+			throw new ObjectValidationException(dto, alleleResponse.getErrorMessagesString());
+		}
 		
 		return allele;
 	}

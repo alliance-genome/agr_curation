@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.GeneDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -33,7 +32,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject DiseaseAnnotationService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO> diseaseAnnotationService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		

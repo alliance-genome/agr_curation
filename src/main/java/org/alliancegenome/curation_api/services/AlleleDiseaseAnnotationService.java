@@ -8,6 +8,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
@@ -17,6 +18,8 @@ import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -33,22 +36,14 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
-	@Inject
-	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject
-	AlleleDAO alleleDAO;
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
-	@Inject
-	AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-	@Inject
-	DiseaseAnnotationService diseaseAnnotationService;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
+	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject AlleleDAO alleleDAO;
+	@Inject GeneDAO geneDAO;
+	@Inject NoteDAO noteDAO;
+	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
+	@Inject DiseaseAnnotationService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO> diseaseAnnotationService;
+	@Inject ConditionRelationDAO conditionRelationDAO;
 	
 
 	@Override
@@ -84,57 +79,65 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	}
 	
 	private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
-		AlleleDiseaseAnnotation annotation;
+		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
+		Allele allele;
+		ObjectResponse<AlleleDiseaseAnnotation> adaResponse = new ObjectResponse<AlleleDiseaseAnnotation>();
 		if (StringUtils.isBlank(dto.getSubject())) {
-			throw new ObjectValidationException(dto, "Annotation for " + dto.getObject() + " missing a subject Allele - skipping");
-		}
-		
-		Allele allele = alleleDAO.find(dto.getSubject());
-		if (allele == null) {
-			throw new ObjectValidationException(dto, "Allele " + dto.getSubject() + " not found in database - skipping annotation");
-		}
-		
-		String annotationId = dto.getModEntityId();
-		if (StringUtils.isBlank(annotationId)) {
-			annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto);
-		}
-		SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
-		if (annotationList == null || annotationList.getResults().size() == 0) {
-			annotation = new AlleleDiseaseAnnotation();
-			annotation.setUniqueId(annotationId);
-			annotation.setSubject(allele);
+			adaResponse.addErrorMessage("subject", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			annotation = annotationList.getResults().get(0);
+			allele = alleleDAO.find(dto.getSubject());
+			if (allele == null) {
+				adaResponse.addErrorMessage("subject", ValidationConstants.INVALID_MESSAGE);
+			} else {
+				String annotationId = dto.getModEntityId();
+				if (StringUtils.isBlank(annotationId)) {
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto);
+				}
+		
+				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
+				if (annotationList == null || annotationList.getResults().size() == 0) {
+					annotation.setUniqueId(annotationId);
+					annotation.setSubject(allele);
+				} else {
+					annotation = annotationList.getResults().get(0);
+				}
+			}
 		}
 		
-		annotation = (AlleleDiseaseAnnotation) diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+		adaResponse = diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+		annotation = adaResponse.getEntity();
 		
-		VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
-		if (diseaseRelation == null) {
-			throw new ObjectValidationException(dto, "Invalid allele disease relation for " + annotationId + " - skipping");
+		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+			if (diseaseRelation == null)
+				adaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
+			annotation.setDiseaseRelation(diseaseRelation);
+		} else {
+			adaResponse.addErrorMessage("diseaseRelation", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		annotation.setDiseaseRelation(diseaseRelation);
 		
-		Gene inferredGene = null;
 		if (StringUtils.isNotBlank(dto.getInferredGene())) {
-			inferredGene = geneDAO.find(dto.getInferredGene());
+			Gene inferredGene = geneDAO.find(dto.getInferredGene());
 			if (inferredGene == null)
-				throw new ObjectValidationException(dto, "Invalid inferred gene for " + annotationId + " - skipping");
+				adaResponse.addErrorMessage("inferredGene", ValidationConstants.INVALID_MESSAGE);
+			annotation.setInferredGene(inferredGene);
 		}
-		annotation.setInferredGene(inferredGene);
 		
 		if (CollectionUtils.isNotEmpty(dto.getAssertedGenes())) {
 			List<Gene> assertedGenes = new ArrayList<>();
 			for (String assertedGeneCurie : dto.getAssertedGenes()) {
 				Gene assertedGene = geneDAO.find(assertedGeneCurie);
-				if (assertedGene == null)
-					throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+				if (assertedGene == null) {
+					adaResponse.addErrorMessage("assertedGenes", ValidationConstants.INVALID_MESSAGE);
+					break;
+				}
 				assertedGenes.add(assertedGene);
 			}
 			annotation.setAssertedGenes(assertedGenes);
-		} else {
-			annotation.setAssertedGenes(null);
 		}
+		
+		if (adaResponse.hasErrors())
+			throw new ObjectValidationException(dto, adaResponse.getErrorMessagesString());
 		
 		return annotation;
 	}

@@ -9,6 +9,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.*;
@@ -25,18 +26,13 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	PersonService personService;
+	@Inject NoteDAO noteDAO;
+	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
+	@Inject NoteValidator noteValidator;
+	@Inject PersonService personService;
+	@Inject AuditedObjectService<Note, NoteDTO> auditedObjectService;
 	
 	@Override
 	@PostConstruct
@@ -57,24 +53,25 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		return new ObjectResponse<Note>(note);
 	}
 	
-	public Note validateNoteDTO(NoteDTO dto, String note_type_vocabulary) throws ObjectValidationException {
+	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String note_type_vocabulary) {
 		Note note = new Note();
-		if (StringUtils.isBlank(dto.getFreeText()) || StringUtils.isBlank(dto.getNoteType()) || dto.getInternal() == null) {
-			throw new ObjectValidationException(dto, "Note missing required fields");
-		}
+		ObjectResponse<Note> noteResponse = auditedObjectService.validateAuditedObjectDTO(note, dto);
+		
+		note = noteResponse.getEntity();
+		
+		if (StringUtils.isBlank(dto.getFreeText()))
+			noteResponse.addErrorMessage("freeText", ValidationConstants.REQUIRED_MESSAGE);
 		note.setFreeText(dto.getFreeText());
-		note.setInternal(dto.getInternal());
 		
-		Boolean obsolete = false;
-		if (dto.getObsolete() != null)
-			obsolete = dto.getObsolete();
-		note.setObsolete(obsolete);
 		
-		VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
-		if (noteType == null) {
-			throw new ObjectValidationException(dto, "Note type '" + dto.getNoteType() + "' not found in vocabulary '" + note_type_vocabulary + "'");
+		if (StringUtils.isBlank(dto.getNoteType())) {
+			noteResponse.addErrorMessage("noteType", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
+			if (noteType == null)
+				noteResponse.addErrorMessage("noteType", ValidationConstants.INVALID_MESSAGE);
+			note.setNoteType(noteType);
 		}
-		note.setNoteType(noteType);
 		
 		List<Reference> noteReferences = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
@@ -83,7 +80,8 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 				if (reference == null || reference.getObsolete()) {
 					reference = referenceService.retrieveFromLiteratureService(publicationId);
 					if (reference == null) {
-						throw new ObjectValidationException(dto, "Invalid reference attached to note: " + publicationId);
+						noteResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
+						break;
 					}
 					referenceDAO.persist(reference);
 				}
@@ -92,37 +90,9 @@ public class NoteService extends BaseEntityCrudService<Note, NoteDAO> {
 		}
 		note.setReferences(noteReferences);
 		
-		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
-			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
-			note.setCreatedBy(createdBy);
-		}
-		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
-			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
-			note.setUpdatedBy(updatedBy);
-		}
+		noteResponse.setEntity(note);
 		
-
-		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
-			OffsetDateTime dateLastModified;
-			try {
-				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_updated - skipping");
-			}
-			note.setDateUpdated(dateLastModified);
-		}
-
-		if (StringUtils.isNotBlank(dto.getDateCreated())) {
-			OffsetDateTime creationDate;
-			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_created - skipping");
-			}
-			note.setDateCreated(creationDate);
-		}
-		
-		return note;
+		return noteResponse;
 	}
 	
 }
