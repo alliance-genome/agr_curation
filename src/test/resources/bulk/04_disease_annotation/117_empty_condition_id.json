@@ -22,7 +22,7 @@
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
-            "condition_statement": "Condition statement",
+            
             "condition_id": "",
             "condition_quantity": "Some amount",
             "condition_gene_ontology": "DATEST:GOTerm0001",

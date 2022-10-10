@@ -81,17 +81,6 @@ export const ExperimentalConditionsTable = () => {
 		}
 	};
 
-	const statementBodyTemplate = (rowData) => {
-		if (rowData) {
-			return (
-				<>
-					<EllipsisTableCell otherClasses={`c${rowData.id}`}>{rowData.conditionStatement}</EllipsisTableCell>
-					<Tooltip target={`.c${rowData.id}`} content={rowData.conditionStatement} />
-				</>
-			)
-		}
-	};
-
 	const conditionClassBodyTemplate = (rowData) => {
 		if (rowData?.conditionClass) {
 			return (
@@ -249,14 +238,6 @@ export const ExperimentalConditionsTable = () => {
 			filter: true,
 			body: summaryBodyTemplate,
 			filterElement: {type: "input", filterName: "conditionSummaryFilter", fields: ["conditionSummary"]}, 
-		},
-		{
-			field: "conditionStatement",
-			header: "Statement",
-			sortable: isEnabled,
-			filter: true,
-			body: statementBodyTemplate,
-			filterElement: {type: "input", filterName: "conditionStatementFilter", fields: ["conditionStatement"]}, 
 		},
 		{
 			field: "conditionClass.name",

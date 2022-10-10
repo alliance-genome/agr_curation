@@ -84,14 +84,10 @@ public class ExperimentalConditionValidator extends AuditedObjectValidator<Exper
 		NCBITaxonTerm conditionTaxon = validateConditionTaxon(uiEntity, dbEntity);
 		dbEntity.setConditionTaxon(conditionTaxon);
 		
-		dbEntity.setConditionStatement(handleStringField(uiEntity.getConditionStatement()));
-		
 		dbEntity.setConditionQuantity(handleStringField(uiEntity.getConditionQuantity()));
 		dbEntity.setConditionFreeText(handleStringField(uiEntity.getConditionFreeText()));
 			
 		dbEntity.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(dbEntity));
-		if (dbEntity.getConditionStatement() == null)
-			dbEntity.setConditionStatement(dbEntity.getConditionSummary());
 		
 		String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dbEntity);
 		if (!uniqueId.equals(uiEntity.getUniqueId())) {
