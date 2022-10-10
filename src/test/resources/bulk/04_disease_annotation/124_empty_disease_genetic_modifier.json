@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0026",
+    "mod_entity_id": "DATEST:Annot0125",
     "internal": false,
     "obsolete": false,
     "subject": "DATEST:Gene0001",
@@ -22,6 +22,7 @@
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
+            
             "condition_id": "DATEST:ExpCondTerm0002",
             "condition_quantity": "Some amount",
             "condition_gene_ontology": "DATEST:GOTerm0001",
@@ -35,7 +36,7 @@
         ]
       }
     ],
-    "disease_genetic_modifier": "DATEST:Gene0002",
+    "disease_genetic_modifier": "",
     "disease_genetic_modifier_relation": "ameliorated_by",
     "with": [
       "HGNC:0001"

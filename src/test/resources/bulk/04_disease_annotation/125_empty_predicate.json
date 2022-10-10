@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0124",
+    "mod_entity_id": "DATEST:Annot0126",
     "internal": false,
     "obsolete": false,
     "subject": "DATEST:Gene0001",
@@ -8,7 +8,7 @@
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
     "negated": true,
-    "predicate": "is_implicated_in",
+    "predicate": "",
     "genetic_sex": "male",
     "updated_by": "DATEST:Person0001",
     "evidence_codes": [
@@ -22,7 +22,7 @@
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
-            "condition_statement": "",
+            
             "condition_id": "DATEST:ExpCondTerm0002",
             "condition_quantity": "Some amount",
             "condition_gene_ontology": "DATEST:GOTerm0001",

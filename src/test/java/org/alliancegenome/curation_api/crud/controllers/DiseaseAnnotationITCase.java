@@ -349,7 +349,6 @@ public class DiseaseAnnotationITCase {
 				body("entity.relatedNotes[0].freeText", is("Test text")).
 				body("entity.relatedNotes[1].freeText", is("Test text 2")).
 				body("entity.conditionRelations[0].conditionRelationType.name", is("relation_type")).
-				body("entity.conditionRelations[0].conditions[0].conditionStatement", is("Statement")).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
@@ -4171,7 +4170,6 @@ public class DiseaseAnnotationITCase {
 	private ExperimentalCondition createExperimentalCondition(String conditionClass, String statement) {
 		ExperimentalCondition condition = new ExperimentalCondition();
 		condition.setConditionClass(createZecoTerm(conditionClass));
-		condition.setConditionStatement(statement);
 		condition.setUniqueId(statement);
 		ObjectResponse<ExperimentalCondition> response = RestAssured.given().
 			contentType("application/json").
