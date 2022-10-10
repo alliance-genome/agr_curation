@@ -50,17 +50,13 @@ public abstract class BaseEntityCrudController<S extends BaseEntityCrudService<E
 
 	public SearchResponse<E> find(Integer page, Integer limit, HashMap<String, Object> params) {
 		if(params == null) params = new HashMap<>();
-		Pagination pagination = new Pagination();
-		pagination.setLimit(limit);
-		pagination.setPage(page);
+		Pagination pagination = new Pagination(page, limit);
 		return service.findByParams(pagination, params);
 	}
 
 	public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
 		if(params == null) params = new HashMap<>();
-		Pagination pagination = new Pagination();
-		pagination.setLimit(limit);
-		pagination.setPage(page);
+		Pagination pagination = new Pagination(page, limit);
 		return service.searchByParams(pagination, params);
 	}
 

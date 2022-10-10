@@ -1,15 +1,11 @@
 package org.alliancegenome.curation_api.model.entities;
 
-import java.util.Map;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
@@ -19,9 +15,6 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordFie
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-import io.quarkiverse.hibernate.types.json.JsonBinaryType;
-import io.quarkiverse.hibernate.types.json.JsonTypes;
-import io.quarkus.logging.Log;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -31,7 +24,6 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Person.class})
 public class LoggedInPerson extends Person {
 
@@ -49,10 +41,5 @@ public class LoggedInPerson extends Person {
 
 	@JsonView({View.FieldsOnly.class})
 	private String apiToken;
-	
-	@Type(type = JsonTypes.JSON_BIN)
-	@Column(columnDefinition = JsonTypes.JSON_BIN)
-	@JsonView({View.FieldsOnly.class})
-	private Map<String, Object> userSettings;
 	
 }
