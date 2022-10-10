@@ -149,8 +149,10 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			conditionFreeText = dto.getConditionFreeText();
 		experimentalCondition.setConditionFreeText(conditionFreeText);
 				
-		String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
-		experimentalCondition.setConditionSummary(conditionSummary);
+		if (!ecResponse.hasErrors()) {
+			String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
+			experimentalCondition.setConditionSummary(conditionSummary);
+		}
 		
 		ecResponse.setEntity(experimentalCondition);
 		
