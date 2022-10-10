@@ -31,7 +31,7 @@ public class GenomicEntityService<E extends GenomicEntity, D extends GenomicEnti
 			for (SynonymDTO synonymDto : dto.getSynonyms()) {
 				ObjectResponse<Synonym> synResponse = synonymService.validateSynonymDTO(synonymDto);
 				if (synResponse.hasErrors()) {
-					response.addErrorMessage("synonyms", synResponse.getErrorMessagesString());
+					response.addErrorMessage("synonyms", synResponse.errorMessagesString());
 				} else {
 					synonyms.add(synResponse.getEntity());
 				}

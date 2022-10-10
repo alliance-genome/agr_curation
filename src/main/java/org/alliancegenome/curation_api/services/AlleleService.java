@@ -172,8 +172,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 		allele.setSequencingStatus(sequencingStatus);
 
-		if (allele.getIsExtinct() != null)
-			allele.setIsExtinct(allele.getIsExtinct());
+		if (dto.getIsExtinct() != null)
+			allele.setIsExtinct(dto.getIsExtinct());
 		
 		List<Reference> references = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
@@ -196,7 +196,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 			for (SynonymDTO synonymDTO : dto.getSynonyms()) {
 				ObjectResponse<Synonym> synResponse = synonymService.validateSynonymDTO(synonymDTO);
 				if (synResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("synonyms", synResponse.getErrorMessagesString());
+					alleleResponse.addErrorMessage("synonyms", synResponse.errorMessagesString());
 					break;
 				} else {
 					synonyms.add(synResponse.getEntity());
@@ -206,7 +206,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 		
 		if (alleleResponse.hasErrors()) {
-			throw new ObjectValidationException(dto, alleleResponse.getErrorMessagesString());
+			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
 		}
 		
 		return allele;

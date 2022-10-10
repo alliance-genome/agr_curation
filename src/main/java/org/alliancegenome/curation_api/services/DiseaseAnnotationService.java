@@ -185,8 +185,6 @@ public class DiseaseAnnotationService<E extends DiseaseAnnotation, D extends Dis
 		ObjectResponse<E> daResponse = auditedObjectService.validateAuditedObjectDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		
-		annotation.setDataProvider(dto.getDataProvider());
-
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			annotation.setModEntityId(dto.getModEntityId());
 		} else {
@@ -254,10 +252,12 @@ public class DiseaseAnnotationService<E extends DiseaseAnnotation, D extends Dis
 			annotation.setWith(null);
 		}
 
-		if (StringUtils.isBlank(dto.getSecondaryDataProvider())) {
+		if (StringUtils.isBlank(dto.getDataProvider()))
 			daResponse.addErrorMessage("dataProvider", ValidationConstants.REQUIRED_MESSAGE);
-		}
-		annotation.setSecondaryDataProvider(dto.getDataProvider());
+		annotation.setDataProvider(dto.getDataProvider());
+		
+		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider()))
+			annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
 
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
@@ -307,7 +307,7 @@ public class DiseaseAnnotationService<E extends DiseaseAnnotation, D extends Dis
 			for (NoteDTO noteDTO : dto.getRelatedNotes()) {
 				ObjectResponse<Note> noteResponse = noteService.validateNoteDTO(noteDTO, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 				if (noteResponse.hasErrors()) {
-					daResponse.addErrorMessage("relatedNotes", noteResponse.getErrorMessagesString());
+					daResponse.addErrorMessage("relatedNotes", noteResponse.errorMessagesString());
 					break;
 				}
 				if (CollectionUtils.isNotEmpty(noteDTO.getReferences())) {

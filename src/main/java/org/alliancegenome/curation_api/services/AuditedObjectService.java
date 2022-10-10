@@ -33,7 +33,7 @@ public class AuditedObjectService <E extends AuditedObject, D extends AuditedObj
 		}
 		
 		Boolean internal = false;
-		if (dto.getInternal() == null)
+		if (dto.getInternal() != null)
 			internal = dto.getInternal();
 		entity.setInternal(internal);
 		

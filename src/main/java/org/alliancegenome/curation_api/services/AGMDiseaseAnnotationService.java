@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -104,8 +105,9 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 			}
 		}
 		
-		adaResponse = diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
-		annotation = adaResponse.getEntity();
+		ObjectResponse<AGMDiseaseAnnotation> daResponse = diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+		annotation = daResponse.getEntity();
+		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
 			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
@@ -151,7 +153,7 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 		
 		if (adaResponse.hasErrors())
-			throw new ObjectValidationException(dto, adaResponse.getErrorMessagesString());
+			throw new ObjectValidationException(dto, adaResponse.errorMessagesString());
 		
 		return annotation;
 	}

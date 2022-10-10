@@ -31,7 +31,7 @@ public class APIResponse {
 	}
 	
 	public void addErrorMessages(Map<String, String> newErrorMessages) {
-		if (!newErrorMessages.isEmpty()) {
+		if (newErrorMessages != null) {
 			if (errorMessages == null)
 				errorMessages = new HashMap<>();
 			errorMessages.putAll(newErrorMessages);
@@ -42,7 +42,7 @@ public class APIResponse {
 		return StringUtils.isNotEmpty(errorMessage) || MapUtils.isNotEmpty(errorMessages);
 	}
 	
-	public String getErrorMessagesString () {
+	public String errorMessagesString () {
 		if (errorMessages == null)
 			return null;
 		

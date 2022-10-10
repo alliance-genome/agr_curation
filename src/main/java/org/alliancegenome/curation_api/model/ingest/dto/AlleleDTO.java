@@ -32,8 +32,9 @@ public class AlleleDTO extends GenomicEntityDTO {
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("is_extinct")
-	private Boolean isExtinct = false;
+	private Boolean isExtinct;
 	
 	@JsonView({View.FieldsAndLists.class})
 	private List<SynonymDTO> synonyms;
+
 }

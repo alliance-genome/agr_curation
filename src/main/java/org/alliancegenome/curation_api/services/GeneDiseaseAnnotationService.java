@@ -105,8 +105,9 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
 		
-		gdaResponse = diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
-		annotation = gdaResponse.getEntity();
+		ObjectResponse<GeneDiseaseAnnotation> daResponse = diseaseAnnotationService.validateAnnotationDTO(annotation, dto);
+		annotation = daResponse.getEntity();
+		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
 			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
@@ -118,7 +119,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 		}
 		
 		if (gdaResponse.hasErrors())
-			throw new ObjectValidationException(dto, gdaResponse.getErrorMessagesString());
+			throw new ObjectValidationException(dto, gdaResponse.errorMessagesString());
 		
 		return annotation;
 	}
