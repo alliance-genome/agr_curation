@@ -70,13 +70,8 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	@Transactional
 	public AGMDiseaseAnnotation upsert(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		AGMDiseaseAnnotation annotation = validateAGMDiseaseAnnotationDTO(dto);
-		if (annotation == null) throw new ObjectUpdateException(dto, "Validation Failed");
 
-		annotation = (AGMDiseaseAnnotation) diseaseAnnotationService.upsert(annotation, dto);
-		if (annotation != null) {
-			agmDiseaseAnnotationDAO.persist(annotation);
-		}
-		return annotation;
+		return agmDiseaseAnnotationDAO.persist(annotation);
 	}
 
 	private AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {

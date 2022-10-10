@@ -70,13 +70,8 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@Transactional
 	public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		AlleleDiseaseAnnotation annotation = validateAlleleDiseaseAnnotationDTO(dto);
-		if (annotation == null) return null;
 		
-		annotation = (AlleleDiseaseAnnotation) diseaseAnnotationService.upsert(annotation, dto);
-		if (annotation != null) {
-			alleleDiseaseAnnotationDAO.persist(annotation);
-		}
-		return annotation;
+		return alleleDiseaseAnnotationDAO.persist(annotation);
 	}
 	
 	private AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {

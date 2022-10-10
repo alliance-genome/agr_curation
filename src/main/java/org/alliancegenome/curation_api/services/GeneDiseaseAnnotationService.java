@@ -63,11 +63,7 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 	public GeneDiseaseAnnotation upsert(GeneDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		GeneDiseaseAnnotation annotation = validateGeneDiseaseAnnotationDTO(dto);
 
-		annotation = (GeneDiseaseAnnotation) diseaseAnnotationService.upsert(annotation, dto);
-		if (annotation != null) {
-			geneDiseaseAnnotationDAO.persist(annotation);
-		}
-		return annotation;
+		return geneDiseaseAnnotationDAO.persist(annotation);
 	}
 	
 	private GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) throws ObjectValidationException {

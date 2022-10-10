@@ -1,14 +1,12 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
-
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ExperimentalConditionDAO;
 import org.alliancegenome.curation_api.dao.ontology.AnatomicalTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.ChemicalTermDAO;
@@ -16,9 +14,7 @@ import org.alliancegenome.curation_api.dao.ontology.ExperimentalConditionOntolog
 import org.alliancegenome.curation_api.dao.ontology.GoTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
-import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
-import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
@@ -40,26 +36,17 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class ExperimentalConditionService extends BaseEntityCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
 
-	@Inject
-	ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject
-	ExperimentalConditionValidator experimentalConditionValidator;
-	@Inject
-	ZecoTermDAO zecoTermDAO;
-	@Inject
-	ChemicalTermDAO chemicalTermDAO;
-	@Inject
-	AnatomicalTermDAO anatomicalTermDAO;
-	@Inject
-	NcbiTaxonTermDAO ncbiTaxonTermDAO;
-	@Inject
-	GoTermDAO goTermDAO;
-	@Inject
-	ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
-	@Inject
-	ExperimentalConditionSummary experimentalConditionSummary;
-	@Inject
-	PersonService personService;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject ExperimentalConditionValidator experimentalConditionValidator;
+	@Inject ZecoTermDAO zecoTermDAO;
+	@Inject ChemicalTermDAO chemicalTermDAO;
+	@Inject AnatomicalTermDAO anatomicalTermDAO;
+	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject GoTermDAO goTermDAO;
+	@Inject ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+	@Inject ExperimentalConditionSummary experimentalConditionSummary;
+	@Inject PersonService personService;
+	@Inject AuditedObjectService<ExperimentalCondition, ExperimentalConditionDTO> auditedObjectService;
 	
 	@Override
 	@PostConstruct
@@ -81,7 +68,9 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 		return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
 	}
 	
-	public ExperimentalCondition validateExperimentalConditionDTO(ExperimentalConditionDTO dto) throws ObjectValidationException {
+	public ObjectResponse<ExperimentalCondition> validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
+		ObjectResponse<ExperimentalCondition> ecResponse = new ObjectResponse<ExperimentalCondition>();
+		
 		String uniqueId = DiseaseAnnotationCurie.getExperimentalConditionCurie(dto);
 
 		ExperimentalCondition experimentalCondition;
@@ -93,42 +82,41 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			experimentalCondition = searchResponse.getSingleResult();
 		}
 		
+		ObjectResponse<ExperimentalCondition> aoResponse = auditedObjectService.validateAuditedObjectDTO(experimentalCondition, dto);
+    	experimentalCondition = aoResponse.getEntity();
+    	ecResponse.addErrorMessages(aoResponse.getErrorMessages());
+		
 		ChemicalTerm conditionChemical = null;
 		if (StringUtils.isNotBlank(dto.getConditionChemical())) {
 			conditionChemical = chemicalTermDAO.find(dto.getConditionChemical());
-			if (conditionChemical == null) {
-				throw new ObjectValidationException(dto, "Invalid ChemicalOntologyId - skipping annotation");
-			}
-			
+			if (conditionChemical == null)
+				ecResponse.addErrorMessage("conditionChemical", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionChemical(conditionChemical);
 		
 		ExperimentalConditionOntologyTerm conditionId = null;
 		if (StringUtils.isNotBlank(dto.getConditionId())) {
 			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
-			if (conditionId == null) {
-				throw new ObjectValidationException(dto, "Invalid ConditionId - skipping annotation");
-			}
+			if (conditionId == null)
+				ecResponse.addErrorMessage("conditionId", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionId(conditionId);
 
 		if (StringUtils.isNotBlank(dto.getConditionClass())) {
 			ZECOTerm term = zecoTermDAO.find(dto.getConditionClass());
-			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET)) {
-				throw new ObjectValidationException(dto, "Invalid ConditionClass - skipping annotation");
-			}
+			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))
+				ecResponse.addErrorMessage("conditionClass", ValidationConstants.INVALID_MESSAGE);
 			experimentalCondition.setConditionClass(term);
 		}
 		else {
-			throw new ObjectValidationException(dto, "ConditionClassId is a required field - skipping annotation");
+			ecResponse.addErrorMessage("conditionClass", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
 		AnatomicalTerm conditionAnatomy = null;
 		if (StringUtils.isNotBlank(dto.getConditionAnatomy())) {
 			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomy());
-			if (conditionAnatomy == null) {
-				throw new ObjectValidationException(dto, "Invalid AnatomicalOntologyId - skipping annotation");
-			}
+			if (conditionAnatomy == null)
+				ecResponse.addErrorMessage("conditionAnatomy", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		experimentalCondition.setConditionAnatomy(conditionAnatomy);
 		
@@ -138,18 +126,16 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 			if (conditionTaxon == null) {
 				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
 			}
-			if (conditionTaxon == null) {
-				throw new ObjectValidationException(dto, "Invalid NCBITaxonId - skipping annotation");
-			}
+			if (conditionTaxon == null)
+				ecResponse.addErrorMessage("conditionTaxon", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionTaxon(conditionTaxon);
 
 		GOTerm conditionGeneOntology = null;
 		if (StringUtils.isNotBlank(dto.getConditionGeneOntology())) {
 			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntology());
-			if (conditionGeneOntology == null) {
-				throw new ObjectValidationException(dto, "Invalid GeneOntologyId - skipping annotation");
-			}
+			if (conditionGeneOntology == null)
+				ecResponse.addErrorMessage("conditionGeneOntology", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionGeneOntology(conditionGeneOntology);
 		
@@ -162,48 +148,13 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 		if (StringUtils.isNotBlank(dto.getConditionFreeText()))
 			conditionFreeText = dto.getConditionFreeText();
 		experimentalCondition.setConditionFreeText(conditionFreeText);
-		
-		experimentalCondition.setInternal(dto.getInternal());
-		
-		Boolean obsolete = false;
-		if (experimentalCondition.getObsolete() != null)
-			obsolete = dto.getObsolete();
-		experimentalCondition.setObsolete(obsolete);
-		
-		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
-			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
-			experimentalCondition.setCreatedBy(createdBy);
-		}
-		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
-			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
-			experimentalCondition.setUpdatedBy(updatedBy);
-		}
-		
-		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
-			OffsetDateTime dateLastModified;
-			try {
-				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_updated in - skipping");
-			}
-			experimentalCondition.setDateUpdated(dateLastModified);
-		}
-
-		if (StringUtils.isNotBlank(dto.getDateCreated())) {
-			OffsetDateTime creationDate;
-			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_created in - skipping");
-			}
-			experimentalCondition.setDateCreated(creationDate);
-		}
-		
+				
 		String conditionSummary = experimentalConditionSummary.getConditionSummary(dto);
 		experimentalCondition.setConditionSummary(conditionSummary);
 		
-		return experimentalConditionDAO.persist(experimentalCondition);
-	
+		ecResponse.setEntity(experimentalCondition);
+		
+		return ecResponse;
 	}
 	
 }
