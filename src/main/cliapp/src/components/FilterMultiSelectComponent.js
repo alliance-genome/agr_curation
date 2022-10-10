@@ -21,7 +21,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 						 }
 				 };
 				 setSelectableOptions(tmp);
-				 if(currentFilters[filterName]) {
+				 if(currentFilters && currentFilters[filterName]) {
 						 let newSelectedOptions = [];
 						 let queryStrings = currentFilters[filterName][field].queryString.split(" ");
 						 for (let i in tmp) {

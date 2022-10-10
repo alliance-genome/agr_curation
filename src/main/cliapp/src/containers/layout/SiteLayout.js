@@ -13,6 +13,7 @@ import { AppMenu } from '../../AppMenu';
 import { AppConfig } from '../../AppConfig';
 
 import { ApiVersionService } from '../../service/ApiVersionService';
+import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
@@ -26,6 +27,7 @@ import '../../assets/demo/flags/flags.css';
 import '../../assets/demo/Demos.scss';
 import '../../assets/layout/layout.scss';
 import '../../App.scss';
+import { useGetUserSettings } from "../../service/useGetUserSettings";
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -38,7 +40,7 @@ const initialThemeState = {
 
 export const SiteLayout = (props) => {
 
-		const [themeState, setThemeState] = useSessionStorage( "themeSettings", initialThemeState);
+		const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
 		const [staticMenuInactive, setStaticMenuInactive] = useState(false);
 		const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);
@@ -114,7 +116,6 @@ export const SiteLayout = (props) => {
 
 		const logout = async () => {
 			await oktaAuth.signOut();
-			sessionStorage.removeItem("userSettings");
 		}
 
 		useEffect(() => {
@@ -309,14 +310,14 @@ export const SiteLayout = (props) => {
 		}
 
 		const wrapperClass = classNames('layout-wrapper', {
-				'layout-overlay': themeState.layoutMode === 'overlay',
-				'layout-static': themeState.layoutMode === 'static',
-				'layout-static-sidebar-inactive': staticMenuInactive && themeState.layoutMode === 'static',
-				'layout-overlay-sidebar-active': overlayMenuActive && themeState.layoutMode === 'overlay',
+				'layout-overlay': themeState?.layoutMode === 'overlay',
+				'layout-static': themeState?.layoutMode === 'static',
+				'layout-static-sidebar-inactive': staticMenuInactive && themeState?.layoutMode === 'static',
+				'layout-overlay-sidebar-active': overlayMenuActive && themeState?.layoutMode === 'overlay',
 				'layout-mobile-sidebar-active': mobileMenuActive,
-				'p-input-filled': themeState.inputStyle === 'filled',
-				'p-ripple-disabled': themeState.ripple === false,
-				'layout-theme-light': themeState.layoutColorMode === 'light'
+				'p-input-filled': themeState?.inputStyle === 'filled',
+				'p-ripple-disabled': themeState?.ripple === false,
+				'layout-theme-light': themeState?.layoutColorMode === 'light'
 		});
 
 		return (
@@ -324,12 +325,12 @@ export const SiteLayout = (props) => {
 				<div className={wrapperClass} onClick={onWrapperClick}>
 						<Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={themeState.layoutColorMode}
+						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={themeState?.layoutColorMode}
 								mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
 								authState={authState} logout={logout} />
 
 						<div className="layout-sidebar" onClick={onSidebarClick}>
-								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState.layoutColorMode} />
+								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
 						</div>
 
 						<div className="layout-main-container">
@@ -337,11 +338,11 @@ export const SiteLayout = (props) => {
 										{children}
 								</div>
 
-								<AppFooter layoutColorMode={themeState.layoutColorMode} />
+								<AppFooter layoutColorMode={themeState?.layoutColorMode} />
 						</div>
 
-						<AppConfig rippleEffect={themeState.ripple} onRippleEffect={onRipple} inputStyle={themeState.inputStyle} onInputStyleChange={onInputStyleChange}
-								layoutMode={themeState.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState.layoutColorMode} onColorModeChange={onColorModeChange} 
+						<AppConfig rippleEffect={themeState?.ripple} onRippleEffect={onRipple} inputStyle={themeState?.inputStyle} onInputStyleChange={onInputStyleChange}
+								layoutMode={themeState?.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState?.layoutColorMode} onColorModeChange={onColorModeChange}
 								themeState={themeState} setThemeState={setThemeState}/>
 
 						<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>

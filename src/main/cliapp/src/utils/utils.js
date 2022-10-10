@@ -58,7 +58,9 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false) {
+export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false, isLoading) {
+	if(isLoading) return;
+
 	let initalColumnOrderObjects = [];
 	let initalColumnOrderFields = [];
 
@@ -105,22 +107,22 @@ export function getRefStrings(referenceItems) {
 export function getRefString(referenceItem) {
 	if (!referenceItem)
 		return;
-	
+
 	if (!referenceItem.cross_references && !referenceItem.crossReferences)
-		return referenceItem.curie;	
-		
+		return referenceItem.curie;
+
 	let xrefCuries = [];
 	if (referenceItem.cross_references) {
 		referenceItem.cross_references.forEach((x,i) => xrefCuries.push(x.curie));
 	} else {
 		referenceItem.crossReferences.forEach((x,i) => xrefCuries.push(x.curie));
 	}
-	
+
 	if (xrefCuries.length === 1)
 		return xrefCuries[0] + ' (' + referenceItem.curie + ')';
 	let primaryXrefCurie = '';
-	
-	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) { 
+
+	if (indexWithPrefix(xrefCuries, 'PMID:') > -1) {
 		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'PMID:'), 1);
 	} else if (indexWithPrefix(xrefCuries, 'FB:') > -1) {
 		primaryXrefCurie = xrefCuries.splice(indexWithPrefix(xrefCuries, 'FB:'), 1);
@@ -137,12 +139,12 @@ export function getRefString(referenceItem) {
 	} else {
 		primaryXrefCurie = xrefCuries.splice(0, 1);
 	}
-	
+
 	return primaryXrefCurie + ' (' + xrefCuries.join('|') + '|' + referenceItem.curie + ')';
 }
 
 function indexWithPrefix(array, prefix) {
-		
+
 	for (var i = 0; i < array.length; i++) {
 		if (array[i].startsWith(prefix)) {
 			return i;

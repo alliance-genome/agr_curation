@@ -28,14 +28,14 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 	@Inject SynonymDAO synonymDAO;
 	@Inject CrossReferenceValidator crossReferenceValidator;
 	@Inject CrossReferenceDAO crossReferenceDAO;
-	
+
 	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
 		String field = "taxon";
 		if (uiEntity.getTaxon() == null || StringUtils.isBlank(uiEntity.getTaxon().getCurie())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		ObjectResponse<NCBITaxonTerm> taxon = ncbiTaxonTermService.get(uiEntity.getTaxon().getCurie());
 		if (taxon.getEntity() == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -43,7 +43,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 		}
 		return taxon.getEntity();
 	}
-	
+
 	public String validateName(GenomicEntity uiEntity) {
 		String name = uiEntity.getName();
 		if (StringUtils.isBlank(name)) {
@@ -52,12 +52,12 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 		}
 		return name;
 	}
-	
+
 	public List<Synonym> validateSynonyms(GenomicEntity uiEntity, GenomicEntity dbEntity) {
 		String field = "synonyms";
-		
+
 		List<Synonym> validatedSynonyms = new ArrayList<Synonym>();
-		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {	
+		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
 			for (Synonym newSynonym : uiEntity.getSynonyms()) {
 				ObjectResponse<Synonym> synonymResponse = synonymValidator.validateSynonym(newSynonym);
 				if (synonymResponse.getEntity() == null) {
@@ -70,7 +70,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 				validatedSynonyms.add(synonymResponse.getEntity());
 			}
 		}
-		
+
 		List<Long> previousIds = new ArrayList<Long>();
 		if(CollectionUtils.isNotEmpty(dbEntity.getSynonyms()))
 			previousIds = dbEntity.getSynonyms().stream().map(Synonym::getId).collect(Collectors.toList());
@@ -81,24 +81,24 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			if (!previousIds.contains(validatedSynonym.getId()))
 				synonymDAO.persist(validatedSynonym);
 		}
-		
+
 		if (dbEntity.getSynonyms() != null) {
 			List<Long> idsToRemove = ListUtils.subtract(previousIds, validatedIds);
 			Predicate<Synonym> removeCondition = synonym -> idsToRemove.contains(synonym.getId());
 			dbEntity.getSynonyms().removeIf(removeCondition);
 		}
-		
+
 		if (CollectionUtils.isEmpty(validatedSynonyms))
 			return null;
-		
+
 		return validatedSynonyms;
 	}
-	
+
 	public List<CrossReference> validateCrossReferences(GenomicEntity uiEntity, GenomicEntity dbEntity) {
 		String field = "crossReferences";
-		
+
 		List<CrossReference> validatedXrefs = new ArrayList<CrossReference>();
-		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {	
+		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
 			for (CrossReference newXref : uiEntity.getCrossReferences()) {
 				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(newXref);
 				if (xrefResponse.getEntity() == null) {
@@ -111,7 +111,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 				validatedXrefs.add(xrefResponse.getEntity());
 			}
 		}
-		
+
 		List<String> previousCuries = new ArrayList<String>();
 		if(CollectionUtils.isNotEmpty(dbEntity.getCrossReferences()))
 			previousCuries = dbEntity.getCrossReferences().stream().map(CrossReference::getCurie).collect(Collectors.toList());
@@ -122,17 +122,17 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			if (!previousCuries.contains(validatedXref.getCurie()))
 				crossReferenceDAO.persist(validatedXref);
 		}
-		
+
 		if (dbEntity.getCrossReferences() != null) {
 			List<String> curiesToRemove = ListUtils.subtract(previousCuries, validatedCuries);
 			Predicate<CrossReference> removeCondition = xref -> curiesToRemove.contains(xref.getCurie());
 			dbEntity.getCrossReferences().removeIf(removeCondition);
 		}
-		
+
 		if (CollectionUtils.isEmpty(validatedXrefs))
 			return null;
-		
+
 		return validatedXrefs;
 	}
-	
+
 }
