@@ -200,11 +200,8 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		}
 		allele.setSequencingStatus(sequencingStatus);
 
-		if (allele.getIsExtinct() != null) {
-			allele.setIsExtinct(allele.getIsExtinct());
-		} else {
-			allele.setIsExtinct(false);
-		}
+		if (dto.getIsExtinct() != null)
+			allele.setIsExtinct(dto.getIsExtinct());
 		
 		List<Reference> references = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
