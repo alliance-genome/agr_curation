@@ -2,7 +2,6 @@ import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { SearchService } from '../../service/SearchService';
-import { useSessionStorage } from '../../service/useSessionStorage';
 
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
@@ -26,31 +25,25 @@ export const useGenericDataTable = ({
 	newEntity,
 	deletionEnabled,
 	deletionMethod,
-	tableState,
-	setTableState,
-	defaultColumnNames,
-	isLoading,
-	initialTableState,
 }) => {
 
-	// const defaultColumnNames = columns.map((col) => {
-	// 	return col.header;
-	// });
-	//
-	// let initialTableState = {
-	// 	page: 0,
-	// 	first: 0,
-	// 	rows: 50,
-	// 	multiSortMeta: [],
-	// 	selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
-	// 	filters: {},
-	// 	isFirst: true,
-	// 	tableKeyName: tableName.replace(/\s+/g, ''), //remove whitespace from tableName
-	// }
-	//
-	// const { settings: tableState, mutate: setTableState, isLoading } = useGetUserSettings(
-	// 	`${initialTableState.tableKeyName}TableSettings`,
-	// 	initialTableState);
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+	let initialTableState = {
+		page: 0,
+		first: 0,
+		rows: 50,
+		multiSortMeta: [],
+		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
+		filters: {},
+		isFirst: false,
+		tableKeyName: tableName.replace(/\s+/g, ''), //remove whitespace from tableName
+		tableSettingsKeyName: tableName.replace(/\s+/g,'') + "TableSettings"
+	}
+
+	const { settings: tableState, mutate: setTableState, isLoading } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
 	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -111,7 +104,6 @@ export const useGenericDataTable = ({
 	});
 
 	useEffect(() => {
-		console.log(tableState);
 		if (
 			!tableState.filters
 			|| Object.keys(tableState.filters).length > 0

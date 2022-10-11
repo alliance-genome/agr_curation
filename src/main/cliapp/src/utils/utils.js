@@ -39,13 +39,14 @@ export function trimWhitespace(value) {
 
 export function filterColumns(columns, selectedColumnNames) {
 	const filteredColumns = columns.filter((col) => {
-		return selectedColumnNames.includes(col.header);
+		return selectedColumnNames?.includes(col.header);
 	})
 	return filteredColumns;
 };
 
 export function orderColumns(columns, selectedColumnNames) {
 	let orderedColumns = [];
+	if(!selectedColumnNames) return orderedColumns;
 	selectedColumnNames.forEach((columnName) => {
 		orderedColumns.push(columns.filter(col => col.header === columnName)[0]);
 	});
@@ -97,11 +98,11 @@ export function getEntityType(entity) {
 export function getRefStrings(referenceItems) {
 	if (!referenceItems)
 		return;
-	
+
 	let refStrings = [];
 	referenceItems.forEach((referenceItem) => {refStrings.push(getRefString(referenceItem))});
-	
-	return refStrings.sort();	
+
+	return refStrings.sort();
 }
 
 export function getRefString(referenceItem) {
@@ -210,3 +211,20 @@ export function onSelectionOver(event, item, query, op, setAutocompleteSelectedI
 	setAutocompleteSelectedItem(_item);
 	op.current.show(event);
 };
+
+export function generateInitialTableState(columns, defaultVisibleColumns){
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+	let initialTableState = {
+		page: 0,
+		first: 0,
+		rows: 50,
+		multiSortMeta: [],
+		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
+		filters: {},
+		isFirst: true,
+	}
+	return { defaultColumnNames, initialTableState };
+}

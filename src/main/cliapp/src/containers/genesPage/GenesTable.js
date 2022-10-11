@@ -43,7 +43,7 @@ export const GenesTable = () => {
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
 		},
 		{
 			field: "name",
@@ -51,14 +51,14 @@ export const GenesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
 		},
 		{
 			field: "symbol",
 			header: "Symbol",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]}, 
+			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]},
 		},
 		{
 			field: "taxon.name",
@@ -66,7 +66,7 @@ export const GenesTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]}, 
+			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
 		}
 	];
 
@@ -74,10 +74,10 @@ export const GenesTable = () => {
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable 
-					endpoint="gene" 
-					tableName="Genes" 
-					columns={columns}	 
+				<GenericDataTable
+					endpoint="gene"
+					tableName="Genes"
+					columns={columns}
 					isEditable={false}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}

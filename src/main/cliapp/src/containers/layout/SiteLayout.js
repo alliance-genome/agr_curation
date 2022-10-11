@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
-import { useSessionStorage } from '../../service/useSessionStorage';
 import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -13,7 +12,6 @@ import { AppMenu } from '../../AppMenu';
 import { AppConfig } from '../../AppConfig';
 
 import { ApiVersionService } from '../../service/ApiVersionService';
-import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 
 import PrimeReact from 'primereact/api';
 import { Tooltip } from 'primereact/tooltip';
@@ -83,15 +81,6 @@ export const SiteLayout = (props) => {
 			setThemeState(_themeState);
 		}
 
-		const setLayoutColorMode= (value) => {
-			let _themeState = {
-				...themeState,
-				layoutColorMode: value
-			};
-
-			setThemeState(_themeState);
-		}
-
 		useEffect(() => {
 			if(authState?.isAuthenticated){
 				setApiService(new ApiVersionService())
@@ -154,10 +143,6 @@ export const SiteLayout = (props) => {
 
 		const onLayoutModeChange = (mode) => {
 				setLayoutMode(mode)
-		}
-
-		const onColorModeChange = (mode) => {
-				setLayoutColorMode(mode)
 		}
 
 		const onWrapperClick = (event) => {
@@ -342,7 +327,7 @@ export const SiteLayout = (props) => {
 						</div>
 
 						<AppConfig rippleEffect={themeState?.ripple} onRippleEffect={onRipple} inputStyle={themeState?.inputStyle} onInputStyleChange={onInputStyleChange}
-								layoutMode={themeState?.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState?.layoutColorMode} onColorModeChange={onColorModeChange}
+								layoutMode={themeState?.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState?.layoutColorMode}
 								themeState={themeState} setThemeState={setThemeState}/>
 
 						<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>

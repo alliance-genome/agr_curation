@@ -22,11 +22,6 @@ const getSessionObject = () => {
 	return JSON.parse(saved);
 };
 
-const getSessionValue = (key, defaultValue) => {
-	const storedValue = getSessionObject();
-	return storedValue[key] || defaultValue;
-}
-
 const setUserSettingsObject = (key, newUserSettingsObject) => {
 	sessionStorage.setItem(key, JSON.stringify(newUserSettingsObject));
 	let loggedInPersonService = new LoggedInPersonService();

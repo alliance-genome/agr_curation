@@ -11,17 +11,15 @@ import { FilterComponent } from './FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
 
-import { filterColumns, orderColumns } from '../../utils/utils';
+import {filterColumns, orderColumns} from '../../utils/utils';
 import { useGenericDataTable } from "./useGenericDataTable";
-import { ProgressSpinner } from "primereact/progressspinner";
 
 export const GenericDataTable = (props) => {
 
 	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled } = props;
+
 	const {
 		setSelectedColumnNames,
-		defaultColumnNames,
-		tableState,
 		tableStateConfirm,
 		onFilter,
 		setColumnList,
@@ -40,7 +38,8 @@ export const GenericDataTable = (props) => {
 		onLazyLoad,
 		columnList,
 		handleDeletion,
-		isLoading,
+		tableState,
+		defaultColumnNames,
 	} = useGenericDataTable(props);
 
 	const toast_topright = useRef(null);
@@ -51,6 +50,10 @@ export const GenericDataTable = (props) => {
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 
 
+
+	// if(isLoading){
+	// 	return <ProgressSpinner/>
+	// }
 
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
 		return (<MultiSelect
@@ -175,9 +178,9 @@ export const GenericDataTable = (props) => {
             </React.Fragment>
     	);
 	}
-	if(isLoading){
-		return <ProgressSpinner/>
-	}
+	// if(isLoading){
+	// 	return <ProgressSpinner/>
+	// }
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />

@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useMutation, useQueryClient} from 'react-query';
+import React, {useRef, useState} from 'react';
+import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
 import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
@@ -26,8 +26,6 @@ import {getRefString} from '../../utils/utils';
 import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-import {ProgressSpinner} from "primereact/progressspinner";
-import {useGetUserSettings} from "../../service/useGetUserSettings";
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -153,7 +151,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const assertedGenesBodyTemplate = (rowData) => {
 		if (rowData && rowData.assertedGenes && rowData.assertedGenes.length > 0) {
-			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1); 
+			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
@@ -161,7 +159,7 @@ export const DiseaseAnnotationsTable = () => {
 					</EllipsisTableCell>
 				);
 			};
-			
+
 			return (
 				<>
 					<div className={`a${rowData.id}${rowData.assertedGenes[0].curie.replace(':', '')}`}>
@@ -1267,29 +1265,6 @@ export const DiseaseAnnotationsTable = () => {
 	}
 	];
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
-	});
-
-	let defaultVisibleColumns;
-	let initialTableState = {
-		page: 0,
-		first: 0,
-		rows: 50,
-		multiSortMeta: [],
-		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
-		filters: {},
-		isFirst: true,
-	}
-
-	const { settings: tableState, mutate: setTableState, isLoading } =
-		useGetUserSettings( "DiseaseAnnotationsTableSettings", initialTableState);
-
-
-	if(isLoading){
-		return <ProgressSpinner/>
-	}
-
 	const headerButtons = () => {
 		return (
 			<>
@@ -1320,11 +1295,6 @@ export const DiseaseAnnotationsTable = () => {
 					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
-					tableState={tableState}
-					setTableState={setTableState}
-					defaultColumnNames={defaultColumnNames}
-					isLoading={isLoading}
-					initialTableState={initialTableState}
 				/>
 			</div>
 			<NewAnnotationForm

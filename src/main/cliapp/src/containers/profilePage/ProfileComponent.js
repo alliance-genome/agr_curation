@@ -6,10 +6,11 @@ import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 import { useOktaAuth } from '@okta/okta-react';
 import { Panel } from 'primereact/panel';
 import { Ripple } from 'primereact/ripple';
-import { useSessionStorage } from '../../service/useSessionStorage';
 import * as jose from 'jose'
 
 import { ConfirmButton } from '../../components/ConfirmButton';
+import {useGetUserSettings} from "../../service/useGetUserSettings";
+import ReactJson from 'react-json-view'
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -22,7 +23,7 @@ const initialThemeState = {
 
 export const ProfileComponent = () => {
 
-	const [themeState, setThemeState] = useSessionStorage( "themeSettings", initialThemeState);
+	const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
 
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
@@ -96,11 +97,9 @@ export const ProfileComponent = () => {
 
 	const jsonTemplate = (props) => {
 		return (
-			<p style={{ wordBreak: "break-all" }}>
-				<Panel headerTemplate={headerTemplate} toggleable collapsed>
-					<pre>{ props.value }</pre>
-				</Panel>
-			</p>
+			<Panel headerTemplate={headerTemplate} toggleable collapsed>
+				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "dark" ? "google" : "rjv-default"}/>
+			</Panel>
 		);
 	};
 
@@ -110,9 +109,9 @@ export const ProfileComponent = () => {
 		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate  },
 		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate  },
 		{ name: "Curation API Token", value: localUserInfo.apiToken, template: textTemplate },
-		{ name: "Okta Access Token Content", value: JSON.stringify(jose.decodeJwt(oktaToken.accessToken.accessToken), null, 2), template: jsonTemplate  },
-		{ name: "Okta Id Token Content", value: JSON.stringify(jose.decodeJwt(oktaToken.idToken.idToken), null, 2), template: jsonTemplate  },
-		{ name: "User Settings", value: JSON.stringify(JSON.parse(sessionStorage.getItem("userSettings")), null, 2), template: jsonTemplate },
+		{ name: "Okta Access Token Content", value: jose.decodeJwt(oktaToken.accessToken.accessToken), template: jsonTemplate  },
+		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate  },
+		{ name: "User Settings", value: localUserInfo.settings, template: jsonTemplate },
 	];
 
 	return (

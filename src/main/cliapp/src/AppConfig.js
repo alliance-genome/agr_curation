@@ -4,7 +4,7 @@ import { InputSwitch } from 'primereact/inputswitch';
 import classNames from 'classnames';
 import { Button } from "primereact/button";
 
-export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputStyleChange, layoutMode, onLayoutModeChange, onColorModeChange, themeState, setThemeState }) => {
+export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputStyleChange, layoutMode, onLayoutModeChange, themeState, setThemeState }) => {
 
 		const [active, setActive] = useState(false);
 		const [scales] = useState([12, 13, 14, 15, 16]);
@@ -20,10 +20,11 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 			setThemeState(_themeState);
 		}
 
-		const setTheme = (value) => {
+		const setTheme = (value, value2) => {
 			let _themeState = {
 				...themeState,
-				theme: value
+				theme: value,
+				layoutColorMode: value2
 			};
 
 			setThemeState(_themeState);
@@ -78,7 +79,7 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 
 		useEffect(() => {
 				document.documentElement.style.fontSize = themeState?.scale + 'px';
-		}, [themeState?.scale])
+		}, [themeState])
 
 		const toggleConfigurator = (event) => {
 				setActive(prevState => !prevState);
@@ -121,15 +122,14 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 				const themeHref = 'assets/themes/' + themeState?.theme + '/theme.css';
 				replaceLink(themeElement, themeHref);
 
-		}, [themeState?.theme, replaceLink])
+		}, [themeState, replaceLink])
 
 		const isIE = () => {
 				return /(MSIE|Trident\/|Edge\/)/i.test(window.navigator.userAgent)
 		}
 
 		const changeTheme = (e, theme, scheme) => {
-				onColorModeChange(scheme);
-				setTheme(theme);
+			setTheme(theme, scheme);
 		}
 
 		return (
