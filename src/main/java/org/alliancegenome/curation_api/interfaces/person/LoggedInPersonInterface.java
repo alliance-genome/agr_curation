@@ -31,7 +31,7 @@ public interface LoggedInPersonInterface {
 	
 	@GET
 	@Path("/")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView(View.PersonSettingView.class)
 	public LoggedInPerson getLoggedInPerson();
 
 	@GET

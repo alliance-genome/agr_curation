@@ -76,7 +76,7 @@ public class Person extends Agent {
 	private String modEntityId;
 	
 	@OneToMany(mappedBy = "person")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	private List<PersonSetting> settings;
 
 }
