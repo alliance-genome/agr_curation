@@ -32,7 +32,7 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
-	@Inject DiseaseAnnotationService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO> diseaseAnnotationService;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		

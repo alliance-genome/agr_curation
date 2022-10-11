@@ -33,7 +33,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject AlleleDiseaseAnnotationService alleleDiseaseService;
-	@Inject DiseaseAnnotationService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO> diseaseAnnotationService;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 

@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.helpers.validators.PersonValidator;
+import org.alliancegenome.curation_api.services.validation.PersonValidator;
 
 @RequestScoped
 public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {

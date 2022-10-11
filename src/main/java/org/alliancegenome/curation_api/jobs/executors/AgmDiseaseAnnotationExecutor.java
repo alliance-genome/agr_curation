@@ -32,7 +32,7 @@ import lombok.extern.jbosslog.JBossLog;
 public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject DiseaseAnnotationService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> diseaseAnnotationService;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 	@Inject AGMDiseaseAnnotationService agmDiseaseService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {

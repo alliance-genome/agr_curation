@@ -1,22 +1,22 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
 
-import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import javax.enterprise.context.RequestScoped;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.PersonService;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class AuditedObjectService <E extends AuditedObject, D extends AuditedObjectDTO> {
-	
+public class AuditedObjectDTOValidator <E extends AuditedObject, D extends AuditedObjectDTO> {
+
 	@Inject PersonService personService;
 	
 	public ObjectResponse<E> validateAuditedObjectDTO (E entity, D dto) {

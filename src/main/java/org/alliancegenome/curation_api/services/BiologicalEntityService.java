@@ -15,33 +15,13 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class BiologicalEntityService<E extends BiologicalEntity, D extends BiologicalEntityDTO> extends BaseEntityCrudService<BiologicalEntity, BiologicalEntityDAO> {
+public class BiologicalEntityService extends BaseEntityCrudService<BiologicalEntity, BiologicalEntityDAO> {
 
 	@Inject BiologicalEntityDAO biologicalEntityDAO;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
 	
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(biologicalEntityDAO);
-	}
-	
-	public ObjectResponse<E> validateBiologicalEntityDTO (E entity, D dto) {
-		
-		ObjectResponse<E> response = new ObjectResponse<E>();
-		
-		if (StringUtils.isBlank(dto.getTaxon())) {
-			response.addErrorMessage("taxon", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
-			if (taxonResponse.getEntity() == null) {
-				response.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE);
-			}
-			entity.setTaxon(taxonResponse.getEntity());
-		}
-			
-		response.setEntity(entity);
-		
-		return response;
 	}
 }

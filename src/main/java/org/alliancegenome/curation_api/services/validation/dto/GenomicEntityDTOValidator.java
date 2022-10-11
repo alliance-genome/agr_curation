@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services;
+package org.alliancegenome.curation_api.services.validation.dto;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +15,18 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class GenomicEntityService<E extends GenomicEntity, D extends GenomicEntityDTO> {
-
-	@Inject SynonymService synonymService;
+public class GenomicEntityDTOValidator <E extends GenomicEntity, D extends GenomicEntityDTO> {
+	
+	@Inject SynonymDTOValidator synonymDtoValidator;
+	@Inject BiologicalEntityDTOValidator<E, D> biologicalEntityDtoValidator;
 	
 	public ObjectResponse<E> validateGenomicEntityDTO (E entity, D dto) {
 		
-		ObjectResponse<E> response = new ObjectResponse<E>();
+		ObjectResponse<E> geResponse = new ObjectResponse<E>();
+		
+		ObjectResponse<E> beResponse = biologicalEntityDtoValidator.validateBiologicalEntityDTO(entity, dto);
+		geResponse.addErrorMessages(beResponse.getErrorMessages());
+		entity = beResponse.getEntity();
 		
 		if (StringUtils.isNotBlank(dto.getName()))
 			entity.setName(dto.getName());
@@ -29,17 +34,17 @@ public class GenomicEntityService<E extends GenomicEntity, D extends GenomicEnti
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
 			List<Synonym> synonyms = new ArrayList<>();
 			for (SynonymDTO synonymDto : dto.getSynonyms()) {
-				ObjectResponse<Synonym> synResponse = synonymService.validateSynonymDTO(synonymDto);
+				ObjectResponse<Synonym> synResponse = synonymDtoValidator.validateSynonymDTO(synonymDto);
 				if (synResponse.hasErrors()) {
-					response.addErrorMessage("synonyms", synResponse.errorMessagesString());
+					geResponse.addErrorMessage("synonyms", synResponse.errorMessagesString());
 				} else {
 					synonyms.add(synResponse.getEntity());
 				}
 			}
 		}
 		
-		response.setEntity(entity);
+		geResponse.setEntity(entity);
 		
-		return response;
+		return geResponse;
 	}
 }
