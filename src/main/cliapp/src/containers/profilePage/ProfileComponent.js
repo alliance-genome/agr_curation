@@ -33,18 +33,21 @@ export const ProfileComponent = () => {
 	const loggedInPersonService = new LoggedInPersonService();
 
 	const globalResetHandler = () =>{
-		window.sessionStorage.setItem('globalStateObject', JSON.stringify({}));
-		window.location.reload();
+		// window.sessionStorage.setItem('globalStateObject', JSON.stringify({}));
+		// console.log(localUserInfo);
+		// window.location.reload();
+		for(let setting of localUserInfo.settings){
+			console.log(setting);
+			localStorage.removeItem(setting.settingsKey);
+		}
 	};
 
 	const themeResetHandler = () => {
-		console.log(themeState);
 		setThemeState(initialThemeState);
 		window.location.reload();
 	};
 
 	const regenApiToken = () => {
-		console.log("RegenToken");
 		loggedInPersonService.regenApiToken().then((data) => {
 			setLocalUserInfo(data);
 		}).catch((err) => {

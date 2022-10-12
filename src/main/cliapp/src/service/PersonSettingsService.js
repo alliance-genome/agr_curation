@@ -8,4 +8,8 @@ export class PersonSettingsService extends BaseAuthService {
 	saveUserSettings(settingsKey, settingsMap) {
 		return this.api.put(`/personsettings/${settingsKey}`, settingsMap).then(res => res.data);
 	}
+
+	deleteUserSettings(settingsKey, settingsMap) {
+		return this.api.delete(`/personsettings/${settingsKey}`, settingsMap).then(res => res.data);
+	}
 }
