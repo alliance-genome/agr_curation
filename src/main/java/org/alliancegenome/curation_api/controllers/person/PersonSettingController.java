@@ -32,6 +32,14 @@ public class PersonSettingController implements PersonSettingInterface {
 
 	@Override
 	@Transactional
+	public ObjectResponse<PersonSetting> deleteUserSetting(String settingsKey) {
+		PersonSetting setting = getSetting(settingsKey);
+		personSettingService.delete(setting.getId());
+		return new ObjectResponse<>(setting);
+	}
+	
+	@Override
+	@Transactional
 	public ObjectResponse<PersonSetting> saveUserSetting(String settingsKey, Map<String, Object> settingsMap) {
 		
 		PersonSetting setting = getSetting(settingsKey);

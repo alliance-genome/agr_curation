@@ -11,6 +11,7 @@ import * as jose from 'jose'
 import { ConfirmButton } from '../../components/ConfirmButton';
 import {useGetUserSettings} from "../../service/useGetUserSettings";
 import ReactJson from 'react-json-view'
+import { PersonSettingsService } from "../../service/PersonSettingsService";
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -31,20 +32,22 @@ export const ProfileComponent = () => {
 	const { authState, oktaAuth } = useOktaAuth();
 
 	const loggedInPersonService = new LoggedInPersonService();
+	const personSettingsService = new PersonSettingsService();
 
 	const globalResetHandler = () =>{
-		window.sessionStorage.setItem('globalStateObject', JSON.stringify({}));
+		for(let setting of localUserInfo.settings){
+			localStorage.removeItem(setting.settingsKey);
+			personSettingsService.deleteUserSettings(setting.settingsKey);
+		}
 		window.location.reload();
 	};
 
 	const themeResetHandler = () => {
-		console.log(themeState);
 		setThemeState(initialThemeState);
 		window.location.reload();
 	};
 
 	const regenApiToken = () => {
-		console.log("RegenToken");
 		loggedInPersonService.regenApiToken().then((data) => {
 			setLocalUserInfo(data);
 		}).catch((err) => {
@@ -98,7 +101,7 @@ export const ProfileComponent = () => {
 	const jsonTemplate = (props) => {
 		return (
 			<Panel headerTemplate={headerTemplate} toggleable collapsed>
-				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "dark" ? "google" : "rjv-default"}/>
+				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "light" ? "rjv-default" : "google"}/>
 			</Panel>
 		);
 	};
