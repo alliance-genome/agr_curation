@@ -29,17 +29,17 @@ public class LoggedInPerson extends Person {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "oktaId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	@Column(unique = true)
 	private String oktaId;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "oktaEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	@Column(unique = true)
 	private String oktaEmail;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	private String apiToken;
 	
 }
