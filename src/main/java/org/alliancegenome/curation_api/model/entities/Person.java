@@ -40,38 +40,38 @@ public class Person extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "firstName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	private String firstName;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "middleName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	private String middleName;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "lastName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	private String lastName;
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({View.FieldsAndLists.class, View.PersonSettingView.class})
 	private List<String> emails;
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({View.FieldsAndLists.class, View.PersonSettingView.class})
 	private List<String> oldEmails;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "orcid_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	@Column(unique = true)
 	private String orcid;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	@Column(unique = true)
 	private String modEntityId;
 	
