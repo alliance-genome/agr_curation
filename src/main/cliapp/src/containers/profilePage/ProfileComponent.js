@@ -11,6 +11,7 @@ import * as jose from 'jose'
 import { ConfirmButton } from '../../components/ConfirmButton';
 import {useGetUserSettings} from "../../service/useGetUserSettings";
 import ReactJson from 'react-json-view'
+import {PersonSettingsService} from "../../service/PersonSettingsService";
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -31,6 +32,7 @@ export const ProfileComponent = () => {
 	const { authState, oktaAuth } = useOktaAuth();
 
 	const loggedInPersonService = new LoggedInPersonService();
+	const personSettingsService = new PersonSettingsService();
 
 	const globalResetHandler = () =>{
 		// window.sessionStorage.setItem('globalStateObject', JSON.stringify({}));
@@ -39,6 +41,7 @@ export const ProfileComponent = () => {
 		for(let setting of localUserInfo.settings){
 			console.log(setting);
 			localStorage.removeItem(setting.settingsKey);
+			personSettingsService.deleteUserSettings(setting.settingsKey);
 		}
 	};
 
