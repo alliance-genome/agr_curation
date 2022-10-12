@@ -98,7 +98,7 @@ export const ProfileComponent = () => {
 	const jsonTemplate = (props) => {
 		return (
 			<Panel headerTemplate={headerTemplate} toggleable collapsed>
-				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "dark" ? "google" : "rjv-default"}/>
+				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "light" ? "rjv-default" : "google"}/>
 			</Panel>
 		);
 	};
