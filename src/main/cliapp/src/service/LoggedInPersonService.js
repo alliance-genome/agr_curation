@@ -9,4 +9,5 @@ export class LoggedInPersonService extends BaseAuthService {
 	regenApiToken() {
 		return this.api.get(`/loggedinperson/regenapitoken`).then(res => res.data);
 	}
+
 }

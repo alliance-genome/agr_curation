@@ -4,7 +4,7 @@ import { Dropdown } from "primereact/dropdown";
 export function FilterComponentDropDown({ isEnabled, field, tokenOperator= "OR" ,filterName, currentFilters, onFilter, options, optionField }) {
 		const [filterValue, setFilterValue] = useState(()=> {
 				for(let i=0; i<options.length; i++){
-						if(currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString){
+						if(currentFilters && currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString){
 								return options[i];
 						}
 				}
@@ -12,7 +12,7 @@ export function FilterComponentDropDown({ isEnabled, field, tokenOperator= "OR" 
 		});
 
 	 useEffect(() => {
-			 if(currentFilters[filterName]){
+			 if(currentFilters && currentFilters[filterName]){
 					 for (let i = 0; i < options.length; i++) {
 							 if (currentFilters[filterName] && options[i][optionField] === currentFilters[filterName][field].queryString) {
 									 setFilterValue(options[i]);
