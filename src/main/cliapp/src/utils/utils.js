@@ -59,9 +59,7 @@ export function reorderArray(array, from, to) {
 	return array;
 };
 
-export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false, isLoading) {
-	if(isLoading) return;
-
+export function setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled = false) {
 	let initalColumnOrderObjects = [];
 	let initalColumnOrderFields = [];
 
