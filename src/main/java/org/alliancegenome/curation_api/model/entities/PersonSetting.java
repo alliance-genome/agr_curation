@@ -31,7 +31,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true, exclude = "person")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Agent.class})
+@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Agent.class})
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class PersonSetting extends GeneratedAuditedObject {

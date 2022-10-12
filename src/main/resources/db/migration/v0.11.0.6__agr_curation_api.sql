@@ -40,3 +40,5 @@ ALTER TABLE ONLY public.personsetting
 ALTER TABLE ONLY public.personsetting_aud
 		ADD CONSTRAINT fkq0ul02mp3963koe1p6sntqc8e FOREIGN KEY (rev) REFERENCES public.revinfo(rev);
 
+ALTER TABLE loggedinperson
+   DROP COLUMN usersettings;
