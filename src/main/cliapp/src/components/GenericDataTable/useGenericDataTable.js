@@ -43,7 +43,7 @@ export const useGenericDataTable = ({
 		tableSettingsKeyName: tableName.replace(/\s+/g,'') + "TableSettings"
 	}
 
-	const { settings: tableState, mutate: setTableState, isLoading } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
 	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -165,7 +165,7 @@ export const useGenericDataTable = ({
 		setTableState(_tableState);
 	};
 
-	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled, isLoading);
+	useSetDefaultColumnOrder(columns, dataTable, defaultColumnNames, setIsFirst, tableState.isFirst, deletionEnabled);
 
 	const onRowEditInit = (event) => {
 		setIsEnabled(false);
@@ -308,7 +308,7 @@ export const useGenericDataTable = ({
 		};
 
 		setTableState(_tableState);
-		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled, isLoading);
+		setDefaultColumnOrder(columns, dataTable, defaultColumnNames, deletionEnabled);
 		const _columnWidths = {...columnWidths};
 
 		Object.keys(_columnWidths).map((key) => {
@@ -367,6 +367,5 @@ export const useGenericDataTable = ({
 		onLazyLoad,
 		columnList,
 		handleDeletion,
-		isLoading,
 	};
 };

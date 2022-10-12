@@ -49,12 +49,6 @@ export const GenericDataTable = (props) => {
 	const [entityToDelete, setEntityToDelete] = useState(null);
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
 
-
-
-	// if(isLoading){
-	// 	return <ProgressSpinner/>
-	// }
-
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
 		return (<MultiSelect
 				value={tableState.selectedColumnNames}
@@ -178,9 +172,6 @@ export const GenericDataTable = (props) => {
             </React.Fragment>
     	);
 	}
-	// if(isLoading){
-	// 	return <ProgressSpinner/>
-	// }
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
