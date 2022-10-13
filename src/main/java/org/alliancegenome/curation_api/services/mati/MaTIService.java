@@ -12,10 +12,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import lombok.NoArgsConstructor;
 import si.mazi.rescu.RestProxyFactory;
 
-@NoArgsConstructor
 @ApplicationScoped
 public class MaTIService {
 
