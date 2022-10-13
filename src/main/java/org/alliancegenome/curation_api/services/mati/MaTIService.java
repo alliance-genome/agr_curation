@@ -15,22 +15,20 @@ import java.util.Base64;
 @ApplicationScoped
 public class MaTIService {
 
-	@Inject
 	@ConfigProperty(name = "okta.client.id")
 	String client_id;
-	@Inject
+
 	@ConfigProperty(name = "okta.client.secret")
 	String client_secret;
-	@Inject
+
 	@ConfigProperty(name = "okta.url")
 	String okta_url;
-	@Inject
+
 	@ConfigProperty(name = "okta.scopes")
 	String okta_scopes;
-	@Inject
+
 	@ConfigProperty(name = "mati.url")
 	String mati_url;
-
 
 	private String fetchOktaToken() throws IOException {
 		String authorization = "Basic " +
@@ -49,7 +47,7 @@ public class MaTIService {
 		return token;
 	}
 
-	public String mintIdentifier(String subdomain)  throws IOException {
+	public String mintIdentifier(String subdomain)	throws IOException {
 		String token = fetchOktaToken();
 		String authorization = "Bearer: " + token;
 		String identifier = RestAssured.given().
