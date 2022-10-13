@@ -84,7 +84,7 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 					} else {
 							filter = null;
 					}
-					const filtersCopy = currentFilters;
+					const filtersCopy = currentFilters ? currentFilters : {};
 					if (filter === null) {
 							delete filtersCopy[filterName];
 					} else {
