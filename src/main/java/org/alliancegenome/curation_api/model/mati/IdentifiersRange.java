@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.model.entities;
+package org.alliancegenome.curation_api.model.mati;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
