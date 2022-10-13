@@ -7,7 +7,7 @@ quarkus.http.non-application-root-path=/
 quarkus.swagger-ui.always-include=true
 quarkus.swagger-ui.doc-expansion=none
 
-quarkus.datasource.db-kind=postgresql 
+quarkus.datasource.db-kind=postgresql
 quarkus.datasource.username=postgres
 quarkus.datasource.password=postgres
 quarkus.datasource.jdbc.max-size=128
@@ -72,6 +72,8 @@ okta.client.id = ""
 okta.url = ""
 okta.client.secret = ""
 okta.api.token = ""
+okta.scopes = ""
+mati.url = ""
 %dev.okta.authentication = false
 %test.okta.authentication = false
 
