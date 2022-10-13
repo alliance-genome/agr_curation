@@ -25,6 +25,18 @@ public abstract class DiseaseAnnotationCurie {
 			relation.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
 		return curie.getCurie();
 	}
+	
+	public static String getConditionRelationUnique(ConditionRelationDTO dto) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		if (dto.getConditionRelationType() != null)
+			curie.add(dto.getConditionRelationType());
+		curie.add(dto.getHandle());
+		if (dto.getSingleReference() != null)
+			curie.add(dto.getSingleReference());
+		if (CollectionUtils.isNotEmpty(dto.getConditions()))
+			dto.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
+		return curie.getCurie();
+	}
 
 	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO);
 	public abstract String getCurieID(DiseaseAnnotation annotation);
