@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.controllers;
 
-import org.alliancegenome.curation_api.model.entities.IdentifiersRange;
+import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.services.mati.MaTIService;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 

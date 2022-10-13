@@ -6,7 +6,7 @@ import java.util.Base64;
 import javax.enterprise.context.ApplicationScoped;
 
 import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
-import org.alliancegenome.curation_api.model.entities.IdentifiersRange;
+import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.model.okta.OktaToken;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
