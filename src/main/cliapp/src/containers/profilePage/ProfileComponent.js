@@ -4,9 +4,14 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { LoggedInPersonService } from '../../service/LoggedInPersonService';
 import { useOktaAuth } from '@okta/okta-react';
-import { resetThemes } from '../../service/useSessionStorage';
+import { Panel } from 'primereact/panel';
+import { Ripple } from 'primereact/ripple';
+import * as jose from 'jose'
 
 import { ConfirmButton } from '../../components/ConfirmButton';
+import {useGetUserSettings} from "../../service/useGetUserSettings";
+import ReactJson from 'react-json-view'
+import { PersonSettingsService } from "../../service/PersonSettingsService";
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -19,25 +24,30 @@ const initialThemeState = {
 
 export const ProfileComponent = () => {
 
+	const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
+
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
 
 	const { authState, oktaAuth } = useOktaAuth();
 
 	const loggedInPersonService = new LoggedInPersonService();
+	const personSettingsService = new PersonSettingsService();
 
 	const globalResetHandler = () =>{
-		window.sessionStorage.setItem('globalStateObject', JSON.stringify({}));
+		for(let setting of localUserInfo.settings){
+			localStorage.removeItem(setting.settingsKey);
+			personSettingsService.deleteUserSettings(setting.settingsKey);
+		}
 		window.location.reload();
 	};
 
-	const themeResetHandler = () =>{
-		resetThemes(initialThemeState);
+	const themeResetHandler = () => {
+		setThemeState(initialThemeState);
 		window.location.reload();
 	};
 
 	const regenApiToken = () => {
-		console.log("RegenToken");
 		loggedInPersonService.regenApiToken().then((data) => {
 			setLocalUserInfo(data);
 		}).catch((err) => {
@@ -57,26 +67,62 @@ export const ProfileComponent = () => {
 			}
 	}, [authState, oktaAuth, setLocalUserInfo]); // eslint-disable-line react-hooks/exhaustive-deps
 
-	const userInfos = [
-		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName },
-		{ name: "Okta Email", value: localUserInfo.oktaEmail },
-		{ name: "Okta Token", value: oktaToken.accessToken.accessToken },
-		{ name: "Curation API Token", value: localUserInfo.apiToken },
-	];
-
 	const valueTemplate = (props) => {
-		console.log(props);
+		//console.log(props.template());
+		return props.template(props);
+		//return props.template;
+	};
+
+	const textTemplate = (props) => {
 		return (
 			<p style={{ wordBreak: "break-all" }}>{ props.value }</p>
 		);
-	}
+	};
+
+
+	const headerTemplate = (options, props) => {
+        const toggleIcon = options.collapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up';
+        const className = `${options.className} justify-content-start`;
+        const titleClassName = `${options.titleClassName} pl-1`;
+
+        return (
+            <div className={className}>
+                <button className={options.togglerClassName} onClick={options.onTogglerClick}>
+                    <span className={toggleIcon}></span>
+                    <Ripple />
+                </button>
+                <span className={titleClassName}>
+                    Expand
+                </span>
+            </div>
+        )
+    };
+
+	const jsonTemplate = (props) => {
+		return (
+			<Panel headerTemplate={headerTemplate} toggleable collapsed>
+				<ReactJson src={props.value} theme={themeState?.layoutColorMode === "light" ? "rjv-default" : "google"}/>
+			</Panel>
+		);
+	};
+
+	const userInfos = [
+		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate  },
+		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate  },
+		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate  },
+		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate  },
+		{ name: "Curation API Token", value: localUserInfo.apiToken, template: textTemplate },
+		{ name: "Okta Access Token Content", value: jose.decodeJwt(oktaToken.accessToken.accessToken), template: jsonTemplate  },
+		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate  },
+		{ name: "User Settings", value: localUserInfo.settings, template: jsonTemplate },
+	];
 
 	return (
 		<div className="grid">
 			<div className="col-12">
 				<Card title="User Profile" subTitle="">
 					<DataTable value={userInfos} style={{ width: "100%"}}>
-						<Column field="name" header="Name" />
+						<Column field="name" header="Name" style={{ minWidth: '16rem' }} />
 						<Column field="value" header="Value" body={valueTemplate} />
 					</DataTable>
 				</Card>

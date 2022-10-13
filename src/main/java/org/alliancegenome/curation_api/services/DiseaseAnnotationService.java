@@ -62,7 +62,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> deleteNotes(Long id) {
-		SearchResponse<DiseaseAnnotation> response = dao.searchByField(new Pagination(), "id", Long.toString(id));
+		SearchResponse<DiseaseAnnotation> response = dao.searchByField(new Pagination(0, 20), "id", Long.toString(id));
 
 		DiseaseAnnotation singleResult = response.getSingleResult();
 		if (singleResult == null) {

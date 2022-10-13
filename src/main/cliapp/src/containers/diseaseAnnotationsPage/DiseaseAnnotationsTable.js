@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, {useRef, useState} from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
@@ -151,7 +151,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const assertedGenesBodyTemplate = (rowData) => {
 		if (rowData && rowData.assertedGenes && rowData.assertedGenes.length > 0) {
-			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1); 
+			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.symbol > b.symbol) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
@@ -159,7 +159,7 @@ export const DiseaseAnnotationsTable = () => {
 					</EllipsisTableCell>
 				);
 			};
-			
+
 			return (
 				<>
 					<div className={`a${rowData.id}${rowData.assertedGenes[0].curie.replace(':', '')}`}>

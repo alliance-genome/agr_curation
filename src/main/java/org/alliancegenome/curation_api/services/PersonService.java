@@ -14,8 +14,7 @@ import org.alliancegenome.curation_api.services.validation.PersonValidator;
 @RequestScoped
 public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
-	@Inject
-	PersonDAO personDAO;
+	@Inject PersonDAO personDAO;
 	@Inject PersonValidator personValidator;
 	
 	@Override

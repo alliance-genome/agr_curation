@@ -137,7 +137,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			singleRefFiltermap.put("singleReferenceFilter", getFilterMap("singleReference.curie", getQueryStringMap(uiEntity.getSingleReference().getCurie())));
 			singleRefFiltermap.put("handleFilter", getFilterMap("handle", getQueryStringMap(uiEntity.getHandle())));
 
-			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(), Map.of("searchFilters", singleRefFiltermap));
+			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(1, 20), Map.of("searchFilters", singleRefFiltermap));
 			if (response.getTotalResults() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 				return null;

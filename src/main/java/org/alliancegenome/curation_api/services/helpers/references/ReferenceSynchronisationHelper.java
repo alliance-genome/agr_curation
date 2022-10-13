@@ -61,12 +61,8 @@ public class ReferenceSynchronisationHelper {
 		
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchFilters", filter);		
-		
-		Pagination pagination = new Pagination();
-		int limit = 50;
-		pagination.setLimit(limit);
-		int page = 0;
-		pagination.setPage(page);
+
+		Pagination pagination = new Pagination(0, 50);
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
 		if (response != null) {
 			for (LiteratureReference result : response.getResults()) {
@@ -87,10 +83,10 @@ public class ReferenceSynchronisationHelper {
 	public void synchroniseReferences() {
 		
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
-		Pagination pagination = new Pagination();
-		int limit = 500;
-		pagination.setLimit(limit);
 		int page = 0;
+		int limit = 500;
+		Pagination pagination = new Pagination(page, limit);
+
 		Boolean allSynced = false;
 		while (!allSynced) {
 			pagination.setPage(page);

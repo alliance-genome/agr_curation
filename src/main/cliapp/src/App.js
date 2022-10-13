@@ -4,7 +4,7 @@ import { Security } from '@okta/okta-react';
 import { OktaAuth } from '@okta/okta-auth-js';
 import { oktaAuthConfig } from './oktaAuthConfig';
 
-import { SiteLayout } from './containers/layout'
+import { Login } from './Login';
 
 import routes from './routes';
 import './App.scss';
@@ -27,9 +27,9 @@ const App = () => {
 
 	return (
 		<Security oktaAuth={oktaAuth} onAuthRequired={customAuthHandler} restoreOriginalUri={restoreOriginalUri}>
-				<SiteLayout>
-					{routes}
-				</SiteLayout>
+			<Login>
+				{routes}
+			</Login>
 		</Security>
 	);
 };
