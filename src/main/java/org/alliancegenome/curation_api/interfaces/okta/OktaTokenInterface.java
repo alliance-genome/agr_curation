@@ -1,17 +1,20 @@
 package org.alliancegenome.curation_api.interfaces.okta;
 
-import javax.ws.rs.*;
+import javax.ws.rs.FormParam;
+import javax.ws.rs.HeaderParam;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+
+import org.alliancegenome.curation_api.model.okta.OktaToken;
 
 @Path("/oauth2/default/v1")
 public interface OktaTokenInterface {
-
+	
 	@POST
-	@Path("/introspect")
-	@Produces({"application/json"})
-	public OktaUserInfo getUserInfo(
+	@Path("/token")
+	public OktaToken getClientCrednetialsAccessToken(
 		@HeaderParam("Authorization") String authorization,
-		//@FormParam("client_id") String client_id,
-		@FormParam("token_type_hint") String token_type_hint,
-		@FormParam("token") String token
+		@FormParam("grant_type") String grantType,
+		@FormParam("scope") String scope
 	);
 }
