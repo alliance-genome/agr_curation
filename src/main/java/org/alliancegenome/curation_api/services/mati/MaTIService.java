@@ -1,15 +1,19 @@
 package org.alliancegenome.curation_api.services.mati;
 
+import java.io.IOException;
+import java.util.Base64;
+
+import javax.enterprise.context.ApplicationScoped;
+
+import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
+import org.alliancegenome.curation_api.model.entities.IdentifiersRange;
+import org.alliancegenome.curation_api.model.okta.OktaToken;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import lombok.NoArgsConstructor;
-import org.alliancegenome.curation_api.model.entities.IdentifiersRange;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import java.io.IOException;
-import java.util.Base64;
+import si.mazi.rescu.RestProxyFactory;
 
 @NoArgsConstructor
 @ApplicationScoped
@@ -31,20 +35,10 @@ public class MaTIService {
 	String mati_url;
 
 	private String fetchOktaToken() throws IOException {
-		String authorization = "Basic " +
-			Base64.getEncoder().encodeToString((client_id+":"+client_secret).getBytes());
-		String token = RestAssured.given().
-			contentType(ContentType.URLENC).
-			header("Accept", "application/json").
-			header("Cache-Control", "no-cache").
-			header("Authorization", authorization).
-			formParam("grant_type", "client_credentials").
-			formParam("scope", okta_scopes).
-			when().
-			post(okta_url + "/oauth2/default/v1/token").
-			then().
-			extract().path("access_token").toString();
-		return token;
+		OktaTokenInterface oktaAPI = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url);
+		String authorization = "Basic " + Base64.getEncoder().encodeToString((client_id + ":" + client_secret).getBytes());
+		OktaToken oktaToken = oktaAPI.getClientCrednetialsAccessToken(authorization, "client_credentials", okta_scopes);
+		return oktaToken.getAccess_token();
 	}
 
 	public String mintIdentifier(String subdomain)	throws IOException {
