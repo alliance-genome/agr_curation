@@ -28,9 +28,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class AGMDiseaseAnnotationDTOValidator {
+public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
 	
-	@Inject DiseaseAnnotationDTOValidator<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO> diseaseAnnotationDtoValidator;
 	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	@Inject AffectedGenomicModelDAO agmDAO;
@@ -64,7 +63,7 @@ public class AGMDiseaseAnnotationDTOValidator {
 			}
 		}
 		
-		ObjectResponse<AGMDiseaseAnnotation> daResponse = diseaseAnnotationDtoValidator.validateAnnotationDTO(annotation, dto);
+		ObjectResponse<AGMDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 

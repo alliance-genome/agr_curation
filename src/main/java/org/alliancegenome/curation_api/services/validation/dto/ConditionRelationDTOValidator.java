@@ -19,17 +19,17 @@ import org.alliancegenome.curation_api.model.ingest.dto.ExperimentalConditionDTO
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class ConditionRelationDTOValidator {
+public class ConditionRelationDTOValidator extends BaseDTOValidator {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
     @Inject VocabularyTermDAO vocabularyTermDAO;
     @Inject ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
     @Inject ExperimentalConditionDAO experimentalConditionDAO;
-    @Inject AuditedObjectDTOValidator<ConditionRelation, ConditionRelationDTO> auditedObjectDtoValidator;
     
     public ObjectResponse<ConditionRelation> validateConditionRelationDTO(ConditionRelationDTO dto) {
     	ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
@@ -44,7 +44,7 @@ public class ConditionRelationDTOValidator {
 			relation = searchResponseRel.getSingleResult();
 		}
     	
-    	ObjectResponse<ConditionRelation> aoResponse = auditedObjectDtoValidator.validateAuditedObjectDTO(relation, dto);
+    	ObjectResponse<ConditionRelation> aoResponse = validateAuditedObjectDTO(relation, dto);
     	relation = aoResponse.getEntity();
     	crResponse.addErrorMessages(aoResponse.getErrorMessages());
     	

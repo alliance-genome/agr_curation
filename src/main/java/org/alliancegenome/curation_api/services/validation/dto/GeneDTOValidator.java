@@ -9,13 +9,13 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class GeneDTOValidator {
+public class GeneDTOValidator extends BaseDTOValidator {
 
 	@Inject GeneDAO geneDAO;
-	@Inject GenomicEntityDTOValidator<Gene, GeneDTO> genomicEntityDtoValidator;
 	
 	public Gene validateGeneDTO (GeneDTO dto) throws ObjectValidationException {
 		
@@ -33,7 +33,7 @@ public class GeneDTOValidator {
 		
 		gene.setCurie(dto.getCurie());
 
-		ObjectResponse<Gene> geResponse = genomicEntityDtoValidator.validateGenomicEntityDTO(gene, dto);
+		ObjectResponse<Gene> geResponse = validateGenomicEntityDTO(gene, dto);
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 		

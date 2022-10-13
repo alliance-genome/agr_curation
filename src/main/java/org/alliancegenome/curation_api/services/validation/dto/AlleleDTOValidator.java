@@ -20,14 +20,13 @@ import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.SynonymDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class AlleleDTOValidator {
+public class AlleleDTOValidator extends BaseDTOValidator {
 
-	@Inject GenomicEntityDTOValidator<Allele, AlleleDTO> genomicEntityDtoValidator;
-	@Inject SynonymDTOValidator synonymDtoValidator;
 	@Inject AlleleDAO alleleDAO;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	@Inject ReferenceDAO referenceDAO;
@@ -49,7 +48,7 @@ public class AlleleDTOValidator {
 		
 		allele.setCurie(dto.getCurie());
 		
-		ObjectResponse<Allele> geResponse = genomicEntityDtoValidator.validateGenomicEntityDTO(allele, dto);
+		ObjectResponse<Allele> geResponse = validateGenomicEntityDTO(allele, dto);
 		alleleResponse.addErrorMessages(geResponse.getErrorMessages());
 		
 		allele = geResponse.getEntity();
@@ -112,7 +111,7 @@ public class AlleleDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
 			List<Synonym> synonyms= new ArrayList<>();
 			for (SynonymDTO synonymDTO : dto.getSynonyms()) {
-				ObjectResponse<Synonym> synResponse = synonymDtoValidator.validateSynonymDTO(synonymDTO);
+				ObjectResponse<Synonym> synResponse = validateSynonymDTO(synonymDTO);
 				if (synResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("synonyms", synResponse.errorMessagesString());
 					break;

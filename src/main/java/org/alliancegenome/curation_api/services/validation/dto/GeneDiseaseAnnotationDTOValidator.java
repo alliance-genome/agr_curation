@@ -23,7 +23,7 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class GeneDiseaseAnnotationDTOValidator {
+public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator{
 
 	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
 	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
@@ -31,7 +31,6 @@ public class GeneDiseaseAnnotationDTOValidator {
 	@Inject NoteDAO noteDAO;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
-	@Inject DiseaseAnnotationDTOValidator <GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO> diseaseAnnotationDtoValidator;
 	
 	public GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) throws ObjectValidationException {
 		
@@ -69,7 +68,7 @@ public class GeneDiseaseAnnotationDTOValidator {
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
 		
-		ObjectResponse<GeneDiseaseAnnotation> daResponse = diseaseAnnotationDtoValidator.validateAnnotationDTO(annotation, dto);
+		ObjectResponse<GeneDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		

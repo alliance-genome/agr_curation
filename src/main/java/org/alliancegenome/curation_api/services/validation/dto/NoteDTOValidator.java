@@ -16,13 +16,13 @@ import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class NoteDTOValidator {
+public class NoteDTOValidator extends BaseDTOValidator {
 
-	@Inject AuditedObjectDTOValidator<Note, NoteDTO> auditedObjectDtoValidator;
 	@Inject ReferenceDAO referenceDAO;
 	@Inject ReferenceService referenceService;
 	@Inject PersonService personService;
@@ -30,7 +30,7 @@ public class NoteDTOValidator {
 	
 	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String note_type_vocabulary) {
 		Note note = new Note();
-		ObjectResponse<Note> noteResponse = auditedObjectDtoValidator.validateAuditedObjectDTO(note, dto);
+		ObjectResponse<Note> noteResponse = validateAuditedObjectDTO(note, dto);
 		
 		note = noteResponse.getEntity();
 		

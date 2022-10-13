@@ -25,13 +25,12 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class AlleleDiseaseAnnotationDTOValidator {
+public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
 	
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
 	@Inject AlleleDAO alleleDAO;
 	@Inject GeneDAO geneDAO;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
-	@Inject DiseaseAnnotationDTOValidator<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO> diseaseAnnotationDtoValidator;
 	
 	public AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
@@ -59,7 +58,7 @@ public class AlleleDiseaseAnnotationDTOValidator {
 			}
 		}
 		
-		ObjectResponse<AlleleDiseaseAnnotation> daResponse = diseaseAnnotationDtoValidator.validateAnnotationDTO(annotation, dto);
+		ObjectResponse<AlleleDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 		

@@ -30,13 +30,13 @@ import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class DiseaseAnnotationDTOValidator<E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> {
+public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 
-	@Inject AuditedObjectDTOValidator<E, D> auditedObjectDtoValidator;
 	@Inject ReferenceDAO referenceDAO;
 	@Inject DoTermDAO doTermDAO;
 	@Inject EcoTermDAO ecoTermDAO;
@@ -49,8 +49,8 @@ public class DiseaseAnnotationDTOValidator<E extends DiseaseAnnotation, D extend
 	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
 	@Inject NoteDTOValidator noteDtoValidator;
 	
-	public ObjectResponse<E> validateAnnotationDTO(E annotation, D dto) {
-		ObjectResponse<E> daResponse = auditedObjectDtoValidator.validateAuditedObjectDTO(annotation, dto);
+	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto) {
+		ObjectResponse<E> daResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {

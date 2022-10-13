@@ -25,10 +25,11 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurie;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
+import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class ExperimentalConditionDTOValidator {
+public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 	
 	@Inject ExperimentalConditionDAO experimentalConditionDAO;
 	@Inject ZecoTermDAO zecoTermDAO;
@@ -39,7 +40,6 @@ public class ExperimentalConditionDTOValidator {
 	@Inject ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
 	@Inject ExperimentalConditionSummary experimentalConditionSummary;
 	@Inject PersonService personService;
-	@Inject AuditedObjectDTOValidator<ExperimentalCondition, ExperimentalConditionDTO> auditedObjectDtoValidator;
 	
 	public ObjectResponse<ExperimentalCondition> validateExperimentalConditionDTO(ExperimentalConditionDTO dto) {
 		ObjectResponse<ExperimentalCondition> ecResponse = new ObjectResponse<ExperimentalCondition>();
@@ -55,7 +55,7 @@ public class ExperimentalConditionDTOValidator {
 			experimentalCondition = searchResponse.getSingleResult();
 		}
 		
-		ObjectResponse<ExperimentalCondition> aoResponse = auditedObjectDtoValidator.validateAuditedObjectDTO(experimentalCondition, dto);
+		ObjectResponse<ExperimentalCondition> aoResponse = validateAuditedObjectDTO(experimentalCondition, dto);
     	experimentalCondition = aoResponse.getEntity();
     	ecResponse.addErrorMessages(aoResponse.getErrorMessages());
 		
