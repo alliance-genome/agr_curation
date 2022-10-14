@@ -33,7 +33,7 @@ public class MaTIService {
 	private String fetchOktaToken() throws IOException {
 		OktaTokenInterface oktaAPI = RestProxyFactory.createProxy(OktaTokenInterface.class, okta_url);
 		String authorization = "Basic " + Base64.getEncoder().encodeToString((client_id + ":" + client_secret).getBytes());
-		OktaToken oktaToken = oktaAPI.getClientCrednetialsAccessToken(authorization, "client_credentials", okta_scopes);
+		OktaToken oktaToken = oktaAPI.getClientCredentialsAccessToken(authorization, "client_credentials", okta_scopes);
 		return oktaToken.getAccess_token();
 	}
 
