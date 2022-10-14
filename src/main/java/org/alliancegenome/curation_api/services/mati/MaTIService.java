@@ -1,18 +1,16 @@
 package org.alliancegenome.curation_api.services.mati;
 
-import java.io.IOException;
-import java.util.Base64;
-
-import javax.enterprise.context.ApplicationScoped;
-
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
 import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.model.okta.OktaToken;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import si.mazi.rescu.RestProxyFactory;
+
+import javax.enterprise.context.ApplicationScoped;
+import java.io.IOException;
+import java.util.Base64;
 
 @ApplicationScoped
 public class MaTIService {
@@ -48,7 +46,7 @@ public class MaTIService {
 			header("Authorization", authorization).
 			header("subdomain", subdomain).
 			when().
-			put(mati_url).
+			put(mati_url + "/api/identifier").
 			then().
 			extract().path("value").toString();
 		return identifier;
@@ -64,7 +62,7 @@ public class MaTIService {
 			header("subdomain", subdomain).
 			header("value", howMany).
 			when().
-			post(mati_url).
+			post(mati_url + "/api/identifier").
 			then().
 			extract().body().as(IdentifiersRange.class);
 		return range;
