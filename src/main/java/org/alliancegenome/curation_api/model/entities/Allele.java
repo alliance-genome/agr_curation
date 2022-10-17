@@ -4,9 +4,12 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -36,6 +39,11 @@ import lombok.ToString;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
 @AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, submitted=true, partial=true)
+@Table(indexes = {
+	@Index(name = "allele_inheritancemode_index", columnList = "inheritanceMode_id"),
+	@Index(name = "allele_inCollection_index", columnList = "inCollection_id"),
+	@Index(name = "allele_sequencingStatus_index", columnList = "sequencingStatus_id"),
+})
 public class Allele extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
@@ -46,6 +54,7 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
+	@JoinTable(indexes = @Index( columnList = "Allele_curie, references_curie"))
 	@JsonView({View.FieldsAndLists.class})
 	private List<Reference> references;
 
