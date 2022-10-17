@@ -1,5 +1,26 @@
 # AGR curation release notes
 
+https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
+
+## v0.11.0
+
+ * New Features
+    * Enable creation of disease annotation; 1st & 2nd iteration pop-up (SCRUM-1709, SCRUM-1903)
+    * Enabled simple deletion of disease annotations (SCRUM-1890)
+    * Condition Summaries & Unique IDs for Experimental Conditions (plan to retire Condition Statements)
+       * Generate consistent condition_summary entries for experimental conditions (SCRUM-2036)
+       * Generate consistent unique_id values for experimental conditions (SCRUM-2037)
+       * Clean up experimental conditions (redundant entries + usage of condition_summary in place of condition_statement) (SCRUM-2038)
+       * Add tooltip to condition autosuggest options to display unique_id values for each experimental condition displayed (SCRUM-2040)
+       * Replace experimental condition autosuggest display with condition_summary instead of condition_statement (SCRUM-2039)
+    * Add display of compatible LinkML schema versions (SCRUM-2091)
+ * Fixes
+    * Fix broken autocomplete for experimental conditions (SCRUM-2089)
+    * Fix sort order of data loads by reverse chronological order (SCRUM-2010)
+    * Fix missing ontologies from dashboard (SCRUM-2076)
+    * Fix blank screen bug in Data Loads widget (SCRUM-2042)
+    * Clean up and address stale file loads in Data Loads widget (SCRUM-2004)
+
 ## v0.10.0
 
  * New features
