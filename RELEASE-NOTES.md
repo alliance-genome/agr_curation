@@ -1,5 +1,7 @@
 # AGR curation release notes
 
+https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
+
 ## v0.11.0
 
  * Curation Software (44 points)
