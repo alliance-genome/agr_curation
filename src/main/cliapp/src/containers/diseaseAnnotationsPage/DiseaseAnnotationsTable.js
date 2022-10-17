@@ -1122,7 +1122,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Genetic Sex",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "multiselect", filterName: "geneticSexFilter", fields: ["geneticSex.name"]},
+		filterElement: {type: "multiselect", filterName: "geneticSexFilter", fields: ["geneticSex.name"], useKeywordFields: true},
 		editor: (props) => geneticSexEditor(props)
 	},
 	{
@@ -1130,7 +1130,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Disease Qualifiers",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "multiselect", filterName: "diseaseQualifiersFilter", fields: ["diseaseQualifiers.name"]},
+		filterElement: {type: "multiselect", filterName: "diseaseQualifiersFilter", fields: ["diseaseQualifiers.name"], useKeywordFields: true},
 		editor: (props) => diseaseQualifiersEditor(props),
 		body: diseaseQualifiersBodyTemplate
 	},
@@ -1148,7 +1148,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Annotation Type",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "multiselect", filterName: "annotationTypeFilter", fields: ["annotationType.name"]},
+		filterElement: {type: "multiselect", filterName: "annotationTypeFilter", fields: ["annotationType.name"], useKeywordFields: true},
 		editor: (props) => annotationTypeEditor(props)
 	},
 	{
