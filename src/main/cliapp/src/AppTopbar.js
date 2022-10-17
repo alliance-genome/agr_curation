@@ -1,20 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useQuery } from 'react-query';
+import React, { useRef, useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Menu } from 'primereact/menu';
 import classNames from 'classnames';
-import { ApiVersionService } from './service/ApiVersionService';
+import { SiteContext } from './containers/layout/SiteContext';
 
 export const AppTopbar = (props) => {
 	const menu = useRef(null);
 
-	let [apiService, setApiService] = useState();
-
-	useEffect(() => {
-		if(props.authState?.isAuthenticated){
-			setApiService(new ApiVersionService())
-		}
-	}, [props.authState]);
+	const { apiVersion } = useContext(SiteContext);
 
 	const menuItems = [
 		{
@@ -35,30 +28,13 @@ export const AppTopbar = (props) => {
 		}
 	];
 
-	const [apiVersion, setApiVersion] = useState({ "version": "0.0.0" });
-
-	useQuery(['getApiVersion', apiVersion],
-		() => apiService.getApiVersion(), {
-			onSuccess: (data) => {
-				//console.log(data);
-				setApiVersion(data);
-			},
-			onError: (error) => {
-			console.log(error);
-			},
-			keepPreviousData: true,
-			refetchOnWindowFocus: false,
-			enabled: !!(props.authState?.isAuthenticated && apiService),
-		}
-	);
-
 	return (
 			<div className="layout-topbar">
 				 {
 						props.authState?.isAuthenticated &&
 						<>
 							 <Link to="/" className="layout-topbar-logo">
-									AGR Curation: {apiVersion.version}
+									AGR Curation: {apiVersion?.version}
 							 </Link>
 							 <button type="button" className="p-link layout-menu-button layout-topbar-button" onClick={props.onToggleMenuClick}>
 									<i className="pi pi-bars" />

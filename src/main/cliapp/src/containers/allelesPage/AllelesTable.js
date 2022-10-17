@@ -13,17 +13,6 @@ export const AllelesTable = () => {
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
-	const descriptionTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-					{rowData.description}
-				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.description} />
-			</>
-		);
-	}
-
 	const symbolTemplate = (rowData) => {
 		return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
 	}
@@ -48,14 +37,6 @@ export const AllelesTable = () => {
 			sortable: { isEnabled },
 			filter: true,
 			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
-		},
-		{
-			field: "description",
-			header: "Description",
-			sortable: isEnabled,
-			filter: true,
-			body: descriptionTemplate,
-			filterElement: {type: "input", filterName: "descriptionFilter", fields: ["description"]}, 
 		},
 		{
 			field: "symbol",
