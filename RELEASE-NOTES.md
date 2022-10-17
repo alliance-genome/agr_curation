@@ -2,23 +2,16 @@
 
 ## v0.11.0
 
- * What's Changed
-    * Merge pull request #657 from alliance-genome/release/v0.10.0-rc1 by @abecerra in #659
-    * SCRUM-2037 Update experimental condition Unique ID generation by @markquintontulloch in #661
-    * SCRUM-2039 & SCRUM-2040 UI changes for switch from conditionStatement to conditionSummary by @markquintontulloch in #663
-    * SCRUM-1903 added related notes table to new annotation form by @adamgibs in #662
-    * SCRUM-2060 Clean up diseaseannotation & diseaseannotation_aud tables by @markquintontulloch in #664
-    * Updated indexer to wait until finished on first two by @oblodgett in #665
-    * SCRUM-2089 Fix autocomplete bug due to ontology synonyms change by @markquintontulloch in #666
-    * SCRUM-2076 Fix display of ontologies in dashboard by @markquintontulloch in #667
-    * SCRUM-1903 fixed related notes error bug by @adamgibs in #668
-    * Added schema version table and POC contexts by @oblodgett in #669
-    * Added default values to useNewAnnotaionReducer by @adamgibs in #670
-    * SCRUM-2101 Remove description column from Allele table by @markquintontulloch in #672
-    * Release/v0.11.0 rc1 by @markquintontulloch in #673
-    * Library setup by @oblodgett in #671
-    * Release/v0.11.0 rc1 by @oblodgett in #674
-    * Release/v0.11.0 by @oblodgett in #710
+ * Curation Software (26 points + 2 spike)
+    * Curation UI
+      * Enable 3rd iteration pop-up for creating new disease annotations (add experimental conditions) (SCRUM-1905; 3 points)
+      * Remove "Description" column/field from the Alleles table (SCRUM-2101; 1 point)
+      * Load and display first iteration of additional Allele attributes (and currently available attributes) (SCRUM-2130; 5 points)
+      * Deprecate condition_statement field of experimental conditions (SCRUM-2140; 1 point)
+      * Persistent user settings across logins and machines (SCRUM-2098; 3 points)
+ * Bug fixes
+    * On alpha: disease qualifiers disappearing upon save of disease annotation (SCRUM-2132; 1 point)
+    * Conditions being lost from UI upon save of DA (SCRUM-2133; 1 point)
 
 ## v0.10.0
 
