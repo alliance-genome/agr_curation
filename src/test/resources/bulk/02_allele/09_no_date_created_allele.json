@@ -8,6 +8,13 @@
     "obsolete": true,
     "created_by": "ALLELETEST:Person0001",
     "updated_by": "ALLELETEST:Person0002",
-    "date_updated": "2022-03-09T22:10:12+00:00"
+    "date_updated": "2022-03-09T22:10:12+00:00",
+    "is_extinct": false,
+    "inheritance_mode": "dominant",
+    "in_collection": "Million_mutations_project",
+    "sequencing_status": "sequenced",
+    "references": [
+      "PMID:25920550"
+    ]
   }
 ]

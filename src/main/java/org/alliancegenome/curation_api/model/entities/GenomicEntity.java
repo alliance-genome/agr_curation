@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.hibernate.envers.Audited;
@@ -20,7 +21,7 @@ import lombok.*;
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"}, callSuper = true)
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BiologicalEntity.class})
 public class GenomicEntity extends BiologicalEntity {
 
 	//@Analyzer(definition = "caseInsensitiveAnalyzer")
@@ -34,6 +35,7 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
+	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({View.FieldsAndLists.class})
 	private List<Synonym> synonyms;
 
@@ -41,6 +43,7 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
+	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({View.FieldsAndLists.class})
 	private List<CrossReference> crossReferences;
 

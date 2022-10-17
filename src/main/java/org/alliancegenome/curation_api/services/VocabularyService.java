@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.helpers.validators.VocabularyValidator;
+import org.alliancegenome.curation_api.services.validation.VocabularyValidator;
 
 @RequestScoped
 public class VocabularyService extends BaseEntityCrudService<Vocabulary, VocabularyDAO> {

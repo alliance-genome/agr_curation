@@ -22,7 +22,6 @@
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
-            "condition_statement": "Condition statement",
             "condition_id": "DATEST:ExpCondTerm0002",
             "condition_gene_ontology": "DATEST:GOTerm0001",
             "condition_anatomy": "DATEST:AnatomyTerm0001",

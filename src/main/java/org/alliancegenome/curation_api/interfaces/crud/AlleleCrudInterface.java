@@ -8,6 +8,7 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.*;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.view.View;
@@ -27,7 +28,9 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	public APIResponse updateAlleles(List<AlleleDTO> alleleData);
 
 	@Override
+	@GET
 	@JsonView(View.FieldsAndLists.class)
+	@Path("/{curie}")
 	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
 
 	@Override

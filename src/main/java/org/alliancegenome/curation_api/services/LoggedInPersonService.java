@@ -24,12 +24,6 @@ public class LoggedInPersonService extends BaseEntityCrudService<LoggedInPerson,
 		setSQLDao(loggedInPersonDAO);
 	}
 	
-	@Transactional
-	public void saveSettings(HashMap<String, Object> settings) {
-		LoggedInPerson user = loggedInPersonDAO.find(authenticatedPerson.getId());
-		user.setUserSettings(settings);
-	}
-	
 	public LoggedInPerson findLoggedInPersonByOktaEmail(String email) {
 		SearchResponse<LoggedInPerson> resp = loggedInPersonDAO.findByField("oktaEmail", email);
 		if (resp != null && resp.getTotalResults() == 1) {

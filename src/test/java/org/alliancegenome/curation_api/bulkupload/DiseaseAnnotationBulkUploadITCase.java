@@ -15,7 +15,6 @@ import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
@@ -108,7 +107,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
@@ -120,9 +119,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].diseaseRelation.name", is("is_implicated_in")).
 			body("results[0].geneticSex.name", is("male")).
 			body("results[0].updatedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].conditionRelations", hasSize(1)).
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
@@ -130,7 +129,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
-			body("results[0].conditionRelations[0].conditions[0].conditionStatement", is("Condition statement")).
 			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
 			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
@@ -180,57 +178,56 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results", hasSize(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0002")).
-			body("results[1].uniqueId", is("DATEST:Annot0002")).
-			body("results[1].subject.curie", is("DATEST:Allele0001")).
-			body("results[1].object.curie", is("DATEST:Disease0001")).
-			body("results[1].diseaseRelation.name", is("is_implicated_in")).
-			body("results[1].geneticSex.name", is("male")).
-			body("results[1].updatedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[1].dateUpdated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[1].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[1].dateCreated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[1].conditionRelations", hasSize(1)).
-			body("results[1].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
-			body("results[1].conditionRelations[0].internal", is(false)).
-			body("results[1].conditionRelations[0].obsolete", is(false)).
-			body("results[1].conditionRelations[0].conditions", hasSize(1)).
-			body("results[1].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
-			body("results[1].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
-			body("results[1].conditionRelations[0].conditions[0].conditionStatement", is("Condition statement")).
-			body("results[1].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
-			body("results[1].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
-			body("results[1].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
-			body("results[1].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
-			body("results[1].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
-			body("results[1].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-			body("results[1].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
-			body("results[1].conditionRelations[0].conditions[0].internal", is(false)).
-			body("results[1].conditionRelations[0].conditions[0].obsolete", is(false)).
-			body("results[1].negated", is(true)).
-			body("results[1].internal", is(false)).
-			body("results[1].obsolete", is(false)).
-			body("results[1].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-			body("results[1].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
-			body("results[1].with", hasSize(1)).
-			body("results[1].with[0].curie", is("HGNC:0001")).
-			body("results[1].singleReference.curie", is("PMID:25920554")).
-			body("results[1].relatedNotes[0].freeText", is("Test note")).
-			body("results[1].relatedNotes[0].noteType.name", is("disease_summary")).
-			body("results[1].relatedNotes[0].internal", is(false)).
-			body("results[1].relatedNotes[0].obsolete", is(false)).
-			body("results[1].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-			body("results[1].annotationType.name", is("manually_curated")).
-			body("results[1].diseaseQualifiers[0].name", is("susceptibility")).
-			body("results[1].evidenceCodes", hasSize(1)).
-			body("results[1].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
-			body("results[1].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[1].assertedGene.curie", is("DATEST:Gene0001"));
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0002")).
+			body("results[0].uniqueId", is("DATEST:Annot0002")).
+			body("results[0].subject.curie", is("DATEST:Allele0001")).
+			body("results[0].object.curie", is("DATEST:Disease0001")).
+			body("results[0].diseaseRelation.name", is("is_implicated_in")).
+			body("results[0].geneticSex.name", is("male")).
+			body("results[0].updatedBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].dateUpdated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].dateCreated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
+			body("results[0].conditionRelations[0].internal", is(false)).
+			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].conditions", hasSize(1)).
+			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
+			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
+			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
+			body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
+			body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
+			body("results[0].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)).
+			body("results[0].negated", is(true)).
+			body("results[0].internal", is(false)).
+			body("results[0].obsolete", is(false)).
+			body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
+			body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
+			body("results[0].with", hasSize(1)).
+			body("results[0].with[0].curie", is("HGNC:0001")).
+			body("results[0].singleReference.curie", is("PMID:25920554")).
+			body("results[0].relatedNotes[0].freeText", is("Test note")).
+			body("results[0].relatedNotes[0].noteType.name", is("disease_summary")).
+			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].obsolete", is(false)).
+			body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
+			body("results[0].annotationType.name", is("manually_curated")).
+			body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
+			body("results[0].evidenceCodes", hasSize(1)).
+			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
+			body("results[0].inferredGene.curie", is("DATEST:Gene0001")).
+			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001"));
 	}
 	
 	@Test
@@ -253,59 +250,58 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results", hasSize(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0003")).
-			body("results[2].uniqueId", is("DATEST:Annot0003")).
-			body("results[2].subject.curie", is("DATEST:AGM0001")).
-			body("results[2].object.curie", is("DATEST:Disease0001")).
-			body("results[2].diseaseRelation.name", is("is_model_of")).
-			body("results[2].geneticSex.name", is("male")).
-			body("results[2].updatedBy.uniqueId", is("DATEST:Person0001")).
-			body("results[2].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[2].createdBy.uniqueId", is("DATEST:Person0001")).
-			body("results[2].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[2].conditionRelations", hasSize(1)).
-			body("results[2].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
-			body("results[2].conditionRelations[0].internal", is(false)).
-			body("results[2].conditionRelations[0].obsolete", is(false)).
-			body("results[2].conditionRelations[0].conditions", hasSize(1)).
-			body("results[2].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
-			body("results[2].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
-			body("results[2].conditionRelations[0].conditions[0].conditionStatement", is("Condition statement")).
-			body("results[2].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
-			body("results[2].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
-			body("results[2].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
-			body("results[2].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
-			body("results[2].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
-			body("results[2].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
-			body("results[2].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
-			body("results[2].conditionRelations[0].conditions[0].internal", is(false)).
-			body("results[2].conditionRelations[0].conditions[0].obsolete", is(false)).
-			body("results[2].negated", is(true)).
-			body("results[2].internal", is(false)).
-			body("results[2].obsolete", is(false)).
-			body("results[2].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
-			body("results[2].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
-			body("results[2].with", hasSize(1)).
-			body("results[2].with[0].curie", is("HGNC:0001")).
-			body("results[2].singleReference.curie", is("PMID:25920554")).
-			body("results[2].relatedNotes[0].freeText", is("Test note")).
-			body("results[2].relatedNotes[0].noteType.name", is("disease_summary")).
-			body("results[2].relatedNotes[0].internal", is(false)).
-			body("results[2].relatedNotes[0].obsolete", is(false)).
-			body("results[2].relatedNotes[0].references[0].curie", is("PMID:25920554")).
-			body("results[2].annotationType.name", is("manually_curated")).
-			body("results[2].diseaseQualifiers[0].name", is("susceptibility")).
-			body("results[2].evidenceCodes", hasSize(1)).
-			body("results[2].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
-			body("results[2].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[2].assertedGene.curie", is("DATEST:Gene0001")).
-			body("results[2].inferredAllele.curie", is("DATEST:Allele0001")).
-			body("results[2].assertedAllele.curie", is("DATEST:Allele0001"));
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0003")).
+			body("results[0].uniqueId", is("DATEST:Annot0003")).
+			body("results[0].subject.curie", is("DATEST:AGM0001")).
+			body("results[0].object.curie", is("DATEST:Disease0001")).
+			body("results[0].diseaseRelation.name", is("is_model_of")).
+			body("results[0].geneticSex.name", is("male")).
+			body("results[0].updatedBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
+			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
+			body("results[0].conditionRelations[0].internal", is(false)).
+			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].conditions", hasSize(1)).
+			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
+			body("results[0].conditionRelations[0].conditions[0].conditionQuantity", is("Some amount")).
+			body("results[0].conditionRelations[0].conditions[0].conditionAnatomy.curie", is("DATEST:AnatomyTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionGeneOntology.curie", is("DATEST:GOTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionTaxon.curie", is("NCBITaxon:6239")).
+			body("results[0].conditionRelations[0].conditions[0].conditionChemical.curie", is("DATEST:ChemicalTerm0001")).
+			body("results[0].conditionRelations[0].conditions[0].conditionFreeText", is("Free text")).
+			body("results[0].conditionRelations[0].conditions[0].conditionSummary", is("Test ExperimentalConditionOntologyTerm:Test ExperimentalConditionOntologyTerm:Test AnatomicalTerm:Test GOTerm:Test ChemicalTerm:Caenorhabditis elegans:Some amount:Free text")).
+			body("results[0].conditionRelations[0].conditions[0].internal", is(false)).
+			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)).
+			body("results[0].negated", is(true)).
+			body("results[0].internal", is(false)).
+			body("results[0].obsolete", is(false)).
+			body("results[0].diseaseGeneticModifier.curie", is("DATEST:Gene0002")).
+			body("results[0].diseaseGeneticModifierRelation.name", is("ameliorated_by")).
+			body("results[0].with", hasSize(1)).
+			body("results[0].with[0].curie", is("HGNC:0001")).
+			body("results[0].singleReference.curie", is("PMID:25920554")).
+			body("results[0].relatedNotes[0].freeText", is("Test note")).
+			body("results[0].relatedNotes[0].noteType.name", is("disease_summary")).
+			body("results[0].relatedNotes[0].internal", is(false)).
+			body("results[0].relatedNotes[0].obsolete", is(false)).
+			body("results[0].relatedNotes[0].references[0].curie", is("PMID:25920554")).
+			body("results[0].annotationType.name", is("manually_curated")).
+			body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
+			body("results[0].evidenceCodes", hasSize(1)).
+			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
+			body("results[0].inferredGene.curie", is("DATEST:Gene0001")).
+			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001")).
+			body("results[0].inferredAllele.curie", is("DATEST:Allele0001")).
+			body("results[0].assertedAllele.curie", is("DATEST:Allele0001"));
 	}
 	
 	@Test
@@ -325,12 +321,12 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)). // Replace 1 WB gene disease annotation with 1
-			body("results", hasSize(3)).
-			body("results[2].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|PMID:25920554"));
+			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("results", hasSize(1)).
+			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|PMID:25920554"));
 	}
 	
 	@Test
@@ -350,10 +346,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); // Replace 1 WB gene disease annotation with 0 
+			body("totalResults", is(0)); // Replace 1 WB gene disease annotation with 0 
 	}
 	
 	@Test
@@ -373,10 +369,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -396,10 +392,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}	
 	
 	@Test
@@ -419,12 +415,12 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0008")).
-			body("results[2].negated", is(false)); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0008")).
+			body("results[0].negated", is(false)); 
 	}
 	
 	@Test
@@ -444,10 +440,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -467,11 +463,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0010"));
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0010"));
 	}
 	
 	@Test
@@ -491,11 +487,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0011"));
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0011"));
 	}
 	
 	@Test
@@ -515,11 +511,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0012")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0012")); 
 	}
 	
 	@Test
@@ -539,10 +535,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0013"));
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0013"));
 	}
 	
 	@Test
@@ -562,11 +558,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0014")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0014")); 
 	}
 	
 	@Test
@@ -586,10 +582,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -609,10 +605,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -632,10 +628,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -655,11 +651,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0018")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0018")); 
 	}
 	
 	@Test
@@ -679,10 +675,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -702,11 +698,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0020")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0020")); 
 	}
 	
 	@Test
@@ -726,11 +722,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0021")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0021")); 
 	}
 	
 	@Test
@@ -750,11 +746,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0022")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0022")); 
 	}
 	
 	@Test
@@ -774,10 +770,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -797,10 +793,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); //
+			body("totalResults", is(0)); //
 	}
 	
 	@Test
@@ -820,16 +816,16 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
 	@Order(26)
-	public void diseaseAnnotationBulkUploadNoConditionStatement() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_no_condition_statement.json"));
+	public void diseaseAnnotationMismatchedNoteReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/26_mismatched_note_reference.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -843,10 +839,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -866,11 +862,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0027")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0027")); 
 	}
 	
 	@Test
@@ -890,11 +886,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0028")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0028")); 
 	}
 	
 	@Test
@@ -914,11 +910,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0029"));
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0029"));
 	}
 	
 	@Test
@@ -938,11 +934,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0030")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0030")); 
 	}
 	
 	@Test
@@ -962,11 +958,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0031")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0031")); 
 	}
 	
 	@Test
@@ -986,11 +982,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].uniqueId", is("DATEST:Annot0032")); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0032")); 
 	}
 	
 	@Test
@@ -1010,10 +1006,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -1033,10 +1029,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -1056,10 +1052,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)); 
+			body("totalResults", is(0)); 
 	}
 	
 	@Test
@@ -1079,10 +1075,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); // Replace 1 WB allele disease annotation with 0 
+			body("totalResults", is(0)); // Replace 1 WB allele disease annotation with 0 
 	}
 	
 	@Test
@@ -1102,7 +1098,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); // Replace 1 WB AGM disease annotation with 0 
@@ -1125,7 +1121,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1148,7 +1144,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1171,7 +1167,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
@@ -1194,7 +1190,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1217,7 +1213,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1240,7 +1236,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1263,7 +1259,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1286,7 +1282,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
@@ -1309,7 +1305,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1332,7 +1328,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1355,7 +1351,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1378,10 +1374,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0049")); 
 	}
 	
 	@Test
@@ -1401,10 +1398,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0050")); 
 	}
 	
 	@Test
@@ -1424,7 +1422,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1447,7 +1445,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1470,10 +1468,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0053")).
 			body("results[0].relatedNotes[0].internal", is(true));	// should be set to true be default
 	}
 	
@@ -1494,10 +1493,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0054")); 
 	}
 	
 	@Test
@@ -1517,7 +1517,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1541,7 +1541,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1564,7 +1564,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1587,7 +1587,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1610,7 +1610,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1633,10 +1633,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0060"));
 	}
 	
 	@Test
@@ -1656,7 +1657,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
@@ -1680,7 +1681,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1703,7 +1704,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
@@ -1726,10 +1727,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)); 
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0064")); 
 	}
 	
 	@Test
@@ -1749,14 +1751,14 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
 	}
 	
 	@Test
-	@Order(65)
+	@Order(66)
 	public void diseaseAnnotationBulkUploadNoInternal() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/66_no_internal.json"));
 		
@@ -1772,10 +1774,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0066")).
 			body("results[0].internal", is(false)); // should default to false 
 	}
 	
@@ -1796,10 +1799,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0067")).
 			body("results[0].conditionRelations[0].internal", is(false)); //should default to false
 	}
 	
@@ -1820,10 +1824,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0068")).
 			body("results[0].obsolete", is(false)); // should default to false 
 	}
 	
@@ -1844,10 +1849,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0069")).
 			body("results[0].conditionRelations[0].obsolete", is(false)); //should default to false
 	}
 	
@@ -1868,10 +1874,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0070")).
 			body("results[0].relatedNotes[0].obsolete", is(false)); //should default to false
 	}
 	
@@ -1892,10 +1899,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0071")).
 			body("results[0].conditionRelations[0].conditions[0].internal", is(false)); //should default to false
 	}
 	
@@ -1916,10 +1924,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Annot0072")).
 			body("results[0].conditionRelations[0].conditions[0].obsolete", is(false)); //should default to false
 	}
 	
@@ -1940,11 +1949,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0073"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0073"));
 	}
 	
 	@Test
@@ -1964,11 +1973,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0074"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0074"));
 	}
 	
 	@Test
@@ -1988,10 +1997,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2011,10 +2020,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2034,11 +2043,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0077"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0077"));
 	}
 	
 	@Test
@@ -2058,11 +2067,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0078"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0078"));
 	}
 	
 	@Test
@@ -2082,11 +2091,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0079"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0079"));
 	}
 	
 	@Test
@@ -2106,11 +2115,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0080"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0080"));
 	}
 	
 	@Test
@@ -2130,10 +2139,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2153,10 +2162,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2176,10 +2185,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2199,10 +2208,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2222,7 +2231,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
@@ -2245,7 +2254,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
@@ -2269,11 +2278,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0087"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0087"));
 	}
 	
 	@Test
@@ -2293,11 +2302,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0088"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0088"));
 	}
 	
 	@Test
@@ -2317,10 +2326,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2340,11 +2349,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0090"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0090"));
 	}
 	
 	@Test
@@ -2364,11 +2373,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0091"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0091"));
 	}
 	
 	@Test
@@ -2388,11 +2397,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0092"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0092"));
 	}
 	
 	@Test
@@ -2412,10 +2421,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2435,11 +2444,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0094"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0094"));
 	}
 	
 	@Test
@@ -2459,11 +2468,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|PMID:25920554"));
+			body("totalResults", is(1)).
+			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|PMID:25920554"));
 	}
 	
 	@Test
@@ -2483,11 +2492,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0096"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0096"));
 	}
 	
 	@Test
@@ -2507,11 +2516,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0097"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0097"));
 	}
 	
 	@Test
@@ -2531,11 +2540,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0098"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0098"));
 	}
 	
 	@Test
@@ -2555,10 +2564,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2578,11 +2587,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0100"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0100"));
 	}
 	
 	@Test
@@ -2602,10 +2611,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2625,7 +2634,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
@@ -2649,11 +2658,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0103"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0103"));
 	}
 	
 	@Test
@@ -2673,11 +2682,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0104"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0104"));
 	}
 	
 	@Test
@@ -2697,11 +2706,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0105"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0105"));
 	}
 	
 	@Test
@@ -2721,11 +2730,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2)).
-			body("results[1].modEntityId", is("DATEST:Annot0106"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0106"));
 	}
 	
 	@Test
@@ -2745,11 +2754,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0107"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0107"));
 	}
 	
 	@Test
@@ -2769,17 +2778,17 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0108"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0108"));
 	}
 	
 	@Test
 	@Order(109)
-	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGene() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_gene_allele_annotation.json"));
+	public void diseaseAnnotationBulkUploadAlleleAnnotationEmptyAssertedGenes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/109_empty_asserted_genes_allele_annotation.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -2793,11 +2802,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0109"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0109"));
 	}
 	
 	@Test
@@ -2817,10 +2826,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2840,11 +2849,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0111"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0111"));
 	}
 	
 	@Test
@@ -2864,10 +2873,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2887,10 +2896,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2910,11 +2919,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0114"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0114"));
 	}
 	
 	@Test
@@ -2934,11 +2943,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0115"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0115"));
 	}
 	
 	@Test
@@ -2958,10 +2967,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -2981,11 +2990,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0117"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0117"));
 	}
 	
 	@Test
@@ -3005,11 +3014,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0118"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0118"));
 	}
 	
 	@Test
@@ -3029,11 +3038,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0119"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0119"));
 	}
 	
 	@Test
@@ -3053,10 +3062,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -3076,10 +3085,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -3099,17 +3108,17 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0122"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0122"));
 	}
 	
 	@Test
 	@Order(123)
-	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGene() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_gene_agm_annotation.json"));
+	public void diseaseAnnotationBulkUploadAgmAnnotationEmptyAssertedGenes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/123_empty_asserted_genes_agm_annotation.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3123,17 +3132,17 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(3)).
-			body("results[2].modEntityId", is("DATEST:Annot0123"));
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0123"));
 	}
 	
 	@Test
 	@Order(124)
-	public void diseaseAnnotationBulkUploadEmptyConditionStatement() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/124_empty_condition_statement.json"));
+	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifier() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/124_empty_disease_genetic_modifier.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3147,39 +3156,16 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	@Test
 	@Order(125)
-	public void diseaseAnnotationBulkUploadEmptyDiseaseGeneticModifier() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/125_empty_disease_genetic_modifier.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(2));
-	}
-	
-	@Test
-	@Order(126)
 	public void diseaseAnnotationBulkUploadEmptyPredicate() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/126_empty_predicate.json"));
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/125_empty_predicate.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -3193,33 +3179,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(2));
-	}
-	
-	@Test
-	@Order(127)
-	public void diseaseAnnotationMismatchedNoteReference() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/127_mismatched_note_reference.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/disease-annotation/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(2));
+			body("totalResults", is(0));
 	}
 	
 	private void loadRequiredEntities() throws Exception {
@@ -3419,6 +3382,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 		Allele allele = new Allele();
 		allele.setCurie(requiredAllele);
 		allele.setTaxon(getTaxon("NCBITaxon:6239"));
+		allele.setName("DA Test Allele");
+		allele.setSymbol("BuData");
+		allele.setInternal(false);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -3449,20 +3415,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 		return vocabulary;
 	}
 	
-	private Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		Vocabulary vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-
 	private void createVocabularyTerm(Vocabulary vocabulary, String name) {
 		VocabularyTerm vocabularyTerm = new VocabularyTerm();
 		vocabularyTerm.setName(name);
@@ -3495,9 +3447,5 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
 		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
-		return new TypeRef<ObjectResponse <CrossReference>>() { };
 	}
 }

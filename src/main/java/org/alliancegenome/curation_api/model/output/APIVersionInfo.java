@@ -18,6 +18,8 @@ public class APIVersionInfo {
 	@JsonView(View.FieldsOnly.class)
 	private TreeMap<String, String> agrCurationSchemaVersions;
 	@JsonView(View.FieldsOnly.class)
+	private TreeMap<String, String> submittedClassSchemaVersions;
+	@JsonView(View.FieldsOnly.class)
 	private String esHost;
 	@JsonView(View.FieldsOnly.class)
 	private String env;
