@@ -34,7 +34,7 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "genomicentities_curie"))
+	@JoinTable(indexes = @Index( columnList = "genomicentities_curie, synonyms_id"))
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({View.FieldsAndLists.class})
 	private List<Synonym> synonyms;
@@ -42,7 +42,7 @@ public class GenomicEntity extends BiologicalEntity {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "genomicentity_curie"))
+	@JoinTable(indexes = @Index( columnList = "genomicentity_curie, crossreferences_curie"))
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
 	@JsonView({View.FieldsAndLists.class})
 	private List<CrossReference> crossReferences;
