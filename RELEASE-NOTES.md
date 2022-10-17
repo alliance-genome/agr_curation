@@ -2,16 +2,33 @@
 
 ## v0.11.0
 
- * Curation Software (26 points + 2 spike)
-    * Curation UI
-      * Enable 3rd iteration pop-up for creating new disease annotations (add experimental conditions) (SCRUM-1905; 3 points)
-      * Remove "Description" column/field from the Alleles table (SCRUM-2101; 1 point)
-      * Load and display first iteration of additional Allele attributes (and currently available attributes) (SCRUM-2130; 5 points)
-      * Deprecate condition_statement field of experimental conditions (SCRUM-2140; 1 point)
-      * Persistent user settings across logins and machines (SCRUM-2098; 3 points)
- * Bug fixes
-    * On alpha: disease qualifiers disappearing upon save of disease annotation (SCRUM-2132; 1 point)
-    * Conditions being lost from UI upon save of DA (SCRUM-2133; 1 point)
+ * Curation Software (44 points)
+   * Curation UI (27 points)
+     * Enable creation of disease annotation; 1st iteration pop-up (SCRUM-1709; 5 points)
+     * Enable creation of disease annotation; 2nd iteration pop-up (related notes) (SCRUM-1903; 5 points)
+     * Enabled simple deletion of disease annotations (SCRUM-1890; 3 points)
+     * Condition Summaries & Unique IDs for Experimental Conditions (plan to retire Condition Statements)
+     * Generate consistent condition_summary entries for experimental conditions (SCRUM-2036; 1 point)
+     * Generate consistent unique_id values for experimental conditions (SCRUM-2037; 1 point)
+     * Clean up experimental conditions in terms of redundant entries and usage of condition_summary in place of condition_statement (SCRUM-2038; 2 points)
+     * Add tooltip to condition autosuggest options to display unique_id values for each experimental condition displayed (SCRUM-2040; 1 point)
+     * Replace experimental condition autosuggest display with condition_summary instead of condition_statement (SCRUM-2039; 2 points)
+   * Add display of compatible LinkML schema versions (SCRUM-2091; 1 point)
+   * Fix broken autocomplete for experimental conditions (SCRUM-2089; 1 point)
+   * Fix “Save & Add Another” button function in new disease annotation pop-up (SCRUM-2077; 1 point)
+   * Fix sort order of data loads by reverse chronological order (SCRUM-2010; 1 point)
+   * Fix missing ontologies from dashboard (SCRUM-2076; 1 point)
+   * Fix blank screen bug in Data Loads widget (SCRUM-2042; 1 point)
+   * Clean up and address stale file loads in Data Loads widget (SCRUM-2004; 1 point)
+
+ * Backend (10 points + 2 spikes)
+   * Connect persist store to front end
+     * Build Postgres curation data container and workflow (SCRUM-1972; 5 points)
+     * Finish Ansible “task” for Open Search & Quarkus API and get them talking to DB (SCRUM-2008; 3 points)
+     * Clean up Postgres database location of disease annotation 'datecreated' and 'dateupdated' values (SCRUM-2060; 1 point)
+     * Ensure Disease Annotation note references match that of the annotation itself (SCRUM-2028; 1 point)
+     * Spike: Discuss creation of curation software code library for use with public website (SCRUM-1973)
+     * Spike: Investigate options for modeling and storing disease annotation curies (SCRUM-2041)
 
 ## v0.10.0
 
