@@ -23,7 +23,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.MoleculeFmsDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.helpers.validators.MoleculeValidator;
+import org.alliancegenome.curation_api.services.validation.MoleculeValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.map.HashedMap;
 import org.apache.commons.lang3.StringUtils;

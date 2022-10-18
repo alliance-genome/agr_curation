@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.time.OffsetDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -12,22 +10,15 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
-import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
-import org.alliancegenome.curation_api.services.helpers.validators.GeneValidator;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
+import org.alliancegenome.curation_api.services.validation.GeneValidator;
+import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -35,24 +26,9 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
-	@Inject
-	CrossReferenceService crossReferenceService;
-	@Inject
-	SynonymService synonymService;
-	@Inject
-	SoTermDAO soTermDAO;
-	@Inject
-	GeneValidator geneValidator;
-	@Inject
-	NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject 
-	NcbiTaxonTermDAO ncbiTaxonTermDAO;
-	@Inject
-	PersonService personService;
+	@Inject GeneDAO geneDAO;
+	@Inject GeneValidator geneValidator;
+	@Inject GeneDTOValidator geneDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -79,8 +55,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
 	@Transactional
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
-		Gene gene = validateGeneDTO(dto);
-		
+		Gene gene = geneDtoValidator.validateGeneDTO(dto);
 		if (gene == null) return null;
 		
 		return geneDAO.persist(gene);
@@ -114,71 +89,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		List<String> curies = geneDAO.findAllCuriesByTaxon(taxonId);
 		curies.removeIf(Objects::isNull);
 		return curies;
-	}
-	
-	private Gene validateGeneDTO(GeneDTO dto) throws ObjectValidationException {
-		// Check for required fields
-		if (StringUtils.isBlank(dto.getCurie()) || StringUtils.isBlank(dto.getTaxon()) || StringUtils.isBlank(dto.getSymbol()) || dto.getInternal() == null) {
-			throw new ObjectValidationException(dto, "Entry for gene " + dto.getCurie() + " missing required fields - skipping");
-		}
-
-		Gene gene = geneDAO.find(dto.getCurie());
-		if (gene == null) {
-			gene = new Gene();
-			gene.setCurie(dto.getCurie());
-		} 
-		
-		// Validate taxon ID
-		ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
-		if (taxonResponse.getEntity() == null) {
-			throw new ObjectValidationException(dto, "Invalid taxon ID for gene " + dto.getCurie() + " - skipping");
-		}
-		gene.setTaxon(taxonResponse.getEntity());
-		
-		gene.setSymbol(dto.getSymbol());
-		
-		String name = null;
-		if (StringUtils.isNotBlank(dto.getName())) 
-			name = dto.getName();
-		gene.setName(name);
-		
-		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
-			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
-			gene.setCreatedBy(createdBy);
-		}
-		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
-			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
-			gene.setUpdatedBy(updatedBy);
-		}
-		
-		gene.setInternal(dto.getInternal());
-		
-		Boolean obsolete = false;
-		if (dto.getObsolete() != null)
-			obsolete = dto.getObsolete();
-		gene.setObsolete(obsolete);
-
-		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
-			OffsetDateTime dateLastModified;
-			try {
-				dateLastModified = OffsetDateTime.parse(dto.getDateUpdated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_updated in " + gene.getCurie() + " - skipping");
-			}
-			gene.setDateUpdated(dateLastModified);
-		}
-
-		if (StringUtils.isNotBlank(dto.getDateCreated())) {
-			OffsetDateTime creationDate;
-			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());
-			} catch (DateTimeParseException e) {
-				throw new ObjectValidationException(dto, "Could not parse date_created in " + gene.getCurie() + " - skipping");
-			}
-			gene.setDateCreated(creationDate);
-		}
-		
-		return gene;
 	}
 
 }

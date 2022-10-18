@@ -77,7 +77,7 @@ public class AlleleBulkUploadITCase {
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
 			body("results[0].inheritanceMode.name", is("dominant")).
-			body("results[0].inCollection.name", is("Million mutations project")).
+			body("results[0].inCollection.name", is("Million_mutations_project")).
 			body("results[0].sequencingStatus.name", is("sequenced")).
 			body("results[0].isExtinct", is(false)).
 			body("results[0].references", hasSize(1)).

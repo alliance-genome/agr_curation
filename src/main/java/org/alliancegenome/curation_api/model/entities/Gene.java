@@ -24,6 +24,9 @@ import lombok.*;
 @ToString(exclude = {"geneDiseaseAnnotations"})
 @Schema(name="Gene", description="POJO that represents the Gene")
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, submitted=true, partial=true)
+@Table(indexes = {
+	@Index(name = "gene_taxon_index", columnList = "geneType_curie"),
+})
 public class Gene extends GenomicEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

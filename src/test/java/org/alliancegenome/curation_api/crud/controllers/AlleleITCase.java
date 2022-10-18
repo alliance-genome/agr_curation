@@ -58,7 +58,7 @@ public class AlleleITCase {
 		inCollectionVocabulary = getVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
 		sequencingStatusVocabulary = getVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
 		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
-		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million mutations project");
+		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
 		sequencingStatus = getVocabularyTerm(sequencingStatusVocabulary, "sequenced");
 		reference = createReference("PMID:19351");
 		references.add(reference);

@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.helpers.validators;
+package org.alliancegenome.curation_api.services.validation;
 
 import java.time.OffsetDateTime;
 
