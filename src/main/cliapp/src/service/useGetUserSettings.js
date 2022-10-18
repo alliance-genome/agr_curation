@@ -20,13 +20,10 @@ export const useGetUserSettings = (key, defaultValue) => {
 	});
 
 	const { mutate } = useMutation(updatedSettings => {
+		setSettings(updatedSettings);
+		localStorage.setItem(key, JSON.stringify(updatedSettings));
 		return personSettingsService.saveUserSettings(key, updatedSettings);
-	},{
-		onSuccess: (data) => {
-			localStorage.setItem(key, JSON.stringify(data.entity.settingsMap));
-			setSettings(data.entity.settingsMap);
-		}
-	} );
+	});
 
 	return {settings, mutate}
 }

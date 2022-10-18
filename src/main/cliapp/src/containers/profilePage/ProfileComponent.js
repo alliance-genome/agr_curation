@@ -24,7 +24,7 @@ const initialThemeState = {
 
 export const ProfileComponent = () => {
 
-	const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
+	const { settings: themeState, mutate: setThemeState } = useGetUserSettings("themeSettings", initialThemeState);
 
 	const [localUserInfo, setLocalUserInfo] = useState({});
 	const [oktaToken] = useState(JSON.parse(localStorage.getItem('okta-token-storage')));
@@ -35,7 +35,7 @@ export const ProfileComponent = () => {
 	const personSettingsService = new PersonSettingsService();
 
 	const globalResetHandler = () =>{
-		for(let setting of localUserInfo.settings){
+		for(let setting of localUserInfo.settings) {
 			localStorage.removeItem(setting.settingsKey);
 			personSettingsService.deleteUserSettings(setting.settingsKey);
 		}
@@ -68,9 +68,7 @@ export const ProfileComponent = () => {
 	}, [authState, oktaAuth, setLocalUserInfo]); // eslint-disable-line react-hooks/exhaustive-deps
 
 	const valueTemplate = (props) => {
-		//console.log(props.template());
 		return props.template(props);
-		//return props.template;
 	};
 
 	const textTemplate = (props) => {
