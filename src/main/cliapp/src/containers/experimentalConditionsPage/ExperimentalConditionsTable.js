@@ -168,7 +168,6 @@ export const ExperimentalConditionsTable = () => {
 				autocompleteFields={autocomplete}
 				rowProps={props}
 				searchService={searchService}
-				fieldname='conditionClass'
 				endpoint='zecoterm'
 				filterName='conditionClassEditorFilter'
 				fieldName='conditionClass'
@@ -200,10 +199,9 @@ export const ExperimentalConditionsTable = () => {
 					autocompleteFields={autocomplete}
 					rowProps={props}
 					searchService={searchService}
-					fieldname={fieldname}
+					fieldName={fieldname}
 					endpoint={endpoint}
 					filterName='singleOntologyFilter'
-					fieldName={fieldname}
 					otherFilters={{
 						obsoleteFilter: {
 							"obsolete": {

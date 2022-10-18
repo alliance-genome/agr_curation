@@ -46,4 +46,16 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel
 	);
 
+	
+	@Override
+	@PUT
+	@Path("/")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<Allele> update(Allele entity);
+	
+	@Override
+	@POST
+	@Path("/")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<Allele> create(Allele entity);
 }
