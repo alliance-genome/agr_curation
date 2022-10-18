@@ -3,7 +3,6 @@ package org.alliancegenome.curation_api.services.mati;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
-import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.model.okta.OktaToken;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import si.mazi.rescu.RestProxyFactory;
@@ -48,14 +47,17 @@ public class MaTIService {
 			when().
 			put(mati_url + "/api/identifier").
 			then().
-			extract().path("value").toString();
+			extract().asString();
+//			extract().path("value").toString();
 		return identifier;
 	}
 
-	public IdentifiersRange mintIdentifierRange(String subdomain, String howMany)  throws IOException {
+//	public IdentifiersRange mintIdentifierRange(String subdomain, String howMany)  throws IOException {
+	public String mintIdentifierRange(String subdomain, String howMany)  throws IOException {
 		String token = fetchOktaToken();
 		String authorization = "Bearer: " + token;
-		IdentifiersRange range = RestAssured.given().
+//		IdentifiersRange range = RestAssured.given().
+		String range = RestAssured.given().
 			contentType(ContentType.JSON).
 			header("Accept", "application/json").
 			header("Authorization", authorization).
@@ -64,7 +66,8 @@ public class MaTIService {
 			when().
 			post(mati_url + "/api/identifier").
 			then().
-			extract().body().as(IdentifiersRange.class);
+				extract().asString();
+//			extract().body().as(IdentifiersRange.class);
 		return range;
 	}
 }
