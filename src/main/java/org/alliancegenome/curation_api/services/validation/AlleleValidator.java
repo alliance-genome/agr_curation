@@ -104,7 +104,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if(uiEntity.getIsExtinct() != null) {
 			dbEntity.setIsExtinct(uiEntity.getIsExtinct());
 		}else{
-			dbEntity.setIsExtinct(false);
+			dbEntity.setIsExtinct(null);
 		}
 		
 		List<Synonym> synonyms = validateSynonyms(uiEntity, dbEntity);

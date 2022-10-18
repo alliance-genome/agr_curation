@@ -16,7 +16,7 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled } = props;
+	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled, dataKey = 'id' } = props;
 
 	const {
 		setSelectedColumnNames,
@@ -126,7 +126,7 @@ export const GenericDataTable = (props) => {
 	}
 
 	const showDeleteDialog = (props) => {
-		let _idToDelete = props.rowData ? props.rowData.id : props.id;
+		let _idToDelete = props.rowData ? props.rowData[dataKey] : props[dataKey];
 		setIdToDelete(_idToDelete);
 		setEntityToDelete(props);
 		setDeleteDialog(true);
@@ -175,7 +175,7 @@ export const GenericDataTable = (props) => {
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
-				<DataTable dataKey='id' value={entities} header={header} ref={dataTable}
+				<DataTable dataKey={dataKey} value={entities} header={header} ref={dataTable}
 					filterDisplay="row" scrollHeight="62vh" scrollable= {true} tableClassName='p-datatable-md'
 					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
 					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}
