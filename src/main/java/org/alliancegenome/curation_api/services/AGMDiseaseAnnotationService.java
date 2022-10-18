@@ -1,22 +1,36 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.dao.*;
+import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
+import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.DiseaseAnnotationCurieManager;
 import org.alliancegenome.curation_api.services.helpers.validators.AGMDiseaseAnnotationValidator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
 
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> {
@@ -113,13 +127,18 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 		}
 		annotation.setInferredGene(inferredGene);
 		
-		Gene assertedGene = null;
-		if (StringUtils.isNotBlank(dto.getAssertedGene())) {
-			assertedGene = geneDAO.find(dto.getAssertedGene());
-			if (assertedGene == null)
-				throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+		if (CollectionUtils.isNotEmpty(dto.getAssertedGenes())) {
+			List<Gene> assertedGenes = new ArrayList<>();
+			for (String assertedGeneCurie : dto.getAssertedGenes()) {
+				Gene assertedGene = geneDAO.find(assertedGeneCurie);
+				if (assertedGene == null)
+					throw new ObjectValidationException(dto, "Invalid asserted gene for " + annotationId + " - skipping");
+				assertedGenes.add(assertedGene);
+			}
+			annotation.setAssertedGenes(assertedGenes);
+		} else {
+			annotation.setAssertedGenes(null);
 		}
-		annotation.setAssertedGene(assertedGene);
 		
 		Allele inferredAllele = null;
 		if (StringUtils.isNotBlank(dto.getInferredAllele())) {

@@ -114,8 +114,8 @@ public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDisease
 			if (sgdStrainBackground == null) {
 				throw new ObjectValidationException(dto, "Invalid AGM (" + dto.getSgdStrainBackground() + ") in 'sgd_strain_background' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
-			if (!sgdStrainBackground.getTaxon().getCurie().equals("NCBITaxon:559292")) {
-				throw new ObjectValidationException(dto, "Non-SGD AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
+			if (!sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
+				throw new ObjectValidationException(dto, "Non-Saccharomyces cerevisiae AGM (" + dto.getSgdStrainBackground() + ") found in 'sgdStrainBackground' field in " + annotation.getUniqueId() + " - skipping annotation");
 			}
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);

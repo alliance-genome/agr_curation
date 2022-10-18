@@ -2,15 +2,15 @@ import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
 
 import { SearchService } from '../../service/SearchService';
-import { useSessionStorage } from '../../service/useSessionStorage';
 
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
+import {useGetUserSettings} from "../../service/useGetUserSettings";
 
-export const useGenericDataTable = ({ 
-	endpoint, 
-	tableName, 
-	columns,	
+export const useGenericDataTable = ({
+	endpoint,
+	tableName,
+	columns,
 	aggregationFields,
 	curieFields,
 	idFields,
@@ -38,15 +38,12 @@ export const useGenericDataTable = ({
 		multiSortMeta: [],
 		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
 		filters: {},
-		isFirst: true,
+		isFirst: false,
 		tableKeyName: tableName.replace(/\s+/g, ''), //remove whitespace from tableName
+		tableSettingsKeyName: tableName.replace(/\s+/g,'') + "TableSettings"
 	}
 
-	
-	const [tableState, setTableState] = useSessionStorage(
-	`${initialTableState.tableKeyName}TableSettings`, 
-		initialTableState
-	);
+	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
 	const [entities, setEntities] = useState(null);
 	const [totalRecords, setTotalRecords] = useState(0);
@@ -84,7 +81,8 @@ export const useGenericDataTable = ({
 			]);
 		},
 		keepPreviousData: true,
-		refetchOnWindowFocus: false
+		refetchOnWindowFocus: false,
+		enabled: !!(tableState)
 	}
 	);
 
@@ -101,12 +99,14 @@ export const useGenericDataTable = ({
 			])
 		},
 		keepPreviousData: true,
-		refetchOnWindowFocus: false
+		refetchOnWindowFocus: false,
+		enabled: !!(tableState)
 	});
 
 	useEffect(() => {
 		if (
-			Object.keys(tableState.filters).length > 0
+			!tableState.filters
+			|| Object.keys(tableState.filters).length > 0
 			|| tableState.multiSortMeta.length > 0
 			|| tableState.page > 0
 			|| !newEntity
@@ -117,7 +117,7 @@ export const useGenericDataTable = ({
 			newEntities.unshift(newEntity);
 			return newEntities;
 		})
-	// eslint-disable-next-line react-hooks/exhaustive-deps	
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [newEntity])
 
 	const setIsFirst = (value) => {
@@ -132,6 +132,7 @@ export const useGenericDataTable = ({
 	const onLazyLoad = (event) => {
 		let _tableState = {
 			...tableState,
+
 			rows: event.rows,
 			page: event.page,
 			first: event.first
@@ -151,7 +152,7 @@ export const useGenericDataTable = ({
 	const onSort = (event) => {
 		let _tableState = {
 			...tableState,
-			multiSortMeta: returnSorted(event, tableState.multiSortMeta)
+			multiSortMeta: returnSorted(event, tableState.multiSortMeta || [])
 		}
 		setTableState(_tableState);
 	};
@@ -272,24 +273,24 @@ export const useGenericDataTable = ({
 					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
 			]);
 			let _entities = global.structuredClone(entities);
-			
+
 			if (editingRows[idToDelete]) {
 				let _editingRows = { ...editingRows};
 				delete _editingRows[idToDelete];
 				setEditingRows(_editingRows);
-				
+
 				const rowsInEdit = Object.keys(editingRows).length;
 				if (rowsInEdit === 0) {
 					setIsEnabled(true);
 				};
 			}
-			
+
 			setEntities(_entities);
 			let _tableState = {
 				...tableState,
 				rows: tableState.rows - 1
 			}
-			
+
 			setTableState(_tableState);
 			setTotalRecords(totalRecords - 1);
 			return null;
@@ -299,7 +300,7 @@ export const useGenericDataTable = ({
 	const onRowEditChange = (event) => {
 		setEditingRows(event.data);
 	};
- 
+
 	const resetTableState = () => {
 		let _tableState = {
 			...initialTableState,
@@ -345,17 +346,17 @@ export const useGenericDataTable = ({
 	};
 
 	return {
-		setSelectedColumnNames, 
-		defaultColumnNames, 
-		tableState, 
+		setSelectedColumnNames,
+		defaultColumnNames,
+		tableState,
 		tableStateConfirm,
-		onFilter, 
-		setColumnList, 
-		columnWidths, 
-		entities, 
-		dataTable, 
-		editingRows, 
-		onRowEditInit, 
+		onFilter,
+		setColumnList,
+		columnWidths,
+		entities,
+		dataTable,
+		editingRows,
+		onRowEditInit,
 		onRowEditCancel,
 		onRowEditSave,
 		onRowEditChange,

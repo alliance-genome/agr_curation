@@ -44,7 +44,7 @@ public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
 			} else {
 				tempMap.put("dbCount", 0);
 			}
-			if(indexedClasses.contains(clazz)) {
+			if(indexedClasses.contains(clazz) || clazz.getSimpleName().equals("Reference")) {
 				if(clazz.getSimpleName().equals("Reference")) {
 					SearchResponse<LiteratureReference> res = literatureReferenceDAO.searchAllCount();
 					tempMap.put("esCount", res.getTotalResults());

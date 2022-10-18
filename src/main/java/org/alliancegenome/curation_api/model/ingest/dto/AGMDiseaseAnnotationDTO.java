@@ -1,10 +1,14 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
+import java.util.List;
+
 import org.alliancegenome.curation_api.view.View;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -18,9 +22,9 @@ public class AGMDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 	@JsonProperty("inferred_allele")
 	private String inferredAllele;
 	
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("asserted_gene")
-	private String assertedGene;
+	@JsonView({View.FieldsAndLists.class})
+	@JsonProperty("asserted_genes")
+	private List<String> assertedGenes;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("asserted_allele")

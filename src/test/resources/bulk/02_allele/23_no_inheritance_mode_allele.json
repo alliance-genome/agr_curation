@@ -1,0 +1,20 @@
+[
+  {
+    "curie": "ALLELETEST:Allele0023",
+    "name": "TestAllele23",
+    "symbol": "ta23",
+    "taxon": "NCBITaxon:6239",
+    "internal": true,
+    "obsolete": true,
+    "created_by": "ALLELETEST:Person0001",
+    "updated_by": "ALLELETEST:Person0002",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-09T22:10:12+00:00",
+    "is_extinct": false,
+    "in_collection": "Million mutations project",
+    "sequencing_status": "sequenced",
+    "references": [
+      "PMID:25920550"
+    ]
+  }
+]

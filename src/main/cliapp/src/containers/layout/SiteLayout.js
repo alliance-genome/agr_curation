@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from 'react-query';
-import { useSessionStorage } from '../../service/useSessionStorage';
 import classNames from 'classnames';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition } from 'react-transition-group';
@@ -26,6 +25,7 @@ import '../../assets/demo/flags/flags.css';
 import '../../assets/demo/Demos.scss';
 import '../../assets/layout/layout.scss';
 import '../../App.scss';
+import { useGetUserSettings } from "../../service/useGetUserSettings";
 
 const initialThemeState = {
 	layoutMode: "static",
@@ -38,15 +38,13 @@ const initialThemeState = {
 
 export const SiteLayout = (props) => {
 
-		const [themeState, setThemeState] = useSessionStorage( "themeSettings", initialThemeState);
+		const { settings: themeState, mutate: setThemeState } = useGetUserSettings( "themeSettings", initialThemeState);
 		const [staticMenuInactive, setStaticMenuInactive] = useState(false);
 		const [overlayMenuActive, setOverlayMenuActive] = useState(false);
 		const [mobileMenuActive, setMobileMenuActive] = useState(false);
 		const [mobileTopbarMenuActive, setMobileTopbarMenuActive] = useState(false);
 
-		const [siteContext, setSiteContext] = useState({ "test": "test data" });
-
-		const [userInfo, setUserInfo] = useState(null);
+		const [siteContext, setSiteContext] = useState({});
 
 		const copyTooltipRef = useRef();
 		const location = useLocation();
@@ -83,15 +81,6 @@ export const SiteLayout = (props) => {
 			setThemeState(_themeState);
 		}
 
-		const setLayoutColorMode= (value) => {
-			let _themeState = {
-				...themeState,
-				layoutColorMode: value
-			};
-
-			setThemeState(_themeState);
-		}
-
 		useEffect(() => {
 			if(authState?.isAuthenticated){
 				setApiService(new ApiVersionService())
@@ -114,19 +103,9 @@ export const SiteLayout = (props) => {
 			}
 		);
 
-		useEffect(() => {
-				if (!authState || !authState.isAuthenticated) {
-						setUserInfo(null);
-				} else {
-						oktaAuth.getUser().then((info) => {
-								setUserInfo(info);
-						}).catch((err) => {
-								console.error(err);
-						});
-				}
-		}, [authState, oktaAuth, setUserInfo]);
-
-		const logout = async () => await oktaAuth.signOut();
+		const logout = async () => {
+			await oktaAuth.signOut();
+		}
 
 		useEffect(() => {
 				if (!authState || !authState.isAuthenticated) {
@@ -164,10 +143,6 @@ export const SiteLayout = (props) => {
 
 		const onLayoutModeChange = (mode) => {
 				setLayoutMode(mode)
-		}
-
-		const onColorModeChange = (mode) => {
-				setLayoutColorMode(mode)
 		}
 
 		const onWrapperClick = (event) => {
@@ -320,14 +295,14 @@ export const SiteLayout = (props) => {
 		}
 
 		const wrapperClass = classNames('layout-wrapper', {
-				'layout-overlay': themeState.layoutMode === 'overlay',
-				'layout-static': themeState.layoutMode === 'static',
-				'layout-static-sidebar-inactive': staticMenuInactive && themeState.layoutMode === 'static',
-				'layout-overlay-sidebar-active': overlayMenuActive && themeState.layoutMode === 'overlay',
+				'layout-overlay': themeState?.layoutMode === 'overlay',
+				'layout-static': themeState?.layoutMode === 'static',
+				'layout-static-sidebar-inactive': staticMenuInactive && themeState?.layoutMode === 'static',
+				'layout-overlay-sidebar-active': overlayMenuActive && themeState?.layoutMode === 'overlay',
 				'layout-mobile-sidebar-active': mobileMenuActive,
-				'p-input-filled': themeState.inputStyle === 'filled',
-				'p-ripple-disabled': themeState.ripple === false,
-				'layout-theme-light': themeState.layoutColorMode === 'light'
+				'p-input-filled': themeState?.inputStyle === 'filled',
+				'p-ripple-disabled': themeState?.ripple === false,
+				'layout-theme-light': themeState?.layoutColorMode === 'light'
 		});
 
 		return (
@@ -335,12 +310,12 @@ export const SiteLayout = (props) => {
 				<div className={wrapperClass} onClick={onWrapperClick}>
 						<Tooltip ref={copyTooltipRef} target=".block-action-copy" position="bottom" content="Copied to clipboard" event="focus" />
 
-						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={themeState.layoutColorMode}
+						<AppTopbar onToggleMenuClick={onToggleMenuClick} layoutColorMode={themeState?.layoutColorMode}
 								mobileTopbarMenuActive={mobileTopbarMenuActive} onMobileTopbarMenuClick={onMobileTopbarMenuClick} onMobileSubTopbarMenuClick={onMobileSubTopbarMenuClick}
-								authState={authState} logout={logout} userInfo={userInfo} />
+								authState={authState} logout={logout} />
 
 						<div className="layout-sidebar" onClick={onSidebarClick}>
-								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState.layoutColorMode} />
+								<AppMenu model={menu} onMenuItemClick={onMenuItemClick} layoutColorMode={themeState?.layoutColorMode} />
 						</div>
 
 						<div className="layout-main-container">
@@ -348,11 +323,11 @@ export const SiteLayout = (props) => {
 										{children}
 								</div>
 
-								<AppFooter layoutColorMode={themeState.layoutColorMode} />
+								<AppFooter layoutColorMode={themeState?.layoutColorMode} />
 						</div>
 
-						<AppConfig rippleEffect={themeState.ripple} onRippleEffect={onRipple} inputStyle={themeState.inputStyle} onInputStyleChange={onInputStyleChange}
-								layoutMode={themeState.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState.layoutColorMode} onColorModeChange={onColorModeChange} 
+						<AppConfig rippleEffect={themeState?.ripple} onRippleEffect={onRipple} inputStyle={themeState?.inputStyle} onInputStyleChange={onInputStyleChange}
+								layoutMode={themeState?.layoutMode} onLayoutModeChange={onLayoutModeChange} layoutColorMode={themeState?.layoutColorMode}
 								themeState={themeState} setThemeState={setThemeState}/>
 
 						<CSSTransition classNames="layout-mask" timeout={{ enter: 200, exit: 200 }} in={mobileMenuActive} unmountOnExit>

@@ -11,16 +11,15 @@ import { FilterComponent } from './FilterComponent'
 import { DataTableHeaderFooterTemplate } from "../DataTableHeaderFooterTemplate";
 
 
-import { filterColumns, orderColumns } from '../../utils/utils';
+import {filterColumns, orderColumns} from '../../utils/utils';
 import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
 	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled } = props;
+
 	const {
 		setSelectedColumnNames,
-		defaultColumnNames,
-		tableState,
 		tableStateConfirm,
 		onFilter,
 		setColumnList,
@@ -39,15 +38,16 @@ export const GenericDataTable = (props) => {
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		tableState,
+		defaultColumnNames,
 	} = useGenericDataTable(props);
-	
+
 	const toast_topright = useRef(null);
 	const [deleteDialog, setDeleteDialog] = useState(false);
-	const [errorDialog, setErrorDialog] = useState(false);	
+	const [errorDialog, setErrorDialog] = useState(false);
 	const [idToDelete, setIdToDelete] = useState(null);
 	const [entityToDelete, setEntityToDelete] = useState(null);
 	const [deletionErrorMessage, setDeletionErrorMessage] = useState(null);
-
 
 	const createMultiselectComponent = (tableState,defaultColumnNames,isEnabled) => {
 		return (<MultiSelect
@@ -115,7 +115,7 @@ export const GenericDataTable = (props) => {
 				} else {
 					return null;
 				}
-				
+
 			})
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -124,38 +124,38 @@ export const GenericDataTable = (props) => {
 	const rowEditorFilterNameHeader = (options) => {
 		return <div className="p-column-header-content"><span className="p-column-title">Filters</span></div>
 	}
-	
+
 	const showDeleteDialog = (props) => {
 		let _idToDelete = props.rowData ? props.rowData.id : props.id;
 		setIdToDelete(_idToDelete);
 		setEntityToDelete(props);
-		setDeleteDialog(true);	
+		setDeleteDialog(true);
 	}
-	
+
 	const deleteRow = async (idToDelete, entityToDelete) => {
 		setDeleteDialog(false);
 		let _deletionErrorMessage = await handleDeletion(idToDelete, entityToDelete);
 		setDeletionErrorMessage(_deletionErrorMessage);
-		if (_deletionErrorMessage !== null) { 
+		if (_deletionErrorMessage !== null) {
 			setErrorDialog(true);
 		}
 	}
-	
+
 	const deleteAction = (props) => {
 		return (
 			<Button icon="pi pi-trash" className="p-button-text"
 					onClick={() => showDeleteDialog(props)}/>
 		);
 	}
-	
+
 	const hideDeleteDialog = () => {
-		setDeleteDialog(false);	
+		setDeleteDialog(false);
 	};
-	
+
 	const hideErrorDialog = () => {
-		setErrorDialog(false);	
+		setErrorDialog(false);
 	};
-	
+
 	const deleteDialogFooter = () => {
 		return (
         	<React.Fragment>
@@ -164,7 +164,7 @@ export const GenericDataTable = (props) => {
         	</React.Fragment>
     	);
 	}
-	
+
 	const errorDialogFooter = () => {
 		return (
         	<React.Fragment>
@@ -172,7 +172,6 @@ export const GenericDataTable = (props) => {
             </React.Fragment>
     	);
 	}
-
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
@@ -198,7 +197,7 @@ export const GenericDataTable = (props) => {
 					}
 					{columnList}
 				</DataTable>
-				
+
 			 <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
                 <div className="confirmation-content">
                     <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />

@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import { InputText } from 'primereact/inputtext';
 
 export function FilterComponentInputText({ isEnabled, fields, nonNullFields, nullFields, filterName, currentFilters, onFilter, tokenOperator="AND" }) {
-		const [filterValue, setFilterValue] = useState(currentFilters[filterName] ? currentFilters[filterName][fields[0]].queryString : '');
+		const [filterValue, setFilterValue] =
+			useState(currentFilters && currentFilters[filterName] ? currentFilters[filterName][fields[0]].queryString : '');
 
 		useEffect(() => {
-				setFilterValue(currentFilters[filterName] ? currentFilters[filterName][fields[0]].queryString : '')
+				setFilterValue(currentFilters && currentFilters[filterName] ? currentFilters[filterName][fields[0]].queryString : '')
 		}, [filterValue, currentFilters, fields, filterName]);
 
 		return (
@@ -32,7 +33,7 @@ export function FilterComponentInputText({ isEnabled, fields, nonNullFields, nul
 										filter = null;
 								}
 
-								const filtersCopy = currentFilters;
+								const filtersCopy = currentFilters ? currentFilters : {};
 								if (filter === null) {
 										delete filtersCopy[filterName];
 								} else {

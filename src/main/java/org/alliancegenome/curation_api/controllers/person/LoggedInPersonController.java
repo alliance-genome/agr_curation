@@ -1,7 +1,5 @@
 package org.alliancegenome.curation_api.controllers.person;
 
-import java.util.HashMap;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -16,11 +14,6 @@ public class LoggedInPersonController implements LoggedInPersonInterface {
 
 	@Inject @AuthenticatedUser LoggedInPerson authenticatedPerson;
 	@Inject LoggedInPersonService loggedInPersonService;
-	
-	public void saveSettings(HashMap<String, Object> settings) {
-		if (settings == null) settings = new HashMap<>();
-		loggedInPersonService.saveSettings(settings);
-	}
 	
 	public ObjectResponse<LoggedInPerson> create(LoggedInPerson person) {
 		return loggedInPersonService.create(person);

@@ -12,6 +12,10 @@ import lombok.*;
 @Getter
 public class IngestDTO {
 	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("linkml_version")
+	private String linkMLVersion;
+	
 	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("agm_ingest_set")
 	private List<AffectedGenomicModelDTO> agmIngestSet;

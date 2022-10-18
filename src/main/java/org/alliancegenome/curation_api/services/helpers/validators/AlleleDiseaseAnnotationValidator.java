@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api.services.helpers.validators;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -8,6 +12,7 @@ import org.alliancegenome.curation_api.dao.*;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.*;
 
 @RequestScoped
@@ -60,8 +65,8 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		Gene inferredGene = validateInferredGene(uiEntity, dbEntity);
 		dbEntity.setInferredGene(inferredGene);
 		
-		Gene assertedGene = validateAssertedGene(uiEntity, dbEntity);
-		dbEntity.setAssertedGene(assertedGene);
+		List<Gene> assertedGenes = validateAssertedGenes(uiEntity, dbEntity);
+		dbEntity.setAssertedGenes(assertedGenes);
 
 		VocabularyTerm relation = validateDiseaseRelation(uiEntity, dbEntity);
 		dbEntity.setDiseaseRelation(relation);
@@ -114,22 +119,28 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 		return inferredGene;
 	}
 
-	private Gene validateAssertedGene(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
-		if (uiEntity.getAssertedGene() == null)
+	private List<Gene> validateAssertedGenes(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {
+		if (CollectionUtils.isEmpty(uiEntity.getAssertedGenes()))
 			return null;
 		
-		Gene assertedGene = geneDAO.find(uiEntity.getAssertedGene().getCurie());
-		if (assertedGene == null) {
-			addMessageResponse("assertedGene", ValidationConstants.INVALID_MESSAGE);
-			return null;
+		List<Gene> assertedGenes = new ArrayList<Gene>();
+		List<String> previousCuries = new ArrayList<String>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getAssertedGenes()))
+			previousCuries = dbEntity.getAssertedGenes().stream().map(Gene::getCurie).collect(Collectors.toList());
+		for (Gene gene : uiEntity.getAssertedGenes()) {
+			Gene assertedGene = geneDAO.find(gene.getCurie());
+			if (assertedGene == null) {
+				addMessageResponse("assertedGenes", ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
+			if (assertedGene.getObsolete() && !previousCuries.contains(assertedGene.getCurie())) {
+				addMessageResponse("assertedGenes", ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+			assertedGenes.add(assertedGene);
 		}
 		
-		if (assertedGene.getObsolete() && (dbEntity.getAssertedGene() == null || !assertedGene.getCurie().equals(dbEntity.getAssertedGene().getCurie()))) {
-			addMessageResponse("assertedGene", ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		
-		return assertedGene;
+		return assertedGenes;
 	}
 	
 	private VocabularyTerm validateDiseaseRelation(AlleleDiseaseAnnotation uiEntity, AlleleDiseaseAnnotation dbEntity) {

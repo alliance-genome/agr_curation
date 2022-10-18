@@ -22,7 +22,6 @@
         "conditions": [
           {
             "condition_class": "DATEST:ExpCondTerm0001",
-            "condition_statement": "Condition statement",
             "condition_id": "DATEST:ExpCondTerm0002",
             "condition_quantity": "Some amount",
             "condition_gene_ontology": "DATEST:GOTerm0001",
@@ -61,7 +60,9 @@
       "susceptibility"
     ],
     "inferred_gene": "DATEST:Gene0001",
-    "asserted_gene": "DATEST:Gene0001",
+    "asserted_genes": [
+      "DATEST:Gene0001"
+    ],
     "inferred_allele": "DATEST:Allele0001",
     "asserted_allele": "DATEST:Allele0001"
   }
