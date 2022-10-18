@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.controllers;
 
+import org.alliancegenome.curation_api.model.mati.Identifier;
 import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.services.mati.MaTIService;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
@@ -9,8 +10,6 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 @Path("/mati")
 @Tag(name = "Mati Test")
@@ -22,10 +21,8 @@ public class MatiTemporalController {
 	MaTIService maTIService;
 
 	@PUT
-	public Map<String,String> testMatiService(@HeaderParam("subdomain") String subdomain) throws IOException {
-		Map <String, String> result = new HashMap<>();
-		result.put("value", maTIService.mintIdentifier(subdomain));
-		return result;
+	public Identifier testMatiService(@HeaderParam("subdomain") String subdomain) throws IOException {
+		return  maTIService.mintIdentifier(subdomain);
 	}
 
 	@POST
