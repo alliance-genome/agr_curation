@@ -70,22 +70,6 @@ export const useGenericDataTable = ({
 
 	const { toast_topleft, toast_topright } = toasts;
 
-
-	useQuery([`${tableState.tableKeyName}Aggregations`, aggregationFields, tableState],
-		() => searchService.search(endpoint, 0, 0, null, {}, {}, aggregationFields), {
-		onSuccess: (data) => {
-		},
-		onError: (error) => {
-			toast_topleft.current.show([
-				{ life: 7000, severity: 'error', summary: 'Page error: ', detail: error.message, sticky: false }
-			]);
-		},
-		keepPreviousData: true,
-		refetchOnWindowFocus: false,
-		enabled: !!(tableState)
-	}
-	);
-
 	useQuery([tableState.tableKeyName, tableState],
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
 		onSuccess: (data) => {
