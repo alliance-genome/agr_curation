@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.bulkupload;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -598,5 +600,185 @@ public class AgmBulkUploadITCase {
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].curie", is("AGMTEST:Agm0020"));
+	}
+	
+	@Test
+	@Order(21)
+	public void agmBulkUploadUpdateNoName() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/21_update_no_name_agm.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0001")).
+			body("results[0]", not(hasKey("name")));
+	}
+	
+	@Test
+	@Order(22)
+	public void agmBulkUploadUpdateNoCreatedBy() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/22_update_no_created_by_agm.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0001")).
+			body("results[0]", not(hasKey("createdBy")));
+	}
+	
+	@Test
+	@Order(23)
+	public void agmBulkUploadUpdateNoUpdatedBy() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/23_update_no_updated_by_agm.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0001")).
+			body("results[0]", not(hasKey("updatedBy")));
+	}
+	
+	@Test
+	@Order(24)
+	public void agmBulkUploadUpdateNoDateCreated() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/24_update_no_date_created_agm.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0001")).
+			body("results[0]", not(hasKey("dateCreated")));
+	}
+	
+	@Test
+	@Order(25)
+	public void agmBulkUploadUpdateNoDateUpdated() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/25_update_no_date_updated_agm.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/agm/bulk/agms").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/agm/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("AGMTEST:Agm0001")).
+			body("results[0]", not(hasKey("dateUpdated")));
 	}
 }

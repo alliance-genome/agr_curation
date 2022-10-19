@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.bulkupload;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -648,5 +650,185 @@ public class GeneBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(23)
+	public void geneBulkUploadUpdateNoName() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/23_update_no_name_gene.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0001")).
+			body("results[0]", not(hasKey("name")));
+	}
+	
+	@Test
+	@Order(24)
+	public void geneBulkUploadUpdateNoCreatedBy() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/24_update_no_created_by_gene.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0001")).
+			body("results[0]", not(hasKey("createdBy")));
+	}
+	
+	@Test
+	@Order(25)
+	public void geneBulkUploadUpdateNoUpdatedBy() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/25_update_no_updated_by_gene.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0001")).
+			body("results[0]", not(hasKey("updatedBy")));
+	}
+	
+	@Test
+	@Order(26)
+	public void geneBulkUploadUpdateNoDateCreated() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/26_update_no_date_created_gene.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0001")).
+			body("results[0]", not(hasKey("dateCreated")));
+	}
+	
+	@Test
+	@Order(27)
+	public void geneBulkUploadUpdateNoDateUpdated() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/27_update_no_date_updated_gene.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/gene/bulk/genes").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0001")).
+			body("results[0]", not(hasKey("dateUpdated")));
 	}
 }
