@@ -91,7 +91,7 @@ export const useGenericDataTable = ({
 		if (
 			!tableState.filters
 			|| Object.keys(tableState.filters).length > 0
-			|| tableState.multiSortMeta.length > 0
+			|| (tableState.multiSortMeta && tableState.multiSortMeta.length > 0)
 			|| tableState.page > 0
 			|| !newEntity
 		) return;
