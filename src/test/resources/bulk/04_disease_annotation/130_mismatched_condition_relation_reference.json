@@ -1,6 +1,6 @@
 [
   {
-    "mod_entity_id": "DATEST:Annot0053",
+    "mod_entity_id": "DATEST:Annot0001",
     "internal": false,
     "obsolete": false,
     "subject": "DATEST:Gene0001",
@@ -16,7 +16,7 @@
     ],
     "condition_relations": [
       {
-        "single_reference": "PMID:25920554",
+        "single_reference": "PMID:12131",
         "handle": "test_handle",
         "condition_relation_type": "exacerbated_by",
         "internal": false,
@@ -47,6 +47,7 @@
       {
         "free_text": "Test note",
         "note_type": "disease_summary",
+        "internal": false,
         "obsolete": false,
         "references": [
           "PMID:25920554"

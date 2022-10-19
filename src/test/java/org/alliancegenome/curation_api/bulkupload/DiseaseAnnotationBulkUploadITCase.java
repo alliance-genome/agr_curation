@@ -123,6 +123,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].handle", is("test_handle")).
+			body("results[0].conditionRelations[0].singleReference.curie", is("PMID:25920554")).
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
 			body("results[0].conditionRelations[0].obsolete", is(false)).
@@ -194,6 +196,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].dateCreated".toString(), is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].handle", is("test_handle")).
+			body("results[0].conditionRelations[0].singleReference.curie", is("PMID:25920554")).
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
 			body("results[0].conditionRelations[0].obsolete", is(false)).
@@ -266,6 +270,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].createdBy.uniqueId", is("DATEST:Person0001")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].conditionRelations", hasSize(1)).
+			body("results[0].conditionRelations[0].handle", is("test_handle")).
+			body("results[0].conditionRelations[0].singleReference.curie", is("PMID:25920554")).
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
 			body("results[0].conditionRelations[0].obsolete", is(false)).
@@ -3166,6 +3172,123 @@ public class DiseaseAnnotationBulkUploadITCase {
 	@Order(125)
 	public void diseaseAnnotationBulkUploadEmptyPredicate() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/125_empty_predicate.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(126)
+	public void diseaseAnnotationBulkUploadNoConditionRelationHandle() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/126_no_condition_relation_handle.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0126"));
+	}
+	
+	@Test
+	@Order(127)
+	public void diseaseAnnotationBulkUploadNoConditionRelationReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/127_no_condition_relation_reference.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(128)
+	public void diseaseAnnotationBulkUploadNoConditionRelationHandleOrReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/128_no_condition_relation_handle_or_reference.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0128"));
+	}
+	
+	@Test
+	@Order(129)
+	public void diseaseAnnotationBulkUploadEmptyConditionRelationReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/129_empty_condition_relation_reference.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(130)
+	public void diseaseAnnotationBulkUploadMismatchedConditionRelationReference() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/130_mismatched_condition_relation_reference.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
