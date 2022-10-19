@@ -79,7 +79,8 @@ export function FilterMultiSelectComponent({ isEnabled, field, useKeywordFields 
 							filter[field] = {
 									useKeywordFields: useKeywordFields,
 									queryString: queryString,
-									tokenOperator: tokenOperator
+									tokenOperator: tokenOperator,
+									queryType: "matchQuery"
 							};
 					} else {
 							filter = null;
