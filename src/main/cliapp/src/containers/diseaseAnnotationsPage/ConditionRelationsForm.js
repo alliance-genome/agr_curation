@@ -141,8 +141,8 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 					<Column editor={internalEditor} field="internal" header="Internal" headerClassName='surface-0'/>
 				</DataTable>
 			}
-			<div className={`w-4 ${showConditionRelations ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} />
+			<div className={`${showConditionRelations ? "pt-3" : ""} p-field p-col`}>
+				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} style={{width:"50%"}} />
 			</div>
 		</div>
 	);

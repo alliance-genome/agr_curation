@@ -15,6 +15,7 @@ import {SubjectAutocompleteTemplate} from '../../components/Autocomplete/Subject
 import {EvidenceAutocompleteTemplate} from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
 import {RelatedNotesForm} from "./RelatedNotesForm";
 import {ConditionRelationsForm} from "./ConditionRelationsForm";
+import {ConditionRelationHandleFormDropdown} from "../../components/ConditionRelationHandleFormSelector";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -41,6 +42,7 @@ export const NewAnnotationForm = ({
 		showConditionRelations,
 	} = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
+	const [isExperimentsEnabled, setIsExperimentsEnabled] = useState(false);
 	const validationService = new ValidationService();
 
 	const validate = async (entities, endpoint) => {
@@ -63,6 +65,7 @@ export const NewAnnotationForm = ({
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: "RESET" });
 		setIsEnabled(false);
+		setIsExperimentsEnabled(false);
 	};
 
 	const validateTable = async (endpoint, errorType, row) => {
@@ -120,6 +123,7 @@ export const NewAnnotationForm = ({
 		evidenceCodesRef.current.inputRef.current.value = "";
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
+		setIsExperimentsEnabled(false);
 	}
 
 	const handleSubmitAndAdd = (event) => {
@@ -133,6 +137,19 @@ export const NewAnnotationForm = ({
 			} else {
 				setIsEnabled(false);
 			}
+		}
+		newAnnotationDispatch({
+			type: "EDIT",
+			field: event.target.name,
+			value: event.target.value
+		});
+	}
+
+	const onSingleReferenceChange= (event) => {
+		if (typeof event.target.value === "object") {
+			setIsExperimentsEnabled(true);
+		} else {
+			setIsExperimentsEnabled(false);
 		}
 		newAnnotationDispatch({
 			type: "EDIT",
@@ -155,6 +172,14 @@ export const NewAnnotationForm = ({
 	const onDropdownFieldChange = (event) => {
 		newAnnotationDispatch({
 			type: "EDIT",
+			field: event.target.name,
+			value: event.target.value
+		});
+	};
+
+	const onDropdownExperimentsFieldChange = (event) =>{
+		newAnnotationDispatch({
+			type: "EDIT_EXPERIMENT",
 			field: event.target.name,
 			value: event.target.value
 		});
@@ -272,7 +297,7 @@ export const NewAnnotationForm = ({
 								fieldName='singleReference'
 								isReference={true}
 								value={newAnnotation.singleReference}
-								onValueChangeHandler={onObjectChange}
+								onValueChangeHandler={onSingleReferenceChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
@@ -344,7 +369,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 					</Splitter>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
-						<SplitterPanel style={{paddingRight: '10px'}}>
+						<SplitterPanel style={{paddingRight: '10px'}} size={70}>
 							<ConditionRelationsForm
 								newAnnotationDispatch={newAnnotationDispatch}
 								conditionRelations={newAnnotation.conditionRelations}
@@ -352,6 +377,19 @@ export const NewAnnotationForm = ({
 								errorMessages={exConErrorMessages}
 								searchService={searchService}
 							/>
+						</SplitterPanel>
+						<SplitterPanel style={{paddingRight: '10px', paddingTop: '6vh'}} size={30}>
+							<label htmlFor="experiments">Experiments</label>
+							<ConditionRelationHandleFormDropdown
+								name="experiments"
+								editorChange={onDropdownExperimentsFieldChange}
+								referenceCurie={newAnnotation.singleReference.curie}
+								value={newAnnotation.conditionRelations[0]?.handle}
+								showClear={false}
+								placeholderText={newAnnotation.conditionRelations[0]?.handle}
+								isEnabled={isExperimentsEnabled}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations[0]?.handle"}/>
 						</SplitterPanel>
 					</Splitter>
 				</form>
