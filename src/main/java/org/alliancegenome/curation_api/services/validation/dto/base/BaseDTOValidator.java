@@ -110,8 +110,11 @@ public class BaseDTOValidator {
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
 		
-		if (StringUtils.isNotBlank(dto.getName()))
+		if (StringUtils.isNotBlank(dto.getName())) {
 			entity.setName(dto.getName());
+		} else {
+			entity.setName(null);
+		}
 	
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
 			List<Synonym> synonyms = new ArrayList<>();
@@ -123,6 +126,8 @@ public class BaseDTOValidator {
 					synonyms.add(synResponse.getEntity());
 				}
 			}
+		} else {
+			entity.setSynonyms(null);
 		}
 		
 		geResponse.setEntity(entity);

@@ -76,6 +76,8 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			if (inferredGene == null)
 				adaResponse.addErrorMessage("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			annotation.setInferredGene(inferredGene);
+		} else {
+			annotation.setInferredGene(null);
 		}
 		
 		if (CollectionUtils.isNotEmpty(dto.getAssertedGenes())) {
@@ -89,6 +91,8 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				assertedGenes.add(assertedGene);
 			}
 			annotation.setAssertedGenes(assertedGenes);
+		} else {
+			annotation.setAssertedGenes(null);
 		}
 		
 		if (adaResponse.hasErrors())
