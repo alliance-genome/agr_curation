@@ -5,10 +5,11 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import javax.enterprise.context.RequestScoped;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -30,6 +31,7 @@ public class BaseDTOValidator {
 
 	@Inject PersonService personService;
 	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject SynonymDAO synonymDAO;
 	
 	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO (E entity, D dto) {
 		
@@ -141,7 +143,7 @@ public class BaseDTOValidator {
 			synonym.setName(dto.getName());
 		}
 		
-		synonymResponse.setEntity(synonym);
+		synonymResponse.setEntity(synonymDAO.persist(synonym));
 		
 		return synonymResponse;
 	}
