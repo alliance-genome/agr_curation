@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.crud.controllers;
 
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -555,6 +557,172 @@ public class AlleleITCase {
 
 	@Test
 	@Order(19)
+	public void editAlleleWithNullInheritanceMode() {
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setSequencingStatus(sequencingStatus);
+		allele.setReferences(references);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", hasKey("inheritanceMode"));
+		
+		allele.setInheritanceMode(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("inheritanceMode")));
+	}
+
+	@Test
+	@Order(20)
+	public void editAlleleWithNullInCollection() {
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setSequencingStatus(sequencingStatus);
+		allele.setReferences(references);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", hasKey("inCollection"));
+		
+		allele.setInCollection(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("inCollection")));
+	}
+
+	@Test
+	@Order(21)
+	public void editAlleleWithNullSequencingStatus() {
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setSequencingStatus(sequencingStatus);
+		allele.setReferences(references);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", hasKey("sequencingStatus"));
+		
+		allele.setSequencingStatus(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("sequencingStatus")));
+	}
+
+	@Test
+	@Order(22)
+	public void editAlleleWithNullIsExtinct() {
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setSequencingStatus(sequencingStatus);
+		allele.setReferences(references);
+		allele.setIsExtinct(true);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", hasKey("isExtinct"));
+		
+		allele.setIsExtinct(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("isExtinct")));
+	}
+
+	@Test
+	@Order(23)
+	public void editAlleleWithNullReferences() {
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setSequencingStatus(sequencingStatus);
+		allele.setReferences(references);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", hasKey("references"));
+		
+		allele.setReferences(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("references")));
+	}
+
+	@Test
+	@Order(24)
 	public void deleteAllele() {
 
 		RestAssured.given().

@@ -48,8 +48,8 @@ public class NoteDTOValidator extends BaseDTOValidator {
 			note.setNoteType(noteType);
 		}
 		
-		List<Reference> noteReferences = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
+			List<Reference> noteReferences = new ArrayList<>();
 			for (String publicationId : dto.getReferences()) {
 				Reference reference = referenceDAO.find(publicationId);
 				if (reference == null || reference.getObsolete()) {
@@ -62,8 +62,10 @@ public class NoteDTOValidator extends BaseDTOValidator {
 				}
 				noteReferences.add(reference);
 			}
+			note.setReferences(noteReferences);
+		} else {
+			note.setReferences(null);
 		}
-		note.setReferences(noteReferences);
 		
 		noteResponse.setEntity(note);
 		

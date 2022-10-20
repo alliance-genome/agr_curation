@@ -37,14 +37,15 @@ public class BaseDTOValidator {
 		
 		ObjectResponse<E> response = new ObjectResponse<E>();
 		
-		if (StringUtils.isNotBlank(dto.getCreatedBy())) {
-			Person createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
-			entity.setCreatedBy(createdBy);
-		}
-		if (StringUtils.isNotBlank(dto.getUpdatedBy())) {
-			Person updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
-			entity.setUpdatedBy(updatedBy);
-		}
+		Person createdBy = null;
+		if (StringUtils.isNotBlank(dto.getCreatedBy()))
+			createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+		entity.setCreatedBy(createdBy);
+		
+		Person updatedBy = null;
+		if (StringUtils.isNotBlank(dto.getUpdatedBy()))
+			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+		entity.setUpdatedBy(updatedBy);
 		
 		Boolean internal = false;
 		if (dto.getInternal() != null)
@@ -56,25 +57,25 @@ public class BaseDTOValidator {
 			obsolete = dto.getObsolete();
 		entity.setObsolete(obsolete);
 
+		OffsetDateTime dateUpdated = null;
 		if (StringUtils.isNotBlank(dto.getDateUpdated())) {
-			OffsetDateTime dateUpdated;
 			try {
 				dateUpdated = OffsetDateTime.parse(dto.getDateUpdated());
-				entity.setDateUpdated(dateUpdated);
 			} catch (DateTimeParseException e) {
 				response.addErrorMessage("dateUpdated", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
+		entity.setDateUpdated(dateUpdated);
 
+		OffsetDateTime creationDate = null;
 		if (StringUtils.isNotBlank(dto.getDateCreated())) {
-			OffsetDateTime creationDate;
 			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());
-				entity.setDateCreated(creationDate);
+				creationDate = OffsetDateTime.parse(dto.getDateCreated());		
 			} catch (DateTimeParseException e) {
 				response.addErrorMessage("dateCreated", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
+		entity.setDateCreated(creationDate);
 	
 		response.setEntity(entity);
 		
@@ -112,8 +113,11 @@ public class BaseDTOValidator {
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
 		
-		if (StringUtils.isNotBlank(dto.getName()))
+		if (StringUtils.isNotBlank(dto.getName())) {
 			entity.setName(dto.getName());
+		} else {
+			entity.setName(null);
+		}
 	
 		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
 			List<Synonym> synonyms = new ArrayList<>();
@@ -125,6 +129,8 @@ public class BaseDTOValidator {
 					synonyms.add(synResponse.getEntity());
 				}
 			}
+		} else {
+			entity.setSynonyms(null);
 		}
 		
 		geResponse.setEntity(entity);

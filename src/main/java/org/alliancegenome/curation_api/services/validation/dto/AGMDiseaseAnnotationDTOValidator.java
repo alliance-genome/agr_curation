@@ -81,6 +81,8 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			if (inferredGene == null)
 				adaResponse.addErrorMessage("inferredGene", ValidationConstants.INVALID_MESSAGE);
 			annotation.setInferredGene(inferredGene);
+		} else {
+			annotation.setInferredGene(null);
 		}
 		
 		if (CollectionUtils.isNotEmpty(dto.getAssertedGenes())) {
@@ -94,6 +96,8 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				assertedGenes.add(assertedGene);
 			}
 			annotation.setAssertedGenes(assertedGenes);
+		} else {
+			annotation.setAssertedGenes(null);
 		}
 		
 		if (StringUtils.isNotBlank(dto.getInferredAllele())) {
@@ -101,6 +105,8 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			if (inferredAllele == null)
 				adaResponse.addErrorMessage("inferredAllele", ValidationConstants.INVALID_MESSAGE);
 			annotation.setInferredAllele(inferredAllele);
+		} else {
+			annotation.setInferredAllele(null);
 		}
 		
 		if (StringUtils.isNotBlank(dto.getAssertedAllele())) {
@@ -108,6 +114,8 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			if (assertedAllele == null)
 				adaResponse.addErrorMessage("assertedAllele", ValidationConstants.INVALID_MESSAGE);
 			annotation.setAssertedAllele(assertedAllele);
+		} else {
+			annotation.setAssertedAllele(null);
 		}
 		
 		if (adaResponse.hasErrors())
