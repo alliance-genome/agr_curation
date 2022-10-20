@@ -45,6 +45,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 				addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
+			referenceDAO.persist(dbEntity);
 		}
 		
 		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);		
