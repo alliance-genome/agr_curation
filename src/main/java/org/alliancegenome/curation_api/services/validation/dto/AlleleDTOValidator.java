@@ -53,14 +53,9 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		
 		allele = geResponse.getEntity();
 		
-		if (StringUtils.isBlank(dto.getName()))
-			alleleResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
-		allele.setName(dto.getName());
-		
-		String symbol = null;
-		if (StringUtils.isNotBlank(dto.getSymbol())) 
-			symbol = dto.getSymbol();
-		allele.setSymbol(symbol);
+		if (StringUtils.isBlank(dto.getSymbol()))
+			alleleResponse.addErrorMessage("symbol", ValidationConstants.REQUIRED_MESSAGE);
+		allele.setSymbol(dto.getSymbol());
 				
 		VocabularyTerm inheritenceMode = null;
 		if (StringUtils.isNotBlank(dto.getInheritanceMode())) {

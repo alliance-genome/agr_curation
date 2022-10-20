@@ -39,7 +39,7 @@ public class GeneValidator extends GenomicEntityValidator {
 		
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		String name = validateName(uiEntity);
+		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
 		dbEntity.setName(name);
 		
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);

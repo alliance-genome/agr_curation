@@ -139,7 +139,9 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0));
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0003"));
 	}
 	
 	@Test
@@ -165,9 +167,7 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0004"));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -193,10 +193,7 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). 
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0004")); // Entry not loaded but existing not deleted
-																					// as different taxon ID
+			body("totalResults", is(0)); // Note, if alleles loaded this failure won't delete them as taxon ID is different
 	}
 	
 	@Test
@@ -472,9 +469,7 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0015"));
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -528,7 +523,9 @@ public class AlleleBulkUploadITCase {
 			post("/api/allele/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0));
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0017"));
 	}
 	
 	@Test
@@ -913,7 +910,7 @@ public class AlleleBulkUploadITCase {
 	
 	@Test
 	@Order(32)
-	public void alleleBulkUploadUpdateNoSymbol() throws Exception {
+	public void alleleBulkUploadUpdateNoName() throws Exception {
 		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
 	
 		RestAssured.given().
@@ -924,7 +921,7 @@ public class AlleleBulkUploadITCase {
 			then().
 			statusCode(200);
 		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/32_update_no_symbol_allele.json"));
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/32_update_no_name_allele.json"));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -944,7 +941,7 @@ public class AlleleBulkUploadITCase {
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].curie", is("ALLELETEST:Allele0001")).
-			body("results[0]", not(hasKey("symbol")));
+			body("results[0]", not(hasKey("name")));
 	}
 	
 	@Test
