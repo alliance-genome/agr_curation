@@ -127,7 +127,7 @@ public class ReferenceSynchronisationHelper {
 		}
 		if (CollectionUtils.isNotEmpty(xrefs))
 			ref.setCrossReferences(xrefs);
-		;
+		
 		if (!ref.getCurie().equals(originalCurie) && originalCurie != null) {
 			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
 			referenceDAO.remove(originalCurie);
