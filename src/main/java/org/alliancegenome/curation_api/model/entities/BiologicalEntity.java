@@ -48,7 +48,7 @@ import lombok.ToString;
 })
 public class BiologicalEntity extends CurieAuditedObject {
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})

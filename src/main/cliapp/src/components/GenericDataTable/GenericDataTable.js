@@ -16,7 +16,7 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled } = props;
+	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled, dataKey = 'id' } = props;
 
 	const {
 		setSelectedColumnNames,
@@ -126,7 +126,7 @@ export const GenericDataTable = (props) => {
 	}
 
 	const showDeleteDialog = (props) => {
-		let _idToDelete = props.rowData ? props.rowData.id : props.id;
+		let _idToDelete = props.rowData ? props.rowData[dataKey] : props[dataKey];
 		setIdToDelete(_idToDelete);
 		setEntityToDelete(props);
 		setDeleteDialog(true);
@@ -158,24 +158,24 @@ export const GenericDataTable = (props) => {
 
 	const deleteDialogFooter = () => {
 		return (
-        	<React.Fragment>
-            	<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
-            	<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete)} />
-        	</React.Fragment>
-    	);
+					<React.Fragment>
+							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
+							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete)} />
+					</React.Fragment>
+			);
 	}
 
 	const errorDialogFooter = () => {
 		return (
-        	<React.Fragment>
-            	<Button label="OK" icon="pi pi-times" className="p-button-text" onClick={hideErrorDialog} />
-            </React.Fragment>
-    	);
+					<React.Fragment>
+							<Button label="OK" icon="pi pi-times" className="p-button-text" onClick={hideErrorDialog} />
+						</React.Fragment>
+			);
 	}
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
-				<DataTable dataKey='id' value={entities} header={header} ref={dataTable}
+				<DataTable dataKey={dataKey} value={entities} header={header} ref={dataTable}
 					filterDisplay="row" scrollHeight="62vh" scrollable= {true} tableClassName='p-datatable-md'
 					editMode= "row" onRowEditInit= {onRowEditInit} onRowEditCancel= {onRowEditCancel}
 					onRowEditSave= {onRowEditSave} editingRows={editingRows} onRowEditChange={onRowEditChange}
@@ -199,21 +199,21 @@ export const GenericDataTable = (props) => {
 				</DataTable>
 
 			 <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
-                <div className="confirmation-content">
-                    <i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-                    {<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
-                </div>
-            </Dialog>
+								<div className="confirmation-content">
+										<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+										{<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
+								</div>
+						</Dialog>
 			<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
-                <div className="error-message-dialog">
-                    <i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
-                    {<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
-                </div>
+								<div className="error-message-dialog">
+										<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+										{<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
+								</div>
 				<hr/>
 				<div className="error-message-detail">
 					{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
 				</div>
-            </Dialog>
+						</Dialog>
 			</div>
 	)
 }
