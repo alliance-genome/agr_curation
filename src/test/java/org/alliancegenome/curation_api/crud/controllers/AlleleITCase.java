@@ -723,6 +723,39 @@ public class AlleleITCase {
 
 	@Test
 	@Order(24)
+	public void editAlleleWithNullName() {
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setSequencingStatus(sequencingStatus);
+		allele.setReferences(references);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", hasKey("name"));
+		
+		allele.setName(null);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("name")));
+	}
+
+	@Test
+	@Order(25)
 	public void deleteAllele() {
 
 		RestAssured.given().

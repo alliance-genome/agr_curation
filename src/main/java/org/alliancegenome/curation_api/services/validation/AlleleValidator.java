@@ -73,7 +73,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		String symbol = validateSymbol(uiEntity);
 		dbEntity.setSymbol(symbol);
 		
-		String name = validateName(uiEntity);
+		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
 		dbEntity.setName(name);
 
 		List<String> previousReferenceCuries = new ArrayList<String>();

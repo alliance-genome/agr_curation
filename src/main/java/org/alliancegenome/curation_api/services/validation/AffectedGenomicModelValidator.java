@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
@@ -34,7 +35,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		String name = validateName(uiEntity);
+		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
 		dbEntity.setName(name);
 		
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);

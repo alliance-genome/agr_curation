@@ -44,15 +44,6 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 		return taxon.getEntity();
 	}
 
-	public String validateName(GenomicEntity uiEntity) {
-		String name = uiEntity.getName();
-		if (StringUtils.isBlank(name)) {
-			addMessageResponse("name", ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		return name;
-	}
-
 	public List<Synonym> validateSynonyms(GenomicEntity uiEntity, GenomicEntity dbEntity) {
 		String field = "synonyms";
 
