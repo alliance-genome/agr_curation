@@ -51,12 +51,16 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		List<Reference> noteReferences = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
 			for (String publicationId : dto.getReferences()) {
-				Reference reference = referenceService.retrieveFromLiteratureService(publicationId);
-				if (reference == null) {
-					noteResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
-					break;
+				Reference reference = referenceDAO.find(publicationId);
+				if (reference == null || reference.getObsolete()) {
+					reference = referenceService.retrieveFromLiteratureService(publicationId);
+					if (reference == null) {
+						noteResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
+						break;
+					}
+					reference = referenceDAO.persist(reference);
 				}
-				noteReferences.add(referenceDAO.persist(reference));
+				noteReferences.add(reference);
 			}
 		}
 		note.setReferences(noteReferences);
