@@ -58,7 +58,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 						noteResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
 						break;
 					}
-					referenceDAO.persist(reference);
+					reference = referenceDAO.persist(reference);
 				}
 				noteReferences.add(reference);
 			}

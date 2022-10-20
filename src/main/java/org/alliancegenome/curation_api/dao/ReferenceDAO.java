@@ -19,6 +19,7 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		updateReferenceForeignKey("conditionrelation", "singlereference_curie", originalCurie, newCurie);
 		updateReferenceForeignKey("note_reference", "references_curie", originalCurie, newCurie);
 		updateReferenceForeignKey("paperhandle", "reference_curie", originalCurie, newCurie);
+		updateReferenceForeignKey("allele_reference", "references_curie", originalCurie, newCurie);
 		deleteReferenceForeignKey("reference_crossreference", "reference_curie", originalCurie);
 	}
 

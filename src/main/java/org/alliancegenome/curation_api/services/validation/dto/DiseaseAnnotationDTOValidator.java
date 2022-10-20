@@ -74,12 +74,15 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			Reference reference = referenceDAO.find(dto.getSingleReference());
 			if (reference == null || reference.getObsolete()) {
 				reference = referenceService.retrieveFromLiteratureService(dto.getSingleReference());
-				if (reference == null)
+				if (reference == null) {
 					daResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
+				} else {
+					reference = referenceDAO.persist(reference);
+				}
 			}
 			annotation.setSingleReference(reference);
-		}
-		
+		}	
+				
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
 			daResponse.addErrorMessage("evidenceCodes", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
