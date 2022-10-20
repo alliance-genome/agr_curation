@@ -101,6 +101,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 						alleleResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
 						break;
 					}
+					reference = referenceDAO.persist(reference);
 				}
 				references.add(reference);
 			}
