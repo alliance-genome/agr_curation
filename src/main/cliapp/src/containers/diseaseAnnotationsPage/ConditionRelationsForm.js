@@ -73,7 +73,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 			 <>
 				 <AutocompleteFormEditor
 					  value={props.props.value[props.rowIndex].conditions}
-					  autocompleteFields={["conditionSummary"]}
+					  autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
 					  rowProps={props}
 					  searchService={searchService}
 					  endpoint='experimental-condition'
