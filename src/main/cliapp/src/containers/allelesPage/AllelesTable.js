@@ -139,7 +139,7 @@ export const AllelesTable = () => {
 	};
 	
 	const referencesTemplate = (rowData) => {
-		if (rowData && rowData.references) {
+		if (rowData && rowData.references && rowData.references.length > 0) {
 			const refStrings = getRefStrings(rowData.references);
 			const listTemplate = (item) => {
 				return (
