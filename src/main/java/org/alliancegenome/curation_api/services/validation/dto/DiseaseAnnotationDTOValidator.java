@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
@@ -45,6 +46,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 	@Inject GeneDAO geneDAO;
 	@Inject BiologicalEntityDAO biologicalEntityDAO;
 	@Inject NoteDAO noteDAO;
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
 	@Inject NoteDTOValidator noteDtoValidator;
@@ -183,6 +185,9 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		}	
 		annotation.setGeneticSex(geneticSex);
 		
+		if (CollectionUtils.isNotEmpty(annotation.getRelatedNotes())) {
+			annotation.getRelatedNotes().forEach(note -> {diseaseAnnotationDAO.deleteAttachedNote(note.getId());});
+		}	
 		if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
 			List<Note> notes = new ArrayList<>();
 			for (NoteDTO noteDTO : dto.getRelatedNotes()) {
