@@ -1,5 +1,8 @@
 package org.alliancegenome.curation_api.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -7,6 +10,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.helpers.references.ReferenceSynchronisationHelper;
 
@@ -32,8 +36,33 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 		refSyncHelper.synchroniseReferences();
 	}
 
-	public Reference retrieveFromLiteratureService(String curie) {
-		return refSyncHelper.retrieveFromLiteratureService(curie);
+	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
+		Reference reference = null;
+		
+		if (curieOrXref.startsWith("AGRKB:")) {
+			reference = referenceDAO.find(curieOrXref);
+		} else {
+			SearchResponse<Reference> response = referenceDAO.findByField("crossReferences.curie", curieOrXref);
+			List<Reference> nonObsoleteRefs = new ArrayList<>();
+			if (response != null && response.getReturnedRecords() > 0) {
+				response.getResults().forEach(ref -> {
+					if (!ref.getObsolete())
+						nonObsoleteRefs.add(ref);
+				});
+			}
+			if (nonObsoleteRefs.size() == 1)
+				reference = nonObsoleteRefs.get(0);
+		}
+		
+		if (reference != null && !reference.getObsolete())
+			return reference;
+		
+		reference = refSyncHelper.retrieveFromLiteratureService(curieOrXref);
+		
+		if (reference == null)
+			return null;
+		
+		return referenceDAO.persist(reference);
 	}
 	
 }

@@ -50,7 +50,7 @@ public class ConditionRelationITCase {
 
 	private void createRequiredObjects() {
 
-		testReference = createReference("PMID:11213376");
+		testReference = createReference("AGRKB:000000004");
 		conditionRelationTypeVocabulary = createVocabulary("Condition relation type vocabulary");
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		experimentalCondition = createExperimentalCondition();

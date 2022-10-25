@@ -112,6 +112,7 @@ public class ReferenceSynchronisationHelper {
 			ref = new Reference();
 			ref.setCurie(litRef.getCurie());
 		}
+		ref.setObsolete(false);
 		
 		List<CrossReference> xrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {

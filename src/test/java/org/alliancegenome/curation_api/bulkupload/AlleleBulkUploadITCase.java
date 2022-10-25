@@ -1,17 +1,20 @@
 package org.alliancegenome.curation_api.bulkupload;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -23,6 +26,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -35,7 +39,8 @@ import io.restassured.config.RestAssuredConfig;
 @Order(2)
 public class AlleleBulkUploadITCase {
 	
-	private String requiredReference = "PMID:25920550";
+	private String requiredReference = "AGRKB:000000001";
+	private String requiredReferenceXref = "PMID:25920550";
 	
 	@BeforeEach
 	public void init() {
@@ -83,7 +88,7 @@ public class AlleleBulkUploadITCase {
 			body("results[0].sequencingStatus.name", is("sequenced")).
 			body("results[0].isExtinct", is(false)).
 			body("results[0].references", hasSize(1)).
-			body("results[0].references[0].curie", is("PMID:25920550")).
+			body("results[0].references[0].curie", is(requiredReference)).
 			body("results[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("results[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
@@ -1274,8 +1279,22 @@ public class AlleleBulkUploadITCase {
 	
 	private void loadReference() throws Exception {
 			
+		CrossReference xref = new CrossReference();
+		xref.setCurie(requiredReferenceXref);
+		
+		ObjectResponse<CrossReference> response = 
+			RestAssured.given().
+				contentType("application/json").
+				body(xref).
+				when().
+				put("/api/cross-reference").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefCrossReference());
+		
 		Reference reference = new Reference();
 		reference.setCurie(requiredReference);
+		reference.setCrossReferences(List.of(response.getEntity()));
 		reference.setObsolete(false);
 		
 		RestAssured.given().
@@ -1285,5 +1304,9 @@ public class AlleleBulkUploadITCase {
 			put("/api/reference").
 			then().
 			statusCode(200);
+	}
+	
+	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
+		return new TypeRef<ObjectResponse <CrossReference>>() { };
 	}
 }

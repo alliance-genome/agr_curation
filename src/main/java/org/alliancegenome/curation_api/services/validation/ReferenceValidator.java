@@ -37,15 +37,10 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 			throw new ApiErrorException(response);
 		}
 		
-		Reference dbEntity = referenceDAO.find(uiEntity.getCurie());
-		
+		Reference dbEntity = referenceService.retrieveFromDbOrLiteratureService(uiEntity.getCurie());
 		if (dbEntity == null) {
-			dbEntity = referenceService.retrieveFromLiteratureService(uiEntity.getCurie());
-			if (dbEntity == null) {
-				addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
-				return null;
-			}
-			referenceDAO.persist(dbEntity);
+			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
+			return null;
 		}
 		
 		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);		

@@ -92,12 +92,9 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	
     	Reference reference = null;
     	if (StringUtils.isNotBlank(dto.getSingleReference())) {
-    		reference = referenceDAO.find(dto.getSingleReference());
-			if (reference == null || reference.getObsolete()) {
-				reference = referenceService.retrieveFromLiteratureService(dto.getSingleReference());
-				if (reference == null)
-					crResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
-			}
+    		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getSingleReference());
+			if (reference == null)
+				crResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
     	}
 		relation.setSingleReference(reference);
     	
