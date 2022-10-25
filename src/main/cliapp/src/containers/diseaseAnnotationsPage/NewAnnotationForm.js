@@ -184,7 +184,21 @@ export const NewAnnotationForm = ({
 			value: event.target.value
 		});
 	}
+	const isExperimentEnabled = () => {
+		return (
+			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
+			typeof newAnnotation.singleReference === "object"
+			&& newAnnotation.singleReference.curie !== ""
+			&& !showConditionRelations
+		)
+	}
 
+	const isConditionRelationButtonEnabled = () => {
+		return (
+			newAnnotation.conditionRelations[0]
+			&& newAnnotation.conditionRelations[0].handle
+		)
+	}
 	const dialogFooter = (
 		<>
 			<div className="p-fluid p-formgrid p-grid">
@@ -368,10 +382,7 @@ export const NewAnnotationForm = ({
 								showConditionRelations={showConditionRelations}
 								errorMessages={exConErrorMessages}
 								searchService={searchService}
-								buttonIsDisabled={(
-									newAnnotation.conditionRelations[0]
-									&& newAnnotation.conditionRelations[0].handle
-								)}
+								buttonIsDisabled={isConditionRelationButtonEnabled()}
 							/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px', paddingTop: '6vh'}} size={30}>
@@ -384,14 +395,7 @@ export const NewAnnotationForm = ({
 								value={newAnnotation.conditionRelations[0]?.handle}
 								showClear={false}
 								placeholderText={newAnnotation.conditionRelations[0]?.handle}
-								isEnabled={
-									(
-										//only enabled if a reference is selected from suggestions and condition relation table isn't visible
-										typeof newAnnotation.singleReference === "object"
-										&& newAnnotation.singleReference.curie !== ""
-										&& !showConditionRelations
-									)
-								}
+								isEnabled={isExperimentEnabled()}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations[0]?.handle"}/>
 						</SplitterPanel>
