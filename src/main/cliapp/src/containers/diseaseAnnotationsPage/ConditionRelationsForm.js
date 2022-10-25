@@ -11,7 +11,7 @@ import { FormErrorMessageComponent } from "../../components/FormErrorMessageComp
 import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAutocompleteTemplate";
 import {AutocompleteFormEditor} from "../../components/Autocomplete/AutocompleteFormEditor";
 
-export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService }) => {
+export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
 	const [editingRows, setEditingRows] = useState({});
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
@@ -29,6 +29,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		newAnnotationDispatch({type: "ADD_NEW_RELATION", count})
 		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
 		setEditingRows(_editingRows);
+
 	};
 
 
@@ -142,7 +143,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 				</DataTable>
 			}
 			<div className={`${showConditionRelations ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} style={{width:"50%"}} />
+				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} style={{width:"50%"}} disabled={buttonIsDisabled}/>
 			</div>
 		</div>
 	);
