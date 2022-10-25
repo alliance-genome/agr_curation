@@ -553,8 +553,11 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 	public SearchResponse<E> findByParams(Pagination pagination, Map<String, Object> params, String orderByField) {
 		if (orderByField != null) {
-			log.debug("Search By Params: " + params + " Order by: " + orderByField);
+			log.debug("Search By Params: " + params + " Order by: " + orderByField + " for class: " + myClass);
+		} else {
+			log.debug("Search By Params: " + params + " for class: " + myClass);
 		}
+		
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> query = builder.createQuery(myClass);
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
@@ -564,7 +567,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		//System.out.println("Root: " + root);
 		List<Predicate> restrictions = new ArrayList<>();
 		List<Predicate> countRestrictions = new ArrayList<>();
-		log.debug(params);
+		
+		
 		for (String key : params.keySet()) {
 			Path<Object> column = null;
 			Path<Object> countColumn = null;
@@ -574,22 +578,66 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				for (String s : objects) {
 					log.debug("Looking up: " + s);
 					if (column != null) {
-						column = column.get(s);
-						countColumn = countColumn.get(s);
+						log.debug("Looking up via column: " + s);
+						
+						Path<Object> pathColumn = column.get(s);
+						if(pathColumn.getJavaType().equals(List.class)) {
+							column = ((Join)column).join(s);
+						} else {
+							column = pathColumn;
+						}
+						Path<Object> pathCountColumn = countColumn.get(s);
+						if(pathCountColumn.getJavaType().equals(List.class)) {
+							countColumn = ((Join)countColumn).join(s);
+						} else {
+							countColumn = pathCountColumn;
+						}
 					} else {
+						log.debug("Looking up via root: " + s);
 						column = root.get(s);
+						if(column.getJavaType().equals(List.class)) {
+							column = root.join(s);
+						}
 						countColumn = countRoot.get(s);
+						if(countColumn.getJavaType().equals(List.class)) {
+							countColumn = countRoot.join(s);
+						}
 					}
-					log.debug("Column Alias: " + column.getAlias());
-					log.debug("Count Alias: " + countColumn.getAlias());
+
+					log.debug(
+						"Column Alias: " + column.getAlias() +
+						" Column Java Type: " + column.getJavaType() +
+						" Column Model: " + column.getModel() +
+						" Column Type Alias: " + column.type().getAlias() +
+						" Column Parent Path Alias: " + column.getParentPath().getAlias()
+					);
+					log.debug(
+						"Count Column Alias: " + countColumn.getAlias() +
+						" Count Column Java Type: " + countColumn.getJavaType() +
+						" Count Column Model: " + countColumn.getModel() +
+						" Count Column Type Alias: " + countColumn.type().getAlias() +
+						" Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias()
+					);
 				}
 			} else {
 				column = root.get(key);
 				countColumn = countRoot.get(key);
 			}
 
-			log.debug("Column Alias: " + column.getAlias());
-			log.debug("Count Alias: " + countColumn.getAlias());
+			log.debug(
+				"Column Alias: " + column.getAlias() +
+				" Column Java Type: " + column.getJavaType() +
+				" Column Model: " + column.getModel() +
+				" Column Type Alias: " + column.type().getAlias() +
+				" Column Parent Path Alias: " + column.getParentPath().getAlias()
+			);
+			log.debug(
+				"Count Column Alias: " + countColumn.getAlias() +
+				" Count Column Java Type: " + countColumn.getJavaType() +
+				" Count Column Model: " + countColumn.getModel() +
+				" Count Column Type Alias: " + countColumn.type().getAlias() +
+				" Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias()
+			);
 
 			Object value = params.get(key);
 			if (value != null) {
