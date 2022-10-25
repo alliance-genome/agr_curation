@@ -31,6 +31,7 @@ export const NewAnnotationForm = ({
 	const toast_error = useRef(null);
 	const withRef = useRef(null);
 	const evidenceCodesRef = useRef(null);
+	const experimentsRef = useRef(null);
 	const {
 		newAnnotation,
 		errorMessages,
@@ -42,7 +43,6 @@ export const NewAnnotationForm = ({
 		showConditionRelations,
 	} = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
-	const [isExperimentsEnabled, setIsExperimentsEnabled] = useState(false);
 	const validationService = new ValidationService();
 
 	const validate = async (entities, endpoint) => {
@@ -65,7 +65,6 @@ export const NewAnnotationForm = ({
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: "RESET" });
 		setIsEnabled(false);
-		setIsExperimentsEnabled(false);
 	};
 
 	const validateTable = async (endpoint, errorType, row) => {
@@ -117,26 +116,24 @@ export const NewAnnotationForm = ({
 		});
 	};
 
-	const handleClear = (event) => {
-		//this manually resets the value of the input text in autocomplete fields with multiple values
+	const handleClear = () => {
+		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
 		withRef.current.inputRef.current.value = "";
 		evidenceCodesRef.current.inputRef.current.value = "";
+		experimentsRef.current.clear();
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
-		setIsExperimentsEnabled(false);
 	}
 
 	const handleSubmitAndAdd = (event) => {
 		handleSubmit(event, false);
 	}
 
-	const onObjectChange = (event) => {
-		if(event.target.name === "subject") { //Save button should be enabled on subject value selection only
-			if (event.target && event.target.value !== '' && event.target.value != null) {
-				setIsEnabled(true);
-			} else {
-				setIsEnabled(false);
-			}
+	const onSubjectChange = (event) => {
+		if (event.target && event.target.value !== '' && event.target.value != null) {
+			setIsEnabled(true);
+		} else {
+			setIsEnabled(false);
 		}
 		newAnnotationDispatch({
 			type: "EDIT",
@@ -146,11 +143,6 @@ export const NewAnnotationForm = ({
 	}
 
 	const onSingleReferenceChange= (event) => {
-		if (typeof event.target.value === "object") {
-			setIsExperimentsEnabled(true);
-		} else {
-			setIsExperimentsEnabled(false);
-		}
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -192,7 +184,21 @@ export const NewAnnotationForm = ({
 			value: event.target.value
 		});
 	}
+	const isExperimentEnabled = () => {
+		return (
+			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
+			typeof newAnnotation.singleReference === "object"
+			&& newAnnotation.singleReference.curie !== ""
+			&& !showConditionRelations
+		)
+	}
 
+	const isConditionRelationButtonEnabled = () => {
+		return (
+			newAnnotation.conditionRelations[0]
+			&& newAnnotation.conditionRelations[0].handle
+		)
+	}
 	const dialogFooter = (
 		<>
 			<div className="p-fluid p-formgrid p-grid">
@@ -226,7 +232,7 @@ export const NewAnnotationForm = ({
 								filterName='subjectFilter'
 								fieldName='subject'
 								value={newAnnotation.subject}
-								onValueChangeHandler={onObjectChange}
+								onValueChangeHandler={onSubjectChange}
 								isSubject={true}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
@@ -376,18 +382,20 @@ export const NewAnnotationForm = ({
 								showConditionRelations={showConditionRelations}
 								errorMessages={exConErrorMessages}
 								searchService={searchService}
+								buttonIsDisabled={isConditionRelationButtonEnabled()}
 							/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px', paddingTop: '6vh'}} size={30}>
 							<label htmlFor="experiments">Experiments</label>
 							<ConditionRelationHandleFormDropdown
 								name="experiments"
+								customRef={experimentsRef}
 								editorChange={onDropdownExperimentsFieldChange}
 								referenceCurie={newAnnotation.singleReference.curie}
 								value={newAnnotation.conditionRelations[0]?.handle}
 								showClear={false}
 								placeholderText={newAnnotation.conditionRelations[0]?.handle}
-								isEnabled={isExperimentsEnabled}
+								isEnabled={isExperimentEnabled()}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations[0]?.handle"}/>
 						</SplitterPanel>
