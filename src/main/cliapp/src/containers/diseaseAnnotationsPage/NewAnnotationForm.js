@@ -31,6 +31,7 @@ export const NewAnnotationForm = ({
 	const toast_error = useRef(null);
 	const withRef = useRef(null);
 	const evidenceCodesRef = useRef(null);
+	const experimentsRef = useRef(null);
 	const {
 		newAnnotation,
 		errorMessages,
@@ -116,9 +117,10 @@ export const NewAnnotationForm = ({
 	};
 
 	const handleClear = () => {
-		//this manually resets the value of the input text in autocomplete fields with multiple values
+		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
 		withRef.current.inputRef.current.value = "";
 		evidenceCodesRef.current.inputRef.current.value = "";
+		experimentsRef.current.clear();
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
 	}
@@ -376,6 +378,7 @@ export const NewAnnotationForm = ({
 							<label htmlFor="experiments">Experiments</label>
 							<ConditionRelationHandleFormDropdown
 								name="experiments"
+								customRef={experimentsRef}
 								editorChange={onDropdownExperimentsFieldChange}
 								referenceCurie={newAnnotation.singleReference.curie}
 								value={newAnnotation.conditionRelations[0]?.handle}
@@ -383,7 +386,7 @@ export const NewAnnotationForm = ({
 								placeholderText={newAnnotation.conditionRelations[0]?.handle}
 								isEnabled={
 									(
-										//only enabled is a reference is selected from suggestions and condition relation table isn't visible
+										//only enabled if a reference is selected from suggestions and condition relation table isn't visible
 										typeof newAnnotation.singleReference === "object"
 										&& newAnnotation.singleReference.curie !== ""
 										&& !showConditionRelations

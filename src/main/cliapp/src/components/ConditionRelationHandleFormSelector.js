@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Dropdown } from "primereact/dropdown"
 import { SearchService } from '../service/SearchService';
 
-export function ConditionRelationHandleFormDropdown({ editorChange, referenceCurie, value, name, showClear, placeholderText, isEnabled }) {
+export function ConditionRelationHandleFormDropdown({ editorChange, referenceCurie, value, name, showClear, placeholderText, isEnabled, customRef }) {
 	const [selectedValue, setSelectedValue] = useState(value);
 	const searchService = new SearchService();
 	const [handles, setHandles] = useState(null);
@@ -30,6 +30,7 @@ export function ConditionRelationHandleFormDropdown({ editorChange, referenceCur
 	return (
 		<>
 			<Dropdown
+				ref={customRef}
 				name={name}
 				value={selectedValue}
 				disabled={!isEnabled}
