@@ -18,7 +18,7 @@ const initialNewAnnotationState = {
 		evidenceCodes: [],
 		with: [],
 		relatedNotes: [],
-		conditionRelations: [],
+		conditionRelations: []
 	},
 	errorMessages: {},
 	relatedNotesErrorMessages: [],
@@ -36,6 +36,13 @@ const newAnnotationReducer = (draft, action) => {
 			return initialNewAnnotationState;
 		case 'EDIT':
 			draft.newAnnotation[action.field] = action.value;
+			break;
+		case 'EDIT_EXPERIMENT':
+			if (typeof action.value === "object") {
+				draft.newAnnotation.conditionRelations[0] = action.value;
+			} else {
+				draft.newAnnotation.conditionRelations[0].handle = action.value;
+			}
 			break;
 		case 'UPDATE_ERROR_MESSAGES':
 			draft[action.errorType]= action.errorMessages;

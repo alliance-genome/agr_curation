@@ -124,7 +124,7 @@ export const ConditionRelationTable = () => {
 		return (
 			<>
 				<AutocompleteRowEditor
-					autocompleteFields={["conditionSummary"]}
+					autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='experimental-condition'

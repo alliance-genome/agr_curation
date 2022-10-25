@@ -1,16 +1,15 @@
 package org.alliancegenome.curation_api.services.validation;
 
-import java.time.OffsetDateTime;
-
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.*;
+import org.alliancegenome.curation_api.services.LoggedInPersonService;
+import org.alliancegenome.curation_api.services.ReferenceService;
 
 @RequestScoped
 public class ReferenceValidator extends AuditedObjectValidator<Reference> {
@@ -46,6 +45,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 				addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
+			referenceDAO.persist(dbEntity);
 		}
 		
 		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);		

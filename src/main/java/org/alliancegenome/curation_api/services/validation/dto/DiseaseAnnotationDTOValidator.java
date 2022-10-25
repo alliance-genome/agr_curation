@@ -10,6 +10,7 @@ import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.BiologicalEntityDAO;
 import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
@@ -45,6 +46,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 	@Inject GeneDAO geneDAO;
 	@Inject BiologicalEntityDAO biologicalEntityDAO;
 	@Inject NoteDAO noteDAO;
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
 	@Inject NoteDTOValidator noteDtoValidator;
@@ -74,12 +76,15 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			Reference reference = referenceDAO.find(dto.getSingleReference());
 			if (reference == null || reference.getObsolete()) {
 				reference = referenceService.retrieveFromLiteratureService(dto.getSingleReference());
-				if (reference == null)
+				if (reference == null) {
 					daResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
+				} else {
+					reference = referenceDAO.persist(reference);
+				}
 			}
 			annotation.setSingleReference(reference);
-		}
-		
+		}	
+				
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
 			daResponse.addErrorMessage("evidenceCodes", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -124,9 +129,12 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			daResponse.addErrorMessage("dataProvider", ValidationConstants.REQUIRED_MESSAGE);
 		annotation.setDataProvider(dto.getDataProvider());
 		
-		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider()))
+		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider())) {
 			annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
-
+		} else {
+			annotation.setSecondaryDataProvider(null);
+		}
+		
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
 			for (String qualifier : dto.getDiseaseQualifiers()) {
@@ -137,6 +145,8 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				diseaseQualifiers.add(diseaseQualifier);
 			}
 			annotation.setDiseaseQualifiers(diseaseQualifiers);
+		} else {
+			annotation.setDiseaseQualifiers(null);
 		}
 
 		if (StringUtils.isNotBlank(dto.getDiseaseGeneticModifier()) || StringUtils.isNotBlank(dto.getDiseaseGeneticModifierRelation())) {
@@ -154,22 +164,30 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
 				annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 			}
+		} else {
+			annotation.setDiseaseGeneticModifier(null);
+			annotation.setDiseaseGeneticModifierRelation(null);
 		}
 			
+		VocabularyTerm annotationType = null;
 		if (StringUtils.isNotBlank(dto.getAnnotationType())) {
-			VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+			annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
 			if (annotationType == null)
 				daResponse.addErrorMessage("annotationType", ValidationConstants.INVALID_MESSAGE);
-			annotation.setAnnotationType(annotationType);
-		}
+			}
+		annotation.setAnnotationType(annotationType);
 		
+		VocabularyTerm geneticSex = null;
 		if (StringUtils.isNotBlank(dto.getGeneticSex())) {
-			VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
+			geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
 			if (geneticSex == null)
 				daResponse.addErrorMessage("geneticSex", ValidationConstants.INVALID_MESSAGE);
-			annotation.setGeneticSex(geneticSex);
-		}
+		}	
+		annotation.setGeneticSex(geneticSex);
 		
+		if (CollectionUtils.isNotEmpty(annotation.getRelatedNotes())) {
+			annotation.getRelatedNotes().forEach(note -> {diseaseAnnotationDAO.deleteAttachedNote(note.getId());});
+		}	
 		if (CollectionUtils.isNotEmpty(dto.getRelatedNotes())) {
 			List<Note> notes = new ArrayList<>();
 			for (NoteDTO noteDTO : dto.getRelatedNotes()) {
@@ -188,6 +206,8 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				notes.add(noteDAO.persist(noteResponse.getEntity()));
 			}
 			annotation.setRelatedNotes(notes);
+		} else {
+			annotation.setRelatedNotes(null);
 		}
 
 		if (CollectionUtils.isNotEmpty(dto.getConditionRelations())) {
@@ -207,6 +227,8 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				}
 			}
 			annotation.setConditionRelations(relations);
+		} else {
+			annotation.setConditionRelations(null);
 		}
 
 		daResponse.setEntity(annotation);

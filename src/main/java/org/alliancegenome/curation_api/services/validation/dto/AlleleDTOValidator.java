@@ -53,14 +53,9 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		
 		allele = geResponse.getEntity();
 		
-		if (StringUtils.isBlank(dto.getName()))
-			alleleResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
-		allele.setName(dto.getName());
-		
-		String symbol = null;
-		if (StringUtils.isNotBlank(dto.getSymbol())) 
-			symbol = dto.getSymbol();
-		allele.setSymbol(symbol);
+		if (StringUtils.isBlank(dto.getSymbol()))
+			alleleResponse.addErrorMessage("symbol", ValidationConstants.REQUIRED_MESSAGE);
+		allele.setSymbol(dto.getSymbol());
 				
 		VocabularyTerm inheritenceMode = null;
 		if (StringUtils.isNotBlank(dto.getInheritanceMode())) {
@@ -89,11 +84,10 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 		allele.setSequencingStatus(sequencingStatus);
 
-		if (dto.getIsExtinct() != null)
-			allele.setIsExtinct(dto.getIsExtinct());
+		allele.setIsExtinct(dto.getIsExtinct());
 		
-		List<Reference> references = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
+			List<Reference> references = new ArrayList<>();
 			for (String publicationId : dto.getReferences()) {
 				Reference reference = referenceDAO.find(publicationId);
 				if (reference == null || reference.getObsolete()) {
@@ -102,24 +96,13 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 						alleleResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
 						break;
 					}
+					reference = referenceDAO.persist(reference);
 				}
 				references.add(reference);
 			}
-		}
-		allele.setReferences(references);
-		
-		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
-			List<Synonym> synonyms= new ArrayList<>();
-			for (SynonymDTO synonymDTO : dto.getSynonyms()) {
-				ObjectResponse<Synonym> synResponse = validateSynonymDTO(synonymDTO);
-				if (synResponse.hasErrors()) {
-					alleleResponse.addErrorMessage("synonyms", synResponse.errorMessagesString());
-					break;
-				} else {
-					synonyms.add(synResponse.getEntity());
-				}
-			}
-			allele.setSynonyms(synonyms);
+			allele.setReferences(references);
+		} else {
+			allele.setReferences(null);
 		}
 		
 		if (alleleResponse.hasErrors()) {
