@@ -116,8 +116,8 @@ public class DiseaseAnnotationITCase {
 		diseaseQualifiers = new ArrayList<VocabularyTerm>();
 		relatedNotes = new ArrayList<Note>();
 		
-		testReference = createReference("PMID:14978094");
-		testReference2 = createReference("PMID:14978095");
+		testReference = createReference("AGRKB:000000005");
+		testReference2 = createReference("AGRKB:000000006");
 		testDoTerm = createDiseaseTerm("DOID:da0001", false);
 		testDoTerm2 = createDiseaseTerm("DOID:da0002", false);
 		testObsoleteDoTerm = createDiseaseTerm("DOID:da0003", true);

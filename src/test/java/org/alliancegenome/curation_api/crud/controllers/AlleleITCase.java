@@ -62,7 +62,7 @@ public class AlleleITCase {
 		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
 		sequencingStatus = getVocabularyTerm(sequencingStatusVocabulary, "sequenced");
-		reference = createReference("PMID:19351");
+		reference = createReference("AGRKB:000000003");
 		references.add(reference);
 		taxon = getTaxonFromCurie("NCBITaxon:10090");
 		taxon2 = getTaxonFromCurie("NCBITaxon:9606");
