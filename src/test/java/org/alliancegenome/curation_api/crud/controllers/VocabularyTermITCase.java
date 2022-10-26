@@ -58,7 +58,7 @@ public class VocabularyTermITCase {
 		
 		RestAssured.given().
 				when().
-				get("/api/vocabularyterm?termName=" + vocabularyTerm.getName() + "&vocabularyName=" + testVocabulary.getName()).
+				get("/api/vocabularyterm/findBy?termName=" + vocabularyTerm.getName() + "&vocabularyName=" + testVocabulary.getName()).
 				then().
 				statusCode(200).
 				body("entity.name", is("Test vocabulary term")).
@@ -96,7 +96,7 @@ public class VocabularyTermITCase {
 		
 		RestAssured.given().
 				when().
-				get("/api/vocabularyterm?termName=" + editedTerm.getName() + "&vocabularyName=" + testVocabulary2.getName()).
+				get("/api/vocabularyterm/findBy?termName=" + editedTerm.getName() + "&vocabularyName=" + testVocabulary2.getName()).
 				then().
 				statusCode(200).
 				body("entity.name", is("Edited test vocabulary term")).
@@ -208,7 +208,7 @@ public class VocabularyTermITCase {
 		ObjectResponse<VocabularyTerm> response =
 				RestAssured.given().
 					when().
-					get("/api/vocabularyterm?termName=" + termName + "&vocabularyName=" + vocabularyName).
+					get("/api/vocabularyterm/findBy?termName=" + termName + "&vocabularyName=" + vocabularyName).
 					then().
 					statusCode(200).
 					extract().body().as(getObjectResponseTypeRefVocabularyTerm());
