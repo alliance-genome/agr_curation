@@ -51,7 +51,7 @@ public class PersonValidator extends AuditedObjectValidator<Person>{
 		
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getOldEmails())) {
-			dbEntity.setOldEmails(uiEntity.getOldEmails());	
+			dbEntity.setOldEmails(uiEntity.getOldEmails()); 
 		} else {
 			dbEntity.setOldEmails(null);
 		}
