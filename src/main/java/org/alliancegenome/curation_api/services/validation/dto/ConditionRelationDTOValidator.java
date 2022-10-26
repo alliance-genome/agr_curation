@@ -40,7 +40,17 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
     	
     	ConditionRelation relation;
-    	String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dto);
+    	
+    	Reference reference = null;
+    	if (StringUtils.isNotBlank(dto.getSingleReference())) {
+    		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getSingleReference());
+			if (reference == null)
+				crResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
+    	}
+    	String refCurie = reference == null ? null : reference.getCurie();
+    	
+    	
+    	String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dto, refCurie);
     	SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", uniqueId);
 		if (searchResponseRel == null || searchResponseRel.getSingleResult() == null) {
 			relation = new ConditionRelation();
@@ -48,7 +58,8 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		} else {
 			relation = searchResponseRel.getSingleResult();
 		}
-    	
+		relation.setSingleReference(reference);
+		
     	ObjectResponse<ConditionRelation> aoResponse = validateAuditedObjectDTO(relation, dto);
     	relation = aoResponse.getEntity();
     	crResponse.addErrorMessages(aoResponse.getErrorMessages());
@@ -89,14 +100,6 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     		}
     		relation.setHandle(null);
     	}
-    	
-    	Reference reference = null;
-    	if (StringUtils.isNotBlank(dto.getSingleReference())) {
-    		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getSingleReference());
-			if (reference == null)
-				crResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
-    	}
-		relation.setSingleReference(reference);
     	
     	crResponse.setEntity(relation);
     	

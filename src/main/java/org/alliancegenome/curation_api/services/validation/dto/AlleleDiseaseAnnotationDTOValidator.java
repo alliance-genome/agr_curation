@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -35,7 +36,15 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 	public AlleleDiseaseAnnotation validateAlleleDiseaseAnnotationDTO(AlleleDiseaseAnnotationDTO dto) throws ObjectValidationException {
 		AlleleDiseaseAnnotation annotation = new AlleleDiseaseAnnotation();
 		Allele allele;
+		
 		ObjectResponse<AlleleDiseaseAnnotation> adaResponse = new ObjectResponse<AlleleDiseaseAnnotation>();
+		
+		ObjectResponse<AlleleDiseaseAnnotation> refResponse = validateReference(annotation, dto);
+		adaResponse.addErrorMessages(refResponse.getErrorMessages());
+		Reference validatedReference = refResponse.getEntity().getSingleReference();
+		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
+		
+		
 		if (StringUtils.isBlank(dto.getSubject())) {
 			adaResponse.addErrorMessage("subject", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -45,7 +54,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto, refCurie);
 				}
 		
 				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
@@ -57,6 +66,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				}
 			}
 		}
+		annotation.setSingleReference(validatedReference);
 		
 		ObjectResponse<AlleleDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
