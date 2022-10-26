@@ -57,7 +57,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(relationType)) {
 			crResponse.addErrorMessage("conditionRelationType", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(relationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+			VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
 			if (conditionRelationTypeTerm == null)
 				crResponse.addErrorMessage("conditionRelationType", ValidationConstants.INVALID_MESSAGE);
 			relation.setConditionRelationType(conditionRelationTypeTerm);

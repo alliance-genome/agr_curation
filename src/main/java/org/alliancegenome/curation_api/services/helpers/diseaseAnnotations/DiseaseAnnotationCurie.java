@@ -41,9 +41,7 @@ public abstract class DiseaseAnnotationCurie {
 	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO);
 	public abstract String getCurieID(DiseaseAnnotation annotation);
 
-	/**
-	 * @return curie string
-	 */
+	
 	public String getCurieID(
 			String subject,
 			String object,
