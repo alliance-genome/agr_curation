@@ -123,7 +123,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifiers())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
 			for (String qualifier : dto.getDiseaseQualifiers()) {
-				VocabularyTerm diseaseQualifier = vocabularyTermDAO.getTermInVocabulary(qualifier, VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+				VocabularyTerm diseaseQualifier = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, qualifier);
 				if (diseaseQualifier == null) {
 					daResponse.addErrorMessage("diseaseQualifiers", ValidationConstants.INVALID_MESSAGE);
 				}
@@ -140,7 +140,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			} else if (StringUtils.isBlank(dto.getDiseaseGeneticModifierRelation())) {
 				daResponse.addErrorMessage("diseaseGeneticModifier", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "diseaseGeneticModifierRelation");
 			} else {
-				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseGeneticModifierRelation(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, dto.getDiseaseGeneticModifierRelation());
 				if (diseaseGeneticModifierRelation == null)
 					daResponse.addErrorMessage("diseaseGeneticModifierRelation", ValidationConstants.INVALID_MESSAGE);
 				BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifier());
@@ -156,7 +156,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			
 		VocabularyTerm annotationType = null;
 		if (StringUtils.isNotBlank(dto.getAnnotationType())) {
-			annotationType = vocabularyTermDAO.getTermInVocabulary(dto.getAnnotationType(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+			annotationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, dto.getAnnotationType());
 			if (annotationType == null)
 				daResponse.addErrorMessage("annotationType", ValidationConstants.INVALID_MESSAGE);
 			}
@@ -164,7 +164,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		
 		VocabularyTerm geneticSex = null;
 		if (StringUtils.isNotBlank(dto.getGeneticSex())) {
-			geneticSex = vocabularyTermDAO.getTermInVocabulary(dto.getGeneticSex(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
+			geneticSex = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, dto.getGeneticSex());
 			if (geneticSex == null)
 				daResponse.addErrorMessage("geneticSex", ValidationConstants.INVALID_MESSAGE);
 		}	

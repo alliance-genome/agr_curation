@@ -173,8 +173,7 @@ export const ConditionRelationTable = () => {
 					</Tooltip>
 				</>
 			);
-			
-		}	
+		}
 	};
 
 	const columns = [

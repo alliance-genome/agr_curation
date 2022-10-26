@@ -73,7 +73,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
-			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY, dto.getDiseaseRelation());
 			if (diseaseRelation == null)
 				adaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
 			annotation.setDiseaseRelation(diseaseRelation);

@@ -73,22 +73,22 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		 return (
 			 <>
 				 <AutocompleteFormEditor
-					  value={props.props.value[props.rowIndex].conditions}
-					  autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
-					  rowProps={props}
-					  searchService={searchService}
-					  endpoint='experimental-condition'
-					  filterName='conditionSummaryFilter'
-					  fieldName='conditions'
-					  subField='conditionSummary'
-					  isMultiple={true}
-					  onValueChangeHandler={(event) => onConditionsEditorValueChange(event, props)}
-					  valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
-						  <ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+						value={props.props.value[props.rowIndex].conditions}
+						autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
+						rowProps={props}
+						searchService={searchService}
+						endpoint='experimental-condition'
+						filterName='conditionSummaryFilter'
+						fieldName='conditions'
+						subField='conditionSummary'
+						isMultiple={true}
+						onValueChangeHandler={(event) => onConditionsEditorValueChange(event, props)}
+						valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
+							<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				 />
 				 <DialogErrorMessageComponent
-					  errorMessages={errorMessages[props.rowIndex]}
-					  errorField={"conditions"}
+						errorMessages={errorMessages[props.rowIndex]}
+						errorField={"conditions"}
 				 />
 			 </>
 		 );
@@ -135,7 +135,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 			<h3>Experimental Conditions</h3>
 			{showConditionRelations &&
 				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row'
-						   editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
+							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' />
 					<Column editor={conditionsEditorTemplate} field="conditions.conditionSummary" header="Conditions" headerClassName='surface-0' />

@@ -121,7 +121,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 			}
 			noteType = vtSearchResponse.getSingleResult();
 		} else {
-			noteType = vocabularyTermDAO.getTermInVocabulary(uiEntity.getNoteType().getName(), noteVocabularyName);
+			noteType = vocabularyTermDAO.getTermInVocabulary(noteVocabularyName, uiEntity.getNoteType().getName());
 			if (noteType == null) {
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;

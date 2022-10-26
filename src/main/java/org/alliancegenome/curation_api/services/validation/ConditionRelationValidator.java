@@ -199,8 +199,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			conditionRelationType = vocabularyTermDAO.find(uiEntity.getConditionRelationType().getId());
 		} else if (uiEntity.getConditionRelationType().getName() != null) {
 			conditionRelationType =
-				vocabularyTermDAO.getTermInVocabulary(uiEntity.getConditionRelationType().getName(),
-					VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+				vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType().getName());
 		}
 		if (conditionRelationType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

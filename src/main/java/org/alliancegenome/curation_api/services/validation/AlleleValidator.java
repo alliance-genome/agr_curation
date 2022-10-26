@@ -160,7 +160,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (uiEntity.getInheritanceMode() == null)
 			return null;
 		
-		VocabularyTerm inheritanceMode = vocabularyTermDAO.getTermInVocabulary(uiEntity.getInheritanceMode().getName(), VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
+		VocabularyTerm inheritanceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, uiEntity.getInheritanceMode().getName());
 		if (inheritanceMode == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -179,7 +179,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (uiEntity.getInCollection() == null)
 			return null;
 
-		VocabularyTerm inCollection = vocabularyTermDAO.getTermInVocabulary(uiEntity.getInCollection().getName(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
+		VocabularyTerm inCollection = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, uiEntity.getInCollection().getName());
 		if (inCollection == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -198,7 +198,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (uiEntity.getSequencingStatus() == null)
 			return null;
 
-		VocabularyTerm sequencingStatus = vocabularyTermDAO.getTermInVocabulary(uiEntity.getSequencingStatus().getName(), VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
+		VocabularyTerm sequencingStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY, uiEntity.getSequencingStatus().getName());
 		if (sequencingStatus == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;

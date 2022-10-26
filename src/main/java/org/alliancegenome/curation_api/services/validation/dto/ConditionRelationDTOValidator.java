@@ -30,6 +30,7 @@ import org.apache.commons.lang3.StringUtils;
 public class ConditionRelationDTOValidator extends BaseDTOValidator {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
+
     @Inject VocabularyTermDAO vocabularyTermDAO;
     @Inject ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
     @Inject ExperimentalConditionDAO experimentalConditionDAO;
@@ -52,6 +53,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	
     	String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dto, refCurie);
     	SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", uniqueId);
+
 		if (searchResponseRel == null || searchResponseRel.getSingleResult() == null) {
 			relation = new ConditionRelation();
 			relation.setUniqueId(uniqueId);
@@ -68,7 +70,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	if (StringUtils.isBlank(relationType)) {
     		crResponse.addErrorMessage("conditionRelationType", ValidationConstants.REQUIRED_MESSAGE);
     	} else {
-    		VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(relationType, VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+    		VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
 			if (conditionRelationTypeTerm == null)
 				crResponse.addErrorMessage("conditionRelationType", ValidationConstants.INVALID_MESSAGE);
 			relation.setConditionRelationType(conditionRelationTypeTerm);

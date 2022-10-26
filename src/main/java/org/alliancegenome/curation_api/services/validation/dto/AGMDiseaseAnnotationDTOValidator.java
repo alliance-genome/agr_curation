@@ -77,7 +77,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
-			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY, dto.getDiseaseRelation());
 			if (diseaseRelation == null)
 				adaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
 			annotation.setDiseaseRelation(diseaseRelation);

@@ -150,7 +150,7 @@ public class AlleleDiseaseAnnotationValidator extends DiseaseAnnotationValidator
 			return null;
 		}
 		
-		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseRelation().getName(), VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
+		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY, uiEntity.getDiseaseRelation().getName());
 
 		if(relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
