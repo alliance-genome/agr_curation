@@ -85,7 +85,7 @@ export const NewAnnotationForm = ({
 				anyErrors = true;
 			}
 		});
-		newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType,  errorMessages: errors});
+		newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors});
 		return anyErrors;
 	}
 
@@ -111,7 +111,7 @@ export const NewAnnotationForm = ({
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
 				]);
 				if (!error.response.data) return;
-				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages",  errorMessages: error.response.data.errorMessages});
+				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: error.response.data.errorMessages});
 			}
 		});
 	};

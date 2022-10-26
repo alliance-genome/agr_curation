@@ -3920,7 +3920,7 @@ public class DiseaseAnnotationITCase {
 				body(editedDiseaseAnnotation).
 				when().
 				put("/api/gene-disease-annotation").
-				then().	
+				then().
 				statusCode(200).
 				body("entity", hasKey("geneticSex"));
 		
