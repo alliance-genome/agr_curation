@@ -184,7 +184,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		VocabularyTerm dgmRelation = vocabularyTermDAO.getTermInVocabulary(uiEntity.getDiseaseGeneticModifierRelation().getName(), VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+		VocabularyTerm dgmRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, uiEntity.getDiseaseGeneticModifierRelation().getName());
 
 		if(dgmRelation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -205,7 +205,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(uiEntity.getGeneticSex().getName(), VocabularyConstants.GENETIC_SEX_VOCABULARY);
+		VocabularyTerm geneticSex = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, uiEntity.getGeneticSex().getName());
 
 		if(geneticSex == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
@@ -226,7 +226,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			return null;
 		}
 
-		VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(uiEntity.getAnnotationType().getName(), VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+		VocabularyTerm annotationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, uiEntity.getAnnotationType().getName());
 
 		if(annotationType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

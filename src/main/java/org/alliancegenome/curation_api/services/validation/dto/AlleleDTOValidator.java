@@ -59,7 +59,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				
 		VocabularyTerm inheritenceMode = null;
 		if (StringUtils.isNotBlank(dto.getInheritanceMode())) {
-			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(dto.getInheritanceMode(), VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
+			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceMode());
 			if (inheritenceMode == null) {
 				alleleResponse.addErrorMessage("inheritanceMode", ValidationConstants.INVALID_MESSAGE);
 			}
@@ -68,7 +68,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		
 		VocabularyTerm inCollection = null;
 		if (StringUtils.isNotBlank(dto.getInCollection())) {
-			inCollection = vocabularyTermDAO.getTermInVocabulary(dto.getInCollection(), VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
+			inCollection = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, dto.getInCollection());
 			if (inCollection == null) {
 				alleleResponse.addErrorMessage("inCollection", ValidationConstants.INVALID_MESSAGE);
 			}
@@ -77,7 +77,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		
 		VocabularyTerm sequencingStatus = null;
 		if (StringUtils.isNotBlank(dto.getSequencingStatus())) {
-			sequencingStatus = vocabularyTermDAO.getTermInVocabulary(dto.getSequencingStatus(), VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
+			sequencingStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY, dto.getSequencingStatus());
 			if (sequencingStatus == null) {
 				alleleResponse.addErrorMessage("sequencingStatus", ValidationConstants.INVALID_MESSAGE);
 			}

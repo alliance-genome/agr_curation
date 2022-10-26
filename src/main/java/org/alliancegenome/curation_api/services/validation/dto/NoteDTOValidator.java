@@ -42,7 +42,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isBlank(dto.getNoteType())) {
 			noteResponse.addErrorMessage("noteType", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(dto.getNoteType(), note_type_vocabulary);
+			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(note_type_vocabulary, dto.getNoteType());
 			if (noteType == null)
 				noteResponse.addErrorMessage("noteType", ValidationConstants.INVALID_MESSAGE);
 			note.setNoteType(noteType);

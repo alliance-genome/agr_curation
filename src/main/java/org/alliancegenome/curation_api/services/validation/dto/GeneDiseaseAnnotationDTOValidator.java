@@ -73,7 +73,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
-			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(dto.getDiseaseRelation(), VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY, dto.getDiseaseRelation());
 			if (diseaseRelation == null)
 				gdaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
 			annotation.setDiseaseRelation(diseaseRelation);
