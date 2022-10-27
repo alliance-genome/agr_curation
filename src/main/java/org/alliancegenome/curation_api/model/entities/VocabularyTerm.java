@@ -37,7 +37,7 @@ import lombok.ToString;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"vocabulary"})
+@ToString(exclude = {"vocabulary", "vocabularyTermSets"})
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 public class VocabularyTerm extends GeneratedAuditedObject {
@@ -76,4 +76,10 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))
 	@Column(columnDefinition="TEXT")
 	private List<String> textSynonyms;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany(mappedBy = "memberTerms")
+	@JsonView({View.VocabularyTermView.class})
+	private List<VocabularyTermSet> vocabularyTermSets;
 }

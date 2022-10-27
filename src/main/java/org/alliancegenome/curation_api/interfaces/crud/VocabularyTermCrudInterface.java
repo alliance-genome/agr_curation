@@ -41,6 +41,11 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Path("/findBy")
 	@JsonView(View.VocabularyTermView.class)
 	public ObjectResponse<VocabularyTerm> getTermInVocabulary(@QueryParam("vocabularyName") String vocabularyName, @QueryParam("termName") String termName);
+	
+	@GET
+	@Path("/findInSet")
+	@JsonView(View.VocabularyTermView.class)
+	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(@QueryParam("vocabularyTermSetName") String vocabularyTermSetName, @QueryParam("termName") String termName);
 
 	@PUT
 	@Path("/")

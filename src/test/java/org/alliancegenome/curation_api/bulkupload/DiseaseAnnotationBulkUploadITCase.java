@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.bulkupload;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.not;
 
 import java.nio.file.Files;
@@ -22,6 +22,7 @@ import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -68,8 +69,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 	private String requiredZecoTerm = "DATEST:ExpCondTerm0001";
 	private String requiredNonSlimZecoTerm = "DATEST:NSExpCondTerm0001";
 	private String requiredExpCondTerm = "DATEST:ExpCondTerm0002";
-	private String requiredGeneDiseaseRelation = "is_implicated_in";
-	private String requiredAlleleDiseaseRelation = "is_implicated_in";
+	private String requiredAlleleAndGeneDiseaseRelation = "is_implicated_in";
 	private String requiredAgmDiseaseRelation = "is_model_of";
 	private String requiredGeneticSex = "male";
 	private String requiredDiseaseGeneticModifierRelation = "ameliorated_by";
@@ -4193,23 +4193,23 @@ public class DiseaseAnnotationBulkUploadITCase {
 		loadReference();
 		
 		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-		Vocabulary geneDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY);
-		Vocabulary alleleDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY);
-		Vocabulary agmDiseaseRelationVocabulary = createVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY);
+		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
 		Vocabulary geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
 		Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 		Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
 		Vocabulary annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
 		Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
-		createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
-		createVocabularyTerm(geneDiseaseRelationVocabulary, requiredGeneDiseaseRelation);
-		createVocabularyTerm(alleleDiseaseRelationVocabulary, requiredAlleleDiseaseRelation);
-		createVocabularyTerm(agmDiseaseRelationVocabulary, requiredAgmDiseaseRelation);
+		VocabularyTerm noteTypeVocabularyTerm = createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
+		VocabularyTerm alleleAndGeneDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAlleleAndGeneDiseaseRelation);
+		VocabularyTerm agmDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAgmDiseaseRelation);
 		createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier);
 		createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex);
 		createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
 		createVocabularyTerm(annotationTypeVocabulary, requiredAnnotationType);
 		createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
+		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, agmDiseaseRelationVocabularyTerm);
+		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, alleleAndGeneDiseaseRelationVocabularyTerm);
+		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, alleleAndGeneDiseaseRelationVocabularyTerm);
 	}
 	
 	private void loadDOTerm() throws Exception {
@@ -4421,17 +4421,37 @@ public class DiseaseAnnotationBulkUploadITCase {
 		return vocabulary;
 	}
 	
-	private void createVocabularyTerm(Vocabulary vocabulary, String name) {
+	private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name) {
 		VocabularyTerm vocabularyTerm = new VocabularyTerm();
 		vocabularyTerm.setName(name);
 		vocabularyTerm.setVocabulary(vocabulary);
 		vocabularyTerm.setInternal(false);
 		
-		RestAssured.given().
+		ObjectResponse<VocabularyTerm> response =
+			RestAssured.given().
 				contentType("application/json").
 				body(vocabularyTerm).
 				when().
 				post("/api/vocabularyterm").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
+		
+		return response.getEntity();
+	}
+	
+	private void createVocabularyTermSet(String name, Vocabulary vocabulary, VocabularyTerm term) {
+		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
+		vocabularyTermSet.setName(name);
+		vocabularyTermSet.setVocabularyTermSetVocabulary(vocabulary);
+		vocabularyTermSet.setInternal(false);
+		vocabularyTermSet.setMemberTerms(List.of(term));
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(vocabularyTermSet).
+				when().
+				post("/api/vocabularytermset").
 				then().
 				statusCode(200);
 	}
@@ -4453,6 +4473,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
 		return new TypeRef<ObjectResponse <Vocabulary>>() { };
+	}
+	
+	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
+		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
 	}
 	
 	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {

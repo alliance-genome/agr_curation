@@ -45,7 +45,7 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.VocabularyTermSetView.class})
-	private Vocabulary vocabulary;
+	private Vocabulary vocabularyTermSetVocabulary;
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
@@ -56,6 +56,6 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "description_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
-	private String description;
+	private String vocabularyTermSetDescription;
 	
 }
