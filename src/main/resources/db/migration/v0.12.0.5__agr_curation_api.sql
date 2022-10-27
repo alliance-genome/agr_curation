@@ -10,12 +10,12 @@ CREATE TABLE vocabularytermset (
 	name varchar(255) NOT NULL,
 	createdby_id bigint,
 	updatedby_id bigint,
-	vocabulary_id bigint NOT NULL
+	setvocabulary_id bigint NOT NULL
 );
 	
 ALTER TABLE vocabularytermset
-	ADD CONSTRAINT vocabularytermset_vocabulary_id_fk
-		FOREIGN KEY (vocabulary_id) REFERENCES vocabulary (id);
+	ADD CONSTRAINT vocabularytermset_setvocabulary_id_fk
+		FOREIGN KEY (setvocabulary_id) REFERENCES vocabulary (id);
 
 CREATE TABLE vocabularytermset_aud (
 	id bigint,
@@ -23,7 +23,7 @@ CREATE TABLE vocabularytermset_aud (
 	revtype smallint,
 	setdescription varchar(255),
 	name varchar(255),
-	vocabulary_id bigint,
+	setvocabulary_id bigint,
 	PRIMARY KEY (id, rev)
 );
 	
@@ -51,13 +51,13 @@ CREATE TABLE vocabularytermset_vocabularyterm_aud (
 	PRIMARY KEY (rev, vocabularytermset_id, memberterms_id)
 );
 
-INSERT INTO vocabularytermset (id, name, vocabulary_id, setdescription)
+INSERT INTO vocabularytermset (id, name, setvocabulary_id, setdescription)
 	SELECT nextval('hibernate_sequence'), 'Allele disease relations', id, 'Disease relation vocabulary terms that are valid for allele disease annotations' FROM vocabulary WHERE name = 'Disease Relation Vocabulary';
 
-INSERT INTO vocabularytermset (id, name, vocabulary_id, setdescription)
+INSERT INTO vocabularytermset (id, name, setvocabulary_id, setdescription)
 	SELECT nextval('hibernate_sequence'), 'AGM disease relations', id, 'Disease relation vocabulary terms that are valid for AGM disease annotations' FROM vocabulary WHERE name = 'Disease Relation Vocabulary';
 
-INSERT INTO vocabularytermset (id, name, vocabulary_id, setdescription)
+INSERT INTO vocabularytermset (id, name, setvocabulary_id, setdescription)
 	SELECT nextval('hibernate_sequence'), 'Gene disease relations', id, 'Disease relation vocabulary terms that are valid for gene disease annotations' FROM vocabulary WHERE name = 'Disease Relation Vocabulary';
 
 INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_id) 
@@ -66,7 +66,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
     	SELECT id FROM vocabularytermset WHERE name = 'Allele disease relations'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
   	)
@@ -78,7 +78,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
     	SELECT id FROM vocabularytermset WHERE name = 'Gene disease relations'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
   	)
@@ -90,7 +90,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
     	SELECT id FROM vocabularytermset WHERE name = 'Gene disease relations'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_marker_for' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_marker_for' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
   	)
@@ -102,7 +102,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
     	SELECT id FROM vocabularytermset WHERE name = 'AGM disease relations'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
   	)
@@ -114,7 +114,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
     	SELECT id FROM vocabularytermset WHERE name = 'AGM disease relations'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_ameliorated_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_ameliorated_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
   	)
@@ -126,7 +126,7 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
     	SELECT id FROM vocabularytermset WHERE name = 'AGM disease relations'
   	),
   	t2 AS (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_exacerbated_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_exacerbated_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
   	)
@@ -134,71 +134,71 @@ INSERT INTO vocabularytermset_vocabularyterm (vocabularytermset_id, memberterms_
   	
 UPDATE diseaseannotation
 	SET diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
 	) WHERE diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Allele disease relations'
     	)
     );
   	
 UPDATE diseaseannotation
 	SET diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
 	) WHERE diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_implicated_in' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Gene disease relations'
     	)
     );
   	
 UPDATE diseaseannotation
 	SET diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_marker_for' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_marker_for' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
 	) WHERE diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_marker_for' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_marker_for' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Gene disease relations'
     	)
     );
   	
 UPDATE diseaseannotation
 	SET diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
 	) WHERE diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'AGM disease relations'
     	)
     );
   	
 UPDATE diseaseannotation
 	SET diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_ameliorated_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_ameliorated_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
 	) WHERE diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_ameliorated_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_ameliorated_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'AGM disease relations'
     	)
     );
   	
 UPDATE diseaseannotation
 	SET diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_exacerbated_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_exacerbated_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'Disease Relation Vocabulary'
     	)
 	) WHERE diseaserelation_id = (
-    	SELECT id FROM vocabularyterm WHERE name = 'is_exacerbated_model_of' AND vocabulary_id = (
+    	SELECT id FROM vocabularyterm WHERE name = 'is_exacerbated_model_of' AND setvocabulary_id = (
     		SELECT id FROM vocabulary WHERE name = 'AGM disease relations'
     	)
     );
     
-DELETE FROM vocabularyterm WHERE vocabulary_id IN (
+DELETE FROM vocabularyterm WHERE setvocabulary_id IN (
 	SELECT id FROM vocabulary WHERE name LIKE '% disease relations'
 );
 
