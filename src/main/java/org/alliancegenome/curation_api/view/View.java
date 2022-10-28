@@ -7,10 +7,10 @@ public class View {
 	public static class FieldsAndLists extends FieldsOnly { }
 	public static class ConditionRelationUpdateView extends FieldsOnly { }
 
-	public static class VocabularyTermView extends FieldsAndLists { }
+	public static class VocabularyTermView extends FieldsOnly { }
 	public static class VocabularyView extends FieldsOnly { }
 	public static class VocabularyTermUpdate extends FieldsOnly { }
-	public static class VocabularyTermSetView extends FieldsAndLists { }
+	public static class VocabularyTermSetView extends FieldsOnly { }
 	
 	public static class NoteView extends FieldsAndLists { }
 	

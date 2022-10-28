@@ -3,13 +3,23 @@ package org.alliancegenome.curation_api.interfaces.crud;
 
 import java.util.HashMap;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.DefaultValue;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.alliancegenome.curation_api.view.View.VocabularyTermView;
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
@@ -51,4 +61,9 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Path("/")
 	@JsonView(View.VocabularyTermUpdate.class)
 	public ObjectResponse<VocabularyTerm> update(VocabularyTerm entity);
+
+	@POST
+	@Path("/")
+	@JsonView(VocabularyTermView.class)
+	public ObjectResponse<VocabularyTerm> create(VocabularyTerm entity);
 }

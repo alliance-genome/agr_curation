@@ -1,5 +1,9 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -8,6 +12,7 @@ import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermSetDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
@@ -53,7 +58,7 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		return validateVocabularyTermSet(uiEntity, dbEntity);
 	}
 	
-	public VocabularyTermSet validateVocabularyTermSet(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
+	private VocabularyTermSet validateVocabularyTermSet(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
 		
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
@@ -63,11 +68,8 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		
 		dbEntity.setVocabularyTermSetDescription(handleStringField(uiEntity.getVocabularyTermSetDescription()));
 		
-		if (CollectionUtils.isNotEmpty(uiEntity.getMemberTerms())) {
-			dbEntity.setMemberTerms(uiEntity.getMemberTerms());
-		} else {
-			dbEntity.setMemberTerms(null);
-		}
+		List<VocabularyTerm> memberTerms = validateMemberTerms(uiEntity, dbEntity);
+		dbEntity.setMemberTerms(memberTerms);
 		
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
@@ -77,7 +79,7 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		return dbEntity;
 	}
 	
-	public String validateName(VocabularyTermSet uiEntity) {
+	private String validateName(VocabularyTermSet uiEntity) {
 		String field = "name";
 		if (StringUtils.isBlank(uiEntity.getName())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -87,7 +89,7 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		return uiEntity.getName();
 	}
 	
-	public Vocabulary validateVocabularyTermSetVocabulary(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
+	private Vocabulary validateVocabularyTermSetVocabulary(VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
 		String field = "vocabularyTermSetVocabulary";
 		if (uiEntity.getVocabularyTermSetVocabulary() == null) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
@@ -106,5 +108,33 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 		}
 		
 		return vocabulary;
+	}
+	
+	private List<VocabularyTerm> validateMemberTerms (VocabularyTermSet uiEntity, VocabularyTermSet dbEntity) {
+		String field = "memberTerms";
+		
+		if (dbEntity.getVocabularyTermSetVocabulary() == null)
+			return null;
+		
+		if (CollectionUtils.isEmpty(uiEntity.getMemberTerms()))
+			return null;
+		
+		List<Long> previousIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getMemberTerms()))
+			dbEntity.getMemberTerms().stream().map(VocabularyTerm::getId).collect(Collectors.toList());
+		
+		for (VocabularyTerm memberTerm : uiEntity.getMemberTerms()) {
+			if (!memberTerm.getVocabulary().getId().equals(dbEntity.getVocabularyTermSetVocabulary().getId())) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			}
+			
+			if (memberTerm.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getMemberTerms()) || !previousIds.contains(memberTerm.getId()))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+		}
+		
+		return uiEntity.getMemberTerms();
 	}
 }

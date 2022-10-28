@@ -31,11 +31,11 @@ public interface VocabularyTermSetCrudInterface extends BaseIdCrudInterface<Voca
 	
 	@GET
 	@Path("/{id}/terms")
-	@JsonView(View.VocabularyTermView.class)
+	@JsonView(View.VocabularyTermSetView.class)
 	ObjectListResponse<VocabularyTerm> getTerms(@PathParam("id") Long id);
 	
 	@GET
 	@Path("/findBy/{name}")
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.VocabularyTermSetView.class)
 	public ObjectResponse<VocabularyTermSet> findByName(@PathParam("name") String name);
 }

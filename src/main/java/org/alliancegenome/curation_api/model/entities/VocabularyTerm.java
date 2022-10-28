@@ -72,7 +72,7 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({View.FieldsAndLists.class, View.VocabularyTermView.class})
 	@JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))
 	@Column(columnDefinition="TEXT")
 	private List<String> textSynonyms;
