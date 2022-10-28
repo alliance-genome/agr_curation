@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -73,19 +74,21 @@ public class VocabularyTermSetITCase {
 				statusCode(200);
 		
 		RestAssured.given().
+				contentType("application/json").
+				body("{\"name\": \"" + testVocabularyTermSetName1 + "\" }").
 				when().
-				get("/api/vocabularytermset/findBy/" + testVocabularyTermSetName1).
+				post("/api/vocabularytermset/find").
 				then().
 				statusCode(200).
-				body("entity.name", is(testVocabularyTermSetName1)).
-				body("entity.obsolete", is(true)).
-				body("entity.internal", is(false)).
-				body("entity.vocabularyTermSetVocabulary.name", is(testVocabulary1.getName())).
-				body("entity.vocabularyTermSetDescription", is("Creation test VocabularyTermSet")).
-				body("entity.memberTerms", hasSize(1)).
-				body("entity.memberTerms[0].name", is(testVocabularyTerm1.getName())).
-				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+				body("results[0].name", is(testVocabularyTermSetName1)).
+				body("results[0].obsolete", is(true)).
+				body("results[0].internal", is(false)).
+				body("results[0].vocabularyTermSetVocabulary.name", is(testVocabulary1.getName())).
+				body("results[0].vocabularyTermSetDescription", is("Creation test VocabularyTermSet")).
+				body("results[0].memberTerms", hasSize(1)).
+				body("results[0].memberTerms[0].name", is(testVocabularyTerm1.getName())).
+				body("results[0].createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("results[0].updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 
 	@Test
@@ -110,19 +113,21 @@ public class VocabularyTermSetITCase {
 				statusCode(200);
 		
 		RestAssured.given().
+		contentType("application/json").
+				body("{\"name\": \"" + testVocabularyTermSetName2 + "\" }").
 				when().
-				get("/api/vocabularytermset/findBy/" + testVocabularyTermSetName2).
+				post("/api/vocabularytermset/find").
 				then().
 				statusCode(200).
-				body("entity.name", is(testVocabularyTermSetName2)).
-				body("entity.obsolete", is(false)).
-				body("entity.internal", is(true)).
-				body("entity.vocabularyTermSetVocabulary.name", is(testVocabulary2.getName())).
-				body("entity.vocabularyTermSetDescription", is("Update test VocabularyTermSet")).
-				body("entity.memberTerms", hasSize(1)).
-				body("entity.memberTerms[0].name", is(testVocabularyTerm3.getName())).
-				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+				body("results[0].name", is(testVocabularyTermSetName2)).
+				body("results[0].obsolete", is(false)).
+				body("results[0].internal", is(true)).
+				body("results[0].vocabularyTermSetVocabulary.name", is(testVocabulary2.getName())).
+				body("results[0].vocabularyTermSetDescription", is("Update test VocabularyTermSet")).
+				body("results[0].memberTerms", hasSize(1)).
+				body("results[0].memberTerms[0].name", is(testVocabularyTerm3.getName())).
+				body("results[0].createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("results[0].updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
 	}
 	
 	@Test
@@ -448,15 +453,17 @@ public class VocabularyTermSetITCase {
 	
 	private VocabularyTermSet getVocabularyTermSet(String name) {
 		
-		ObjectResponse<VocabularyTermSet> response =
+		SearchResponse<VocabularyTermSet> response =
 				RestAssured.given().
+					contentType("application/json").
+					body("{\"name\": \"" + name + "\" }").
 					when().
-					get("/api/vocabularytermset/findBy/" + name).
+					post("/api/vocabularytermset/find").
 					then().
 					statusCode(200).
-					extract().body().as(getObjectResponseTypeRefVocabularyTermSet());
+					extract().body().as(getSearchResponseTypeRefVocabularyTermSet());
 		
-		return response.getEntity();
+		return response.getSingleResult();
 	}
 
 	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
@@ -467,7 +474,7 @@ public class VocabularyTermSetITCase {
 		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
 	}
 	
-	private TypeRef<ObjectResponse<VocabularyTermSet>> getObjectResponseTypeRefVocabularyTermSet() {
-		return new TypeRef<ObjectResponse <VocabularyTermSet>>() { };
+	private TypeRef<SearchResponse<VocabularyTermSet>> getSearchResponseTypeRefVocabularyTermSet() {
+		return new TypeRef<SearchResponse <VocabularyTermSet>>() { };
 	}
 }
