@@ -86,9 +86,8 @@ public class DiseaseAnnotationITCase {
 	private Vocabulary annotationTypeVocabulary;
 	private Vocabulary noteTypeVocabulary;
 	private Vocabulary conditionRelationTypeVocabulary;
-	private VocabularyTerm geneDiseaseRelation;
 	private VocabularyTerm geneDiseaseRelation2;
-	private VocabularyTerm alleleDiseaseRelation;
+	private VocabularyTerm alleleAndGeneDiseaseRelation;
 	private VocabularyTerm agmDiseaseRelation;
 	private VocabularyTerm geneticSex;
 	private VocabularyTerm diseaseGeneticModifierRelation;
@@ -140,9 +139,8 @@ public class DiseaseAnnotationITCase {
 		diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 		diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
 		annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
-		geneDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in");
 		geneDiseaseRelation2 = createVocabularyTerm(diseaseRelationVocabulary, "is_marker_for", false);
-		alleleDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in");
+		alleleAndGeneDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in");
 		agmDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_model_of");
 		diseaseQualifiers.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity", false));
 		geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite", false);
@@ -165,7 +163,7 @@ public class DiseaseAnnotationITCase {
 		createRequiredObjects();
 		
 		GeneDiseaseAnnotation diseaseAnnotation = new GeneDiseaseAnnotation();
-		diseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		diseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		diseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setNegated(false);
 		diseaseAnnotation.setObject(testDoTerm);
@@ -207,7 +205,7 @@ public class DiseaseAnnotationITCase {
 	public void createAlleleDiseaseAnnotation() {
 
 		AlleleDiseaseAnnotation diseaseAnnotation = new AlleleDiseaseAnnotation();
-		diseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		diseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		diseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION);
 		diseaseAnnotation.setNegated(false);
 		diseaseAnnotation.setObject(testDoTerm);
@@ -322,6 +320,7 @@ public class DiseaseAnnotationITCase {
 				put("/api/gene-disease-annotation").
 				then().
 				statusCode(200);
+				
 
 		RestAssured.given().
 				when().
@@ -359,7 +358,7 @@ public class DiseaseAnnotationITCase {
 	public void editAlleleDiseaseAnnotation() {
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -489,7 +488,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithObsoleteEcoTerm() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -524,7 +523,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithObsoleteDoTerm() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testObsoleteDoTerm);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -559,7 +558,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithMissingSubject() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -594,7 +593,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithMissingObject() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(null);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -665,7 +664,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithMissingDataProvider() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider(null);
@@ -704,7 +703,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -743,7 +742,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedDoTerm.setObsolete(false);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(nonPersistedDoTerm);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -820,7 +819,7 @@ public class DiseaseAnnotationITCase {
 		ecoTerms.add(nonPersistedEcoTerm);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -859,7 +858,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedBiologicalEntity.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -897,7 +896,7 @@ public class DiseaseAnnotationITCase {
 		withGenes.add(testGene2);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -936,7 +935,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedModel.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -971,7 +970,7 @@ public class DiseaseAnnotationITCase {
 	@Order(20)
 	public void editWithMissingCreatedBy() {
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1006,7 +1005,7 @@ public class DiseaseAnnotationITCase {
 	public void editAttachedNote() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1052,7 +1051,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithObsoleteNoteType() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1093,7 +1092,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithObsoleteConditionRelationType() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1136,7 +1135,7 @@ public class DiseaseAnnotationITCase {
 		Reference invalidReference = new Reference();
 		invalidReference.setCurie("Invalid");
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1176,7 +1175,7 @@ public class DiseaseAnnotationITCase {
 		relatedNotes.remove(0);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1250,7 +1249,7 @@ public class DiseaseAnnotationITCase {
 		relatedNotes.add(note);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1297,7 +1296,7 @@ public class DiseaseAnnotationITCase {
 		conditionRelations.add(conditionRelation);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1345,7 +1344,7 @@ public class DiseaseAnnotationITCase {
 		
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1421,7 +1420,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1462,7 +1461,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1671,7 +1670,7 @@ public class DiseaseAnnotationITCase {
 	public void editAlleleDiseaseAnnotationWithObsoleteInferredGene() {
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1708,7 +1707,7 @@ public class DiseaseAnnotationITCase {
 	public void editAlleleDiseaseAnnotationWithObsoleteAssertedGene() {
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1901,7 +1900,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithObsoleteSubject() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1941,7 +1940,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithInvalidGeneticSex() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -1976,7 +1975,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithInvalidAnnotationType() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -2011,7 +2010,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithInvalidDiseaseGeneticModifierRelation() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -2049,7 +2048,7 @@ public class DiseaseAnnotationITCase {
 		withGenes.add(testObsoleteGene);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -2085,7 +2084,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2121,7 +2120,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testObsoleteDoTerm);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2157,7 +2156,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2192,7 +2191,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setDataProvider("TEST2");
 		newDiseaseAnnotation.setSubject(testGene2);
@@ -2263,7 +2262,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION3);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setSubject(testGene2);
@@ -2302,7 +2301,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2342,7 +2341,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(nonPersistedDoTerm);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2421,7 +2420,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2461,7 +2460,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2500,7 +2499,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2540,7 +2539,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2576,7 +2575,7 @@ public class DiseaseAnnotationITCase {
 	public void createWithMissingCreatedBy() {
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION3);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2617,7 +2616,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2660,7 +2659,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2705,7 +2704,7 @@ public class DiseaseAnnotationITCase {
 		invalidReference.setCurie("Invalid");
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2744,7 +2743,7 @@ public class DiseaseAnnotationITCase {
 		
 		AlleleDiseaseAnnotation newDiseaseAnnotation = new AlleleDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -2786,7 +2785,7 @@ public class DiseaseAnnotationITCase {
 		
 		AlleleDiseaseAnnotation newDiseaseAnnotation = new AlleleDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3000,7 +2999,7 @@ public class DiseaseAnnotationITCase {
 		
 		AlleleDiseaseAnnotation newDiseaseAnnotation = new AlleleDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3038,7 +3037,7 @@ public class DiseaseAnnotationITCase {
 		
 		AlleleDiseaseAnnotation newDiseaseAnnotation = new AlleleDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3236,7 +3235,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3277,7 +3276,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3313,7 +3312,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3349,7 +3348,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3388,7 +3387,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3423,7 +3422,7 @@ public class DiseaseAnnotationITCase {
 	public void createDuplicateDiseaseAnnotation() {
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3458,7 +3457,7 @@ public class DiseaseAnnotationITCase {
 	public void createDiseaseAnnotationWithModifierWithoutRelation() {
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3492,7 +3491,7 @@ public class DiseaseAnnotationITCase {
 	public void createDiseaseAnnotationWithModiferRelationWithoutModifier() {
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3526,7 +3525,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithModifierWithoutRelation() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3561,7 +3560,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithModifierRelationWithoutModifier() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3596,7 +3595,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithMissingSingleReference() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3632,7 +3631,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3667,7 +3666,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithMissingEvidenceCodes() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3703,7 +3702,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3742,7 +3741,7 @@ public class DiseaseAnnotationITCase {
 		mismatchedRefNotes.add(mismatchRefNote);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3780,7 +3779,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3817,7 +3816,7 @@ public class DiseaseAnnotationITCase {
 		mismatchedRefNotes.add(mismatchRefNote);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3857,7 +3856,7 @@ public class DiseaseAnnotationITCase {
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId("TEST:MismatchRef");
-		newDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		newDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		newDiseaseAnnotation.setNegated(true);
 		newDiseaseAnnotation.setObject(testDoTerm2);
 		newDiseaseAnnotation.setDataProvider("TEST2");
@@ -3892,7 +3891,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullGeneticSex() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3937,7 +3936,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullWith() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -3983,7 +3982,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullRelatedNotes() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4028,7 +4027,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullSgdStrainBackground() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4076,7 +4075,7 @@ public class DiseaseAnnotationITCase {
 		conditionRelations.add(conditionRelation);
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4122,7 +4121,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullAnnotationType() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4167,7 +4166,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullDiseaseQualifiers() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4212,7 +4211,7 @@ public class DiseaseAnnotationITCase {
 	public void editWithNullDiseaseGeneticModifierAndRelation() {
 		
 		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4247,7 +4246,7 @@ public class DiseaseAnnotationITCase {
 	public void editAlleleAnnotationWithNullInferredGene() {
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");
@@ -4292,7 +4291,7 @@ public class DiseaseAnnotationITCase {
 	public void editAlleleAnnotationWithNullAssertedGene() {
 		
 		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
-		editedDiseaseAnnotation.setDiseaseRelation(alleleDiseaseRelation);
+		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
 		editedDiseaseAnnotation.setDataProvider("TEST2");

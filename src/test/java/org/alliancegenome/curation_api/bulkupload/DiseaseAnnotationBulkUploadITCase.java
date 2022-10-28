@@ -4199,17 +4199,18 @@ public class DiseaseAnnotationBulkUploadITCase {
 		Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
 		Vocabulary annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
 		Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
-		VocabularyTerm noteTypeVocabularyTerm = createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
+		createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
 		VocabularyTerm alleleAndGeneDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAlleleAndGeneDiseaseRelation);
 		VocabularyTerm agmDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAgmDiseaseRelation);
+		VocabularyTerm geneDiseaseVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, "is_marker_for");
 		createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier);
 		createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex);
 		createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
 		createVocabularyTerm(annotationTypeVocabulary, requiredAnnotationType);
 		createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
-		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, agmDiseaseRelationVocabularyTerm);
-		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, alleleAndGeneDiseaseRelationVocabularyTerm);
-		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, alleleAndGeneDiseaseRelationVocabularyTerm);
+		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(agmDiseaseRelationVocabularyTerm));
+		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(alleleAndGeneDiseaseRelationVocabularyTerm));
+		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(geneDiseaseVocabularyTerm, alleleAndGeneDiseaseRelationVocabularyTerm));
 	}
 	
 	private void loadDOTerm() throws Exception {
@@ -4440,12 +4441,12 @@ public class DiseaseAnnotationBulkUploadITCase {
 		return response.getEntity();
 	}
 	
-	private void createVocabularyTermSet(String name, Vocabulary vocabulary, VocabularyTerm term) {
+	private void createVocabularyTermSet(String name, Vocabulary vocabulary, List<VocabularyTerm> terms) {
 		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
 		vocabularyTermSet.setName(name);
 		vocabularyTermSet.setVocabularyTermSetVocabulary(vocabulary);
 		vocabularyTermSet.setInternal(false);
-		vocabularyTermSet.setMemberTerms(List.of(term));
+		vocabularyTermSet.setMemberTerms(terms);
 		
 		RestAssured.given().
 				contentType("application/json").
