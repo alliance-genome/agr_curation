@@ -132,6 +132,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
 			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].uniqueId", is("exacerbated_by|test_handle|" + requiredReference + "|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text")).
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -205,6 +206,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
 			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].uniqueId", is("exacerbated_by|test_handle|" + requiredReference + "|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text")).
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -279,6 +281,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].conditionRelations[0].conditionRelationType.name", is("exacerbated_by")).
 			body("results[0].conditionRelations[0].internal", is(false)).
 			body("results[0].conditionRelations[0].obsolete", is(false)).
+			body("results[0].conditionRelations[0].uniqueId", is("exacerbated_by|test_handle|" + requiredReference + "|DATEST:ExpCondTerm0001|DATEST:ExpCondTerm0002|DATEST:AnatomyTerm0001|DATEST:ChemicalTerm0001|DATEST:GOTerm0001|NCBITaxon:6239|Some amount|Free text")).
 			body("results[0].conditionRelations[0].conditions", hasSize(1)).
 			body("results[0].conditionRelations[0].conditions[0].conditionClass.curie", is("DATEST:ExpCondTerm0001")).
 			body("results[0].conditionRelations[0].conditions[0].conditionId.curie", is("DATEST:ExpCondTerm0002")).
@@ -336,7 +339,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			statusCode(200).
 			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
 			body("results", hasSize(1)).
-			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|" + requiredReferenceXref));
+			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|" + requiredReference));
 	}
 	
 	@Test
@@ -2482,7 +2485,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
-			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|" + requiredReferenceXref));
+			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|" + requiredReference));
 	}
 	
 	@Test

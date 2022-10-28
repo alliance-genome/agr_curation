@@ -69,16 +69,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				daResponse.addErrorMessage("object", ValidationConstants.INVALID_MESSAGE);
 			annotation.setObject(disease);
 		}
-
-		if (StringUtils.isBlank(dto.getSingleReference())) {
-			daResponse.addErrorMessage("singleReference", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			Reference reference = referenceService.retrieveFromDbOrLiteratureService(dto.getSingleReference());
-			if (reference == null)
-				daResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
-			annotation.setSingleReference(reference);
-		}	
-				
+		
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodes())) {
 			daResponse.addErrorMessage("evidenceCodes", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -225,6 +216,23 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			annotation.setConditionRelations(null);
 		}
 
+		daResponse.setEntity(annotation);
+		return daResponse;
+	}
+	
+	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateReference (E annotation, D dto) {
+		ObjectResponse<E> daResponse = new ObjectResponse<E>();
+		
+		Reference reference = null;
+		if (StringUtils.isBlank(dto.getSingleReference())) {
+			daResponse.addErrorMessage("singleReference", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getSingleReference());
+			if (reference == null)
+				daResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
+		}	
+		annotation.setSingleReference(reference);
+		
 		daResponse.setEntity(annotation);
 		return daResponse;
 	}
