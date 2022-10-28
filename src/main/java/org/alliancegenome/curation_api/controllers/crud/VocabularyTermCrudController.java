@@ -50,4 +50,9 @@ public class VocabularyTermCrudController extends BaseEntityCrudController<Vocab
 		return vocabularyTermService.getTermInVocabulary(vocabularyName, termName);
 	}
 
+	@Override
+	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(String vocabularyTermSetName, String termName) {
+		return vocabularyTermService.getTermInVocabularyTermSet(vocabularyTermSetName, termName);
+	}
+
 }
