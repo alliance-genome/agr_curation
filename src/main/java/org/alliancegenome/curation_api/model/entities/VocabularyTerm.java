@@ -9,6 +9,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -38,6 +39,9 @@ import lombok.ToString;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"vocabulary", "vocabularyTermSets"})
+@Table(indexes = {
+		@Index(name = "vocabularyterm_name_index", columnList = "name")
+	})
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 public class VocabularyTerm extends GeneratedAuditedObject {
