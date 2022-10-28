@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -11,18 +10,14 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.GeneDAO;
-import org.alliancegenome.curation_api.dao.ReferenceDAO;
-import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
-import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
-import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -73,19 +68,18 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		List<String> curiesToRemove = ListUtils.subtract(alleleCuriesBefore, distinctAfter);
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
-		log.info("Deleting disease annotations linked to " + curiesToRemove.size() + " unloaded alleles");
-		List<String> foundAlleleCuries = new ArrayList<String>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " alleles", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			Allele allele = alleleDAO.find(curie);
 			if (allele != null) {
-				foundAlleleCuries.add(curie);
+				alleleDAO.deleteAlleleAndReferencingDiseaseAnnotations(curie);
 			} else {
 				log.error("Failed getting allele: " + curie);
 			}
+			ph.progressProcess();
 		}
-		alleleDAO.deleteReferencingDiseaseAnnotations(foundAlleleCuries);
-		foundAlleleCuries.forEach(curie -> {delete(curie);});
-		log.info("Deletion of disease annotations linked to unloaded alleles finished");
+		ph.finishProcess();
 	}
 	
 	public List<String> getCuriesByTaxonId(String taxonId) {
