@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AffectedGenomicModelValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AffectedGenomicModelDTOValidator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
@@ -93,19 +94,18 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
-		log.info("Deleting disease annotations linked to " + curiesToRemove.size() + " unloaded AGMs");
-		List<String> foundAgmCuries = new ArrayList<String>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
 			if (agm != null) {
-				foundAgmCuries.add(curie);
+				affectedGenomicModelDAO.deleteAgmAndReferencingDiseaseAnnotations(curie);
 			} else {
 				log.error("Failed getting AGM: " + curie);
 			}
+			ph.progressProcess();
 		}
-		affectedGenomicModelDAO.deleteReferencingDiseaseAnnotations(foundAgmCuries);
-		foundAgmCuries.forEach(curie -> {delete(curie);});
-		log.info("Deletion of disease annotations linked to unloaded AGMs finished");
+		ph.finishProcess();
 	}
 	
 	public List<String> getCuriesByTaxonId(String taxonId) {
