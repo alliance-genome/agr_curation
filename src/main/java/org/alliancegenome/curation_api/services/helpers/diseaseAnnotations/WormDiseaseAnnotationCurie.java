@@ -15,11 +15,11 @@ public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	 * @return curie string
 	 */
 	@Override
-	public String getCurieID(DiseaseAnnotationDTO annotationDTO) {
+	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
 		curie.add(annotationDTO.getSubject());
 		curie.add(annotationDTO.getObject());
-		curie.add(annotationDTO.getSingleReference());
+		curie.add(refCurie);
 		return curie.getCurie();
 	}
 
