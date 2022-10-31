@@ -21,9 +21,10 @@ public class NoteDTO extends AuditedObjectDTO{
 	private String freeText;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("note_type")
-	private String noteType;
+	@JsonProperty("note_type_name")
+	private String noteTypeName;
 	
 	@JsonView({View.FieldsAndLists.class})
-	private List<String> references;
+	@JsonProperty("evidence_curies")
+	private List<String> evidenceCuries;
 }

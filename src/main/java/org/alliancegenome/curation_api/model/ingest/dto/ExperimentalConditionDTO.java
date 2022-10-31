@@ -1,22 +1,23 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import org.alliancegenome.curation_api.model.ingest.dto.base.UniqueIdAuditedObjectDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 
 @Data
-public class ExperimentalConditionDTO extends UniqueIdAuditedObjectDTO{
+public class ExperimentalConditionDTO extends AuditedObjectDTO{
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("condition_class")
-	private String conditionClass;
+	@JsonProperty("condition_class_curie")
+	private String conditionClassCurie;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("condition_id")
-	private String conditionId;
+	@JsonProperty("condition_id_curie")
+	private String conditionIdCurie;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("condition_quantity")
@@ -24,20 +25,20 @@ public class ExperimentalConditionDTO extends UniqueIdAuditedObjectDTO{
 	
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("condition_gene_ontology")
-	private String conditionGeneOntology;
+	@JsonProperty("condition_gene_ontology_curie")
+	private String conditionGeneOntologyCurie;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("condition_anatomy")
-	private String conditionAnatomy;
+	@JsonProperty("condition_anatomy_curie")
+	private String conditionAnatomyCurie;
 	
-	@JsonProperty("condition_taxon")
-	private String conditionTaxon;
+	@JsonProperty("condition_taxon_curie")
+	private String conditionTaxonCurie;
 	
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("condition_chemical")
-	private String conditionChemical;
+	@JsonProperty("condition_chemical_curie")
+	private String conditionChemicalCurie;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("condition_free_text")

@@ -17,12 +17,12 @@ public class AuditedObjectDTO extends BaseDTO {
 	private Boolean obsolete = false;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("created_by")
-	private String createdBy;
+	@JsonProperty("created_by_curie")
+	private String createdByCurie;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("updated_by")
-	private String updatedBy;
+	@JsonProperty("updated_by_curie")
+	private String updatedByCurie;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("date_created")

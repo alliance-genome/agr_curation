@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.view.View;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -15,6 +16,7 @@ public class GenomicEntityDTO extends BiologicalEntityDTO {
 	private String name;
 	
 	@JsonView({View.FieldsAndLists.class})
-	private List<SynonymDTO> synonyms;
+	@JsonProperty("synonym_dtos")
+	private List<SynonymDTO> synonymDtos;
 	
 }

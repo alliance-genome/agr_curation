@@ -43,10 +43,10 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	ConditionRelation relation;
     	
     	Reference reference = null;
-    	if (StringUtils.isNotBlank(dto.getSingleReference())) {
-    		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getSingleReference());
+    	if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
+    		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
 			if (reference == null)
-				crResponse.addErrorMessage("singleReference", ValidationConstants.INVALID_MESSAGE);
+				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE);
     	}
     	String refCurie = reference == null ? null : reference.getCurie();
     	
@@ -66,24 +66,24 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	relation = aoResponse.getEntity();
     	crResponse.addErrorMessages(aoResponse.getErrorMessages());
     	
-    	String relationType = dto.getConditionRelationType();
+    	String relationType = dto.getConditionRelationTypeName();
     	if (StringUtils.isBlank(relationType)) {
-    		crResponse.addErrorMessage("conditionRelationType", ValidationConstants.REQUIRED_MESSAGE);
+    		crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.REQUIRED_MESSAGE);
     	} else {
     		VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
 			if (conditionRelationTypeTerm == null)
-				crResponse.addErrorMessage("conditionRelationType", ValidationConstants.INVALID_MESSAGE);
+				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE);
 			relation.setConditionRelationType(conditionRelationTypeTerm);
     	}
     	
     	List<ExperimentalCondition> conditions = new ArrayList<>();
-    	if (CollectionUtils.isEmpty(dto.getConditions())) {
-    		crResponse.addErrorMessage("conditions", ValidationConstants.REQUIRED_MESSAGE);
+    	if (CollectionUtils.isEmpty(dto.getConditionDtos())) {
+    		crResponse.addErrorMessage("condition_dtos", ValidationConstants.REQUIRED_MESSAGE);
     	} else {
-    		for (ExperimentalConditionDTO conditionDTO : dto.getConditions()) {
+    		for (ExperimentalConditionDTO conditionDTO : dto.getConditionDtos()) {
     			ObjectResponse<ExperimentalCondition> ecResponse = experimentalConditionDtoValidator.validateExperimentalConditionDTO(conditionDTO);
     			if (ecResponse.hasErrors()) {
-    				crResponse.addErrorMessage("conditions", ecResponse.errorMessagesString());
+    				crResponse.addErrorMessage("condition_dtos", ecResponse.errorMessagesString());
     			} else {
     				conditions.add(experimentalConditionDAO.persist(ecResponse.getEntity()));
     			}
@@ -93,8 +93,8 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     	
     	if (StringUtils.isNotBlank(dto.getHandle())) {
     		relation.setHandle(dto.getHandle());
-    		if (StringUtils.isBlank(dto.getSingleReference())) {
-    			crResponse.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "singleReference");
+    		if (StringUtils.isBlank(dto.getReferenceCurie())) {
+    			crResponse.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "reference_curie");
     		}
     	} else {
     		if (relation.getHandle() != null) {

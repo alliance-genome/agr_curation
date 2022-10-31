@@ -16,19 +16,20 @@ public class AlleleDTO extends GenomicEntityDTO {
 	private String symbol;
 	
 	@JsonView({View.FieldsAndLists.class})
-	private List<String> references;
+	@JsonProperty("reference_curies")
+	private List<String> referenceCuries;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("inheritance_mode")
-	private String inheritanceMode;
+	@JsonProperty("inheritance_mode_name")
+	private String inheritanceModeName;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("in_collection")
-	private String inCollection;
+	@JsonProperty("in_collection_name")
+	private String inCollectionName;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("sequencing_status")
-	private String sequencingStatus;
+	@JsonProperty("sequencing_status_name")
+	private String sequencingStatusName;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("is_extinct")

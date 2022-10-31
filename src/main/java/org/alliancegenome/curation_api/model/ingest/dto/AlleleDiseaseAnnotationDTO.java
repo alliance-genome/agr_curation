@@ -15,11 +15,15 @@ import lombok.Setter;
 public class AlleleDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("inferred_gene")
-	private String inferredGene;
+	@JsonProperty("allele_curie")
+	private String alleleCurie;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("inferred_gene_curie")
+	private String inferredGeneCurie;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("asserted_genes")
-	private List<String> assertedGenes;
+	@JsonProperty("asserted_gene_curies")
+	private List<String> assertedGeneCuries;
 	
 }
