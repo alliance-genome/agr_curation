@@ -88,13 +88,6 @@ export const NewVocabularyTermSetForm = ({
 		});
 	}
 	
-	const isVocabularySelected = () => {
-		return (
-			typeof newVocabularyTermSet.vocabularyTermSetVocabulary === "object"
-			&& newVocabularyTermSet.vocabularyTermSetVocabulary
-		)
-	}
-
 	const dialogFooter = (
 		<>
 			<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
@@ -170,7 +163,6 @@ export const NewVocabularyTermSetForm = ({
 								isMultiple={true}
 								classNames={classNames({'p-invalid': submitted && errorMessages?.memberTerms})}
 								passedOnChange={onMemberTermsChange}
-								isEnabled ={isVocabularySelected}
 								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 									<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
