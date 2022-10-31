@@ -16,6 +16,9 @@ import {EvidenceAutocompleteTemplate} from '../../components/Autocomplete/Eviden
 import {RelatedNotesForm} from "./RelatedNotesForm";
 import {ConditionRelationsForm} from "./ConditionRelationsForm";
 import {ConditionRelationHandleFormDropdown} from "../../components/ConditionRelationHandleFormSelector";
+import { ControlledVocabularyFormDropdown } from '../../components/ControlledVocabularyFormSelector';
+import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
+import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -44,6 +47,11 @@ export const NewAnnotationForm = ({
 	} = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
 	const validationService = new ValidationService();
+	const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
+	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
+	const annotationTypeTerms = useControlledVocabularyService('Annotation types');
+	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
+	const geneticModifierRelationTerms = useControlledVocabularyService('Disease genetic modifier relations');
 
 	const validate = async (entities, endpoint) => {
 		const validationResultsArray = [];
@@ -400,6 +408,122 @@ export const NewAnnotationForm = ({
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations[0]?.handle"}/>
 						</SplitterPanel>
 					</Splitter>
+					<Splitter style={{border:'none', height:'10%', padding:'10px', width: '40%'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}}>
+							<label htmlFor="geneticSex">Genetic Sex</label>
+							<ControlledVocabularyFormDropdown
+								name="geneticSex"
+								options={geneticSexTerms}
+								editorChange={onDropdownFieldChange}
+								value={newAnnotation.geneticSex}
+								className={classNames({'p-invalid': submitted && errorMessages.geneticSex})}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"geneticSex"} />
+						</SplitterPanel>
+					</Splitter>
+
+					<Splitter style={{border:'none', height:'10%', padding:'10px', width: '40%'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}}>
+							<label htmlFor="diseaseQualifiers">Disease Qualifiers</label>
+							<ControlledVocabularyFormMultiSelectDropdown
+								name="diseaseQualifiers"
+								options={diseaseQualifiersTerms}
+								editorChange={onArrayFieldChange}
+								placeholderText="Select"
+								value={newAnnotation.diseaseQualifiers}
+								className={classNames({'p-invalid': submitted && errorMessages.diseaseQualifiers})}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseQualifiers"} />
+						</SplitterPanel>
+					</Splitter>
+
+					<Splitter style={{border:'none', height:'10%', padding:'10px', width: '40%'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}}>
+							<label htmlFor="sgdStrainBackground">SGD Strain Background</label>
+							<AutocompleteFormEditor
+								autocompleteFields={["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+								searchService={searchService}
+								endpoint='agm'
+								filterName='sgdStrainBackgroundFilter'
+								fieldName='sgdStrainBackground'
+								isSgdStrainBackground={true}
+								name="sgdStrainBackground"
+								label="SGD Strain Background"
+								value={newAnnotation.sgdStrainBackground}
+								onValueChangeHandler={onSingleReferenceChange}
+								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+								classNames={classNames({'p-invalid': submitted && errorMessages.sgdStrainBackground})}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"sgdStrainBackground"}/>
+						</SplitterPanel>
+					</Splitter>
+
+					<Splitter style={{border:'none', height:'10%', padding:'10px', width: '40%'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}}>
+							<label htmlFor="annotationType">Annotation Type</label>
+								<ControlledVocabularyFormDropdown
+									name="annotationType"
+									field="annotationType"
+									options={annotationTypeTerms}
+									editorChange={onDropdownFieldChange}
+									showClear={true}
+									value={newAnnotation.annotationType}
+									className={classNames({'p-invalid': submitted && errorMessages.annotationType})}
+								/>
+								<FormErrorMessageComponent errorMessages={errorMessages} errorField={"annotationType"} />
+						</SplitterPanel>
+					</Splitter>
+
+					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}} size={40}>
+							<label htmlFor="diseaseGeneticModifierRelation">Genetic Modifier Relation</label>
+							<ControlledVocabularyFormDropdown
+								name="diseaseGeneticModifierRelation"
+								field="diseaseGeneticModifierRelation"
+								options={geneticModifierRelationTerms}
+								editorChange={onDropdownFieldChange}
+								showClear={true}
+								value={newAnnotation.diseaseGeneticModifierRelation}
+								className={classNames({'p-invalid': submitted && errorMessages.diseaseGeneticModifierRelation})}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifierRelation"}/>
+						</SplitterPanel>
+						<SplitterPanel style={{paddingRight: '10px'}} size={60}>
+							<label htmlFor="diseaseGeneticModifier">Genetic Modifier</label>
+							<AutocompleteFormEditor
+								autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+								name="diseaseGeneticModifier"
+								searchService={searchService}
+								endpoint='biologicalentity'
+								filterName='geneticModifierFilter'
+								fieldName='diseaseGeneticModifier'
+								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+								value={newAnnotation.diseaseGeneticModifier}
+								onValueChangeHandler={onSingleReferenceChange}
+								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseGeneticModifier})}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifier"}/>
+						</SplitterPanel>
+					</Splitter>
+
+					<Splitter style={{border:'none', height:'10%', padding:'10px', width: '40%'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}}>
+							<label htmlFor="internal"><font color={'red'}>*</font>Internal</label>
+							<Dropdown
+								name="internal"
+								value={newAnnotation.internal}
+								options={booleanTerms}
+								optionLabel='text'
+								optionValue='name'
+								onChange={onDropdownFieldChange}
+								className={classNames({'p-invalid': submitted && errorMessages.internal})}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
+						</SplitterPanel>
+					</Splitter>
+
 				</form>
 			</Dialog>
 		</div>
