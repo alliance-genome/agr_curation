@@ -2,11 +2,9 @@ package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -29,37 +27,35 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Audited
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
-@Schema(name="Vocabulary", description="POJO that represents the Vocabulary")
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
-@Table(indexes = {
-	@Index(name = "vocabulary_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "vocabulary_name_index", columnList = "name")
-})
-public class Vocabulary extends GeneratedAuditedObject {
-	
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(unique = true)
-	@JsonView({View.FieldsOnly.class})
-	private String name;
+@Schema(name="VocabularyTermSet", description="POJO that represents the Vocabulary Term Set")
+@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+public class VocabularyTermSet extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "vocabularyDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
-	private String vocabularyDescription;
+	private String name;
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(mappedBy = "vocabulary")
-	@JsonView({View.VocabularyView.class})
+	@ManyToOne
+	@JsonView({View.VocabularyTermSetView.class})
+	private Vocabulary vocabularyTermSetVocabulary;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany
+	@JsonView({View.VocabularyTermSetView.class})
 	private List<VocabularyTerm> memberTerms;
-
+	
+	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "description_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@JsonView({View.VocabularyTermSetView.class})
+	private String vocabularyTermSetDescription;
+	
 }

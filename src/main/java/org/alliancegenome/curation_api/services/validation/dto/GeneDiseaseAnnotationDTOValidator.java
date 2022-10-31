@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -36,7 +37,14 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
 		Gene gene;
+		
 		ObjectResponse<GeneDiseaseAnnotation> gdaResponse = new ObjectResponse<GeneDiseaseAnnotation>();
+		
+		ObjectResponse<GeneDiseaseAnnotation> refResponse = validateReference(annotation, dto);
+		gdaResponse.addErrorMessages(refResponse.getErrorMessages());
+		Reference validatedReference = refResponse.getEntity().getSingleReference();
+		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
+		
 		if (StringUtils.isBlank(dto.getSubject())) {
 			gdaResponse.addErrorMessage("subject", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -46,7 +54,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto, refCurie);
 				}
 		
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
@@ -58,6 +66,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				}
 			}
 		}
+		annotation.setSingleReference(validatedReference);
 		
 		AffectedGenomicModel sgdStrainBackground = null;
 		if (StringUtils.isNotBlank(dto.getSgdStrainBackground())) {
@@ -73,7 +82,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
-			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY, dto.getDiseaseRelation());
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelation());
 			if (diseaseRelation == null)
 				gdaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
 			annotation.setDiseaseRelation(diseaseRelation);
