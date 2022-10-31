@@ -17,12 +17,12 @@ export const AutocompleteRowEditor = (
 		otherFilters = [],
 		isSubject = false,
 		isWith = false,
+		isMemberTerms = false,
 		isMultiple = false,
 		isReference = false,
 		isSgdStrainBackground = false,
 		valueDisplay,
 		passedOnChange
-
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -33,10 +33,10 @@ export const AutocompleteRowEditor = (
 				return getRefString(rowProps.rowData[fieldName]);
 			return isMultiple ?
 				rowProps.rowData[fieldName] :
-				rowProps.rowData[fieldName]?.curie
+				rowProps.rowData[fieldName]?.[subField]
 		}
 	);
-
+	
 	const op = useRef(null);
 	const [autocompleteSelectedItem, setAutocompleteSelectedItem] = useState({});
 	const search = (event) => {
@@ -48,6 +48,15 @@ export const AutocompleteRowEditor = (
 				...((isSubject || isWith || isReference) && {tokenOperator: "AND"})
 			}
 		});
+		if (isMemberTerms) {
+			otherFilters={
+				vocabularyFilter: {
+					"vocabulary.name": {
+						queryString: rowProps.props.value[rowProps.rowIndex].vocabularyTermSetVocabulary.name
+					}
+				}
+			}
+		}
 
 		searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters})
 			.then((data) => {
@@ -85,11 +94,11 @@ export const AutocompleteRowEditor = (
 
 		if (typeof event.target.value === "object") {
 			 updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
-			 setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			 setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
 		} else {
 			updatedRows[rowProps.rowIndex][fieldName] = {};
-			updatedRows[rowProps.rowIndex][fieldName]["curie"] = event.target.value;
-			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			updatedRows[rowProps.rowIndex][fieldName][subField] = event.target.value;
+			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
 		}
 	};
 
