@@ -33,7 +33,7 @@ const newVocabularyTermSetReducer = (draft, action) => {
 			draft.newVocabularyTermSetDialog = true;
 			break;
 		default:
-      throw Error('Unknown action: ' + action.type);
+			throw Error('Unknown action: ' + action.type);
 	}
 };
 
