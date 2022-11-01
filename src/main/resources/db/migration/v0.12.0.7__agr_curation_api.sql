@@ -19,6 +19,8 @@ CREATE INDEX personsetting_updatedby_index ON public.personsetting USING btree (
 CREATE INDEX reference_createdby_index ON public.reference USING btree (createdby_id);
 CREATE INDEX reference_updatedby_index ON public.reference USING btree (updatedby_id);
 
+DROP INDEX idxps5haxca5tl3e2xmx5tdjcnyr;
+
 ALTER TABLE ONLY public.vocabularytermset
     ADD CONSTRAINT fk2r8ma9a3j52tdas1y22yk9pso FOREIGN KEY (updatedby_id) REFERENCES public.person(id);
 ALTER TABLE ONLY public.ontologyterm_synonym
