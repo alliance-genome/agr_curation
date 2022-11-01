@@ -15,10 +15,8 @@ export const AutocompleteFormEditor = (
 		subField = "curie",
 		otherFilters = [],
 		isSubject = false,
-		isWith = false,
 		isMultiple = false,
 		isReference = false,
-		isSgdStrainBackground = false,
 		valueDisplayHandler,
 		value,
 		customRef,
@@ -35,20 +33,14 @@ export const AutocompleteFormEditor = (
 		autocompleteFields.forEach(field => {
 			filter[field] = {
 				queryString: event.query,
-				...((isSubject || isWith || isReference) && {tokenOperator: "AND"})
+				...((isSubject || isReference) && {tokenOperator: "AND"})
 			}
 		});
 
 		searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters})
 			.then((data) => {
 				if (data.results?.length > 0) {
-					if (isWith) {
-						setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-					} else if (isSgdStrainBackground) {
-						setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
-					} else {
-						setFiltered(data.results);
-					}
+					setFiltered(data.results);
 				} else {
 					setFiltered([]);
 				}
