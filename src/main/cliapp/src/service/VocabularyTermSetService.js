@@ -8,7 +8,7 @@ export class VocabularyTermSetService extends BaseAuthService {
 
 	async deleteVocabularyTermSet(updatedVocabularyTermSet) {
 		const deletionService = new DeletionService();
-		return await deletionService.delete('/vocabularytermset', updatedVocabularyTermSet.id);
+		return await deletionService.delete('vocabularytermset', updatedVocabularyTermSet.id);
 	}
 
 	createVocabularyTermSet(vocabularyTermSet) {
