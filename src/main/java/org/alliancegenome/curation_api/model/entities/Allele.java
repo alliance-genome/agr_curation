@@ -54,7 +54,10 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "Allele_curie, references_curie"))
+	@JoinTable(indexes = {
+		@Index( columnList = "Allele_curie"),
+		@Index( columnList = "references_curie")
+	})
 	@JsonView({View.FieldsAndLists.class, View.Allele.class})
 	private List<Reference> references;
 
