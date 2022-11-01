@@ -22,7 +22,8 @@ export const AutocompleteRowEditor = (
 		isReference = false,
 		isSgdStrainBackground = false,
 		valueDisplay,
-		passedOnChange
+		passedOnChange,
+		isEnabled=true
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -126,6 +127,7 @@ export const AutocompleteRowEditor = (
 				onHide={(e) => op.current.hide(e)}
 				onChange={(e) => onValueChange(e)}
 				className={classNames}
+				disabled={!isEnabled}
 			/>
 			<EditorTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} dataType={fieldName}/>
 		</div>
