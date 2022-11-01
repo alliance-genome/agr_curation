@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,6 +14,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={DiseaseAnnotationDTO.class}, submitted=true)
 public class AlleleDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 	
 	@JsonView({View.FieldsOnly.class})
