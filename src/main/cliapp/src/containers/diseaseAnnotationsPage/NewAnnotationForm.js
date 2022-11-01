@@ -362,11 +362,17 @@ export const NewAnnotationForm = ({
 								filterName='withFilter'
 								fieldName='with'
 								isMultiple={true}
-								isWith={true}
 								value={newAnnotation.with}
 								onValueChangeHandler={onArrayFieldChange}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+								otherFilters={{
+									taxonFilter: {
+										"taxon.curie": {
+											queryString: "NCBITaxon:9606"
+										}
+									},
+								}}
 								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
@@ -446,7 +452,6 @@ export const NewAnnotationForm = ({
 								endpoint='agm'
 								filterName='sgdStrainBackgroundFilter'
 								fieldName='sgdStrainBackground'
-								isSgdStrainBackground={true}
 								name="sgdStrainBackground"
 								label="SGD Strain Background"
 								value={newAnnotation.sgdStrainBackground}
@@ -454,6 +459,13 @@ export const NewAnnotationForm = ({
 								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 								classNames={classNames({'p-invalid': submitted && errorMessages.sgdStrainBackground})}
+								otherFilters={{
+									taxonFilter: {
+										"taxon.name": {
+											queryString: "Saccharomyces cerevisiae"
+										}
+									},
+								}}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"sgdStrainBackground"}/>
 						</SplitterPanel>

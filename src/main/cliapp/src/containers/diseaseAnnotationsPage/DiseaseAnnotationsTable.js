@@ -702,9 +702,15 @@ export const DiseaseAnnotationsTable = () => {
 					endpoint='agm'
 					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
-					isSgdStrainBackground={true}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					otherFilters={{
+						taxonFilter: {
+							"taxon.name": {
+								queryString: "Saccharomyces cerevisiae"
+							}
+						},
+					}}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -825,10 +831,16 @@ export const DiseaseAnnotationsTable = () => {
 					endpoint='gene'
 					filterName='withFilter'
 					fieldName='with'
-					isWith={true}
 					isMultiple={true}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					otherFilters={{
+						taxonFilter: {
+							"taxon.curie": {
+								queryString: "NCBITaxon:9606"
+							}
+						},
+					}}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
