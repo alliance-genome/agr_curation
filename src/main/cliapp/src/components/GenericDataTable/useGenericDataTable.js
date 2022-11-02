@@ -216,24 +216,29 @@ export const useGenericDataTable = ({
 			},
 			onError: (error, variables, context) => {
 				setIsEnabled(false);
+				let errorMessage = "";
+				if(error.response.data.errorMessage !== undefined)
+					errorMessage = error.response.data.errorMessage;
+				else if(error.response.data !== undefined)
+					errorMessage = error.response.data;
 				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
+					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
 				]);
 
 				let _entities = global.structuredClone(entities);
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
-
 				errorMessagesCopy[event.index] = {};
-				Object.keys(error.response.data.errorMessages).forEach((field) => {
-					let messageObject = {
-						severity: "error",
-						message: error.response.data.errorMessages[field]
-					};
-					errorMessagesCopy[event.index][field] = messageObject;
-				});
-
-				setErrorMessages({ ...errorMessagesCopy });
+				if(error.response.data.errorMessages !== undefined) {
+					Object.keys(error.response.data.errorMessages).forEach((field) => {
+						let messageObject = {
+							severity: "error",
+							message: error.response.data.errorMessages[field]
+						};
+						errorMessagesCopy[event.index][field] = messageObject;
+					});
+					setErrorMessages({...errorMessagesCopy});
+				}
 
 				setEntities(_entities);
 				let _editingRows = { ...editingRows, ...{ [`${_entities[event.index].id}`]: true } };
