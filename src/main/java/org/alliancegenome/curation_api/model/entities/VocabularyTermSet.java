@@ -54,7 +54,7 @@ public class VocabularyTermSet extends GeneratedAuditedObject {
 	private List<VocabularyTerm> memberTerms;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "description_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "vocabularyTermSetDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.VocabularyTermSetView.class})
 	private String vocabularyTermSetDescription;
 	

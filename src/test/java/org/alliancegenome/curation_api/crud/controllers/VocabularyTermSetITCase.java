@@ -31,7 +31,7 @@ import io.restassured.common.mapper.TypeRef;
 @Order(13)
 public class VocabularyTermSetITCase {
 	
-	private Vocabulary testVocabulary1;	
+	private Vocabulary testVocabulary1;
 	private Vocabulary testVocabulary2;
 	private Vocabulary testObsoleteVocabulary;
 	private VocabularyTerm testVocabularyTerm1;

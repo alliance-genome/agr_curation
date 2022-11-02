@@ -88,6 +88,13 @@ export const NewVocabularyTermSetForm = ({
 		});
 	}
 	
+	const isMemberTermsEnabled = () => {
+		return (
+			//only enabled if a vocabulary is selected
+			newVocabularyTermSet.vocabularyTermSetVocabulary != null
+		)
+	}
+	
 	const dialogFooter = (
 		<>
 			<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
@@ -161,6 +168,7 @@ export const NewVocabularyTermSetForm = ({
 									}
 								}}
 								isMultiple={true}
+								isEnabled={isMemberTermsEnabled()}
 								classNames={classNames({'p-invalid': submitted && errorMessages?.memberTerms})}
 								passedOnChange={onMemberTermsChange}
 								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
