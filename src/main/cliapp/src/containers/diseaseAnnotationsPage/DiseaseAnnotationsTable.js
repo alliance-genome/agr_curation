@@ -674,10 +674,10 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteRowEditor
-					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+					autocompleteFields={getSubjectAutocompleteFields(props)}
 					rowProps={props}
 					searchService={searchService}
-					endpoint='biologicalentity'
+					endpoint={getSubjectEndpoint(props)}
 					filterName='subjectFilter'
 					fieldName='subject'
 					isSubject={true}
@@ -690,6 +690,19 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 			</>
 		);
+	};
+	
+	const getSubjectEndpoint = (props) => {
+		if (props.rowData?.type === "GeneDiseaseAnnotation") return 'gene';
+		if (props.rowData?.type === "AlleleDiseaseAnnotation") return 'allele';
+		if (props.rowData?.type === "AGMDiseaseAnnotation") return 'agm';	
+		return 'biologicalentity';
+	};
+	
+	const getSubjectAutocompleteFields = (props) => {
+		let subjectFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		if (props.rowData.type !== "AGMDiseaseAnnotation") subjectFields.push("symbol");
+		return subjectFields;
 	};
 
 	const sgdStrainBackgroundEditorTemplate = (props) => {
