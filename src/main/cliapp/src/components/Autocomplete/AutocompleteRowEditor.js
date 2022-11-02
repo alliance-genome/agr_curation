@@ -16,13 +16,12 @@ export const AutocompleteRowEditor = (
 		subField = "curie",
 		otherFilters = [],
 		isSubject = false,
-		isWith = false,
+		isMemberTerms = false,
 		isMultiple = false,
 		isReference = false,
-		isSgdStrainBackground = false,
 		valueDisplay,
-		passedOnChange
-
+		passedOnChange,
+		isEnabled=true
 	}
 ) => {
 	const [filtered, setFiltered] = useState([]);
@@ -33,7 +32,7 @@ export const AutocompleteRowEditor = (
 				return getRefString(rowProps.rowData[fieldName]);
 			return isMultiple ?
 				rowProps.rowData[fieldName] :
-				rowProps.rowData[fieldName]?.curie
+				rowProps.rowData[fieldName]?.[subField]
 		}
 	);
 
@@ -45,20 +44,23 @@ export const AutocompleteRowEditor = (
 		autocompleteFields.forEach(field => {
 			filter[field] = {
 				queryString: event.query,
-				...((isSubject || isWith || isReference) && {tokenOperator: "AND"})
+				...((isSubject || isReference) && {tokenOperator: "AND"})
 			}
 		});
+		if (isMemberTerms) {
+			otherFilters={
+				vocabularyFilter: {
+					"vocabulary.name": {
+						queryString: rowProps.props.value[rowProps.rowIndex].vocabularyTermSetVocabulary.name
+					}
+				}
+			}
+		}
 
 		searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters})
 			.then((data) => {
 				if (data.results?.length > 0) {
-					if (isWith) {
-						setFiltered(data.results.filter((gene) => Boolean(gene.curie.startsWith("HGNC:"))));
-					} else if (isSgdStrainBackground) {
-						setFiltered(data.results.filter((agm) => Boolean(agm.curie.startsWith("SGD:"))));
-					} else {
-						setFiltered(data.results);
-					}
+					setFiltered(data.results);
 				} else {
 					setFiltered([]);
 				}
@@ -85,11 +87,11 @@ export const AutocompleteRowEditor = (
 
 		if (typeof event.target.value === "object") {
 			 updatedRows[rowProps.rowIndex][fieldName] = event.target.value;
-			 setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			 setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
 		} else {
 			updatedRows[rowProps.rowIndex][fieldName] = {};
-			updatedRows[rowProps.rowIndex][fieldName]["curie"] = event.target.value;
-			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.curie);
+			updatedRows[rowProps.rowIndex][fieldName][subField] = event.target.value;
+			setFieldValue(updatedRows[rowProps.rowIndex][fieldName]?.[subField]);
 		}
 	};
 
@@ -117,6 +119,7 @@ export const AutocompleteRowEditor = (
 				onHide={(e) => op.current.hide(e)}
 				onChange={(e) => onValueChange(e)}
 				className={classNames}
+				disabled={!isEnabled}
 			/>
 			<EditorTooltip op={op} autocompleteSelectedItem={autocompleteSelectedItem} dataType={fieldName}/>
 		</div>

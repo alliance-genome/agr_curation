@@ -6,6 +6,7 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -31,6 +32,10 @@ import lombok.ToString;
 @ToString(exclude = {"pageAreas"})
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@Table(indexes = {
+	@Index(name = "crossreference_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "crossreference_updatedby_index", columnList = "updatedBy_id")
+})
 public class CrossReference extends CurieAuditedObject {
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)

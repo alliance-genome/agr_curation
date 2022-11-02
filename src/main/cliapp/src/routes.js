@@ -20,6 +20,7 @@ import { MoleculesPage } from './containers/moleculesPage';
 import { ReferencePage } from './containers/referencePage';
 import { ControlledVocabularyPage } from './containers/controlledVocabularyPage';
 import { VocabulariesPage } from './containers/vocabularyPage';
+import { VocabularyTermSetPage } from './containers/vocabularyTermSetPage';
 
 import { FMSComponent } from './components/FMSComponent';
 import { MetricsComponent } from './components/MetricsComponent';
@@ -44,6 +45,7 @@ export default (
 		<SecureRoute path="/references" render={() => <ReferencePage />} />
 		<SecureRoute path="/vocabterms" render={() => <ControlledVocabularyPage />} />
 		<SecureRoute path="/vocabularies" render={() => <VocabulariesPage />} />
+		<SecureRoute path="/vocabularytermsets" render={() => <VocabularyTermSetPage />} />
 
 		<SecureRoute path="/ontology/eco" render={() => <GeneralOntologyComponent showAbbreviation={true} name="ECO" endpoint="ecoterm" />} />
 

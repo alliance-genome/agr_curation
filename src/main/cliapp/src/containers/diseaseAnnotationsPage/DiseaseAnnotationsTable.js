@@ -674,10 +674,10 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteRowEditor
-					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+					autocompleteFields={getSubjectAutocompleteFields(props)}
 					rowProps={props}
 					searchService={searchService}
-					endpoint='biologicalentity'
+					endpoint={getSubjectEndpoint(props)}
 					filterName='subjectFilter'
 					fieldName='subject'
 					isSubject={true}
@@ -691,6 +691,19 @@ export const DiseaseAnnotationsTable = () => {
 			</>
 		);
 	};
+	
+	const getSubjectEndpoint = (props) => {
+		if (props.rowData?.type === "GeneDiseaseAnnotation") return 'gene';
+		if (props.rowData?.type === "AlleleDiseaseAnnotation") return 'allele';
+		if (props.rowData?.type === "AGMDiseaseAnnotation") return 'agm';	
+		return 'biologicalentity';
+	};
+	
+	const getSubjectAutocompleteFields = (props) => {
+		let subjectFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		if (props.rowData.type !== "AGMDiseaseAnnotation") subjectFields.push("symbol");
+		return subjectFields;
+	};
 
 	const sgdStrainBackgroundEditorTemplate = (props) => {
 		return (
@@ -702,9 +715,15 @@ export const DiseaseAnnotationsTable = () => {
 					endpoint='agm'
 					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
-					isSgdStrainBackground={true}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					otherFilters={{
+						taxonFilter: {
+							"taxon.name": {
+								queryString: "Saccharomyces cerevisiae"
+							}
+						},
+					}}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -825,10 +844,16 @@ export const DiseaseAnnotationsTable = () => {
 					endpoint='gene'
 					filterName='withFilter'
 					fieldName='with'
-					isWith={true}
 					isMultiple={true}
 					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					otherFilters={{
+						taxonFilter: {
+							"taxon.curie": {
+								queryString: "NCBITaxon:9606"
+							}
+						},
+					}}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}

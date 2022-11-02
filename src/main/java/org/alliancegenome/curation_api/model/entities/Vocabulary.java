@@ -40,7 +40,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 @Table(indexes = {
 	@Index(name = "vocabulary_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id")
+	@Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "vocabulary_name_index", columnList = "name")
 })
 public class Vocabulary extends GeneratedAuditedObject {
 	

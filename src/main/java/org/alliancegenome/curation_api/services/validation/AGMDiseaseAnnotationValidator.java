@@ -205,7 +205,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY, uiEntity.getDiseaseRelation().getName());
+		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getDiseaseRelation().getName());
 
 		if(relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);

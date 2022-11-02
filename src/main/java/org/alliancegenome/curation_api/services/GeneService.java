@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -18,6 +17,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -70,19 +70,18 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		List<String> curiesToRemove = ListUtils.subtract(geneCuriesBefore, distinctAfter);
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
-		log.info("Deleting disease annotations linked to " + curiesToRemove.size() + " unloaded genes");
-		List<String> foundGeneCuries = new ArrayList<String>();
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
+		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " genes", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			Gene gene = geneDAO.find(curie);
 			if (gene != null) {
-				foundGeneCuries.add(curie);
+				geneDAO.deleteGeneAndReferencingDiseaseAnnotations(curie);
 			} else {
 				log.error("Failed getting gene: " + curie);
 			}
+			ph.progressProcess();
 		}
-		geneDAO.deleteReferencingDiseaseAnnotations(foundGeneCuries);
-		foundGeneCuries.forEach(curie -> {delete(curie);});
-		log.info("Deletion of disease annotations linked to unloaded genes finished");
+		ph.finishProcess();
 	}
 	
 	public List<String> getCuriesByTaxonId(String taxonId) {
