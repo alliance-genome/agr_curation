@@ -17,6 +17,10 @@ export const SubjectAutocompleteTemplate = ({ item, setAutocompleteSelectedItem,
 			</div>
 		);
 	} else {
-		return null;
+		return (
+			<div>
+				<div onMouseOver={(event) => onSelectionOver(event, item, query, op, setAutocompleteSelectedItem)} dangerouslySetInnerHTML={{__html: item.curie}}/>
+			</div>
+		);
 	};
 };
