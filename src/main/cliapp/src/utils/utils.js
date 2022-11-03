@@ -208,7 +208,7 @@ export function onSelectionOver(event, item, query, op, setAutocompleteSelectedI
 	const _item = filterDropDownObject(query, item)
 	setAutocompleteSelectedItem(_item);
 	op.current.show(event);
-};
+}
 
 export function generateInitialTableState(columns, defaultVisibleColumns){
 	const defaultColumnNames = columns.map((col) => {
@@ -225,4 +225,33 @@ export function generateInitialTableState(columns, defaultVisibleColumns){
 		isFirst: true,
 	}
 	return { defaultColumnNames, initialTableState };
+}
+
+export function validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors) {
+	const bioEntityFieldNames = ["subject", "diseaseGeneticModifier", "sgdStrainBackground", "assertedAllele"];
+
+	bioEntityFieldNames.forEach((field) => {
+		if(updatedRow[field] && Object.keys(updatedRow[field]).length === 1){
+			const errorObject = {
+				severity: "error",
+				message: "Must select from autosuggest"
+			}
+			setUiErrorMessages((uiErrorMessages) => {
+				const _uiErrorMessages = global.structuredClone(uiErrorMessages);
+				if (!_uiErrorMessages[event.index]) _uiErrorMessages[event.index] = {};
+				_uiErrorMessages[event.index][field] = errorObject;
+				return _uiErrorMessages;
+			});
+
+			setIsEnabled(false);
+			areUiErrors.current = true;
+
+		} else {
+			setUiErrorMessages((uiErrorMessages) => {
+				const _uiErrorMessages = global.structuredClone(uiErrorMessages);
+				if (_uiErrorMessages[event.index]) _uiErrorMessages[event.index][field] = null;
+				return _uiErrorMessages;
+			})
+		}
+	})
 }
