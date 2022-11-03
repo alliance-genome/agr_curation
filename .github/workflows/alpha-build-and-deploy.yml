@@ -10,8 +10,9 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v2
-    - run: git fetch --prune --unshallow
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
     - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Declare some variables
       id: vars
@@ -43,7 +44,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
@@ -91,10 +92,9 @@ jobs:
             }
           ]
     - name: Check out repository code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
-        submodules: 'recursive'
-    - run: git fetch --prune --unshallow
+        fetch-depth: 0
     - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Declare some variables
       id: vars
