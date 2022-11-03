@@ -1,0 +1,16 @@
+CREATE INDEX allele_incollection_index ON public.allele USING btree (incollection_id);
+CREATE INDEX allele_inheritancemode_index ON public.allele USING btree (inheritancemode_id);
+CREATE INDEX allele_sequencingstatus_index ON public.allele USING btree (sequencingstatus_id);
+CREATE INDEX biologicalentity_createdby_index ON public.biologicalentity USING btree (createdby_id);
+CREATE INDEX biologicalentity_taxon_index ON public.biologicalentity USING btree (taxon_curie);
+CREATE INDEX biologicalentity_updatedby_index ON public.biologicalentity USING btree (updatedby_id);
+CREATE INDEX gene_taxon_index ON public.gene USING btree (genetype_curie);
+CREATE INDEX idx48t7pceipvyg9kqy9eue51mps ON public.genomicentity_synonym USING btree (genomicentities_curie, synonyms_id);
+CREATE INDEX idxfxhndon9oi3648gb3s6oua4fd ON public.genomicentity_crossreference USING btree (genomicentity_curie, crossreferences_curie);
+CREATE INDEX idxps5haxca5tl3e2xmx5tdjcnyr ON public.allele_reference USING btree (allele_curie, references_curie);
+CREATE INDEX ontologyterm_createdby_index ON public.ontologyterm USING btree (createdby_id);
+CREATE INDEX ontologyterm_updatedby_index ON public.ontologyterm USING btree (updatedby_id);
+CREATE INDEX person_createdby_index ON public.person USING btree (createdby_id);
+CREATE INDEX person_updatedby_index ON public.person USING btree (updatedby_id);
+CREATE INDEX vocabulary_createdby_index ON public.vocabulary USING btree (createdby_id);
+CREATE INDEX vocabulary_updatedby_index ON public.vocabulary USING btree (updatedby_id);

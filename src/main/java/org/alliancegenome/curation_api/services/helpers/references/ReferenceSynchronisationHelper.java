@@ -21,9 +21,6 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.apache.commons.collections.CollectionUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ReferenceSynchronisationHelper {
 
@@ -36,10 +33,12 @@ public class ReferenceSynchronisationHelper {
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 		
 		if (litRef != null) {
-			Reference ref = new Reference();
+			Reference ref = referenceDAO.find(litRef.getCurie());
+			if (ref == null)
+				ref = new Reference();
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		
-			return referenceDAO.merge(ref);
+			return ref;
 		}
 		return null;
 	}
@@ -113,6 +112,7 @@ public class ReferenceSynchronisationHelper {
 			ref = new Reference();
 			ref.setCurie(litRef.getCurie());
 		}
+		ref.setObsolete(false);
 		
 		List<CrossReference> xrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
@@ -129,9 +129,6 @@ public class ReferenceSynchronisationHelper {
 		if (CollectionUtils.isNotEmpty(xrefs))
 			ref.setCrossReferences(xrefs);
 		
-		Reference existingRef = referenceDAO.find(ref.getCurie());
-		if (existingRef == null)
-			ref = referenceDAO.merge(ref);
 		if (!ref.getCurie().equals(originalCurie) && originalCurie != null) {
 			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
 			referenceDAO.remove(originalCurie);
@@ -153,7 +150,7 @@ public class ReferenceSynchronisationHelper {
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		}
 		
-		response.setEntity(ref);
+		response.setEntity(referenceDAO.persist(ref));
 		
 		return response;
 	}

@@ -29,7 +29,7 @@ export const AutocompleteRowEditor = (
 	const [query, setQuery] = useState();
 	const [fieldValue, setFieldValue] = useState(() => {
 			if(!rowProps) return "";
-			if (isReference)
+			if (isReference && !isMultiple)
 				return getRefString(rowProps.rowData[fieldName]);
 			return isMultiple ?
 				rowProps.rowData[fieldName] :

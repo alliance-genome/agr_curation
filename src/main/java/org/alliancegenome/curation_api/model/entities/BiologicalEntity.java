@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.model.entities;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -39,9 +41,14 @@ import lombok.ToString;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min="1.0.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@Table(indexes = {
+	@Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"),
+})
 public class BiologicalEntity extends CurieAuditedObject {
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({View.FieldsOnly.class})

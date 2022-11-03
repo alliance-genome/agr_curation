@@ -1,15 +1,15 @@
 package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -36,6 +36,10 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @JsonIgnoreProperties(ignoreUnknown = true)
 @AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Agent.class})
+@Table(indexes = {
+	@Index(name = "person_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "person_updatedby_index", columnList = "updatedBy_id")
+})
 public class Person extends Agent {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

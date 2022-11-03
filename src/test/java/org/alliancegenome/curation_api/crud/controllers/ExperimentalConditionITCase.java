@@ -20,6 +20,8 @@ import org.junit.jupiter.api.*;
 
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -868,6 +870,228 @@ public class ExperimentalConditionITCase {
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
 				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
+	}
+	
+	@Test
+	@Order(30)
+	public void editWithNullConditionId() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionId"));
+				
+		editedExperimentalCondition.setConditionId(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionId")));
+		
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(31)
+	public void editWithNullConditionQuantity() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionQuantity"));
+				
+		editedExperimentalCondition.setConditionQuantity(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionQuantity")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(32)
+	public void editWithNullConditionGeneOntology() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionGeneOntology"));
+				
+		editedExperimentalCondition.setConditionGeneOntology(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionGeneOntology")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(33)
+	public void editWithNullConditionAnatomy() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionAnatomy"));
+				
+		editedExperimentalCondition.setConditionAnatomy(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionAnatomy")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(34)
+	public void editWithNullConditionTaxon() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionTaxon"));
+				
+		editedExperimentalCondition.setConditionTaxon(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionTaxon")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(35)
+	public void editWithNullConditionChemical() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionChemical"));
+				
+		editedExperimentalCondition.setConditionChemical(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionChemical")));
+		
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
 	}
 
 	private ExperimentalCondition getExperimentalCondition(String conditionSummary) {

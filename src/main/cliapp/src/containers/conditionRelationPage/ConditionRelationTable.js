@@ -124,7 +124,7 @@ export const ConditionRelationTable = () => {
 		return (
 			<>
 				<AutocompleteRowEditor
-					autocompleteFields={["conditionSummary"]}
+					autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='experimental-condition'
@@ -173,8 +173,7 @@ export const ConditionRelationTable = () => {
 					</Tooltip>
 				</>
 			);
-			
-		}	
+		}
 	};
 
 	const columns = [
@@ -206,7 +205,7 @@ export const ConditionRelationTable = () => {
 		},
 		{
 			field: "conditions.conditionSummary",
-			header: "Conditions",
+			header: "Experimental Conditions",
 			sortable: isEnabled,
 			filter: true,
 			body: conditionTemplate,
@@ -231,7 +230,7 @@ export const ConditionRelationTable = () => {
 			<Messages ref={errorMessage}/>
 			<GenericDataTable
 				endpoint="condition-relation"
-				tableName="Condition Relations"
+				tableName="Experiments"
 				columns={columns}
 				aggregationFields={aggregationFields}
 				isEditable={true}

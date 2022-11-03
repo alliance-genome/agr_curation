@@ -20,6 +20,11 @@ public class View {
 	public static class DiseaseAnnotationUpdate extends DiseaseAnnotation { }
 	public static class DiseaseAnnotationCreate extends DiseaseAnnotation { }
 	
+
+	public static class Allele extends FieldsOnly { }
+	public static class AlleleUpdate extends Allele { }
+	public static class AlleleCreate extends Allele { }
+	
 	public static class PersonSettingView { }
 
 }

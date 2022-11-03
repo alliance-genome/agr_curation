@@ -9,15 +9,13 @@ import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.helpers.validators.SynonymValidator;
+import org.alliancegenome.curation_api.services.validation.SynonymValidator;
 
 @RequestScoped
 public class SynonymService extends BaseEntityCrudService<Synonym, SynonymDAO> {
 
-	@Inject
-	SynonymDAO synonymDAO;
-	@Inject
-	SynonymValidator synonymValidator;
+	@Inject SynonymDAO synonymDAO;
+	@Inject SynonymValidator synonymValidator;
 	
 	@Override
 	@PostConstruct

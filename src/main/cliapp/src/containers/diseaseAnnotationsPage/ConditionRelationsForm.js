@@ -11,7 +11,7 @@ import { FormErrorMessageComponent } from "../../components/FormErrorMessageComp
 import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAutocompleteTemplate";
 import {AutocompleteFormEditor} from "../../components/Autocomplete/AutocompleteFormEditor";
 
-export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService }) => {
+export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
 	const [editingRows, setEditingRows] = useState({});
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const conditionRelationTypeTerms = useControlledVocabularyService('Condition relation types');
@@ -29,6 +29,7 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		newAnnotationDispatch({type: "ADD_NEW_RELATION", count})
 		let _editingRows = { ...editingRows, ...{ [`${count}`]: true } };
 		setEditingRows(_editingRows);
+
 	};
 
 
@@ -72,22 +73,22 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		 return (
 			 <>
 				 <AutocompleteFormEditor
-					  value={props.props.value[props.rowIndex].conditions}
-					  autocompleteFields={["conditionSummary"]}
-					  rowProps={props}
-					  searchService={searchService}
-					  endpoint='experimental-condition'
-					  filterName='conditionSummaryFilter'
-					  fieldName='conditions'
-					  subField='conditionSummary'
-					  isMultiple={true}
-					  onValueChangeHandler={(event) => onConditionsEditorValueChange(event, props)}
-					  valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
-						  <ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+						value={props.props.value[props.rowIndex].conditions}
+						autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
+						rowProps={props}
+						searchService={searchService}
+						endpoint='experimental-condition'
+						filterName='conditionSummaryFilter'
+						fieldName='conditions'
+						subField='conditionSummary'
+						isMultiple={true}
+						onValueChangeHandler={(event) => onConditionsEditorValueChange(event, props)}
+						valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
+							<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				 />
 				 <DialogErrorMessageComponent
-					  errorMessages={errorMessages[props.rowIndex]}
-					  errorField={"conditions"}
+						errorMessages={errorMessages[props.rowIndex]}
+						errorField={"conditions"}
 				 />
 			 </>
 		 );
@@ -134,15 +135,15 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 			<h3>Experimental Conditions</h3>
 			{showConditionRelations &&
 				<DataTable value={conditionRelations} dataKey="dataKey" showGridlines editMode='row'
-						   editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
+							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={conditionRelationTypeEditor} field="conditionRelationType.name" header="Relation" headerClassName='surface-0' />
 					<Column editor={conditionsEditorTemplate} field="conditions.conditionSummary" header="Conditions" headerClassName='surface-0' />
 					<Column editor={internalEditor} field="internal" header="Internal" headerClassName='surface-0'/>
 				</DataTable>
 			}
-			<div className={`w-4 ${showConditionRelations ? "pt-3" : ""} p-field p-col`}>
-				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} />
+			<div className={`${showConditionRelations ? "pt-3" : ""} p-field p-col`}>
+				<Button label="Add Experimental Condition" onClick={createNewRelationHandler} style={{width:"50%"}} disabled={buttonIsDisabled}/>
 			</div>
 		</div>
 	);
