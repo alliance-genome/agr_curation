@@ -14,11 +14,10 @@ jobs:
       with:
         fetch-depth: 0
     - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
-    - name: Declare some variables
-      id: vars
+    - name: Store release tag in env
       shell: bash
       run: |
-        echo "##[set-output name=tagname;]$(git describe --tags)"
+        echo "tagname=$(git describe --tags)" >> $GITHUB_ENV
     # This step will configure environment variables to be used by all steps
     # involving AWS interaction further down
     - name: AWS credentials configuration
@@ -34,7 +33,7 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         ECR_REPOSITORY: agr_curation
-        IMAGE_TAG: ${{ steps.vars.outputs.tagname }}
+        IMAGE_TAG: ${{ env.tagname }}
       run: |
         docker build --build-arg OVERWRITE_VERSION=${IMAGE_TAG} -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
         docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:${GITHUB_REF#refs/heads/}
@@ -96,19 +95,18 @@ jobs:
       with:
         fetch-depth: 0
     - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
-    - name: Declare some variables
-      id: vars
+    - name: Store release tag in env
       shell: bash
       run: |
-        echo "##[set-output name=tagname;]$(git describe --tags)"
+        echo "tagname=$(git describe --tags)" >> $GITHUB_ENV
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
-        sed -i.bak "s/0.0.0/${{ steps.vars.outputs.tagname }}/g" .ebextensions/version.config
+        sed -i.bak "s/0.0.0/${{ env.tagname }}/g" .ebextensions/version.config
         echo "Stored version config:"
         echo "----------------------"
         cat .ebextensions/version.config
     - name: Generate deployment package
-      run: zip -r ${{ steps.vars.outputs.tagname }}.zip docker-compose.yml .ebextensions/
+      run: zip -r ${{ env.tagname }}.zip docker-compose.yml .ebextensions/
     - name: Deploy to EB
       uses: einaregilsson/beanstalk-deploy@v14
       with:
@@ -116,8 +114,8 @@ jobs:
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         application_name: curation-app
         environment_name: curation-alpha
-        version_label: ${{ steps.vars.outputs.tagname }}
-        deployment_package: ${{ steps.vars.outputs.tagname }}.zip
+        version_label: ${{ env.tagname }}
+        deployment_package: ${{ env.tagname }}.zip
         use_existing_version_if_available: true
         region: us-east-1
     - name: Set COMMIT_MESSAGE
@@ -127,7 +125,7 @@ jobs:
       env:
         INCOMING_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       with:
-        text: "Deployment of release ${{ steps.vars.outputs.tagname }} to alpha completed! :tada:"
+        text: "Deployment of release ${{ env.tagname }} to alpha completed! :tada:"
         attachments: |
           [
             {
