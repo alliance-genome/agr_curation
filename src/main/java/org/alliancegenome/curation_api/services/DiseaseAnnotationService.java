@@ -12,7 +12,6 @@ import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Note;
-import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -61,25 +60,20 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	}
 
 	@Transactional
-	public ObjectResponse<DiseaseAnnotation> deleteNotes(Long id) {
-		SearchResponse<DiseaseAnnotation> response = dao.searchByField(new Pagination(0, 20), "id", Long.toString(id));
+	public void deleteAnnotationAndNotes(Long id) {
+		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 
-		DiseaseAnnotation singleResult = response.getSingleResult();
-		if (singleResult == null) {
-			ObjectResponse<DiseaseAnnotation> oResponse = new ObjectResponse<>();
-			oResponse.addErrorMessage("id", "Could not find Disease Annotation with id: " + id);
-			throw new ApiErrorException(oResponse);
+		if (annotation == null) {
+			ObjectResponse<DiseaseAnnotation> response = new ObjectResponse<>();
+			response.addErrorMessage("id", "Could not find Disease Annotation with id: " + id);
+			throw new ApiErrorException(response);
 		}
-		// remove notes
-		if (CollectionUtils.isNotEmpty(singleResult.getRelatedNotes())) {
-			singleResult.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
-		}
-		singleResult.setRelatedNotes(null);
-		if (singleResult.getSingleReference() != null) {
-			singleResult.setSingleReference(null);
-		}
-
-		return new ObjectResponse<>(singleResult);
+		
+		List<Note> notesToDelete = annotation.getRelatedNotes();
+		diseaseAnnotationDAO.remove(id);
+		
+		if (CollectionUtils.isNotEmpty(notesToDelete))
+			annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
 	}
-
+	
 }

@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 public class ConditionRelationDTOValidator extends BaseDTOValidator {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
-
     @Inject VocabularyTermDAO vocabularyTermDAO;
     @Inject ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
     @Inject ExperimentalConditionDAO experimentalConditionDAO;

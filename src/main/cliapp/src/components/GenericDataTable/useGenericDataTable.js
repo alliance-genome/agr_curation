@@ -1,11 +1,11 @@
 import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-
 import { SearchService } from '../../service/SearchService';
 
-import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
+import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog, validateBioEntityFields } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
-import {useGetUserSettings} from "../../service/useGetUserSettings";
+import { useGetUserSettings } from "../../service/useGetUserSettings";
+
 
 export const useGenericDataTable = ({
 	endpoint,
@@ -64,11 +64,15 @@ export const useGenericDataTable = ({
 
 	const searchService = new SearchService();
 
-	const { errorMessages, setErrorMessages } = errorObject;
+	const { errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages } = errorObject;
+	const closeRowRef = useRef([]);
+	const areUiErrors = useRef(false);
 
 	const dataTable = useRef(null);
 
 	const { toast_topleft, toast_topright } = toasts;
+	const [exceptionDialog, setExceptionDialog] = useState(false);
+	const [exceptionMessage,setExceptionMessage] = useState("");
 
 	useQuery([tableState.tableKeyName, tableState],
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
@@ -162,26 +166,42 @@ export const useGenericDataTable = ({
 		const rowsInEdit = Object.keys(editingRows).length - 1;
 		if (rowsInEdit === 0) {
 			setIsEnabled(true);
-		};
+		}
+
+		closeRowRef.current[event.index] = true;
 
 		let _entities = [...entities];
 		_entities[event.index] = originalRows[event.index];
 		delete originalRows[event.index];
 		setOriginalRows(originalRows);
 		setEntities(_entities);
+
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages({ ...errorMessagesCopy });
 
+		const uiErrorMessagesCopy = uiErrorMessages;
+		uiErrorMessagesCopy[event.index] = {};
+		setUiErrorMessages({ ...uiErrorMessagesCopy });
+
 	};
 
+	//Todo: at some point it may make sense to refactor this function into a set of smaller utility functions and pass them down from the calling components
 	const onRowEditSave = (event) => {
+		areUiErrors.current = false;
+		closeRowRef.current[event.index] = true;
 		const rowsInEdit = Object.keys(editingRows).length - 1;
 		if (rowsInEdit === 0) {
 			setIsEnabled(true);
 		}
 
 		let updatedRow = global.structuredClone(event.data);//deep copy
+		validateBioEntityFields(updatedRow, setUiErrorMessages, event, setIsEnabled, closeRowRef, areUiErrors);
+
+		if (areUiErrors.current) {
+			closeRowRef.current[event.index] = false;
+			return;
+		}
 
 		if(curieFields){
 			curieFields.forEach((field) => {
@@ -191,7 +211,7 @@ export const useGenericDataTable = ({
 					updatedRow[field].curie = curie;
 				}
 			});
-		};
+		}
 
 		if(idFields){
 			idFields.forEach((field) => {
@@ -216,24 +236,32 @@ export const useGenericDataTable = ({
 			},
 			onError: (error, variables, context) => {
 				setIsEnabled(false);
-				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
-				]);
+				let errorMessage = "";
+				if(error.response.data.errorMessage !== undefined) {
+					errorMessage = error.response.data.errorMessage;
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+					]);
+				}
+				else if(error.response.data !== undefined) {
+					setExceptionMessage(error.response.data);
+					setExceptionDialog(true);
+				}
 
 				let _entities = global.structuredClone(entities);
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
-
 				errorMessagesCopy[event.index] = {};
-				Object.keys(error.response.data.errorMessages).forEach((field) => {
-					let messageObject = {
-						severity: "error",
-						message: error.response.data.errorMessages[field]
-					};
-					errorMessagesCopy[event.index][field] = messageObject;
-				});
-
-				setErrorMessages({ ...errorMessagesCopy });
+				if(error.response.data.errorMessages !== undefined) {
+					Object.keys(error.response.data.errorMessages).forEach((field) => {
+						let messageObject = {
+							severity: "error",
+							message: error.response.data.errorMessages[field]
+						};
+						errorMessagesCopy[event.index][field] = messageObject;
+					});
+					setErrorMessages({...errorMessagesCopy});
+				}
 
 				setEntities(_entities);
 				let _editingRows = { ...editingRows, ...{ [`${_entities[event.index].id}`]: true } };
@@ -282,6 +310,10 @@ export const useGenericDataTable = ({
 	}
 
 	const onRowEditChange = (event) => {
+		//keep the row in edit mode if there are UI validation errors
+		if(closeRowRef.current[event.index] === false){
+			return;
+		}
 		setEditingRows(event.data);
 	};
 
@@ -351,5 +383,8 @@ export const useGenericDataTable = ({
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		exceptionDialog,
+		setExceptionDialog,
+		exceptionMessage
 	};
 };

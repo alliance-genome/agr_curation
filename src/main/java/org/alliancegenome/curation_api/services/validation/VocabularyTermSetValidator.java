@@ -49,7 +49,7 @@ public class VocabularyTermSetValidator extends AuditedObjectValidator<Vocabular
 	
 	public VocabularyTermSet validateVocabularyTermSetCreate(VocabularyTermSet uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		errorMessage = "Could not create Vocabulary: [" + uiEntity.getName() + "]";
+		errorMessage = "Could not create VocabularyTermSet: [" + uiEntity.getName() + "]";
 		
 		VocabularyTermSet dbEntity = new VocabularyTermSet();
 
