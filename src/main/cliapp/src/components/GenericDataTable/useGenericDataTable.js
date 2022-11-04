@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-
 import { SearchService } from '../../service/SearchService';
 
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
@@ -69,6 +68,8 @@ export const useGenericDataTable = ({
 	const dataTable = useRef(null);
 
 	const { toast_topleft, toast_topright } = toasts;
+	const [exceptionDialog, setExceptionDialog] = useState(false);
+	const [exceptionMessage,setExceptionMessage] = useState("");
 
 	useQuery([tableState.tableKeyName, tableState],
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
@@ -216,24 +217,32 @@ export const useGenericDataTable = ({
 			},
 			onError: (error, variables, context) => {
 				setIsEnabled(false);
-				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: error.response.data.errorMessage, sticky: false }
-				]);
+				let errorMessage = "";
+				if(error.response.data.errorMessage !== undefined) {
+					errorMessage = error.response.data.errorMessage;
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+					]);
+				}
+				else if(error.response.data !== undefined) {
+					setExceptionMessage(error.response.data);
+					setExceptionDialog(true);
+				}
 
 				let _entities = global.structuredClone(entities);
 
 				const errorMessagesCopy = global.structuredClone(errorMessages);
-
 				errorMessagesCopy[event.index] = {};
-				Object.keys(error.response.data.errorMessages).forEach((field) => {
-					let messageObject = {
-						severity: "error",
-						message: error.response.data.errorMessages[field]
-					};
-					errorMessagesCopy[event.index][field] = messageObject;
-				});
-
-				setErrorMessages({ ...errorMessagesCopy });
+				if(error.response.data.errorMessages !== undefined) {
+					Object.keys(error.response.data.errorMessages).forEach((field) => {
+						let messageObject = {
+							severity: "error",
+							message: error.response.data.errorMessages[field]
+						};
+						errorMessagesCopy[event.index][field] = messageObject;
+					});
+					setErrorMessages({...errorMessagesCopy});
+				}
 
 				setEntities(_entities);
 				let _editingRows = { ...editingRows, ...{ [`${_entities[event.index].id}`]: true } };
@@ -351,5 +360,8 @@ export const useGenericDataTable = ({
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		exceptionDialog,
+		setExceptionDialog,
+		exceptionMessage
 	};
 };

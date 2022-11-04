@@ -40,6 +40,9 @@ export const GenericDataTable = (props) => {
 		handleDeletion,
 		tableState,
 		defaultColumnNames,
+		exceptionDialog,
+		setExceptionDialog,
+		exceptionMessage
 	} = useGenericDataTable(props);
 
 	const toast_topright = useRef(null);
@@ -156,6 +159,10 @@ export const GenericDataTable = (props) => {
 		setErrorDialog(false);
 	};
 
+	const hideExceptionDialog = () => {
+		setExceptionDialog(false);
+	};
+
 	const deleteDialogFooter = () => {
 		return (
 					<React.Fragment>
@@ -172,6 +179,15 @@ export const GenericDataTable = (props) => {
 						</React.Fragment>
 			);
 	}
+
+	const exceptionDialogFooter = () => {
+		return (
+			<React.Fragment>
+				<Button label="OK" icon="pi pi-times" className="p-button-text" onClick={hideExceptionDialog} />
+			</React.Fragment>
+		);
+	}
+
 	return (
 			<div className="card">
 				<Toast ref={toast_topright} position="top-right" />
@@ -214,6 +230,17 @@ export const GenericDataTable = (props) => {
 					{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
 				</div>
 						</Dialog>
+
+				<Dialog visible={exceptionDialog} style={{ width: '550px' }} header="Exception" modal footer={exceptionDialogFooter} onHide={hideExceptionDialog}>
+					<div className="error-message-dialog">
+						<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+						{<span>Exception Occurred!!</span>}
+					</div>
+					<hr/>
+					<div className="error-message-detail">
+						{<span style={{fontSize: '0.85rem'}}>{exceptionMessage}</span>}
+					</div>
+				</Dialog>
 			</div>
 	)
 }
