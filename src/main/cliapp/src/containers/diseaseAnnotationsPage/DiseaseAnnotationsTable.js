@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
@@ -54,9 +54,14 @@ export const DiseaseAnnotationsTable = () => {
 	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
 
 	const [newDiseaseAnnotation, setNewDiseaseAnnotation] = useState(null);
+
 	const [errorMessages, setErrorMessages] = useState({});
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
+
+	const [uiErrorMessages, setUiErrorMessages] = useState([]);
+	const uiErrorMessagesRef = useRef();
+	uiErrorMessagesRef.current = uiErrorMessages;
 
 	const searchService = new SearchService();
 
@@ -688,17 +693,21 @@ export const DiseaseAnnotationsTable = () => {
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"subject"}
 				/>
+				<ErrorMessageComponent
+					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorField={"subject"}
+				/>
 			</>
 		);
 	};
-	
+
 	const getSubjectEndpoint = (props) => {
 		if (props.rowData?.type === "GeneDiseaseAnnotation") return 'gene';
 		if (props.rowData?.type === "AlleleDiseaseAnnotation") return 'allele';
-		if (props.rowData?.type === "AGMDiseaseAnnotation") return 'agm';	
+		if (props.rowData?.type === "AGMDiseaseAnnotation") return 'agm';
 		return 'biologicalentity';
 	};
-	
+
 	const getSubjectAutocompleteFields = (props) => {
 		let subjectFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 		if (props.rowData.type !== "AGMDiseaseAnnotation") subjectFields.push("symbol");
@@ -729,6 +738,10 @@ export const DiseaseAnnotationsTable = () => {
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField={"sgdStrainBackground"}
 				/>
+				<ErrorMessageComponent
+					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
+					errorField={"sgdStrainBackground"}
+				/>
 			</>
 		);
 	};
@@ -749,6 +762,10 @@ export const DiseaseAnnotationsTable = () => {
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField={"diseaseGeneticModifier"}
+				/>
+				<ErrorMessageComponent
+					errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
 					errorField={"diseaseGeneticModifier"}
 				/>
 			</>
@@ -772,6 +789,10 @@ export const DiseaseAnnotationsTable = () => {
 					/>
 					<ErrorMessageComponent
 						errorMessages={errorMessagesRef.current[props.rowIndex]}
+						errorField={"assertedAllele"}
+					/>
+					<ErrorMessageComponent
+						errorMessages={uiErrorMessagesRef.current[props.rowIndex]}
 						errorField={"assertedAllele"}
 					/>
 				</>
@@ -1315,7 +1336,7 @@ export const DiseaseAnnotationsTable = () => {
 					setIsEnabled={setIsEnabled}
 					toasts={{toast_topleft, toast_topright }}
 					initialColumnWidth={10}
-					errorObject={{errorMessages, setErrorMessages}}
+					errorObject={{errorMessages, setErrorMessages, uiErrorMessages, setUiErrorMessages}}
 					headerButtons={headerButtons}
 					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
