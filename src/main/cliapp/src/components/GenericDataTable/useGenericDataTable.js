@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
 import { useQuery } from 'react-query';
-
 import { SearchService } from '../../service/SearchService';
 
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog } from '../../utils/utils';
@@ -69,6 +68,8 @@ export const useGenericDataTable = ({
 	const dataTable = useRef(null);
 
 	const { toast_topleft, toast_topright } = toasts;
+	const [exceptionDialog, setExceptionDialog] = useState(false);
+	const [exceptionMessage,setExceptionMessage] = useState("");
 
 	useQuery([tableState.tableKeyName, tableState],
 		() => searchService.search(endpoint, tableState.rows, tableState.page, tableState.multiSortMeta, tableState.filters, sortMapping, [], nonNullFieldsTable), {
@@ -217,13 +218,16 @@ export const useGenericDataTable = ({
 			onError: (error, variables, context) => {
 				setIsEnabled(false);
 				let errorMessage = "";
-				if(error.response.data.errorMessage !== undefined)
+				if(error.response.data.errorMessage !== undefined) {
 					errorMessage = error.response.data.errorMessage;
-				else if(error.response.data !== undefined)
-					errorMessage = error.response.data;
-				toast_topright.current.show([
-					{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
-				]);
+					toast_topright.current.show([
+						{ life: 7000, severity: 'error', summary: 'Update error: ', detail: errorMessage, sticky: false }
+					]);
+				}
+				else if(error.response.data !== undefined) {
+					setExceptionMessage(error.response.data);
+					setExceptionDialog(true);
+				}
 
 				let _entities = global.structuredClone(entities);
 
@@ -356,5 +360,8 @@ export const useGenericDataTable = ({
 		onLazyLoad,
 		columnList,
 		handleDeletion,
+		exceptionDialog,
+		setExceptionDialog,
+		exceptionMessage
 	};
 };
