@@ -9,7 +9,8 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import {ExConAutocompleteTemplate} from "../../components/Autocomplete/ExConAutocompleteTemplate";
-import {AutocompleteFormEditor} from "../../components/Autocomplete/AutocompleteFormEditor";
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
 export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelations, showConditionRelations, errorMessages, searchService, buttonIsDisabled }) => {
 	const [editingRows, setEditingRows] = useState({});
@@ -59,7 +60,8 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		);
 	};
 
-	const onConditionsEditorValueChange = (event, props) => {
+	const onConditionsEditorValueChange = (event, setValue, props) => {
+		setValue(event.target.value);
 		newAnnotationDispatch({
 			type: "EDIT_ROW",
 			tableType: "conditionRelations",
@@ -69,22 +71,28 @@ export const ConditionRelationsForm = ({ newAnnotationDispatch, conditionRelatio
 		})
 	}
 
+	const conditionSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["conditionSummary"];
+		const endpoint = "experimental-condition";
+		const filterName = "conditionSummaryFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const conditionsEditorTemplate = (props) => {
 		 return (
 			 <>
-				 <AutocompleteFormEditor
-						value={props.props.value[props.rowIndex].conditions}
-						autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
-						rowProps={props}
-						searchService={searchService}
-						endpoint='experimental-condition'
-						filterName='conditionSummaryFilter'
-						fieldName='conditions'
-						subField='conditionSummary'
-						isMultiple={true}
-						onValueChangeHandler={(event) => onConditionsEditorValueChange(event, props)}
-						valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
-							<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+				 <AutocompleteMultiEditor
+					 search={conditionSearch}
+					 initialValue={props.rowData.conditions}
+					 rowProps={props}
+					 fieldName='conditions'
+					 subField='conditionSummary'
+					 valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						 <ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					 onValueChangeHandler={onConditionsEditorValueChange}
 				 />
 				 <DialogErrorMessageComponent
 						errorMessages={errorMessages[props.rowIndex]}

@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -38,7 +39,8 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Agent.class})
 @Table(indexes = {
 	@Index(name = "person_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "person_updatedby_index", columnList = "updatedBy_id")
+	@Index(name = "person_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "person_uniqueid_index", columnList = "uniqueid"),
 })
 public class Person extends Agent {
 
@@ -60,11 +62,13 @@ public class Person extends Agent {
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.PersonSettingView.class})
+	@JoinTable(indexes = @Index( columnList = "person_id"))
 	private List<String> emails;
 	
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
 	@JsonView({View.FieldsAndLists.class, View.PersonSettingView.class})
+	@JoinTable(indexes = @Index( columnList = "person_id"))
 	private List<String> oldEmails;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

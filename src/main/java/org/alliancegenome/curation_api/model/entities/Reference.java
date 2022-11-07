@@ -3,7 +3,10 @@ package org.alliancegenome.curation_api.model.entities;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -29,12 +32,20 @@ import lombok.ToString;
 @ToString
 @Schema(name="Reference", description="POJO that represents the Reference")
 @AGRCurationSchemaVersion(min="1.2.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class}, partial=true)
+@Table(indexes = {
+	@Index(name = "reference_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "reference_updatedby_index", columnList = "updatedBy_id")
+})
 public class Reference extends CurieAuditedObject {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JsonView({View.FieldsOnly.class})
+	@JoinTable(indexes = {
+		@Index( columnList = "Reference_curie"),
+		@Index( columnList = "crossReferences_curie")
+	})
 	private List<CrossReference> crossReferences;
 	
 }

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { InputTextEditor } from '../../components/InputTextEditor';
-import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 import { SearchService } from '../../service/SearchService';
@@ -14,6 +14,7 @@ import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { NewConditionForm } from './NewConditionForm';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { useNewConditionReducer } from './useNewConditionReducer';
+import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
 
 export const ExperimentalConditionsTable = () => {
@@ -21,7 +22,7 @@ export const ExperimentalConditionsTable = () => {
 	const [errorMessages, setErrorMessages] = useState({});
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [newExperimentalCondition, setNewExperimentalCondition] = useState(null);
-	const { newConditionState, newConditionDispatch } = useNewConditionReducer(); 
+	const { newConditionState, newConditionDispatch } = useNewConditionReducer();
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const searchService = new SearchService();
@@ -31,6 +32,8 @@ export const ExperimentalConditionsTable = () => {
 	errorMessagesRef.current = errorMessages;
 
 	let experimentalConditionService = new ExperimentalConditionService();
+
+	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 
 	const sortMapping = {
 		'conditionGeneOntology.name': ['conditionGeneOntology.curie', 'conditionGeneOntology.namespace']
@@ -133,7 +136,7 @@ export const ExperimentalConditionsTable = () => {
 			);
 		}
 	};
-	
+
 	const internalBodyTemplate = (rowData) => {
 		if (rowData && rowData.internal !== null && rowData.internal !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
@@ -161,28 +164,40 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const conditionClassEditorTemplate = (props, autocomplete) => {
+	const onConditionClassValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "conditionClass", setFieldValue);
+	};
+
+	const conditionClassSearch = (event, setFiltered, setQuery) => {
+		const endpoint = "zecoterm";
+		const filterName = "conditionClassEditorFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			},
+			"subsetFilter": {
+				"subsets": {
+					queryString: 'ZECO_0000267'
+				}
+			}
+		}
+
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
+	const conditionClassEditorTemplate = (props) => {
 		return (
 			<>
-			<AutocompleteRowEditor
-				autocompleteFields={autocomplete}
+			<AutocompleteEditor
+				search={conditionClassSearch}
+				initialValue={props.rowData.conditionClass.curie}
 				rowProps={props}
-				searchService={searchService}
-				endpoint='zecoterm'
-				filterName='conditionClassEditorFilter'
-				fieldName='conditionClass'
-				otherFilters={{
-					"obsoleteFilter": {
-						"obsolete": {
-							queryString: false
-						}
-					},
-					"subsetFilter": {
-						"subsets": {
-							queryString: 'ZECO_0000267'
-						}
-					}
-				}}
+				fieldName="conditionClass"
+				onValueChangeHandler={onConditionClassValueChange}
 			/>
 			<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -192,23 +207,35 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
+	const onSingleOntologyValueChange = (event, setFieldValue, props, fieldName) => {
+		defaultAutocompleteOnChange(props, event, fieldName, setFieldValue);
+	};
+
+	const singleOntologySearch = (event, setFiltered, endpoint, autocomplete, setQuery) => {
+		const filterName = "singleOntologyFilter";
+		const filter = buildAutocompleteFilter(event, autocomplete);
+		const otherFilters={
+			obsoleteFilter: {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
 	const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={autocomplete}
+				<AutocompleteEditor
+					search={(event, setFiltered, setQuery) => singleOntologySearch(event, setFiltered, endpoint, autocomplete, setQuery)}
+					initialValue={props.rowData[fieldname]?.curie}
 					rowProps={props}
-					searchService={searchService}
-					fieldName={fieldname}
-					endpoint={endpoint}
 					filterName='singleOntologyFilter'
-					otherFilters={{
-						obsoleteFilter: {
-							"obsolete": {
-								queryString: false
-							}
-						}
-					}}
+					fieldName={fieldname}
+					onValueChangeHandler={onSingleOntologyValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -218,7 +245,6 @@ export const ExperimentalConditionsTable = () => {
 		);
 	};
 
-	const curieAutocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 
 	const columns = [
 		{
@@ -227,7 +253,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: uniqueIdBodyTemplate,
-			filterElement: {type: "input", filterName: "uniqueidFilter", fields: ["uniqueId"]}, 
+			filterElement: {type: "input", filterName: "uniqueidFilter", fields: ["uniqueId"]},
 		},
 		{
 			field: "conditionSummary",
@@ -235,7 +261,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			body: summaryBodyTemplate,
-			filterElement: {type: "input", filterName: "conditionSummaryFilter", fields: ["conditionSummary"]}, 
+			filterElement: {type: "input", filterName: "conditionSummaryFilter", fields: ["conditionSummary"]},
 		},
 		{
 			field: "conditionClass.name",
@@ -243,7 +269,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionClassBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionClassFilter", fields: ["conditionClass.curie", "conditionClass.name"]}, 
+			filterElement: {type: "input", filterName: "conditionClassFilter", fields: ["conditionClass.curie", "conditionClass.name"]},
 			editor: (props) => conditionClassEditorTemplate(props, curieAutocompleteFields)
 		},
 		{
@@ -252,7 +278,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionIdBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionIdFilter", fields: ["conditionId.curie", "conditionId.name"]}, 
+			filterElement: {type: "input", filterName: "conditionIdFilter", fields: ["conditionId.curie", "conditionId.name"]},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionId", "experimentalconditionontologyterm", curieAutocompleteFields)
 		},
 		{
@@ -260,7 +286,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Gene Ontology",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionGeneOntologyFilter", fields: ["conditionGeneOntology.curie", "conditionGeneOntology.name"]}, 
+			filterElement: {type: "input", filterName: "conditionGeneOntologyFilter", fields: ["conditionGeneOntology.curie", "conditionGeneOntology.name"]},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionGeneOntology", "goterm", curieAutocompleteFields),
 			body: conditionGeneOntologyBodyTemplate
 		},
@@ -270,7 +296,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionChemicalBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionChemicalFilter", fields: ["conditionChemical.curie", "conditionChemical.name"]}, 
+			filterElement: {type: "input", filterName: "conditionChemicalFilter", fields: ["conditionChemical.curie", "conditionChemical.name"]},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionChemical", "chemicalterm", curieAutocompleteFields)
 		},
 		{
@@ -279,7 +305,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionAnatomyBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionAnatomyFilter", fields: ["conditionAnatomy.curie", "conditionAnatomy.name"]}, 
+			filterElement: {type: "input", filterName: "conditionAnatomyFilter", fields: ["conditionAnatomy.curie", "conditionAnatomy.name"]},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionAnatomy", "anatomicalterm", curieAutocompleteFields)
 		},
 		{
@@ -288,7 +314,7 @@ export const ExperimentalConditionsTable = () => {
 			sortable: isEnabled,
 			body: conditionTaxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionTaxonFilter", fields: ["conditionTaxon.curie", "conditionTaxon.name"]}, 
+			filterElement: {type: "input", filterName: "conditionTaxonFilter", fields: ["conditionTaxon.curie", "conditionTaxon.name"]},
 			editor: (props) => singleOntologyEditorTemplate(props, "conditionTaxon", "ncbitaxonterm", curieAutocompleteFields)
 		},
 		{
@@ -296,7 +322,7 @@ export const ExperimentalConditionsTable = () => {
 			header: "Quantity",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionQuantityFilter", fields: ["conditionQuantity"]}, 
+			filterElement: {type: "input", filterName: "conditionQuantityFilter", fields: ["conditionQuantity"]},
 			editor: (props) => freeTextEditor(props, "conditionQuantity")
 		}
 		,
@@ -305,10 +331,10 @@ export const ExperimentalConditionsTable = () => {
 			header: "Free Text",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "conditionFreeTextFilter", fields: ["conditionFreeText"]}, 
+			filterElement: {type: "input", filterName: "conditionFreeTextFilter", fields: ["conditionFreeText"]},
 			editor: (props) => freeTextEditor(props, "conditionFreeText")
 		},
-		{ 
+		{
 			field: "internal",
 			header: "Internal",
 			body: internalBodyTemplate,
@@ -331,10 +357,10 @@ export const ExperimentalConditionsTable = () => {
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable 
-					endpoint="experimental-condition" 
-					tableName="Experimental Conditions" 
-					columns={columns}	 
+				<GenericDataTable
+					endpoint="experimental-condition"
+					tableName="Experimental Conditions"
+					columns={columns}
 					isEditable={true}
 					curieFields={["conditionClass", "conditionId", "conditionAnatomy", "conditionTaxon", "conditionGeneOntology", "conditionChemical"]}
 					sortMapping={sortMapping}

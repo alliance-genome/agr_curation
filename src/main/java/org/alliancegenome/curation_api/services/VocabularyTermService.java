@@ -31,6 +31,13 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		response.setEntity(term);
 		return response;
 	}
+
+	public ObjectResponse<VocabularyTerm> getTermInVocabularyTermSet(String vocabularyTermSetName, String termName) {
+		VocabularyTerm term = vocabularyTermDAO.getTermInVocabularyTermSet(vocabularyTermSetName, termName);
+		ObjectResponse<VocabularyTerm> response = new ObjectResponse<VocabularyTerm>();
+		response.setEntity(term);
+		return response;
+	}
 	
 	@Override
 	@Transactional
