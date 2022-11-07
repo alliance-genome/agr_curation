@@ -8,19 +8,21 @@ import { EllipsisTableCell } from "../../components/EllipsisTableCell";
 import { ListTableCell } from "../../components/ListTableCell";
 import { Button } from 'primereact/button';
 import { VocabularyTermSetService } from "../../service/VocabularyTermSetService";
-import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { NewVocabularyTermSetForm } from './NewVocabularyTermSetForm';
 import { useNewVocabularyTermSetReducer } from './useNewVocabularyTermSetReducer';
 import { InputTextEditor } from "../../components/InputTextEditor";
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
+import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEditor";
+import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 
 export const VocabularyTermSetTable = () => {
 
 	const [isEnabled, setIsEnabled] = useState(true);
 	const [newVocabularyTermSet, setNewVocabularyTermSet] = useState(null);
-	const { newVocabularyTermSetState, newVocabularyTermSetDispatch } = useNewVocabularyTermSetReducer(); 
+	const { newVocabularyTermSetState, newVocabularyTermSetDispatch } = useNewVocabularyTermSetReducer();
 
 	const searchService = new SearchService();
 	const errorMessage = useRef(null);
@@ -59,20 +61,32 @@ export const VocabularyTermSetTable = () => {
 			);
 		}
 	};
-	
+
+	const onVocabularyChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "vocabularyTermSetVocabulary", setFieldValue, "name");
+	}
+	const vocabularySearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields =["name"];
+		const endpoint="vocabulary";
+		const filterName="vocabularyFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const vocabularyEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["name"]}
+				<AutocompleteEditor
+					search={vocabularySearch}
+					initialValue={props.rowData.vocabularyTermSetVocabulary?.name}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='vocabulary'
-					filterName='vocabularyFilter'
 					fieldName='vocabularyTermSetVocabulary'
-					subField='name'
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					subField={"name"}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					onValueChangeHandler={onVocabularyChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -99,20 +113,39 @@ export const VocabularyTermSetTable = () => {
 		}
 	};
 
+	const onMemberTermsChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "memberTerms", setFieldValue);
+	};
+
+	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
+		const autocompleteFields =["name"];
+		const endpoint = "vocabularyterm";
+		const filterName = "memberTermsFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
+			vocabularyFilter: {
+				"vocabulary.name": {
+					queryString: props.props.value[props.rowIndex].vocabularyTermSetVocabulary.name
+				}
+			}
+		}
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
 	const memberTermsEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["name"]}
-					rowProps={props}
-					searchService={searchService}
-					endpoint='vocabularyterm'
-					filterName='memberTermsFilter'
+				<AutocompleteMultiEditor
+					name="memberTerms"
 					fieldName='memberTerms'
 					subField='name'
-					isMultiple={true}
-					isMemberTerms={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
+					initialValue={props.rowData.memberTerms}
+					rowProps={props}
+					search={memberTermSearch}
+					onValueChangeHandler={onMemberTermsChange}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 						<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 				/>
 				<ErrorMessageComponent

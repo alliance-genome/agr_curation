@@ -10,13 +10,14 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
-import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
-import { getRefStrings } from '../../utils/utils';
+import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange} from '../../utils/utils';
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 export const AllelesTable = () => {
 
@@ -27,31 +28,31 @@ export const AllelesTable = () => {
 
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
-	
+
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const inCollectionTerms = useControlledVocabularyService('Allele collection vocabulary');
 	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
-	
+
 	const searchService = new SearchService();
 	let alleleService = new AlleleService();
 
 	const aggregationFields = [
 		'inCollection.name', 'inheritanceMode.name'
 	];
-	
+
 	const mutation = useMutation(updatedAllele => {
 		if (!alleleService) {
 			alleleService = new AlleleService();
 		}
 		return alleleService.saveAllele(updatedAllele);
 	});
-	
+
 	const symbolTemplate = (rowData) => {
 		if (rowData?.symbol) {
 			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
 		}
 	}
-	
+
 	const nameTemplate = (rowData) => {
 		if (rowData?.name) {
 			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.name }} />
@@ -110,13 +111,13 @@ export const AllelesTable = () => {
 			</>
 		);
 	};
-	
+
 	const isExtinctTemplate = (rowData) => {
 		if (rowData && rowData.isExtinct !== null && rowData.isExtinct !== undefined) {
 			return <EllipsisTableCell>{JSON.stringify(rowData.isExtinct)}</EllipsisTableCell>;
 		}
 	};
-	
+
 	const referencesTemplate = (rowData) => {
 		if (rowData && rowData.references && rowData.references.length > 0) {
 			const refStrings = getRefStrings(rowData.references);
@@ -141,21 +142,31 @@ export const AllelesTable = () => {
 		}
 	};
 
+	const onReferenceValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
+	};
+
+	const referenceSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["curie", "cross_references.curie"];
+		const endpoint = "literature-reference";
+		const filterName = "curieFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const referencesEditor = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-
-					autocompleteFields={["curie", "cross_references.curie"]}
+				<AutocompleteMultiEditor
+					search={referenceSearch}
+					initialValue={props.rowData.references}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='literature-reference'
-					filterName='curieFilter'
-					isReference={true}
-					isMultiple={true}
 					fieldName='references'
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onReferenceValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -164,24 +175,36 @@ export const AllelesTable = () => {
 			</>
 		);
 	};
-	
+
+	const onTaxonValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "taxon", setFieldValue);
+	};
+
+	const taxonSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const endpoint = "ncbitaxonterm";
+		const filterName = "taxonFilter";
+		const otherFilters = {
+			obsoleteFilter: {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+		setQuery(event.query);
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
 	const taxonEditor = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+				<AutocompleteEditor
+					search={taxonSearch}
+					initialValue={props.rowData.taxon?.curie}
 					rowProps={props}
-					searchService={searchService}
 					fieldName='taxon'
-					endpoint='ncbitaxonterm'
-					filterName='taxonFilter'
-					otherFilters={{
-						obsoleteFilter: {
-							"obsolete": {
-								queryString: false
-							}
-						}
-					}}
+					onValueChangeHandler={onTaxonValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -257,7 +280,7 @@ export const AllelesTable = () => {
 			</>
 		);
 	};
-	
+
 	const freeTextEditor = (props, fieldname) => {
 		return (
 			<>
@@ -276,7 +299,7 @@ export const AllelesTable = () => {
 			header: "Curie",
 			sortable: { isEnabled },
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
 		},
 		{
 			field: "name",
@@ -284,7 +307,7 @@ export const AllelesTable = () => {
 			body: nameTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
 			editor: (props) => freeTextEditor(props, "name")
 		},
 		{
@@ -294,7 +317,7 @@ export const AllelesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]},
-			editor: (props) => freeTextEditor(props, "symbol") 
+			editor: (props) => freeTextEditor(props, "symbol")
 		},
 		{
 			field: "taxon.name",
@@ -302,7 +325,7 @@ export const AllelesTable = () => {
 			body: taxonTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]}, 
+			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
 			editor: (props) => taxonEditor(props)
 		},
 		{
@@ -391,11 +414,11 @@ export const AllelesTable = () => {
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable 
+				<GenericDataTable
 					dataKey="curie"
-					endpoint="allele" 
-					tableName="Alleles" 
-					columns={columns}	 
+					endpoint="allele"
+					tableName="Alleles"
+					columns={columns}
 					aggregationFields={aggregationFields}
 					isEditable={true}
 					mutation={mutation}
