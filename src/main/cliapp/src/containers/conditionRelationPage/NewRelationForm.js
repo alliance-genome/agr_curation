@@ -6,12 +6,13 @@ import { InputText } from "primereact/inputtext";
 import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
+import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { LiteratureAutocompleteTemplate } from "../../components/Autocomplete/LiteratureAutocompleteTemplate";
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
-import {AutocompleteFormEditor} from "../../components/Autocomplete/AutocompleteFormEditor";
+import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 
 export const NewRelationForm = ({
@@ -75,7 +76,8 @@ export const NewRelationForm = ({
 		});
 	}
 
-	const onReferenceChange = (event) => {
+	const onReferenceChange = (event, setFieldValue) => {
+		setFieldValue(event.target.value);
 		newRelationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -83,13 +85,31 @@ export const NewRelationForm = ({
 		});
 	}
 
+	const referenceSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["curie", "cross_references.curie"];
+		const endpoint = "literature-reference";
+		const filterName = "curieFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const onConditionsChange = (event, setFieldValue) => {
+		setFieldValue(event.target.value);
 		newRelationDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value: event.target.value
 		});
-		setFieldValue(event.target.value);
+	}
+
+	const conditionSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["conditionSummary"];
+		const endpoint = "experimental-condition";
+		const filterName = "experimentalConditionFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const dialogFooter = (
@@ -119,20 +139,16 @@ export const NewRelationForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
-							<AutocompleteFormEditor
-								autocompleteFields={["curie", "cross_references.curie"]}
-								searchService={searchService}
+							<AutocompleteEditor
+								search={referenceSearch}
 								name="singleReference"
 								label="Reference"
-								endpoint='literature-reference'
-								filterName='curieFilter'
 								fieldName='singleReference'
-								isReference={true}
-								value={newRelation.singleReference}
+								initialValue={newRelation.singleReference}
 								onValueChangeHandler={onReferenceChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
-								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
-									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+									<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
 						</div>
@@ -153,19 +169,15 @@ export const NewRelationForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="conditions">Conditions</label>
-							<AutocompleteRowEditor
-								name="conditions"
-								autocompleteFields={["conditionSummary"]}
-								searchService={searchService}
-								endpoint='experimental-condition'
-								filterName='experimentalConditionFilter'
+							<AutocompleteMultiEditor
+								search={conditionSearch}
+								initialValue={newRelation.conditions}
 								fieldName='conditions'
 								subField='conditionSummary'
-								isMultiple={true}
-								classNames={classNames({'p-invalid': submitted && errorMessages.conditions})}
-								passedOnChange={onConditionsChange}
-								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-									<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+								name="conditions"
+								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+									<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+								onValueChangeHandler={onConditionsChange}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditions"}/>
 						</div>

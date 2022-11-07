@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { useMutation } from 'react-query';
 import { Toast } from 'primereact/toast';
 
-import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
+import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
@@ -22,10 +22,11 @@ import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { Button } from 'primereact/button';
 import { Tooltip } from 'primereact/tooltip';
-import {getRefString} from '../../utils/utils';
+import {getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from '../../utils/utils';
 import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -675,19 +676,31 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	const onSubjectValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "subject", setFieldValue);
+	};
+
+	const subjectSearch = (event, setFiltered, setQuery, props) => {
+		const autocompleteFields = getSubjectAutocompleteFields(props);
+		const endpoint = getSubjectEndpoint(props);
+		const filterName = "subjectFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const subjectEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={getSubjectAutocompleteFields(props)}
+				<AutocompleteEditor
+					initialValue={props.rowData.subject?.curie}
+					search={subjectSearch}
 					rowProps={props}
 					searchService={searchService}
-					endpoint={getSubjectEndpoint(props)}
-					filterName='subjectFilter'
 					fieldName='subject'
-					isSubject={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onSubjectValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -713,26 +726,38 @@ export const DiseaseAnnotationsTable = () => {
 		if (props.rowData.type !== "AGMDiseaseAnnotation") subjectFields.push("symbol");
 		return subjectFields;
 	};
+	const onSgdStrainBackgroundValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "sgdStrainBackground", setFieldValue);
+	};
+
+	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const endpoint = "agm";
+		const filterName = "sgdStrainBackgroundFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
+			taxonFilter: {
+				"taxon.name": {
+					queryString: "Saccharomyces cerevisiae"
+				}
+			},
+		}
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
 
 	const sgdStrainBackgroundEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+				<AutocompleteEditor
 					rowProps={props}
+					initialValue={props.rowData.sgdStrainBackground?.curie}
+					search={sgdStrainBackgroundSearch}
 					searchService={searchService}
-					endpoint='agm'
-					filterName='sgdStrainBackgroundFilter'
 					fieldName='sgdStrainBackground'
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-					otherFilters={{
-						taxonFilter: {
-							"taxon.name": {
-								queryString: "Saccharomyces cerevisiae"
-							}
-						},
-					}}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onSgdStrainBackgroundValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -746,19 +771,30 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	const onGeneticModifierValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "diseaseGeneticModifier", setFieldValue);
+	};
+
+	const geneticModifierSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const endpoint = "biologicalentity";
+		const filterName = "geneticModifierFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const geneticModifierEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+				<AutocompleteEditor
+					search={geneticModifierSearch}
+					initialValue={props.rowData.diseaseGeneticModifier?.curie}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='biologicalentity'
-					filterName='geneticModifierFilter'
 					fieldName='diseaseGeneticModifier'
-					isSubject={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onGeneticModifierValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -771,21 +807,32 @@ export const DiseaseAnnotationsTable = () => {
 			</>
 		);
 	};
+
+	const onAssertedAlleleValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "assertedAllele", setFieldValue);
+	};
+
+	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const endpoint = "allele";
+		const filterName = "assertedAlleleFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
 
 	const assertedAlleleEditorTemplate = (props) => {
 		if (props.rowData.type === "AGMDiseaseAnnotation") {
 			return (
 				<>
-					<AutocompleteRowEditor
-						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+					<AutocompleteEditor
+						search={assertedAlleleSearch}
+						initialValue={props.rowData.assertedAllele?.curie}
 						rowProps={props}
-						searchService={searchService}
-						endpoint='allele'
-						filterName='assertedAlleleFilter'
 						fieldName='assertedAllele'
-						isSubject={true}
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+						valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+						onValueChangeHandler={onAssertedAlleleValueChange}
 					/>
 					<ErrorMessageComponent
 						errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -802,23 +849,35 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const onDiseaseValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "object", setFieldValue);
+	};
+
+	const diseaseSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const endpoint = "doterm";
+		const filterName = "diseaseFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
+			obsoleteFilter: {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
 	const diseaseEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+				<AutocompleteEditor
+					search={diseaseSearch}
+					initialValue={props.rowData.object?.curie}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='doterm'
-					filterName='diseaseFilter'
 					fieldName='object'
-					otherFilters={{
-						obsoleteFilter: {
-							"obsolete": {
-								queryString: false
-							}
-						}
-					}}
+					onValueChangeHandler={onDiseaseValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -828,23 +887,34 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	const onAssertedGeneValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "assertedGenes", setFieldValue);
+	};
+
+	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const endpoint = "gene";
+		const filterName = "assertedGenesFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const assertedGenesEditorTemplate = (props) => {
 		if (props.rowData.type === "GeneDiseaseAnnotation") {
 			return null;
 		} else {
 			return (
 				<>
-					<AutocompleteRowEditor
-						autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+					<AutocompleteMultiEditor
+						search={assertedGenesSearch}
+						initialValue={props.rowData.assertedGenes}
 						rowProps={props}
-						searchService={searchService}
-						endpoint='gene'
-						filterName='assertedGenesFilter'
 						fieldName='assertedGenes'
-						isSubject={true}
-						isMultiple={true}
-						valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-							<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+						valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+						onValueChangeHandler={onAssertedGeneValueChange}
 					/>
 					<ErrorMessageComponent
 						errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -855,26 +925,37 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const onWithValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "with", setFieldValue);
+	};
+
+	const withSearch = (event, setFiltered, setInputValue) => {
+	   const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+	   const endpoint = "gene";
+	   const filterName = "withFilter";
+	   const filter = buildAutocompleteFilter(event, autocompleteFields);
+	   const otherFilters = {
+			taxonFilter: {
+				"taxon.curie": {
+					queryString: "NCBITaxon:9606"
+				}
+			},
+		}
+
+	   setInputValue(event.query);
+	   autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
 	const withEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"]}
+				<AutocompleteMultiEditor
+					search={withSearch}
+					initialValue={props.rowData.with}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='gene'
-					filterName='withFilter'
 					fieldName='with'
-					isMultiple={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-					otherFilters={{
-						taxonFilter: {
-							"taxon.curie": {
-								queryString: "NCBITaxon:9606"
-							}
-						},
-					}}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onWithValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
@@ -884,32 +965,44 @@ export const DiseaseAnnotationsTable = () => {
 		);
 	};
 
+	const onEvidenceValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "evidenceCodes", setFieldValue);
+	};
+
+	const evidenceSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["curie", "name", "abbreviation"];
+		const endpoint = "ecoterm";
+		const filterName = "evidenceFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
+			obsoleteFilter: {
+				"obsolete": {
+					queryString: false
+				}
+			},
+			subsetFilter: {
+				"subsets": {
+					queryString: "agr_eco_terms"
+				}
+			}
+		}
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
 	const evidenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["curie", "name", "abbreviation"]}
+				<AutocompleteMultiEditor
+					search={evidenceSearch}
+					initialValue={props.rowData.evidenceCodes}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='ecoterm'
-					filterName='evidenceFilter'
 					fieldName='evidenceCodes'
-					isMultiple={true}
-					otherFilters={{
-						obsoleteFilter: {
-							"obsolete": {
-								queryString: false
-							}
-						},
-						subsetFilter: {
-							"subsets": {
-								queryString: "agr_eco_terms"
-							}
-						}
-					}}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<EvidenceAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
-			/>
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<EvidenceAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onEvidenceValueChange}
+				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}
 					errorField="evidenceCodes"
@@ -992,20 +1085,30 @@ export const DiseaseAnnotationsTable = () => {
 		}
 	};
 
+	const onReferenceValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "singleReference", setFieldValue);
+	};
+
+	const referenceSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["curie", "cross_references.curie"];
+		const endpoint = "literature-reference";
+		const filterName = "curieFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const referenceEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-
-					autocompleteFields={["curie", "cross_references.curie"]}
+				<AutocompleteEditor
+				    search={referenceSearch}
+					initialValue={() => getRefString(props.rowData.singleReference)}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='literature-reference'
-					filterName='curieFilter'
-					isReference={true}
 					fieldName='singleReference'
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onReferenceValueChange}
 				/>
 				<ErrorMessageComponent
 					errorMessages={errorMessagesRef.current[props.rowIndex]}

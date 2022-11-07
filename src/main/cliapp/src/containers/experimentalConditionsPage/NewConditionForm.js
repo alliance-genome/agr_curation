@@ -7,15 +7,16 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { InputTextarea } from "primereact/inputtextarea";
 import { useMutation, useQueryClient } from "react-query";
-import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
+import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
+import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
 
 export const NewConditionForm = ({
 	newConditionState,
 	newConditionDispatch,
-	searchService, 
+	searchService,
 	experimentalConditionService,
 	setNewExperimentalCondition,
 	curieAutocompleteFields,
@@ -60,12 +61,108 @@ export const NewConditionForm = ({
 		const curie = event.value.curie;
 		const stringValue = event.value;
 		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};
+		setFieldValue(event.target.value);
 		newConditionDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value,
 		});
-		setFieldValue(event.target.value);
+	}
+
+	const conditionClassSearch = (event, setFiltered, setQuery) => {
+		const endpoint = "zecoterm";
+		const filterName = "conditionClassEditorFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			},
+			"subsetFilter": {
+				"subsets": {
+					queryString: 'ZECO_0000267'
+				}
+			}
+		}
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
+	const conditionIdSearch = (event, setFiltered, setQuery) => {
+		const endpoint = "experimentalconditionontologyterm";
+		const filterName = "singleOntologyFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
+	const conditionGeneOntologySearch = (event, setFiltered, setQuery) => {
+		const endpoint = "goterm";
+		const filterName = "singleOntologyFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
+	const conditionChemicalSearch = (event, setFiltered, setQuery) => {
+		const endpoint = "chemicalterm";
+		const filterName = "singleOntologyFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+		setQuery(event.query)
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
+	const conditionAnatomySearch = (event, setFiltered, setQuery) => {
+		const endpoint = "anatomicalterm";
+		const filterName = "singleOntologyFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
+
+	const conditionTaxonSearch = (event, setFiltered, setQuery) => {
+		const endpoint = "ncbitaxonterm";
+		const filterName = "singleOntologyFilter";
+		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
+		const otherFilters = {
+			"obsoleteFilter": {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		}
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	}
 
 	const onInternalChange = (event) => {
@@ -101,135 +198,74 @@ export const NewConditionForm = ({
 					<form>
 						<div className="field">
 							<label htmlFor="conditionClass">Condition Class</label>
-							<AutocompleteRowEditor
-								autocompleteFields={curieAutocompleteFields}
-								searchService={searchService}
+							<AutocompleteEditor
 								name="conditionClass"
-								label="Condition Class"
-								endpoint='zecoterm'
-								filterName='conditionClassEditorFilter'
-								fieldName='conditionClass'
-								value={newCondition.conditionClass}
-								passedOnChange={onCurieFieldChange}
+								search={conditionClassSearch}
+								initialValue={newCondition.conditionClass.curie}
+								fieldName="conditionClass"
+								onValueChangeHandler={onCurieFieldChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditionClass})}
-								otherFilters={{
-									"obsoleteFilter": {
-										"obsolete": {
-											queryString: false
-										}
-									},
-									"subsetFilter": {
-										"subsets": {
-											queryString: 'ZECO_0000267'
-										}
-									}
-								}}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionClass"}/>
 						</div>
 						<div className="field">
 							<label htmlFor="conditionId">Condition Term</label>
-							<AutocompleteRowEditor
+							<AutocompleteEditor
 								name="conditionId"
-								autocompleteFields={curieAutocompleteFields}
-								searchService={searchService}
-								passedOnChange={onCurieFieldChange}
+								search={conditionIdSearch}
+								initialValue={newCondition.conditionId.curie}
 								fieldname={"conditionId"}
-								endpoint={"experimentalconditionontologyterm"}
-								filterName='singleOntologyFilter'
+								onValueChangeHandler={onCurieFieldChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditionId})}
-								otherFilters={{
-									obsoleteFilter: {
-										"obsolete": {
-											queryString: false
-										}
-									}
-								}}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionId"}/>
 						</div>
 						<div className="field">
 							<label htmlFor="conditionGeneOntology">Gene Ontology</label>
-							<AutocompleteRowEditor
+							<AutocompleteEditor
 								name="conditionGeneOntology"
-								autocompleteFields={curieAutocompleteFields}
-								searchService={searchService}
-								passedOnChange={onCurieFieldChange}
+								search={conditionGeneOntologySearch}
+								initialValue={newCondition.conditionGeneOntology.curie}
+								onValueChangeHandler={onCurieFieldChange}
 								fieldname={"conditionGeneOntology"}
-								endpoint={"goterm"}
-								filterName='singleOntologyFilter'
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditionGeneOntology})}
-								otherFilters={{
-									obsoleteFilter: {
-										"obsolete": {
-											queryString: false
-										}
-									}
-								}}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionGeneOntology"}/>
 						</div>
 						<div className="field">
 							<label htmlFor="conditionChemical">Chemical</label>
-							<AutocompleteRowEditor
+							<AutocompleteEditor
 								name="conditionChemical"
-								autocompleteFields={curieAutocompleteFields}
-								searchService={searchService}
-								passedOnChange={onCurieFieldChange}
+								search={conditionChemicalSearch}
+								initialValue={newCondition.conditionChemical.curie}
 								fieldname={"conditionChemical"}
-								endpoint={"chemicalterm"}
-								filterName='singleOntologyFilter'
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditionChemical})}
-								otherFilters={{
-									obsoleteFilter: {
-										"obsolete": {
-											queryString: false
-										}
-									}
-								}}
+								onValueChangeHandler={onCurieFieldChange}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionChemical"}/>
 						</div>
 						<div className="field">
 							<label htmlFor="conditionAnatomy">Anatomy</label>
-							<AutocompleteRowEditor
+							<AutocompleteEditor
 								name="conditionAnatomy"
-								autocompleteFields={curieAutocompleteFields}
-								searchService={searchService}
-								passedOnChange={onCurieFieldChange}
+								initialValue={newCondition.conditionAnatomy.curie}
+								search={conditionAnatomySearch}
+								onValueChangeHandler={onCurieFieldChange}
 								fieldname={"conditionAnatomy"}
-								endpoint={"anatomicalterm"}
-								filterName='singleOntologyFilter'
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditionAnatomy})}
-								otherFilters={{
-									obsoleteFilter: {
-										"obsolete": {
-											queryString: false
-										}
-									}
-								}}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionAnatomy"}/>
 						</div>
-		
+
 						<div className="field">
 							<label htmlFor="conditionTaxon">Taxon</label>
-							<AutocompleteRowEditor
+							<AutocompleteEditor
 								name="conditionTaxon"
-								autocompleteFields={curieAutocompleteFields}
-								searchService={searchService}
-								passedOnChange={onCurieFieldChange}
+								initialValue={newCondition.conditionTaxon.curie}
+								search={conditionTaxonSearch}
+								onValueChangeHandler={onCurieFieldChange}
 								fieldname={"conditionTaxon"}
-								endpoint={"ncbitaxonterm"}
-								filterName='singleOntologyFilter'
 								classNames={classNames({'p-invalid': submitted && errorMessages.conditionTaxon})}
-								otherFilters={{
-									obsoleteFilter: {
-										"obsolete": {
-											queryString: false
-										}
-									}
-								}}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionTaxon"}/>
 						</div>
@@ -262,10 +298,10 @@ export const NewConditionForm = ({
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"internal"}/>
 						</div>
-		
+
 						<div className="field">
 							<label htmlFor="conditionFreeText">Free Text</label>
-							<InputTextarea 
+							<InputTextarea
 								id="conditionFreeText"
 								name="conditionFreeText"
 								value={newCondition.conditionFreeText}

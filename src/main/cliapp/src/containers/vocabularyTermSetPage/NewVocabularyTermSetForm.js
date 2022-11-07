@@ -8,8 +8,9 @@ import { useMutation, useQueryClient } from "react-query";
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
 import { classNames } from "primereact/utils";
-import { AutocompleteRowEditor } from "../../components/Autocomplete/AutocompleteRowEditor";
-import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
+import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import {autocompleteSearch, buildAutocompleteFilter} from "../../utils/utils";
 
 
 export const NewVocabularyTermSetForm = ({
@@ -63,21 +64,48 @@ export const NewVocabularyTermSetForm = ({
 		});
 	};
 
-	const onVocabularyChange = (event) => {
+	const onVocabularyChange = (event, setFieldValue) => {
+		setFieldValue(event.target.value);
 		newVocabularyTermSetDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value: event.value,
 		});
 	}
+	const vocabularySearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields =["name"];
+		const endpoint="vocabulary";
+		const filterName="vocabularyFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setQuery(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
 
 	const onMemberTermsChange = (event, setFieldValue) => {
+		setFieldValue(event.value);
 		newVocabularyTermSetDispatch({
 			type: "EDIT",
 			field: event.target.name,
 			value: event.value
 		});
-		setFieldValue(event.value);	
+	}
+
+	const memberTermSearch = (event, setFiltered, setInputValue, props) => {
+		const autocompleteFields =["name"];
+		const endpoint = "vocabularyterm";
+		const filterName = "memberTermsFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
+			vocabularyFilter: {
+				"vocabulary.name": {
+					queryString: newVocabularyTermSet?.vocabularyTermSetVocabulary?.name
+				}
+			}
+		}
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	}
 
 	const onDescriptionChange = (event) => {
@@ -87,14 +115,14 @@ export const NewVocabularyTermSetForm = ({
 			value: event.target.value
 		});
 	}
-	
+
 	const isMemberTermsEnabled = () => {
 		return (
 			//only enabled if a vocabulary is selected
 			newVocabularyTermSet.vocabularyTermSetVocabulary != null
 		)
 	}
-	
+
 	const dialogFooter = (
 		<>
 			<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDialog} />
@@ -123,18 +151,16 @@ export const NewVocabularyTermSetForm = ({
 						</div>
 						<div className="field">
 							<label htmlFor="vocabularyTermSetVocabulary"><font color={'red'}>*</font>Vocabulary</label>
-							<AutocompleteFormEditor
-								autocompleteFields={["name"]}
-								searchService={searchService}
+							<AutocompleteEditor
 								name="vocabularyTermSetVocabulary"
 								label="Vocabulary"
-								endpoint='vocabulary'
-								filterName='vocabularyFilter'
 								fieldName='vocabularyTermSetVocabulary'
-								value={newVocabularyTermSet?.vocabularyTermSetVocabulary?.name}
+								subField={"name"}
+								initialValue={newVocabularyTermSet?.vocabularyTermSetVocabulary?.name}
+								search={vocabularySearch}
 								onValueChangeHandler={onVocabularyChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages?.vocabularyTermSetVocabulary})}
-								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
+								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 									<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetVocabulary"}/>
@@ -148,31 +174,21 @@ export const NewVocabularyTermSetForm = ({
 								value={newVocabularyTermSet.vocabularyTermSetDescription}
 								onChange={onDescriptionChange}
 							/>
-							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetDescription"}/>	
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"vocabularyTermSetDescription"}/>
 						</div>
 						<div className="field">
 							<label htmlFor="memberTerms">Vocabulary Terms</label>
-							<AutocompleteRowEditor
+							<AutocompleteMultiEditor
 								name="memberTerms"
-								autocompleteFields={["name"]}
-								searchService={searchService}
-								endpoint='vocabularyterm'
-								filterName='memberTermsFilter'
 								fieldName='memberTerms'
 								subField='name'
-								otherFilters={{
-									vocabularyFilter: {
-										"vocabulary.name": {
-											queryString: newVocabularyTermSet?.vocabularyTermSetVocabulary?.name
-										}
-									}
-								}}
-								isMultiple={true}
 								isEnabled={isMemberTermsEnabled()}
-								classNames={classNames({'p-invalid': submitted && errorMessages?.memberTerms})}
-								passedOnChange={onMemberTermsChange}
+								initialValue={newVocabularyTermSet.memberTerms}
+								search={memberTermSearch}
+								onValueChangeHandler={onMemberTermsChange}
 								valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
 									<VocabTermAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+								classNames={classNames({'p-invalid': submitted && errorMessages?.memberTerms})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"memberTerms"}/>
 						</div>
