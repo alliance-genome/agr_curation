@@ -26,10 +26,6 @@ ALTER TABLE diseaseannotation_aud
 	DROP COLUMN diseaseannotationcurie;
 	
 -- Create InformationContentEntity tables and move data from Reference tables
-DROP INDEX reference_createdby_index;
-
-DROP INDEX reference_updatedby_index;
-
 CREATE TABLE informationcontententity (
 	curie varchar(255) CONSTRAINT informationcontententity_pkey PRIMARY KEY,
 	datecreated timestamp without time zone,
@@ -63,6 +59,14 @@ UPDATE informationcontententity
 			FROM reference
 		) AS subquery
 	WHERE informationcontententity.curie = subquery.curie;
+	
+ALTER TABLE informationcontententity
+	ADD CONSTRAINT informationcontententity_createdby_id_fk
+		FOREIGN KEY (createdby_id) REFERENCES person (id);	
+
+ALTER TABLE informationcontententity
+	ADD CONSTRAINT informationcontententity_updatedby_id_fk
+		FOREIGN KEY (updatedby_id) REFERENCES person (id);
 	
 INSERT INTO informationcontententity_aud (curie, rev, revtype)
 	SELECT curie, rev, revtype FROM reference_aud;
@@ -110,3 +114,88 @@ DELETE FROM vocabularyterm
 	
 DELETE FROM vocabulary
 	WHERE name = 'Sequencing status vocabulary';
+	
+-- Add evidence to Association
+CREATE TABLE association_informationcontententity (
+	association_id bigint,
+	evidence_curie varchar(255),
+	PRIMARY KEY (association_id, evidence_curie)
+);
+
+ALTER TABLE association_informationcontententity
+	ADD CONSTRAINT association_informationcontententity_association_id_fk
+		FOREIGN KEY (association_id) REFERENCES association (id);
+
+ALTER TABLE association_informationcontententity
+	ADD CONSTRAINT association_informationcontententity_evidence_curie_fk
+		FOREIGN KEY (evidence_curie) REFERENCES informationcontententity (curie);
+		
+CREATE TABLE association_informationcontententity_aud (
+	association_id bigint,
+	evidence_curie varchar(255),
+	rev integer NOT NULL,
+	revtype smallint,
+	PRIMARY KEY (rev, association_id, evidence_curie)
+);
+
+ALTER TABLE association_informationcontententity_aud
+	ADD CONSTRAINT association_informationcontententity_aud_rev_fk
+		FOREIGN KEY (rev) REFERENCES revinfo (rev);
+		
+-- Create SlotAnnotation tables
+CREATE TABLE slotannotation (
+	id bigint CONSTRAINT slotannotation_pkey PRIMARY KEY,
+	datecreated timestamp without time zone,
+	dateupdated timestamp without time zone,
+	dbdatecreated timestamp without time zone,
+	dbdateupdated timestamp without time zone,
+	internal boolean DEFAULT false,
+	obsolete boolean DEFAULT false,
+	createdby_id bigint,
+	updatedby_id bigint
+);
+
+ALTER TABLE slotannotation
+	ADD CONSTRAINT slotannotation_createdby_id_fk
+		FOREIGN KEY (createdby_id) REFERENCES person (id);	
+
+ALTER TABLE slotannotation
+	ADD CONSTRAINT slotannotation_updatedby_id_fk
+		FOREIGN KEY (updatedby_id) REFERENCES person (id);
+
+CREATE TABLE slotannotation_aud (
+	id bigint NOT NULL,
+	rev integer NOT NULL,
+	revtype smallint,
+	PRIMARY KEY (id, rev)
+);
+
+ALTER TABLE slotannotation_aud
+	ADD CONSTRAINT slotannotation_aud_rev_fk
+		FOREIGN KEY (rev) REFERENCES revinfo (rev);
+
+CREATE TABLE slotannotation_informationcontententity (
+	slotannotation_id bigint,
+	evidence_curie varchar(255),
+	PRIMARY KEY (slotannotation_id, evidence_curie)
+);
+
+ALTER TABLE slotannotation_informationcontententity
+	ADD CONSTRAINT slotannotation_informationcontententity_association_id_fk
+		FOREIGN KEY (slotannotation_id) REFERENCES slotannotation (id);
+
+ALTER TABLE slotannotation_informationcontententity
+	ADD CONSTRAINT slotannotation_informationcontententity_evidence_curie_fk
+		FOREIGN KEY (evidence_curie) REFERENCES informationcontententity (curie);
+		
+CREATE TABLE slotannotation_informationcontententity_aud (
+	slotannotation_id bigint,
+	evidence_curie varchar(255),
+	rev integer NOT NULL,
+	revtype smallint,
+	PRIMARY KEY (rev, slotannotation_id, evidence_curie)
+);
+
+ALTER TABLE slotannotation_informationcontententity_aud
+	ADD CONSTRAINT slotannotation_informationcontententity_aud_rev_fk
+		FOREIGN KEY (rev) REFERENCES revinfo (rev);
