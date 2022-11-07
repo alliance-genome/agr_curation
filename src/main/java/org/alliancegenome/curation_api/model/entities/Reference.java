@@ -36,7 +36,7 @@ import lombok.ToString;
 	@Index(name = "reference_createdby_index", columnList = "createdBy_id"),
 	@Index(name = "reference_updatedby_index", columnList = "updatedBy_id")
 })
-public class Reference extends CurieAuditedObject {
+public class Reference extends InformationContentEntity {
 	
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
