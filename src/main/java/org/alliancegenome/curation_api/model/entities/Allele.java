@@ -79,5 +79,10 @@ public class Allele extends GenomicEntity {
 	
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
+	
+	@IndexedEmbedded(includeDepth = 2)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	private List<AlleleMutationTypeSlotAnnotation> allele_mutation_types;
 }
 
