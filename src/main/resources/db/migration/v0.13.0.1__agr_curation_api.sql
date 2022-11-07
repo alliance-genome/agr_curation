@@ -1,46 +1,26 @@
+-- Move uniqueId from Association to DiseaseAnnotation
 ALTER TABLE diseaseannotation
-	ADD COLUMN uniqueid varchar(2000) UNIQUE NOT NULL,
-	ADD COLUMN datecreated timestamp without time zone,
-	ADD COLUMN dateupdated timestamp without time zone,
-	ADD COLUMN createdby_id bigint,
-	ADD COLUMN updatedby_id bigint,
-	ADD COLUMN internal boolean DEFAULT false,
-	ADD COLUMN obsolete boolean DEFAULT false,
-	ADD COLUMN dbdatecreated timestamp without time zone,
-	ADD COLUMN dbdateupdated timestamp without time zone;
+	ADD COLUMN uniqueid varchar(2000) UNIQUE NOT NULL;
+
+UPDATE diseaseannotation
+	SET uniqueid = subquery.uniqueid
+	FROM (
+		SELECT uniqueid
+			FROM association
+		) AS subquery
+	WHERE diseaseannotation.id = subquery.id;
 	
+ALTER TABLE association
+	DROP COLUMN uniqueid;
+
+-- Delete diseaseAnnotationCurie
 ALTER TABLE diseaseannotation 
 	DROP COLUMN diseaseannotationcurie;
 	
 ALTER TABLE diseaseannotation_aud
 	DROP COLUMN diseaseannotationcurie;
-
-ALTER TABLE diseaseannotation
-	ADD CONSTRAINT diseaseannotation_createdby_id_fk
-		FOREIGN KEY (createdby_id) REFERENCES person (id);
-		
 	
-ALTER TABLE diseaseannotation
-	ADD CONSTRAINT diseaseannotation_updatedby_id_fk
-		FOREIGN KEY (by_id) REFERENCES person (id);
-
-UPDATE diseaseannotation
-	SET datecreated = subquery.datecreated, dateupdated = subquery.dateupdated,
-		createdby_id = subquery.createdby_id, updatedby_id = subquery.updatedby_id,
-		internal = subquery.internal, obsolete = subquery.obsolete,
-		dbdatecreated = subquery.dbdatecreated, dbdateupdated = subquery.dbdateupdated	
-	FROM (
-		SELECT id, datecreated, dateupdated, createdby_id, updatedby_id, internal,
-			obsolete, dbdatecreated, dbdateupdated
-			FROM association
-		) AS subquery
-	WHERE diseaseannotation.id = subquery.id;
-	
-ALTER TABLE diseaseannotation
-	DROP CONSTRAINT fk5a3i0leqdmstsdfpq1j1b15el;
-	
-DROP TABLE association_aud, association;
-
+-- Create InformationContentEntity tables and move data from Reference tables
 CREATE TABLE informationcontententity (
 	curie varchar(255) CONSTRAINT informationcontententity_pkey PRIMARY KEY,
 	datecreated timestamp without time zone,
@@ -99,3 +79,13 @@ ALTER TABLE reference_aud
 		
 ALTER TABLE reference_aud
 	DROP COLUMN revtype;
+	
+ALTER TABLE reference
+	DROP COLUMN datecreated,
+	DROP COLUMN dateupdated,
+	DROP COLUMN internal,
+	DROP COLUMN obsolete,
+	DROP COLUMN createdby_id,
+	DROP COLUMN updatedby_id,
+	DROP COLUMN dbdatecreated,
+	DROP COLUMN dbdateupdated;
