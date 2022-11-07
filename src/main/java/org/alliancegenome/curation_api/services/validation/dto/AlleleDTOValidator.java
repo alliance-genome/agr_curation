@@ -74,15 +74,6 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 		allele.setInCollection(inCollection);
-		
-		VocabularyTerm sequencingStatus = null;
-		if (StringUtils.isNotBlank(dto.getSequencingStatusName())) {
-			sequencingStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY, dto.getSequencingStatusName());
-			if (sequencingStatus == null) {
-				alleleResponse.addErrorMessage("sequencing_status_name", ValidationConstants.INVALID_MESSAGE);
-			}
-		}
-		allele.setSequencingStatus(sequencingStatus);
 
 		allele.setIsExtinct(dto.getIsExtinct());
 		

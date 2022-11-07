@@ -29,7 +29,6 @@ export const AllelesTable = () => {
 	const toast_topright = useRef(null);
 	
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const sequencingStatusTerms = useControlledVocabularyService('Sequencing status vocabulary');
 	const inCollectionTerms = useControlledVocabularyService('Allele collection vocabulary');
 	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
 	
@@ -37,7 +36,7 @@ export const AllelesTable = () => {
 	let alleleService = new AlleleService();
 
 	const aggregationFields = [
-		'inCollection.name', 'sequencingStatus.name', 'inheritanceMode.name'
+		'inCollection.name', 'inheritanceMode.name'
 	];
 	
 	const mutation = useMutation(updatedAllele => {
@@ -108,26 +107,6 @@ export const AllelesTable = () => {
 					showClear={true}
 				/>
 				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"inCollection"} />
-			</>
-		);
-	};
-
-	const onSequencingStatusEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		updatedAlleles[props.rowIndex].sequencingStatus = event.value;
-	};
-
-	const sequencingStatusEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="sequencingStatus"
-					options={sequencingStatusTerms}
-					editorChange={onSequencingStatusEditorValueChange}
-					props={props}
-					showClear={true}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"sequencingStatus"} />
 			</>
 		);
 	};
@@ -350,14 +329,6 @@ export const AllelesTable = () => {
 			filter: true,
 			filterElement: {type: "multiselect", filterName: "inCollectionFilter", fields: ["inCollection.name"], useKeywordFields: true},
 			editor: (props) => inCollectionEditor(props)
-		},
-		{
-			field: "sequencingStatus.name",
-			header: "Sequencing Status",
-			sortable: isEnabled,
-			filter: true,
-			filterElement: {type: "multiselect", filterName: "sequencingStatusFilter", fields: ["sequencingStatus.name"], useKeywordFields: true},
-			editor: (props) => sequencingStatusEditor(props)
 		},
 		{
 			field: "isExtinct",

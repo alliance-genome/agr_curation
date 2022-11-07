@@ -12,7 +12,6 @@
     "is_extinct": false,
     "inheritance_mode_name": "dominant",
     "in_collection_name": "Million_mutations_project",
-    "sequencing_status_name": "sequenced",
     "reference_curies": [
       "PMID:25920550"
     ]

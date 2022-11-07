@@ -98,9 +98,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 		VocabularyTerm inCollection = validateInCollection(uiEntity, dbEntity);
 		dbEntity.setInCollection(inCollection);
 
-		VocabularyTerm sequencingStatus = validateSequencingStatus(uiEntity, dbEntity);
-		dbEntity.setSequencingStatus(sequencingStatus);
-		
 		if(uiEntity.getIsExtinct() != null) {
 			dbEntity.setIsExtinct(uiEntity.getIsExtinct());
 		}else{
@@ -190,25 +187,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			return null;
 		}
 		return inCollection;
-	}
-
-	public VocabularyTerm validateSequencingStatus(Allele uiEntity, Allele dbEntity) {
-		String field = "sequencingStatus";
-
-		if (uiEntity.getSequencingStatus() == null)
-			return null;
-
-		VocabularyTerm sequencingStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY, uiEntity.getSequencingStatus().getName());
-		if (sequencingStatus == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (sequencingStatus.getObsolete() && (dbEntity.getSequencingStatus() == null || !sequencingStatus.getName().equals(dbEntity.getSequencingStatus().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return sequencingStatus;
 	}
 
 }

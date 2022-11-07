@@ -73,12 +73,6 @@ public class Allele extends GenomicEntity {
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm inCollection;
 
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
-	private VocabularyTerm sequencingStatus;
-	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
 	@KeywordField(name = "isExtinct_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
 	@JsonView({View.FieldsOnly.class})

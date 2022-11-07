@@ -29,10 +29,6 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("in_collection_name")
 	private String inCollectionName;
-
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("sequencing_status_name")
-	private String sequencingStatusName;
 	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("is_extinct")

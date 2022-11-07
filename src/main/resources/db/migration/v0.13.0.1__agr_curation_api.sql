@@ -89,3 +89,18 @@ ALTER TABLE reference
 	DROP COLUMN updatedby_id,
 	DROP COLUMN dbdatecreated,
 	DROP COLUMN dbdateupdated;
+	
+-- Deprecate Allele sequencingStatus
+ALTER TABLE allele
+	DROP COLUMN sequencingstatus_id;
+	
+ALTER TABLE allele_aud
+	DROP COLUMN sequencingstatus_id;
+	
+DELETE FROM vocabularyterm
+	WHERE vocabulary_id = (
+		SELECT id FROM vocabulary WHERE name = 'Sequencing status vocabulary'
+	);
+	
+DELETE FROM vocabulary
+	WHERE name = 'Sequencing status vocabulary';

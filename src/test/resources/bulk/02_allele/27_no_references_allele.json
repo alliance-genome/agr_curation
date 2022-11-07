@@ -12,7 +12,6 @@
     "date_updated": "2022-03-09T22:10:12+00:00",
     "is_extinct": false,
     "inheritance_mode_name": "dominant",
-    "in_collection_name": "Million_mutations_project",
-    "sequencing_status_name": "sequenced"
+    "in_collection_name": "Million_mutations_project"
   }
 ]
