@@ -38,11 +38,10 @@ import lombok.ToString;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, submitted=true, partial=true)
+@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, partial=true)
 @Table(indexes = {
 	@Index(name = "allele_inheritancemode_index", columnList = "inheritanceMode_id"),
 	@Index(name = "allele_inCollection_index", columnList = "inCollection_id"),
-	@Index(name = "allele_sequencingStatus_index", columnList = "sequencingStatus_id"),
 })
 public class Allele extends GenomicEntity {
 

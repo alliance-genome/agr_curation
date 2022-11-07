@@ -1,11 +1,16 @@
--- Move uniqueId from Association to DiseaseAnnotation
+-- Move uniqueId from Association to DiseaseAnnotation and add curie
 ALTER TABLE diseaseannotation
+	ADD COLUMN curie varchar(255),
 	ADD COLUMN uniqueid varchar(2000) UNIQUE NOT NULL;
+	
+ALTER TABLE diseaseannotation_aud
+	ADD COLUMN curie varchar(255),
+	ADD COLUMN uniqueid varchar(2000);
 
 UPDATE diseaseannotation
 	SET uniqueid = subquery.uniqueid
 	FROM (
-		SELECT uniqueid
+		SELECT id, uniqueid
 			FROM association
 		) AS subquery
 	WHERE diseaseannotation.id = subquery.id;
@@ -21,6 +26,10 @@ ALTER TABLE diseaseannotation_aud
 	DROP COLUMN diseaseannotationcurie;
 	
 -- Create InformationContentEntity tables and move data from Reference tables
+DROP INDEX reference_createdby_index;
+
+DROP INDEX reference_updatedby_index;
+
 CREATE TABLE informationcontententity (
 	curie varchar(255) CONSTRAINT informationcontententity_pkey PRIMARY KEY,
 	datecreated timestamp without time zone,
@@ -29,18 +38,15 @@ CREATE TABLE informationcontententity (
 	dbdateupdated timestamp without time zone,
 	internal boolean DEFAULT false,
 	obsolete boolean DEFAULT false,
-	vocabularytermsetdescription varchar(255),
-	name varchar(255) NOT NULL,
 	createdby_id bigint,
-	updatedby_id bigint,
-	vocabularytermsetvocabulary_id bigint NOT NULL
+	updatedby_id bigint
 );
 
 CREATE TABLE informationcontententity_aud (
 	curie varchar(255) NOT NULL,
 	rev integer NOT NULL,
 	revtype smallint,
-	PRIMARY KEY (rev, curie)
+	PRIMARY KEY (curie, rev)
 );
 
 INSERT INTO informationcontententity (curie)
@@ -59,23 +65,15 @@ UPDATE informationcontententity
 	WHERE informationcontententity.curie = subquery.curie;
 	
 INSERT INTO informationcontententity_aud (curie, rev, revtype)
-	SELECT curie, rev, revtype FROM reference;
+	SELECT curie, rev, revtype FROM reference_aud;
 
 ALTER TABLE informationcontententity_aud
 	ADD CONSTRAINT informationcontententity_aud_rev_fk
 		FOREIGN KEY (rev) REFERENCES revinfo (rev);
 	
-ALTER TABLE reference
-	ADD CONSTRAINT reference_curie_fk
-		FOREIGN KEY (curie) REFERENCES informationcontententity (curie);
-		
 ALTER TABLE reference_aud
-	ADD CONSTRAINT reference_aud_curie_fk
-		FOREIGN KEY (curie) REFERENCES informationcontententity_aud (curie);
-		
-ALTER TABLE reference_aud
-	ADD CONSTRAINT reference_aud_rev_fk
-		FOREIGN KEY (curie) REFERENCES informationcontententity_aud (rev);
+	ADD CONSTRAINT reference_aud_curie_rev_fk
+		FOREIGN KEY (curie, rev) REFERENCES informationcontententity_aud;
 		
 ALTER TABLE reference_aud
 	DROP COLUMN revtype;
@@ -90,7 +88,15 @@ ALTER TABLE reference
 	DROP COLUMN dbdatecreated,
 	DROP COLUMN dbdateupdated;
 	
--- Deprecate Allele sequencingStatus
+CREATE INDEX informationcontententity_createdby_index
+	ON public.informationcontententity USING btree (createdby_id);
+
+CREATE INDEX informationcontententity_updatedby_index
+	ON public.informationcontententity USING btree (updatedby_id);
+
+-- Deprecate Allele sequencingStatus	
+DROP INDEX allele_sequencingstatus_index;
+
 ALTER TABLE allele
 	DROP COLUMN sequencingstatus_id;
 	
