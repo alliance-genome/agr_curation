@@ -83,6 +83,6 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
-	private List<AlleleMutationTypeSlotAnnotation> allele_mutation_types;
+	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
 }
 
