@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,7 @@ public class AlleleBulkUploadITCase {
 	
 	private String requiredReference = "AGRKB:000000001";
 	private String requiredReferenceXref = "PMID:25920550";
+	private String requiredSoTerm = "SO:00001";
 	
 	@BeforeEach
 	public void init() {
@@ -91,7 +93,10 @@ public class AlleleBulkUploadITCase {
 			body("results[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("results[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].alleleMutationTypes", hasSize(1)).
+			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
+			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm));
 	}
 	
 	@Test
@@ -1184,6 +1189,7 @@ public class AlleleBulkUploadITCase {
 	
 	private void loadRequiredEntities() throws Exception {
 		loadReference();
+		loadSOTerm();
 	}
 	
 	private void loadReference() throws Exception {
@@ -1211,6 +1217,21 @@ public class AlleleBulkUploadITCase {
 			body(reference).
 			when().
 			put("/api/reference").
+			then().
+			statusCode(200);
+	}
+	
+	private void loadSOTerm() throws Exception {
+		SOTerm soTerm = new SOTerm();
+		soTerm.setCurie(requiredSoTerm);
+		soTerm.setName("Test SOTerm");
+		soTerm.setObsolete(false);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(soTerm).
+			when().
+			put("/api/soterm").
 			then().
 			statusCode(200);
 	}
