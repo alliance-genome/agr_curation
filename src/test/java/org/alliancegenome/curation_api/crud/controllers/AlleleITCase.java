@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
 import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
@@ -13,12 +13,15 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -44,7 +47,6 @@ public class AlleleITCase {
 	
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary inCollectionVocabulary;
-	private Vocabulary sequencingStatusVocabulary;
 	private VocabularyTerm inheritanceMode;
 	private VocabularyTerm inCollection;
 	private Reference reference;
@@ -53,19 +55,22 @@ public class AlleleITCase {
 	private NCBITaxonTerm taxon2;
 	private Person person;
 	private OffsetDateTime datetime;
+	private SOTerm soTerm;
+	private AlleleMutationTypeSlotAnnotation alleleMutationType;
 	
 	private void createRequiredObjects() {
 		inheritanceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 		inCollectionVocabulary = getVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
-		sequencingStatusVocabulary = getVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
 		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
 		reference = createReference("AGRKB:000000003");
+		soTerm = createSoTerm("SO:00002");
 		references.add(reference);
 		taxon = getTaxonFromCurie("NCBITaxon:10090");
 		taxon2 = getTaxonFromCurie("NCBITaxon:9606");
 		person = createPerson("TEST:AllelePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
+		alleleMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), List.of(soTerm));
 	}
 	
 	@Test
@@ -85,6 +90,7 @@ public class AlleleITCase {
 		allele.setCreatedBy(person);
 		allele.setIsExtinct(false);
 		allele.setDateCreated(datetime);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -111,7 +117,9 @@ public class AlleleITCase {
 				body("entity.references[0].curie", is(reference.getCurie())).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 				body("entity.createdBy.uniqueId", is("TEST:AllelePerson0001")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
+				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie()));
 	}
 
 	@Test
@@ -739,6 +747,30 @@ public class AlleleITCase {
 		person = response.getEntity();
 		return (Person) person;
 	}
+	
+	private SOTerm createSoTerm(String curie) {
+		SOTerm term = new SOTerm();
+		term.setCurie(curie);
+		
+		ObjectResponse<SOTerm> response = RestAssured.given().
+				contentType("application/json").
+				body(term).
+				when().
+				post("/api/soterm").
+				then().
+				statusCode(200).extract().
+				body().as(getObjectResponseTypeRefSOTerm());
+		
+		return response.getEntity();
+	}
+	
+	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation (List<InformationContentEntity> evidence, List<SOTerm> mutationTypes) {
+		AlleleMutationTypeSlotAnnotation amt = new AlleleMutationTypeSlotAnnotation();
+		amt.setEvidence(evidence);
+		amt.setMutationTypes(mutationTypes);
+		
+		return amt;
+	}
 
 	private TypeRef<ObjectResponse<Allele>> getObjectResponseTypeRefAllele() {
 		return new TypeRef<ObjectResponse <Allele>>() { };
@@ -763,6 +795,11 @@ public class AlleleITCase {
 
 	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
 		return new TypeRef<ObjectResponse <LoggedInPerson>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<SOTerm>> getObjectResponseTypeRefSOTerm() {
+		return new TypeRef<ObjectResponse <SOTerm>>() {
 		};
 	}
 

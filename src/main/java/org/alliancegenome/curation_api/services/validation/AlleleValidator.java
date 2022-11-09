@@ -217,6 +217,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 					}
 					return null;
 				}
+				mt = mtResponse.getEntity();
+				mt.setSingleAllele(dbEntity);
 				validatedMutationTypes.add(mtResponse.getEntity());
 			}
 		}

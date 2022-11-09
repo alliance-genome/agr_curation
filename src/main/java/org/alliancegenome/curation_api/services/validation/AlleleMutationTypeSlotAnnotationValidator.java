@@ -7,9 +7,11 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -21,6 +23,7 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 
 	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject SoTermDAO soTermDAO;
+	@Inject AlleleDAO alleleDAO;
 
 
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotation(AlleleMutationTypeSlotAnnotation uiEntity) {
@@ -49,6 +52,11 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 		}
 		dbEntity = (AlleleMutationTypeSlotAnnotation) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
+		if (uiEntity.getSingleAllele() != null) {
+			Allele singleAllele = validateSingleAllele(uiEntity, dbEntity);
+			dbEntity.setSingleAllele(singleAllele);
+		}
+		
 		List<InformationContentEntity> evidence = validateEvidence(uiEntity, dbEntity);
 		dbEntity.setEvidence(evidence);
 		
@@ -90,6 +98,22 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 
 		}
 		return validMutationTypes;
+	}
+	
+	private Allele validateSingleAllele (AlleleMutationTypeSlotAnnotation uiEntity, AlleleMutationTypeSlotAnnotation dbEntity) {
+		String field = "singleAllele";
+		
+		Allele allele = alleleDAO.find(uiEntity.getSingleAllele().getCurie());
+		if (allele == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		if (allele.getObsolete() && !dbEntity.getSingleAllele().getObsolete()) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return allele;
 	}
 	
 }
