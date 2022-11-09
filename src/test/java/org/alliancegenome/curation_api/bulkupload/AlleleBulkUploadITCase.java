@@ -1187,6 +1187,138 @@ public class AlleleBulkUploadITCase {
 			body("results[0]", not(hasKey("references")));
 	}
 	
+	@Test
+	@Order(42)
+	public void alleleBulkUploadNoAlleleMutationTypeEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/42_no_allele_mutation_type_evidence.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0042"));
+	}
+	
+	@Test
+	@Order(43)
+	public void alleleBulkUploadUpdateNoAlleleMutationTypeEvidence() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/43_update_no_allele_mutation_type_evidence.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleMutationTypes")).
+			body("results[0].alleleMutationTypes[0]", not(hasKey("references")));
+	}
+	
+	@Test
+	@Order(44)
+	public void alleleBulkUploadNoAlleleMutationTypeMutationTypes() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/44_no_allele_mutation_type_mutation_types.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(45)
+	public void alleleBulkUploadInvalidAlleleMutationTypeMutationType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/45_invalid_allele_mutation_type_mutation_type.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(46)
+	public void alleleBulkUploadInvalidAlleleMutationTypeEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/46_invalid_allele_mutation_type_evidence.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
 	private void loadRequiredEntities() throws Exception {
 		loadReference();
 		loadSOTerm();

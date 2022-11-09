@@ -33,10 +33,6 @@ public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 					saResponse.addErrorMessage("evidence_curies", ValidationConstants.INVALID_MESSAGE);
 					break;
 				}
-				if (evidenceEntity.getObsolete()) {
-					saResponse.addErrorMessage("evidence_curies", ValidationConstants.OBSOLETE_MESSAGE);
-					break;
-				}
 				evidence.add(evidenceEntity);
 			}
 			annotation.setEvidence(evidence);

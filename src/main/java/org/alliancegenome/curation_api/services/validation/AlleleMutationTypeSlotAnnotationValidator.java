@@ -17,7 +17,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped
-public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationValidator {
+public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationValidator<AlleleMutationTypeSlotAnnotation> {
 
 	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject SoTermDAO soTermDAO;
