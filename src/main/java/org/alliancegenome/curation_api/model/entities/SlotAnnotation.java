@@ -34,7 +34,7 @@ public class SlotAnnotation extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({View.FieldsAndLists.class, View.Allele.class})
 	private List<InformationContentEntity> evidence;
 	
 }

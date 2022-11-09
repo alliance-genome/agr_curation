@@ -14,7 +14,7 @@ ALTER TABLE allelemutationtypeslotannotation
 
 CREATE TABLE allelemutationtypeslotannotation_aud (
 	id bigint,
-	singleallele_curie varchar(255) NOT NULL,
+	singleallele_curie varchar(255),
 	rev integer NOT NULL,
 	PRIMARY KEY (id, rev)
 );

@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
 
+import java.util.HashMap;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -20,7 +21,9 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.view.View;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -54,7 +57,6 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout,
 		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel
 	);
-
 	
 	@Override
 	@PUT
@@ -67,4 +69,14 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@Path("/")
 	@JsonView(View.Allele.class)
 	public ObjectResponse<Allele> create(Allele entity);
+	
+	@Override
+	@POST
+	@Path("/find")
+	@Tag(name = "Database Search Endpoints")
+	@JsonView(View.Allele.class)
+	public SearchResponse<Allele> find(
+			@DefaultValue("0") @QueryParam("page") Integer page,
+			@DefaultValue("10") @QueryParam("limit") Integer limit,
+			@RequestBody HashMap<String, Object> params);
 }

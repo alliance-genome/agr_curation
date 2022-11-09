@@ -7,13 +7,16 @@ import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Synonym;
@@ -21,14 +24,17 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.ListUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator {
 	
 	@Inject AlleleDAO alleleDAO;
-	@Inject ReferenceValidator referenceValidator;
+	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
+	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject ReferenceValidator referenceValidator;
 	
 	private String errorMessage;
 	
@@ -65,6 +71,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return validateAllele(uiEntity, dbEntity);
 	}		
 
+	@Transactional
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
@@ -115,10 +122,17 @@ public class AlleleValidator extends GenomicEntityValidator {
 		} else {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
+		
+		if (!response.hasErrors()) dbEntity = alleleDAO.persist(dbEntity);
+		
+		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
 	
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
+		} else {
+			if (CollectionUtils.isNotEmpty(mutationTypes))
+				mutationTypes.forEach(amt -> {alleleMutationTypeDAO.persist(amt);});
 		}
 		
 		return dbEntity;
@@ -151,7 +165,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return singleRefResponse.getEntity();
 	}
 
-	public VocabularyTerm validateInheritanceMode(Allele uiEntity, Allele dbEntity) {
+	private VocabularyTerm validateInheritanceMode(Allele uiEntity, Allele dbEntity) {
 		String field = "inheritanceMode";
 
 		if (uiEntity.getInheritanceMode() == null)
@@ -170,7 +184,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return inheritanceMode;
 	}
 
-	public VocabularyTerm validateInCollection(Allele uiEntity, Allele dbEntity) {
+	private VocabularyTerm validateInCollection(Allele uiEntity, Allele dbEntity) {
 		String field = "inCollection";
 
 		if (uiEntity.getInCollection() == null)
@@ -189,4 +203,38 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return inCollection;
 	}
 
+	private List<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypes (Allele uiEntity, Allele dbEntity) {
+		String field = "alleleMutationTypes";
+		
+		List<AlleleMutationTypeSlotAnnotation> validatedMutationTypes = new ArrayList<AlleleMutationTypeSlotAnnotation>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleMutationTypes())) {
+			for (AlleleMutationTypeSlotAnnotation mt : uiEntity.getAlleleMutationTypes()) {
+				ObjectResponse<AlleleMutationTypeSlotAnnotation> mtResponse = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(mt);
+				if (mtResponse.getEntity() == null) {
+					Map<String, String> errors = mtResponse.getErrorMessages();
+					for (String mtField : errors.keySet()) {
+						addMessageResponse(field, mtField + " - " + errors.get(mtField));
+					}
+					return null;
+				}
+				validatedMutationTypes.add(mtResponse.getEntity());
+			}
+		}
+
+		List<Long> previousIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleMutationTypes()))
+			previousIds = dbEntity.getAlleleMutationTypes().stream().map(AlleleMutationTypeSlotAnnotation::getId).collect(Collectors.toList());
+		List<Long> validatedIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(validatedMutationTypes))
+			validatedIds = validatedMutationTypes.stream().map(AlleleMutationTypeSlotAnnotation::getId).collect(Collectors.toList());
+	
+		List<Long> idsToRemove = ListUtils.subtract(previousIds, validatedIds);
+		idsToRemove.forEach(id -> {alleleMutationTypeDAO.remove(id);});
+
+		if (CollectionUtils.isEmpty(validatedMutationTypes))
+			return null;
+
+		return validatedMutationTypes;
+	}
+	
 }

@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
@@ -27,6 +28,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmb
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -37,7 +39,7 @@ import lombok.ToString;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
+@ToString(exclude = {"alleleDiseaseAnnotations", "alleleMutationTypes"}, callSuper = true)
 @AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, partial=true)
 @Table(indexes = {
 	@Index(name = "allele_inheritancemode_index", columnList = "inheritanceMode_id"),
@@ -82,7 +84,9 @@ public class Allele extends GenomicEntity {
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	@JsonManagedReference
+	@JsonView({View.FieldsAndLists.class, View.Allele.class})
 	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
 }
 
