@@ -38,19 +38,19 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 
 	public ObjectResponse<ConditionRelation> validateConditionRelationDTO(ConditionRelationDTO dto) {
 		ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
-    	
+		
 		ConditionRelation relation;
-    	
+		
 		Reference reference = null;
-    	if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
-    		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
-    		if (reference == null)
+		if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
+			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
+			if (reference == null)
 				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE);
-    	}
-    	String refCurie = reference == null ? null : reference.getCurie();
+		}
+		String refCurie = reference == null ? null : reference.getCurie();
 	
-    	String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dto, refCurie);
-    	SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", uniqueId);
+		String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dto, refCurie);
+		SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", uniqueId);
 
 		if (searchResponseRel == null || searchResponseRel.getSingleResult() == null) {
 			relation = new ConditionRelation();
@@ -61,48 +61,48 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		relation.setSingleReference(reference);
 		
 		ObjectResponse<ConditionRelation> aoResponse = validateAuditedObjectDTO(relation, dto);
-    	relation = aoResponse.getEntity();
-    	crResponse.addErrorMessages(aoResponse.getErrorMessages());
-    	
-    	String relationType = dto.getConditionRelationTypeName();
-    	if (StringUtils.isBlank(relationType)) {
-    		crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.REQUIRED_MESSAGE);
-    	} else {
-    		VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
+		relation = aoResponse.getEntity();
+		crResponse.addErrorMessages(aoResponse.getErrorMessages());
+		
+		String relationType = dto.getConditionRelationTypeName();
+		if (StringUtils.isBlank(relationType)) {
+			crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
 			if (conditionRelationTypeTerm == null)
 				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE);
 			relation.setConditionRelationType(conditionRelationTypeTerm);
-    	}
-    	
-    	List<ExperimentalCondition> conditions = new ArrayList<>();
-    	if (CollectionUtils.isEmpty(dto.getConditionDtos())) {
-    		crResponse.addErrorMessage("condition_dtos", ValidationConstants.REQUIRED_MESSAGE);
-    	} else {
-    		for (ExperimentalConditionDTO conditionDTO : dto.getConditionDtos()) {
-    			ObjectResponse<ExperimentalCondition> ecResponse = experimentalConditionDtoValidator.validateExperimentalConditionDTO(conditionDTO);
-    			if (ecResponse.hasErrors()) {
-    				crResponse.addErrorMessage("condition_dtos", ecResponse.errorMessagesString());
-    			} else {
-    				conditions.add(experimentalConditionDAO.persist(ecResponse.getEntity()));
-    			}
-    		}
-    	}
-    	relation.setConditions(conditions);
+		}
+		
+		List<ExperimentalCondition> conditions = new ArrayList<>();
+		if (CollectionUtils.isEmpty(dto.getConditionDtos())) {
+			crResponse.addErrorMessage("condition_dtos", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			for (ExperimentalConditionDTO conditionDTO : dto.getConditionDtos()) {
+				ObjectResponse<ExperimentalCondition> ecResponse = experimentalConditionDtoValidator.validateExperimentalConditionDTO(conditionDTO);
+				if (ecResponse.hasErrors()) {
+					crResponse.addErrorMessage("condition_dtos", ecResponse.errorMessagesString());
+				} else {
+					conditions.add(experimentalConditionDAO.persist(ecResponse.getEntity()));
+				}
+			}
+		}
+		relation.setConditions(conditions);
 	
-    	if (StringUtils.isNotBlank(dto.getHandle())) {
-    		relation.setHandle(dto.getHandle());
-    		if (StringUtils.isBlank(dto.getReferenceCurie())) {
-    			crResponse.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "reference_curie");
-    		}
-    	} else {
-    		if (relation.getHandle() != null) {
-    			crResponse.addErrorMessage("handle", ValidationConstants.REQUIRED_MESSAGE);
-    		}
-    		relation.setHandle(null);
-    	}
+		if (StringUtils.isNotBlank(dto.getHandle())) {
+			relation.setHandle(dto.getHandle());
+			if (StringUtils.isBlank(dto.getReferenceCurie())) {
+				crResponse.addErrorMessage("handle", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "reference_curie");
+			}
+		} else {
+			if (relation.getHandle() != null) {
+				crResponse.addErrorMessage("handle", ValidationConstants.REQUIRED_MESSAGE);
+			}
+			relation.setHandle(null);
+		}
 	
-    	crResponse.setEntity(relation);
-    	
-    	return crResponse;
+		crResponse.setEntity(relation);
+		
+		return crResponse;
 	}
 }
