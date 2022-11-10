@@ -229,45 +229,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
-		annotatedClasses.remove(CHEBITerm.class);
-		annotatedClasses.remove(Allele.class);
-		
-		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
-		ph1.startProcess("MassIndex CHEBITerm");
-		MassIndexer indexer1 =
-			searchSession
-				.massIndexer(CHEBITerm.class)
-				.batchSizeToLoadObjects(batchSizeToLoadObjects)
-				.idFetchSize(idFetchSize)
-				.dropAndCreateSchemaOnStart(true)
-				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(typesToIndexInParallel)
-				.threadsToLoadObjects(threadsToLoadObjects)
-				.monitor(new MassIndexingMonitor() {
-					public void documentsAdded(long increment) { }
-					public void entitiesLoaded(long increment) { }
-					public void addToTotalCount(long increment) { }
-					public void documentsBuilt(long increment) {
-						ph1.progressProcess();
-					}
-					public void indexingCompleted() {
-						ph1.finishProcess();
-					}
-				});
-		
-		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer1.transactionTimeout(transactionTimeout);
-		if (limitIndexedObjectsTo > 0) {
-			indexer1.limitIndexedObjectsTo(limitIndexedObjectsTo);
-		}
-		try {
-			log.info("Waiting for Chebi Indexer to finish");
-			indexer1.startAndWait();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess("MassIndex");
 		MassIndexer indexer =
@@ -290,8 +251,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 						ph.finishProcess();
 					}
 				});
-		
-		//indexer.dropAndCreateSchemaOnStart(true);
+
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
@@ -300,41 +260,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 			log.info("Waiting for Full Indexer to finish");
 			indexer.startAndWait();
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		ProcessDisplayHelper ph2 = new ProcessDisplayHelper(10000);
-		ph2.startProcess("MassIndex Allele");
-		MassIndexer indexer2 =
-			searchSession
-				.massIndexer(Allele.class)
-				.batchSizeToLoadObjects(50)
-				.idFetchSize(idFetchSize)
-				.dropAndCreateSchemaOnStart(true)
-				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(typesToIndexInParallel)
-				.threadsToLoadObjects(threadsToLoadObjects)
-				.monitor(new MassIndexingMonitor() {
-					public void documentsAdded(long increment) { }
-					public void entitiesLoaded(long increment) { }
-					public void addToTotalCount(long increment) { }
-					public void documentsBuilt(long increment) {
-						ph2.progressProcess();
-					}
-					public void indexingCompleted() {
-						ph2.finishProcess();
-					}
-				});
-		
-		//indexer.dropAndCreateSchemaOnStart(true);
-		indexer2.transactionTimeout(transactionTimeout);
-		if (limitIndexedObjectsTo > 0) {
-			indexer2.limitIndexedObjectsTo(limitIndexedObjectsTo);
-		}
-		log.info("Starting Allele Indexer and not waiting for finish");
-		indexer2.start();
-
 
 	}
 

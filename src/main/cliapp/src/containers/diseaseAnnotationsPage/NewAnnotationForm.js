@@ -258,6 +258,14 @@ export const NewAnnotationForm = ({
 			value: event.target.value
 		});
 	}
+
+	const onControlledVocabChange = (event) => {
+		newAnnotationDispatch({
+			type: "EDIT",
+			field: event.target.name,
+			value: event.target.value
+		});
+	}
 	const isExperimentEnabled = () => {
 		return (
 			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
@@ -493,7 +501,7 @@ export const NewAnnotationForm = ({
 							<ControlledVocabularyFormMultiSelectDropdown
 								name="diseaseQualifiers"
 								options={diseaseQualifiersTerms}
-								editorChange={onArrayFieldChange}
+								editorChange={onControlledVocabChange}
 								placeholderText="Select"
 								value={newAnnotation.diseaseQualifiers}
 								className={classNames({'p-invalid': submitted && errorMessages.diseaseQualifiers})}
