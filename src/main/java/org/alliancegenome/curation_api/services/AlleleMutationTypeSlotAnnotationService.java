@@ -32,7 +32,7 @@ public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudServi
 	}
 	
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validate(AlleleMutationTypeSlotAnnotation uiEntity) {
-		AlleleMutationTypeSlotAnnotation amt = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, true);
+		AlleleMutationTypeSlotAnnotation amt = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<AlleleMutationTypeSlotAnnotation>(amt);
 	}
 	

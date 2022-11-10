@@ -10,12 +10,14 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
+import { MutationTypesDialog } from './MutationTypesDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
+import { Button } from 'primereact/button';
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange} from '../../utils/utils';
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
@@ -26,6 +28,14 @@ export const AllelesTable = () => {
 	const errorMessagesRef = useRef();
 	errorMessagesRef.current = errorMessages;
 
+	const [mutationTypesData, setMutationTypesData] = useState({
+		mutationTypes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+	
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -292,6 +302,104 @@ export const AllelesTable = () => {
 			</>
 		);
 	};
+	
+	const mutationTypesTemplate = (rowData) => {
+		if (rowData?.alleleMutationTypes) {
+			const mutationTypeSet = new Set();
+			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
+				if (rowData.alleleMutationTypes[i].mutationTypes) {    			
+					for(var j = 0; j < rowData.alleleMutationTypes[i].mutationTypes.length; j++) {
+						let mtString = rowData.alleleMutationTypes[i].mutationTypes[j].name + ' (' +
+							rowData.alleleMutationTypes[i].mutationTypes[j].curie + ')';
+						mutationTypeSet.add(mtString);
+					}
+				}
+			}
+			if (mutationTypeSet.size > 0) {
+				const sortedMutationTypes = Array.from(mutationTypeSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<Button className="p-button-text"
+							onClick={(event) => { handleMutationTypesOpen(event, rowData, false) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								{item && item}
+							</span>
+						</Button>
+					);
+				};
+				return <ListTableCell template={listTemplate} listData={sortedMutationTypes}/>
+			}
+		}
+	};
+	
+	const mutationTypesEditor = (props) => {
+		if (props?.rowData?.alleleMutationTypes) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleMutationTypesOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`Mutation Types(${props.rowData.alleleMutationTypes.length}) `}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+						</span>
+					</Button>
+				</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleMutationTypesOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Mutation Type
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+							</span>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+	
+	
+
+	const handleMutationTypesOpen = (event, rowData, isInEdit) => {
+		let _mutationTypesData = {};
+		_mutationTypesData["originalMutationTypes"] = rowData.alleleMutationTypes;
+		_mutationTypesData["dialog"] = true;
+		_mutationTypesData["isInEdit"] = isInEdit;
+		setMutationTypesData(() => ({
+			..._mutationTypesData
+		}));
+	};
+
+	const handleMutationTypesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _mutationTypesData = {};
+		_mutationTypesData["originalMutationTypes"] = rowProps.rowData.alleleMutationTypes;
+		_mutationTypesData["dialog"] = true;
+		_mutationTypesData["isInEdit"] = isInEdit;
+		_mutationTypesData["rowIndex"] = index;
+		_mutationTypesData["mainRowProps"] = rowProps;
+		setMutationTypesData(() => ({
+			..._mutationTypesData
+		}));
+	};
 
 	const columns = [
 		{
@@ -327,6 +435,15 @@ export const AllelesTable = () => {
 			filter: true,
 			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
 			editor: (props) => taxonEditor(props)
+		},
+		{
+			field: "alleleMutationTypes.mutationTypes.name",
+			header: "Mutation Types",
+			body: mutationTypesTemplate,
+			editor: (props) => mutationTypesEditor(props),
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "mutationTypesFilter", fields: ["alleleMutationTypes.mutationTypes.curie", "alleleMutationTypes.mutationTypes.name", "alleleMutationTypes.evidence.curie"]}
 		},
 		{
 			field: "references.curie",
@@ -411,6 +528,7 @@ export const AllelesTable = () => {
 	];
 
 	return (
+		<>
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
@@ -429,5 +547,12 @@ export const AllelesTable = () => {
 					errorObject = {{errorMessages, setErrorMessages}}
 				/>
 			</div>
+			<MutationTypesDialog
+				originalMutationTypesData={mutationTypesData}
+				setOriginalMutationTypesData={setMutationTypesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+		</>
 	);
 };
