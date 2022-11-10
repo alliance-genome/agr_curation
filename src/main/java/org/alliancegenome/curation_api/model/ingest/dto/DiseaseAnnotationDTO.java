@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class})
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class})
 public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({View.FieldsOnly.class})

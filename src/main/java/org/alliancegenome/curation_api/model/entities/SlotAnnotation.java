@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "SlotAnnotation", description = "POJO that represents a SlotAnnotation")
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 public class SlotAnnotation extends GeneratedAuditedObject {
 	
 	@IndexedEmbedded(includeDepth = 2)

@@ -31,7 +31,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 @Schema(name="Reference", description="POJO that represents the Reference")
-@AGRCurationSchemaVersion(min="1.2.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={InformationContentEntity.class}, partial=true)
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={InformationContentEntity.class}, partial=true)
 public class Reference extends InformationContentEntity {
 	
 	@IndexedEmbedded(includeDepth = 1)
