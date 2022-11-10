@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.AlleleMutationTypeSlotAnnotationDAO;
@@ -39,15 +40,17 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 
 	@Override
+	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity);
-		return new ObjectResponse<Allele>(alleleDAO.persist(dbEntity));
+		return new ObjectResponse<Allele>(dbEntity);
 	}
 	
 	@Override
+	@Transactional
 	public ObjectResponse<Allele> create(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleCreate(uiEntity);
-		return new ObjectResponse<Allele>(alleleDAO.persist(dbEntity));
+		return new ObjectResponse<Allele>(dbEntity);
 	}
 
 	public Allele upsert(AlleleDTO dto) throws ObjectUpdateException {

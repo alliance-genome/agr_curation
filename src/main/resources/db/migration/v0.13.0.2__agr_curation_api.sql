@@ -1,7 +1,7 @@
 -- Create AlleleMutationTypeSlotAnnotation tables
 CREATE TABLE allelemutationtypeslotannotation (
 	id bigint CONSTRAINT allelemutationtypeslotannotation_pkey PRIMARY KEY,
-	singleallele_curie varchar(255) NOT NULL
+	singleallele_curie varchar(255)
 	);
 
 ALTER TABLE allelemutationtypeslotannotation

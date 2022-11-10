@@ -26,11 +26,7 @@ import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValid
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import io.quarkus.logging.Log;
-import lombok.extern.jbosslog.JBossLog;
-
 @RequestScoped
-@JBossLog
 public class AlleleDTOValidator extends BaseDTOValidator {
 
 	@Inject AlleleDAO alleleDAO;
@@ -101,16 +97,12 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.setReferences(null);
 		}
 		
-		// Persist allele now if no errors so that it can be attached to SlotAnnotation objects 
-		Boolean allelePersisted = false;
-		if (!alleleResponse.hasErrors()) {
-			allele = alleleDAO.persist(allele);
-			allelePersisted = true;
-		}
-		
 		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
-			allele.getAlleleMutationTypes().forEach(amt -> {alleleMutationTypeDAO.remove(amt.getId());});
+			allele.getAlleleMutationTypes().forEach(amt -> {
+				amt.setSingleAllele(null);
+				alleleMutationTypeDAO.remove(amt.getId());});
 		}	
+
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(dto.getAlleleMutationTypeDtos())) {
 			for (AlleleMutationTypeSlotAnnotationDTO mutationTypeDTO : dto.getAlleleMutationTypeDtos()) {
@@ -126,12 +118,16 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		}
 		
 		if (alleleResponse.hasErrors()) {
-			if (allelePersisted)
-				alleleDAO.remove(allele.getCurie());
 			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
-		} else {
-			if (CollectionUtils.isNotEmpty(mutationTypes))
-				mutationTypes.forEach(amt -> {alleleMutationTypeDAO.persist(amt);});
+		} 
+		
+		allele = alleleDAO.persist(allele);
+		
+		if (CollectionUtils.isNotEmpty(mutationTypes)) {
+			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes) {
+				mt.setSingleAllele(allele);
+				alleleMutationTypeDAO.persist(mt);
+			}
 		}
 		
 		return allele;

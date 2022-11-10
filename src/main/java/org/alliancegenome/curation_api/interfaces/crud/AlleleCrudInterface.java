@@ -41,7 +41,7 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 
 	@Override
 	@GET
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView(View.Allele.class)
 	@Path("/{curie}")
 	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
 

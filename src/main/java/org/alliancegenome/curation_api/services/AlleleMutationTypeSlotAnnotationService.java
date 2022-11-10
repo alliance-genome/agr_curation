@@ -25,14 +25,14 @@ public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudServi
 	
 	@Transactional
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> upsert(AlleleMutationTypeSlotAnnotation uiEntity) {
-		AlleleMutationTypeSlotAnnotation dbEntity = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true);
+		AlleleMutationTypeSlotAnnotation dbEntity = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, true);
 		if (dbEntity == null)
 			return null;
 		return new ObjectResponse<AlleleMutationTypeSlotAnnotation>(alleleMutationTypeDAO.persist(dbEntity));
 	}
 	
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validate(AlleleMutationTypeSlotAnnotation uiEntity) {
-		AlleleMutationTypeSlotAnnotation amt = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true);
+		AlleleMutationTypeSlotAnnotation amt = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, true);
 		return new ObjectResponse<AlleleMutationTypeSlotAnnotation>(amt);
 	}
 	

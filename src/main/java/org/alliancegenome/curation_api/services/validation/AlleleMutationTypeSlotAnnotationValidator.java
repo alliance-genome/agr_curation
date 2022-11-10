@@ -18,6 +18,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 
+
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationValidator<AlleleMutationTypeSlotAnnotation> {
 
@@ -27,12 +28,13 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 
 
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotation(AlleleMutationTypeSlotAnnotation uiEntity) {
-		AlleleMutationTypeSlotAnnotation mutationType = validateAlleleMutationTypeSlotAnnotation(uiEntity, false);
+		AlleleMutationTypeSlotAnnotation mutationType = validateAlleleMutationTypeSlotAnnotation(uiEntity, false, false);
 		response.setEntity(mutationType);
 		return response;
 	}
 
-	public AlleleMutationTypeSlotAnnotation validateAlleleMutationTypeSlotAnnotation(AlleleMutationTypeSlotAnnotation uiEntity, Boolean throwError) {
+	public AlleleMutationTypeSlotAnnotation validateAlleleMutationTypeSlotAnnotation(AlleleMutationTypeSlotAnnotation uiEntity, Boolean throwError, Boolean validateAllele) {
+
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not create/update AlleleMutationTypeSlotAnnotation: [" + uiEntity.getId() + "]";
 
@@ -52,7 +54,7 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 		}
 		dbEntity = (AlleleMutationTypeSlotAnnotation) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
 
-		if (uiEntity.getSingleAllele() != null) {
+		if (validateAllele) {
 			Allele singleAllele = validateSingleAllele(uiEntity, dbEntity);
 			dbEntity.setSingleAllele(singleAllele);
 		}
@@ -62,7 +64,7 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 		
 		List<SOTerm> mutationTypes = validateMutationTypes(uiEntity, dbEntity);
 		dbEntity.setMutationTypes(mutationTypes);
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -108,7 +110,7 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		if (allele.getObsolete() && !dbEntity.getSingleAllele().getObsolete()) {
+		if (allele.getObsolete() && (dbEntity.getSingleAllele() != null && !dbEntity.getSingleAllele().getObsolete())) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
