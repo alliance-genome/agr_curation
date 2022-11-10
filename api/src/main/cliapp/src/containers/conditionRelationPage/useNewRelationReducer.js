@@ -35,7 +35,7 @@ const newRelationReducer = (draft, action) => {
 			draft.newRelationDialog = true;
 			break;
 		default:
-      throw Error('Unknown action: ' + action.type);
+			throw Error('Unknown action: ' + action.type);
 	}
 };
 

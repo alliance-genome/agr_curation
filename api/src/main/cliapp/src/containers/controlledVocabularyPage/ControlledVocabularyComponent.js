@@ -267,7 +267,7 @@ export const ControlledVocabularyComponent = () => {
 				<GenericDataTable 
 					endpoint="vocabularyterm" 
 					tableName="Controlled Vocabulary Terms" 
-					columns={columns}  
+					columns={columns}	 
 					isEditable={true}
 					mutation={mutation}
 					isEnabled={isEnabled}

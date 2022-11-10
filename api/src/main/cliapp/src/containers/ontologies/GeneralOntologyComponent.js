@@ -87,15 +87,15 @@ export const GeneralOntologyComponent = ({name, endpoint, showNamespace, showAbb
 						initialColumnWidth={17}
 						errorObject = {{errorMessages, setErrorMessages}}
 					/>
-			    </TabPanel>
-			    <TabPanel header="Tree View">
-			        <GenericDataTree
+					</TabPanel>
+					<TabPanel header="Tree View">
+							<GenericDataTree
 						endpoint={endpoint}
 						treeName={name}
 						toasts={{toast_topleft, toast_topright }}
 						errorObject = {{errorMessages, setErrorMessages}}
 					/>
-			    </TabPanel>
+					</TabPanel>
 			</TabView>
 		</>
 	)

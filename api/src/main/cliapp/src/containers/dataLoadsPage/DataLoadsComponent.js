@@ -379,8 +379,8 @@ export const DataLoadsComponent = () => {
 				if (fileVersionParts[1] === maxVersionParts[1]) {
 					if (fileVersionParts[2] > maxVersionParts[2]) return false; 
 				}
-			}	
-		}	
+			} 
+		} 
 		return true;
 	};
 	

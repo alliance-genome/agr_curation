@@ -2,28 +2,28 @@ import { useImmerReducer } from "use-immer";
 
 const initialNewConditionState = {
 	newCondition: {
-    internal: null,
-    obsolete: "false",
-    conditionClass: {
-        curie: ""
-    },
-    conditionId: {
-        curie: ""
-    },
-    conditionTaxon: {
-        curie: ""
-    },
-    conditionGeneOntology: {
-        curie: ""
-    },
-    conditionChemical: {
-        curie: ""
-    },
-    conditionAnatomy: {
-        curie: ""
-    },
-    conditionQuantity: "",
-    conditionFreeText: ""
+		internal: null,
+		obsolete: "false",
+		conditionClass: {
+				curie: ""
+		},
+		conditionId: {
+				curie: ""
+		},
+		conditionTaxon: {
+				curie: ""
+		},
+		conditionGeneOntology: {
+				curie: ""
+		},
+		conditionChemical: {
+				curie: ""
+		},
+		conditionAnatomy: {
+				curie: ""
+		},
+		conditionQuantity: "",
+		conditionFreeText: ""
 	},
 	errorMessages: {},
 	submitted: false,
@@ -51,7 +51,7 @@ const newConditionReducer = (draft, action) => {
 			draft.newConditionDialog = true;
 			break;
 		default: 
-      throw Error('Unknown action: ' + action.type);
+			throw Error('Unknown action: ' + action.type);
 	}
 };
 

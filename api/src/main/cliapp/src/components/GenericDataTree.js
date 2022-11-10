@@ -56,14 +56,14 @@ export const GenericDataTree = (props) => {
 	}
 
 	const onNodeSelect = (event) => {
-        //console.log(event.node);
+				//console.log(event.node);
 
-        const ontologyService = new OntologyService(props.endpoint);
-        ontologyService.getTerm(event.node.curie).then((res) => {
+				const ontologyService = new OntologyService(props.endpoint);
+				ontologyService.getTerm(event.node.curie).then((res) => {
 			console.log(res.data.entity);
 			setSelectedTerm(res.data.entity);
 		});
-    }
+		}
 
 	useEffect(() => {
 		const ontologyService = new OntologyService(props.endpoint);

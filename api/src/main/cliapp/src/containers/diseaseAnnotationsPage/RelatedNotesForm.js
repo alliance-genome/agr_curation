@@ -49,7 +49,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 	};
 
 	const onNoteTypeEditorValueChange = (props, event) => {
-		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes",  field: "noteType", index: props.rowIndex, value: event.target.value})
+		newAnnotationDispatch({type: "EDIT_ROW", tableType: "relatedNotes",	 field: "noteType", index: props.rowIndex, value: event.target.value})
 	};
 
 	const noteTypeEditor = (props) => {
@@ -103,7 +103,7 @@ export const RelatedNotesForm = ({ newAnnotationDispatch, relatedNotes, showRela
 			<h3>Related Notes</h3>
 			{showRelatedNotes &&
 				<DataTable value={relatedNotes} dataKey="dataKey" showGridlines editMode='row'
-						   editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
+							 editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef}>
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={noteTypeEditor} field="noteType.name" header="Note Type" headerClassName='surface-0' />
 					<Column editor={internalEditor} field="internal" header="Internal" headerClassName='surface-0'/>
