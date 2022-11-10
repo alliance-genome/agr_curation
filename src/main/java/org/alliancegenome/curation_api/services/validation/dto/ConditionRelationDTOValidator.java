@@ -30,26 +30,25 @@ import org.apache.commons.lang3.StringUtils;
 public class ConditionRelationDTOValidator extends BaseDTOValidator {
 
 	@Inject ConditionRelationDAO conditionRelationDAO;
-    @Inject VocabularyTermDAO vocabularyTermDAO;
-    @Inject ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
-    @Inject ExperimentalConditionDAO experimentalConditionDAO;
-    @Inject ReferenceDAO referenceDAO;
-    @Inject ReferenceService referenceService;
-    
-    public ObjectResponse<ConditionRelation> validateConditionRelationDTO(ConditionRelationDTO dto) {
-    	ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
+	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject ExperimentalConditionDTOValidator experimentalConditionDtoValidator;
+	@Inject ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
+
+	public ObjectResponse<ConditionRelation> validateConditionRelationDTO(ConditionRelationDTO dto) {
+		ObjectResponse<ConditionRelation> crResponse = new ObjectResponse<ConditionRelation>();
     	
-    	ConditionRelation relation;
+		ConditionRelation relation;
     	
-    	Reference reference = null;
+		Reference reference = null;
     	if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
     		reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
-			if (reference == null)
+    		if (reference == null)
 				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE);
     	}
     	String refCurie = reference == null ? null : reference.getCurie();
-    	
-    	
+	
     	String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dto, refCurie);
     	SearchResponse<ConditionRelation> searchResponseRel = conditionRelationDAO.findByField("uniqueId", uniqueId);
 
@@ -61,7 +60,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		}
 		relation.setSingleReference(reference);
 		
-    	ObjectResponse<ConditionRelation> aoResponse = validateAuditedObjectDTO(relation, dto);
+		ObjectResponse<ConditionRelation> aoResponse = validateAuditedObjectDTO(relation, dto);
     	relation = aoResponse.getEntity();
     	crResponse.addErrorMessages(aoResponse.getErrorMessages());
     	
@@ -89,7 +88,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     		}
     	}
     	relation.setConditions(conditions);
-    	
+	
     	if (StringUtils.isNotBlank(dto.getHandle())) {
     		relation.setHandle(dto.getHandle());
     		if (StringUtils.isBlank(dto.getReferenceCurie())) {
@@ -101,9 +100,9 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
     		}
     		relation.setHandle(null);
     	}
-    	
+	
     	crResponse.setEntity(relation);
     	
     	return crResponse;
-    }
+	}
 }
