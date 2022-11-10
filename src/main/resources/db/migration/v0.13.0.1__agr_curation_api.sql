@@ -1,7 +1,7 @@
 -- Move uniqueId from Association to DiseaseAnnotation and add curie
 ALTER TABLE diseaseannotation
 	ADD COLUMN curie varchar(255),
-	ADD COLUMN uniqueid varchar(2000) UNIQUE NOT NULL;
+	ADD COLUMN uniqueid varchar(2000);
 	
 ALTER TABLE diseaseannotation_aud
 	ADD COLUMN curie varchar(255),
@@ -14,6 +14,10 @@ UPDATE diseaseannotation
 			FROM association
 		) AS subquery
 	WHERE diseaseannotation.id = subquery.id;
+
+ALTER TABLE diseaseannotation
+	ALTER COLUMN uniqueid
+ 		SET NOT NULL;
 	
 ALTER TABLE association
 	DROP COLUMN uniqueid;
