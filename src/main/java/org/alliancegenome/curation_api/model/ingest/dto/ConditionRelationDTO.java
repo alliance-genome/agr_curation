@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ExperimentalConditionDTO.class})
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ExperimentalConditionDTO.class})
 public class ConditionRelationDTO extends AuditedObjectDTO {
 
 	@JsonProperty("condition_relation_type_name")

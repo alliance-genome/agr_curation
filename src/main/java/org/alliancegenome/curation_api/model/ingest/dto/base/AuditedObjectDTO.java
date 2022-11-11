@@ -11,7 +11,7 @@ import lombok.*;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE)
 public class AuditedObjectDTO extends BaseDTO {
 	
 	@JsonView({View.FieldsOnly.class})

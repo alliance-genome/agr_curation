@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class}, submitted=true)
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class}, submitted=true)
 public class AlleleDTO extends GenomicEntityDTO {
 
 	@JsonView({View.FieldsOnly.class})

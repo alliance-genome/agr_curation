@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.validation.dto;
+package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.InformationContentEntityDAO;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
-import org.alliancegenome.curation_api.model.entities.SlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.SlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.InformationContentEntityService;

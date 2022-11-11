@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.validation;
+package org.alliancegenome.curation_api.services.validation.slotAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,13 +8,13 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
-import org.alliancegenome.curation_api.dao.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
 
