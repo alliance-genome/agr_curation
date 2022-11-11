@@ -19,10 +19,6 @@ ALTER TABLE diseaseannotation
 	ALTER COLUMN uniqueid
  		SET NOT NULL;
 	
-ALTER TABLE diseaseannotation
-	ALTER COLUMN uniqueid
-		SET NOT NULL;
-	
 ALTER TABLE association
 	DROP COLUMN uniqueid;
 
