@@ -26,35 +26,38 @@
 		<okta.authn.version>2.0.0</okta.authn.version>
 		<okta-jwt.version>0.5.1</okta-jwt.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-	</properties>
 
+		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+		<quarkus.platform.version>2.13.3.Final</quarkus.platform.version>
+	</properties>
 
 
 	<dependencies>
 
 
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>model</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>interface</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>dao</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>service</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
+			<groupId>${project.groupId}</groupId>
 			<artifactId>core</artifactId>
 			<version>${project.version}</version>
 		</dependency>
@@ -325,34 +328,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<groupId>org.sonatype.plugins</groupId>
-				<artifactId>nexus-staging-maven-plugin</artifactId>
-				<version>1.6.7</version>
-				<extensions>true</extensions>
-				<configuration>
-					<serverId>ossrh</serverId>
-					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-					<autoReleaseAfterClose>true</autoReleaseAfterClose>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.5</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-						<configuration>
-							<keyname>AGR Admin</keyname>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
 
 
 			<plugin>
@@ -395,6 +370,22 @@
 					<tagNameFormat>v@{project.version}</tagNameFormat>
 				</configuration>
 			</plugin>
+
+
+			<plugin>
+				<groupId>org.jboss.jandex</groupId>
+				<artifactId>jandex-maven-plugin</artifactId>
+				<version>1.2.3</version>
+				<executions>
+					<execution>
+						<id>make-index</id>
+						<goals>
+							<goal>jandex</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
 		</plugins>
 	</build>
 

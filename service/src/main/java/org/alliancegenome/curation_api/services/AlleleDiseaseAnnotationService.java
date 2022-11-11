@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.services;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
@@ -14,7 +14,7 @@ import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleDiseaseAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnnotationDTOValidator;
 
-@RequestScoped
+@ApplicationScoped
 public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
 	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;

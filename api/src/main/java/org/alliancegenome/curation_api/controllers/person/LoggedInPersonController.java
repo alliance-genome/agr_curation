@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.controllers.person;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.interfaces.person.LoggedInPersonInterface;
+import org.alliancegenome.curation_api.model.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;

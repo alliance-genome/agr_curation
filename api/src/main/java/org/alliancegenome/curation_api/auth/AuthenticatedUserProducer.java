@@ -4,6 +4,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.enterprise.inject.Produces;
 
+import org.alliancegenome.curation_api.model.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 
 @RequestScoped

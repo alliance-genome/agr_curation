@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.auth;
+package org.alliancegenome.curation_api.model.auth;
 
 import java.lang.annotation.*;
 

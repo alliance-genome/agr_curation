@@ -13,6 +13,7 @@ import javax.ws.rs.core.*;
 import javax.ws.rs.ext.Provider;
 
 import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
+import org.alliancegenome.curation_api.model.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;

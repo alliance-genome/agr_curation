@@ -3,18 +3,19 @@ package org.alliancegenome.curation_api.services.ontology;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
-@RequestScoped
+@ApplicationScoped
 public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO> {
 	
 	@Inject EcoTermDAO ecoTermDAO;
