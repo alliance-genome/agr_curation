@@ -3,7 +3,7 @@ package org.alliancegenome.curation_api.services.base;
 import java.util.Map;
 
 import org.alliancegenome.curation_api.dao.base.*;
-import org.alliancegenome.curation_api.document.base.BaseDocument;
+import org.alliancegenome.curation_api.model.document.base.BaseDocument;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 

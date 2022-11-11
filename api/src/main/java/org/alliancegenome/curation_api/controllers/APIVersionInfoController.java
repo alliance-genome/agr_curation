@@ -8,8 +8,8 @@ import java.util.TreeMap;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import org.alliancegenome.curation_api.interfaces.APIVersionInterface;
+import org.alliancegenome.curation_api.constants.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.APIVersionInterface;
 import org.alliancegenome.curation_api.model.output.APIVersionInfo;
 import org.alliancegenome.curation_api.services.APIVersionInfoService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;

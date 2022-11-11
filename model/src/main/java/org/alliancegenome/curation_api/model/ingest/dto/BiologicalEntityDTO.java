@@ -1,7 +1,7 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
+import org.alliancegenome.curation_api.constants.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 

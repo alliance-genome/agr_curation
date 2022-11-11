@@ -10,8 +10,8 @@
 		<version>${revision}</version>
 	</parent>
 
-	<artifactId>controller</artifactId>
-	<name>AGR Curation :: API Controller Layer</name>
+	<artifactId>core</artifactId>
+	<name>AGR Curation :: API Core</name>
 	<description>This software is for using the curation api as a library</description>
 
 	<properties>
@@ -31,28 +31,31 @@
 	</properties>
 
 	<dependencies>
-
-
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
-			<artifactId>model</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.alliancegenome</groupId>-->
-		<!--			<artifactId>interface</artifactId>-->
-		<!--			<version>${project.version}</version>-->
-		<!--		</dependency>-->
-		<dependency>
-			<groupId>org.alliancegenome</groupId>
-			<artifactId>dao</artifactId>
-			<version>${project.version}</version>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.alliancegenome</groupId>
-			<artifactId>service</artifactId>
-			<version>${project.version}</version>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+			<version>1.12.131</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-hibernate-search-orm-elasticsearch</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-elasticsearch-rest-high-level-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>io.quarkus</groupId>
+			<artifactId>quarkus-resteasy-multipart</artifactId>
 		</dependency>
 	</dependencies>
-
 </project>

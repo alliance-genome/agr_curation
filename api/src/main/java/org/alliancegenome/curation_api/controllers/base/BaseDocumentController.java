@@ -3,8 +3,8 @@ package org.alliancegenome.curation_api.controllers.base;
 import java.util.HashMap;
 
 import org.alliancegenome.curation_api.dao.base.BaseDocumentDAO;
-import org.alliancegenome.curation_api.document.base.BaseDocument;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdDocumentInterface;
+import org.alliancegenome.curation_api.model.document.base.BaseDocument;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.*;
 import org.alliancegenome.curation_api.services.base.BaseDocumentService;

@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces;
+package org.alliancegenome.curation_api.model;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;

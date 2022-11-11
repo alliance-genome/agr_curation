@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import org.alliancegenome.curation_api.document.base.BaseDocument;
+import org.alliancegenome.curation_api.model.document.base.BaseDocument;
 
 public abstract class BaseDocumentDAO<E extends BaseDocument> {
 	

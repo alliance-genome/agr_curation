@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.exceptions;
 
-import org.alliancegenome.curation_api.config.RestDefaultObjectMapper;
+import javax.inject.Inject;
+
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,7 +30,7 @@ public class ObjectUpdateException extends Exception {
 	@NoArgsConstructor
 	public static class ObjectUpdateExceptionData {
 		
-		private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
+		@Inject ObjectMapper mapper;
 		
 		@JsonView({View.FieldsOnly.class})
 		private String jsonObject = null;

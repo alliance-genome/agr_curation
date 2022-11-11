@@ -2,7 +2,7 @@ package org.alliancegenome.curation_api.model.document;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.document.base.BaseDocument;
+import org.alliancegenome.curation_api.model.document.base.BaseDocument;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.*;

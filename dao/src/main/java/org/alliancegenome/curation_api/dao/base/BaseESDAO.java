@@ -4,7 +4,7 @@ import java.util.*;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.document.base.BaseDocument;
+import org.alliancegenome.curation_api.model.document.base.BaseDocument;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.elasticsearch.action.search.SearchRequest;

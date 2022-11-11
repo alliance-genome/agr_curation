@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces;
+package org.alliancegenome.curation_api.constants;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

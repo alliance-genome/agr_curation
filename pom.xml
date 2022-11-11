@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -14,14 +12,14 @@
 	<description>This software is for using the curation api as a library</description>
 	<url>https://github.com/alliance-genome/agr_curation</url>
 
-   <modules>
-      <module>api</module>
-      <module>controller</module>
-      <module>model</module>
-      <module>interface</module>
-      <module>service</module>
-      <module>dao</module>
-   </modules>
+	<modules>
+		<module>api</module>
+		<module>model</module>
+		<module>interface</module>
+		<module>service</module>
+		<module>dao</module>
+		<module>core</module>
+	</modules>
 
 	<properties>
 		<revision>0.0.0</revision>
@@ -31,14 +29,18 @@
 		<maven.compiler.target>11</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<quarkus.platform.artifact-id>quarkus-bom</quarkus.platform.artifact-id>
+		<quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
+		<quarkus.platform.version>2.13.3.Final</quarkus.platform.version>
 	</properties>
 
-   <scm>
-      <connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
-      <developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
-      <url>https://www.github.com/alliance-genome/agr_curation/tree/master</url>
-      <tag>HEAD</tag>
-   </scm>
+	<scm>
+		<connection>scm:git:git@github.com:alliance-genome/agr_curation.git</connection>
+		<developerConnection>scm:git:git@github.com:alliance-genome/agr_curation.git</developerConnection>
+		<url>https://www.github.com/alliance-genome/agr_curation/tree/master</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<licenses>
 		<license>
@@ -121,6 +123,14 @@
 		</repository>
 	</distributionManagement>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>1.18.22</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<finalName>${project.artifactId}</finalName>
 
@@ -155,34 +165,34 @@
 					</execution>
 				</executions>
 			</plugin>
-         <plugin>
-            <groupId>org.sonatype.plugins</groupId>
-            <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.7</version>
-            <extensions>true</extensions>
-            <configuration>
-               <serverId>ossrh</serverId>
-               <nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
-               <autoReleaseAfterClose>true</autoReleaseAfterClose>
-            </configuration>
-         </plugin>
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.5</version>
-            <executions>
-               <execution>
-                  <id>sign-artifacts</id>
-                  <phase>verify</phase>
-                  <goals>
-                     <goal>sign</goal>
-                  </goals>
-                  <configuration>
-                     <keyname>AGR Admin</keyname>
-                  </configuration>
-               </execution>
-            </executions>
-         </plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://s01.oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-gpg-plugin</artifactId>
+				<version>1.5</version>
+				<executions>
+					<execution>
+						<id>sign-artifacts</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>sign</goal>
+						</goals>
+						<configuration>
+							<keyname>AGR Admin</keyname>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
 
 			<plugin>
