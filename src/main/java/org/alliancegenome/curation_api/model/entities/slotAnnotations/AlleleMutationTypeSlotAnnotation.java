@@ -45,7 +45,7 @@ public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.Allele.class})
+	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})
 	private List<SOTerm> mutationTypes;
 
 }

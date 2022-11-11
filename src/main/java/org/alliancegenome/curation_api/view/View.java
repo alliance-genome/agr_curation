@@ -22,9 +22,9 @@ public class View {
 	public static class DiseaseAnnotationCreate extends DiseaseAnnotation { }
 	
 
-	public static class Allele extends FieldsOnly { }
-	public static class AlleleUpdate extends Allele { }
-	public static class AlleleCreate extends Allele { }
+	public static class AlleleView extends FieldsOnly { }
+	public static class AlleleUpdate extends AlleleView { }
+	public static class AlleleCreate extends AlleleView { }
 	
 	public static class PersonSettingView { }
 
