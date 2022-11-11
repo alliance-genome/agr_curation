@@ -14,6 +14,10 @@ UPDATE diseaseannotation
 			FROM association
 		) AS subquery
 	WHERE diseaseannotation.id = subquery.id;
+
+ALTER TABLE diseaseannotation
+	ALTER COLUMN uniqueid
+ 		SET NOT NULL;
 	
 ALTER TABLE diseaseannotation
 	ALTER COLUMN uniqueid
