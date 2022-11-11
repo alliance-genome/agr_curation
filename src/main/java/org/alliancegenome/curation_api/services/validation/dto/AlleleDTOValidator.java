@@ -5,22 +5,25 @@ import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectValidationException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.SynonymDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.AlleleMutationTypeSlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -28,10 +31,13 @@ import org.apache.commons.lang3.StringUtils;
 public class AlleleDTOValidator extends BaseDTOValidator {
 
 	@Inject AlleleDAO alleleDAO;
+	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	@Inject ReferenceDAO referenceDAO;
 	@Inject ReferenceService referenceService;
+	@Inject AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
 
+	@Transactional
 	public Allele validateAlleleDTO(AlleleDTO dto) throws ObjectValidationException {
 		
 		ObjectResponse<Allele> alleleResponse = new ObjectResponse<Allele>();
@@ -92,8 +98,37 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			allele.setReferences(null);
 		}
 		
+		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
+			allele.getAlleleMutationTypes().forEach(amt -> {
+				amt.setSingleAllele(null);
+				alleleMutationTypeDAO.remove(amt.getId());});
+		}	
+
+		List<AlleleMutationTypeSlotAnnotation> mutationTypes = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getAlleleMutationTypeDtos())) {
+			for (AlleleMutationTypeSlotAnnotationDTO mutationTypeDTO : dto.getAlleleMutationTypeDtos()) {
+				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(mutationTypeDTO);
+				if (mutationTypeResponse.hasErrors()) {
+					alleleResponse.addErrorMessage("allele_mutation_type_dtos", mutationTypeResponse.errorMessagesString());
+					break;
+				}
+				AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
+				mutationType.setSingleAllele(allele);
+				mutationTypes.add(mutationType);
+			}
+		}
+		
 		if (alleleResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, alleleResponse.errorMessagesString());
+		} 
+		
+		allele = alleleDAO.persist(allele);
+		
+		if (CollectionUtils.isNotEmpty(mutationTypes)) {
+			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes) {
+				mt.setSingleAllele(allele);
+				alleleMutationTypeDAO.persist(mt);
+			}
 		}
 		
 		return allele;

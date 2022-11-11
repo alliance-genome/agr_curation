@@ -15,6 +15,16 @@
     "in_collection_name": "Million_mutations_project",
     "reference_curies": [
       "PMID:25920550"
+    ],
+    "allele_mutation_type_dtos": [
+      {
+        "evidence_curies": [
+          "PMID:25920550"
+        ],
+        "mutation_type_curies": [
+          "SO:00001"
+        ]
+      }
     ]
   }
 ]

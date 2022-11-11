@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class}, submitted=true)
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class}, submitted=true)
 public class AlleleDTO extends GenomicEntityDTO {
 
 	@JsonView({View.FieldsOnly.class})
@@ -34,4 +34,8 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonProperty("is_extinct")
 	private Boolean isExtinct;
 
+	@JsonView({View.FieldsAndLists.class})
+	@JsonProperty("allele_mutation_type_dtos")
+	private List<AlleleMutationTypeSlotAnnotationDTO> alleleMutationTypeDtos;
+	
 }
