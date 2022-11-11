@@ -28,17 +28,17 @@ public abstract class DiseaseAnnotationCurie {
 	
 	public static String getConditionRelationUnique(ConditionRelationDTO dto, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		if (dto.getConditionRelationType() != null)
-			curie.add(dto.getConditionRelationType());
+		if (dto.getConditionRelationTypeName() != null)
+			curie.add(dto.getConditionRelationTypeName());
 		curie.add(dto.getHandle());
 		if (refCurie != null)
 			curie.add(refCurie);
-		if (CollectionUtils.isNotEmpty(dto.getConditions()))
-			dto.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
+		if (CollectionUtils.isNotEmpty(dto.getConditionDtos()))
+			dto.getConditionDtos().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
 		return curie.getCurie();
 	}
 
-	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO, String refCurie);
+	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie);
 	public abstract String getCurieID(DiseaseAnnotation annotation);
 
 	
@@ -92,12 +92,12 @@ public abstract class DiseaseAnnotationCurie {
 
 	public static String getExperimentalConditionCurie(ExperimentalConditionDTO dto) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		curie.add(dto.getConditionClass());
-		curie.add(dto.getConditionId());
-		curie.add(dto.getConditionAnatomy());
-		curie.add(dto.getConditionChemical());
-		curie.add(dto.getConditionGeneOntology());
-		curie.add(dto.getConditionTaxon());
+		curie.add(dto.getConditionClassCurie());
+		curie.add(dto.getConditionIdCurie());
+		curie.add(dto.getConditionAnatomyCurie());
+		curie.add(dto.getConditionChemicalCurie());
+		curie.add(dto.getConditionGeneOntologyCurie());
+		curie.add(dto.getConditionTaxonCurie());
 		curie.add(dto.getConditionQuantity());
 		curie.add(dto.getConditionFreeText());
 		return curie.getCurie();

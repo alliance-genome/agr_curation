@@ -85,7 +85,6 @@ public class AlleleBulkUploadITCase {
 			body("results[0].obsolete", is(true)).
 			body("results[0].inheritanceMode.name", is("dominant")).
 			body("results[0].inCollection.name", is("Million_mutations_project")).
-			body("results[0].sequencingStatus.name", is("sequenced")).
 			body("results[0].isExtinct", is(false)).
 			body("results[0].references", hasSize(1)).
 			body("results[0].references[0].curie", is(requiredReference)).
@@ -726,34 +725,6 @@ public class AlleleBulkUploadITCase {
 	}
 	
 	@Test
-	@Order(25)
-	public void alleleBulkUploadNoSequencingStatus() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/25_no_sequencing_status_allele.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0025"));
-	}
-	
-	@Test
 	@Order(26)
 	public void alleleBulkUploadNoIsExtinct() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/26_no_is_extinct_allele.json"));
@@ -839,32 +810,6 @@ public class AlleleBulkUploadITCase {
 	@Order(29)
 	public void alleleBulkUploadInvalidInCollection() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/29_invalid_in_collection_allele.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(30)
-	public void alleleBulkUploadInvalidSequencingStatus() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/30_invalid_sequencing_status_allele.json"));
 		
 		// upload file
 		RestAssured.given().
@@ -1163,42 +1108,6 @@ public class AlleleBulkUploadITCase {
 			body("results", hasSize(1)).
 			body("results[0].curie", is("ALLELETEST:Allele0001")).
 			body("results[0]", not(hasKey("inCollection")));
-	}
-	
-	@Test
-	@Order(39)
-	public void alleleBulkUploadUpdateNoSequencingStatus() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/39_update_no_sequencing_status_allele.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0001")).
-			body("results[0]", not(hasKey("sequencingStatus")));
 	}
 	
 	@Test

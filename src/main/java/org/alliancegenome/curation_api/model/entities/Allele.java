@@ -38,11 +38,10 @@ import lombok.ToString;
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(exclude = {"alleleDiseaseAnnotations"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, submitted=true, partial=true)
+@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntity.class}, partial=true)
 @Table(indexes = {
 	@Index(name = "allele_inheritancemode_index", columnList = "inheritanceMode_id"),
 	@Index(name = "allele_inCollection_index", columnList = "inCollection_id"),
-	@Index(name = "allele_sequencingStatus_index", columnList = "sequencingStatus_id"),
 })
 public class Allele extends GenomicEntity {
 
@@ -73,12 +72,6 @@ public class Allele extends GenomicEntity {
 	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm inCollection;
 
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
-	private VocabularyTerm sequencingStatus;
-	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
 	@KeywordField(name = "isExtinct_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanAndNullValueBridge.class))
 	@JsonView({View.FieldsOnly.class})

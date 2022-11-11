@@ -47,7 +47,6 @@ public class AlleleITCase {
 	private Vocabulary sequencingStatusVocabulary;
 	private VocabularyTerm inheritanceMode;
 	private VocabularyTerm inCollection;
-	private VocabularyTerm sequencingStatus;
 	private Reference reference;
 	private List<Reference> references = new ArrayList<Reference>();
 	private NCBITaxonTerm taxon;
@@ -61,7 +60,6 @@ public class AlleleITCase {
 		sequencingStatusVocabulary = getVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
 		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
-		sequencingStatus = getVocabularyTerm(sequencingStatusVocabulary, "sequenced");
 		reference = createReference("AGRKB:000000003");
 		references.add(reference);
 		taxon = getTaxonFromCurie("NCBITaxon:10090");
@@ -83,7 +81,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setCreatedBy(person);
 		allele.setIsExtinct(false);
@@ -110,7 +107,6 @@ public class AlleleITCase {
 				body("entity.name", is("TestAllele")).
 				body("entity.inheritanceMode.name", is(inheritanceMode.getName())).
 				body("entity.inCollection.name", is(inCollection.getName())).
-				body("entity.sequencingStatus.name", is(sequencingStatus.getName())).
 				body("entity.isExtinct", is(false)).
 				body("entity.references[0].curie", is(reference.getCurie())).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
@@ -158,7 +154,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 		RestAssured.given().
@@ -181,7 +176,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 		RestAssured.given().
@@ -204,7 +198,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 		RestAssured.given().
@@ -232,7 +225,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 
 		RestAssured.given().
@@ -256,7 +248,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 	
@@ -282,7 +273,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inheritanceMode);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 	
@@ -300,32 +290,6 @@ public class AlleleITCase {
 
 	@Test
 	@Order(9)
-	public void createAlleleWithInvalidSequencingStatus() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0009");
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(inheritanceMode);
-		allele.setReferences(references);
-		
-	
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.sequencingStatus", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(10)
 	public void createAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
@@ -339,7 +303,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(invalidReferences);
 		
 		RestAssured.given().
@@ -354,7 +317,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(11)
+	@Order(10)
 	public void editAlleleWithMissingCurie() {
 		Allele allele = getAllele();
 		allele.setCurie(null);
@@ -363,7 +326,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 		RestAssured.given().
@@ -378,7 +340,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(12)
+	@Order(11)
 	public void editAlleleWithMissingSymbol() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -386,7 +348,6 @@ public class AlleleITCase {
 		allele.setSymbol(null);
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
 		RestAssured.given().
@@ -401,14 +362,13 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(13)
+	@Order(12)
 	public void editAlleleWithMissingTaxon() {
 		Allele allele = getAllele();
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setTaxon(null);
 		
@@ -424,7 +384,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(14)
+	@Order(13)
 	public void editAlleleWithInvalidTaxon() {
 		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
 		nonPersistedTaxon.setCurie("TEST:invalid");
@@ -436,11 +396,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		
-	
-
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
@@ -453,7 +410,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(15)
+	@Order(14)
 	public void editAlleleWithInvalidInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -461,10 +418,7 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
-		
-	
 
 		RestAssured.given().
 			contentType("application/json").
@@ -478,7 +432,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(16)
+	@Order(15)
 	public void editAlleleWithInvalidInCollection() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -486,10 +440,7 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inheritanceMode);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
-		
-	
 
 		RestAssured.given().
 			contentType("application/json").
@@ -503,32 +454,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(17)
-	public void editAlleleWithInvalidSequencingStatus() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(inheritanceMode);
-		allele.setReferences(references);
-		
-	
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.sequencingStatus", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(18)
+	@Order(16)
 	public void editAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
@@ -541,7 +467,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(invalidReferences);
 		
 		RestAssured.given().
@@ -556,7 +481,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(19)
+	@Order(17)
 	public void editAlleleWithNullInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -564,7 +489,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 
 		RestAssured.given().
@@ -589,7 +513,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(20)
+	@Order(18)
 	public void editAlleleWithNullInCollection() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -597,7 +521,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 
 		RestAssured.given().
@@ -622,40 +545,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(21)
-	public void editAlleleWithNullSequencingStatus() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
-		allele.setReferences(references);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("sequencingStatus"));
-		
-		allele.setSequencingStatus(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("sequencingStatus")));
-	}
-
-	@Test
-	@Order(22)
+	@Order(19)
 	public void editAlleleWithNullIsExtinct() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -663,7 +553,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setIsExtinct(true);
 
@@ -689,7 +578,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(23)
+	@Order(20)
 	public void editAlleleWithNullReferences() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -697,7 +586,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 
 		RestAssured.given().
@@ -722,7 +610,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(24)
+	@Order(21)
 	public void editAlleleWithNullName() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -730,7 +618,6 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 
 		RestAssured.given().
@@ -755,7 +642,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(25)
+	@Order(22)
 	public void deleteAllele() {
 
 		RestAssured.given().

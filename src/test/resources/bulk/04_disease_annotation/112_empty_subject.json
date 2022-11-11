@@ -3,33 +3,33 @@
     "mod_entity_id": "DATEST:Annot0112",
     "internal": false,
     "obsolete": false,
-    "subject": "",
-    "object": "DATEST:Disease0001",
+    "gene_curie": "",
+    "do_term_curie": "DATEST:Disease0001",
     "data_provider": "TEST",
     "secondary_data_provider": "TEST2",
     "negated": true,
-    "predicate": "is_implicated_in",
-    "genetic_sex": "male",
-    "updated_by": "DATEST:Person0001",
-    "evidence_codes": [
+    "disease_relation_name": "is_implicated_in",
+    "genetic_sex_name": "male",
+    "updated_by_curie": "DATEST:Person0001",
+    "evidence_code_curies": [
       "DATEST:Evidence0001"
     ],
-    "condition_relations": [
+    "condition_relation_dtos": [
       {
-        "single_reference": "PMID:25920554",
+        "reference_curie": "PMID:25920554",
         "handle": "test_handle",
-        "condition_relation_type": "exacerbated_by",
+        "condition_relation_type_name": "exacerbated_by",
         "internal": false,
         "obsolete": false,
-        "conditions": [
+        "condition_dtos": [
           {
-            "condition_class": "DATEST:ExpCondTerm0001",
-            "condition_id": "DATEST:ExpCondTerm0002",
+            "condition_class_curie": "DATEST:ExpCondTerm0001",
+            "condition_id_curie": "DATEST:ExpCondTerm0002",
             "condition_quantity": "Some amount",
-            "condition_gene_ontology": "DATEST:GOTerm0001",
-            "condition_anatomy": "DATEST:AnatomyTerm0001",
-            "condition_taxon": "NCBITaxon:6239",
-            "condition_chemical": "DATEST:ChemicalTerm0001",
+            "condition_gene_ontology_curie": "DATEST:GOTerm0001",
+            "condition_anatomy_curie": "DATEST:AnatomyTerm0001",
+            "condition_taxon_curie": "NCBITaxon:6239",
+            "condition_chemical_curie": "DATEST:ChemicalTerm0001",
             "condition_free_text": "Free text",
             "internal": false,
             "obsolete": false
@@ -37,29 +37,29 @@
         ]
       }
     ],
-    "disease_genetic_modifier": "DATEST:Gene0002",
-    "disease_genetic_modifier_relation": "ameliorated_by",
-    "with": [
+    "disease_genetic_modifier_curie": "DATEST:Gene0002",
+    "disease_genetic_modifier_relation_name": "ameliorated_by",
+    "with_gene_curies": [
       "HGNC:0001"
     ],
-    "single_reference": "PMID:25920554",
-    "related_notes": [
+    "reference_curie": "PMID:25920554",
+    "note_dtos": [
       {
         "free_text": "Test note",
-        "note_type": "disease_summary",
+        "note_type_name": "disease_summary",
         "internal": false,
         "obsolete": false,
-        "references": [
+        "evidence_curies": [
           "PMID:25920554"
         ]
       }
     ],
-    "created_by": "DATEST:Person0001",
+    "created_by_curie": "DATEST:Person0001",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00",
-    "sgd_strain_background": "SGD:AGM0001",
-    "annotation_type": "manually_curated",
-    "disease_qualifiers": [
+    "sgd_strain_background_curie": "SGD:AGM0001",
+    "annotation_type_name": "manually_curated",
+    "disease_qualifier_names": [
       "susceptibility"
     ]
   }

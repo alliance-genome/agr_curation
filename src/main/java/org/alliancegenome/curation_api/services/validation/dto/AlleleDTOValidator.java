@@ -58,40 +58,31 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		allele.setSymbol(dto.getSymbol());
 				
 		VocabularyTerm inheritenceMode = null;
-		if (StringUtils.isNotBlank(dto.getInheritanceMode())) {
-			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceMode());
+		if (StringUtils.isNotBlank(dto.getInheritanceModeName())) {
+			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceModeName());
 			if (inheritenceMode == null) {
-				alleleResponse.addErrorMessage("inheritanceMode", ValidationConstants.INVALID_MESSAGE);
+				alleleResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
 		allele.setInheritanceMode(inheritenceMode);
 		
 		VocabularyTerm inCollection = null;
-		if (StringUtils.isNotBlank(dto.getInCollection())) {
-			inCollection = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, dto.getInCollection());
+		if (StringUtils.isNotBlank(dto.getInCollectionName())) {
+			inCollection = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, dto.getInCollectionName());
 			if (inCollection == null) {
-				alleleResponse.addErrorMessage("inCollection", ValidationConstants.INVALID_MESSAGE);
+				alleleResponse.addErrorMessage("in_collection_name", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
 		allele.setInCollection(inCollection);
-		
-		VocabularyTerm sequencingStatus = null;
-		if (StringUtils.isNotBlank(dto.getSequencingStatus())) {
-			sequencingStatus = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY, dto.getSequencingStatus());
-			if (sequencingStatus == null) {
-				alleleResponse.addErrorMessage("sequencingStatus", ValidationConstants.INVALID_MESSAGE);
-			}
-		}
-		allele.setSequencingStatus(sequencingStatus);
 
 		allele.setIsExtinct(dto.getIsExtinct());
 		
-		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
+		if (CollectionUtils.isNotEmpty(dto.getReferenceCuries())) {
 			List<Reference> references = new ArrayList<>();
-			for (String publicationId : dto.getReferences()) {
+			for (String publicationId : dto.getReferenceCuries()) {
 				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
 				if (reference == null) {
-					alleleResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
+					alleleResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE);
 					break;
 				}
 				references.add(reference);

@@ -2,18 +2,17 @@
   {
     "curie": "ALLELETEST:Allele0001",
     "symbol": "ta4",
-    "taxon": "NCBITaxon:6239",
+    "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
-    "created_by": "ALLELETEST:Person0001",
-    "updated_by": "ALLELETEST:Person0002",
+    "created_by_curie": "ALLELETEST:Person0001",
+    "updated_by_curie": "ALLELETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00",
     "is_extinct": false,
-    "inheritance_mode": "dominant",
-    "in_collection": "Million_mutations_project",
-    "sequencing_status": "sequenced",
-    "references": [
+    "inheritance_mode_name": "dominant",
+    "in_collection_name": "Million_mutations_project",
+    "reference_curies": [
       "PMID:25920550"
     ]
   }

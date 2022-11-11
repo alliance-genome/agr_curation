@@ -1,16 +1,23 @@
 package org.alliancegenome.curation_api.model.ingest.dto;
 
-import org.alliancegenome.curation_api.model.ingest.dto.base.CurieAuditedObjectDTO;
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
 
 @Data
-public class BiologicalEntityDTO extends CurieAuditedObjectDTO {
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class})
+public class BiologicalEntityDTO extends AuditedObjectDTO {
 
 	@JsonView({View.FieldsOnly.class})
-	private String taxon;
+	private String curie;
+	
+	@JsonProperty("taxon_curie")
+	private String taxonCurie;
 	
 }
