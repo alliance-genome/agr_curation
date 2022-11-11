@@ -41,7 +41,7 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 
 	@Override
 	@GET
-	@JsonView(View.Allele.class)
+	@JsonView(View.AlleleView.class)
 	@Path("/{curie}")
 	public ObjectResponse<Allele> get(@PathParam("curie") String curie);
 
@@ -61,20 +61,20 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@Override
 	@PUT
 	@Path("/")
-	@JsonView(View.Allele.class)
+	@JsonView(View.AlleleView.class)
 	public ObjectResponse<Allele> update(Allele entity);
 	
 	@Override
 	@POST
 	@Path("/")
-	@JsonView(View.Allele.class)
+	@JsonView(View.AlleleView.class)
 	public ObjectResponse<Allele> create(Allele entity);
 	
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Database Search Endpoints")
-	@JsonView(View.Allele.class)
+	@JsonView(View.AlleleView.class)
 	public SearchResponse<Allele> find(
 			@DefaultValue("0") @QueryParam("page") Integer page,
 			@DefaultValue("10") @QueryParam("limit") Integer limit,

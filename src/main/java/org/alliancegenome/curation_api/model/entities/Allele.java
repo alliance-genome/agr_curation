@@ -60,7 +60,7 @@ public class Allele extends GenomicEntity {
 		@Index( columnList = "Allele_curie"),
 		@Index( columnList = "references_curie")
 	})
-	@JsonView({View.FieldsAndLists.class, View.Allele.class})
+	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})
 	private List<Reference> references;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -87,7 +87,7 @@ public class Allele extends GenomicEntity {
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	@JsonManagedReference
-	@JsonView({View.FieldsAndLists.class, View.Allele.class})
+	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})
 	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
 }
 
