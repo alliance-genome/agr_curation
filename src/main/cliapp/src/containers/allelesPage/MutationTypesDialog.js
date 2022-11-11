@@ -90,12 +90,14 @@ export const MutationTypesDialog = ({
 			}
 			if ((originalMutationTypes[index].evidence && !data.evidence) ||
 				(!originalMutationTypes[index].evidence && data.evidence) ||
-				(data.evidence.length !== originalMutationTypes[index].evidence.length)) {
+				(data.evidence && (data.evidence.length !== originalMutationTypes[index].evidence.length))) {
 				rowsEdited.current++;
 			} else {
-				for (var j = 0; j < data.evidence.length; j++) {
-					if (data.evidence[j].curie !== originalMutationTypes[index].evidence[j].curie) {
-						rowsEdited.current++;
+				if (data.evidence) {
+					for (var j = 0; j < data.evidence.length; j++) {
+						if (data.evidence[j].curie !== originalMutationTypes[index].evidence[j].curie) {
+							rowsEdited.current++;
+						}
 					}
 				}
 			}

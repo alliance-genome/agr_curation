@@ -18,8 +18,8 @@ import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/Li
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
-import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange} from '../../utils/utils';
-import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
+import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 export const AllelesTable = () => {
 
@@ -70,16 +70,16 @@ export const AllelesTable = () => {
 	}
 
 	const taxonTemplate = (rowData) => {
-			if (rowData?.taxon) {
-					return (
-							<>
-									<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
-											{rowData.taxon.name} ({rowData.taxon.curie})
-									</EllipsisTableCell>
-									<Tooltip target={`.${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
-							</>
-					);
-			}
+		if (rowData?.taxon) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`}>
+						{rowData.taxon.name} ({rowData.taxon.curie})
+					</EllipsisTableCell>
+					<Tooltip target={`.${"TAXON_NAME_"}${rowData.curie.replace(':', '')}${rowData.taxon.curie.replace(':', '')}`} content= {`${rowData.taxon.name} (${rowData.taxon.curie})`} style={{ width: '250px', maxWidth: '450px' }}/>
+				</>
+			);
+		}
 	}
 
 	const onInheritanceModeEditorValueChange = (props, event) => {
@@ -304,6 +304,8 @@ export const AllelesTable = () => {
 	};
 	
 	const mutationTypesTemplate = (rowData) => {
+		console.log(mutationTypesData);
+		console.log(rowData);
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
 			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
@@ -319,15 +321,19 @@ export const AllelesTable = () => {
 				const sortedMutationTypes = Array.from(mutationTypeSet).sort();
 				const listTemplate = (item) => {
 					return (
-						<Button className="p-button-text"
-							onClick={(event) => { handleMutationTypesOpen(event, rowData, false) }} >
-							<span style={{ textDecoration: 'underline' }}>
-								{item && item}
-							</span>
-						</Button>
+						<span style={{ textDecoration: 'underline' }}>
+							{item && item}
+						</span>
 					);
 				};
-				return <ListTableCell template={listTemplate} listData={sortedMutationTypes}/>
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleMutationTypesOpen(event, rowData, false) }} >
+							<ListTableCell template={listTemplate} listData={sortedMutationTypes}/>
+						</Button>
+					</>
+				);
 			}
 		}
 	};

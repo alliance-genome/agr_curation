@@ -84,7 +84,6 @@ public class Allele extends GenomicEntity {
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 	
 	@IndexedEmbedded(includeDepth = 2)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})

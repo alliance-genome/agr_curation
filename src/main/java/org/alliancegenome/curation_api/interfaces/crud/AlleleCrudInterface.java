@@ -84,7 +84,7 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Endpoints")
-	@JsonView({View.Allele.class})
+	@JsonView({View.AlleleView.class})
 	public SearchResponse<Allele> search(
 			@DefaultValue("0") @QueryParam("page") Integer page,
 			@DefaultValue("10") @QueryParam("limit") Integer limit,

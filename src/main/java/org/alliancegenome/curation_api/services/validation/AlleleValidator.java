@@ -139,6 +139,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 				alleleMutationTypeDAO.persist(mt);
 			}
 		}
+		dbEntity.setAlleleMutationTypes(mutationTypes);
 		
 		return dbEntity;
 	}
