@@ -16,8 +16,11 @@
 
    <modules>
       <module>api</module>
+      <module>controller</module>
       <module>model</module>
       <module>interface</module>
+      <module>service</module>
+      <module>dao</module>
    </modules>
 
 	<properties>
@@ -91,6 +94,20 @@
 			<organizationUrl>https://www.uoregon.edu/</organizationUrl>
 		</developer>
 	</developers>
+
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>${quarkus.platform.group-id}</groupId>
+				<artifactId>${quarkus.platform.artifact-id}</artifactId>
+				<version>${quarkus.platform.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 
 	<distributionManagement>
 		<snapshotRepository>

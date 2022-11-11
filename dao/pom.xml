@@ -11,9 +11,9 @@
       <artifactId>agr_curation</artifactId>
       <version>${revision}</version>
    </parent>
-	
-	<artifactId>interface</artifactId>
-	<name>AGR Curation :: API Interface</name>
+
+	<artifactId>dao</artifactId>
+	<name>AGR Curation :: API DAO Layer</name>
 	<description>This software is for using the curation api as a library</description>
 	
 	<properties>
@@ -31,6 +31,5 @@
 		<quarkus.platform.version>2.13.3.Final</quarkus.platform.version>
 		<surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
 	</properties>
-
 
 </project>
