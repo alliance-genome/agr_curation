@@ -25,13 +25,23 @@ public abstract class DiseaseAnnotationCurie {
 			relation.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
 		return curie.getCurie();
 	}
+	
+	public static String getConditionRelationUnique(ConditionRelationDTO dto, String refCurie) {
+		CurieGeneratorHelper curie = new CurieGeneratorHelper();
+		if (dto.getConditionRelationType() != null)
+			curie.add(dto.getConditionRelationType());
+		curie.add(dto.getHandle());
+		if (refCurie != null)
+			curie.add(refCurie);
+		if (CollectionUtils.isNotEmpty(dto.getConditions()))
+			dto.getConditions().forEach(experimentalCondition -> curie.add(getExperimentalConditionCurie(experimentalCondition)));
+		return curie.getCurie();
+	}
 
-	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO);
+	public abstract String getCurieID(DiseaseAnnotationDTO annotationDTO, String refCurie);
 	public abstract String getCurieID(DiseaseAnnotation annotation);
 
-	/**
-	 * @return curie string
-	 */
+	
 	public String getCurieID(
 			String subject,
 			String object,
@@ -44,7 +54,8 @@ public abstract class DiseaseAnnotationCurie {
 		curie.add(object);
 		if (associationType != null)
 			curie.add(associationType);
-		curie.add(getEvidenceCurie(evidenceCodes, reference));
+		if (reference != null)
+			curie.add(getEvidenceCurie(evidenceCodes, reference));
 		if (CollectionUtils.isNotEmpty(conditionRelations)) {
 			curie.add(conditionRelations.stream()
 					.map(condition -> {

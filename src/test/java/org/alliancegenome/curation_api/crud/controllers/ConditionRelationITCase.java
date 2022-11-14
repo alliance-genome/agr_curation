@@ -50,7 +50,7 @@ public class ConditionRelationITCase {
 
 	private void createRequiredObjects() {
 
-		testReference = createReference("PMID:11213376");
+		testReference = createReference("AGRKB:000000004");
 		conditionRelationTypeVocabulary = createVocabulary("Condition relation type vocabulary");
 		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
 		experimentalCondition = createExperimentalCondition();
@@ -327,7 +327,6 @@ public class ConditionRelationITCase {
 	public void createConditionRelationWithInvalidCondition() {
 		ExperimentalCondition nonPersistedCondition = new ExperimentalCondition();
 		nonPersistedCondition.setConditionClass(getZecoTerm("ZECO:da00001"));
-		nonPersistedCondition.setConditionStatement("Statement2");
 		nonPersistedCondition.setUniqueId("Statement2");
 		
 		ConditionRelation conditionRelation = new ConditionRelation();
@@ -383,7 +382,6 @@ public class ConditionRelationITCase {
 		
 		ExperimentalCondition nonPersistedCondition = new ExperimentalCondition();
 		nonPersistedCondition.setConditionClass(getZecoTerm("ZECO:da00001"));
-		nonPersistedCondition.setConditionStatement("Statement2");
 		nonPersistedCondition.setUniqueId("Statement2");
 		
 		cr.setHandle("invalid_conditions");
@@ -552,7 +550,6 @@ public class ConditionRelationITCase {
 	private ExperimentalCondition createExperimentalCondition() {
 		ExperimentalCondition condition = new ExperimentalCondition();
 		condition.setConditionClass(createZecoTerm("ZECO:da00001"));
-		condition.setConditionStatement("Statement1");
 		condition.setUniqueId("Statement1");
 
 		ObjectResponse<ExperimentalCondition> response = given().

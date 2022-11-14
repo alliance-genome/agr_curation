@@ -31,9 +31,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 	}
 
 	public SearchResponse<E> searchAllCount() {
-		Pagination pagination = new Pagination();
-		pagination.setLimit(0);
-		pagination.setPage(0);
+		Pagination pagination = new Pagination(0, 0);
 		Map<String, Object> params = new HashMap<String, Object>();
 		return searchByParams(pagination, params);
 	}

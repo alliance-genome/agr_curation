@@ -95,7 +95,7 @@ export const ConditionRelationsDialog = ({
 				}
 			});
 		} else {
-			delete _editingRows[event.index];	
+			delete _editingRows[event.index];
 			compareChangesInRelations(event.data,event.index);
 		}
 		setErrorMessages(errorMessagesCopy);
@@ -267,7 +267,7 @@ export const ConditionRelationsDialog = ({
 		return (
 			<>
 				<AutocompleteRowEditor
-					autocompleteFields={["conditionSummary"]}
+					autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
 					rowProps={props}
 					searchService={searchService}
 					endpoint='experimental-condition'
@@ -317,7 +317,7 @@ export const ConditionRelationsDialog = ({
 		);
 	}
 	
-	let headerGroup = 	<ColumnGroup>
+	let headerGroup = <ColumnGroup>
 						<Row>
 							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
 							<Column header="Relation" />
@@ -331,7 +331,7 @@ export const ConditionRelationsDialog = ({
 			<Toast ref={toast_topright} position="top-right" />
 			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
 				<h3>Experimental Conditions</h3>
-				<DataTable value={localConditionRelations} dataKey="dataKey" showGridlines  editMode='row' headerColumnGroup={headerGroup}
+				<DataTable value={localConditionRelations} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
 								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
 								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />

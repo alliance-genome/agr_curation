@@ -28,9 +28,7 @@ public abstract class BaseDocumentController<S extends BaseDocumentService<E, D>
 
 	public SearchResponse<E> search(Integer page, Integer limit, HashMap<String, Object> params) {
 		if(params == null) params = new HashMap<String, Object>();
-		Pagination pagination = new Pagination();
-		pagination.setLimit(limit);
-		pagination.setPage(page);
+		Pagination pagination = new Pagination(page, limit);
 		return service.searchByParams(pagination, params);
 	}
 

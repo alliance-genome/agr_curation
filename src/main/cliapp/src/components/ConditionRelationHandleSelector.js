@@ -7,8 +7,8 @@ export function ConditionRelationHandleDropdown({ field, options, editorChange, 
 		const [selectedValue, setSelectedValue] = useState(props.rowData[field]);
 		const searchService = new SearchService();
 		const [handles, setHandles] = useState(null);
-			
-			
+
+
 		const onShow = () => {
 				setSelectedValue(props.rowData[field])
 				if (props.props.value[props.rowIndex]?.singleReference?.curie) {

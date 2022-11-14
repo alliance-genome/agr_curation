@@ -14,7 +14,7 @@ ReactDOM.render(
 	<HashRouter>
 		<ScrollToTop>
 			<QueryClientProvider client={queryClient}>
-				<App></App>
+				<App />
 				<ReactQueryDevtools />
 			</QueryClientProvider>
 		</ScrollToTop>

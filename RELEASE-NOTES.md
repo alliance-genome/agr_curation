@@ -1,5 +1,46 @@
 # AGR curation release notes
 
+https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
+
+## v0.12.0
+ * New Features
+    * New service to call MaTI (SCRUM-2011)
+    * Removed extra SiteLayout from routes (SCRUM-2160)
+    * Renaming of Experiments table and column (SCRUM-2069, SCRUM-2070)
+    * Refactor DTO validation code (SCRUM-2145)
+    * Return exact matches only from dropdown filters (SCRUM-2139)
+    * Make allele attributes editable (SCRUM-2161)
+    * Add LinkML version submission documentation 
+    * Experiments dropdown to NewAnnotationForm (SCRUM-1917)
+    * Enable entering identifiers of experimental condition components in autocomplete (SCRUM-2099)
+ * Fixes
+    * Fix for OR on multiselect fields 
+    * Fix synonym and reference persistence
+    * Bug fixes and integration tests for updates with null value ( SCRUM-2174)
+    * Fix reference autosuggest (SCRUM-2161)
+    * Fix blank screen on ref deletion (SCRUM-2161)
+    * Delete existing notes when doing DA bulk upload
+    * Added indexes to allele touching tables 
+
+## v0.11.0
+
+ * New Features
+    * Enable creation of disease annotation; 1st & 2nd iteration pop-up (SCRUM-1709, SCRUM-1903)
+    * Enabled simple deletion of disease annotations (SCRUM-1890)
+    * Condition Summaries & Unique IDs for Experimental Conditions (plan to retire Condition Statements)
+       * Generate consistent condition_summary entries for experimental conditions (SCRUM-2036)
+       * Generate consistent unique_id values for experimental conditions (SCRUM-2037)
+       * Clean up experimental conditions (redundant entries + usage of condition_summary in place of condition_statement) (SCRUM-2038)
+       * Add tooltip to condition autosuggest options to display unique_id values for each experimental condition displayed (SCRUM-2040)
+       * Replace experimental condition autosuggest display with condition_summary instead of condition_statement (SCRUM-2039)
+    * Add display of compatible LinkML schema versions (SCRUM-2091)
+ * Fixes
+    * Fix broken autocomplete for experimental conditions (SCRUM-2089)
+    * Fix sort order of data loads by reverse chronological order (SCRUM-2010)
+    * Fix missing ontologies from dashboard (SCRUM-2076)
+    * Fix blank screen bug in Data Loads widget (SCRUM-2042)
+    * Clean up and address stale file loads in Data Loads widget (SCRUM-2004)
+
 ## v0.10.0
 
  * New features

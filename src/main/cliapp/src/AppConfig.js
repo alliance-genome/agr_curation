@@ -4,7 +4,7 @@ import { InputSwitch } from 'primereact/inputswitch';
 import classNames from 'classnames';
 import { Button } from "primereact/button";
 
-export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputStyleChange, layoutMode, onLayoutModeChange, onColorModeChange, themeState, setThemeState }) => {
+export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputStyleChange, layoutMode, onLayoutModeChange, themeState, setThemeState }) => {
 
 		const [active, setActive] = useState(false);
 		const [scales] = useState([12, 13, 14, 15, 16]);
@@ -12,20 +12,19 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 		let outsideClickListener = useRef(null);
 
 		const setScale = (value) => {
-			//this is to allow a caller to pass a funtion as an argument
-			const valueToStore = value instanceof Function ? value(themeState.scale) : value;
 			let _themeState = {
 				...themeState,
-				scale: valueToStore
+				scale: value
 			};
 
 			setThemeState(_themeState);
 		}
 
-		const setTheme = (value) => {
+		const setTheme = (value, value2) => {
 			let _themeState = {
 				...themeState,
-				theme: value
+				theme: value,
+				layoutColorMode: value2
 			};
 
 			setThemeState(_themeState);
@@ -69,16 +68,18 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 		}
 
 		const decrementScale = () => {
-				setScale((prevState) => --prevState);
+				const _scale = themeState.scale - 1;
+				setScale(_scale);
 		}
 
 		const incrementScale = () => {
-				setScale((prevState) => ++prevState);
+				const _scale = themeState.scale + 1;
+				setScale(_scale);
 		}
 
 		useEffect(() => {
-				document.documentElement.style.fontSize = themeState.scale + 'px';
-		}, [themeState.scale])
+				document.documentElement.style.fontSize = themeState?.scale + 'px';
+		}, [themeState])
 
 		const toggleConfigurator = (event) => {
 				setActive(prevState => !prevState);
@@ -118,18 +119,17 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 
 		useEffect(() => {
 				let themeElement = document.getElementById('theme-link');
-				const themeHref = 'assets/themes/' + themeState.theme + '/theme.css';
+				const themeHref = 'assets/themes/' + themeState?.theme + '/theme.css';
 				replaceLink(themeElement, themeHref);
 
-		}, [themeState.theme, replaceLink])
+		}, [themeState, replaceLink])
 
 		const isIE = () => {
 				return /(MSIE|Trident\/|Edge\/)/i.test(window.navigator.userAgent)
 		}
 
 		const changeTheme = (e, theme, scheme) => {
-				onColorModeChange(scheme);
-				setTheme(theme);
+			setTheme(theme, scheme);
 		}
 
 		return (
@@ -142,13 +142,13 @@ export const AppConfig = ({ rippleEffect, onRippleEffect, inputStyle, onInputSty
 						<div className="layout-config-content">
 								<h5 className="mt-0">Component Scale</h5>
 								<div className="config-scale">
-										<Button icon="pi pi-minus" onClick={decrementScale} className="p-button-text" disabled={themeState.scale === scales[0]} />
+										<Button icon="pi pi-minus" onClick={decrementScale} className="p-button-text" disabled={themeState?.scale === scales[0]} />
 										{
 												scales.map((item) => {
-														return <i className={classNames('pi pi-circle-on', { 'scale-active': item === themeState.scale })} key={item} />
+														return <i className={classNames('pi pi-circle-on', { 'scale-active': item === themeState?.scale })} key={item} />
 												})
 										}
-										<Button icon="pi pi-plus" onClick={incrementScale} className="p-button-text" disabled={themeState.scale === scales[scales.length - 1]} />
+										<Button icon="pi pi-plus" onClick={incrementScale} className="p-button-text" disabled={themeState?.scale === scales[scales.length - 1]} />
 								</div>
 
 								<h5>Input Style</h5>

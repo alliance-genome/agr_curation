@@ -19,21 +19,11 @@ public class VocabularyTermCrudController extends BaseEntityCrudController<Vocab
 
 	@Inject
 	VocabularyTermService vocabularyTermService;
-	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(vocabularyTermService);
-	}
-
-	@Override
-	public ObjectResponse<VocabularyTerm> getTermInVocabulary(String name, String vocabulary) {
-		VocabularyTerm term = vocabularyTermDAO.getTermInVocabulary(name, vocabulary);
-		ObjectResponse<VocabularyTerm> response = new ObjectResponse<VocabularyTerm>();
-		response.setEntity(term);
-		return response;
 	}
 
 	@Override
@@ -53,6 +43,11 @@ public class VocabularyTermCrudController extends BaseEntityCrudController<Vocab
 			throw new ApiErrorException(ret);
 		}
 		return ret;
+	}
+
+	@Override
+	public ObjectResponse<VocabularyTerm> getTermInVocabulary(String vocabularyName, String termName) {
+		return vocabularyTermService.getTermInVocabulary(vocabularyName, termName);
 	}
 
 }

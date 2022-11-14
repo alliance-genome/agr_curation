@@ -14,6 +14,8 @@ import {LiteratureAutocompleteTemplate} from '../../components/Autocomplete/Lite
 import {SubjectAutocompleteTemplate} from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import {EvidenceAutocompleteTemplate} from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
 import {RelatedNotesForm} from "./RelatedNotesForm";
+import {ConditionRelationsForm} from "./ConditionRelationsForm";
+import {ConditionRelationHandleFormDropdown} from "../../components/ConditionRelationHandleFormSelector";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -29,21 +31,24 @@ export const NewAnnotationForm = ({
 	const toast_error = useRef(null);
 	const withRef = useRef(null);
 	const evidenceCodesRef = useRef(null);
+	const experimentsRef = useRef(null);
 	const {
 		newAnnotation,
 		errorMessages,
 		relatedNotesErrorMessages,
+		exConErrorMessages,
 		submitted,
 		newAnnotationDialog,
 		showRelatedNotes,
+		showConditionRelations,
 	} = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
 	const validationService = new ValidationService();
 
-	const validateNotes = async (notes) => {
+	const validate = async (entities, endpoint) => {
 		const validationResultsArray = [];
-		for (const note of notes) {
-			const result = await validationService.validate('note', note);
+		for (const entity of entities) {
+			const result = await validationService.validate(endpoint, entity);
 			validationResultsArray.push(result);
 		}
 		return validationResultsArray;
@@ -62,17 +67,17 @@ export const NewAnnotationForm = ({
 		setIsEnabled(false);
 	};
 
-	const relatedNotesValidation = async () => {
-		const relatedNotesResults = await validateNotes(newAnnotation.relatedNotes);
-		const relatedNotesErrors = [];
+	const validateTable = async (endpoint, errorType, row) => {
+		const results = await validate(row, endpoint);
+		const errors = [];
 		let anyErrors = false;
-		relatedNotesResults.forEach((result, index) => {
-			const { isError, data } = result;
+		results.forEach((result, index) => {
+			const {isError, data} = result;
 			if (isError) {
-				relatedNotesErrors[index] = {};
+				errors[index] = {};
 				if (!data) return;
 				Object.keys(data).forEach((field) => {
-					relatedNotesErrors[index][field] = {
+					errors[index][field] = {
 						severity: "error",
 						message: data[field]
 					};
@@ -80,18 +85,19 @@ export const NewAnnotationForm = ({
 				anyErrors = true;
 			}
 		});
-		newAnnotationDispatch({type: "UPDATE_RELATED_NOTES_ERROR_MESSAGES", errorMessages: relatedNotesErrors});
+		newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: errorType, errorMessages: errors});
 		return anyErrors;
 	}
 
 	const handleSubmit = async (event, closeAfterSubmit=true) => {
 		event.preventDefault();
 		newAnnotationDispatch({type: "SUBMIT"});
-		const isRelatedNotesErrors = await relatedNotesValidation();
+		const isRelatedNotesErrors = await validateTable("note", "relatedNotesErrorMessages", newAnnotation.relatedNotes);
+		const isExConErrors = await validateTable("condition-relation", "exConErrorMessages", newAnnotation.conditionRelations);
 
 		mutation.mutate(newAnnotation, {
 			onSuccess: (data) => {
-				if (!isRelatedNotesErrors) {
+				if (!(isRelatedNotesErrors || isExConErrors)) {
 					setNewDiseaseAnnotation(data.data.entity);
 					queryClient.invalidateQueries('DiseaseAnnotationsHandles');
 					toast_success.current.show({severity: 'success', summary: 'Successful', detail: 'New Annotation Added'});
@@ -105,15 +111,16 @@ export const NewAnnotationForm = ({
 					{life: 7000, severity: 'error', summary: 'Page error: ', detail: error.response.data.errorMessage, sticky: false}
 				]);
 				if (!error.response.data) return;
-				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorMessages: error.response.data.errorMessages});
+				newAnnotationDispatch({type: "UPDATE_ERROR_MESSAGES", errorType: "errorMessages", errorMessages: error.response.data.errorMessages});
 			}
 		});
 	};
 
-	const handleClear = (event) => {
-		//manually reset the value of the input text in autocomplete fields with multiple values
+	const handleClear = () => {
+		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
 		withRef.current.inputRef.current.value = "";
 		evidenceCodesRef.current.inputRef.current.value = "";
+		experimentsRef.current.clear();
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
 	}
@@ -122,14 +129,20 @@ export const NewAnnotationForm = ({
 		handleSubmit(event, false);
 	}
 
-	const onObjectChange = (event) => {
-		if(event.target.name === "subject") { //Save button should be enabled on subject value selection only
-			if (event.target && event.target.value !== '' && event.target.value != null) {
-				setIsEnabled(true);
-			} else {
-				setIsEnabled(false);
-			}
+	const onSubjectChange = (event) => {
+		if (event.target && event.target.value !== '' && event.target.value != null) {
+			setIsEnabled(true);
+		} else {
+			setIsEnabled(false);
 		}
+		newAnnotationDispatch({
+			type: "EDIT",
+			field: event.target.name,
+			value: event.target.value
+		});
+	}
+
+	const onSingleReferenceChange= (event) => {
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -156,6 +169,14 @@ export const NewAnnotationForm = ({
 		});
 	};
 
+	const onDropdownExperimentsFieldChange = (event) =>{
+		newAnnotationDispatch({
+			type: "EDIT_EXPERIMENT",
+			field: event.target.name,
+			value: event.target.value
+		});
+	};
+
 	const onArrayFieldChange = (event) => {
 		newAnnotationDispatch({
 			type: "EDIT",
@@ -163,7 +184,21 @@ export const NewAnnotationForm = ({
 			value: event.target.value
 		});
 	}
+	const isExperimentEnabled = () => {
+		return (
+			//only enabled if a reference is selected from suggestions and condition relation table isn't visible
+			typeof newAnnotation.singleReference === "object"
+			&& newAnnotation.singleReference.curie !== ""
+			&& !showConditionRelations
+		)
+	}
 
+	const isConditionRelationButtonEnabled = () => {
+		return (
+			newAnnotation.conditionRelations[0]
+			&& newAnnotation.conditionRelations[0].handle
+		)
+	}
 	const dialogFooter = (
 		<>
 			<div className="p-fluid p-formgrid p-grid">
@@ -197,7 +232,7 @@ export const NewAnnotationForm = ({
 								filterName='subjectFilter'
 								fieldName='subject'
 								value={newAnnotation.subject}
-								onValueChangeHandler={onObjectChange}
+								onValueChangeHandler={onSubjectChange}
 								isSubject={true}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
@@ -268,7 +303,7 @@ export const NewAnnotationForm = ({
 								fieldName='singleReference'
 								isReference={true}
 								value={newAnnotation.singleReference}
-								onValueChangeHandler={onObjectChange}
+								onValueChangeHandler={onSingleReferenceChange}
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 								valueDisplayHandler={(item, setAutocompleteSelectedItem, op, query) =>
 									<LiteratureAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
@@ -337,6 +372,32 @@ export const NewAnnotationForm = ({
 								showRelatedNotes={showRelatedNotes}
 								errorMessages={relatedNotesErrorMessages}
 							/>
+						</SplitterPanel>
+					</Splitter>
+					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
+						<SplitterPanel style={{paddingRight: '10px'}} size={70}>
+							<ConditionRelationsForm
+								newAnnotationDispatch={newAnnotationDispatch}
+								conditionRelations={newAnnotation.conditionRelations}
+								showConditionRelations={showConditionRelations}
+								errorMessages={exConErrorMessages}
+								searchService={searchService}
+								buttonIsDisabled={isConditionRelationButtonEnabled()}
+							/>
+						</SplitterPanel>
+						<SplitterPanel style={{paddingRight: '10px', paddingTop: '6vh'}} size={30}>
+							<label htmlFor="experiments">Experiments</label>
+							<ConditionRelationHandleFormDropdown
+								name="experiments"
+								customRef={experimentsRef}
+								editorChange={onDropdownExperimentsFieldChange}
+								referenceCurie={newAnnotation.singleReference.curie}
+								value={newAnnotation.conditionRelations[0]?.handle}
+								showClear={false}
+								placeholderText={newAnnotation.conditionRelations[0]?.handle}
+								isEnabled={isExperimentEnabled()}
+							/>
+							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"conditionRelations[0]?.handle"}/>
 						</SplitterPanel>
 					</Splitter>
 				</form>

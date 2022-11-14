@@ -6,6 +6,8 @@ import javax.persistence.*;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.*;
 import org.alliancegenome.curation_api.model.entities.ontology.*;
 import org.alliancegenome.curation_api.view.View;
@@ -39,15 +41,16 @@ import lombok.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 //@ToString(exclude = {"genomicLocations"})
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={ConditionRelation.class, Note.class, Association.class})
 @Schema(name = "Disease_Annotation", description = "Annotation class representing a disease annotation")
 public abstract class DiseaseAnnotation extends Association {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "alliancecurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
+	@KeywordField(name = "diseaseAnnotationCurie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true)
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
-	private String allianceCurie;
+	private String diseaseAnnotationCurie;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "modEntityId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
@@ -83,7 +86,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<ConditionRelation> conditionRelations;
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -108,7 +111,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<VocabularyTerm> diseaseQualifiers;
 
 	@IndexedEmbedded(includeDepth = 1)

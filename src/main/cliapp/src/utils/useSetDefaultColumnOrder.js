@@ -5,8 +5,8 @@ export const useSetDefaultColumnOrder = (columns, dataTable, defaultColumnOption
 	useEffect(() => {
 		if (isFirst) {
 			setDefaultColumnOrder(columns, dataTable, defaultColumnOptions, deletionEnabled);
-		};
-		setIsFirst(false);
+			setIsFirst(false);
+		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 };

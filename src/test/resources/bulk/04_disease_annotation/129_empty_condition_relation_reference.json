@@ -1,0 +1,66 @@
+[
+  {
+    "mod_entity_id": "DATEST:Annot0001",
+    "internal": false,
+    "obsolete": false,
+    "subject": "DATEST:Gene0001",
+    "object": "DATEST:Disease0001",
+    "data_provider": "TEST",
+    "secondary_data_provider": "TEST2",
+    "negated": true,
+    "predicate": "is_implicated_in",
+    "genetic_sex": "male",
+    "updated_by": "DATEST:Person0001",
+    "evidence_codes": [
+      "DATEST:Evidence0001"
+    ],
+    "condition_relations": [
+      {
+        "single_reference": "",
+        "handle": "test_handle",
+        "condition_relation_type": "exacerbated_by",
+        "internal": false,
+        "obsolete": false,
+        "conditions": [
+          {
+            "condition_class": "DATEST:ExpCondTerm0001",
+            "condition_id": "DATEST:ExpCondTerm0002",
+            "condition_quantity": "Some amount",
+            "condition_gene_ontology": "DATEST:GOTerm0001",
+            "condition_anatomy": "DATEST:AnatomyTerm0001",
+            "condition_taxon": "NCBITaxon:6239",
+            "condition_chemical": "DATEST:ChemicalTerm0001",
+            "condition_free_text": "Free text",
+            "internal": false,
+            "obsolete": false
+          }
+        ]
+      }
+    ],
+    "disease_genetic_modifier": "DATEST:Gene0002",
+    "disease_genetic_modifier_relation": "ameliorated_by",
+    "with": [
+      "HGNC:0001"
+    ],
+    "single_reference": "PMID:25920554",
+    "related_notes": [
+      {
+        "free_text": "Test note",
+        "note_type": "disease_summary",
+        "internal": false,
+        "obsolete": false,
+        "references": [
+          "PMID:25920554"
+        ]
+      }
+    ],
+    "created_by": "DATEST:Person0001",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-09T22:10:12+00:00",
+    "sgd_strain_background": "SGD:AGM0001",
+    "annotation_type": "manually_curated",
+    "disease_qualifiers": [
+      "susceptibility"
+    ]
+  }
+]

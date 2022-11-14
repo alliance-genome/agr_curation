@@ -20,6 +20,8 @@ import org.junit.jupiter.api.*;
 
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.not;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +46,7 @@ public class ExperimentalConditionITCase {
 	private ZFATerm testObsoleteZfaTerm;
 	private NCBITaxonTerm testObsoleteNcbiTaxonTerm;
 	private ZECOTerm testNonSlimZecoTerm;
+	private String testConditionSummary;
 	
 	private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRef() {
 		return new TypeRef<>() {
@@ -72,8 +75,10 @@ public class ExperimentalConditionITCase {
 		createRequiredObjects();
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		experimentalCondition.setConditionStatement("CRUD:Statement1");
 		experimentalCondition.setConditionClass(testZecoTerm);
+		
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(experimentalCondition);
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -84,11 +89,10 @@ public class ExperimentalConditionITCase {
 				statusCode(200);
 		RestAssured.given().
 				when().
-				get("/api/experimental-condition/findBy/CRUD:Statement1").
+				get("/api/experimental-condition/findBy/" + testConditionSummary).
 				then().
 				statusCode(200).
 				body("entity.conditionClass.curie", is("ZECO:ec0001")).
-				body("entity.conditionStatement", is("CRUD:Statement1")).
 				body("entity.internal", is(false)).
 				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
@@ -98,10 +102,9 @@ public class ExperimentalConditionITCase {
 	@Order(2)
 	public void editExperimentalcondition() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement1");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm2);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -109,8 +112,9 @@ public class ExperimentalConditionITCase {
 		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
 		editedExperimentalCondition.setConditionChemical(testChebiTerm);
 		editedExperimentalCondition.setConditionFreeText("Free text");
-		editedExperimentalCondition.setConditionSummary(ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition));
 		editedExperimentalCondition.setInternal(true);
+		
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -121,11 +125,10 @@ public class ExperimentalConditionITCase {
 				statusCode(200);
 		RestAssured.given().
 				when().
-				get("/api/experimental-condition/findBy/CRUD:Statement2").
+				get("/api/experimental-condition/findBy/" + testConditionSummary).
 				then().
 				statusCode(200).
 				body("entity.conditionClass.curie", is("ZECO:ec0002")).
-				body("entity.conditionStatement", is("CRUD:Statement2")).
 				body("entity.conditionId.curie", is("ZECO:ec0003")).
 				body("entity.conditionQuantity", is("Amount")).
 				body("entity.conditionGeneOntology.curie", is("GO:ec0001")).
@@ -141,10 +144,9 @@ public class ExperimentalConditionITCase {
 	@Order(3)
 	public void editWithObsoleteConditionClass() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testObsoleteZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -167,10 +169,9 @@ public class ExperimentalConditionITCase {
 	@Order(4)
 	public void editWithObsoleteConditionId() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testObsoleteZecoTerm);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -193,16 +194,16 @@ public class ExperimentalConditionITCase {
 	@Order(5)
 	public void editWithObsoleteConditionAnatomy() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testObsoleteZfaTerm);
 		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
 		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
 		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+		
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -219,10 +220,9 @@ public class ExperimentalConditionITCase {
 	@Order(6)
 	public void editWithObsoleteConditionGeneOntology() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -245,10 +245,9 @@ public class ExperimentalConditionITCase {
 	@Order(7)
 	public void editWithObsoleteConditionTaxon() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -271,10 +270,9 @@ public class ExperimentalConditionITCase {
 	@Order(8)
 	public void editWithObsoleteConditionChemical() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -297,14 +295,13 @@ public class ExperimentalConditionITCase {
 	@Order(9)
 	public void editWithInvalidConditionClass() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
 		nonPersistedZecoTerm.setCurie("NPZECO:0001");
 		nonPersistedZecoTerm.setObsolete(false);
 		
 		editedExperimentalCondition.setConditionClass(nonPersistedZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -327,14 +324,13 @@ public class ExperimentalConditionITCase {
 	@Order(10)
 	public void editWithInvalidConditionId() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
 		nonPersistedZecoTerm.setCurie("NPZECO:0001");
 		nonPersistedZecoTerm.setObsolete(false);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(nonPersistedZecoTerm);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -357,14 +353,13 @@ public class ExperimentalConditionITCase {
 	@Order(11)
 	public void editWithInvalidConditionAnatomy() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		ZFATerm nonPersistedZfaTerm = new ZFATerm();
 		nonPersistedZfaTerm.setCurie("NPZFA:0001");
 		nonPersistedZfaTerm.setObsolete(false);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
@@ -387,14 +382,13 @@ public class ExperimentalConditionITCase {
 	@Order(12)
 	public void editWithInvalidConditionGeneOntology() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		GOTerm nonPersistedGoTerm = new GOTerm();
 		nonPersistedGoTerm.setCurie("NPGO:0001");
 		nonPersistedGoTerm.setObsolete(false);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -417,14 +411,13 @@ public class ExperimentalConditionITCase {
 	@Order(13)
 	public void editWithInvalidConditionChemical() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		CHEBITerm nonPersistedChebiTerm = new CHEBITerm();
 		nonPersistedChebiTerm.setCurie("NPCHEBI:0001");
 		nonPersistedChebiTerm.setObsolete(false);
 		
 		editedExperimentalCondition.setConditionClass(testZecoTerm2);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -447,10 +440,9 @@ public class ExperimentalConditionITCase {
 	@Order(14)
 	public void editWithMissingConditionClass() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(null);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -468,50 +460,14 @@ public class ExperimentalConditionITCase {
 				body("errorMessages", is(aMapWithSize(1))).
 				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
-
-	@Test
-	@Order(15)
-	public void editWithMissingConditionStatement() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm2);
-		editedExperimentalCondition.setConditionStatement(null);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200);
-		
-		// Reset conditionStatement as used by getExperimentalCondition() in subsequent tests
-		// TODO: delete following once conditionSummary used for findBy endpoint
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
-		RestAssured.given().
-			contentType("application/json").
-			body(editedExperimentalCondition).
-			when().
-			put("/api/experimental-condition").
-			then().
-			statusCode(200);
-	}
 	
 	@Test
-	@Order(16)
+	@Order(15)
 	public void editWithNonSlimConditionClass() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition("CRUD:Statement2");
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
 		
 		editedExperimentalCondition.setConditionClass(testNonSlimZecoTerm);
-		editedExperimentalCondition.setConditionStatement("CRUD:Statement2");
 		editedExperimentalCondition.setConditionId(testZecoTerm3);
 		editedExperimentalCondition.setConditionQuantity("Amount");
 		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -531,13 +487,12 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(17)
+	@Order(16)
 	public void createWithObsoleteConditionClass() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testObsoleteZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement3");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount3");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -557,13 +512,12 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(18)
+	@Order(17)
 	public void createWithObsoleteConditionId() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement4");
 		experimentalCondition.setConditionId(testObsoleteZecoTerm);
 		experimentalCondition.setConditionQuantity("Amount4");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -583,13 +537,12 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(19)
+	@Order(18)
 	public void createWithObsoleteConditionAnatomy() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement5");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount5");
 		experimentalCondition.setConditionAnatomy(testObsoleteZfaTerm);
@@ -609,13 +562,12 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(20)
+	@Order(19)
 	public void createWithObsoleteConditionGeneOntology() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement6");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount6");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -635,13 +587,12 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(21)
+	@Order(20)
 	public void createWithObsoleteConditionTaxon() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement7");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount7");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -661,13 +612,12 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(22)
+	@Order(21)
 	public void createWithObsoleteConditionChemical() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement8");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount8");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -687,7 +637,7 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(23)
+	@Order(22)
 	public void createWithInvalidConditionClass() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
@@ -697,7 +647,6 @@ public class ExperimentalConditionITCase {
 		nonPersistedZecoTerm.setObsolete(false);
 		
 		experimentalCondition.setConditionClass(nonPersistedZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement9");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount9");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -717,7 +666,7 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(24)
+	@Order(23)
 	public void createWithInvalidConditionId() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
@@ -727,7 +676,6 @@ public class ExperimentalConditionITCase {
 		nonPersistedZecoTerm.setObsolete(false);
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement10");
 		experimentalCondition.setConditionId(nonPersistedZecoTerm);
 		experimentalCondition.setConditionQuantity("Amount10");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -747,7 +695,7 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(25)
+	@Order(24)
 	public void createWithInvalidConditionAnatomy() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
@@ -757,7 +705,6 @@ public class ExperimentalConditionITCase {
 		nonPersistedZfaTerm.setObsolete(false);
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement11");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount11");
 		experimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
@@ -777,7 +724,7 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(26)
+	@Order(25)
 	public void createWithInvalidConditionGeneOntology() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
@@ -787,7 +734,6 @@ public class ExperimentalConditionITCase {
 		nonPersistedGoTerm.setObsolete(false);
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement12");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount12");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -807,7 +753,7 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(27)
+	@Order(26)
 	public void createWithInvalidConditionChemical() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
@@ -817,7 +763,6 @@ public class ExperimentalConditionITCase {
 		nonPersistedChebiTerm.setObsolete(false);
 		
 		experimentalCondition.setConditionClass(testZecoTerm2);
-		experimentalCondition.setConditionStatement("CRUD:Statement13");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount13");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -837,12 +782,11 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(28)
+	@Order(27)
 	public void createWithMissingConditionClass() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
-		experimentalCondition.setConditionStatement("CRUD:Statement14");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount14");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -862,36 +806,12 @@ public class ExperimentalConditionITCase {
 	}
 
 	@Test
-	@Order(29)
-	public void createWithMissingConditionStatement() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testZecoTerm2);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount15");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(200);
-	}
-	
-	@Test
-	@Order(30)
+	@Order(28)
 	public void createWithNonSlimConditionClass() {
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testNonSlimZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement16");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount16");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -911,12 +831,11 @@ public class ExperimentalConditionITCase {
 	}
 	
 	@Test
-	@Order(31)
+	@Order(29)
 	public void createDuplicateExperimentalCondition() {
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionStatement("CRUD:Statement17");
 		experimentalCondition.setConditionId(testZecoTerm3);
 		experimentalCondition.setConditionQuantity("Amount17");
 		experimentalCondition.setConditionAnatomy(testZfaTerm);
@@ -935,7 +854,6 @@ public class ExperimentalConditionITCase {
 		ExperimentalCondition experimentalConditionDuplicate = new ExperimentalCondition();
 		
 		experimentalConditionDuplicate.setConditionClass(testZecoTerm);
-		experimentalConditionDuplicate.setConditionStatement("CRUD:Statement17");
 		experimentalConditionDuplicate.setConditionId(testZecoTerm3);
 		experimentalConditionDuplicate.setConditionQuantity("Amount17");
 		experimentalConditionDuplicate.setConditionAnatomy(testZfaTerm);
@@ -953,11 +871,233 @@ public class ExperimentalConditionITCase {
 				body("errorMessages", is(aMapWithSize(1))).
 				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
+	
+	@Test
+	@Order(30)
+	public void editWithNullConditionId() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
 
-	private ExperimentalCondition getExperimentalCondition(String conditionStatement) {
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionId"));
+				
+		editedExperimentalCondition.setConditionId(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionId")));
+		
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(31)
+	public void editWithNullConditionQuantity() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionQuantity"));
+				
+		editedExperimentalCondition.setConditionQuantity(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionQuantity")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(32)
+	public void editWithNullConditionGeneOntology() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionGeneOntology"));
+				
+		editedExperimentalCondition.setConditionGeneOntology(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionGeneOntology")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(33)
+	public void editWithNullConditionAnatomy() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionAnatomy"));
+				
+		editedExperimentalCondition.setConditionAnatomy(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionAnatomy")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(34)
+	public void editWithNullConditionTaxon() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionTaxon"));
+				
+		editedExperimentalCondition.setConditionTaxon(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionTaxon")));
+
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+	
+	@Test
+	@Order(35)
+	public void editWithNullConditionChemical() {
+		
+		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		
+		editedExperimentalCondition.setConditionClass(testZecoTerm);
+		editedExperimentalCondition.setConditionId(testZecoTerm3);
+		editedExperimentalCondition.setConditionQuantity("Amount");
+		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
+		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
+		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
+		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", hasKey("conditionChemical"));
+				
+		editedExperimentalCondition.setConditionChemical(null);
+				
+		RestAssured.given().
+				contentType("application/json").
+				body(editedExperimentalCondition).
+				when().
+				put("/api/experimental-condition").
+				then().
+				statusCode(200).
+				body("entity", not(hasKey("conditionChemical")));
+		
+		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+	}
+
+	private ExperimentalCondition getExperimentalCondition(String conditionSummary) {
 		ObjectResponse<ExperimentalCondition> res = RestAssured.given().
 				when().
-				get("/api/experimental-condition/findBy/" + conditionStatement).
+				get("/api/experimental-condition/findBy/" + conditionSummary).
 				then().
 				statusCode(200).
 				extract().body().as(getObjectResponseTypeRef());

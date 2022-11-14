@@ -45,11 +45,11 @@ public class NoteITCase {
 		testVocabularyTerm = createVocabularyTerm("Note test vocabulary term", testVocabulary, false);
 		testVocabularyTerm2 = createVocabularyTerm("Note test vocabulary term 2", testVocabulary, false);
 		testObsoleteVocabularyTerm = createVocabularyTerm("Obsolete Note test vocabularyTerm", testVocabulary, true);
-		Reference testReference = createReference("PMID:14978092", false);
+		Reference testReference = createReference("AGRKB:000000007", false);
 		testReferences.add(testReference);
-		Reference testReference2 = createReference("PMID:14978093", false);
+		Reference testReference2 = createReference("AGRKB:000000008", false);
 		testReferences2.add(testReference2);
-		Reference testObsoleteReference = createReference("PMID:0", true);
+		Reference testObsoleteReference = createReference("AGRKB:000000009", true);
 		testObsoleteReferences.add(testObsoleteReference);
 	}
 
@@ -84,7 +84,7 @@ public class NoteITCase {
 				body("entity.obsolete", is(true)).
 				body("entity.internal", is(true)).
 				body("entity.noteType.name", is("Note test vocabulary term")).
-				body("entity.references[0].curie", is("PMID:14978092")).
+				body("entity.references[0].curie", is(testReferences.get(0).getCurie())).
 				body("entity.freeText", is("Test text")).
 				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
@@ -118,7 +118,7 @@ public class NoteITCase {
 				body("entity.obsolete", is(false)).
 				body("entity.internal", is(false)).
 				body("entity.noteType.name", is("Note test vocabulary term 2")).
-				body("entity.references[0].curie", is("PMID:14978093")).
+				body("entity.references[0].curie", is(testReferences2.get(0).getCurie())).
 				body("entity.freeText", is("Edited test text")).
 				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
@@ -291,7 +291,8 @@ public class NoteITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
+		// returns invalid rather than obsolete as tries to retrieve from LiteratureService if obsolete entry found, which returns null
 	}
 
 	@Test
@@ -461,7 +462,8 @@ public class NoteITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
+		// returns invalid rather than obsolete as tries to retrieve from LiteratureService if obsolete entry found, which returns null
 	}
 
 

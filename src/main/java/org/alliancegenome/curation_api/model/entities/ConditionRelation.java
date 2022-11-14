@@ -4,6 +4,7 @@ import java.util.*;
 
 import javax.persistence.*;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.base.UniqueIdAuditedObject;
 import org.alliancegenome.curation_api.view.View;
@@ -23,7 +24,7 @@ import lombok.*;
 @Indexed
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Schema(name = "ConditionRelation", description = "POJO that describes the Condition Relation")
-@AGRCurationSchemaVersion("1.2.4")
+@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={ExperimentalCondition.class})
 public class ConditionRelation extends UniqueIdAuditedObject {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -46,7 +47,7 @@ public class ConditionRelation extends UniqueIdAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotationUpdate.class})
+	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<ExperimentalCondition> conditions;
 
 

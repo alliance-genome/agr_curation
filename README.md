@@ -585,6 +585,16 @@ This is a grouping mechanism to group files together
 | WB    | Worm Base |
 | ZFIN  | Zebrafish Information Network |
 
+### Including corresponding LinkML version in the JSON file submission header
+
+The LinkML version for which the file is being submitted now needs to be added to the JSON file header, for example:
+
+```json
+{
+  "linkml_version" : "v1.3.2",
+  "disease_agm_ingest_set" : [ {
+```
+
 ## EB Deployment (beta)
 This section is WIP.
 
