@@ -33,10 +33,6 @@ import lombok.ToString;
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "SlotAnnotation", description = "POJO that represents a SlotAnnotation")
-@Table(indexes = {
-	@Index(name = "slotannotation_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "slotannotation_updatedby_index", columnList = "updatedBy_id"),
-})
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 public class SlotAnnotation extends GeneratedAuditedObject {
