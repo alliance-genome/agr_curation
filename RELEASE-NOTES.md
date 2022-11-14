@@ -10,15 +10,16 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * Refactor DTO validation code (SCRUM-2145)
     * Return exact matches only from dropdown filters (SCRUM-2139)
     * Make allele attributes editable (SCRUM-2161)
+    * Add LinkML version submission documentation 
+    * Experiments dropdown to NewAnnotationForm (SCRUM-1917)
+    * Enable entering identifiers of experimental condition components in autocomplete (SCRUM-2099)
+ * Fixes
     * Fix for OR on multiselect fields 
     * Fix synonym and reference persistence
     * Bug fixes and integration tests for updates with null value ( SCRUM-2174)
-    * Add LinkML version submission documentation 
     * Fix reference autosuggest (SCRUM-2161)
     * Fix blank screen on ref deletion (SCRUM-2161)
-    * Enable entering identifiers of experimental condition components in autocomplete (SCRUM-2099)
     * Delete existing notes when doing DA bulk upload
-    * Experiments dropdown to NewAnnotationForm (SCRUM-1917)
     * Added indexes to allele touching tables 
 
 ## v0.11.0
