@@ -1,2 +1,2 @@
-DELETE INDEX slotannotation_createdby_index;
-DELETE INDEX slotannotation_updatedby_index;
+DROP INDEX slotannotation_createdby_index;
+DROP INDEX slotannotation_updatedby_index;
