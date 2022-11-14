@@ -2,10 +2,13 @@ import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { FileUpload } from 'primereact/fileupload';
+import { Toast } from "primereact/toast";
 
 import { useOktaAuth } from '@okta/okta-react';
 import { SearchService } from '../../service/SearchService';
 import { DataLoadService } from '../../service/DataLoadService';
+import { DataSubmissionService } from '../../service/DataSubmissionService';
 import { Messages } from 'primereact/messages';
 import { Button } from 'primereact/button';
 import { NewBulkLoadForm } from './NewBulkLoadForm';
@@ -42,12 +45,15 @@ export const DataLoadsComponent = () => {
 	const [disableFormFields, setDisableFormFields] = useState(false);
 	const errorMessage = useRef(null);
 	const searchService = new SearchService();
+	const dataSubmissionService = new DataSubmissionService();
 
 	const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
 
 	const queryClient = useQueryClient();
-	
+
 	let dataLoadService = null;
+	const toast = useRef(null);
+
 
 	const handleNewBulkLoadGroupOpen = (event) => {
 		setBulkLoadGroupDialog(true);
@@ -57,7 +63,7 @@ export const DataLoadsComponent = () => {
 		bulkLoadDispatch({ type: "RESET" });
 		setBulkLoadDialog(true);
 	};
-	
+
 	const loadTypeClasses = new Map([
 		["FULL_INGEST", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO", "GeneDTO", "AlleleDTO", "AffectedGenomicModelDTO"]],
 		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO"]],
@@ -143,10 +149,20 @@ export const DataLoadsComponent = () => {
 		setHistoryDialog(true);
 	};
 
-
 	const historyActionBodyTemplate = (rowData) => {
 		return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
 	};
+
+	const uploadLoadFile = (event, rowData) => {
+		let type = rowData.backendBulkLoadType + "_" + rowData.dataType;
+		let formData = new FormData();
+		if(event.files.length >= 1) {
+			formData.append(type, event.files[0]);
+		}
+		dataSubmissionService.sendFile(formData);
+		toast.current.show({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
+		event.options.clear();
+	}
 
 	const loadFileActionBodyTemplate = (rowData) => {
 		let ret = [];
@@ -172,13 +188,16 @@ export const DataLoadsComponent = () => {
 			if (!rowData.bulkloadStatus || rowData.bulkloadStatus === "FINISHED" || rowData.bulkloadStatus === "FAILED" || rowData.bulkloadStatus === "STOPPED") {
 				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
 			}
+		}else{
+			ret.push(<FileUpload key="upload" mode="basic" auto chooseOptions={{icon:'pi pi-upload', label: 'Upload', className:"p-button-rounded p-button-info mr-2"}}
+								 accept="*" customUpload uploadHandler={e => uploadLoadFile(e, rowData)} maxFileSize={1000000000000000} />);
 		}
 
 		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
 			ret.push(<Button key="delete" icon="pi pi-trash" className="p-button-rounded p-button-danger mr-2" onClick={() => deleteLoad(rowData)} />);
 		}
 
-		return ret;
+		return <div style={{display: 'inline-flex'}}> {ret} </div>;
 	};
 
 	const groupActionBodyTemplate = (rowData) => {
@@ -333,30 +352,30 @@ export const DataLoadsComponent = () => {
 			return [];
 		}
 	}
-	
+
 	const fileWithinSchemaRange = (fileVersion, loadType) => {
 		if (!fileVersion) return false;
 		const classVersions = apiVersion?.agrCurationSchemaVersions;
 		if (!classVersions) return false;
-		
+
 		const fileVersionParts = parseVersionString(fileVersion);
-		
+
 		let loadedClasses = [];
 		if (loadTypeClasses.has(loadType)) {
 			loadedClasses = loadTypeClasses.get(loadType);
 		} else {
 			console.error("Unrecognized load type " + loadType);
 		}
-		
+
 		for (const loadedClass of loadedClasses) {
 			const classVersionRange = classVersions[loadedClass];
 			if (!classVersionRange) return false;
-		
+
 			let minMaxVersions = classVersionRange.includes("-") ? classVersionRange.split(" - ") : [classVersionRange, classVersionRange];
 			if (minMaxVersions.length === 0 || minMaxVersions.length > 2) return false;
 			let minMaxVersionParts = [];
 			minMaxVersions.forEach((version, ix) => {minMaxVersionParts[ix] = parseVersionString(version)});
-			
+
 			const minVersionParts = minMaxVersionParts[0];
 			if (minMaxVersions.length === 1) {
 				if (minVersionParts[0] !== fileVersionParts[0] || minVersionParts[1] !== fileVersionParts[1] || minVersionParts[2] !== fileVersionParts[2]) {
@@ -369,7 +388,7 @@ export const DataLoadsComponent = () => {
 			if (fileVersionParts[0] === minVersionParts[0]) {
 				if (fileVersionParts[1] < minVersionParts[1]) return false;
 				if (fileVersionParts[1] === minVersionParts[1]) {
-					if (fileVersionParts[2] < minVersionParts[2]) return false; 
+					if (fileVersionParts[2] < minVersionParts[2]) return false;
 				}
 			}
 			// check not higher than max version
@@ -377,25 +396,26 @@ export const DataLoadsComponent = () => {
 			if (fileVersionParts[0] === maxVersionParts[0]) {
 				if (fileVersionParts[1] > maxVersionParts[1]) return false;
 				if (fileVersionParts[1] === maxVersionParts[1]) {
-					if (fileVersionParts[2] > maxVersionParts[2]) return false; 
+					if (fileVersionParts[2] > maxVersionParts[2]) return false;
 				}
-			}	
-		}	
+			}
+		}
 		return true;
 	};
-	
+
 	const parseVersionString = (version) => {
 		const regexp = /(?<major>\d+)\.(?<minor>\d+)\.?(?<patch>\d*)/;
 		const versionParts = version.match(regexp).groups;
 		const majorVersion = versionParts.major ? parseInt(versionParts.major) : 0;
 		const minorVersion = versionParts.minor ? parseInt(versionParts.minor) : 0;
 		const patchVersion = versionParts.patch ? parseInt(versionParts.patch) : 0;
-		
+
 		return [majorVersion, minorVersion, patchVersion];
 	}
 
 	return (
 		<>
+			<Toast ref={toast}></Toast>
 			<div className="card">
 				<Button label="New Group" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadGroupOpen} />
 				<Button label="New Bulk Load" icon="pi pi-plus" className="p-button-success mr-2" onClick={handleNewBulkLoadOpen} />
