@@ -61,6 +61,31 @@ jobs:
         run: |
           make integration-test
 
+  verify-test-ui:
+    if: github.event.action != 'edited' || github.event.changes.base
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Report workflow details
+        run: |
+          echo "Repository ${{ github.repository }}."
+          echo "Trigger ref ${{ github.ref }}, base-ref ${{ github.base_ref }}, head_ref ${{ github.head_ref }}."
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Report files updated in PR
+        run: |
+          git fetch -q origin ${{ github.base_ref }} ${{ github.head_ref }}
+          git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+      - name: Report Node version
+        run: |
+          node -v
+      - name: Run UI Tests and Build
+        working-directory: src/main/cliapp
+        run: |
+          npm install
+          npm test -- --watchAll=false
+          npm run build
   test-build-docker-image:
       if: github.event.action != 'edited' || github.event.changes.base
       runs-on: ubuntu-20.04
