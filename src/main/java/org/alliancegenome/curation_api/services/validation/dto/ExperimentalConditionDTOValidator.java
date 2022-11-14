@@ -60,55 +60,55 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		ecResponse.addErrorMessages(aoResponse.getErrorMessages());
 		
 		ChemicalTerm conditionChemical = null;
-		if (StringUtils.isNotBlank(dto.getConditionChemical())) {
-			conditionChemical = chemicalTermDAO.find(dto.getConditionChemical());
+		if (StringUtils.isNotBlank(dto.getConditionChemicalCurie())) {
+			conditionChemical = chemicalTermDAO.find(dto.getConditionChemicalCurie());
 			if (conditionChemical == null)
-				ecResponse.addErrorMessage("conditionChemical", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_chemical_curie", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionChemical(conditionChemical);
 		
 		ExperimentalConditionOntologyTerm conditionId = null;
-		if (StringUtils.isNotBlank(dto.getConditionId())) {
-			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionId());
+		if (StringUtils.isNotBlank(dto.getConditionIdCurie())) {
+			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionIdCurie());
 			if (conditionId == null)
-				ecResponse.addErrorMessage("conditionId", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_id_curie", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionId(conditionId);
 
-		if (StringUtils.isNotBlank(dto.getConditionClass())) {
-			ZECOTerm term = zecoTermDAO.find(dto.getConditionClass());
+		if (StringUtils.isNotBlank(dto.getConditionClassCurie())) {
+			ZECOTerm term = zecoTermDAO.find(dto.getConditionClassCurie());
 			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))
-				ecResponse.addErrorMessage("conditionClass", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.INVALID_MESSAGE);
 			experimentalCondition.setConditionClass(term);
 		}
 		else {
-			ecResponse.addErrorMessage("conditionClass", ValidationConstants.REQUIRED_MESSAGE);
+			ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
 		AnatomicalTerm conditionAnatomy = null;
-		if (StringUtils.isNotBlank(dto.getConditionAnatomy())) {
-			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomy());
+		if (StringUtils.isNotBlank(dto.getConditionAnatomyCurie())) {
+			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomyCurie());
 			if (conditionAnatomy == null)
-				ecResponse.addErrorMessage("conditionAnatomy", ValidationConstants.REQUIRED_MESSAGE);
+				ecResponse.addErrorMessage("condition_anatomy_curie", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		experimentalCondition.setConditionAnatomy(conditionAnatomy);
 		
 		NCBITaxonTerm conditionTaxon = null;
-		if (StringUtils.isNotBlank(dto.getConditionTaxon())) {
-			conditionTaxon = ncbiTaxonTermDAO.find(dto.getConditionTaxon());
+		if (StringUtils.isNotBlank(dto.getConditionTaxonCurie())) {
+			conditionTaxon = ncbiTaxonTermDAO.find(dto.getConditionTaxonCurie());
 			if (conditionTaxon == null) {
-				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxon());
+				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxonCurie());
 			}
 			if (conditionTaxon == null)
-				ecResponse.addErrorMessage("conditionTaxon", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_taxon_curie", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionTaxon(conditionTaxon);
 
 		GOTerm conditionGeneOntology = null;
-		if (StringUtils.isNotBlank(dto.getConditionGeneOntology())) {
-			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntology());
+		if (StringUtils.isNotBlank(dto.getConditionGeneOntologyCurie())) {
+			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntologyCurie());
 			if (conditionGeneOntology == null)
-				ecResponse.addErrorMessage("conditionGeneOntology", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_gene_ontology_curie", ValidationConstants.INVALID_MESSAGE);
 		}
 		experimentalCondition.setConditionGeneOntology(conditionGeneOntology);
 		

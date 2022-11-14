@@ -3,11 +3,11 @@
     "curie": "GENETEST:Gene0018",
     "name": "TestGene18",
     "symbol": "tg18",
-    "taxon": "NCBITaxon:6239",
+    "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
-    "updated_by": "GENETEST:Person0002",
-    "created_by": "",
+    "updated_by_curie": "GENETEST:Person0002",
+    "created_by_curie": "",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00"
   }

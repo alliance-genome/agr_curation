@@ -60,7 +60,7 @@ public class AgmExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad (List <AffectedGenomicModelDTO> agms) {
 		List<String> taxonIds = agms.stream()
-				.map( agmDTO -> agmDTO.getTaxon() ).distinct().collect( Collectors.toList() );
+				.map( agmDTO -> agmDTO.getTaxonCurie() ).distinct().collect( Collectors.toList() );
 		return runLoad(taxonIds, agms);
 	}
 		

@@ -45,16 +45,16 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		Reference validatedReference = refResponse.getEntity().getSingleReference();
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
 		
-		if (StringUtils.isBlank(dto.getSubject())) {
-			gdaResponse.addErrorMessage("subject", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getGeneCurie())) {
+			gdaResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			gene = geneDAO.find(dto.getSubject());
+			gene = geneDAO.find(dto.getGeneCurie());
 			if (gene == null) {
-				gdaResponse.addErrorMessage("subject", ValidationConstants.INVALID_MESSAGE);
+				gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE);
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto, refCurie);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto, dto.getGeneCurie(), refCurie);
 				}
 		
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
@@ -69,10 +69,10 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		annotation.setSingleReference(validatedReference);
 		
 		AffectedGenomicModel sgdStrainBackground = null;
-		if (StringUtils.isNotBlank(dto.getSgdStrainBackground())) {
-			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackground());
+		if (StringUtils.isNotBlank(dto.getSgdStrainBackgroundCurie())) {
+			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackgroundCurie());
 			if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
-				gdaResponse.addErrorMessage("sgdStrainBackground", ValidationConstants.INVALID_MESSAGE);
+				gdaResponse.addErrorMessage("sgd_strain_background_curie", ValidationConstants.INVALID_MESSAGE);
 			}
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
@@ -81,13 +81,13 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		annotation = daResponse.getEntity();
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
-		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
-			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelation());
+		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName());
 			if (diseaseRelation == null)
-				gdaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
+				gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE);
 			annotation.setDiseaseRelation(diseaseRelation);
 		} else {
-			gdaResponse.addErrorMessage("diseaseRelation", ValidationConstants.REQUIRED_MESSAGE);
+			gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
 		if (gdaResponse.hasErrors())

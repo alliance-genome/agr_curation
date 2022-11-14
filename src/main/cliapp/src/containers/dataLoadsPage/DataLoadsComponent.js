@@ -65,14 +65,14 @@ export const DataLoadsComponent = () => {
 	};
 
 	const loadTypeClasses = new Map([
-		["FULL_INGEST", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation", "Gene", "Allele", "AffectedGenomicModel"]],
-		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotation", "AlleleDiseaseAnnotation", "AGMDiseaseAnnotation"]],
-		["GENE_DISEASE_ANNOTATION", ["GeneDiseaseAnnotation"]],
-		["ALLELE_DISEASE_ANNOTATION", ["AlleleDiseaseAnnotation"]],
-		["AGM_DISEASE_ANNOTATION", ["AGMDiseaseAnnotation"]],
-		["GENE", ["Gene"]],
-		["ALLELE", ["Allele"]],
-		["AGM", ["AffectedGenomicModel"]]
+		["FULL_INGEST", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO", "GeneDTO", "AlleleDTO", "AffectedGenomicModelDTO"]],
+		["DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO", "AlleleDiseaseAnnotationDTO", "AGMDiseaseAnnotationDTO"]],
+		["GENE_DISEASE_ANNOTATION", ["GeneDiseaseAnnotationDTO"]],
+		["ALLELE_DISEASE_ANNOTATION", ["AlleleDiseaseAnnotationDTO"]],
+		["AGM_DISEASE_ANNOTATION", ["AGMDiseaseAnnotationDTO"]],
+		["GENE", ["GeneDTO"]],
+		["ALLELE", ["AlleleDTO"]],
+		["AGM", ["AffectedGenomicModelDTO"]]
 		]);
 
 	useQuery(['bulkloadtable'],

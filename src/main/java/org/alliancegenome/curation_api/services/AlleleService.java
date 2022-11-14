@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
@@ -18,6 +19,7 @@ import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.AlleleValidator;
 import org.alliancegenome.curation_api.services.validation.dto.AlleleDTOValidator;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -27,6 +29,7 @@ import lombok.extern.jbosslog.JBossLog;
 public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleDAO> {
 
 	@Inject AlleleDAO alleleDAO;
+	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject AlleleValidator alleleValidator;
 	@Inject AlleleDTOValidator alleleDtoValidator;
 
@@ -40,23 +43,18 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Transactional
 	public ObjectResponse<Allele> update(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleUpdate(uiEntity);
-		return new ObjectResponse<Allele>(alleleDAO.persist(dbEntity));
+		return new ObjectResponse<Allele>(dbEntity);
 	}
 	
 	@Override
 	@Transactional
 	public ObjectResponse<Allele> create(Allele uiEntity) {
 		Allele dbEntity = alleleValidator.validateAlleleCreate(uiEntity);
-		return new ObjectResponse<Allele>(alleleDAO.persist(dbEntity));
+		return new ObjectResponse<Allele>(dbEntity);
 	}
 
-	@Transactional
 	public Allele upsert(AlleleDTO dto) throws ObjectUpdateException {
-		Allele allele = alleleDtoValidator.validateAlleleDTO(dto);
-		
-		if (allele == null) return null;
-		
-		return alleleDAO.persist(allele);
+		return alleleDtoValidator.validateAlleleDTO(dto);
 	}
 	
 	public void removeNonUpdatedAlleles(String taxonIds, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter) {
@@ -73,6 +71,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		for (String curie : curiesToRemove) {
 			Allele allele = alleleDAO.find(curie);
 			if (allele != null) {
+				deleteAlleleSlotAnnotations(allele);
 				alleleDAO.deleteAlleleAndReferencingDiseaseAnnotations(curie);
 			} else {
 				log.error("Failed getting allele: " + curie);
@@ -88,5 +87,9 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		return curies;
 	}
 	
-	
+	private void deleteAlleleSlotAnnotations(Allele allele) {
+		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
+			allele.getAlleleMutationTypes().forEach(amt -> {alleleMutationTypeDAO.remove(amt.getId());});
+		}
+	}
 }
