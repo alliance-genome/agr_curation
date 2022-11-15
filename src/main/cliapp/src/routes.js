@@ -54,26 +54,27 @@ export default (
 
 		<SecureRoute path="/ontology/ncbitaxon" render={() => <GeneralOntologyComponent hideDefinition={true} name="NCBITaxon" endpoint="ncbitaxonterm" />} />
 
-		<SecureRoute path="/ontology/chebi"  render={() => <GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />} />
-		<SecureRoute path="/ontology/do"     render={() => <GeneralOntologyComponent name="Diseases" endpoint="doterm" />} />
-		<SecureRoute path="/ontology/ma"     render={() => <GeneralOntologyComponent name="MA" endpoint="materm" />} />
-		<SecureRoute path="/ontology/zfa"    render={() => <GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />} />
-		<SecureRoute path="/ontology/mp"     render={() => <GeneralOntologyComponent name="MP" endpoint="mpterm" />} />
-		<SecureRoute path="/ontology/dao"    render={() => <GeneralOntologyComponent name="DAO" endpoint="daoterm" />} />
-		<SecureRoute path="/ontology/emapa"  render={() => <GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />} />
-		<SecureRoute path="/ontology/wbbt"   render={() => <GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />} />
-		<SecureRoute path="/ontology/xco"    render={() => <GeneralOntologyComponent name="XCO" endpoint="xcoterm" />} />
-		<SecureRoute path="/ontology/zeco"   render={() => <GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />} />
-		<SecureRoute path="/ontology/wbls"   render={() => <GeneralOntologyComponent name="WBls" endpoint="wblsterm" />} />
-		<SecureRoute path="/ontology/fbdv"   render={() => <GeneralOntologyComponent name="FBdv" endpoint="fbdvterm" />} />
+		<SecureRoute path="/ontology/chebi"	 render={() => <GeneralOntologyComponent name="ChEBI" endpoint="chebiterm" />} />
+		<SecureRoute path="/ontology/do"		 render={() => <GeneralOntologyComponent name="Diseases" endpoint="doterm" />} />
+		<SecureRoute path="/ontology/ma"		 render={() => <GeneralOntologyComponent name="MA" endpoint="materm" />} />
+		<SecureRoute path="/ontology/zfa"		 render={() => <GeneralOntologyComponent name="ZFA" endpoint="zfaterm" />} />
+		<SecureRoute path="/ontology/mp"		 render={() => <GeneralOntologyComponent name="MP" endpoint="mpterm" />} />
+		<SecureRoute path="/ontology/dao"		 render={() => <GeneralOntologyComponent name="DAO" endpoint="daoterm" />} />
+		<SecureRoute path="/ontology/emapa"	 render={() => <GeneralOntologyComponent name="EMAPA" endpoint="emapaterm" />} />
+		<SecureRoute path="/ontology/wbbt"	 render={() => <GeneralOntologyComponent name="WBbt" endpoint="wbbtterm" />} />
+		<SecureRoute path="/ontology/xco"		 render={() => <GeneralOntologyComponent name="XCO" endpoint="xcoterm" />} />
+		<SecureRoute path="/ontology/ro"			 render={() => <GeneralOntologyComponent name="RO" endpoint="roterm" />} />
+		<SecureRoute path="/ontology/zeco"	 render={() => <GeneralOntologyComponent name="ZECO" endpoint="zecoterm" />} />
+		<SecureRoute path="/ontology/wbls"	 render={() => <GeneralOntologyComponent name="WBls" endpoint="wblsterm" />} />
+		<SecureRoute path="/ontology/fbdv"	 render={() => <GeneralOntologyComponent name="FBdv" endpoint="fbdvterm" />} />
 		<SecureRoute path="/ontology/mmusdv" render={() => <GeneralOntologyComponent name="MmusDv" endpoint="mmusdvterm" />} />
-		<SecureRoute path="/ontology/zfs"    render={() => <GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />} />
-		<SecureRoute path="/ontology/xba"    render={() => <GeneralOntologyComponent name="XBA" endpoint="xbaterm" />} />
-		<SecureRoute path="/ontology/xbs"    render={() => <GeneralOntologyComponent name="XBS" endpoint="xbsterm" />} />
-		<SecureRoute path="/ontology/xpo"    render={() => <GeneralOntologyComponent name="XPO" endpoint="xpoterm" />} />
-		<SecureRoute path="/ontology/atp"    render={() => <GeneralOntologyComponent name="ATP" endpoint="atpterm" />} />
-		<SecureRoute path="/ontology/xbed"   render={() => <GeneralOntologyComponent name="XBED" endpoint="xbedterm" />} />
-		<SecureRoute path="/ontology/xsmo"   render={() => <GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />} />
+		<SecureRoute path="/ontology/zfs"		 render={() => <GeneralOntologyComponent name="ZFS" endpoint="zfsterm" />} />
+		<SecureRoute path="/ontology/xba"		 render={() => <GeneralOntologyComponent name="XBA" endpoint="xbaterm" />} />
+		<SecureRoute path="/ontology/xbs"		 render={() => <GeneralOntologyComponent name="XBS" endpoint="xbsterm" />} />
+		<SecureRoute path="/ontology/xpo"		 render={() => <GeneralOntologyComponent name="XPO" endpoint="xpoterm" />} />
+		<SecureRoute path="/ontology/atp"		 render={() => <GeneralOntologyComponent name="ATP" endpoint="atpterm" />} />
+		<SecureRoute path="/ontology/xbed"	 render={() => <GeneralOntologyComponent name="XBED" endpoint="xbedterm" />} />
+		<SecureRoute path="/ontology/xsmo"	 render={() => <GeneralOntologyComponent name="XSMO" endpoint="xsmoterm" />} />
 
 		<SecureRoute path="/fmspage" render={() => <FMSComponent />} />
 		<SecureRoute path="/metricspage" render={() =><MetricsComponent />} />
