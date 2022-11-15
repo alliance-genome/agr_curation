@@ -14,6 +14,7 @@ import { MutationTypesDialog } from './MutationTypesDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
@@ -40,14 +41,13 @@ export const AllelesTable = () => {
 	const toast_topright = useRef(null);
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const inCollectionTerms = useControlledVocabularyService('Allele collection vocabulary');
 	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
 
 	const searchService = new SearchService();
 	let alleleService = new AlleleService();
 
 	const aggregationFields = [
-		'inCollection.name', 'inheritanceMode.name'
+		'inheritanceMode.name'
 	];
 
 	const mutation = useMutation(updatedAllele => {
@@ -102,22 +102,26 @@ export const AllelesTable = () => {
 		);
 	};
 
-	const onInCollectionEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		updatedAlleles[props.rowIndex].inCollection = event.value;
+	const onInCollectionValueChange = (event, setFieldValue, props) => {
+		defaultAutocompleteOnChange(props, event, "inCollection", setFieldValue, "name");
 	};
 
 	const inCollectionEditor = (props) => {
 		return (
 			<>
-				<ControlledVocabularyDropdown
-					field="inCollection"
-					options={inCollectionTerms}
-					editorChange={onInCollectionEditorValueChange}
-					props={props}
-					showClear={true}
+				<AutocompleteEditor
+					search={inCollectionSearch}
+					initialValue={props.rowData.inCollection?.name}
+					rowProps={props}
+					fieldName='inCollection'
+					onValueChangeHandler={onInCollectionValueChange}
+					valueDisplay={(item, setAutocompleteSelectedItem, op, query) =>
+						<VocabTermAutocompleteTemplate item={item} op={op} query={query} setAutocompleteSelectedItem={setAutocompleteSelectedItem}/>}
 				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"inCollection"} />
+				<ErrorMessageComponent
+					errorMessages={errorMessagesRef.current[props.rowIndex]}
+					errorField='inCollection'
+				/>
 			</>
 		);
 	};
@@ -151,6 +155,27 @@ export const AllelesTable = () => {
 
 		}
 	};
+	
+	const inCollectionSearch = (event, setFiltered, setQuery) => {
+		const autocompleteFields = ["name"];
+		const endpoint = "vocabularyterm";
+		const filterName = "taxonFilter";
+		const otherFilters = {
+			obsoleteFilter: {
+				"obsolete": {
+					queryString: false
+				}
+			},
+			vocabularyFilter: {
+				"vocabulary.name": {
+					queryString: "Allele collection vocabulary"
+				}
+			}
+		}
+		setQuery(event.query);
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+	}
 
 	const onReferenceValueChange = (event, setFieldValue, props) => {
 		multipleAutocompleteOnChange(props, event, "references", setFieldValue);
@@ -304,8 +329,6 @@ export const AllelesTable = () => {
 	};
 	
 	const mutationTypesTemplate = (rowData) => {
-		console.log(mutationTypesData);
-		console.log(rowData);
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
 			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
@@ -473,7 +496,7 @@ export const AllelesTable = () => {
 			header: "In Collection",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "multiselect", filterName: "inCollectionFilter", fields: ["inCollection.name"], useKeywordFields: true},
+			filterElement: {type: "input", filterName: "inCollectionFilter", fields: ["inCollection.name"], useKeywordFields: true},
 			editor: (props) => inCollectionEditor(props)
 		},
 		{
