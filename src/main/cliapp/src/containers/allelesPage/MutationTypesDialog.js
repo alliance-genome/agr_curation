@@ -14,7 +14,7 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { SearchService } from '../../service/SearchService';
 import { ValidationService } from '../../service/ValidationService';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from "../../utils/utils";
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 
@@ -273,15 +273,15 @@ export const MutationTypesDialog = ({
 
 	const evidenceTemplate = (rowData) => {
 		if (rowData && rowData.evidence) {
-			const sortedEvidence = rowData.evidence.sort((a,b) => (a.curie > b.curie) ? 1 : -1);
+			const refStrings = getRefStrings(rowData.evidence);
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
-						{item.curie}
+						{item}
 					</EllipsisTableCell>
 				);
 			};
-			return <ListTableCell template={listTemplate} listData={sortedEvidence} />
+			return <ListTableCell template={listTemplate} listData={refStrings} />
 		}
 	};
 
