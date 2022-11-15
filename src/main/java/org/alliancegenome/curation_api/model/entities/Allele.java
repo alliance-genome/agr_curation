@@ -53,7 +53,7 @@ public class Allele extends GenomicEntity {
 	@JsonView({View.FieldsOnly.class})
 	private String symbol;
 	
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"curie", "crossReferences.curie"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = {
@@ -83,7 +83,7 @@ public class Allele extends GenomicEntity {
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 	
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = {"evidence.curie", "mutationTypes.curie", "mutationTypes.name"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})
