@@ -243,6 +243,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Mouse Developmental Anatomy Ontology (EMAPA)', icon: 'pi pi-fw pi-home', to: '/ontology/emapa' },
 												{ label: 'C. elegans Gross Anatomy Ontology (WBbt)', icon: 'pi pi-fw pi-home', to: '/ontology/wbbt' },
 												{ label: 'Experimental condition ontology (XCO)', icon: 'pi pi-fw pi-home', to: '/ontology/xco' },
+												{ label: 'Relation ontology (RO)', icon: 'pi pi-fw pi-home', to: '/ontology/ro' },
 												{ label: 'Zebrafish Experimental Conditions Ontology (ZECO)', icon: 'pi pi-fw pi-home', to: '/ontology/zeco' },
 												{ label: 'C. elegans Development Ontology (WBls)', icon: 'pi pi-fw pi-home', to: '/ontology/wbls' },
 												{ label: 'FlyBase Developmental Ontology (FBdv)', icon: 'pi pi-fw pi-home', to: '/ontology/fbdv' },
