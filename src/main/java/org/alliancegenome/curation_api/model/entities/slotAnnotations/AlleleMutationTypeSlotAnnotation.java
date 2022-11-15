@@ -9,6 +9,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -36,6 +37,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={SlotAnnotation.class})
 @Schema(name = "AlleleMutationtTypeSlotAnnotation", description = "POJO representing an allele mutation type slot annotation")
+@Table(indexes = {
+	@Index(name = "allelemutationtype_singleallele_curie_index", columnList = "singleallele_curie"),
+})
 public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
