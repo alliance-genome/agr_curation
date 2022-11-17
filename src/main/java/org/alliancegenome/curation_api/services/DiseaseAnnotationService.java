@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,6 +78,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		Boolean madePublic = true; //TODO: check boolean field once in place
 		if (madePublic) {
 			annotation.setObsolete(true);
+			annotation.setUpdatedBy(authenticatedPerson);
+			annotation.setDateUpdated(OffsetDateTime.now());
 			diseaseAnnotationDAO.persist(annotation);
 		} else {
 			List<Note> notesToDelete = annotation.getRelatedNotes();
