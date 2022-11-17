@@ -5,6 +5,8 @@ const initialNewAnnotationState = {
 		subject: {
 			curie: "",
 		},
+		assertedGenes : [],
+		assertedAllele : null,
 		diseaseRelation: {
 			name: "",
 		},
