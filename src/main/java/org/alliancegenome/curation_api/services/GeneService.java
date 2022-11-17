@@ -29,6 +29,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	@Inject GeneDAO geneDAO;
 	@Inject GeneValidator geneValidator;
 	@Inject GeneDTOValidator geneDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -71,11 +72,24 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " genes", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " genes", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			Gene gene = geneDAO.find(curie);
 			if (gene != null) {
-				geneDAO.deleteGeneAndReferencingDiseaseAnnotations(curie);
+				List<String> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
+				Boolean anyPublicReferencingDAs = false;
+				for (String idString : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(Long.parseLong(idString), false);
+					if (daMadePublic)
+						anyPublicReferencingDAs = true;
+				}
+	
+				if (anyPublicReferencingDAs) {
+					gene.setObsolete(true);
+					geneDAO.persist(gene);
+				} else {
+					geneDAO.remove(curie);
+				}
 			} else {
 				log.error("Failed getting gene: " + curie);
 			}

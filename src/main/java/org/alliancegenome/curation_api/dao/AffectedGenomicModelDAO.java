@@ -22,8 +22,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		return (List<String>) jpqlQuery.getResultList();
 	}
 	
-	@Transactional
-	public void deleteAgmAndReferencingDiseaseAnnotations(String agmCurie) {
+	public List<String> findReferencingDiseaseAnnotations(String agmCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie = :agmCurie");
 		jpqlQuery.setParameter("agmCurie", agmCurie);
 		List<String> results = (List<String>)jpqlQuery.getResultList();
@@ -32,23 +31,7 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		jpqlQuery.setParameter("agmCurie", agmCurie);
 		results.addAll((List<String>) jpqlQuery.getResultList());
 		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_conditionrelation WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_ecoterm WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_note WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_vocabularyterm WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		remove(agmCurie);
+		return results;
 	}
 	
 }

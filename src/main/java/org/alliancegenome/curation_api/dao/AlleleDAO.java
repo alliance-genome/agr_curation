@@ -22,8 +22,7 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return (List<String>) jpqlQuery.getResultList();
 	}
 	
-	@Transactional
-	public void deleteAlleleAndReferencingDiseaseAnnotations(String alleleCurie) {
+	public List<String> findReferencingDiseaseAnnotationIds(String alleleCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie = :alleleCurie");
 		jpqlQuery.setParameter("alleleCurie", alleleCurie);
 		List<String> results = (List<String>)jpqlQuery.getResultList();
@@ -32,23 +31,11 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		jpqlQuery.setParameter("alleleCurie", alleleCurie);
 		results.addAll((List<String>) jpqlQuery.getResultList());
 		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_conditionrelation WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
+		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.inferredAllele.curie = :alleleCurie OR ada.assertedAllele.curie = :alleleCurie");
+		jpqlQuery.setParameter("alleleCurie", alleleCurie);
+		results.addAll((List<String>) jpqlQuery.getResultList());
 		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_ecoterm WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_note WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_vocabularyterm WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		remove(alleleCurie);
+		return results;
 	}
 	
 }

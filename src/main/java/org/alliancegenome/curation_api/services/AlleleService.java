@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -32,6 +33,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject AlleleValidator alleleValidator;
 	@Inject AlleleDTOValidator alleleDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
@@ -57,7 +59,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		return alleleDtoValidator.validateAlleleDTO(dto);
 	}
 	
-	public void removeNonUpdatedAlleles(String taxonIds, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter) {
+	public void removeOrDeprecateNonUpdatedAlleles(String taxonIds, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter) {
 		log.debug("runLoad: After: " + taxonIds + " " + alleleCuriesAfter.size());
 
 		List<String> distinctAfter = alleleCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -67,12 +69,25 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " alleles", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " alleles", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			Allele allele = alleleDAO.find(curie);
 			if (allele != null) {
-				deleteAlleleSlotAnnotations(allele);
-				alleleDAO.deleteAlleleAndReferencingDiseaseAnnotations(curie);
+				List<String> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
+				Boolean anyPublicReferencingDAs = false;
+				for (String idString : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(Long.parseLong(idString), false);
+					if (daMadePublic)
+						anyPublicReferencingDAs = true;
+				}
+				
+				if (anyPublicReferencingDAs) {
+					allele.setObsolete(true);
+					alleleDAO.persist(allele);
+				} else {
+					deleteAlleleSlotAnnotations(allele);
+					alleleDAO.remove(curie);
+				}
 			} else {
 				log.error("Failed getting allele: " + curie);
 			}

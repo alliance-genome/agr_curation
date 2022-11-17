@@ -41,6 +41,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	@Inject AffectedGenomicModelValidator affectedGenomicModelValidator;
 	@Inject AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
 	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -95,11 +97,24 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
 			if (agm != null) {
-				affectedGenomicModelDAO.deleteAgmAndReferencingDiseaseAnnotations(curie);
+				List<String> referencingDAIds = affectedGenomicModelDAO.findReferencingDiseaseAnnotations(curie);
+				Boolean anyPublicReferencingDAs = false;
+				for (String idString : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(Long.parseLong(idString), false);
+					if (daMadePublic)
+						anyPublicReferencingDAs = true;
+				}
+				
+				if (anyPublicReferencingDAs) {
+					agm.setObsolete(true);
+					affectedGenomicModelDAO.persist(agm);
+				} else {
+					affectedGenomicModelDAO.remove(curie);
+				}
 			} else {
 				log.error("Failed getting AGM: " + curie);
 			}

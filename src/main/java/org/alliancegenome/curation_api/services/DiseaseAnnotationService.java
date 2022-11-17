@@ -60,7 +60,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	}
 
 	@Transactional
-	public void deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError) {
+	public Boolean deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 
 		if (annotation == null) {
@@ -71,21 +71,22 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 				throw new ApiErrorException(response);
 			}
 			log.error(errorMessage);
-			return;
+			return false;
 		}
 		
-		Boolean madePublic = true; //TODO: add method to determine this once mechanism in place
+		Boolean madePublic = true; //TODO: check boolean field once in place
 		if (madePublic) {
 			annotation.setObsolete(true);
 			diseaseAnnotationDAO.persist(annotation);
-			return;
+		} else {
+			List<Note> notesToDelete = annotation.getRelatedNotes();
+			diseaseAnnotationDAO.remove(id);
+		
+			if (CollectionUtils.isNotEmpty(notesToDelete))
+				annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
 		}
 		
-		List<Note> notesToDelete = annotation.getRelatedNotes();
-		diseaseAnnotationDAO.remove(id);
-		
-		if (CollectionUtils.isNotEmpty(notesToDelete))
-			annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
+		return madePublic;
 	}
 	
 }

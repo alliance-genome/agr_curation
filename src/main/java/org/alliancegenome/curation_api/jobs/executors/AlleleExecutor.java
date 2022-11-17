@@ -100,7 +100,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 			
-		alleleService.removeNonUpdatedAlleles(taxonIds.toString(), alleleCuriesBefore, alleleCuriesAfter);
+		alleleService.removeOrDeprecateNonUpdatedAlleles(taxonIds.toString(), alleleCuriesBefore, alleleCuriesAfter);
 			
 		return new LoadHistoryResponce(history);	
 	}
