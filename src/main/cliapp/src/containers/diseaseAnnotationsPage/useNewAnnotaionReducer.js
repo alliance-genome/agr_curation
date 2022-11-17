@@ -6,7 +6,7 @@ const initialNewAnnotationState = {
 			curie: "",
 		},
 		assertedGenes : [],
-		assertedAllele : [],
+		assertedAllele : null,
 		diseaseRelation: {
 			name: "",
 		},

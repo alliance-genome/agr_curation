@@ -14,6 +14,7 @@ export const AutocompleteEditor = (
 		subField = "curie",
 		valueDisplay,
 		onValueChangeHandler,
+		disabled
 	}
 ) => {
 	const [suggestions, setSuggestions] = useState([]);
@@ -40,6 +41,7 @@ export const AutocompleteEditor = (
 				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
 				field={subField}
 				value={fieldValue}
+				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
 				completeMethod={(event) => search(event, setSuggestions, setQuery, rowProps)}

@@ -50,6 +50,8 @@ export const NewAnnotationForm = ({
 		showConditionRelations,
 	} = newAnnotationState;
 	const [isEnabled, setIsEnabled] = useState(false);
+	const [isAsssertedGeneEnabled, setAsssertedGeneEnabled] = useState(false);
+	const [isAsssertedAlleleEnabled, setAsssertedAlleleEnabled] = useState(false);
 	const validationService = new ValidationService();
 	const geneticSexTerms = useControlledVocabularyService('Genetic sexes');
 	const diseaseQualifiersTerms = useControlledVocabularyService('Disease qualifiers');
@@ -77,6 +79,8 @@ export const NewAnnotationForm = ({
 	const hideDialog = () => {
 		newAnnotationDispatch({ type: "RESET" });
 		setIsEnabled(false);
+		setAsssertedAlleleEnabled(false);
+		setAsssertedGeneEnabled(false);
 	};
 
 	const validateTable = async (endpoint, errorType, row) => {
@@ -137,6 +141,8 @@ export const NewAnnotationForm = ({
 		experimentsRef.current.clear();
 		newAnnotationDispatch({ type: "CLEAR" });
 		setIsEnabled(false);
+		setAsssertedAlleleEnabled(false);
+		setAsssertedGeneEnabled(false);
 	}
 
 	const handleSubmitAndAdd = (event) => {
@@ -191,6 +197,16 @@ export const NewAnnotationForm = ({
 			setIsEnabled(true);
 		} else {
 			setIsEnabled(false);
+		}
+		if(event.target.value && event.target.value.type && (event.target.value.type === "Allele" || event.target.value.type === "AffectedGenomicModel" )){
+			setAsssertedGeneEnabled(true);
+		}else{
+			setAsssertedGeneEnabled(false);
+		}
+		if(event.target.value && event.target.value.type && (event.target.value.type === "AffectedGenomicModel")){
+			setAsssertedAlleleEnabled(true);
+		}else{
+			setAsssertedAlleleEnabled(false);
 		}
 		setFieldValue(event.target.value);
 		newAnnotationDispatch({
@@ -388,6 +404,7 @@ export const NewAnnotationForm = ({
 								name="assertedGenes"
 								label="Asserted Genes"
 								fieldName='assertedGenes'
+								disabled = {!isAsssertedGeneEnabled}
 								initialValue={newAnnotation.assertedGenes}
 								onValueChangeHandler={onArrayFieldChange}
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
@@ -398,14 +415,15 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedAllele">Asserted Allele</label>
-							<AutocompleteMultiEditor
+							<AutocompleteEditor
 								customRef={assertedAlleleRef}
 								search={assertedAlleleSearch}
 								name="assertedAllele"
 								label="Asserted Allele"
 								fieldName='assertedAllele'
+								disabled = {!isAsssertedAlleleEnabled}
 								initialValue={newAnnotation.assertedAllele}
-								onValueChangeHandler={onArrayFieldChange}
+								onValueChangeHandler={onSingleReferenceChange}
 								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedAllele})}
