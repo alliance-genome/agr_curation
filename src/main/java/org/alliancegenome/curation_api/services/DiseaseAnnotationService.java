@@ -29,6 +29,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject NoteService noteService;
+	@Inject LoggedInPersonService loggedInPersonService;
 
 	@Override
 	@PostConstruct
@@ -78,7 +79,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		Boolean madePublic = true; //TODO: check boolean field once in place
 		if (madePublic) {
 			annotation.setObsolete(true);
-			annotation.setUpdatedBy(authenticatedPerson);
+			annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
 			annotation.setDateUpdated(OffsetDateTime.now());
 			diseaseAnnotationDAO.persist(annotation);
 		} else {
