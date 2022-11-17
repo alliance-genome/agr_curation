@@ -1444,6 +1444,7 @@ export const DiseaseAnnotationsTable = () => {
 					newEntity={newDiseaseAnnotation}
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
+					deprecateIfPublic={true}
 				/>
 			</div>
 			<NewAnnotationForm

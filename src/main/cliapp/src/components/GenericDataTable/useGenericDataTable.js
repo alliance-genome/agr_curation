@@ -276,19 +276,21 @@ export const useGenericDataTable = ({
 		});
 	};
 
-	const handleDeletion = async (idToDelete, entityToDelete) => {
+	const handleDeletion = async (idToDelete, entityToDelete, deprecateIfPublic) => {
 		const result = await deletionMethod(entityToDelete)
 		if (result.isError) {
+			const action = deprecateIfPublic ? 'delete/deprecate' : 'delete';
 			toast_topright.current.show([
-				{ life: 7000, severity: 'error', summary: 'Could not delete ' + endpoint +
+				{ life: 7000, severity: 'error', summary: 'Could not ' + action + ' ' + endpoint +
 					' [' + idToDelete + ']', sticky: false }
 			]);
 			let deletionErrorMessage = result?.message ? result.message : null;
 			return deletionErrorMessage;
 		} else {
+			const action = deprecateIfPublic ? 'Deletion/deprecation' : 'Deletion';
 			toast_topright.current.show([
-				{ life: 7000, severity: 'success', summary: 'Deletion successful: ',
-					detail: 'Deletion of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
+				{ life: 7000, severity: 'success', summary: action + ' successful: ',
+					detail: action + ' of ' + endpoint + ' [' + idToDelete + '] was successful', sticky: false }
 			]);
 			let _entities = global.structuredClone(entities);
 
