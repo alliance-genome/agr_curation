@@ -45,16 +45,16 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
 		
 		
-		if (StringUtils.isBlank(dto.getSubject())) {
-			adaResponse.addErrorMessage("subject", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getAlleleCurie())) {
+			adaResponse.addErrorMessage("allele_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			allele = alleleDAO.find(dto.getSubject());
+			allele = alleleDAO.find(dto.getAlleleCurie());
 			if (allele == null) {
-				adaResponse.addErrorMessage("subject", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("allele_curie", ValidationConstants.INVALID_MESSAGE);
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto, refCurie);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(allele.getTaxon().getCurie()).getCurieID(dto, dto.getAlleleCurie(), refCurie);
 				}
 		
 				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
@@ -72,30 +72,30 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
 		
-		if (StringUtils.isNotEmpty(dto.getDiseaseRelation())) {
-			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelation());
+		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
+			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName());
 			if (diseaseRelation == null)
-				adaResponse.addErrorMessage("diseaseRelation", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE);
 			annotation.setDiseaseRelation(diseaseRelation);
 		} else {
-			adaResponse.addErrorMessage("diseaseRelation", ValidationConstants.REQUIRED_MESSAGE);
+			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
 		
-		if (StringUtils.isNotBlank(dto.getInferredGene())) {
-			Gene inferredGene = geneDAO.find(dto.getInferredGene());
+		if (StringUtils.isNotBlank(dto.getInferredGeneCurie())) {
+			Gene inferredGene = geneDAO.find(dto.getInferredGeneCurie());
 			if (inferredGene == null)
-				adaResponse.addErrorMessage("inferredGene", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("inferred_gene_curie", ValidationConstants.INVALID_MESSAGE);
 			annotation.setInferredGene(inferredGene);
 		} else {
 			annotation.setInferredGene(null);
 		}
 		
-		if (CollectionUtils.isNotEmpty(dto.getAssertedGenes())) {
+		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneCuries())) {
 			List<Gene> assertedGenes = new ArrayList<>();
-			for (String assertedGeneCurie : dto.getAssertedGenes()) {
+			for (String assertedGeneCurie : dto.getAssertedGeneCuries()) {
 				Gene assertedGene = geneDAO.find(assertedGeneCurie);
 				if (assertedGene == null) {
-					adaResponse.addErrorMessage("assertedGenes", ValidationConstants.INVALID_MESSAGE);
+					adaResponse.addErrorMessage("asserted_gene_curies", ValidationConstants.INVALID_MESSAGE);
 					break;
 				}
 				assertedGenes.add(assertedGene);

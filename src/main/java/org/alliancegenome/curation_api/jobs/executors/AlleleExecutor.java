@@ -60,7 +60,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad (List <AlleleDTO> alleles) {
 		List<String> taxonIds = alleles.stream()
-				.map( alleleDTO -> alleleDTO.getTaxon() ).distinct().collect( Collectors.toList() );
+				.map( alleleDTO -> alleleDTO.getTaxonCurie() ).distinct().collect( Collectors.toList() );
 		return runLoad(taxonIds, alleles);
 	}
 		

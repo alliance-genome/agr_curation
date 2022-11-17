@@ -1,0 +1,6 @@
+CREATE INDEX allelemutationtypeslotannotation_id_index ON public.allelemutationtypeslotannotation_soterm USING btree (allelemutationtypeslotannotation_id);
+CREATE INDEX allelemutationtypeslotannotation_mutationtypes_curie_index ON public.allelemutationtypeslotannotation_soterm USING btree (mutationtypes_curie);
+CREATE INDEX slotannotation_informationcontententity_slotannotation_id_index ON public.slotannotation_informationcontententity USING btree (slotannotation_id);
+CREATE INDEX slotannotation_informationcontententity_evidence_curie_index ON public.slotannotation_informationcontententity USING btree (evidence_curie);
+CREATE INDEX slotannotation_createdby_index ON public.slotannotation USING btree (createdby_id);
+CREATE INDEX slotannotation_updatedby_index ON public.slotannotation USING btree (updatedby_id);

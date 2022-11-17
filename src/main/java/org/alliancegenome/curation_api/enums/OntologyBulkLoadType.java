@@ -16,6 +16,7 @@ public enum OntologyBulkLoadType {
 	EMAPA(EMAPATerm.class),
 	GO(GOTerm.class),
 	SO(SOTerm.class),
+	RO(ROTerm.class),
 	WBLS(WBLSTerm.class),
 	FBDV(FBDVTerm.class),
 	MMUSDV(MMUSDVTerm.class),

@@ -61,7 +61,7 @@ public class GeneExecutor extends LoadFileExecutor {
 	// Gets called from the API directly
 	public APIResponse runLoad (List <GeneDTO> genes) {
 		List<String> taxonIds = genes.stream()
-				 .map( geneDTO -> geneDTO.getTaxon() ).distinct().collect( Collectors.toList() );
+				 .map( geneDTO -> geneDTO.getTaxonCurie() ).distinct().collect( Collectors.toList() );
 		return runLoad(taxonIds, genes);
 	}
 	

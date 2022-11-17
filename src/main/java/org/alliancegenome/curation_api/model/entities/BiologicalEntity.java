@@ -47,7 +47,7 @@ import lombok.ToString;
 	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"),
 })
 public class BiologicalEntity extends CurieAuditedObject {
-
+	
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne

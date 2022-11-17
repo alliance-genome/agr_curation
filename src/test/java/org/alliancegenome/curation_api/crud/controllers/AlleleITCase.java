@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
 import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
@@ -13,12 +13,15 @@ import java.util.List;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -44,30 +47,32 @@ public class AlleleITCase {
 	
 	private Vocabulary inheritanceModeVocabulary;
 	private Vocabulary inCollectionVocabulary;
-	private Vocabulary sequencingStatusVocabulary;
 	private VocabularyTerm inheritanceMode;
 	private VocabularyTerm inCollection;
-	private VocabularyTerm sequencingStatus;
 	private Reference reference;
 	private List<Reference> references = new ArrayList<Reference>();
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
 	private Person person;
 	private OffsetDateTime datetime;
+	private SOTerm soTerm;
+	private SOTerm soTerm2;
+	private AlleleMutationTypeSlotAnnotation alleleMutationType;
 	
 	private void createRequiredObjects() {
 		inheritanceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
 		inCollectionVocabulary = getVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY);
-		sequencingStatusVocabulary = getVocabulary(VocabularyConstants.SEQUENCING_STATUS_VOCABULARY);
 		inheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		inCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
-		sequencingStatus = getVocabularyTerm(sequencingStatusVocabulary, "sequenced");
 		reference = createReference("AGRKB:000000003");
+		soTerm = createSoTerm("SO:00002");
+		soTerm2 = createSoTerm("SO:00003");
 		references.add(reference);
 		taxon = getTaxonFromCurie("NCBITaxon:10090");
 		taxon2 = getTaxonFromCurie("NCBITaxon:9606");
 		person = createPerson("TEST:AllelePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
+		alleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, soTerm);
 	}
 	
 	@Test
@@ -83,11 +88,11 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setCreatedBy(person);
 		allele.setIsExtinct(false);
 		allele.setDateCreated(datetime);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -110,23 +115,27 @@ public class AlleleITCase {
 				body("entity.name", is("TestAllele")).
 				body("entity.inheritanceMode.name", is(inheritanceMode.getName())).
 				body("entity.inCollection.name", is(inCollection.getName())).
-				body("entity.sequencingStatus.name", is(sequencingStatus.getName())).
 				body("entity.isExtinct", is(false)).
 				body("entity.references[0].curie", is(reference.getCurie())).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 				body("entity.createdBy.uniqueId", is("TEST:AllelePerson0001")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+				body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
+				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie()));
 	}
 
 	@Test
 	@Order(2)
 	public void editAllele() {
 		Allele allele = getAllele();
+		AlleleMutationTypeSlotAnnotation alleleMutationType2 = createAlleleMutationTypeSlotAnnotation(reference, soTerm2);
+		
 		allele.setSymbol("Allele<sup>edited</sup>");
 		allele.setTaxon(taxon2);
 		allele.setInternal(true);
 		allele.setObsolete(true);
 		allele.setIsExtinct(true);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType2));
 
 		RestAssured.given().
 				contentType("application/json").
@@ -146,7 +155,8 @@ public class AlleleITCase {
 				body("entity.taxon.curie", is(taxon2.getCurie())).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
-				body("entity.isExtinct", is(true));
+				body("entity.isExtinct", is(true)).
+				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm2.getCurie()));
 	}
 	
 	@Test
@@ -158,8 +168,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -181,8 +191,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -204,8 +214,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -232,8 +242,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -256,8 +266,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 	
 
@@ -282,8 +292,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inheritanceMode);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 	
 
@@ -300,32 +310,6 @@ public class AlleleITCase {
 
 	@Test
 	@Order(9)
-	public void createAlleleWithInvalidSequencingStatus() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0009");
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(inheritanceMode);
-		allele.setReferences(references);
-		
-	
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.sequencingStatus", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(10)
 	public void createAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
@@ -339,8 +323,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(invalidReferences);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -354,7 +338,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(11)
+	@Order(10)
 	public void editAlleleWithMissingCurie() {
 		Allele allele = getAllele();
 		allele.setCurie(null);
@@ -363,8 +347,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -378,7 +362,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(12)
+	@Order(11)
 	public void editAlleleWithMissingSymbol() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -386,8 +370,8 @@ public class AlleleITCase {
 		allele.setSymbol(null);
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -401,16 +385,16 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(13)
+	@Order(12)
 	public void editAlleleWithMissingTaxon() {
 		Allele allele = getAllele();
 		allele.setSymbol("Allele<sup>test</sup>");
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setTaxon(null);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -424,7 +408,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(14)
+	@Order(13)
 	public void editAlleleWithInvalidTaxon() {
 		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
 		nonPersistedTaxon.setCurie("TEST:invalid");
@@ -436,11 +420,9 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
-	
-
 		RestAssured.given().
 			contentType("application/json").
 			body(allele).
@@ -453,7 +435,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(15)
+	@Order(14)
 	public void editAlleleWithInvalidInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -461,10 +443,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
-		
-	
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -478,7 +458,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(16)
+	@Order(15)
 	public void editAlleleWithInvalidInCollection() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -486,10 +466,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inheritanceMode);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
-		
-	
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -503,32 +481,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(17)
-	public void editAlleleWithInvalidSequencingStatus() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(inheritanceMode);
-		allele.setReferences(references);
-		
-	
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.sequencingStatus", is(ValidationConstants.INVALID_MESSAGE));
-	}
-
-	@Test
-	@Order(18)
+	@Order(16)
 	public void editAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
@@ -541,8 +494,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(invalidReferences);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -556,7 +509,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(19)
+	@Order(17)
 	public void editAlleleWithNullInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -564,8 +517,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -589,7 +542,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(20)
+	@Order(18)
 	public void editAlleleWithNullInCollection() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -597,8 +550,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -622,40 +575,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(21)
-	public void editAlleleWithNullSequencingStatus() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
-		allele.setReferences(references);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("sequencingStatus"));
-		
-		allele.setSequencingStatus(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("sequencingStatus")));
-	}
-
-	@Test
-	@Order(22)
+	@Order(19)
 	public void editAlleleWithNullIsExtinct() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -663,9 +583,9 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
 		allele.setIsExtinct(true);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -689,7 +609,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(23)
+	@Order(20)
 	public void editAlleleWithNullReferences() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -697,8 +617,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -722,7 +642,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(24)
+	@Order(21)
 	public void editAlleleWithNullName() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
@@ -730,8 +650,8 @@ public class AlleleITCase {
 		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
-		allele.setSequencingStatus(sequencingStatus);
 		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 
 		RestAssured.given().
 			contentType("application/json").
@@ -753,9 +673,226 @@ public class AlleleITCase {
 			statusCode(200).
 			body("entity", not(hasKey("name")));
 	}
+	
+	@Test
+	@Order(22)
+	public void createAlleleWithMissingAlleleMutationTypeMutationTypes() {
+		Allele allele = new Allele();
+		
+		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
+		invalidAlleleMutationType.setEvidence(List.of(reference));
+		invalidAlleleMutationType.setMutationTypes(null);
 
+		allele.setCurie("Allele:0022");
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(23)
+	public void createAlleleWithInvalidAlleleMutationTypeMutationTypes() {
+		Allele allele = new Allele();
+		
+		SOTerm nonPersistedSoTerm = new SOTerm();
+		nonPersistedSoTerm.setCurie("SO:00004");
+		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, nonPersistedSoTerm);
+		
+		allele.setCurie("Allele:0023");allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(24)
+	public void createAlleleWithInvalidAlleleMutationTypeEvidence() {
+		Allele allele = new Allele();
+		
+		Reference nonPersistedReference = new Reference();
+		nonPersistedReference.setCurie("PMID:00004");
+		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(nonPersistedReference, soTerm);
+		
+		allele.setCurie("Allele:0024");allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleMutationTypes", is("evidence - " + ValidationConstants.INVALID_MESSAGE));
+	}
+	
 	@Test
 	@Order(25)
+	public void editAlleleWithMissingAlleleMutationTypeMutationTypes() {
+		Allele allele = getAllele();
+		
+		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
+		invalidAlleleMutationType.setEvidence(List.of(reference));
+		invalidAlleleMutationType.setMutationTypes(null);
+		
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+	
+	@Test
+	@Order(26)
+	public void editAlleleWithInvalidAlleleMutationTypeMutationTypes() {
+		Allele allele = getAllele();
+		
+		SOTerm nonPersistedSoTerm = new SOTerm();
+		nonPersistedSoTerm.setCurie("SO:00004");
+		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, nonPersistedSoTerm);
+		
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleMutationTypes", is("mutationTypes - " + ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(27)
+	public void editAlleleWithInvalidAlleleMutationTypeEvidence() {
+		Allele allele = getAllele();
+		
+		Reference nonPersistedReference = new Reference();
+		nonPersistedReference.setCurie("PMID:00004");
+		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(nonPersistedReference, soTerm);
+		
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(invalidAlleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleMutationTypes", is("evidence - " + ValidationConstants.INVALID_MESSAGE));
+	}
+	
+	@Test
+	@Order(28)
+	public void editAlleleWithNullAlleleMutationTypeEvidence() {
+		Allele allele = getAllele();
+		AlleleMutationTypeSlotAnnotation noEvidenceAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
+		noEvidenceAlleleMutationType.setMutationTypes(List.of(soTerm));
+		
+		allele.setTaxon(taxon);
+		allele.setSymbol("Allele<sup>test</sup>");
+		allele.setName("TestAllele");
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleMutationTypes(List.of(alleleMutationType));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
+			
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity.alleleMutationTypes[0]", hasKey("evidence"));
+
+		allele.setAlleleMutationTypes(List.of(noEvidenceAlleleMutationType));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
+	
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity.alleleMutationTypes[0]", not(hasKey("evidence")));
+	}
+
+	@Test
+	@Order(29)
 	public void deleteAllele() {
 
 		RestAssured.given().
@@ -852,6 +989,32 @@ public class AlleleITCase {
 		person = response.getEntity();
 		return (Person) person;
 	}
+	
+	private SOTerm createSoTerm(String curie) {
+		SOTerm term = new SOTerm();
+		term.setCurie(curie);
+		
+		ObjectResponse<SOTerm> response = RestAssured.given().
+				contentType("application/json").
+				body(term).
+				when().
+				post("/api/soterm").
+				then().
+				statusCode(200).extract().
+				body().as(getObjectResponseTypeRefSOTerm());
+		
+		return response.getEntity();
+	}
+	
+	private AlleleMutationTypeSlotAnnotation createAlleleMutationTypeSlotAnnotation (InformationContentEntity evidence, SOTerm mutationType) {
+		AlleleMutationTypeSlotAnnotation amt = new AlleleMutationTypeSlotAnnotation();
+		if (evidence != null)
+			amt.setEvidence(List.of(evidence));
+		if (mutationType != null)
+			amt.setMutationTypes(List.of(mutationType));
+		
+		return amt;
+	}
 
 	private TypeRef<ObjectResponse<Allele>> getObjectResponseTypeRefAllele() {
 		return new TypeRef<ObjectResponse <Allele>>() { };
@@ -876,6 +1039,11 @@ public class AlleleITCase {
 
 	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
 		return new TypeRef<ObjectResponse <LoggedInPerson>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<SOTerm>> getObjectResponseTypeRefSOTerm() {
+		return new TypeRef<ObjectResponse <SOTerm>>() {
 		};
 	}
 

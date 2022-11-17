@@ -37,6 +37,7 @@ export const Dashboard = () => {
 		XBATerm: { name: "XBA", link: "/#/ontology/xba", type: 'ontology', },
 		XBSTerm: { name: "XBS", link: "/#/ontology/xbs", type: 'ontology', },
 		XCOTerm: { name: "XCO", link: "/#/ontology/xco", type: 'ontology', },
+		ROTerm: { name: "RO", link: "/#/ontology/ro", type: 'ontology', },
 		ZECOTerm: { name: "ZECO", link: "/#/ontology/zeco", type: 'ontology', },
 		NCBITaxonTerm: { name: "NCBITaxon", link: "/#/ontology/ncbitaxon", type: 'ontology', },
 		WBLSTerm: { name: "WBLS", link: "/#/ontology/wbls", type: 'ontology', },

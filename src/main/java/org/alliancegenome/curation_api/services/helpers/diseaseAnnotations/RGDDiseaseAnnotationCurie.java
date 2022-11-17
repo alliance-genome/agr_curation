@@ -5,7 +5,10 @@ import java.util.stream.Collectors;
 
 import org.alliancegenome.curation_api.model.entities.*;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
+import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,13 +21,14 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	 * @param annotationDTO DiseaseModelAnnotationFmsDTO
 	 * @return curie string
 	 */
+	
 	@Override
-	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String refCurie) {
+	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		curie.add(annotationDTO.getSubject());
-		curie.add(annotationDTO.getObject());
+		curie.add(subjectCurie);
+		curie.add(annotationDTO.getDoTermCurie());
 		curie.add(refCurie);
-		curie.add(StringUtils.join(annotationDTO.getEvidenceCodes(), "::"));
+		curie.add(StringUtils.join(annotationDTO.getEvidenceCodeCuries(), "::"));
 		return curie.getCurie();
 	}
 
