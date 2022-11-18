@@ -2,6 +2,8 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -12,22 +14,27 @@ import lombok.Setter;
 
 @Setter
 @Getter
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={DiseaseAnnotationDTO.class}, submitted=true)
 public class AGMDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("inferred_gene")
-	private String inferredGene;
+	@JsonProperty("agm_curie")
+	private String agmCurie;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("inferred_allele")
-	private String inferredAllele;
+	@JsonProperty("inferred_gene_curie")
+	private String inferredGeneCurie;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("inferred_allele_curie")
+	private String inferredAlleleCurie;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("asserted_genes")
-	private List<String> assertedGenes;
+	@JsonProperty("asserted_gene_curies")
+	private List<String> assertedGeneCuries;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("asserted_allele")
-	private String assertedAllele;
+	@JsonProperty("asserted_allele_curie")
+	private String assertedAlleleCurie;
 	
 }

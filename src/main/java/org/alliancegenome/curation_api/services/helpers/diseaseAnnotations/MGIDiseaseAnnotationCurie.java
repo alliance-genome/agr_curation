@@ -3,7 +3,10 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 import java.util.List;
 
 import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 public class MGIDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
@@ -14,11 +17,12 @@ public class MGIDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	 * @param annotationDTO DiseaseModelAnnotationFmsDTO
 	 * @return curie string
 	 */
+	
 	@Override
-	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String refCurie) {
+	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
-		curie.add(annotationDTO.getSubject());
-		curie.add(annotationDTO.getObject());
+		curie.add(subjectCurie);
+		curie.add(annotationDTO.getDoTermCurie());
 		curie.add(refCurie);
 		return curie.getCurie();
 	}
