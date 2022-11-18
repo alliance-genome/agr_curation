@@ -15,6 +15,7 @@ export const AutocompleteMultiEditor = (
 		valueDisplay,
 		onValueChangeHandler,
 		customRef,
+		disabled
 	}
 ) => {
 	const [suggestions, setSuggestions] = useState([]);
@@ -44,6 +45,7 @@ export const AutocompleteMultiEditor = (
 				panelStyle={{width: '15%', display: 'flex', maxHeight: '350px'}}
 				field={subField}
 				value={fieldValue}
+				disabled={disabled}
 				suggestions={suggestions}
 				itemTemplate={itemTemplate}
 				completeMethod={(event) => search(event, setSuggestions, setInputValue, rowProps)}
