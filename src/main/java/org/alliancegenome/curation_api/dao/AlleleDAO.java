@@ -22,18 +22,18 @@ public class AlleleDAO extends BaseSQLDAO<Allele> {
 		return (List<String>) jpqlQuery.getResultList();
 	}
 	
-	public List<String> findReferencingDiseaseAnnotationIds(String alleleCurie) {
+	public List<Long> findReferencingDiseaseAnnotationIds(String alleleCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie = :alleleCurie");
 		jpqlQuery.setParameter("alleleCurie", alleleCurie);
-		List<String> results = (List<String>)jpqlQuery.getResultList();
+		List<Long> results = (List<Long>)jpqlQuery.getResultList();
 		
 		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.subject.curie = :alleleCurie");
 		jpqlQuery.setParameter("alleleCurie", alleleCurie);
-		results.addAll((List<String>) jpqlQuery.getResultList());
+		results.addAll((List<Long>) jpqlQuery.getResultList());
 		
 		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.inferredAllele.curie = :alleleCurie OR ada.assertedAllele.curie = :alleleCurie");
 		jpqlQuery.setParameter("alleleCurie", alleleCurie);
-		results.addAll((List<String>) jpqlQuery.getResultList());
+		results.addAll((List<Long>) jpqlQuery.getResultList());
 		
 		return results;
 	}

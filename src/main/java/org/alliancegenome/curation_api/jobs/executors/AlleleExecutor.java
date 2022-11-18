@@ -48,7 +48,6 @@ public class AlleleExecutor extends LoadFileExecutor {
 			if (alleles != null) {
 				bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
 				bulkLoadFileDAO.merge(bulkLoadFile);
-				
 				trackHistory(runLoad(taxonId, alleles), bulkLoadFile);
 			}
 			

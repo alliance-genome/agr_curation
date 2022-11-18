@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -30,6 +31,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	@Inject GeneValidator geneValidator;
 	@Inject GeneDTOValidator geneDtoValidator;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject PersonService personService;
 
 	@Override
 	@PostConstruct
@@ -62,6 +64,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return geneDAO.persist(gene);
 	}
 	
+	@Transactional
 	public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter) {
 		log.debug("runLoad: After: " + taxonIds + " " + geneCuriesAfter.size());
 
@@ -76,15 +79,17 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		for (String curie : curiesToRemove) {
 			Gene gene = geneDAO.find(curie);
 			if (gene != null) {
-				List<String> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
+				List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
 				Boolean anyPublicReferencingDAs = false;
-				for (String idString : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(Long.parseLong(idString), false);
+				for (Long daId : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false);
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
 	
 				if (anyPublicReferencingDAs) {
+					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate("Gene bulk upload"));
+					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);
 					geneDAO.persist(gene);
 				} else {

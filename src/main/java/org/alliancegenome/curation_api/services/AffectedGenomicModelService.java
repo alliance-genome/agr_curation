@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	@Inject AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
 	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
 	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject PersonService personService;
 	
 	@Override
 	@PostConstruct
@@ -87,6 +89,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		return affectedGenomicModelDAO.persist(agm);
 	}
 	
+	@Transactional
 	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
 		log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
 
@@ -101,15 +104,17 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		for (String curie : curiesToRemove) {
 			AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
 			if (agm != null) {
-				List<String> referencingDAIds = affectedGenomicModelDAO.findReferencingDiseaseAnnotations(curie);
+				List<Long> referencingDAIds = affectedGenomicModelDAO.findReferencingDiseaseAnnotations(curie);
 				Boolean anyPublicReferencingDAs = false;
-				for (String idString : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(Long.parseLong(idString), false);
+				for (Long daId : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false);
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
 				
 				if (anyPublicReferencingDAs) {
+					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate("Gene bulk upload"));
+					agm.setDateUpdated(OffsetDateTime.now());
 					agm.setObsolete(true);
 					affectedGenomicModelDAO.persist(agm);
 				} else {

@@ -9,13 +9,13 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
+import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
+import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
@@ -30,6 +30,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
 	@Inject NoteService noteService;
 	@Inject LoggedInPersonService loggedInPersonService;
+	@Inject PersonService personService;
 
 	@Override
 	@PostConstruct
@@ -79,7 +80,11 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		Boolean madePublic = true; //TODO: check boolean field once in place
 		if (madePublic) {
 			annotation.setObsolete(true);
-			annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+			if (authenticatedPerson.getOktaEmail() != null) {
+				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
+			} else {
+				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(annotation.getDataProvider() + " bulk upload"));
+			}
 			annotation.setDateUpdated(OffsetDateTime.now());
 			diseaseAnnotationDAO.persist(annotation);
 		} else {
