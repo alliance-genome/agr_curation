@@ -30,7 +30,7 @@ public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 			for (String evidenceCurie : dto.getEvidenceCuries()) {
 				InformationContentEntity evidenceEntity = informationContentEntityService.retrieveFromDbOrLiteratureService(evidenceCurie);
 				if (evidenceEntity == null) {
-					saResponse.addErrorMessage("evidence_curies", ValidationConstants.INVALID_MESSAGE);
+					saResponse.addErrorMessage("evidence_curies", ValidationConstants.INVALID_MESSAGE + " (" + evidenceCurie + ")");
 					break;
 				}
 				evidence.add(evidenceEntity);

@@ -62,7 +62,7 @@ public class BaseDTOValidator {
 			try {
 				dateUpdated = OffsetDateTime.parse(dto.getDateUpdated());
 			} catch (DateTimeParseException e) {
-				response.addErrorMessage("date_updated", ValidationConstants.INVALID_MESSAGE);
+				response.addErrorMessage("date_updated", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateUpdated() + ")");
 			}
 		}
 		entity.setDateUpdated(dateUpdated);
@@ -72,7 +72,7 @@ public class BaseDTOValidator {
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());		
 			} catch (DateTimeParseException e) {
-				response.addErrorMessage("date_created", ValidationConstants.INVALID_MESSAGE);
+				response.addErrorMessage("date_created", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateCreated() + ")");
 			}
 		}
 		entity.setDateCreated(creationDate);
@@ -95,7 +95,7 @@ public class BaseDTOValidator {
 		} else {
 			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
-				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE);
+				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}

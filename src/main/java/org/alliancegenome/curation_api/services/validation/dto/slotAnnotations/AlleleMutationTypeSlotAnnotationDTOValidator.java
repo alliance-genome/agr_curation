@@ -31,7 +31,7 @@ public class AlleleMutationTypeSlotAnnotationDTOValidator extends SlotAnnotation
 			for (String soCurie : dto.getMutationTypeCuries()) {
 				SOTerm soTerm = soTermDAO.find(soCurie);
 				if (soTerm == null) {
-					amsaResponse.addErrorMessage("mutation_type_curies", ValidationConstants.INVALID_MESSAGE);
+					amsaResponse.addErrorMessage("mutation_type_curies", ValidationConstants.INVALID_MESSAGE + " (" + soCurie + ")");
 					break;
 				}
 				soTerms.add(soTerm);

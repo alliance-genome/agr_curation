@@ -54,7 +54,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		} else {
 			agm = agmDAO.find(dto.getAgmCurie());
 			if (agm == null) {
-				adaResponse.addErrorMessage("agm_curie", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("agm_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAgmCurie() + ")");
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
@@ -79,7 +79,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
 			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName());
 			if (diseaseRelation == null)
-				adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseRelationName() + ")");
 			annotation.setDiseaseRelation(diseaseRelation);
 		} else {
 			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
@@ -88,7 +88,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		if (StringUtils.isNotBlank(dto.getInferredGeneCurie())) {
 			Gene inferredGene = geneDAO.find(dto.getInferredGeneCurie());
 			if (inferredGene == null)
-				adaResponse.addErrorMessage("inferred_gene_curie", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("inferred_gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredGeneCurie() + ")");
 			annotation.setInferredGene(inferredGene);
 		} else {
 			annotation.setInferredGene(null);
@@ -99,10 +99,10 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			for (String assertedGeneCurie : dto.getAssertedGeneCuries()) {
 				Gene assertedGene = geneDAO.find(assertedGeneCurie);
 				if (assertedGene == null) {
-					adaResponse.addErrorMessage("asserted_gene_curies", ValidationConstants.INVALID_MESSAGE);
-					break;
+					adaResponse.addErrorMessage("asserted_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + assertedGeneCurie + ")");
+				} else {
+					assertedGenes.add(assertedGene);
 				}
-				assertedGenes.add(assertedGene);
 			}
 			annotation.setAssertedGenes(assertedGenes);
 		} else {
@@ -112,7 +112,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		if (StringUtils.isNotBlank(dto.getInferredAlleleCurie())) {
 			Allele inferredAllele = alleleDAO.find(dto.getInferredAlleleCurie());
 			if (inferredAllele == null)
-				adaResponse.addErrorMessage("inferred_allele_curie", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("inferred_allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInferredAlleleCurie() + ")");
 			annotation.setInferredAllele(inferredAllele);
 		} else {
 			annotation.setInferredAllele(null);
@@ -121,7 +121,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		if (StringUtils.isNotBlank(dto.getAssertedAlleleCurie())) {
 			Allele assertedAllele = alleleDAO.find(dto.getAssertedAlleleCurie());
 			if (assertedAllele == null)
-				adaResponse.addErrorMessage("asserted_allele_curie", ValidationConstants.INVALID_MESSAGE);
+				adaResponse.addErrorMessage("asserted_allele_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAssertedAlleleCurie() + ")");
 			annotation.setAssertedAllele(assertedAllele);
 		} else {
 			annotation.setAssertedAllele(null);
