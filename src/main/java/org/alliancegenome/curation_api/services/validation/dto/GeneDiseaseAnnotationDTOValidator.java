@@ -50,7 +50,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		} else {
 			gene = geneDAO.find(dto.getGeneCurie());
 			if (gene == null) {
-				gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE);
+				gdaResponse.addErrorMessage("gene_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneCurie() + ")");
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
@@ -72,7 +72,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		if (StringUtils.isNotBlank(dto.getSgdStrainBackgroundCurie())) {
 			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackgroundCurie());
 			if (sgdStrainBackground == null || !sgdStrainBackground.getTaxon().getName().startsWith("Saccharomyces cerevisiae")) {
-				gdaResponse.addErrorMessage("sgd_strain_background_curie", ValidationConstants.INVALID_MESSAGE);
+				gdaResponse.addErrorMessage("sgd_strain_background_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSgdStrainBackgroundCurie() + ")");
 			}
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
@@ -84,7 +84,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
 			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName());
 			if (diseaseRelation == null)
-				gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE);
+				gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseRelationName() + ")");
 			annotation.setDiseaseRelation(diseaseRelation);
 		} else {
 			gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);

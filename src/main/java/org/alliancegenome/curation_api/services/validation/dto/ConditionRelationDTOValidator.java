@@ -45,7 +45,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getReferenceCurie())) {
 			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
 			if (reference == null)
-				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE);
+				crResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getReferenceCurie() + ")");
 		}
 		String refCurie = reference == null ? null : reference.getCurie();
 	
@@ -70,7 +70,7 @@ public class ConditionRelationDTOValidator extends BaseDTOValidator {
 		} else {
 			VocabularyTerm conditionRelationTypeTerm = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, relationType);
 			if (conditionRelationTypeTerm == null)
-				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE);
+				crResponse.addErrorMessage("condition_relation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + relationType + ")");
 			relation.setConditionRelationType(conditionRelationTypeTerm);
 		}
 		

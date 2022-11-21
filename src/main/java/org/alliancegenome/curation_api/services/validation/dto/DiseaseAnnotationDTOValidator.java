@@ -66,7 +66,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		} else {
 			DOTerm disease = doTermDAO.find(dto.getDoTermCurie());
 			if (disease == null) 
-				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE);
+				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDoTermCurie() + ")");
 			annotation.setObject(disease);
 		}
 		
@@ -77,10 +77,10 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			for (String ecoCurie : dto.getEvidenceCodeCuries()) {
 				ECOTerm ecoTerm = ecoTermDAO.find(ecoCurie);
 				if (ecoTerm == null) {
-					daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.INVALID_MESSAGE);
-					break;
+					daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.INVALID_MESSAGE + " (" + ecoCurie + ")");
+				} else {
+					ecoTerms.add(ecoTerm);
 				}
-				ecoTerms.add(ecoTerm);
 			}
 			annotation.setEvidenceCodes(ecoTerms);
 		}
@@ -95,15 +95,15 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			List<Gene> withGenes = new ArrayList<>();
 			for (String withCurie : dto.getWithGeneCuries()) {
 				if (!withCurie.startsWith("HGNC:")) {
-					daResponse.addErrorMessage("with_gene_curies", ValidationConstants.INVALID_MESSAGE);
-					break;
+					daResponse.addErrorMessage("with_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + withCurie + ")");
+				} else {
+					Gene withGene = geneDAO.getByIdOrCurie(withCurie);
+					if (withGene == null) {
+						daResponse.addErrorMessage("with_gene_curies", ValidationConstants.INVALID_MESSAGE + " (" + withCurie + ")");
+					} else {
+						withGenes.add(withGene);
+					}
 				}
-				Gene withGene = geneDAO.getByIdOrCurie(withCurie);
-				if (withGene == null) {
-					daResponse.addErrorMessage("with_gene_curies", ValidationConstants.INVALID_MESSAGE);
-					break;
-				}
-				withGenes.add(withGene);
 			}
 			annotation.setWith(withGenes);
 		} else {
@@ -125,9 +125,10 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			for (String qualifier : dto.getDiseaseQualifierNames()) {
 				VocabularyTerm diseaseQualifier = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, qualifier);
 				if (diseaseQualifier == null) {
-					daResponse.addErrorMessage("disease_qualifier_names", ValidationConstants.INVALID_MESSAGE);
+					daResponse.addErrorMessage("disease_qualifier_names", ValidationConstants.INVALID_MESSAGE + " (" + qualifier + ")");
+				} else {
+					diseaseQualifiers.add(diseaseQualifier);
 				}
-				diseaseQualifiers.add(diseaseQualifier);
 			}
 			annotation.setDiseaseQualifiers(diseaseQualifiers);
 		} else {
@@ -142,10 +143,10 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			} else {
 				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, dto.getDiseaseGeneticModifierRelationName());
 				if (diseaseGeneticModifierRelation == null)
-					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE);
+					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifierCurie());
 				if (diseaseGeneticModifier == null)
-					daResponse.addErrorMessage("disease_genetic_modifier_curie", ValidationConstants.INVALID_MESSAGE);
+					daResponse.addErrorMessage("disease_genetic_modifier_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierCurie()+ ")");
 				annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
 				annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 			}
@@ -158,7 +159,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getAnnotationTypeName())) {
 			annotationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, dto.getAnnotationTypeName());
 			if (annotationType == null)
-				daResponse.addErrorMessage("annotation_type_name", ValidationConstants.INVALID_MESSAGE);
+				daResponse.addErrorMessage("annotation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAnnotationTypeName() + ")");
 			}
 		annotation.setAnnotationType(annotationType);
 		
@@ -166,7 +167,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getGeneticSexName())) {
 			geneticSex = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, dto.getGeneticSexName());
 			if (geneticSex == null)
-				daResponse.addErrorMessage("genetic_sex_name", ValidationConstants.INVALID_MESSAGE);
+				daResponse.addErrorMessage("genetic_sex_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneticSexName() + ")");
 		}	
 		annotation.setGeneticSex(geneticSex);
 		
@@ -184,7 +185,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				if (CollectionUtils.isNotEmpty(noteDTO.getEvidenceCuries())) {
 					for (String noteRef : noteDTO.getEvidenceCuries()) {
 						if (!noteRef.equals(dto.getReferenceCurie())) {
-							daResponse.addErrorMessage("relatedNotes - evidence_curies", ValidationConstants.INVALID_MESSAGE);
+							daResponse.addErrorMessage("relatedNotes - evidence_curies", ValidationConstants.INVALID_MESSAGE + " (" + noteRef + ")");
 						}
 					}
 				}
@@ -200,8 +201,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			for (ConditionRelationDTO conditionRelationDTO : dto.getConditionRelationDtos()) {
 				if (conditionRelationDTO.getHandle() != null) {
 					if (!conditionRelationDTO.getReferenceCurie().equals(dto.getReferenceCurie())) {
-						daResponse.addErrorMessage("condition_relation_dtos - handle", ValidationConstants.INVALID_MESSAGE);
-						break;
+						daResponse.addErrorMessage("condition_relation_dtos - reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + conditionRelationDTO.getReferenceCurie() + ")");
 					}
 				}
 				ObjectResponse<ConditionRelation> crResponse = conditionRelationDtoValidator.validateConditionRelationDTO(conditionRelationDTO);
@@ -229,7 +229,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		} else {
 			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
 			if (reference == null)
-				daResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE);
+				daResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getReferenceCurie() + ")");
 		}	
 		annotation.setSingleReference(reference);
 		

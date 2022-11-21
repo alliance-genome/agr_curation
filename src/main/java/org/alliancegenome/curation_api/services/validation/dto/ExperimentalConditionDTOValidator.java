@@ -63,7 +63,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getConditionChemicalCurie())) {
 			conditionChemical = chemicalTermDAO.find(dto.getConditionChemicalCurie());
 			if (conditionChemical == null)
-				ecResponse.addErrorMessage("condition_chemical_curie", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_chemical_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionChemicalCurie() + ")");
 		}
 		experimentalCondition.setConditionChemical(conditionChemical);
 		
@@ -71,14 +71,14 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getConditionIdCurie())) {
 			conditionId = experimentalConditionOntologyTermDAO.find(dto.getConditionIdCurie());
 			if (conditionId == null)
-				ecResponse.addErrorMessage("condition_id_curie", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_id_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionIdCurie() + ")");
 		}
 		experimentalCondition.setConditionId(conditionId);
 
 		if (StringUtils.isNotBlank(dto.getConditionClassCurie())) {
 			ZECOTerm term = zecoTermDAO.find(dto.getConditionClassCurie());
 			if (term == null || term.getSubsets().isEmpty() || !term.getSubsets().contains(OntologyConstants.ZECO_AGR_SLIM_SUBSET))
-				ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_class_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionClassCurie() + ")");
 			experimentalCondition.setConditionClass(term);
 		}
 		else {
@@ -89,7 +89,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getConditionAnatomyCurie())) {
 			conditionAnatomy = anatomicalTermDAO.find(dto.getConditionAnatomyCurie());
 			if (conditionAnatomy == null)
-				ecResponse.addErrorMessage("condition_anatomy_curie", ValidationConstants.REQUIRED_MESSAGE);
+				ecResponse.addErrorMessage("condition_anatomy_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionAnatomyCurie() + ")");
 		}
 		experimentalCondition.setConditionAnatomy(conditionAnatomy);
 		
@@ -100,7 +100,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 				conditionTaxon = ncbiTaxonTermDAO.downloadAndSave(dto.getConditionTaxonCurie());
 			}
 			if (conditionTaxon == null)
-				ecResponse.addErrorMessage("condition_taxon_curie", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionTaxonCurie() + ")");
 		}
 		experimentalCondition.setConditionTaxon(conditionTaxon);
 
@@ -108,7 +108,7 @@ public class ExperimentalConditionDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getConditionGeneOntologyCurie())) {
 			conditionGeneOntology = goTermDAO.find(dto.getConditionGeneOntologyCurie());
 			if (conditionGeneOntology == null)
-				ecResponse.addErrorMessage("condition_gene_ontology_curie", ValidationConstants.INVALID_MESSAGE);
+				ecResponse.addErrorMessage("condition_gene_ontology_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getConditionGeneOntologyCurie() + ")");
 		}
 		experimentalCondition.setConditionGeneOntology(conditionGeneOntology);
 		

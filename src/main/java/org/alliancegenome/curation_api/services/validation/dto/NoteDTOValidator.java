@@ -44,7 +44,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		} else {
 			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(note_type_vocabulary, dto.getNoteTypeName());
 			if (noteType == null)
-				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE);
+				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNoteTypeName() + ")");
 			note.setNoteType(noteType);
 		}
 		
@@ -53,7 +53,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 			for (String publicationId : dto.getEvidenceCuries()) {
 				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
 				if (reference == null) {
-					noteResponse.addErrorMessage("evidence_curies", ValidationConstants.INVALID_MESSAGE);
+					noteResponse.addErrorMessage("evidence_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
 					break;
 				}
 				noteReferences.add(reference);
