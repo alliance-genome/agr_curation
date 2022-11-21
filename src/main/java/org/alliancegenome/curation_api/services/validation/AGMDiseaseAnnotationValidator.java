@@ -43,7 +43,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	
 	public AGMDiseaseAnnotation validateAnnotationUpdate(AGMDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
