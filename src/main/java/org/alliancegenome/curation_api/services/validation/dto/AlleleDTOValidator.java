@@ -67,7 +67,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getInheritanceModeName())) {
 			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceModeName());
 			if (inheritenceMode == null) {
-				alleleResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.INVALID_MESSAGE);
+				alleleResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInheritanceModeName() + ")");
 			}
 		}
 		allele.setInheritanceMode(inheritenceMode);
@@ -76,7 +76,7 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		if (StringUtils.isNotBlank(dto.getInCollectionName())) {
 			inCollection = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_COLLECTION_VOCABULARY, dto.getInCollectionName());
 			if (inCollection == null) {
-				alleleResponse.addErrorMessage("in_collection_name", ValidationConstants.INVALID_MESSAGE);
+				alleleResponse.addErrorMessage("in_collection_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInCollectionName() + ")");
 			}
 		}
 		allele.setInCollection(inCollection);
@@ -88,10 +88,10 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			for (String publicationId : dto.getReferenceCuries()) {
 				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
 				if (reference == null) {
-					alleleResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE);
-					break;
+					alleleResponse.addErrorMessage("reference_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
+				} else {
+					references.add(reference);
 				}
-				references.add(reference);
 			}
 			allele.setReferences(references);
 		} else {
@@ -110,11 +110,11 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				ObjectResponse<AlleleMutationTypeSlotAnnotation> mutationTypeResponse = alleleMutationTypeDtoValidator.validateAlleleMutationTypeSlotAnnotationDTO(mutationTypeDTO);
 				if (mutationTypeResponse.hasErrors()) {
 					alleleResponse.addErrorMessage("allele_mutation_type_dtos", mutationTypeResponse.errorMessagesString());
-					break;
+				} else {
+					AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
+					mutationType.setSingleAllele(allele);
+					mutationTypes.add(mutationType);
 				}
-				AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
-				mutationType.setSingleAllele(allele);
-				mutationTypes.add(mutationType);
 			}
 		}
 		
