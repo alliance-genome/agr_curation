@@ -35,9 +35,11 @@ export const ProfileComponent = () => {
 	const personSettingsService = new PersonSettingsService();
 
 	const globalResetHandler = () =>{
-		for(let setting of localUserInfo.settings) {
-			localStorage.removeItem(setting.settingsKey);
-			personSettingsService.deleteUserSettings(setting.settingsKey);
+		if (localUserInfo.settings) {
+			for(let setting of localUserInfo.settings) {
+				localStorage.removeItem(setting.settingsKey);
+				personSettingsService.deleteUserSettings(setting.settingsKey);
+			}
 		}
 		window.location.reload();
 	};
