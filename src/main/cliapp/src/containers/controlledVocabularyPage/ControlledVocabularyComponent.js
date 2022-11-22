@@ -17,7 +17,7 @@ export const ControlledVocabularyComponent = () => {
 		const newTermReducer = (state, action) => {
 				switch (action.type) {
 						case 'RESET':
-								return { name: "" };
+								return { name: "", obsolete: false };
 						default:
 								return { ...state, [action.field]: action.value };
 				}
@@ -41,7 +41,7 @@ export const ControlledVocabularyComponent = () => {
 
 	useQuery("vocabularies",() => vocabularyService.getVocabularies(), {
 			onSuccess: (data) => {
-					setVocabularies(data.data.results);
+					setVocabularies(data.data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
 			},
 			onError: (error) => {
 					toast_topleft.current.show([
