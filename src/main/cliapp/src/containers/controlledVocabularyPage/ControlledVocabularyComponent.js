@@ -41,7 +41,9 @@ export const ControlledVocabularyComponent = () => {
 
 	useQuery("vocabularies",() => vocabularyService.getVocabularies(), {
 			onSuccess: (data) => {
-					setVocabularies(data.data.results.sort((a, b) => (a.name > b.name) ? 1 : -1));
+					setVocabularies(data.data.results.sort(function (a, b) {
+						return a.name.localeCompare(b.name, 'en', {'sensitivity' : 'base'});
+					}));
 			},
 			onError: (error) => {
 					toast_topleft.current.show([
