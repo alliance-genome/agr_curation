@@ -135,8 +135,8 @@ export const NewAnnotationForm = ({
 	const handleClear = () => {
 		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
 		withRef.current.inputRef.current.value = "";
-		assertedGenesRef.current.inputRef.current.value = "";
-		assertedAlleleRef.current.inputRef.current.value = "";
+		//assertedGenesRef.current.inputRef.current.value = "";
+		//assertedAlleleRef.current.inputRef.current.value = "";
 		evidenceCodesRef.current.inputRef.current.value = "";
 		experimentsRef.current.clear();
 		newAnnotationDispatch({ type: "CLEAR" });
@@ -389,8 +389,9 @@ export const NewAnnotationForm = ({
 								search={subjectSearch}
 								fieldName='subject'
 								name="subject"
+								searchService={searchService}
 								onValueChangeHandler={onSubjectChange}
-								valueDisplayHandler={(item, setAutocompleteHoverItem, op, query) =>
+								valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
 									<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>

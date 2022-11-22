@@ -194,7 +194,7 @@ export const ExperimentalConditionsTable = () => {
 			<>
 			<AutocompleteEditor
 				search={conditionClassSearch}
-				initialValue={props.rowData.conditionClass.curie}
+				initialValue={props.rowData.conditionClass?.curie}
 				rowProps={props}
 				fieldName="conditionClass"
 				onValueChangeHandler={onConditionClassValueChange}
