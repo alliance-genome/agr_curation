@@ -29,7 +29,7 @@ import lombok.ToString;
 @Audited
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"pageAreas"})
+@ToString(exclude = {"pageAreas"}, callSuper = true)
 @Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 @Table(indexes = {
