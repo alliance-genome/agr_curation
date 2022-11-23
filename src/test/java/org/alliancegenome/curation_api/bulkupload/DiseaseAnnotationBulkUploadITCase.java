@@ -4187,6 +4187,88 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0]", not(hasKey("assertedAllele")));
 	}
 	
+	@Test
+	@Order(155)
+	public void diseaseAnnotationBulkUploadUpdateNoSecondaryDataProvider() throws Exception {
+		String original_content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/01_all_fields_gene_annotation.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(original_content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+				
+		String updated_content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/155_update_no_secondary_data_provider.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updated_content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("results", hasSize(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0001")).
+			body("results[0]", not(hasKey("secondaryDataProvider")));
+	}
+	
+	@Test
+	@Order(156)
+	public void diseaseAnnotationBulkUploadInvalidDataProvider() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/156_invalid_data_provider.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0)); 
+	}
+	
+	@Test
+	@Order(157)
+	public void diseaseAnnotationBulkUploadInvalidSecondaryDataProvider() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/157_invalid_secondary_data_provider.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/gene-disease-annotation/bulk/wbAnnotationFile").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0)); 
+	}
+	
 	private void loadRequiredEntities() throws Exception {
 		loadDOTerm();
 		loadECOTerm();
@@ -4203,6 +4285,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		loadReference();
 		loadOrganization("TEST");
 		loadOrganization("TEST2");
+		loadOrganization("OBSOLETE");
 		
 		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
@@ -4229,6 +4312,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		Organization organization = new Organization();
 		organization.setUniqueId(abbreviation);
 		organization.setAbbreviation(abbreviation);
+		organization.setObsolete(false);
 		
 		RestAssured.given().
 			contentType("application/json").
