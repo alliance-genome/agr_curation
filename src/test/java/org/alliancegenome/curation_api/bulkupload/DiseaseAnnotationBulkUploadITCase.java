@@ -19,6 +19,7 @@ import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
@@ -162,7 +163,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].diseaseQualifiers[0].name", is("susceptibility")).
 			body("results[0].sgdStrainBackground.curie", is("SGD:AGM0001")).
 			body("results[0].evidenceCodes", hasSize(1)).
-			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001"));
+			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
+			body("results[0].dataProvider.abbreviation", is("TEST")).
+			body("results[0].secondaryDataProvider.abbreviation", is("TEST2"));
 	}
 	
 	@Test
@@ -237,7 +240,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].evidenceCodes", hasSize(1)).
 			body("results[0].evidenceCodes[0].curie", is("DATEST:Evidence0001")).
 			body("results[0].inferredGene.curie", is("DATEST:Gene0001")).
-			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001"));
+			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001")).
+			body("results[0].dataProvider.abbreviation", is("TEST")).
+			body("results[0].secondaryDataProvider.abbreviation", is("TEST2"));
 	}
 	
 	@Test
@@ -314,7 +319,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].inferredGene.curie", is("DATEST:Gene0001")).
 			body("results[0].assertedGenes[0].curie", is("DATEST:Gene0001")).
 			body("results[0].inferredAllele.curie", is("DATEST:Allele0001")).
-			body("results[0].assertedAllele.curie", is("DATEST:Allele0001"));
+			body("results[0].assertedAllele.curie", is("DATEST:Allele0001")).
+			body("results[0].dataProvider.abbreviation", is("TEST")).
+			body("results[0].secondaryDataProvider.abbreviation", is("TEST2"));
 	}
 	
 	@Test
@@ -4194,6 +4201,8 @@ public class DiseaseAnnotationBulkUploadITCase {
 		loadAGM(requiredAgm, "NCBITaxon:6239");
 		loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
 		loadReference();
+		loadOrganization("TEST");
+		loadOrganization("TEST2");
 		
 		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
@@ -4214,6 +4223,20 @@ public class DiseaseAnnotationBulkUploadITCase {
 		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(agmDiseaseRelationVocabularyTerm));
 		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(alleleAndGeneDiseaseRelationVocabularyTerm));
 		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(geneDiseaseVocabularyTerm, alleleAndGeneDiseaseRelationVocabularyTerm));
+	}
+	
+	private void loadOrganization(String abbreviation) throws Exception {
+		Organization organization = new Organization();
+		organization.setUniqueId(abbreviation);
+		organization.setAbbreviation(abbreviation);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(organization).
+			when().
+			put("/api/organization").
+			then().
+			statusCode(200);
 	}
 	
 	private void loadDOTerm() throws Exception {
