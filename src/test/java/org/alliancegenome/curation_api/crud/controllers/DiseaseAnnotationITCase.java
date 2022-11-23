@@ -199,7 +199,6 @@ public class DiseaseAnnotationITCase {
 				body("entity.object.curie", is("DOID:da0001")).
 				body("entity.diseaseRelation.name", is("is_implicated_in")).
 				body("entity.negated", is(false)).
-				body("entity.dataProvider", is("TEST")).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.singleReference.curie", is(testReference.getCurie())).
@@ -243,7 +242,6 @@ public class DiseaseAnnotationITCase {
 				body("entity.object.curie", is("DOID:da0001")).
 				body("entity.diseaseRelation.name", is("is_implicated_in")).
 				body("entity.negated", is(false)).
-				body("entity.dataProvider", is("TEST")).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
@@ -288,7 +286,6 @@ public class DiseaseAnnotationITCase {
 				body("entity.object.curie", is("DOID:da0001")).
 				body("entity.diseaseRelation.name", is("is_model_of")).
 				body("entity.negated", is(false)).
-				body("entity.dataProvider", is("TEST")).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0001")).
@@ -368,7 +365,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.createdBy.uniqueId", is("TEST:Person0001")).
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.dataProvider.abbreviation", is("TEST2")).
-				body("entity.secondaryDataProvider.abbreviation", is("TEST1"));
+				body("entity.secondaryDataProvider.abbreviation", is("TEST"));
 	}
 
 	@Test
@@ -416,8 +413,6 @@ public class DiseaseAnnotationITCase {
 				body("entity.negated", is(true)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
 				body("entity.diseaseRelation.name", is("is_implicated_in")).
-				body("entity.dataProvider", is("TEST2")).
-				body("entity.secondaryDataProvider", is("TEST3")).
 				body("entity.geneticSex.name", is("hermaphrodite")).
 				body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
 				body("entity.diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -432,7 +427,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 				body("entity.dataProvider.abbreviation", is("TEST2")).
-				body("entity.secondaryDataProvider.abbreviation", is("TEST1"));
+				body("entity.secondaryDataProvider.abbreviation", is("TEST"));
 
 	}
 	
@@ -483,8 +478,6 @@ public class DiseaseAnnotationITCase {
 				body("entity.negated", is(true)).
 				body("entity.evidenceCodes[0].curie", is("ECO:da0002")).
 				body("entity.diseaseRelation.name", is("is_model_of")).
-				body("entity.dataProvider", is("TEST2")).
-				body("entity.secondaryDataProvider", is("TEST3")).
 				body("entity.geneticSex.name", is("hermaphrodite")).
 				body("entity.diseaseGeneticModifier.curie", is("BE:da0001")).
 				body("entity.diseaseGeneticModifierRelation.name", is("ameliorated_by")).
@@ -501,7 +494,7 @@ public class DiseaseAnnotationITCase {
 				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
 				body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 				body("entity.dataProvider.abbreviation", is("TEST2")).
-				body("entity.secondaryDataProvider.abbreviation", is("TEST1"));
+				body("entity.secondaryDataProvider.abbreviation", is("TEST"));
 
 	}
 
@@ -4699,26 +4692,6 @@ public class DiseaseAnnotationITCase {
 				then().
 				statusCode(200);
 		return model;
-	}
-	
-	private Vocabulary createVocabulary(String name) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setInternal(false);
-		
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
 	}
 	
 	private Reference createReference(String curie) {
