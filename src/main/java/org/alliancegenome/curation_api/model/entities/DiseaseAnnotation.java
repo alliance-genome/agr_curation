@@ -132,15 +132,17 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
 	private List<Note> relatedNotes;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "dataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
-	private String dataProvider;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Organization dataProvider;
 
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "secondaryDataProvider_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
-	private String secondaryDataProvider;
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class})
+	private Organization secondaryDataProvider;
 
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
