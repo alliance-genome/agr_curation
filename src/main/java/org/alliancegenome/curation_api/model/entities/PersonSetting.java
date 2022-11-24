@@ -4,7 +4,10 @@ import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -35,6 +38,11 @@ import lombok.ToString;
 @AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@Table(indexes = {
+	@Index(name = "personsetting_createdby_index", columnList = "createdBy_id"),
+	@Index(name = "personsetting_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "personsetting_person_index",  columnList = "person_id")
+})
 public class PersonSetting extends GeneratedAuditedObject {
 
 	@ManyToOne

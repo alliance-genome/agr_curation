@@ -26,4 +26,15 @@ public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
 		return resp.getSingleResult();
 
 	}
+	
+	public VocabularyTerm getTermInVocabularyTermSet(String vocabularyTermSetName, String termName) {
+
+		Map<String, Object> params = new HashMap<String, Object>();
+		params.put("name", termName);
+		params.put("vocabularyTermSets.name", vocabularyTermSetName);
+
+		SearchResponse<VocabularyTerm> resp = findByParams(null, params);
+		return resp.getSingleResult();
+
+	}
 }

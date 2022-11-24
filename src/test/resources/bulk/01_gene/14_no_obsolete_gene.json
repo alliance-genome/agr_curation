@@ -3,10 +3,10 @@
     "curie": "GENETEST:Gene0014",
     "name": "TestGene1",
     "symbol": "tg1",
-    "taxon": "NCBITaxon:6239",
+    "taxon_curie": "NCBITaxon:6239",
     "internal": true,
-    "created_by": "GENETEST:Person0001",
-    "updated_by": "GENETEST:Person0002",
+    "created_by_curie": "GENETEST:Person0001",
+    "updated_by_curie": "GENETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-09T22:10:12+00:00"
   }

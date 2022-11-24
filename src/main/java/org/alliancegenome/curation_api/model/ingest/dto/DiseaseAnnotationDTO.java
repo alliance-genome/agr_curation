@@ -2,30 +2,29 @@ package org.alliancegenome.curation_api.model.ingest.dto;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.model.ingest.dto.base.UniqueIdAuditedObjectDTO;
+import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.view.View;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
-public class DiseaseAnnotationDTO extends UniqueIdAuditedObjectDTO {
+@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class})
+public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("alliance_curie")
-	private String allianceCurie;
-	
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("mod_entity_id")
 	private String modEntityId;
 
 	@JsonView({View.FieldsOnly.class})
-	private String subject;
-
-	@JsonView({View.FieldsOnly.class})
-	private String object;
+	@JsonProperty("do_term_curie")
+	private String doTermCurie;
 
 	@JsonView({View.FieldsOnly.class})
 	@JsonProperty("data_provider")
@@ -39,61 +38,46 @@ public class DiseaseAnnotationDTO extends UniqueIdAuditedObjectDTO {
 	private Boolean negated = false;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("predicate")
-	private String diseaseRelation;
+	@JsonProperty("disease_relation_name")
+	private String diseaseRelationName;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("genetic_sex")
-	private String geneticSex;
+	@JsonProperty("genetic_sex_name")
+	private String geneticSexName;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("evidence_codes")
-	private List<String> evidenceCodes;
+	@JsonProperty("evidence_code_curies")
+	private List<String> evidenceCodeCuries;
 
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("condition_relations")
-	private List<ConditionRelationDTO> conditionRelations;
+	@JsonProperty("condition_relation_dtos")
+	private List<ConditionRelationDTO> conditionRelationDtos;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("disease_genetic_modifier")
-	private String diseaseGeneticModifier;
+	@JsonProperty("disease_genetic_modifier_curie")
+	private String diseaseGeneticModifierCurie;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("disease_genetic_modifier_relation")
-	private String diseaseGeneticModifierRelation;
-
-	@JsonView({View.FieldsAndLists.class})
-	private List<String> with;
-
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("single_reference")
-	private String singleReference;
-
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("disease_annotation_summary")
-	private String diseaseAnnotationSummary;
-	
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("disease_annotation_note")
-	private String diseaseAnnotationNote;
-
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("table_id")
-	protected Long tableId;
-
-	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("annotation_type")
-	private String annotationType;
+	@JsonProperty("disease_genetic_modifier_relation_name")
+	private String diseaseGeneticModifierRelationName;
 
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("disease_qualifiers")
-	private List<String> diseaseQualifiers;
-	
+	@JsonProperty("with_gene_curies")
+	private List<String> withGeneCuries;
+
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("sgd_strain_background")
-	private String sgdStrainBackground;
+	@JsonProperty("reference_curie")
+	private String referenceCurie;
+
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("annotation_type_name")
+	private String annotationTypeName;
+
+	@JsonView({View.FieldsAndLists.class})
+	@JsonProperty("disease_qualifier_names")
+	private List<String> diseaseQualifierNames;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("related_notes")
-	private List<NoteDTO> relatedNotes;
+	@JsonProperty("note_dtos")
+	private List<NoteDTO> noteDtos;
 }

@@ -38,13 +38,13 @@ public class BaseDTOValidator {
 		ObjectResponse<E> response = new ObjectResponse<E>();
 		
 		Person createdBy = null;
-		if (StringUtils.isNotBlank(dto.getCreatedBy()))
-			createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedBy());
+		if (StringUtils.isNotBlank(dto.getCreatedByCurie()))
+			createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedByCurie());
 		entity.setCreatedBy(createdBy);
 		
 		Person updatedBy = null;
-		if (StringUtils.isNotBlank(dto.getUpdatedBy()))
-			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedBy());
+		if (StringUtils.isNotBlank(dto.getUpdatedByCurie()))
+			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedByCurie());
 		entity.setUpdatedBy(updatedBy);
 		
 		Boolean internal = false;
@@ -62,7 +62,7 @@ public class BaseDTOValidator {
 			try {
 				dateUpdated = OffsetDateTime.parse(dto.getDateUpdated());
 			} catch (DateTimeParseException e) {
-				response.addErrorMessage("dateUpdated", ValidationConstants.INVALID_MESSAGE);
+				response.addErrorMessage("date_updated", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateUpdated() + ")");
 			}
 		}
 		entity.setDateUpdated(dateUpdated);
@@ -72,7 +72,7 @@ public class BaseDTOValidator {
 			try {
 				creationDate = OffsetDateTime.parse(dto.getDateCreated());		
 			} catch (DateTimeParseException e) {
-				response.addErrorMessage("dateCreated", ValidationConstants.INVALID_MESSAGE);
+				response.addErrorMessage("date_created", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateCreated() + ")");
 			}
 		}
 		entity.setDateCreated(creationDate);
@@ -90,12 +90,12 @@ public class BaseDTOValidator {
 		beResponse.addErrorMessages(aoResponse.getErrorMessages());
 		entity = aoResponse.getEntity();
 		
-		if (StringUtils.isBlank(dto.getTaxon())) {
-			beResponse.addErrorMessage("taxon", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getTaxonCurie())) {
+			beResponse.addErrorMessage("taxon_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxon());
+			ObjectResponse<NCBITaxonTerm> taxonResponse = ncbiTaxonTermService.get(dto.getTaxonCurie());
 			if (taxonResponse.getEntity() == null) {
-				beResponse.addErrorMessage("taxon", ValidationConstants.INVALID_MESSAGE);
+				beResponse.addErrorMessage("taxon_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getTaxonCurie() + ")");
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
@@ -119,12 +119,12 @@ public class BaseDTOValidator {
 			entity.setName(null);
 		}
 	
-		if (CollectionUtils.isNotEmpty(dto.getSynonyms())) {
+		if (CollectionUtils.isNotEmpty(dto.getSynonymDtos())) {
 			List<Synonym> synonyms = new ArrayList<>();
-			for (SynonymDTO synonymDto : dto.getSynonyms()) {
+			for (SynonymDTO synonymDto : dto.getSynonymDtos()) {
 				ObjectResponse<Synonym> synResponse = validateSynonymDTO(synonymDto);
 				if (synResponse.hasErrors()) {
-					geResponse.addErrorMessage("synonyms", synResponse.errorMessagesString());
+					geResponse.addErrorMessage("synonym_dtos", synResponse.errorMessagesString());
 				} else {
 					synonyms.add(synResponse.getEntity());
 				}
