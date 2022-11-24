@@ -4,6 +4,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from "primereact/toast";
+import { Dialog } from 'primereact/dialog';
 
 import { useOktaAuth } from '@okta/okta-react';
 import { SearchService } from '../../service/SearchService';
@@ -46,6 +47,10 @@ export const DataLoadsComponent = () => {
 	const errorMessage = useRef(null);
 	const searchService = new SearchService();
 	const dataSubmissionService = new DataSubmissionService();
+	const [uploadLoadType, setUploadLoadType] = useState(null);
+	const [uploadSubType, setUploadSubType] = useState(null);
+	const [uploadConfirmDialog, setUploadConfirmDialog] = useState(false);
+	const [uploadFile, setUploadFile] = useState(null);
 
 	const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
 
@@ -153,15 +158,30 @@ export const DataLoadsComponent = () => {
 		return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
 	};
 
-	const uploadLoadFile = (event, rowData) => {
-		let type = rowData.backendBulkLoadType + "_" + rowData.dataType;
+	const showUploadConfirmDialog = (event, rowData) => {
+		setUploadLoadType(rowData.backendBulkLoadType);
+		setUploadSubType(rowData.dataType);
+		setUploadConfirmDialog(true);
+		setUploadFile(event.files[0]);
+	}
+	
+	const hideUploadConfirmDialog = () => {
+		setUploadLoadType(null);
+		setUploadSubType(null);
+		setUploadConfirmDialog(false);
+	}
+	
+	const uploadLoadFile = () => {
+		let type = uploadLoadType + "_" + uploadSubType;
 		let formData = new FormData();
-		if(event.files.length >= 1) {
-			formData.append(type, event.files[0]);
+		if(uploadFile) {
+			formData.append(type, uploadFile);
 		}
 		dataSubmissionService.sendFile(formData);
 		toast.current.show({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
-		event.options.clear();
+		setUploadLoadType(null);
+		setUploadSubType(null);
+		setUploadConfirmDialog(false);
 	}
 
 	const loadFileActionBodyTemplate = (rowData) => {
@@ -190,7 +210,7 @@ export const DataLoadsComponent = () => {
 			}
 		}else{
 			ret.push(<FileUpload key="upload" mode="basic" auto chooseOptions={{icon:'pi pi-upload', label: 'Upload', className:"p-button-rounded p-button-info mr-2"}}
-								 accept="*" customUpload uploadHandler={e => uploadLoadFile(e, rowData)} maxFileSize={1000000000000000} />);
+								 accept="*" customUpload uploadHandler={e => showUploadConfirmDialog(e, rowData)} maxFileSize={1000000000000000} />);
 		}
 
 		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
@@ -412,6 +432,15 @@ export const DataLoadsComponent = () => {
 
 		return [majorVersion, minorVersion, patchVersion];
 	}
+	
+	const uploadConfirmDialogFooter = () => {
+		return (
+			<React.Fragment>
+				<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideUploadConfirmDialog} />
+				<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => uploadLoadFile()} />
+			</React.Fragment>
+		);
+	}
 
 	return (
 		<>
@@ -450,6 +479,12 @@ export const DataLoadsComponent = () => {
 					dataLoadService={getService()}
 					history={history}
 				/>
+				<Dialog visible={uploadConfirmDialog} style={{ width: '450px' }} header="Confirm Upload" modal footer={uploadConfirmDialogFooter} onHide={hideUploadConfirmDialog}>
+					<div className="confirmation-content">
+						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+							{<span>Please confirm that you are submitting a file with LoadType “{uploadLoadType}” and SubType “{uploadSubType}”.</span>}
+					</div>
+				</Dialog>
 			</div>
 			<div className="card">
 				<h3>Schema Version Table</h3>
