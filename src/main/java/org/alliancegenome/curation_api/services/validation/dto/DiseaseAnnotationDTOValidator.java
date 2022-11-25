@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
@@ -22,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -30,6 +32,7 @@ import org.alliancegenome.curation_api.model.ingest.dto.ConditionRelationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NoteDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
@@ -50,6 +53,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 	@Inject ConditionRelationDAO conditionRelationDAO;
 	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
 	@Inject NoteDTOValidator noteDtoValidator;
+	@Inject OrganizationDAO organizationDAO;
 	
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> daResponse = validateAuditedObjectDTO(annotation, dto);
@@ -110,15 +114,28 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			annotation.setWith(null);
 		}
 
-		if (StringUtils.isBlank(dto.getDataProvider()))
-			daResponse.addErrorMessage("data_provider", ValidationConstants.REQUIRED_MESSAGE);
-		annotation.setDataProvider(dto.getDataProvider());
-		
-		if (StringUtils.isNotBlank(dto.getSecondaryDataProvider())) {
-			annotation.setSecondaryDataProvider(dto.getSecondaryDataProvider());
+		if (StringUtils.isBlank(dto.getDataProviderName())) {
+			daResponse.addErrorMessage("data_provider_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			annotation.setSecondaryDataProvider(null);
+			SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dto.getDataProviderName());
+			if (dpResponse == null || dpResponse.getResults().size() != 1) {
+				daResponse.addErrorMessage("data_provider_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDataProviderName() + ")");
+			} else {
+				annotation.setDataProvider(dpResponse.getSingleResult());
+			}
 		}
+		
+		Organization secondaryDataProvider = null;
+		if (StringUtils.isNotBlank(dto.getSecondaryDataProviderName())) {
+			SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dto.getSecondaryDataProviderName());
+			if (dpResponse == null || dpResponse.getResults().size() != 1) {
+				daResponse.addErrorMessage("secondary_data_provider_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSecondaryDataProviderName() + ")");
+			} else {
+				secondaryDataProvider = dpResponse.getSingleResult();
+			}
+		}
+		annotation.setSecondaryDataProvider(secondaryDataProvider);
+		
 		
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifierNames())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
