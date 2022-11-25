@@ -1352,18 +1352,18 @@ export const DiseaseAnnotationsTable = () => {
 		body: assertedAlleleBodyTemplate
 	},
 	{
-		field: "dataProvider",
+		field: "dataProvider.abbreviation",
 		header: "Data Provider",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "dataProviderFilter", fields: ["dataProvider"]},
+		filterElement: {type: "input", filterName: "dataProviderFilter", fields: ["dataProvider.abbreviation", "dataProvider.fullName", "dataProvider.shortName"]},
 	},
 	{
-		field: "secondaryDataProvider",
+		field: "secondaryDataProvider.abbreviation",
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider"]},
+		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider.abbreviation", "secondaryDataProvider.fullName", "scondaryDataProvider.shortName"]},
 	},
 	{
 		field: "updatedBy.uniqueId",

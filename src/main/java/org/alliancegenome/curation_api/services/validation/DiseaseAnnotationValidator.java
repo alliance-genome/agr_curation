@@ -14,6 +14,7 @@ import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.NoteDAO;
+import org.alliancegenome.curation_api.dao.OrganizationDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.ontology.DoTermDAO;
@@ -23,6 +24,7 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.Note;
+import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
@@ -40,35 +42,22 @@ import org.apache.commons.lang3.StringUtils;
 
 public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAnnotation>{
 
-	@Inject
-	EcoTermDAO ecoTermDAO;
-	@Inject
-	DoTermDAO doTermDAO;
-	@Inject
-	GeneDAO geneDAO;
-	@Inject
-	BiologicalEntityDAO biologicalEntityDAO;
-	@Inject
-	VocabularyTermDAO vocabularyTermDAO;
-	@Inject
-	ReferenceDAO referenceDAO;
-	@Inject
-	ReferenceService referenceService;
-	@Inject
-	ReferenceValidator referenceValidator;
-	@Inject
-	NoteValidator noteValidator;
-	@Inject
-	NoteService noteService;
-	@Inject
-	NoteDAO noteDAO;
-	@Inject
-	ConditionRelationValidator conditionRelationValidator;
-	@Inject
-	ConditionRelationDAO conditionRelationDAO;
-	@Inject
-	DiseaseAnnotationDAO diseaseAnnotationDAO;
-
+	@Inject EcoTermDAO ecoTermDAO;
+	@Inject DoTermDAO doTermDAO;
+	@Inject GeneDAO geneDAO;
+	@Inject BiologicalEntityDAO biologicalEntityDAO;
+	@Inject VocabularyTermDAO vocabularyTermDAO;
+	@Inject ReferenceDAO referenceDAO;
+	@Inject ReferenceService referenceService;
+	@Inject ReferenceValidator referenceValidator;
+	@Inject NoteValidator noteValidator;
+	@Inject NoteService noteService;
+	@Inject NoteDAO noteDAO;
+	@Inject ConditionRelationValidator conditionRelationValidator;
+	@Inject ConditionRelationDAO conditionRelationDAO;
+	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject OrganizationDAO organizationDAO;
+	
 	public DOTerm validateObject(DiseaseAnnotation	uiEntity, DiseaseAnnotation	 dbEntity) {
 		String field = "object";
 		if (ObjectUtils.isEmpty(uiEntity.getObject()) || StringUtils.isEmpty(uiEntity.getObject().getCurie())) {
@@ -138,14 +127,35 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return validWithGenes;
 	}
 
-	public String validateDataProvider(DiseaseAnnotation uiEntity) {
-		// TODO: re-enable error response once field can be added in UI
-		String dataProvider = uiEntity.getDataProvider();
-		if (dataProvider == null) {
-			// addMessageResponse("dataProvider", requiredMessage);
+	public Organization validateDataProvider(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity, Boolean isPrimary) {
+		String field = isPrimary ? "dataProvider" : "secondaryDataProvider";
+		if (isPrimary) {
+			if (uiEntity.getDataProvider() == null) {
+				// TODO: re-enable error response once field can be automatically populated
+				// addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+				return null;
+			}
+		} else {
+			if (uiEntity.getSecondaryDataProvider() == null)
+				return null;
+		}
+		
+		String dataProviderAbbrv = isPrimary ? uiEntity.getDataProvider().getAbbreviation() : uiEntity.getSecondaryDataProvider().getAbbreviation();
+		
+		Organization dataProvider;
+		SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dataProviderAbbrv);
+		if (dpResponse == null || dpResponse.getResults().size() != 1) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
+		dataProvider = dpResponse.getSingleResult();
 
+		Organization dbDataProvider = isPrimary ? dbEntity.getDataProvider() : dbEntity.getSecondaryDataProvider();
+		if (dataProvider.getObsolete() && (dbDataProvider == null || !dataProvider.getAbbreviation().equals(dbDataProvider.getAbbreviation()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
 		return dataProvider;
 	}
 
@@ -416,10 +426,11 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		VocabularyTerm geneticSex = validateGeneticSex(uiEntity, dbEntity);
 		dbEntity.setGeneticSex(geneticSex);
 
-		String dataProvider = validateDataProvider(uiEntity);
+		Organization dataProvider = validateDataProvider(uiEntity, dbEntity, true);
 		dbEntity.setDataProvider(dataProvider);
 
-		dbEntity.setSecondaryDataProvider(handleStringField(uiEntity.getSecondaryDataProvider()));
+		Organization secondaryDataProvider = validateDataProvider(uiEntity, dbEntity, false);
+		dbEntity.setSecondaryDataProvider(secondaryDataProvider);
 
 		BiologicalEntity diseaseGeneticModifier = validateDiseaseGeneticModifier(uiEntity, dbEntity);
 		VocabularyTerm dgmRelation = validateDiseaseGeneticModifierRelation(uiEntity, dbEntity);

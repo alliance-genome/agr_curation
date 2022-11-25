@@ -5,7 +5,7 @@
     "obsolete": false,
     "gene_curie": "DATEST:Gene0001",
     "do_term_curie": "DATEST:Disease0001",
-    "data_provider": "TEST",
+    "data_provider_name": "TEST",
     "negated": true,
     "disease_relation_name": "is_implicated_in",
     "genetic_sex_name": "male",

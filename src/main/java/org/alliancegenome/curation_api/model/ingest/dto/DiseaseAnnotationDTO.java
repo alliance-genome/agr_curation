@@ -15,7 +15,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class})
+@AGRCurationSchemaVersion(min="1.4.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class, ConditionRelationDTO.class, NoteDTO.class})
 public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 
 	@JsonView({View.FieldsOnly.class})
@@ -27,12 +27,12 @@ public class DiseaseAnnotationDTO extends AuditedObjectDTO {
 	private String doTermCurie;
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("data_provider")
-	private String dataProvider;
+	@JsonProperty("data_provider_name")
+	private String dataProviderName;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("secondary_data_provider")
-	private String secondaryDataProvider;
+	@JsonProperty("secondary_data_provider_name")
+	private String secondaryDataProviderName;
 
 	@JsonView({View.FieldsOnly.class})
 	private Boolean negated = false;
