@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -82,7 +81,7 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 		List<String> alleleCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
 		ph.startProcess("Allele Update " + taxonIds.toString(), alleles.size());
 		alleles.forEach(alleleDTO -> {
 				
@@ -104,4 +103,5 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 		return new LoadHistoryResponce(history);	
 	}
+
 }

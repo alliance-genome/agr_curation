@@ -1,16 +1,25 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
+import java.util.Date;
+
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.*;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
 import org.alliancegenome.curation_api.model.entities.bulkloads.*;
+import org.alliancegenome.curation_api.model.event.EndProcessingEvent;
+import org.alliancegenome.curation_api.model.event.ProcessingEvent;
+import org.alliancegenome.curation_api.model.event.ProgressProcessingEvent;
+import org.alliancegenome.curation_api.model.event.StartProcessingEvent;
 import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.util.ProcessDisplayHandler;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LoadFileExecutor {
-
+public class LoadFileExecutor implements ProcessDisplayHandler {
+	
+	@Inject Event<ProcessingEvent> processingEvent;
 	@Inject ObjectMapper mapper;
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
@@ -44,5 +53,20 @@ public class LoadFileExecutor {
 		if (versionString.startsWith("v"))
 			return versionString.substring(1);
 		return versionString;
+	}
+	
+	@Override
+	public void startProcess(String message, long totalSize) {
+		processingEvent.fire(new StartProcessingEvent(message, totalSize));
+	}
+
+	@Override
+	public void progressProcess(String message, String data, long startTime, Date nowTime, long lastTime, long currentCount, long lastCount, long totalSize) {
+		processingEvent.fire(new ProgressProcessingEvent(message, data, startTime, nowTime, lastTime, currentCount, lastCount, totalSize));
+	}
+
+	@Override
+	public void finishProcess(String message, String data, long current, long duration) {
+		processingEvent.fire(new EndProcessingEvent(message, data, current, duration));
 	}
 }

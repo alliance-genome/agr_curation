@@ -83,7 +83,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		
 		List<String> geneCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
 		ph.startProcess("Gene Update " + taxonIds.toString(), genes.size());
 		genes.forEach(geneDTO -> {
 			

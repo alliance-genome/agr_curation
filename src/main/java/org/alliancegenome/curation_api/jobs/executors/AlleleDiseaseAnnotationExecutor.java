@@ -72,7 +72,7 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 		
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
 		ph.startProcess("Allele Disease Annotation Update " + taxonId, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {

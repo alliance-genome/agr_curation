@@ -82,7 +82,7 @@ public class AgmExecutor extends LoadFileExecutor {
 			
 		List<String> agmCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
 		ph.startProcess("AGM Update " + taxonIds.toString(), agms.size());
 		agms.forEach(agmDTO -> {
 				
