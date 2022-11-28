@@ -102,7 +102,7 @@ export const MutationTypesDialog = ({
 				}
 			}
 		}
-		
+
 		if((localMutationTypes.length > originalMutationTypes?.length) || !originalMutationTypes){
 			rowsEdited.current++;
 		}
@@ -189,7 +189,7 @@ export const MutationTypesDialog = ({
 		errorMessagesCopy[rowIndex] = {};
 		errorMessagesCopy[rowIndex]["alleleMutationTypes"] = messageObject;
 		setErrorMessagesMainRow({...errorMessagesCopy});
-		
+
 		setOriginalMutationTypesData((originalMutationTypesData) => {
 				return {
 					...originalMutationTypesData,
@@ -260,7 +260,7 @@ export const MutationTypesDialog = ({
 	const onMutationTypeValueChange = (event, setFieldValue, props) => {
 		multipleAutocompleteOnChange(props, event, "mutationTypes", setFieldValue);
 	};
-	
+
 	const mutationTypeSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["name", "curie"];
 		const endpoint = "soterm";
@@ -309,7 +309,7 @@ export const MutationTypesDialog = ({
 	const onEvidenceValueChange = (event, setFieldValue, props) => {
 		multipleAutocompleteOnChange(props, event, "evidence", setFieldValue);
 	};
-	
+
 	const evidenceSearch = (event, setFiltered, setInputValue) => {
 		const autocompleteFields = ["curie", "cross_references.curie"];
 		const endpoint = "literature-reference";
@@ -332,7 +332,7 @@ export const MutationTypesDialog = ({
 			</div>
 		);
 	}
-	
+
 	const createNewMutationTypeHandler = (event) => {
 		let cnt = localMutationTypes ? localMutationTypes.length : 0;
 		const _localMutationTypes = global.structuredClone(localMutationTypes);
@@ -345,7 +345,7 @@ export const MutationTypesDialog = ({
 	};
 
 	const handleDeleteMutationType = (event, props) => {
-		let _localMutationTypes = global.structuredClone(localMutationTypes); 
+		let _localMutationTypes = global.structuredClone(localMutationTypes);
 		if(props.dataKey){
 			_localMutationTypes.splice(props.dataKey, 1);
 		}else {
@@ -389,4 +389,3 @@ export const MutationTypesDialog = ({
 		</div>
 	);
 };
-
