@@ -173,11 +173,6 @@ export const ExperimentalConditionsTable = () => {
 		const filterName = "conditionClassEditorFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			},
 			"subsetFilter": {
 				"subsets": {
 					queryString: 'ZECO_0000267'
@@ -214,16 +209,9 @@ export const ExperimentalConditionsTable = () => {
 	const singleOntologySearch = (event, setFiltered, endpoint, autocomplete, setQuery) => {
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, autocomplete);
-		const otherFilters={
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const singleOntologyEditorTemplate = (props, fieldname, endpoint, autocomplete) => {

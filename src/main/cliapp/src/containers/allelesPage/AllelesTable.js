@@ -161,11 +161,6 @@ export const AllelesTable = () => {
 		const endpoint = "vocabularyterm";
 		const filterName = "taxonFilter";
 		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			},
 			vocabularyFilter: {
 				"vocabulary.name": {
 					queryString: "Allele collection vocabulary"
@@ -219,16 +214,9 @@ export const AllelesTable = () => {
 		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 		const endpoint = "ncbitaxonterm";
 		const filterName = "taxonFilter";
-		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const taxonEditor = (props) => {

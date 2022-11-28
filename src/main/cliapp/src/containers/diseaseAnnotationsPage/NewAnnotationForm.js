@@ -243,15 +243,8 @@ export const NewAnnotationForm = ({
 		const endpoint = "doterm";
 		const filterName = "diseaseFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const onDropdownFieldChange = (event) => {
@@ -307,11 +300,6 @@ export const NewAnnotationForm = ({
 		const filterName = "evidenceFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			},
 			subsetFilter: {
 				"subsets": {
 					queryString: "agr_eco_terms"
