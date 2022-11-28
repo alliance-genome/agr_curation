@@ -270,7 +270,8 @@ export const useGenericDataTable = ({
 				}
 
 				setEntities(_entities);
-				let _editingRows = { ...editingRows, ...{ [`${_entities[event.index].id}`]: true } };
+				let key = _entities[event.index].id ? _entities[event.index].id : _entities[event.index].curie;
+				let _editingRows = { ...editingRows, ...{ [`${key}`]: true } };
 				setEditingRows(_editingRows);
 			},
 		});
