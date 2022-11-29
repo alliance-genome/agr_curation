@@ -90,7 +90,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 	
 	@Transactional
-	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
+	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
 
 		List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -107,13 +107,13 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 				List<Long> referencingDAIds = affectedGenomicModelDAO.findReferencingDiseaseAnnotations(curie);
 				Boolean anyPublicReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false);
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM");
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
 				
 				if (anyPublicReferencingDAs) {
-					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate("Gene bulk upload"));
+					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
 					agm.setDateUpdated(OffsetDateTime.now());
 					agm.setObsolete(true);
 					affectedGenomicModelDAO.persist(agm);

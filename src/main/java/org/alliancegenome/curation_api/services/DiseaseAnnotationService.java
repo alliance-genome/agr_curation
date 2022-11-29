@@ -50,20 +50,20 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		log.debug("runLoad: Remove: " + taxonId + " " + idsToRemove.size());
 
 		for (Long id : idsToRemove) {
-			deprecateOrDeleteAnnotationAndNotes(id, false);
+			deprecateOrDeleteAnnotationAndNotes(id, false, "disease annotation");
 		}
 	}
 
 	@Override
 	@Transactional
 	public ObjectResponse<DiseaseAnnotation> delete(Long id) {
-		deprecateOrDeleteAnnotationAndNotes(id, true);
+		deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
 		ObjectResponse<DiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
 
 	@Transactional
-	public Boolean deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError) {
+	public Boolean deprecateOrDeleteAnnotationAndNotes(Long id, Boolean throwApiError, String loadType) {
 		DiseaseAnnotation annotation = diseaseAnnotationDAO.find(id);
 
 		if (annotation == null) {
@@ -83,7 +83,7 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (authenticatedPerson.getOktaEmail() != null) {
 				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
 			} else {
-				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(annotation.getDataProvider().getAbbreviation() + " bulk upload"));
+				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(annotation.getDataProvider().getAbbreviation() + " " + loadType + " bulk upload"));
 			}
 			annotation.setDateUpdated(OffsetDateTime.now());
 			diseaseAnnotationDAO.persist(annotation);

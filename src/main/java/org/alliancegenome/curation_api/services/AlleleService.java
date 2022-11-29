@@ -62,7 +62,7 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 	}
 	
 	@Transactional
-	public void removeOrDeprecateNonUpdatedAlleles(String taxonIds, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter) {
+	public void removeOrDeprecateNonUpdatedAlleles(String taxonIds, List<String> alleleCuriesBefore, List<String> alleleCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + alleleCuriesAfter.size());
 
 		List<String> distinctAfter = alleleCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -79,13 +79,13 @@ public class AlleleService extends BaseDTOCrudService<Allele, AlleleDTO, AlleleD
 				List<Long> referencingDAIds = alleleDAO.findReferencingDiseaseAnnotationIds(curie);
 				Boolean anyPublicReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false);
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "allele");
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
 				
 				if (anyPublicReferencingDAs) {
-					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate("Gene bulk upload"));
+					allele.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " allele bulk upload"));
 					allele.setDateUpdated(OffsetDateTime.now());
 					allele.setObsolete(true);
 					alleleDAO.persist(allele);

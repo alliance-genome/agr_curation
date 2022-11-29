@@ -65,7 +65,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 	
 	@Transactional
-	public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter) {
+	public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + geneCuriesAfter.size());
 
 		List<String> distinctAfter = geneCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -82,13 +82,13 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 				List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
 				Boolean anyPublicReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
-					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false);
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "gene");
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
 	
 				if (anyPublicReferencingDAs) {
-					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate("Gene bulk upload"));
+					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
 					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);
 					geneDAO.persist(gene);

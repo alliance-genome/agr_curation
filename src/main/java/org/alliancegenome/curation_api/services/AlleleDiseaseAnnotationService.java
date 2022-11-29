@@ -52,7 +52,7 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true);
+		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}
