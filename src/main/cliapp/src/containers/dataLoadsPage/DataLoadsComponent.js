@@ -1,4 +1,4 @@
-import React, { useReducer, useRef, useState, useContext, useEffect } from 'react';
+import React, { useReducer, useRef, useState, useContext } from 'react';
 import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
@@ -93,48 +93,42 @@ export const DataLoadsComponent = () => {
 				}
 				setGroups(data.results);
 			}
+
+			var loc = window.location, new_uri;
+			if (loc.protocol === "https:") {
+				new_uri = "wss:";
+			} else {
+				new_uri = "ws:";
+			}
+			if(process.env.NODE_ENV === 'production') {
+				new_uri += "//" + loc.host;
+			} else {
+				new_uri += "//localhost:8080";
+			}
+
+			new_uri += loc.pathname + "processing_events";
+			//console.log(new_uri);
+			let ws = new WebSocket(new_uri);
+
+			ws.onopen = () => console.log('ws opened');
+			ws.onclose = () => console.log('ws closed');
+
+			ws.onmessage = (e, runningLoads) => {
+				let processingMessage = JSON.parse(e.data);
+				setRunningLoads((prevState) => {
+					//console.log(prevState);
+					const newState = {...prevState};
+					newState[processingMessage.message] = processingMessage;
+					//console.log(newState);
+					return newState;
+				});
+			}
+
 		},
 		keepPreviousData: true,
 		refetchOnWindowFocus: false
 	});
 
-	useEffect(() => {
-
-		var loc = window.location, new_uri;
-		if (loc.protocol === "https:") {
-			new_uri = "wss:";
-		} else {
-			new_uri = "ws:";
-		}
-		if(process.env.NODE_ENV === 'production') {
-			new_uri += "//" + loc.host;
-		} else {
-			new_uri += "//localhost:8080";
-		}
-
-		new_uri += loc.pathname + "processing_events";
-		//console.log(new_uri);
-		let ws = new WebSocket(new_uri);
-
-		ws.onopen = () => console.log('ws opened');
-		ws.onclose = () => console.log('ws closed');
-
-		ws.onmessage = e => {
-			const processingMessage = JSON.parse(e.data);
-			setRunningLoads((prevState) => {
-				//console.log(prevState);
-				const newState = {...prevState};
-				newState[processingMessage.message] = processingMessage;
-				//console.log(newState);
-				return newState;
-			});
-		};
-
-		return () => {
-			ws.close();
-		}
-
-	}, []);
 
 
 	const getService = () => {
@@ -142,7 +136,7 @@ export const DataLoadsComponent = () => {
 			dataLoadService = new DataLoadService(authState);
 		}
 		return dataLoadService;
-	}
+	};
 
 	const urlTemplate = (rowData) => {
 		return <a href={rowData.s3Url}>Download</a>;
