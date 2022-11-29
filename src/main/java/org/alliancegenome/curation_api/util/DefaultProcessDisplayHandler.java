@@ -12,15 +12,15 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 	private DecimalFormat df = new DecimalFormat("#");
 	
 	@Override
-	public void startProcess(String message, long totalSize) {
+	public void startProcess(String message, long startTime, long totalSize) {
 		if (totalSize > 0)
-			logInfoMessage(message + "Starting Process [total = " + ProcessDisplayHandler.getBigNumber(totalSize) + "] " + new Date());
+			logInfoMessage(message + "Starting Process [total = " + ProcessDisplayHandler.getBigNumber(totalSize) + "] " + new Date(startTime));
 		else
-			logInfoMessage(message + "Starting Process... (" + new Date() + ")");
+			logInfoMessage(message + "Starting Process... (" + new Date(startTime) + ")");
 	}
 
 	@Override
-	public void progressProcess(String message, String data, long startTime, Date nowTime, long lastTime, long currentCount, long lastCount, long totalSize) {
+	public void progressProcess(String message, String data, long startTime, long nowTime, long lastTime, long currentCount, long lastCount, long totalSize) {
 		
 		double percent = 0;
 		if (totalSize > 0) {
@@ -34,8 +34,8 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 		if(totalSize > 0) {
 			sb.append(" of [" + ProcessDisplayHandler.getBigNumber(totalSize) + "] " + (int) (percent * 100L) + "%");
 		}
-		long time = (nowTime.getTime() - lastTime);
-		long diff = (nowTime.getTime() - startTime);
+		long time = (nowTime - lastTime);
+		long diff = (nowTime - startTime);
 		sb.append(", " + (time / 1000) + "s to process " + ProcessDisplayHandler.getBigNumber(processedAmount) + " records at " + ProcessDisplayHandler.getBigNumber((processedAmount * 1000L) / time) + "r/s");
 		if(data != null) {
 			sb.append(" " + data);
@@ -46,7 +46,7 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 		if (percent > 0) {
 			int perms = (int) (diff / percent);
 			Date end = new Date(startTime + perms);
-			String expectedDuration = ProcessDisplayHandler.getHumanReadableTimeDisplay(end.getTime() - nowTime.getTime());
+			String expectedDuration = ProcessDisplayHandler.getHumanReadableTimeDisplay(end.getTime() - nowTime);
 			sb.append(", Mem: " + df.format(memoryPercent() * 100) + "%, ETA: " + expectedDuration + " [" + end + "]");
 		}
 		logInfoMessage(sb.toString());
@@ -55,11 +55,11 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 	
 
 	@Override
-	public void finishProcess(String message, String data, long current, long duration) {
+	public void finishProcess(String message, String data, long currentCount, long totalSize, long duration) {
 		String result = ProcessDisplayHandler.getHumanReadableTimeDisplay(duration);
-		String localMessage = message + "Finished: took: " + result + " to process " + ProcessDisplayHandler.getBigNumber(current);
+		String localMessage = message + "Finished: took: " + result + " to process " + ProcessDisplayHandler.getBigNumber(currentCount);
 		if (duration != 0) {
-			localMessage += " records at a rate of: " + ProcessDisplayHandler.getBigNumber((current * 1000) / duration) + "r/s " + ProcessDisplayHandler.getBigNumber((current * 60000) / duration) + "r/m";
+			localMessage += " records at a rate of: " + ProcessDisplayHandler.getBigNumber((currentCount * 1000) / duration) + "r/s " + ProcessDisplayHandler.getBigNumber((currentCount * 60000) / duration) + "r/m";
 		} else {
 			localMessage += " records";
 		}
@@ -86,12 +86,10 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 	}
 	
 	private void logWarnMessage(String message) {
-		System.out.println(message);
 		log.warn(message);
 	}
 	
 	private void logInfoMessage(String message) {
-		System.out.println(message);
 		log.info(message);
 	}
 

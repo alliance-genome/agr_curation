@@ -1,12 +1,8 @@
 package org.alliancegenome.curation_api.util;
 
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public interface ProcessDisplayHandler {
-
-	public void startProcess(String message, long totalSize);
-
 
 	public static String getBigNumber(long number) {
 		return String.format("%,d", number);
@@ -19,9 +15,7 @@ public interface ProcessDisplayHandler {
 		return String.format("%02d:%02d:%02d", hours, minutes, seconds);
 	}
 
-	public void progressProcess(String message, String data,
-		long startTime, Date nowTime, long lastTime,
-		long currentCount, long lastCount, long totalSize);
-
-	public void finishProcess(String message, String data, long current, long duration);
+	public void startProcess(String message, long startTime, long totalSize);
+	public void progressProcess(String message, String data, long startTime, long nowTime, long lastTime, long currentCount, long lastCount, long totalSize);
+	public void finishProcess(String message, String data, long currentCount, long totalSize, long duration);
 }

@@ -81,7 +81,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 		List<String> alleleCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ph.addDisplayHandler(this);
 		ph.startProcess("Allele Update " + taxonIds.toString(), alleles.size());
 		alleles.forEach(alleleDTO -> {
 				

@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -83,7 +82,9 @@ public class GeneExecutor extends LoadFileExecutor {
 		
 		List<String> geneCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(this);
+		
 		ph.startProcess("Gene Update " + taxonIds.toString(), genes.size());
 		genes.forEach(geneDTO -> {
 			

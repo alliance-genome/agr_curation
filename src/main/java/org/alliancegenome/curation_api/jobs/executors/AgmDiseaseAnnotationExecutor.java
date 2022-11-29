@@ -69,7 +69,8 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
 		List<String> annotationIdsAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000, this);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ph.addDisplayHandler(this);
 		ph.startProcess("AGM Disease Annotation Update " + taxonId, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {

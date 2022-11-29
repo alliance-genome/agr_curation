@@ -1,8 +1,8 @@
 package org.alliancegenome.curation_api.websocket;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
@@ -18,18 +18,18 @@ import org.alliancegenome.curation_api.model.event.ProcessingEvent;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+@ServerEndpoint("/processing_events")
 @ApplicationScoped
-@ServerEndpoint("/websockets/processing_events")
 public class LoadProcessingWebsocket {
 	
 	@Inject ObjectMapper mapper;
 
-	private static final Set<Session> sessions = Collections.synchronizedSet(new HashSet<Session>());
+	Map<String, Session> sessions = new ConcurrentHashMap<>();
 
 	@OnOpen
 	public void onOpen(Session session) {
 		try {
-			sessions.add(session);
+			sessions.put(session.getId(), session);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -38,15 +38,15 @@ public class LoadProcessingWebsocket {
 	@OnClose
 	public void onClose(Session session) {
 		try {
-			sessions.remove(session);
+			sessions.remove(session.getId());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
 	@OnError
-	public void onError(Session session) {
-		sessions.remove(session);
+	public void onError(Session session, Throwable throwable) {
+		sessions.remove(session.getId());
 	}
 
 	@OnMessage
@@ -55,9 +55,9 @@ public class LoadProcessingWebsocket {
 	}
 
 	public void observeProcessingEvent(@Observes ProcessingEvent event) {
-		for (Session session : sessions) {
+		for (Entry<String, Session> sessionEntry: sessions.entrySet()) {
 			try {
-				session.getAsyncRemote().sendText(mapper.writeValueAsString(event));
+				sessionEntry.getValue().getAsyncRemote().sendText(mapper.writeValueAsString(event));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

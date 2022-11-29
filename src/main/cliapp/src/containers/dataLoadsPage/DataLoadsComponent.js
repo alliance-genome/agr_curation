@@ -1,10 +1,11 @@
-import React, { useReducer, useRef, useState, useContext } from 'react';
+import React, { useReducer, useRef, useState, useContext, useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from "primereact/toast";
 import { Dialog } from 'primereact/dialog';
+import { ProgressBar } from 'primereact/progressbar';
 
 import { useOktaAuth } from '@okta/okta-react';
 import { SearchService } from '../../service/SearchService';
@@ -36,6 +37,7 @@ export const DataLoadsComponent = () => {
 	const { apiVersion } = useContext(SiteContext);
 
 	const [groups, setGroups] = useState({});
+	const [runningLoads, setRunningLoads] = useState({});
 	const [history, setHistory] = useState({id: 0});
 	const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
 	const [historyDialog, setHistoryDialog] = useState(false);
@@ -57,7 +59,6 @@ export const DataLoadsComponent = () => {
 
 	let dataLoadService = null;
 	const toast = useRef(null);
-
 
 	const handleNewBulkLoadGroupOpen = (event) => {
 		setBulkLoadGroupDialog(true);
@@ -96,6 +97,45 @@ export const DataLoadsComponent = () => {
 		keepPreviousData: true,
 		refetchOnWindowFocus: false
 	});
+
+	useEffect(() => {
+
+		var loc = window.location, new_uri;
+		if (loc.protocol === "https:") {
+			new_uri = "wss:";
+		} else {
+			new_uri = "ws:";
+		}
+		if(process.env.NODE_ENV === 'production') {
+			new_uri += "//" + loc.host;
+		} else {
+			new_uri += "//localhost:8080";
+		}
+
+		new_uri += loc.pathname + "processing_events";
+		//console.log(new_uri);
+		let ws = new WebSocket(new_uri);
+
+		ws.onopen = () => console.log('ws opened');
+		ws.onclose = () => console.log('ws closed');
+
+		ws.onmessage = e => {
+			const processingMessage = JSON.parse(e.data);
+			setRunningLoads((prevState) => {
+				//console.log(prevState);
+				const newState = {...prevState};
+				newState[processingMessage.message] = processingMessage;
+				//console.log(newState);
+				return newState;
+			});
+		};
+
+		return () => {
+			ws.close();
+		}
+
+	}, []);
+
 
 	const getService = () => {
 		if(!dataLoadService) {
@@ -441,6 +481,28 @@ export const DataLoadsComponent = () => {
 		);
 	}
 
+	const processingLoadsComponents = () => {
+
+		let ret = [];
+		//console.log(runningLoads);
+		for(let key in runningLoads) {
+			//console.log(key);
+			if(runningLoads[key]) {
+				ret.push(
+					<div className="col-2" key={key}>
+						<div className="card">
+							<h3>{ key }</h3>
+							<ProgressBar value={
+								runningLoads[key].totalSize && runningLoads[key].currentCount ? (parseInt((runningLoads[key].currentCount / runningLoads[key].totalSize) * 10000) / 100) : 0
+							} />
+						</div>
+					</div>
+				);
+			}
+		}
+		return ret;
+	}
+
 	return (
 		<>
 			<Toast ref={toast}></Toast>
@@ -491,6 +553,10 @@ export const DataLoadsComponent = () => {
 					<Column header="Class Name" field="className" />
 					<Column header="Curation Schema (LinkML) Version" field="schemaVersion"></Column>
 				</DataTable>
+			</div>
+			<div className="card">
+				<h3>Data Processing Info Table</h3>
+				<div className="grid">{ processingLoadsComponents() }</div>
 			</div>
 		</>
 	);

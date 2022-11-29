@@ -6,8 +6,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class StartProcessingEvent extends ProcessingEvent {
-
 	private String message;
+	private long startTime;
 	private long totalSize;
-
 }

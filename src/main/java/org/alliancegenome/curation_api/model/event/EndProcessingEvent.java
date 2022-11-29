@@ -8,6 +8,7 @@ import lombok.Data;
 public class EndProcessingEvent extends ProcessingEvent {
 	private String message;
 	private String data;
-	private long current;
+	private long currentCount;
+	private long totalSize;
 	private long duration;
 }
