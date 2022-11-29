@@ -1,15 +1,10 @@
 package org.alliancegenome.curation_api.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
-
-import lombok.Getter;
 
 public class ProcessDisplayHelper {
 
@@ -24,8 +19,7 @@ public class ProcessDisplayHelper {
 	private AtomicLong sizeCounter = new AtomicLong(0);
 	
 	private long displayTimeout = 30000; // How often to display to the console
-	
-	@Getter
+
 	private List<ProcessDisplayHandler> handlers;
 	
 	public ProcessDisplayHelper() {

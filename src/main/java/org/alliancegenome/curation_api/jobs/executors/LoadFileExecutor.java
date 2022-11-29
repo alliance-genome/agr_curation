@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
@@ -10,20 +9,16 @@ import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUp
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
-import org.alliancegenome.curation_api.model.event.EndProcessingEvent;
-import org.alliancegenome.curation_api.model.event.ProcessingEvent;
-import org.alliancegenome.curation_api.model.event.ProgressProcessingEvent;
-import org.alliancegenome.curation_api.model.event.StartProcessingEvent;
 import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.response.LoadHistoryResponce;
-import org.alliancegenome.curation_api.util.ProcessDisplayHandler;
+import org.alliancegenome.curation_api.services.ProcessDisplayService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class LoadFileExecutor implements ProcessDisplayHandler {
+public class LoadFileExecutor {
 	
-	@Inject Event<ProcessingEvent> processingEvent;
 	@Inject ObjectMapper mapper;
+	@Inject ProcessDisplayService processDisplayService;
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
@@ -57,19 +52,5 @@ public class LoadFileExecutor implements ProcessDisplayHandler {
 			return versionString.substring(1);
 		return versionString;
 	}
-	
-	@Override
-	public void startProcess(String message, long startTime, long totalSize) {
-		processingEvent.fire(new StartProcessingEvent(message, startTime, totalSize));
-	}
 
-	@Override
-	public void progressProcess(String message, String data, long startTime, long nowTime, long lastTime, long currentCount, long lastCount, long totalSize) {
-		processingEvent.fire(new ProgressProcessingEvent(message, data, startTime, nowTime, lastTime, currentCount, lastCount, totalSize));
-	}
-
-	@Override
-	public void finishProcess(String message, String data, long current, long totalSize, long duration) {
-		processingEvent.fire(new EndProcessingEvent(message, data, current, totalSize, duration));
-	}
 }

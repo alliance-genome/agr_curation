@@ -475,6 +475,24 @@ export const DataLoadsComponent = () => {
 		);
 	}
 
+	const ProgressIndicator = ({ load }) => {
+        if(load.currentCount && load.totalSize) {
+        	return <ProgressBar value={(parseInt((load.currentCount / load.totalSize) * 10000) / 100)} />
+        } else if(load.currentCount && load.lastCount && load.lastTime && load.nowTime) {
+        	let rate = Math.ceil(((load.currentCount - load.lastCount) / (load.nowTime - load.lastTime)) * 1000);
+			return (
+	            <ProgressBar
+	            	value={rate}
+	            	displayValueTemplate={(value) => {
+	            		return <>{value}r/s -- {load.currentCount}</>
+	            	}}
+	            />
+	        );
+        } else {
+        	return <ProgressBar value={0} />
+        }
+    }
+
 	const processingLoadsComponents = () => {
 
 		let ret = [];
@@ -486,9 +504,7 @@ export const DataLoadsComponent = () => {
 					<div className="col-2" key={key}>
 						<div className="card">
 							<h3>{ key }</h3>
-							<ProgressBar value={
-								runningLoads[key].totalSize && runningLoads[key].currentCount ? (parseInt((runningLoads[key].currentCount / runningLoads[key].totalSize) * 10000) / 100) : 0
-							} />
+							<ProgressIndicator load={runningLoads[key]} />
 						</div>
 					</div>
 				);
