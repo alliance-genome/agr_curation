@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -45,12 +44,13 @@ public class GeneExecutor extends LoadFileExecutor {
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			List<GeneDTO> genes = ingestDto.getGeneIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
+			String dataType = manual.getDataType().name();
 			
 			if (genes != null) {
 				bulkLoadFile.setRecordCount(genes.size() + bulkLoadFile.getRecordCount());
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
-				trackHistory(runLoad(taxonId, genes), bulkLoadFile);
+				trackHistory(runLoad(taxonId, genes, dataType), bulkLoadFile);
 			}
 			
 		} catch (Exception e) {
@@ -62,16 +62,16 @@ public class GeneExecutor extends LoadFileExecutor {
 	public APIResponse runLoad (List <GeneDTO> genes) {
 		List<String> taxonIds = genes.stream()
 				 .map( geneDTO -> geneDTO.getTaxonCurie() ).distinct().collect( Collectors.toList() );
-		return runLoad(taxonIds, genes);
+		return runLoad(taxonIds, genes, "API");
 	}
 	
-	public APIResponse runLoad(String taxonId, List<GeneDTO> genes) {
+	public APIResponse runLoad(String taxonId, List<GeneDTO> genes, String dataType) {
 		List<String> taxonIds = new ArrayList<String>();
 		taxonIds.add(taxonId);
-		return runLoad(taxonIds, genes);
+		return runLoad(taxonIds, genes, dataType);
 	}
 		
-	public APIResponse runLoad(List<String> taxonIds, List<GeneDTO> genes) {
+	public APIResponse runLoad(List<String> taxonIds, List<GeneDTO> genes, String dataType) {
 		
 		List<String> geneCuriesBefore = new ArrayList<String>();
 		for (String taxonId : taxonIds) {
@@ -83,7 +83,9 @@ public class GeneExecutor extends LoadFileExecutor {
 		
 		List<String> geneCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(genes.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
+		
 		ph.startProcess("Gene Update " + taxonIds.toString(), genes.size());
 		genes.forEach(geneDTO -> {
 			
@@ -101,7 +103,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 		
-		geneService.removeNonUpdatedGenes(taxonIds.toString(), geneCuriesBefore, geneCuriesAfter);
+		geneService.removeNonUpdatedGenes(taxonIds.toString(), geneCuriesBefore, geneCuriesAfter, dataType);
 		
 		return new LoadHistoryResponce(history);	
 	}

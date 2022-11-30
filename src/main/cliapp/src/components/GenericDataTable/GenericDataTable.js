@@ -16,7 +16,7 @@ import { useGenericDataTable } from "./useGenericDataTable";
 
 export const GenericDataTable = (props) => {
 
-	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled, dataKey = 'id' } = props;
+	const { tableName, isEnabled, aggregationFields, endpoint, columns, headerButtons, deletionEnabled, dataKey = 'id', deprecateIfPublic = false } = props;
 
 	const {
 		setSelectedColumnNames,
@@ -47,6 +47,7 @@ export const GenericDataTable = (props) => {
 
 	const toast_topright = useRef(null);
 	const [deleteDialog, setDeleteDialog] = useState(false);
+	const [deprecateDialog, setDeprecateDialog] = useState(false);
 	const [errorDialog, setErrorDialog] = useState(false);
 	const [idToDelete, setIdToDelete] = useState(null);
 	const [entityToDelete, setEntityToDelete] = useState(null);
@@ -128,16 +129,22 @@ export const GenericDataTable = (props) => {
 		return <div className="p-column-header-content"><span className="p-column-title">Filters</span></div>
 	}
 
-	const showDeleteDialog = (props) => {
+	const showDeleteOrDeprecateDialog = (props) => {
 		let _idToDelete = props.rowData ? props.rowData[dataKey] : props[dataKey];
+		let isPublic = true; // TODO: check field in props when populated
 		setIdToDelete(_idToDelete);
 		setEntityToDelete(props);
-		setDeleteDialog(true);
+		if (deprecateIfPublic && isPublic) {
+			setDeprecateDialog(true);
+		} else {
+			setDeleteDialog(true);
+		}
 	}
 
 	const deleteRow = async (idToDelete, entityToDelete) => {
 		setDeleteDialog(false);
-		let _deletionErrorMessage = await handleDeletion(idToDelete, entityToDelete);
+		setDeprecateDialog(false);
+		let _deletionErrorMessage = await handleDeletion(idToDelete, entityToDelete, deprecateIfPublic);
 		setDeletionErrorMessage(_deletionErrorMessage);
 		if (_deletionErrorMessage !== null) {
 			setErrorDialog(true);
@@ -147,9 +154,13 @@ export const GenericDataTable = (props) => {
 	const deleteAction = (props) => {
 		return (
 			<Button icon="pi pi-trash" className="p-button-text"
-					onClick={() => showDeleteDialog(props)}/>
+					onClick={() => showDeleteOrDeprecateDialog(props)}/>
 		);
 	}
+
+	const hideDeprecateDialog = () => {
+		setDeprecateDialog(false);
+	} ;
 
 	const hideDeleteDialog = () => {
 		setDeleteDialog(false);
@@ -167,7 +178,16 @@ export const GenericDataTable = (props) => {
 		return (
 					<React.Fragment>
 							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeleteDialog} />
-							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete)} />
+							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete, false)} />
+					</React.Fragment>
+			);
+	}
+
+	const deprecateDialogFooter = () => {
+		return (
+					<React.Fragment>
+							<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideDeprecateDialog} />
+							<Button label="Confirm" icon="pi pi-check" className="p-button-text" onClick={() => deleteRow(idToDelete, entityToDelete, true)} />
 					</React.Fragment>
 			);
 	}
@@ -214,22 +234,30 @@ export const GenericDataTable = (props) => {
 					{columnList}
 				</DataTable>
 
-			 <Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
-								<div className="confirmation-content">
-										<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
-										{<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
-								</div>
-						</Dialog>
-			<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
-								<div className="error-message-dialog">
-										<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
-										{<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
-								</div>
-				<hr/>
-				<div className="error-message-detail">
-					{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
-				</div>
-						</Dialog>
+			 	<Dialog visible={deleteDialog} style={{ width: '450px' }} header="Confirm Deletion" modal footer={deleteDialogFooter} onHide={hideDeleteDialog}>
+					<div className="confirmation-content">
+						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+						{<span>Warning: You are about to delete this data object from the database. This cannot be undone. Please confirm deletion or cancel.</span>}
+					</div>
+				</Dialog>
+
+				<Dialog visible={deprecateDialog} style={{ width: '450px' }} header="Confirm Deprecation" modal footer={deprecateDialogFooter} onHide={hideDeprecateDialog}>
+					<div className="confirmation-content">
+						<p><i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />Warning: This object has been made public and cannot be deleted. It will be deprecated instead.</p><br/>
+						<p>Please confirm deprecation or cancel.</p>
+					</div>
+				</Dialog>
+
+				<Dialog visible={errorDialog} style={{ width: '450px' }} header="Deletion Error" modal footer={errorDialogFooter} onHide={hideErrorDialog}>
+					<div className="error-message-dialog">
+						<i className="pi pi-ban mr-3" style={{ fontSize: '2rem'}} />
+						{<span>ERROR: The data object you are trying to delete is in use by other data objects. Remove data connections to all other data objects and try to delete again.</span>}
+					</div>
+					<hr/>
+					<div className="error-message-detail">
+						{<span style={{fontSize: '0.85rem'}}>{deletionErrorMessage}</span>}
+					</div>
+				</Dialog>
 
 				<Dialog visible={exceptionDialog} style={{ width: '550px' }} header="Exception" modal footer={exceptionDialogFooter} onHide={hideExceptionDialog}>
 					<div className="error-message-dialog">
@@ -244,4 +272,3 @@ export const GenericDataTable = (props) => {
 			</div>
 	)
 }
-

@@ -44,12 +44,13 @@ public class AgmExecutor extends LoadFileExecutor {
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			List<AffectedGenomicModelDTO> agms = ingestDto.getAgmIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
+			String dataType = manual.getDataType().name();
 			
 			if (agms != null) {
 				bulkLoadFile.setRecordCount(agms.size() + bulkLoadFile.getRecordCount());
 				bulkLoadFileDAO.merge(bulkLoadFile);
 				
-				trackHistory(runLoad(taxonId, agms), bulkLoadFile);
+				trackHistory(runLoad(taxonId, agms, dataType), bulkLoadFile);
 			}
 			
 		} catch (Exception e) {
@@ -61,16 +62,16 @@ public class AgmExecutor extends LoadFileExecutor {
 	public APIResponse runLoad (List <AffectedGenomicModelDTO> agms) {
 		List<String> taxonIds = agms.stream()
 				.map( agmDTO -> agmDTO.getTaxonCurie() ).distinct().collect( Collectors.toList() );
-		return runLoad(taxonIds, agms);
+		return runLoad(taxonIds, agms, "API");
 	}
 		
-	public APIResponse runLoad(String taxonId, List<AffectedGenomicModelDTO> agms) {
+	public APIResponse runLoad(String taxonId, List<AffectedGenomicModelDTO> agms, String dataType) {
 		List<String> taxonIds = new ArrayList<String>();
 		taxonIds.add(taxonId);
-		return runLoad(taxonIds, agms);
+		return runLoad(taxonIds, agms, dataType);
 	}
 			
-	public APIResponse runLoad(List<String> taxonIds, List<AffectedGenomicModelDTO> agms) {
+	public APIResponse runLoad(List<String> taxonIds, List<AffectedGenomicModelDTO> agms, String dataType) {
 			
 		List<String> agmCuriesBefore = new ArrayList<String>();
 		for (String taxonId : taxonIds) {
@@ -82,7 +83,8 @@ public class AgmExecutor extends LoadFileExecutor {
 			
 		List<String> agmCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(agms.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("AGM Update " + taxonIds.toString(), agms.size());
 		agms.forEach(agmDTO -> {
 				
@@ -100,7 +102,7 @@ public class AgmExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 			
-		affectedGenomicModelService.removeNonUpdatedAgms(taxonIds.toString(), agmCuriesBefore, agmCuriesAfter);
+		affectedGenomicModelService.removeNonUpdatedAgms(taxonIds.toString(), agmCuriesBefore, agmCuriesAfter, dataType);
 			
 		return new LoadHistoryResponce(history);	
 	}

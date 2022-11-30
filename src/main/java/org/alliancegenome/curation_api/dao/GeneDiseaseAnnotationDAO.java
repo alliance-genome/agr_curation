@@ -15,10 +15,10 @@ public class GeneDiseaseAnnotationDAO extends BaseSQLDAO<GeneDiseaseAnnotation> 
 		super(GeneDiseaseAnnotation.class);
 	}
 
-	public List<String> findAllAnnotationIds(String taxonID) {
-		Query jpqlQuery = entityManager.createQuery("SELECT annotation.uniqueId FROM GeneDiseaseAnnotation annotation WHERE annotation.subject.taxon.curie=:taxonId");
+	public List<Long> findAllAnnotationIds(String taxonID) {
+		Query jpqlQuery = entityManager.createQuery("SELECT annotation.id FROM GeneDiseaseAnnotation annotation WHERE annotation.subject.taxon.curie=:taxonId");
 		jpqlQuery.setParameter("taxonId", taxonID);
-		return (List<String>) jpqlQuery.getResultList();
+		return (List<Long>) jpqlQuery.getResultList();
 	}
 	
 }

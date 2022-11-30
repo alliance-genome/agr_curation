@@ -212,7 +212,7 @@ export function onSelectionOver(event, item, query, op, setAutocompleteHoverItem
 
 
 export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters={}, applyObsoleteFilter=true) {
-	const obsoleteFilter = applyObsoleteFilter ? {
+	const obsoleteFilter = applyObsoleteFilter && endpoint !== 'literature-reference' ? {
 			obsoleteFilter: {
 				"obsolete": {
 					queryString: false

@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -44,12 +43,12 @@ public class AlleleExecutor extends LoadFileExecutor {
 			bulkLoadFile.setLinkMLSchemaVersion(getVersionNumber(ingestDto.getLinkMLVersion()));
 			List<AlleleDTO> alleles = ingestDto.getAlleleIngestSet();
 			String taxonId = manual.getDataType().getTaxonId();
+			String dataType = manual.getDataType().name();
 			
 			if (alleles != null) {
 				bulkLoadFile.setRecordCount(alleles.size() + bulkLoadFile.getRecordCount());
 				bulkLoadFileDAO.merge(bulkLoadFile);
-				
-				trackHistory(runLoad(taxonId, alleles), bulkLoadFile);
+				trackHistory(runLoad(taxonId, alleles, dataType), bulkLoadFile);
 			}
 			
 		} catch (Exception e) {
@@ -61,16 +60,16 @@ public class AlleleExecutor extends LoadFileExecutor {
 	public APIResponse runLoad (List <AlleleDTO> alleles) {
 		List<String> taxonIds = alleles.stream()
 				.map( alleleDTO -> alleleDTO.getTaxonCurie() ).distinct().collect( Collectors.toList() );
-		return runLoad(taxonIds, alleles);
+		return runLoad(taxonIds, alleles, "API");
 	}
 		
-	public APIResponse runLoad(String taxonId, List<AlleleDTO> alleles) {
+	public APIResponse runLoad(String taxonId, List<AlleleDTO> alleles, String dataType) {
 		List<String> taxonIds = new ArrayList<String>();
 		taxonIds.add(taxonId);
-		return runLoad(taxonIds, alleles);
+		return runLoad(taxonIds, alleles, dataType);
 	}
 			
-	public APIResponse runLoad(List<String> taxonIds, List<AlleleDTO> alleles) {
+	public APIResponse runLoad(List<String> taxonIds, List<AlleleDTO> alleles, String dataType) {
 			
 		List<String> alleleCuriesBefore = new ArrayList<String>();
 		for (String taxonId : taxonIds) {
@@ -82,7 +81,8 @@ public class AlleleExecutor extends LoadFileExecutor {
 			
 		List<String> alleleCuriesAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(alleles.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Allele Update " + taxonIds.toString(), alleles.size());
 		alleles.forEach(alleleDTO -> {
 				
@@ -100,8 +100,9 @@ public class AlleleExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 			
-		alleleService.removeNonUpdatedAlleles(taxonIds.toString(), alleleCuriesBefore, alleleCuriesAfter);
+		alleleService.removeOrDeprecateNonUpdatedAlleles(taxonIds.toString(), alleleCuriesBefore, alleleCuriesAfter, dataType);
 			
 		return new LoadHistoryResponce(history);	
 	}
+
 }
