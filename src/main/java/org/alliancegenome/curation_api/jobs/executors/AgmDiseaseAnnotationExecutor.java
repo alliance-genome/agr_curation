@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.AGMDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -69,7 +68,8 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
 		List<Long> annotationIdsAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("AGM Disease Annotation Update " + taxonId, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			try {

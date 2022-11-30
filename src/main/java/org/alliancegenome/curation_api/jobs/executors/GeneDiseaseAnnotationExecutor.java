@@ -68,7 +68,8 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
 		List<Long> annotationIdsAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Gene Disease Annotation Update " + taxonId, annotations.size());
 		annotations.forEach(annotationDTO -> {
 			

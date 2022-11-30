@@ -22,7 +22,7 @@ public class MatiTemporalController {
 
 	@PUT
 	public Identifier testMatiService(@HeaderParam("subdomain") String subdomain) throws IOException {
-		return  maTIService.mintIdentifier(subdomain);
+		return	maTIService.mintIdentifier(subdomain);
 	}
 
 	@POST
