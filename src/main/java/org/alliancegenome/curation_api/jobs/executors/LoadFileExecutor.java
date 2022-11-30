@@ -2,16 +2,23 @@ package org.alliancegenome.curation_api.jobs.executors;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.loads.*;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileExceptionDAO;
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileHistoryDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.model.entities.bulkloads.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileException;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.LoadHistoryResponce;
+import org.alliancegenome.curation_api.services.ProcessDisplayService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class LoadFileExecutor {
-
+	
 	@Inject ObjectMapper mapper;
+	@Inject ProcessDisplayService processDisplayService;
 	@Inject BulkLoadFileDAO bulkLoadFileDAO;
 	@Inject BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
 	@Inject BulkLoadFileExceptionDAO bulkLoadFileExceptionDAO;
@@ -45,4 +52,5 @@ public class LoadFileExecutor {
 			return versionString.substring(1);
 		return versionString;
 	}
+
 }

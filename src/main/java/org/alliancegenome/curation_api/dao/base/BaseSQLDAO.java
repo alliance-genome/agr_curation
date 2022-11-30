@@ -1,15 +1,32 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.extern.jbosslog.JBossLog;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
-import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
@@ -26,26 +43,14 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 import org.reflections.Reflections;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.reflections.scanners.Scanners.TypesAnnotated;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
-	@Inject
-	protected EntityManager entityManager;
-	@Inject
-	protected SearchSession searchSession;
-	@Inject
-	protected MeterRegistry registry;
+	@Inject protected EntityManager entityManager;
+	@Inject protected SearchSession searchSession;
+	@Inject protected ProcessDisplayService processDisplayService;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -229,8 +234,9 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("MassIndex");
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
+		ph.startProcess("Mass Index Everything");
 		MassIndexer indexer =
 			searchSession
 				.massIndexer(annotatedClasses)
@@ -267,7 +273,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
 
-		log.debug("Starting Index for: " + objectClass);
+		log.debug("Starting Indexing for: " + objectClass);
 		MassIndexer indexer =
 			searchSession
 				.massIndexer(objectClass)
@@ -279,36 +285,25 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 				.threadsToLoadObjects(threadsToLoadObjects)
 				.monitor(new MassIndexingMonitor() {
 
-					ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-					Counter counter;
+					ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 
-					@Override
-					public void documentsAdded(long increment) {
-						//log.info("documentsAdded: " + increment);
-					}
-
-					@Override
-					public void documentsBuilt(long increment) {
-						ph.progressProcess();
-						counter.increment();
-					}
-
-					@Override
-					public void entitiesLoaded(long increment) {
-						//log.info("entitiesLoaded: " + increment);
-					}
+					public void documentsAdded(long increment) { }
+					public void entitiesLoaded(long increment) { }
 
 					@Override
 					public void addToTotalCount(long increment) {
+						ph.addDisplayHandler(processDisplayService);
 						ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
-						counter = registry.counter("reindex." + objectClass.getSimpleName());
-						//registry.timer("").
+					}
+					
+					@Override
+					public void documentsBuilt(long increment) {
+						ph.progressProcess();
 					}
 
 					@Override
 					public void indexingCompleted() {
 						ph.finishProcess();
-						registry.remove(counter);
 					}
 
 				});
