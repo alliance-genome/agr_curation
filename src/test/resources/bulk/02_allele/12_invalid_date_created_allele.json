@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0012",
-    "name": "TestAllele12",
-    "symbol": "ta12",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

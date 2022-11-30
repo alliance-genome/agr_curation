@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0031",
-    "name": "TestAllele31",
-    "symbol": "ta31",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

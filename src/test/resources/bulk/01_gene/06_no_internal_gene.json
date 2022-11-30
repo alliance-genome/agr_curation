@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0006",
-    "name": "TestGene6",
-    "symbol": "tg6",
     "taxon_curie": "NCBITaxon:6239",
     "obsolete": true,
     "created_by_curie": "GENETEST:Person0001",

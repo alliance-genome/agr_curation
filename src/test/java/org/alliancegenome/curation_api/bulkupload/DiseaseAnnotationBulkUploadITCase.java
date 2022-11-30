@@ -4532,8 +4532,6 @@ public class DiseaseAnnotationBulkUploadITCase {
 		Allele allele = new Allele();
 		allele.setCurie(requiredAllele);
 		allele.setTaxon(getTaxon("NCBITaxon:6239"));
-		allele.setName("DA Test Allele");
-		allele.setSymbol("BuData");
 		allele.setInternal(false);
 
 		RestAssured.given().

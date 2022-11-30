@@ -80,8 +80,6 @@ public class AlleleBulkUploadITCase {
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].curie", is("ALLELETEST:Allele0001")).
-			body("results[0].name", is("TestAllele1")).
-			body("results[0].symbol", is("ta1")).
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
@@ -103,60 +101,6 @@ public class AlleleBulkUploadITCase {
 	@Order(2)
 	public void alleleBulkUploadNoCurie() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/02_no_curie_allele.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(3)
-	public void alleleBulkUploadNoName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/03_no_name_allele.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0003"));
-	}
-	
-	@Test
-	@Order(4)
-	public void alleleBulkUploadNoSymbol() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/04_no_symbol_allele.json"));
 		
 		// upload file
 		RestAssured.given().
@@ -456,32 +400,6 @@ public class AlleleBulkUploadITCase {
 	}
 	
 	@Test
-	@Order(15)
-	public void alleleBulkUploadEmptySymbol() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/15_empty_symbol_allele.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
 	@Order(16)
 	public void alleleBulkUploadEmptyUpdatedBy() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/16_empty_updated_by_allele.json"));
@@ -507,34 +425,6 @@ public class AlleleBulkUploadITCase {
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].curie", is("ALLELETEST:Allele0016"));
-	}
-	
-	@Test
-	@Order(17)
-	public void alleleBulkUploadEmptyName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/17_empty_name_allele.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0017"));
 	}
 	
 	@Test
@@ -861,42 +751,6 @@ public class AlleleBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(32)
-	public void alleleBulkUploadUpdateNoName() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/32_update_no_name_allele.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/allele/bulk/alleles").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/allele/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0001")).
-			body("results[0]", not(hasKey("name")));
 	}
 	
 	@Test

@@ -32,6 +32,12 @@ public class AffectedGenomicModelDTOValidator extends BaseDTOValidator {
 		
 		agm.setCurie(dto.getCurie());
 		
+		if (StringUtils.isNotBlank(dto.getName())) {
+			agm.setName(dto.getName());
+		} else {
+			agm.setName(null);
+		}
+		
 		ObjectResponse<AffectedGenomicModel> geResponse = validateGenomicEntityDTO(agm, dto);
 		agmResponse.addErrorMessages(geResponse.getErrorMessages());
 		

@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0011",
-    "name": "TestGene11",
-    "symbol": "tg11",
     "taxon_curie": "NCBITaxon:1009",
     "internal": true,
     "obsolete": true,

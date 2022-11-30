@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0023",
-    "name": "TestAllele23",
-    "symbol": "ta23",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

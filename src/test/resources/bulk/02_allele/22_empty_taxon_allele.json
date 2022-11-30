@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0022",
-    "name": "TestAllele22",
-    "symbol": "ta22",
     "taxon_curie": "",
     "internal": true,
     "obsolete": true,

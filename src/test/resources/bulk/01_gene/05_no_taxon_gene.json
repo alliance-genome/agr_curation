@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0005",
-    "name": "TestGene5",
-    "symbol": "tg5",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "GENETEST:Person0001",

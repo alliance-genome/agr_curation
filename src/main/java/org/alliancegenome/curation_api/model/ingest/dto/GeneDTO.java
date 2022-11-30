@@ -8,7 +8,5 @@ import lombok.Data;
 @Data
 @AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class}, submitted=true)
 public class GeneDTO extends GenomicEntityDTO {
-
-	private String symbol;
 	
 }

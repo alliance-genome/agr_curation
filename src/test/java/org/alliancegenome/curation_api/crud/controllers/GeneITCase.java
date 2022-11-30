@@ -37,7 +37,7 @@ public class GeneITCase {
 	@Order(1)
 	public void createValidGene() {
 		soTerm = createSoTerm(GENE_TYPE, "Test SO term");
-		gene = createGene(GENE_CURIE, GENE_NAME, GENE_TAXON, GENE_SYMBOL, soTerm);
+		gene = createGene(GENE_CURIE, GENE_TAXON, soTerm);
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -64,8 +64,6 @@ public class GeneITCase {
 	public void editGene() {
 		SOTerm newSoTerm = createSoTerm("SO:0001000", "Test SO term 2");
 		
-		gene.setName("Gene edited");
-		gene.setSymbol("GT2");
 		gene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
 		gene.setGeneType(newSoTerm);
 		gene.setInternal(true);
@@ -105,7 +103,7 @@ public class GeneITCase {
 	@Test
 	@Order(4)
 	public void createMissingCurieGene() {
-		Gene noCurieGene = createGene(null, GENE_NAME, GENE_TAXON, GENE_SYMBOL, soTerm);
+		Gene noCurieGene = createGene(null, GENE_TAXON, soTerm);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -118,22 +116,8 @@ public class GeneITCase {
 	
 	@Test
 	@Order(5)
-	public void createMissingNameGene() {
-		Gene noNameGene = createGene(GENE_CURIE, null, GENE_TAXON, GENE_SYMBOL, soTerm);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(noNameGene).
-			when().
-			put("/api/gene").
-			then().
-			statusCode(400);
-	}
-	
-	@Test
-	@Order(6)
 	public void createMissingTaxonGene() {
-		Gene noTaxonGene = createGene(GENE_CURIE, GENE_NAME, null, GENE_SYMBOL, soTerm);
+		Gene noTaxonGene = createGene(GENE_CURIE, null, soTerm);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -145,23 +129,9 @@ public class GeneITCase {
 	}
 
 	@Test
-	@Order(7)
-	public void createMissingSymbolGene() {
-		Gene noSymbolGene = createGene(GENE_CURIE, GENE_NAME, GENE_TAXON, null, soTerm);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(noSymbolGene).
-			when().
-			put("/api/gene").
-			then().
-			statusCode(400);
-	}
-	
-	@Test
-	@Order(8)
+	@Order(6)
 	public void createInvalidTaxonGene() {
-		Gene invalidTaxonGene = createGene(GENE_CURIE, GENE_NAME, INVALID_TAXON, GENE_SYMBOL, soTerm);
+		Gene invalidTaxonGene = createGene(GENE_CURIE, INVALID_TAXON, soTerm);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -173,12 +143,12 @@ public class GeneITCase {
 	}
 	
 	@Test
-	@Order(9)
+	@Order(7)
 	public void createInvalidTypeGene() {
 		SOTerm invalidSoTerm = new SOTerm();
 		invalidSoTerm.setCurie(INVALID_GENE_TYPE);
 		invalidSoTerm.setName("Unloaded SO Term");
-		Gene invalidTypeGene = createGene(GENE_CURIE, GENE_NAME, GENE_TAXON, GENE_SYMBOL, invalidSoTerm);
+		Gene invalidTypeGene = createGene(GENE_CURIE, GENE_TAXON, invalidSoTerm);
 	
 		RestAssured.given().
 			contentType("application/json").
@@ -189,12 +159,10 @@ public class GeneITCase {
 			statusCode(400);
 	}
 	
-	private Gene createGene(String curie, String name, String taxon, String symbol, SOTerm type) {
+	private Gene createGene(String curie, String taxon, SOTerm type) {
 		Gene gene = new Gene();
 		gene.setCurie(curie);
-		gene.setName(name);
 		gene.setTaxon(getTaxonFromCurie(taxon));
-		gene.setSymbol(symbol);
 		gene.setGeneType(type);
 		
 		return gene;

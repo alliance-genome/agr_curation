@@ -1,8 +1,6 @@
 [
   {
     "curie": "",
-    "name": "TestAllele21",
-    "symbol": "ta21",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

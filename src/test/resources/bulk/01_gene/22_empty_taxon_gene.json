@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0022",
-    "name": "TestGene22",
-    "symbol": "tg22",
     "taxon_curie": "",
     "internal": true,
     "obsolete": true,

@@ -1,8 +1,6 @@
 [
   {
     "curie": "",
-    "name": "TestGene17",
-    "symbol": "tg17",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

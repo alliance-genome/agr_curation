@@ -37,11 +37,6 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 		
-		String symbol = dto.getSymbol();
-		if (StringUtils.isBlank(symbol)) 
-			geneResponse.addErrorMessage("symbol", ValidationConstants.REQUIRED_MESSAGE);
-		gene.setSymbol(symbol);
-		
 		if (geneResponse.hasErrors()) {
 			throw new ObjectValidationException(dto, geneResponse.errorMessagesString());
 		}

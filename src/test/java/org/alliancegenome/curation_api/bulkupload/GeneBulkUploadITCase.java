@@ -67,8 +67,6 @@ public class GeneBulkUploadITCase {
 			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].curie", is("GENETEST:Gene0001")).
-			body("results[0].name", is("TestGene1")).
-			body("results[0].symbol", is("tg1")).
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
 			body("results[0].obsolete", is(true)).
@@ -82,60 +80,6 @@ public class GeneBulkUploadITCase {
 	@Order(2)
 	public void geneBulkUploadNoCurie() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/02_no_curie_gene.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene/bulk/genes").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(3)
-	public void geneBulkUploadNoName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/03_no_name_gene.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene/bulk/genes").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("GENETEST:Gene0003"));
-	}
-	
-	@Test
-	@Order(4)
-	public void geneBulkUploadNoSymbol() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/04_no_symbol_gene.json"));
 		
 		// upload file
 		RestAssured.given().
@@ -462,34 +406,6 @@ public class GeneBulkUploadITCase {
 	}
 	
 	@Test
-	@Order(16)
-	public void geneBulkUploadEmptyName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/16_empty_name_gene.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene/bulk/genes").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("GENETEST:Gene0016"));
-	}
-	
-	@Test
 	@Order(17)
 	public void geneBulkUploadEmptyCurie() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/17_empty_curie_gene.json"));
@@ -600,32 +516,6 @@ public class GeneBulkUploadITCase {
 	}
 	
 	@Test
-	@Order(21)
-	public void geneBulkUploadEmptySymbol() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/21_empty_symbol_gene.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/gene/bulk/genes").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
 	@Order(22)
 	public void geneBulkUploadEmptyTaxon() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/22_empty_taxon_gene.json"));
@@ -649,42 +539,6 @@ public class GeneBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(23)
-	public void geneBulkUploadUpdateNoName() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/gene/bulk/genes").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/01_gene/23_update_no_name_gene.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/gene/bulk/genes").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/gene/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("GENETEST:Gene0001")).
-			body("results[0]", not(hasKey("name")));
 	}
 	
 	@Test

@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0008",
-    "name": "TestGene8",
-    "symbol": "tg8",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

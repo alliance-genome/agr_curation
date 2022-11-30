@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0013",
-    "name": "TestGene13",
-    "symbol": "tg13",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

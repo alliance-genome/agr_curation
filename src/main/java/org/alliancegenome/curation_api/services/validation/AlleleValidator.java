@@ -17,14 +17,12 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.AlleleMutationTypeSlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AlleleValidator extends GenomicEntityValidator {
@@ -75,12 +73,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
 		dbEntity.setTaxon(taxon);
 		
-		String symbol = validateSymbol(uiEntity);
-		dbEntity.setSymbol(symbol);
-		
-		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
-		dbEntity.setName(name);
-
 		List<String> previousReferenceCuries = new ArrayList<String>();
 		if (CollectionUtils.isNotEmpty(dbEntity.getReferences()))
 			previousReferenceCuries = dbEntity.getReferences().stream().map(Reference::getCurie).collect(Collectors.toList());
@@ -109,9 +101,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.setIsExtinct(null);
 		}
 		
-		List<Synonym> synonyms = validateSynonyms(uiEntity, dbEntity);
-		dbEntity.setSynonyms(synonyms);
-
 		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
 		dbEntity.setCrossReferences(crossReferences);
 		
@@ -142,15 +131,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 		dbEntity.setAlleleMutationTypes(mutationTypes);
 		
 		return dbEntity;
-	}
-	
-	private String validateSymbol(Allele uiEntity) {
-		String symbol = uiEntity.getSymbol();
-		if (StringUtils.isBlank(symbol)) {
-			addMessageResponse("symbol", ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		return symbol;
 	}
 	
 	private Reference validateReference (Reference uiEntity, List<String> previousCuries) {

@@ -8,10 +8,10 @@ import org.alliancegenome.curation_api.dao.GeneDAO;
 import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.ontology.*;
+import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class GeneValidator extends GenomicEntityValidator {
@@ -39,21 +39,9 @@ public class GeneValidator extends GenomicEntityValidator {
 		
 		dbEntity = (Gene) validateAuditedObjectFields(uiEntity, dbEntity, false);
 
-		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
-		dbEntity.setName(name);
-		
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
 		dbEntity.setTaxon(taxon);
 		
-		String symbol = validateSymbol(uiEntity);
-		dbEntity.setSymbol(symbol);
-		
-		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
-			dbEntity.setSynonyms(uiEntity.getSynonyms());
-		} else {
-			dbEntity.setSynonyms(null);
-		}
-
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
 		} else {
@@ -75,15 +63,6 @@ public class GeneValidator extends GenomicEntityValidator {
 		}
 		
 		return dbEntity;
-	}
-	
-	private String validateSymbol(Gene uiEntity) {
-		String symbol = uiEntity.getSymbol();
-		if (StringUtils.isBlank(symbol)) {
-			addMessageResponse("symbol", ValidationConstants.REQUIRED_MESSAGE);
-			return null;
-		}
-		return symbol;
 	}
 	
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {

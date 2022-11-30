@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0015",
-    "name": "TestGene15",
-    "symbol": "tg9",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

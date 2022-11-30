@@ -4983,8 +4983,6 @@ public class DiseaseAnnotationITCase {
 		allele.setCurie(curie);
 		allele.setTaxon(getTaxonFromCurie(taxon));
 		allele.setObsolete(obsolete);
-		allele.setName("DA CRUD Test Allele");
-		allele.setSymbol("DATA");
 		allele.setInternal(false);
 
 		RestAssured.given().

@@ -37,7 +37,6 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
 	@Inject CrossReferenceService crossReferenceService;
 	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject SynonymService synonymService;
 	@Inject AlleleDAO alleleDAO;
 	@Inject AffectedGenomicModelValidator affectedGenomicModelValidator;
 	@Inject AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;

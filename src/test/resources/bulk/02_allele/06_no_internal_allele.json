@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0006",
-    "name": "TestAllele6",
-    "symbol": "ta6",
     "taxon_curie": "NCBITaxon:6239",
     "obsolete": true,
     "created_by_curie": "ALLELETEST:Person0001",

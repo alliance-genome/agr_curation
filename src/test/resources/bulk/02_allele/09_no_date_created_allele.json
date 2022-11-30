@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0009",
-    "name": "TestAllele9",
-    "symbol": "ta9",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

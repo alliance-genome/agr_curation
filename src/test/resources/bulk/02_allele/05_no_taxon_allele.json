@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0005",
-    "name": "TestAllele5",
-    "symbol": "ta5",
     "internal": true,
     "obsolete": true,
     "created_by_curie": "ALLELETEST:Person0001",

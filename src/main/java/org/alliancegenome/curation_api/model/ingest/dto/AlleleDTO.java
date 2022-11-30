@@ -15,9 +15,6 @@ import lombok.Data;
 @AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class}, submitted=true)
 public class AlleleDTO extends GenomicEntityDTO {
 
-	@JsonView({View.FieldsOnly.class})
-	private String symbol;
-	
 	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("reference_curies")
 	private List<String> referenceCuries;

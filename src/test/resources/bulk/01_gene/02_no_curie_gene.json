@@ -1,7 +1,5 @@
 [
   {
-    "name": "TestGene2",
-    "symbol": "tg2",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

@@ -1,8 +1,6 @@
 [
   {
     "curie": "GENETEST:Gene0019",
-    "name": "TestGene19",
-    "symbol": "tg19",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

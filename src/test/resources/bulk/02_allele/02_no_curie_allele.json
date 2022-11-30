@@ -1,7 +1,5 @@
 [
   {
-    "name": "TestAllele2",
-    "symbol": "ta2",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

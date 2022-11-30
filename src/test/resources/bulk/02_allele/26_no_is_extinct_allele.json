@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0026",
-    "name": "TestAllele26",
-    "symbol": "ta26",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,

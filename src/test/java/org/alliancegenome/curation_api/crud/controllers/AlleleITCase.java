@@ -84,8 +84,6 @@ public class AlleleITCase {
 		Allele allele = new Allele();
 		allele.setCurie(ALLELE);
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -108,11 +106,9 @@ public class AlleleITCase {
 				then().
 				statusCode(200).
 				body("entity.curie", is(ALLELE)).
-				body("entity.symbol", is("Allele<sup>test</sup>")).
 				body("entity.taxon.curie", is(taxon.getCurie())).
 				body("entity.internal", is(false)).
 				body("entity.obsolete", is(false)).
-				body("entity.name", is("TestAllele")).
 				body("entity.inheritanceMode.name", is(inheritanceMode.getName())).
 				body("entity.inCollection.name", is(inCollection.getName())).
 				body("entity.isExtinct", is(false)).
@@ -130,7 +126,6 @@ public class AlleleITCase {
 		Allele allele = getAllele();
 		AlleleMutationTypeSlotAnnotation alleleMutationType2 = createAlleleMutationTypeSlotAnnotation(reference, soTerm2);
 		
-		allele.setSymbol("Allele<sup>edited</sup>");
 		allele.setTaxon(taxon2);
 		allele.setInternal(true);
 		allele.setObsolete(true);
@@ -151,7 +146,6 @@ public class AlleleITCase {
 				then().
 				statusCode(200).
 				body("entity.curie", is(ALLELE)).
-				body("entity.symbol", is("Allele<sup>edited</sup>")).
 				body("entity.taxon.curie", is(taxon2.getCurie())).
 				body("entity.internal", is(true)).
 				body("entity.obsolete", is(true)).
@@ -164,8 +158,6 @@ public class AlleleITCase {
 	public void createAlleleWithMissingCurie() {
 		Allele allele = new Allele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -184,34 +176,9 @@ public class AlleleITCase {
 	
 	@Test
 	@Order(4)
-	public void createAlleleWithMissingSymbol() {
-		Allele allele = new Allele();
-		allele.setCurie("Allele:0004");
-		allele.setTaxon(taxon);
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.symbol", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(5)
 	public void createAlleleWithMissingTaxon() {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0005");
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -229,7 +196,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(6)
+	@Order(5)
 	public void createAlleleWithInvalidTaxon() {
 		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
 		nonPersistedTaxon.setCurie("TEST:invalid");
@@ -238,8 +205,6 @@ public class AlleleITCase {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0006");
 		allele.setTaxon(nonPersistedTaxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -257,13 +222,11 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	public void createAlleleWithInvalidInheritanceMode() {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0007");
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -283,13 +246,11 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void createAlleleWithInvalidInCollection() {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0008");
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inheritanceMode);
 		allele.setReferences(references);
@@ -309,7 +270,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(9)
+	@Order(8)
 	public void createAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
@@ -319,8 +280,6 @@ public class AlleleITCase {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0010");
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(invalidReferences);
@@ -338,13 +297,11 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(10)
+	@Order(9)
 	public void editAlleleWithMissingCurie() {
 		Allele allele = getAllele();
 		allele.setCurie(null);
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -362,34 +319,9 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(11)
-	public void editAlleleWithMissingSymbol() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setName("TestAllele");
-		allele.setSymbol(null);
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(400).
-			body("errorMessages", is(aMapWithSize(1))).
-			body("errorMessages.symbol", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(12)
+	@Order(10)
 	public void editAlleleWithMissingTaxon() {
 		Allele allele = getAllele();
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -408,7 +340,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(13)
+	@Order(11)
 	public void editAlleleWithInvalidTaxon() {
 		NCBITaxonTerm nonPersistedTaxon = new NCBITaxonTerm();
 		nonPersistedTaxon.setCurie("TEST:invalid");
@@ -416,8 +348,6 @@ public class AlleleITCase {
 		
 		Allele allele = getAllele();
 		allele.setTaxon(nonPersistedTaxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -435,12 +365,10 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(14)
+	@Order(12)
 	public void editAlleleWithInvalidInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inCollection);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -458,12 +386,10 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(15)
+	@Order(13)
 	public void editAlleleWithInvalidInCollection() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inheritanceMode);
 		allele.setReferences(references);
@@ -481,7 +407,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(16)
+	@Order(14)
 	public void editAlleleWithInvalidReference() {
 		List<Reference> invalidReferences = new ArrayList<Reference>();
 		Reference invalidReference = new Reference();
@@ -490,8 +416,6 @@ public class AlleleITCase {
 		
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(invalidReferences);
@@ -509,12 +433,10 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(17)
+	@Order(15)
 	public void editAlleleWithNullInheritanceMode() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -542,12 +464,10 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(18)
+	@Order(16)
 	public void editAlleleWithNullInCollection() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -575,12 +495,10 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(19)
+	@Order(17)
 	public void editAlleleWithNullIsExtinct() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -609,12 +527,10 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(20)
+	@Order(18)
 	public void editAlleleWithNullReferences() {
 		Allele allele = getAllele();
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -642,40 +558,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(21)
-	public void editAlleleWithNullName() {
-		Allele allele = getAllele();
-		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
-		allele.setInheritanceMode(inheritanceMode);
-		allele.setInCollection(inCollection);
-		allele.setReferences(references);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", hasKey("name"));
-		
-		allele.setName(null);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("name")));
-	}
-	
-	@Test
-	@Order(22)
+	@Order(19)
 	public void createAlleleWithMissingAlleleMutationTypeMutationTypes() {
 		Allele allele = new Allele();
 		
@@ -685,8 +568,6 @@ public class AlleleITCase {
 
 		allele.setCurie("Allele:0022");
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -704,7 +585,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(23)
+	@Order(20)
 	public void createAlleleWithInvalidAlleleMutationTypeMutationTypes() {
 		Allele allele = new Allele();
 		
@@ -712,9 +593,8 @@ public class AlleleITCase {
 		nonPersistedSoTerm.setCurie("SO:00004");
 		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, nonPersistedSoTerm);
 		
-		allele.setCurie("Allele:0023");allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
+		allele.setCurie("Allele:0023");
+		allele.setTaxon(taxon);
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -732,7 +612,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(24)
+	@Order(21)
 	public void createAlleleWithInvalidAlleleMutationTypeEvidence() {
 		Allele allele = new Allele();
 		
@@ -740,9 +620,8 @@ public class AlleleITCase {
 		nonPersistedReference.setCurie("PMID:00004");
 		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(nonPersistedReference, soTerm);
 		
-		allele.setCurie("Allele:0024");allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
+		allele.setCurie("Allele:0024");
+		allele.setTaxon(taxon);
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -760,7 +639,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(25)
+	@Order(22)
 	public void editAlleleWithMissingAlleleMutationTypeMutationTypes() {
 		Allele allele = getAllele();
 		
@@ -769,8 +648,6 @@ public class AlleleITCase {
 		invalidAlleleMutationType.setMutationTypes(null);
 		
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -788,7 +665,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(26)
+	@Order(23)
 	public void editAlleleWithInvalidAlleleMutationTypeMutationTypes() {
 		Allele allele = getAllele();
 		
@@ -797,8 +674,6 @@ public class AlleleITCase {
 		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(reference, nonPersistedSoTerm);
 		
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -816,7 +691,7 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(27)
+	@Order(24)
 	public void editAlleleWithInvalidAlleleMutationTypeEvidence() {
 		Allele allele = getAllele();
 		
@@ -825,8 +700,6 @@ public class AlleleITCase {
 		AlleleMutationTypeSlotAnnotation invalidAlleleMutationType = createAlleleMutationTypeSlotAnnotation(nonPersistedReference, soTerm);
 		
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -844,15 +717,13 @@ public class AlleleITCase {
 	}
 	
 	@Test
-	@Order(28)
+	@Order(25)
 	public void editAlleleWithNullAlleleMutationTypeEvidence() {
 		Allele allele = getAllele();
 		AlleleMutationTypeSlotAnnotation noEvidenceAlleleMutationType = new AlleleMutationTypeSlotAnnotation();
 		noEvidenceAlleleMutationType.setMutationTypes(List.of(soTerm));
 		
 		allele.setTaxon(taxon);
-		allele.setSymbol("Allele<sup>test</sup>");
-		allele.setName("TestAllele");
 		allele.setInheritanceMode(inheritanceMode);
 		allele.setInCollection(inCollection);
 		allele.setReferences(references);
@@ -892,7 +763,7 @@ public class AlleleITCase {
 	}
 
 	@Test
-	@Order(29)
+	@Order(26)
 	public void deleteAllele() {
 
 		RestAssured.given().
