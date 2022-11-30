@@ -6,6 +6,10 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.dao.AlleleDAO;
+import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.model.entities.Allele;
+import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.services.InformationContentEntityService;
@@ -15,8 +19,20 @@ import org.apache.commons.collections.CollectionUtils;
 public class SlotAnnotationValidator <E extends SlotAnnotation> extends AuditedObjectValidator<E> {
 
 	@Inject InformationContentEntityService informationContentEntityService;
+	@Inject AlleleDAO alleleDAO;
+	@Inject GeneDAO geneDAO;
 	
-	public List<InformationContentEntity> validateEvidence(SlotAnnotation uiEntity, SlotAnnotation dbEntity) {
+	public E validateSlotAnnotationFields(E uiEntity, E dbEntity, Boolean newObject) {
+		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, newObject);
+
+		List<InformationContentEntity> evidence = validateEvidence(uiEntity, dbEntity);
+		dbEntity.setEvidence(evidence);
+		
+		return dbEntity;
+	}
+	
+	
+	public List<InformationContentEntity> validateEvidence(E uiEntity, E dbEntity) {
 		String field = "evidence";
 		
 		if (CollectionUtils.isEmpty(uiEntity.getEvidence()))
@@ -38,6 +54,38 @@ public class SlotAnnotationValidator <E extends SlotAnnotation> extends AuditedO
 		}
 		
 		return validatedEntities;
+	}
+	
+	public Allele validateSingleAllele (Allele uiAllele, Allele dbAllele) {
+		String field = "singleAllele";
+		
+		Allele allele = alleleDAO.find(uiAllele.getCurie());
+		if (allele == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		if (allele.getObsolete() && (dbAllele != null && !dbAllele.getObsolete())) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return allele;
+	}
+	
+	public Gene validateSingleGene (Gene uiGene, Gene dbGene) {
+		String field = "singleGene";
+		
+		Gene gene = geneDAO.find(uiGene.getCurie());
+		if (gene == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+		if (gene.getObsolete() && (dbGene != null && !dbGene.getObsolete())) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+		
+		return gene;
 	}
 
 }

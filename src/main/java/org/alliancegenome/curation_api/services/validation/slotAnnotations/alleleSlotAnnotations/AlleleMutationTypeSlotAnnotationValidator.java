@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.validation.slotAnnotations;
+package org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,10 +12,10 @@ import org.alliancegenome.curation_api.dao.ontology.SoTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.SlotAnnotationValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 
@@ -52,15 +52,13 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 			dbEntity = new AlleleMutationTypeSlotAnnotation();
 			newEntity = true;
 		}
-		dbEntity = (AlleleMutationTypeSlotAnnotation) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
-
+		
+		dbEntity = (AlleleMutationTypeSlotAnnotation) validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
+		
 		if (validateAllele) {
-			Allele singleAllele = validateSingleAllele(uiEntity, dbEntity);
+			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
-		
-		List<InformationContentEntity> evidence = validateEvidence(uiEntity, dbEntity);
-		dbEntity.setEvidence(evidence);
 		
 		List<SOTerm> mutationTypes = validateMutationTypes(uiEntity, dbEntity);
 		dbEntity.setMutationTypes(mutationTypes);
@@ -100,22 +98,6 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 
 		}
 		return validMutationTypes;
-	}
-	
-	private Allele validateSingleAllele (AlleleMutationTypeSlotAnnotation uiEntity, AlleleMutationTypeSlotAnnotation dbEntity) {
-		String field = "singleAllele";
-		
-		Allele allele = alleleDAO.find(uiEntity.getSingleAllele().getCurie());
-		if (allele == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-		if (allele.getObsolete() && (dbEntity.getSingleAllele() != null && !dbEntity.getSingleAllele().getObsolete())) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		
-		return allele;
 	}
 	
 }

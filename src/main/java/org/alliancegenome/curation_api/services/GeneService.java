@@ -42,9 +42,17 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	@Override
 	@Transactional
 	public ObjectResponse<Gene> update(Gene uiEntity) {
-		Gene dbEntity = geneValidator.validateAnnotation(uiEntity);
-		return new ObjectResponse<Gene>(geneDAO.persist(dbEntity));
+		Gene dbEntity = geneValidator.validateGeneUpdate(uiEntity);
+		return new ObjectResponse<Gene>(dbEntity);
 	}
+
+	@Override
+	@Transactional
+	public ObjectResponse<Gene> create(Gene uiEntity) {
+		Gene dbEntity = geneValidator.validateGeneCreate(uiEntity);
+		return new ObjectResponse<Gene>(dbEntity);
+	}
+
 
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
 		return geneDtoValidator.validateGeneDTO(dto);
