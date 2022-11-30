@@ -47,16 +47,6 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	}
 
 	@Transactional
-	public Gene getByIdOrCurie(String id) {
-		Gene gene = geneDAO.getByIdOrCurie(id);
-		if (gene != null) {
-			gene.getSynonyms().size();
-			gene.getSecondaryIdentifiers().size();
-		}
-		return gene;
-	}
-
-	@Transactional
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
 		Gene gene = geneDtoValidator.validateGeneDTO(dto);
 		if (gene == null) return null;

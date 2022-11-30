@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.model.entities.slotAnnotations;
+package org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations;
 
 import java.util.List;
 
@@ -15,6 +15,7 @@ import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.SlotAnnotation;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
