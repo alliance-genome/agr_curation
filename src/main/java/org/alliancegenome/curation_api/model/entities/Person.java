@@ -9,6 +9,7 @@ import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -86,5 +87,9 @@ public class Person extends Agent {
 	@OneToMany(mappedBy = "person")
 	@JsonView({View.PersonSettingView.class})
 	private List<PersonSetting> settings;
+	
+	@ManyToOne
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
+	private AllianceMember allianceMember;
 
 }
