@@ -34,10 +34,10 @@ public class TestContainerResource {
 		private Map<String, String> getConfig() {
 			final Map<String, String> map = new HashMap<>();
 
-			map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", container.getHost() + ":" + container.getMappedPort(9200));
+			//map.put("quarkus.hibernate-search-orm.elasticsearch.hosts", container.getHost() + ":" + container.getMappedPort(9200));
 			//map.put("quarkus.hibernate-search-orm.elasticsearch.version", "openseach:1.2.4");
 
-			map.put("quarkus.datasource.jdbc.url", "jdbc:postgresql://" + pgContainer.getHost() + ":" + pgContainer.getMappedPort(5432) + "/curation");
+			//map.put("quarkus.datasource.jdbc.url", "jdbc:postgresql://" + pgContainer.getHost() + ":" + pgContainer.getMappedPort(5432) + "/curation");
 
 			// map.put("quarkus.elasticsearch.hosts", container.getHost() + ":" +
 			// container.getMappedPort(9200));
