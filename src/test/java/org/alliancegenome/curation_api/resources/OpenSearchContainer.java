@@ -1,5 +1,7 @@
 package org.alliancegenome.curation_api.resources;
 
+import java.time.Duration;
+
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.*;
 import org.testcontainers.utility.*;
@@ -23,7 +25,11 @@ public class OpenSearchContainer extends GenericContainer<OpenSearchContainer> {
 
 		// String regex = ".*(\"message\":\\s?\"started\".*|] started\n$)";
 		// setWaitStrategy(new LogMessageWaitStrategy().withRegEx(regex));
-		setWaitStrategy((new HttpWaitStrategy()).forPort(9200).forStatusCodeMatching(response -> response == 200 || response == 401));
+		setWaitStrategy((new HttpWaitStrategy())
+			.forPort(9200)
+			.forStatusCodeMatching(response -> response == 200 || response == 401)
+			.withStartupTimeout(Duration.ofSeconds(300))
+		);
 
 	}
 }
