@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class}, submitted=true)
+@AGRCurationSchemaVersion(min="1.5.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class, NameSlotAnnotationDTO.class}, submitted=true)
 public class AlleleDTO extends GenomicEntityDTO {
 
 	@JsonView({View.FieldsAndLists.class})
@@ -34,5 +34,17 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonView({View.FieldsAndLists.class})
 	@JsonProperty("allele_mutation_type_dtos")
 	private List<AlleleMutationTypeSlotAnnotationDTO> alleleMutationTypeDtos;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("allele_symbol_dto")
+	private NameSlotAnnotationDTO alleleSymbolDto;
+	
+	@JsonView({View.FieldsOnly.class})
+	@JsonProperty("allele_full_name_dto")
+	private NameSlotAnnotationDTO alleleFullNameDto;
+	
+	@JsonView({View.FieldsAndLists.class})
+	@JsonProperty("allele_synonyms_dto")
+	private List<NameSlotAnnotationDTO> alleleSynonymDtos;
 	
 }
