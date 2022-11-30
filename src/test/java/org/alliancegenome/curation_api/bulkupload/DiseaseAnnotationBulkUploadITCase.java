@@ -4246,7 +4246,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -4272,7 +4272,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -4295,7 +4295,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
