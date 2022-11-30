@@ -16,18 +16,18 @@ import lombok.Data;
 public class GeneDTO extends GenomicEntityDTO {
 
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("allele_symbol_dto")
-	private NameSlotAnnotationDTO alleleSymbolDto;
+	@JsonProperty("gene_symbol_dto")
+	private NameSlotAnnotationDTO geneSymbolDto;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("allele_full_name_dto")
-	private NameSlotAnnotationDTO alleleFullNameDto;
+	@JsonProperty("gene_full_name_dto")
+	private NameSlotAnnotationDTO geneFullNameDto;
 	
 	@JsonView({View.FieldsOnly.class})
-	@JsonProperty("allele_systematic_name_dto")
-	private NameSlotAnnotationDTO alleleSystematicNameDto;
+	@JsonProperty("gene_systematic_name_dto")
+	private NameSlotAnnotationDTO geneSystematicNameDto;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("allele_synonyms_dto")
-	private List<NameSlotAnnotationDTO> alleleSynonymDtos;
+	@JsonProperty("gene_synonyms_dto")
+	private List<NameSlotAnnotationDTO> geneSynonymDtos;
 }

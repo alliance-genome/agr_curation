@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations;
+package org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.SlotAnnotationDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped

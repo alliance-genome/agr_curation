@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.dao.slotAnnotations;
+package org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations;
 
 import javax.enterprise.context.ApplicationScoped;
 

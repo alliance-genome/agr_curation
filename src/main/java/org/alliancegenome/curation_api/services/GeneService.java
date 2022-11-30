@@ -46,12 +46,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return new ObjectResponse<Gene>(geneDAO.persist(dbEntity));
 	}
 
-	@Transactional
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
-		Gene gene = geneDtoValidator.validateGeneDTO(dto);
-		if (gene == null) return null;
-		
-		return geneDAO.persist(gene);
+		return geneDtoValidator.validateGeneDTO(dto);
 	}
 	
 	@Transactional
