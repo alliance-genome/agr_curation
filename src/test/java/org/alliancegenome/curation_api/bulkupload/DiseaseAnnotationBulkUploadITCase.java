@@ -337,16 +337,28 @@ public class DiseaseAnnotationBulkUploadITCase {
 			then().
 			statusCode(200);
 		
+		// Creating new WB DA, deprecating previous
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].uniqueId", is("DATEST:Gene0001|DATEST:Disease0001|" + requiredReference));
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{\"obsolete\":true}").
+			post("/api/gene-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0001"));
 	}
 	
 	@Test
@@ -365,11 +377,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0)); // Replace 1 WB gene disease annotation with 0 
+			body("totalResults", is(0));
 	}
 	
 	@Test
@@ -388,7 +400,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -411,7 +423,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -434,7 +446,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -459,7 +471,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -482,7 +494,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -506,7 +518,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -530,7 +542,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -554,7 +566,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			body("totalResults", is(1)).
@@ -577,7 +589,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -601,7 +613,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -624,7 +636,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -647,7 +659,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -670,7 +682,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -694,7 +706,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -717,7 +729,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -741,7 +753,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -765,7 +777,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -789,7 +801,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -812,7 +824,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -835,7 +847,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -858,7 +870,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -881,7 +893,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -905,7 +917,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -929,7 +941,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -953,7 +965,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -977,7 +989,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1001,7 +1013,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1025,7 +1037,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1048,7 +1060,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1071,7 +1083,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1094,11 +1106,22 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0)); // Replace 1 WB allele disease annotation with 0 
+			body("totalResults", is(0));
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{\"obsolete\":true}").
+			post("/api/allele-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0002"));
 	}
 	
 	@Test
@@ -1117,11 +1140,22 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0)); // Replace 1 WB AGM disease annotation with 0 
+			body("totalResults", is(0));
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{\"obsolete\":true}").
+			post("/api/agm-disease-annotation/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].modEntityId", is("DATEST:Annot0003"));
 	}
 	
 	@Test
@@ -1140,7 +1174,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1163,7 +1197,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1186,7 +1220,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1209,7 +1243,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1232,7 +1266,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1255,7 +1289,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1278,7 +1312,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1301,7 +1335,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1324,7 +1358,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1347,7 +1381,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1370,7 +1404,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1393,7 +1427,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1417,7 +1451,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1441,7 +1475,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1464,7 +1498,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1487,7 +1521,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1512,7 +1546,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1536,14 +1570,13 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
 	}
 	
-	// TODO: Replace status code when enum changed to vocabulary term
 	@Test
 	@Order(56)
 	public void diseaseAnnotationBulkUploadInvalidAnnotationType() throws Exception {
@@ -1560,7 +1593,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1583,7 +1616,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1606,7 +1639,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1629,7 +1662,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1652,7 +1685,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1676,7 +1709,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1700,7 +1733,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1723,7 +1756,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1746,7 +1779,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1770,7 +1803,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1793,7 +1826,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1818,7 +1851,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1843,7 +1876,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1868,7 +1901,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1893,7 +1926,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1918,7 +1951,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1943,7 +1976,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1968,7 +2001,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -1992,7 +2025,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2016,7 +2049,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2039,7 +2072,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2062,7 +2095,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2086,7 +2119,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2110,7 +2143,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2134,7 +2167,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2158,7 +2191,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2181,7 +2214,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2204,7 +2237,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2227,7 +2260,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2250,7 +2283,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2273,7 +2306,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2297,7 +2330,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2321,7 +2354,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2345,7 +2378,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2368,7 +2401,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2392,7 +2425,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2416,7 +2449,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2440,7 +2473,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2463,7 +2496,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2487,7 +2520,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2511,7 +2544,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2535,7 +2568,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2559,7 +2592,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2583,7 +2616,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2606,7 +2639,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2630,7 +2663,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2653,7 +2686,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2677,7 +2710,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2701,7 +2734,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2725,7 +2758,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2749,7 +2782,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2773,7 +2806,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2797,7 +2830,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2821,7 +2854,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2845,7 +2878,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2868,7 +2901,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2892,7 +2925,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2915,7 +2948,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2938,7 +2971,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2962,7 +2995,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -2986,7 +3019,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3009,7 +3042,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3033,7 +3066,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3057,7 +3090,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3081,7 +3114,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3104,7 +3137,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3127,7 +3160,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3151,7 +3184,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3175,7 +3208,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3198,7 +3231,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3221,7 +3254,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3245,7 +3278,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3268,7 +3301,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3292,7 +3325,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3315,7 +3348,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -3348,11 +3381,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("geneticSex")));
@@ -3384,11 +3417,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("updatedBy")));
@@ -3420,11 +3453,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("dateUpdated")));
@@ -3456,11 +3489,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("createdBy")));
@@ -3492,11 +3525,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("dateCreated")));
@@ -3528,11 +3561,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("with")));
@@ -3564,11 +3597,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("relatedNotes")));
@@ -3600,11 +3633,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("sgdStrainBackground")));
@@ -3636,11 +3669,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("conditionRelations")));
@@ -3672,11 +3705,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0].conditionRelations[0].conditions[0]", not(hasKey("conditionId")));
@@ -3708,11 +3741,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0].conditionRelations[0].conditions[0]", not(hasKey("conditionQuantity")));
@@ -3744,11 +3777,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0].conditionRelations[0].conditions[0]", not(hasKey("conditionGeneOntology")));
@@ -3780,11 +3813,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0].conditionRelations[0].conditions[0]", not(hasKey("conditionAnatomy")));
@@ -3816,11 +3849,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0].conditionRelations[0].conditions[0]", not(hasKey("conditionTaxon")));
@@ -3852,11 +3885,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0].conditionRelations[0].conditions[0]", not(hasKey("conditionChemical")));
@@ -3888,11 +3921,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("annotationType")));
@@ -3924,11 +3957,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("diseaseQualifiers")));
@@ -3960,11 +3993,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0001")).
 			body("results[0]", not(hasKey("diseaseGeneticModifier"))).
@@ -3997,11 +4030,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0002")).
 			body("results[0]", not(hasKey("inferredGene")));
@@ -4033,11 +4066,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/allele-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0002")).
 			body("results[0]", not(hasKey("assertedGene")));
@@ -4069,11 +4102,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0003")).
 			body("results[0]", not(hasKey("inferredGene")));
@@ -4105,11 +4138,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0003")).
 			body("results[0]", not(hasKey("assertedGene")));
@@ -4141,11 +4174,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0003")).
 			body("results[0]", not(hasKey("inferredAllele")));
@@ -4177,11 +4210,11 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/agm-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)). // Replace 1 WB gene disease annotation with 1
+			body("totalResults", is(1)).
 			body("results", hasSize(1)).
 			body("results[0].modEntityId", is("DATEST:Annot0003")).
 			body("results[0]", not(hasKey("assertedAllele")));
@@ -4213,7 +4246,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -4239,7 +4272,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).
@@ -4262,7 +4295,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post("/api/gene-disease-annotation/find?limit=10&page=0").
 			then().
 			statusCode(200).

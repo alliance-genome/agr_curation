@@ -61,12 +61,12 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 	// Gets called from the API directly
 	public APIResponse runLoad(String taxonId, List<AGMDiseaseAnnotationDTO> annotations) {
-		List<String> annotationIdsBefore = new ArrayList<>();
+		List<Long> annotationIdsBefore = new ArrayList<>();
 		annotationIdsBefore.addAll(agmDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));
 		annotationIdsBefore.removeIf(Objects::isNull);
 
 		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
-		List<String> annotationIdsAfter = new ArrayList<>();
+		List<Long> annotationIdsAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
@@ -75,7 +75,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			try {
 				AGMDiseaseAnnotation annotation = agmDiseaseService.upsert(annotationDTO);
 				history.incrementCompleted();
-				annotationIdsAfter.add(annotation.getUniqueId());
+				annotationIdsAfter.add(annotation.getId());
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {

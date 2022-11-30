@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,6 +30,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	@Inject GeneDAO geneDAO;
 	@Inject GeneValidator geneValidator;
 	@Inject GeneDTOValidator geneDtoValidator;
+	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject PersonService personService;
 
 	@Override
 	@PostConstruct
@@ -61,7 +64,8 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return geneDAO.persist(gene);
 	}
 	
-	public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter) {
+	@Transactional
+	public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + geneCuriesAfter.size());
 
 		List<String> distinctAfter = geneCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -71,11 +75,26 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " genes", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " genes", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			Gene gene = geneDAO.find(curie);
 			if (gene != null) {
-				geneDAO.deleteGeneAndReferencingDiseaseAnnotations(curie);
+				List<Long> referencingDAIds = geneDAO.findReferencingDiseaseAnnotations(curie);
+				Boolean anyPublicReferencingDAs = false;
+				for (Long daId : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "gene");
+					if (daMadePublic)
+						anyPublicReferencingDAs = true;
+				}
+	
+				if (anyPublicReferencingDAs) {
+					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
+					gene.setDateUpdated(OffsetDateTime.now());
+					gene.setObsolete(true);
+					geneDAO.persist(gene);
+				} else {
+					geneDAO.remove(curie);
+				}
 			} else {
 				log.error("Failed getting gene: " + curie);
 			}

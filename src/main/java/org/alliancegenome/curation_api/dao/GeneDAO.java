@@ -26,41 +26,36 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 		return (List<String>) jpqlQuery.getResultList();
 	}
 	
-	@Transactional
-	public void deleteGeneAndReferencingDiseaseAnnotations(String geneCurie) {
+	public List<Long> findReferencingDiseaseAnnotations(String geneCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
-		List<String> results = (List<String>)jpqlQuery.getResultList();
+		List<Long> results = (List<Long>)jpqlQuery.getResultList();
 		
 		jpqlQuery = entityManager.createQuery("SELECT gda.id FROM GeneDiseaseAnnotation gda WHERE gda.subject.curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<String>) jpqlQuery.getResultList());
+		results.addAll((List<Long>) jpqlQuery.getResultList());
+		
+		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.inferredGene.curie = :geneCurie");
+		jpqlQuery.setParameter("geneCurie", geneCurie);
+		results.addAll((List<Long>) jpqlQuery.getResultList());
+		
+		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AlleleDiseaseAnnotation ada WHERE ada.inferredGene.curie = :geneCurie");
+		jpqlQuery.setParameter("geneCurie", geneCurie);
+		results.addAll((List<Long>) jpqlQuery.getResultList());
 		
 		jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_gene gda WHERE with_curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<String>) jpqlQuery.getResultList());
+		results.addAll((List<Long>) jpqlQuery.getResultList());
 		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_conditionrelation WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
+		jpqlQuery = entityManager.createNativeQuery("SELECT agmdiseaseannotation_id FROM agmdiseaseannotation_gene gda WHERE assertedgenes_curie = :geneCurie");
+		jpqlQuery.setParameter("geneCurie", geneCurie);
+		results.addAll((List<Long>) jpqlQuery.getResultList());
 		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_ecoterm WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
+		jpqlQuery = entityManager.createNativeQuery("SELECT allelediseaseannotation_id FROM allelediseaseannotation_gene gda WHERE assertedgenes_curie = :geneCurie");
+		jpqlQuery.setParameter("geneCurie", geneCurie);
+		results.addAll((List<Long>) jpqlQuery.getResultList());
 		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_gene WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_note WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		jpqlQuery = entityManager.createNativeQuery("DELETE FROM diseaseannotation_vocabularyterm WHERE diseaseannotation_id IN (:ids)");
-		jpqlQuery.setParameter("ids", results);
-		jpqlQuery.executeUpdate();
-		
-		remove(geneCurie);
+		return results;
 	}
 	
 

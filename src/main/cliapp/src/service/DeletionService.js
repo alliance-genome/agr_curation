@@ -19,4 +19,3 @@ export class DeletionService extends BaseAuthService {
 		};
 	}
 }
-
