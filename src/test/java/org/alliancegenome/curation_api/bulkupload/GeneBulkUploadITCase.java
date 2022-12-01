@@ -9,8 +9,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -22,6 +28,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -40,11 +47,15 @@ public class GeneBulkUploadITCase {
 					.setParam("http.socket.timeout", 60000)
 					.setParam("http.connection.timeout", 60000));
 	}
+	
+	private String requiredReference = "AGRKB:000000001";
 
 	@Test
 	@Order(1)
 	public void geneBulkUploadCheckFields() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
+		
+		loadRequiredEntities();
 		
 		// upload file
 		RestAssured.given().
@@ -73,7 +84,32 @@ public class GeneBulkUploadITCase {
 			body("results[0].createdBy.uniqueId", is("GENETEST:Person0001")).
 			body("results[0].updatedBy.uniqueId", is("GENETEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].geneSymbol.displayText", is("Tg1")).
+			body("results[0].geneSymbol.formatText", is("Tg<sup>1</sup>")).
+			body("results[0].geneSymbol.synonymScope.name", is("exact")).
+			body("results[0].geneSymbol.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneSymbol.nameType.name", is("nomenclature_symbol")).
+			body("results[0].geneSymbol.formatText", is(requiredReference)).
+			body("results[0].geneFullName.displayText", is("Test gene 1")).
+			body("results[0].geneFullName.formatText", is("Test gene<sup>1</sup>")).
+			body("results[0].geneFullName.synonymScope.name", is("exact")).
+			body("results[0].geneFullName.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneFullName.nameType.name", is("full_name")).
+			body("results[0].geneFullName.formatText", is(requiredReference)).
+			body("results[0].geneSystematicName.displayText", is("Test gene 1")).
+			body("results[0].geneSystematicName.formatText", is("Test gene<sup>1</sup>")).
+			body("results[0].geneSystematicName.synonymScope.name", is("exact")).
+			body("results[0].geneSystematicName.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneSystematicName.nameType.name", is("systematic_name")).
+			body("results[0].geneSystematicName.formatText", is(requiredReference)).
+			body("results[0].geneSynonyms", hasSize(1)).
+			body("results[0].geneSynonyms[0].displayText", is("Test gene synonym 1")).
+			body("results[0].geneSynonyms[0].formatText", is("Test gene synonym <sup>1</sup>")).
+			body("results[0].geneSynonyms[0].synonymScope.name", is("exact")).
+			body("results[0].geneSynonyms[0].synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneSynonyms[0].nameType.name", is("unspecified")).
+			body("results[0].geneSynonyms[0].formatText", is(requiredReference));
 	}
 	
 	@Test
@@ -683,5 +719,81 @@ public class GeneBulkUploadITCase {
 			body("results", hasSize(1)).
 			body("results[0].curie", is("GENETEST:Gene0001")).
 			body("results[0]", not(hasKey("dateUpdated")));
+	}
+	
+	private void loadRequiredEntities() {
+		Vocabulary nameTypeVocabulary = createVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
+		Vocabulary synonymScopeVocabulary = createVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
+		VocabularyTerm symbolTerm = createVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		VocabularyTerm fullNameTerm = createVocabularyTerm(nameTypeVocabulary, "full_name");
+		VocabularyTerm systematicNameTerm = createVocabularyTerm(nameTypeVocabulary, "systematic_name");
+		createVocabularyTerm(nameTypeVocabulary, "unspecified");
+		createVocabularyTerm(synonymScopeVocabulary, "exact");
+		createVocabularyTermSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, nameTypeVocabulary, List.of(symbolTerm));
+		createVocabularyTermSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, nameTypeVocabulary, List.of(fullNameTerm));
+		createVocabularyTermSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, nameTypeVocabulary, List.of(systematicNameTerm));
+	}
+	
+	private Vocabulary createVocabulary(String name) {
+		Vocabulary vocabulary = new Vocabulary();
+		vocabulary.setName(name);
+		vocabulary.setInternal(false);
+		
+		ObjectResponse<Vocabulary> response = 
+			RestAssured.given().
+				contentType("application/json").
+				body(vocabulary).
+				when().
+				post("/api/vocabulary").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVocabulary());
+		
+		vocabulary = response.getEntity();
+		
+		return vocabulary;
+	}
+	
+	private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name) {
+		VocabularyTerm vocabularyTerm = new VocabularyTerm();
+		vocabularyTerm.setName(name);
+		vocabularyTerm.setVocabulary(vocabulary);
+		vocabularyTerm.setInternal(false);
+		
+		ObjectResponse<VocabularyTerm> response =
+			RestAssured.given().
+				contentType("application/json").
+				body(vocabularyTerm).
+				when().
+				post("/api/vocabularyterm").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
+		
+		return response.getEntity();
+	}
+	
+	private void createVocabularyTermSet(String name, Vocabulary vocabulary, List<VocabularyTerm> terms) {
+		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
+		vocabularyTermSet.setName(name);
+		vocabularyTermSet.setVocabularyTermSetVocabulary(vocabulary);
+		vocabularyTermSet.setInternal(false);
+		vocabularyTermSet.setMemberTerms(terms);
+		
+		RestAssured.given().
+				contentType("application/json").
+				body(vocabularyTermSet).
+				when().
+				post("/api/vocabularytermset").
+				then().
+				statusCode(200);
+	}
+	
+	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
+		return new TypeRef<ObjectResponse <Vocabulary>>() { };
+	}
+	
+	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
+		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
 	}
 }

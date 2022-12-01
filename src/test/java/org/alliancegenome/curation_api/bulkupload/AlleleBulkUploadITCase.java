@@ -92,6 +92,25 @@ public class AlleleBulkUploadITCase {
 			body("results[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("results[0].alleleSymbol.displayText", is("Ta1")).
+			body("results[0].alleleSymbol.formatText", is("Ta<sup>1</sup>")).
+			body("results[0].alleleSymbol.synonymScope.name", is("exact")).
+			body("results[0].alleleSymbol.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].alleleSymbol.nameType.name", is("nomenclature_symbol")).
+			body("results[0].alleleSymbol.formatText", is(requiredReference)).
+			body("results[0].alleleFullName.displayText", is("Test allele 1")).
+			body("results[0].alleleFullName.formatText", is("Test allele<sup>1</sup>")).
+			body("results[0].alleleFullName.synonymScope.name", is("exact")).
+			body("results[0].alleleFullName.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].alleleFullName.nameType.name", is("full_name")).
+			body("results[0].alleleFullName.formatText", is(requiredReference)).
+			body("results[0].alleleSynonyms", hasSize(1)).
+			body("results[0].alleleSynonyms[0].displayText", is("Test allele synonym 1")).
+			body("results[0].alleleSynonyms[0].formatText", is("Test allele synonym <sup>1</sup>")).
+			body("results[0].alleleSynonyms[0].synonymScope.name", is("exact")).
+			body("results[0].alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].alleleSynonyms[0].nameType.name", is("unspecified")).
+			body("results[0].alleleSynonyms[0].formatText", is(requiredReference)).
 			body("results[0].alleleMutationTypes", hasSize(1)).
 			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
 			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm));
