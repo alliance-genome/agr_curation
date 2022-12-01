@@ -39,7 +39,6 @@ jobs:
           server-id: ossrh
           server-username: MAVEN_USERNAME
           server-password: MAVEN_PASSWORD
-      - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
       - name: Set Proper version
         run: mvn versions:set -ntp -DnewVersion=${{ github.event.release.tag_name }}
       - id: install-secret-key
