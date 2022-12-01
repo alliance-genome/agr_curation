@@ -55,25 +55,25 @@ public class Gene extends GenomicEntity {
 	private List<GeneDiseaseAnnotation> geneDiseaseAnnotations;
 	
 	@IndexedEmbedded(includeDepth = 2)
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({View.FieldsOnly.class, View.AlleleView.class})
 	private GeneSymbolSlotAnnotation geneSymbol;
 	
 	@IndexedEmbedded(includeDepth = 2)
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({View.FieldsOnly.class, View.AlleleView.class})
 	private GeneFullNameSlotAnnotation geneFullName;
 	
 	@IndexedEmbedded(includeDepth = 2)
-	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({View.FieldsOnly.class, View.AlleleView.class})
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 	
 	@IndexedEmbedded(includeDepth = 2)
-	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})
 	private List<GeneSynonymSlotAnnotation> geneSynonyms;

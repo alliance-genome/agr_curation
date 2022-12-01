@@ -55,7 +55,7 @@ public class GeneBulkUploadITCase {
 	public void geneBulkUploadCheckFields() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
 		
-		loadRequiredEntities();
+		//loadRequiredEntities();
 		
 		// upload file
 		RestAssured.given().
