@@ -8,20 +8,27 @@ import javax.enterprise.event.Event;
 import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.ws.rs.Priorities;
-import javax.ws.rs.container.*;
-import javax.ws.rs.core.*;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.Provider;
 
+import org.alliancegenome.curation_api.dao.AllianceMemberDAO;
 import org.alliancegenome.curation_api.dao.LoggedInPersonDAO;
+import org.alliancegenome.curation_api.model.entities.AllianceMember;
 import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.LoggedInPersonService;
 import org.alliancegenome.curation_api.services.helpers.persons.LoggedInPersonUniqueIdHelper;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import com.okta.jwt.*;
+import com.okta.jwt.Jwt;
+import com.okta.jwt.JwtVerificationException;
 import com.okta.sdk.authc.credentials.TokenClientCredentials;
-import com.okta.sdk.client.*;
+import com.okta.sdk.client.Client;
+import com.okta.sdk.client.Clients;
+import com.okta.sdk.resource.group.Group;
 import com.okta.sdk.resource.user.User;
 
 import io.quarkus.logging.Log;
@@ -39,6 +46,8 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 	@Inject AuthenticationService authenticationService;
 
 	@Inject LoggedInPersonDAO loggedInPersonDAO;
+	
+	@Inject AllianceMemberDAO allianceMemberDAO;
 
 	@Inject LoggedInPersonService loggedInPersonService;
 
@@ -160,9 +169,24 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		User user = client.getUser(oktaId);
 
 		if(user != null) {
+			AllianceMember member = null;
+			for(Group group: user.listGroups()) {
+				String allianceMember = (String)group.getProfile().get("affiliated_alliance_member");
+				if(allianceMember != null) {
+					SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("uniqueId", allianceMember);
+					if(res.getTotalResults() == 1) {
+						member = res.getResults().get(0);
+						break;
+					} else {
+						log.info("Alliance Look up error: more than one member found");
+					}
+				}
+			}
+			
 			LoggedInPerson person = new LoggedInPerson();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setOktaId(oktaId);
+			if(member != null) person.setAllianceMember(member);
 			person.setOktaEmail(user.getProfile().getEmail());
 			person.setFirstName(user.getProfile().getFirstName());
 			person.setLastName(user.getProfile().getLastName());
