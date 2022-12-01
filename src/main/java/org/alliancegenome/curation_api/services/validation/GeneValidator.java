@@ -139,6 +139,8 @@ public class GeneValidator extends GenomicEntityValidator {
 			}
 		}
 		dbEntity.setGeneSynonyms(synonyms);
+		
+		return dbEntity;
 	}
 	
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {

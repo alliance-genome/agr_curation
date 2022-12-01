@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.services.slotAnnotations;
+package org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -9,7 +9,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.validation.slotAnnotations.AlleleMutationTypeSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationValidator;
 
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudService<AlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotationDAO> {

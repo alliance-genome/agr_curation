@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.controllers.crud.slotAnnotations;
+package org.alliancegenome.curation_api.controllers.crud.slotAnnotations.alleleSlotAnnotations;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
@@ -6,10 +6,10 @@ import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
-import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.AlleleMutationTypeSlotAnnotationCrudInterface;
+import org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationCrudInterface;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.slotAnnotations.AlleleMutationTypeSlotAnnotationService;
+import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationService;
 
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationCrudController extends BaseEntityCrudController<AlleleMutationTypeSlotAnnotationService, AlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotationDAO> implements AlleleMutationTypeSlotAnnotationCrudInterface {

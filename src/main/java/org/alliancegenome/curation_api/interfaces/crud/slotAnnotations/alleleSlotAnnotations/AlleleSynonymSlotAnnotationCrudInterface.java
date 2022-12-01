@@ -1,4 +1,4 @@
-package org.alliancegenome.curation_api.interfaces.crud.slotAnnotations;
+package org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.alleleSlotAnnotations;
 
 
 import javax.ws.rs.Consumes;
@@ -8,21 +8,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseIdCrudInterface;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
-@Path("/allelemutationtypeslotannotation")
-@Tag(name = "CRUD - Allele Mutation Type Slot Annotations")
+@Path("/allelesynonymslotannotation")
+@Tag(name = "CRUD - Allele Synonym Slot Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public interface AlleleMutationTypeSlotAnnotationCrudInterface extends BaseIdCrudInterface<AlleleMutationTypeSlotAnnotation> {
+public interface AlleleSynonymSlotAnnotationCrudInterface extends BaseIdCrudInterface<AlleleSynonymSlotAnnotation> {
 	
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)
-	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validate(AlleleMutationTypeSlotAnnotation entity);
+	public ObjectResponse<AlleleSynonymSlotAnnotation> validate(AlleleSynonymSlotAnnotation entity);
 }
