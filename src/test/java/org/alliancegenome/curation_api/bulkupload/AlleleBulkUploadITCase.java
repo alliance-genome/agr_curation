@@ -41,7 +41,6 @@ import io.restassured.config.RestAssuredConfig;
 public class AlleleBulkUploadITCase {
 	
 	private String requiredReference = "AGRKB:000000001";
-	private String requiredReferenceXref = "PMID:25920550";
 	private String requiredSoTerm = "SO:00001";
 	
 	@BeforeEach
@@ -95,22 +94,22 @@ public class AlleleBulkUploadITCase {
 			body("results[0].alleleSymbol.displayText", is("Ta1")).
 			body("results[0].alleleSymbol.formatText", is("Ta<sup>1</sup>")).
 			body("results[0].alleleSymbol.synonymScope.name", is("exact")).
-			body("results[0].alleleSymbol.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].alleleSymbol.synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].alleleSymbol.nameType.name", is("nomenclature_symbol")).
-			body("results[0].alleleSymbol.formatText", is(requiredReference)).
+			body("results[0].alleleSymbol.evidence[0].curie", is(requiredReference)).
 			body("results[0].alleleFullName.displayText", is("Test allele 1")).
 			body("results[0].alleleFullName.formatText", is("Test allele<sup>1</sup>")).
 			body("results[0].alleleFullName.synonymScope.name", is("exact")).
-			body("results[0].alleleFullName.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].alleleFullName.synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].alleleFullName.nameType.name", is("full_name")).
-			body("results[0].alleleFullName.formatText", is(requiredReference)).
+			body("results[0].alleleFullName.evidence[0].curie", is(requiredReference)).
 			body("results[0].alleleSynonyms", hasSize(1)).
 			body("results[0].alleleSynonyms[0].displayText", is("Test allele synonym 1")).
 			body("results[0].alleleSynonyms[0].formatText", is("Test allele synonym <sup>1</sup>")).
 			body("results[0].alleleSynonyms[0].synonymScope.name", is("exact")).
-			body("results[0].alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].alleleSynonyms[0].nameType.name", is("unspecified")).
-			body("results[0].alleleSynonyms[0].formatText", is(requiredReference)).
+			body("results[0].alleleSynonyms[0].evidence[0].curie", is(requiredReference)).
 			body("results[0].alleleMutationTypes", hasSize(1)).
 			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
 			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm));
@@ -1229,37 +1228,7 @@ public class AlleleBulkUploadITCase {
 	}
 	
 	private void loadRequiredEntities() throws Exception {
-		loadReference();
 		loadSOTerm();
-	}
-	
-	private void loadReference() throws Exception {
-			
-		CrossReference xref = new CrossReference();
-		xref.setCurie(requiredReferenceXref);
-		
-		ObjectResponse<CrossReference> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(xref).
-				when().
-				put("/api/cross-reference").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefCrossReference());
-		
-		Reference reference = new Reference();
-		reference.setCurie(requiredReference);
-		reference.setCrossReferences(List.of(response.getEntity()));
-		reference.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			put("/api/reference").
-			then().
-			statusCode(200);
 	}
 	
 	private void loadSOTerm() throws Exception {
@@ -1275,9 +1244,5 @@ public class AlleleBulkUploadITCase {
 			put("/api/soterm").
 			then().
 			statusCode(200);
-	}
-	
-	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
-		return new TypeRef<ObjectResponse <CrossReference>>() { };
 	}
 }

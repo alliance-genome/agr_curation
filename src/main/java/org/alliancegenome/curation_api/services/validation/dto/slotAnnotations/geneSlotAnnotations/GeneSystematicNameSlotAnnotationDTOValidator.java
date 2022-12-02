@@ -23,7 +23,7 @@ public class GeneSystematicNameSlotAnnotationDTOValidator extends NameSlotAnnota
     	
     	GeneSystematicNameSlotAnnotation annotation = new GeneSystematicNameSlotAnnotation();
     	
-    	ObjectResponse<GeneSystematicNameSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
+    	ObjectResponse<GeneSystematicNameSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
     	annotation = saResponse.getEntity();
     	gsnsaResponse.addErrorMessages(saResponse.getErrorMessages());
     	

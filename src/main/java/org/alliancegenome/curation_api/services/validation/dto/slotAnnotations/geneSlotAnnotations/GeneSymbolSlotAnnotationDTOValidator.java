@@ -23,7 +23,7 @@ public class GeneSymbolSlotAnnotationDTOValidator extends NameSlotAnnotationDTOV
     	
     	GeneSymbolSlotAnnotation annotation = new GeneSymbolSlotAnnotation();
     	
-    	ObjectResponse<GeneSymbolSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
+    	ObjectResponse<GeneSymbolSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
     	annotation = saResponse.getEntity();
     	gssaResponse.addErrorMessages(saResponse.getErrorMessages());
     	

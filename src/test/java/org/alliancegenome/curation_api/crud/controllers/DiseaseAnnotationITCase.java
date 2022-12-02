@@ -36,6 +36,8 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
@@ -110,6 +112,8 @@ public class DiseaseAnnotationITCase {
 	private Organization dataProvider;
 	private Organization secondaryDataProvider;
 	private Organization obsoleteDataProvider;
+	private Vocabulary nameTypeVocabulary;
+	private VocabularyTerm symbolNameType;
 	
 	private void createRequiredObjects() {
 		testEcoTerms = new ArrayList<ECOTerm>();
@@ -127,13 +131,15 @@ public class DiseaseAnnotationITCase {
 		testEcoTerms.add(createEcoTerm("ECO:da0001", "Test evidence code", false));
 		testEcoTerms2.add(createEcoTerm("ECO:da0002", "Test evidence code2", false));
 		testObsoleteEcoTerms.add(createEcoTerm("ECO:da0003", "Test obsolete evidence code", true));
-		testGene = createGene("GENE:da0001", "NCBITaxon:9606", false);
-		testGene2 = createGene("GENE:da0002", "NCBITaxon:9606", false);
-		testObsoleteGene = createGene("HGNC:da0003", "NCBITaxon:9606", true);
-		testWithGenes.add(createGene("HGNC:1", "NCBITaxon:9606", false));
-		testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606", false);
-		testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606", false);
-		testObsoleteAllele = createAllele("ALLELE:da0003", "NCBITaxon:9606", true);
+		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
+		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		testGene = createGene("GENE:da0001", "NCBITaxon:9606", false, symbolNameType);
+		testGene2 = createGene("GENE:da0002", "NCBITaxon:9606", false, symbolNameType);
+		testObsoleteGene = createGene("HGNC:da0003", "NCBITaxon:9606", true, symbolNameType);
+		testWithGenes.add(createGene("HGNC:1", "NCBITaxon:9606", false, symbolNameType));
+		testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606", false, symbolNameType);
+		testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606", false, symbolNameType);
+		testObsoleteAllele = createAllele("ALLELE:da0003", "NCBITaxon:9606", true, symbolNameType);
 		testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
 		testAgm2 = createModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
 		testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
@@ -145,7 +151,7 @@ public class DiseaseAnnotationITCase {
 		diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
 		diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
 		annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
-		geneDiseaseRelation2 = createVocabularyTerm(diseaseRelationVocabulary, "is_marker_for", false);
+		geneDiseaseRelation2 = getVocabularyTerm(diseaseRelationVocabulary, "is_marker_for");
 		alleleAndGeneDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in");
 		agmDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_model_of");
 		diseaseQualifiers.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity", false));
@@ -4962,11 +4968,18 @@ public class DiseaseAnnotationITCase {
 	}
 
 
-	private Gene createGene(String curie, String taxon, Boolean obsolete) {
+	private Gene createGene(String curie, String taxon, Boolean obsolete, VocabularyTerm symbolNameTerm) {
 		Gene gene = new Gene();
 		gene.setCurie(curie);
 		gene.setTaxon(getTaxonFromCurie(taxon));
 		gene.setObsolete(obsolete);
+		
+		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
+		symbol.setNameType(symbolNameTerm);
+		symbol.setDisplayText(curie);
+		symbol.setFormatText(curie);
+		
+		gene.setGeneSymbol(symbol);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -4978,12 +4991,19 @@ public class DiseaseAnnotationITCase {
 		return gene;
 	}
 
-	private Allele createAllele(String curie, String taxon, Boolean obsolete) {
+	private Allele createAllele(String curie, String taxon, Boolean obsolete, VocabularyTerm symbolNameTerm) {
 		Allele allele = new Allele();
 		allele.setCurie(curie);
 		allele.setTaxon(getTaxonFromCurie(taxon));
 		allele.setObsolete(obsolete);
 		allele.setInternal(false);
+		
+		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
+		symbol.setNameType(symbolNameTerm);
+		symbol.setDisplayText(curie);
+		symbol.setFormatText(curie);
+		
+		allele.setAlleleSymbol(symbol);
 
 		RestAssured.given().
 				contentType("application/json").

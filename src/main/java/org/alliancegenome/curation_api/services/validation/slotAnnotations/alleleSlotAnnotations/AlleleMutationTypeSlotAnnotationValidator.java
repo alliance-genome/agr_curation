@@ -24,7 +24,6 @@ public class AlleleMutationTypeSlotAnnotationValidator extends SlotAnnotationVal
 
 	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject SoTermDAO soTermDAO;
-	@Inject AlleleDAO alleleDAO;
 
 
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotation(AlleleMutationTypeSlotAnnotation uiEntity) {

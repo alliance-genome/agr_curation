@@ -23,7 +23,7 @@ public class AlleleSymbolSlotAnnotationDTOValidator extends NameSlotAnnotationDT
     	
     	AlleleSymbolSlotAnnotation annotation = new AlleleSymbolSlotAnnotation();
     	
-    	ObjectResponse<AlleleSymbolSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
+    	ObjectResponse<AlleleSymbolSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
     	annotation = saResponse.getEntity();
     	assaResponse.addErrorMessages(saResponse.getErrorMessages());
     	

@@ -23,7 +23,7 @@ public class AlleleFullNameSlotAnnotationDTOValidator extends NameSlotAnnotation
     	
     	AlleleFullNameSlotAnnotation annotation = new AlleleFullNameSlotAnnotation();
     	
-    	ObjectResponse<AlleleFullNameSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
+    	ObjectResponse<AlleleFullNameSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
     	annotation = saResponse.getEntity();
     	afnsaResponse.addErrorMessages(saResponse.getErrorMessages());
     	

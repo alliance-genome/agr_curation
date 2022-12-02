@@ -18,9 +18,6 @@
       {
         "evidence_curies": [
           "PMID:25920550"
-        ],
-        "mutation_type_curies": [
-          "SO:00001"
         ]
       }
     ],

@@ -28,6 +28,6 @@ public class GeneDTO extends GenomicEntityDTO {
 	private NameSlotAnnotationDTO geneSystematicNameDto;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("gene_synonyms_dto")
+	@JsonProperty("gene_synonym_dtos")
 	private List<NameSlotAnnotationDTO> geneSynonymDtos;
 }

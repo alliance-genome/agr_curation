@@ -12,6 +12,8 @@ import java.time.ZoneId;
 import java.util.List;
 
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
@@ -49,13 +51,14 @@ public class GeneBulkUploadITCase {
 	}
 	
 	private String requiredReference = "AGRKB:000000001";
+	private String requiredReferenceXref = "PMID:25920550";
 
 	@Test
 	@Order(1)
 	public void geneBulkUploadCheckFields() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/01_gene/01_all_fields_gene.json"));
 		
-		//loadRequiredEntities();
+		loadRequiredEntities();
 		
 		// upload file
 		RestAssured.given().
@@ -88,28 +91,28 @@ public class GeneBulkUploadITCase {
 			body("results[0].geneSymbol.displayText", is("Tg1")).
 			body("results[0].geneSymbol.formatText", is("Tg<sup>1</sup>")).
 			body("results[0].geneSymbol.synonymScope.name", is("exact")).
-			body("results[0].geneSymbol.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneSymbol.synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].geneSymbol.nameType.name", is("nomenclature_symbol")).
-			body("results[0].geneSymbol.formatText", is(requiredReference)).
+			body("results[0].geneSymbol.evidence[0].curie", is(requiredReference)).
 			body("results[0].geneFullName.displayText", is("Test gene 1")).
 			body("results[0].geneFullName.formatText", is("Test gene<sup>1</sup>")).
 			body("results[0].geneFullName.synonymScope.name", is("exact")).
-			body("results[0].geneFullName.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneFullName.synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].geneFullName.nameType.name", is("full_name")).
-			body("results[0].geneFullName.formatText", is(requiredReference)).
-			body("results[0].geneSystematicName.displayText", is("Test gene 1")).
-			body("results[0].geneSystematicName.formatText", is("Test gene<sup>1</sup>")).
+			body("results[0].geneFullName.evidence[0].curie", is(requiredReference)).
+			body("results[0].geneSystematicName.displayText", is("Tg1.1")).
+			body("results[0].geneSystematicName.formatText", is("Tg1.1")).
 			body("results[0].geneSystematicName.synonymScope.name", is("exact")).
-			body("results[0].geneSystematicName.synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneSystematicName.synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].geneSystematicName.nameType.name", is("systematic_name")).
-			body("results[0].geneSystematicName.formatText", is(requiredReference)).
+			body("results[0].geneSystematicName.evidence[0].curie", is(requiredReference)).
 			body("results[0].geneSynonyms", hasSize(1)).
 			body("results[0].geneSynonyms[0].displayText", is("Test gene synonym 1")).
 			body("results[0].geneSynonyms[0].formatText", is("Test gene synonym <sup>1</sup>")).
 			body("results[0].geneSynonyms[0].synonymScope.name", is("exact")).
-			body("results[0].geneSynonyms[0].synonymUrl", is("https://alliancegenome.org.test")).
+			body("results[0].geneSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
 			body("results[0].geneSynonyms[0].nameType.name", is("unspecified")).
-			body("results[0].geneSynonyms[0].formatText", is(requiredReference));
+			body("results[0].geneSynonyms[0].evidence[0].curie", is(requiredReference));
 	}
 	
 	@Test
@@ -574,7 +577,10 @@ public class GeneBulkUploadITCase {
 			post("/api/gene/find?limit=10&page=0").
 			then().
 			statusCode(200).
-			body("totalResults", is(0));
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("GENETEST:Gene0020")); // Entry not loaded but existing not deleted
+															   // as different taxon ID
 	}
 	
 	@Test
@@ -721,79 +727,42 @@ public class GeneBulkUploadITCase {
 			body("results[0]", not(hasKey("dateUpdated")));
 	}
 	
-	private void loadRequiredEntities() {
-		Vocabulary nameTypeVocabulary = createVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
-		Vocabulary synonymScopeVocabulary = createVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
-		VocabularyTerm symbolTerm = createVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		VocabularyTerm fullNameTerm = createVocabularyTerm(nameTypeVocabulary, "full_name");
-		VocabularyTerm systematicNameTerm = createVocabularyTerm(nameTypeVocabulary, "systematic_name");
-		createVocabularyTerm(nameTypeVocabulary, "unspecified");
-		createVocabularyTerm(synonymScopeVocabulary, "exact");
-		createVocabularyTermSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, nameTypeVocabulary, List.of(symbolTerm));
-		createVocabularyTermSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, nameTypeVocabulary, List.of(fullNameTerm));
-		createVocabularyTermSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, nameTypeVocabulary, List.of(systematicNameTerm));
+	private void loadRequiredEntities() throws Exception {
+		loadReference();
 	}
 	
-	private Vocabulary createVocabulary(String name) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setInternal(false);
+
+	
+	private void loadReference() throws Exception {
+			
+		CrossReference xref = new CrossReference();
+		xref.setCurie(requiredReferenceXref);
 		
-		ObjectResponse<Vocabulary> response = 
+		ObjectResponse<CrossReference> response = 
 			RestAssured.given().
 				contentType("application/json").
-				body(vocabulary).
+				body(xref).
 				when().
-				post("/api/vocabulary").
+				put("/api/cross-reference").
 				then().
 				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
+				extract().body().as(getObjectResponseTypeRefCrossReference());
 		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setVocabulary(vocabulary);
-		vocabularyTerm.setInternal(false);
-		
-		ObjectResponse<VocabularyTerm> response =
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-		
-		return response.getEntity();
-	}
-	
-	private void createVocabularyTermSet(String name, Vocabulary vocabulary, List<VocabularyTerm> terms) {
-		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
-		vocabularyTermSet.setName(name);
-		vocabularyTermSet.setVocabularyTermSetVocabulary(vocabulary);
-		vocabularyTermSet.setInternal(false);
-		vocabularyTermSet.setMemberTerms(terms);
+		Reference reference = new Reference();
+		reference.setCurie(requiredReference);
+		reference.setCrossReferences(List.of(response.getEntity()));
+		reference.setObsolete(false);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTermSet).
-				when().
-				post("/api/vocabularytermset").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(reference).
+			when().
+			put("/api/reference").
+			then().
+			statusCode(200);
 	}
 	
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
+	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
+		return new TypeRef<ObjectResponse <CrossReference>>() { };
 	}
 }

@@ -27,7 +27,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.SlotAnnotationDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
@@ -130,6 +129,12 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 		
+		if (allele.getAlleleSymbol() != null) {
+			AlleleSymbolSlotAnnotation symbol = allele.getAlleleSymbol();
+			symbol.setSingleAllele(null);
+			alleleSymbolDAO.remove(symbol.getId());
+		}
+		
 		AlleleSymbolSlotAnnotation symbol = null;
 		if (dto.getAlleleSymbolDto() == null) {
 			alleleResponse.addErrorMessage("allele_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
@@ -142,6 +147,12 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 		
+		if (allele.getAlleleFullName() != null) {
+			AlleleFullNameSlotAnnotation fullName = allele.getAlleleFullName();
+			fullName.setSingleAllele(null);
+			alleleFullNameDAO.remove(fullName.getId());
+		}
+		
 		AlleleFullNameSlotAnnotation fullName = null;
 		if (dto.getAlleleFullNameDto() != null) {
 			ObjectResponse<AlleleFullNameSlotAnnotation> fullNameResponse = alleleFullNameDtoValidator.validateAlleleFullNameSlotAnnotationDTO(dto.getAlleleFullNameDto());
@@ -150,6 +161,12 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			} else {
 				fullName = fullNameResponse.getEntity();
 			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(allele.getAlleleSynonyms())) {
+			allele.getAlleleSynonyms().forEach(as -> {
+				as.setSingleAllele(null);
+				alleleSynonymDAO.remove(as.getId());});
 		}
 		
 		List<AlleleSynonymSlotAnnotation> synonyms = new ArrayList<>();

@@ -17,7 +17,7 @@
     "allele_mutation_type_dtos": [
       {
         "evidence_curies": [
-          "PMID:25920550"
+          "PMID:Invalid"
         ],
         "mutation_type_curies": [
           "SO:00001"

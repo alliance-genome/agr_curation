@@ -64,6 +64,12 @@ public class GeneDTOValidator extends BaseDTOValidator {
 		geneResponse.addErrorMessages(geResponse.getErrorMessages());
 		gene = geResponse.getEntity();
 		
+		if (gene.getGeneSymbol() != null) {
+			GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
+			symbol.setSingleGene(null);
+			geneSymbolDAO.remove(symbol.getId());
+		}
+		
 		GeneSymbolSlotAnnotation symbol = null;
 		if (dto.getGeneSymbolDto() == null) {
 			geneResponse.addErrorMessage("gene_symbol_dto", ValidationConstants.REQUIRED_MESSAGE);
@@ -76,6 +82,12 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			}
 		}
 		
+		if (gene.getGeneFullName() != null) {
+			GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
+			fullName.setSingleGene(null);
+			geneFullNameDAO.remove(fullName.getId());
+		}
+		
 		GeneFullNameSlotAnnotation fullName = null;
 		if (dto.getGeneFullNameDto() != null) {
 			ObjectResponse<GeneFullNameSlotAnnotation> fullNameResponse = geneFullNameDtoValidator.validateGeneFullNameSlotAnnotationDTO(dto.getGeneFullNameDto());
@@ -86,6 +98,12 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			}
 		}
 		
+		if (gene.getGeneSystematicName() != null) {
+			GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
+			systematicName.setSingleGene(null);
+			geneSystematicNameDAO.remove(systematicName.getId());
+		}
+		
 		GeneSystematicNameSlotAnnotation systematicName = null;
 		if (dto.getGeneSystematicNameDto() != null) {
 			ObjectResponse<GeneSystematicNameSlotAnnotation> systematicNameResponse = geneSystematicNameDtoValidator.validateGeneSystematicNameSlotAnnotationDTO(dto.getGeneSystematicNameDto());
@@ -94,6 +112,12 @@ public class GeneDTOValidator extends BaseDTOValidator {
 			} else {
 				systematicName = systematicNameResponse.getEntity();
 			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms())) {
+			gene.getGeneSynonyms().forEach(gs -> {
+				gs.setSingleGene(null);
+				geneSynonymDAO.remove(gs.getId());});
 		}
 		
 		List<GeneSynonymSlotAnnotation> synonyms = new ArrayList<>();

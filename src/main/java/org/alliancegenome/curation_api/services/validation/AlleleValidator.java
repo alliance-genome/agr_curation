@@ -246,7 +246,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		Long reusedId = uiEntity.getAlleleSymbol().getId();
 		AlleleSymbolSlotAnnotation previousSymbol = dbEntity.getAlleleSymbol();
 		
-		if (previousSymbol != null && reusedId != null && !previousSymbol.getId().equals(reusedId)) {
+		if (previousSymbol != null && (reusedId == null || !previousSymbol.getId().equals(reusedId))) {
 			previousSymbol.setSingleAllele(null);
 			alleleSymbolDAO.remove(previousSymbol.getId());
 		}
@@ -256,7 +256,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		Long reusedId = uiEntity.getAlleleFullName().getId();
 		AlleleFullNameSlotAnnotation previousFullName = dbEntity.getAlleleFullName();
 		
-		if (previousFullName != null && reusedId != null && !previousFullName.getId().equals(reusedId)) {
+		if (previousFullName != null && (reusedId == null || !previousFullName.getId().equals(reusedId))) {
 			previousFullName.setSingleAllele(null);
 			alleleFullNameDAO.remove(previousFullName.getId());
 		}
@@ -305,6 +305,11 @@ public class AlleleValidator extends GenomicEntityValidator {
 	private AlleleSymbolSlotAnnotation validateAlleleSymbol (Allele uiEntity, Allele dbEntity) {
 		String field = "alleleSymbol";
 		
+		if (uiEntity.getAlleleSymbol() == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+		
 		ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity.getAlleleSymbol());
 		if (symbolResponse.getEntity() == null) {
 			Map<String, String> errors = symbolResponse.getErrorMessages();
@@ -318,6 +323,9 @@ public class AlleleValidator extends GenomicEntityValidator {
 	}
 	
 	private AlleleFullNameSlotAnnotation validateAlleleFullName (Allele uiEntity, Allele dbEntity) {
+		if (uiEntity.getAlleleFullName() == null)
+			return null;
+		
 		String field = "alleleFullName";
 		
 		ObjectResponse<AlleleFullNameSlotAnnotation> nameResponse = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity.getAlleleFullName());
@@ -361,9 +369,11 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleMutationTypes()))
 			removeUnusedAlleleMutationTypes(uiEntity, dbEntity);
 		
-		removeUnusedAlleleSymbol(uiEntity, dbEntity);
+		if (dbEntity.getAlleleSymbol() != null)
+			removeUnusedAlleleSymbol(uiEntity, dbEntity);
 		
-		removeUnusedAlleleFullName(uiEntity, dbEntity);
+		if (dbEntity.getAlleleFullName() != null)
+			removeUnusedAlleleFullName(uiEntity, dbEntity);
 		
 		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleSynonyms()))
 			removeUnusedAlleleSynonyms(uiEntity, dbEntity);

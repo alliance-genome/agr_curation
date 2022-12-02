@@ -19,7 +19,6 @@ import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
@@ -144,6 +143,9 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 	
 	private SOTerm validateGeneType(Gene uiEntity, Gene dbEntity) {
+		if (uiEntity.getGeneType() == null)
+			return null;
+		
 		SOTerm soTerm = soTermDAO.find(uiEntity.getGeneType().getCurie());
 		if (soTerm == null) {
 			addMessageResponse("geneType", ValidationConstants.INVALID_MESSAGE);
@@ -159,6 +161,11 @@ public class GeneValidator extends GenomicEntityValidator {
 	private GeneSymbolSlotAnnotation validateGeneSymbol (Gene uiEntity, Gene dbEntity) {
 		String field = "geneSymbol";
 		
+		if (uiEntity.getGeneSymbol() == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+		
 		ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolValidator.validateGeneSymbolSlotAnnotation(uiEntity.getGeneSymbol());
 		if (symbolResponse.getEntity() == null) {
 			Map<String, String> errors = symbolResponse.getErrorMessages();
@@ -172,6 +179,9 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 	
 	private GeneFullNameSlotAnnotation validateGeneFullName (Gene uiEntity, Gene dbEntity) {
+		if (uiEntity.getGeneFullName() == null)
+			return null;
+		
 		String field = "geneFullName";
 		
 		ObjectResponse<GeneFullNameSlotAnnotation> nameResponse = geneFullNameValidator.validateGeneFullNameSlotAnnotation(uiEntity.getGeneFullName());
@@ -187,6 +197,9 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 	
 	private GeneSystematicNameSlotAnnotation validateGeneSystematicName (Gene uiEntity, Gene dbEntity) {
+		if (uiEntity.getGeneSystematicName() == null)
+			return null;
+		
 		String field = "geneSystematicName";
 		
 		ObjectResponse<GeneSystematicNameSlotAnnotation> nameResponse = geneSystematicNameValidator.validateGeneSystematicNameSlotAnnotation(uiEntity.getGeneSystematicName());
@@ -227,11 +240,14 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 	
 	private void removeUnusedSlotAnnotations(Gene uiEntity, Gene dbEntity) {
-		removeUnusedGeneSymbol(uiEntity, dbEntity);
+		if (dbEntity.getGeneSymbol() != null)
+			removeUnusedGeneSymbol(uiEntity, dbEntity);
 		
-		removeUnusedGeneFullName(uiEntity, dbEntity);
+		if (dbEntity.getGeneFullName() != null)
+			removeUnusedGeneFullName(uiEntity, dbEntity);
 		
-		removeUnusedGeneSystematicName(uiEntity, dbEntity);
+		if (dbEntity.getGeneSystematicName() != null)
+			removeUnusedGeneSystematicName(uiEntity, dbEntity);
 		
 		if (CollectionUtils.isNotEmpty(dbEntity.getGeneSynonyms()))
 			removeUnusedGeneSynonyms(uiEntity, dbEntity);
@@ -241,7 +257,7 @@ public class GeneValidator extends GenomicEntityValidator {
 		Long reusedId = uiEntity.getGeneSymbol().getId();
 		GeneSymbolSlotAnnotation previousSymbol = dbEntity.getGeneSymbol();
 		
-		if (previousSymbol != null && reusedId != null && !previousSymbol.getId().equals(reusedId)) {
+		if (previousSymbol != null && (reusedId == null || !previousSymbol.getId().equals(reusedId))) {
 			previousSymbol.setSingleGene(null);
 			geneSymbolDAO.remove(previousSymbol.getId());
 		}
@@ -251,7 +267,7 @@ public class GeneValidator extends GenomicEntityValidator {
 		Long reusedId = uiEntity.getGeneFullName().getId();
 		GeneFullNameSlotAnnotation previousFullName = dbEntity.getGeneFullName();
 		
-		if (previousFullName != null && reusedId != null && !previousFullName.getId().equals(reusedId)) {
+		if (previousFullName != null && (reusedId == null || !previousFullName.getId().equals(reusedId))) {
 			previousFullName.setSingleGene(null);
 			geneFullNameDAO.remove(previousFullName.getId());
 		}
@@ -261,7 +277,7 @@ public class GeneValidator extends GenomicEntityValidator {
 		Long reusedId = uiEntity.getGeneSystematicName().getId();
 		GeneSystematicNameSlotAnnotation previousSystematicName = dbEntity.getGeneSystematicName();
 		
-		if (previousSystematicName != null && reusedId != null && !previousSystematicName.getId().equals(reusedId)) {
+		if (previousSystematicName != null && (reusedId == null || !previousSystematicName.getId().equals(reusedId))) {
 			previousSystematicName.setSingleGene(null);
 			geneSystematicNameDAO.remove(previousSystematicName.getId());
 		}

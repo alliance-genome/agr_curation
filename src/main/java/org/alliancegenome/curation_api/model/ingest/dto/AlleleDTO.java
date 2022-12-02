@@ -44,7 +44,7 @@ public class AlleleDTO extends GenomicEntityDTO {
 	private NameSlotAnnotationDTO alleleFullNameDto;
 	
 	@JsonView({View.FieldsAndLists.class})
-	@JsonProperty("allele_synonyms_dto")
+	@JsonProperty("allele_synonym_dtos")
 	private List<NameSlotAnnotationDTO> alleleSynonymDtos;
 	
 }

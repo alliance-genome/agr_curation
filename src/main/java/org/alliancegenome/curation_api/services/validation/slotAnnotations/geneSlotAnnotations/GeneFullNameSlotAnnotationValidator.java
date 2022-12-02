@@ -27,7 +27,7 @@ public class GeneFullNameSlotAnnotationValidator extends NameSlotAnnotationValid
 	}
 
 	public GeneFullNameSlotAnnotation validateGeneFullNameSlotAnnotation(GeneFullNameSlotAnnotation uiEntity, Boolean throwError, Boolean validateGene) {
-
+		
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not create/update GeneFullNameSlotAnnotation: [" + uiEntity.getId() + "]";
 

@@ -19,25 +19,25 @@ public class GeneSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTO
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	
 	public ObjectResponse<GeneSynonymSlotAnnotation> validateGeneSynonymSlotAnnotationDTO(NameSlotAnnotationDTO dto) {
-    	ObjectResponse<GeneSynonymSlotAnnotation> gssaResposne = new ObjectResponse<GeneSynonymSlotAnnotation>();
+    	ObjectResponse<GeneSynonymSlotAnnotation> gssaResponse = new ObjectResponse<GeneSynonymSlotAnnotation>();
     	
     	GeneSynonymSlotAnnotation annotation = new GeneSynonymSlotAnnotation();
     	
-    	ObjectResponse<GeneSynonymSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
+    	ObjectResponse<GeneSynonymSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
     	annotation = saResponse.getEntity();
-    	gssaResposne.addErrorMessages(saResponse.getErrorMessages());
+    	gssaResponse.addErrorMessages(saResponse.getErrorMessages());
     	
     	if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
 			VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY, dto.getNameTypeName());
 			if (nameType == null)
-				gssaResposne.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
+				gssaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
 			annotation.setNameType(nameType);
 		} else {
-			gssaResposne.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
+			gssaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
     	
-    	gssaResposne.setEntity(annotation);
+    	gssaResponse.setEntity(annotation);
     	
-    	return gssaResposne;
+    	return gssaResponse;
     }
 }

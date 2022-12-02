@@ -31,7 +31,7 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
     	if (StringUtils.isBlank(dto.getFormatText())) {
     		nsaResponse.addErrorMessage("format_text", ValidationConstants.REQUIRED_MESSAGE);
     	} else {
-    		annotation.setDisplayText(dto.getFormatText());
+    		annotation.setFormatText(dto.getFormatText());
     	}
     	
     	if (StringUtils.isBlank(dto.getSynonymUrl())) {

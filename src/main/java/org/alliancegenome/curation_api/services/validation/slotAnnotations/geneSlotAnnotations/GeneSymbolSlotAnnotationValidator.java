@@ -45,6 +45,7 @@ public class GeneSymbolSlotAnnotationValidator extends NameSlotAnnotationValidat
 			dbEntity = new GeneSymbolSlotAnnotation();
 			newEntity = true;
 		}
+		
 		dbEntity = (GeneSymbolSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
 		
 		VocabularyTerm nameType = validateSymbolNameType(uiEntity.getNameType(), dbEntity.getNameType());
