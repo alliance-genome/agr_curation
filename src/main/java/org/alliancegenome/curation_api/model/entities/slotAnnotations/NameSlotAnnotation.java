@@ -39,31 +39,31 @@ public abstract class NameSlotAnnotation extends SlotAnnotation {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm nameType;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "formatText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	protected String formatText;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "displayText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	protected String displayText;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "synonymUrl_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
 	protected String synonymUrl;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	private VocabularyTerm synonymScope;
 
 }

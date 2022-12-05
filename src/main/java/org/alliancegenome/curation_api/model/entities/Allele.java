@@ -90,13 +90,13 @@ public class Allele extends GenomicEntity {
 	@IndexedEmbedded(includeDepth = 2)
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class})
+	@JsonView({View.FieldsOnly.class})
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({View.FieldsOnly.class, View.AlleleView.class})
+	@JsonView({View.FieldsOnly.class})
 	private AlleleFullNameSlotAnnotation alleleFullName;
 	
 	@IndexedEmbedded(includeDepth = 2)

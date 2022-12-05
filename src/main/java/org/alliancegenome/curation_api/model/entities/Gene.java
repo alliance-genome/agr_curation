@@ -57,19 +57,19 @@ public class Gene extends GenomicEntity {
 	@IndexedEmbedded(includeDepth = 2)
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({View.FieldsOnly.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	private GeneSymbolSlotAnnotation geneSymbol;
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({View.FieldsOnly.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	private GeneFullNameSlotAnnotation geneFullName;
 	
 	@IndexedEmbedded(includeDepth = 2)
 	@OneToOne(mappedBy = "singleGene", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	@JsonView({View.FieldsOnly.class, View.GeneView.class})
+	@JsonView({View.FieldsOnly.class})
 	private GeneSystematicNameSlotAnnotation geneSystematicName;
 	
 	@IndexedEmbedded(includeDepth = 2)
