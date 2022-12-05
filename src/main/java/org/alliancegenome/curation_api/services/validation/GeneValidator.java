@@ -254,7 +254,7 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 
 	private void removeUnusedGeneSymbol (Gene uiEntity, Gene dbEntity) {
-		Long reusedId = uiEntity.getGeneSymbol().getId();
+		Long reusedId = uiEntity.getGeneSymbol() == null ? null : uiEntity.getGeneSymbol().getId();
 		GeneSymbolSlotAnnotation previousSymbol = dbEntity.getGeneSymbol();
 		
 		if (previousSymbol != null && (reusedId == null || !previousSymbol.getId().equals(reusedId))) {
@@ -264,7 +264,7 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 
 	private void removeUnusedGeneFullName (Gene uiEntity, Gene dbEntity) {
-		Long reusedId = uiEntity.getGeneFullName().getId();
+		Long reusedId = uiEntity.getGeneFullName() == null ? null : uiEntity.getGeneFullName().getId();
 		GeneFullNameSlotAnnotation previousFullName = dbEntity.getGeneFullName();
 		
 		if (previousFullName != null && (reusedId == null || !previousFullName.getId().equals(reusedId))) {
@@ -274,7 +274,7 @@ public class GeneValidator extends GenomicEntityValidator {
 	}
 
 	private void removeUnusedGeneSystematicName (Gene uiEntity, Gene dbEntity) {
-		Long reusedId = uiEntity.getGeneSystematicName().getId();
+		Long reusedId = uiEntity.getGeneSystematicName() == null ? null : uiEntity.getGeneSystematicName().getId();
 		GeneSystematicNameSlotAnnotation previousSystematicName = dbEntity.getGeneSystematicName();
 		
 		if (previousSystematicName != null && (reusedId == null || !previousSystematicName.getId().equals(reusedId))) {

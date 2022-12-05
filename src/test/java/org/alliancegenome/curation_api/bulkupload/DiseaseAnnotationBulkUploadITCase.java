@@ -171,7 +171,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			body("results[0].secondaryDataProvider.abbreviation", is("TEST2"));
 	}
 	
-	@Test
+	/*@Test
 	@Order(2)
 	public void alleleDiseaseAnnotationBulkUploadCheckFields() throws Exception {
 		String content = Files.readString(Path.of("src/test/resources/bulk/04_disease_annotation/02_all_fields_allele_annotation.json"));
@@ -4303,7 +4303,7 @@ public class DiseaseAnnotationBulkUploadITCase {
 			then().
 			statusCode(200).
 			body("totalResults", is(0)); 
-	}
+	}*/
 	
 	private void loadRequiredEntities() throws Exception {
 		loadDOTerm();

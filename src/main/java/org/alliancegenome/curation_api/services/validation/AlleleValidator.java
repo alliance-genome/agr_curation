@@ -243,7 +243,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 	}
 
 	private void removeUnusedAlleleSymbol (Allele uiEntity, Allele dbEntity) {
-		Long reusedId = uiEntity.getAlleleSymbol().getId();
+		Long reusedId = uiEntity.getAlleleSymbol() == null ? null : uiEntity.getAlleleSymbol().getId();
 		AlleleSymbolSlotAnnotation previousSymbol = dbEntity.getAlleleSymbol();
 		
 		if (previousSymbol != null && (reusedId == null || !previousSymbol.getId().equals(reusedId))) {
@@ -253,7 +253,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 	}
 
 	private void removeUnusedAlleleFullName (Allele uiEntity, Allele dbEntity) {
-		Long reusedId = uiEntity.getAlleleFullName().getId();
+		Long reusedId = uiEntity.getAlleleFullName() == null ? null :uiEntity.getAlleleFullName().getId();
 		AlleleFullNameSlotAnnotation previousFullName = dbEntity.getAlleleFullName();
 		
 		if (previousFullName != null && (reusedId == null || !previousFullName.getId().equals(reusedId))) {

@@ -16,7 +16,6 @@ import javax.ws.rs.core.MediaType;
 
 import org.alliancegenome.curation_api.interfaces.base.BaseCurieCrudInterface;
 import org.alliancegenome.curation_api.interfaces.base.BaseDTOCrudControllerInterface;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
 import org.alliancegenome.curation_api.response.APIResponse;
@@ -35,6 +34,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene>, BaseDTOCrudControllerInterface<Gene, GeneDTO> {
 
 	@Override
+	@GET
+	@Path("/{curie}")
 	@JsonView(View.GeneView.class)
 	public ObjectResponse<Gene> get(@PathParam("curie") String curie);
 
