@@ -91,18 +91,22 @@ public class GeneITCase {
 				body("entity.geneSymbol.formatText", is("GT1")).
 				body("entity.geneSymbol.nameType.name", is(symbolNameType.getName())).
 				body("entity.geneSymbol.synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.geneSymbol.synonymUrl", is("https://test.org")).
 				body("entity.geneFullName.displayText", is("Gene test 1")).
 				body("entity.geneFullName.formatText", is("Gene test 1")).
 				body("entity.geneFullName.nameType.name", is(fullNameType.getName())).
 				body("entity.geneFullName.synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.geneFullName.synonymUrl", is("https://test.org")).
 				body("entity.geneSynonyms[0].displayText", is("Gene test synonym 1")).
 				body("entity.geneSynonyms[0].formatText", is("Gene test synonym 1")).
 				body("entity.geneSynonyms[0].nameType.name", is(symbolNameType.getName())).
 				body("entity.geneSynonyms[0].synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.geneSynonyms[0].synonymUrl", is("https://test.org")).
 				body("entity.geneSystematicName.displayText", is("GT.1")).
 				body("entity.geneSystematicName.formatText", is("GT.1")).
 				body("entity.geneSystematicName.nameType.name", is(systematicNameType.getName())).
-				body("entity.geneSystematicName.synonymScope.name", is(exactSynonymScope.getName()));
+				body("entity.geneSystematicName.synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.geneSystematicName.synonymUrl", is("https://test.org"));
 	}
 
 	@Test
@@ -120,12 +124,14 @@ public class GeneITCase {
 		symbol.setDisplayText("GT2");
 		symbol.setFormatText("GT2");
 		symbol.setSynonymScope(broadSynonymScope);
+		symbol.setSynonymUrl("https://test2.org");
 		gene.setGeneSymbol(symbol);
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setDisplayText("Gene test 2");
 		fullName.setFormatText("Gene test 2");
 		fullName.setSynonymScope(broadSynonymScope);
+		fullName.setSynonymUrl("https://test2.org");
 		gene.setGeneFullName(fullName);
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
@@ -133,12 +139,14 @@ public class GeneITCase {
 		synonym.setDisplayText("Gene test synonym 2");
 		synonym.setFormatText("Gene test synonym 2");
 		synonym.setSynonymScope(broadSynonymScope);
+		synonym.setSynonymUrl("https://test2.org");
 		gene.setGeneSynonyms(List.of(synonym));
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setDisplayText("GT.2");
 		systematicName.setFormatText("GT.2");
 		systematicName.setSynonymScope(broadSynonymScope);
+		systematicName.setSynonymUrl("https://test2.org");
 		gene.setGeneSystematicName(systematicName);
 
 		RestAssured.given().
@@ -162,18 +170,22 @@ public class GeneITCase {
 				body("entity.geneSymbol.formatText", is("GT2")).
 				body("entity.geneSymbol.nameType.name", is(systematicNameType.getName())).
 				body("entity.geneSymbol.synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.geneSymbol.synonymUrl", is("https://test2.org")).
 				body("entity.geneFullName.displayText", is("Gene test 2")).
 				body("entity.geneFullName.formatText", is("Gene test 2")).
 				body("entity.geneFullName.nameType.name", is(fullNameType.getName())).
 				body("entity.geneFullName.synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.geneFullName.synonymUrl", is("https://test2.org")).
 				body("entity.geneSynonyms[0].displayText", is("Gene test synonym 2")).
 				body("entity.geneSynonyms[0].formatText", is("Gene test synonym 2")).
 				body("entity.geneSynonyms[0].nameType.name", is(systematicNameType.getName())).
 				body("entity.geneSynonyms[0].synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.geneSynonyms[0].synonymUrl", is("https://test2.org")).
 				body("entity.geneSystematicName.displayText", is("GT.2")).
 				body("entity.geneSystematicName.formatText", is("GT.2")).
 				body("entity.geneSystematicName.nameType.name", is(systematicNameType.getName())).
-				body("entity.geneSystematicName.synonymScope.name", is(broadSynonymScope.getName()));
+				body("entity.geneSystematicName.synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.geneSystematicName.synonymUrl", is("https://test2.org"));
 	}
 	
 	@Test
@@ -1794,6 +1806,7 @@ public class GeneITCase {
 		symbol.setFormatText(name);
 		symbol.setNameType(symbolNameType);
 		symbol.setSynonymScope(exactSynonymScope);
+		symbol.setSynonymUrl("https://test.org");
 		
 		return symbol;
 	}
@@ -1804,6 +1817,7 @@ public class GeneITCase {
 		fullName.setFormatText(name);
 		fullName.setNameType(fullNameType);
 		fullName.setSynonymScope(exactSynonymScope);
+		fullName.setSynonymUrl("https://test.org");
 		
 		return fullName;
 	}
@@ -1814,18 +1828,20 @@ public class GeneITCase {
 		synonym.setFormatText(name);
 		synonym.setNameType(symbolNameType);
 		synonym.setSynonymScope(exactSynonymScope);
+		synonym.setSynonymUrl("https://test.org");
 		
 		return synonym;
 	}
 
 	private GeneSystematicNameSlotAnnotation createGeneSystematicNameSlotAnnotation(String name) {
-		GeneSystematicNameSlotAnnotation fullName = new GeneSystematicNameSlotAnnotation();
-		fullName.setDisplayText(name);
-		fullName.setFormatText(name);
-		fullName.setNameType(systematicNameType);
-		fullName.setSynonymScope(exactSynonymScope);
+		GeneSystematicNameSlotAnnotation systematicName = new GeneSystematicNameSlotAnnotation();
+		systematicName.setDisplayText(name);
+		systematicName.setFormatText(name);
+		systematicName.setNameType(systematicNameType);
+		systematicName.setSynonymScope(exactSynonymScope);
+		systematicName.setSynonymUrl("https://test.org");
 		
-		return fullName;
+		return systematicName;
 	}
 	
 	private SOTerm createSoTerm(String curie, String name) {

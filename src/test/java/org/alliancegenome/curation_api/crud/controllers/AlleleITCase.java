@@ -148,14 +148,17 @@ public class AlleleITCase {
 				body("entity.alleleSymbol.formatText", is("Test symbol")).
 				body("entity.alleleSymbol.nameType.name", is(symbolNameType.getName())).
 				body("entity.alleleSymbol.synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.alleleSymbol.synonymUrl", is("https://test.org")).
 				body("entity.alleleFullName.displayText", is("Test name")).
 				body("entity.alleleFullName.formatText", is("Test name")).
 				body("entity.alleleFullName.nameType.name", is(fullNameType.getName())).
 				body("entity.alleleFullName.synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.alleleFullName.synonymUrl", is("https://test.org")).
 				body("entity.alleleSynonyms[0].displayText", is("Test synonym")).
 				body("entity.alleleSynonyms[0].formatText", is("Test synonym")).
 				body("entity.alleleSynonyms[0].nameType.name", is(symbolNameType.getName())).
-				body("entity.alleleSynonyms[0].synonymScope.name", is(exactSynonymScope.getName()));
+				body("entity.alleleSynonyms[0].synonymScope.name", is(exactSynonymScope.getName())).
+				body("entity.alleleSynonyms[0].synonymUrl", is("https://test.org"));
 	}
 
 	@Test
@@ -176,12 +179,14 @@ public class AlleleITCase {
 		newSymbol.setFormatText("EditedFormat");
 		newSymbol.setNameType(systematicNameType);
 		newSymbol.setSynonymScope(broadSynonymScope);
+		newSymbol.setSynonymUrl("https://test2.org");
 		allele.setAlleleSymbol(newSymbol);
 		
 		AlleleFullNameSlotAnnotation newName = allele.getAlleleFullName();
 		newName.setDisplayText("EditedDisplay");
 		newName.setFormatText("EditedFormat");
 		newName.setSynonymScope(broadSynonymScope);
+		newName.setSynonymUrl("https://test2.org");
 		allele.setAlleleFullName(newName);
 		
 		AlleleSynonymSlotAnnotation newSynonym = allele.getAlleleSynonyms().get(0);
@@ -189,6 +194,8 @@ public class AlleleITCase {
 		newSynonym.setFormatText("EditedFormat");
 		newSynonym.setNameType(fullNameType);
 		newSynonym.setSynonymScope(broadSynonymScope);
+		newSynonym.setSynonymUrl("https://test2.org");
+		allele.setAlleleSynonyms(List.of(newSynonym));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -213,14 +220,17 @@ public class AlleleITCase {
 				body("entity.alleleSymbol.formatText", is("EditedFormat")).
 				body("entity.alleleSymbol.nameType.name", is(systematicNameType.getName())).
 				body("entity.alleleSymbol.synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.alleleSymbol.synonymUrl", is("https://test2.org")).
 				body("entity.alleleFullName.displayText", is("EditedDisplay")).
 				body("entity.alleleFullName.formatText", is("EditedFormat")).
 				body("entity.alleleFullName.nameType.name", is(fullNameType.getName())).
 				body("entity.alleleFullName.synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.alleleFullName.synonymUrl", is("https://test2.org")).
 				body("entity.alleleSynonyms[0].displayText", is("EditedDisplay")).
 				body("entity.alleleSynonyms[0].formatText", is("EditedFormat")).
 				body("entity.alleleSynonyms[0].nameType.name", is(fullNameType.getName())).
-				body("entity.alleleSynonyms[0].synonymScope.name", is(broadSynonymScope.getName()));
+				body("entity.alleleSynonyms[0].synonymScope.name", is(broadSynonymScope.getName())).
+				body("entity.alleleSynonyms[0].synonymUrl", is("https://test2.org"));
 	}
 	
 	@Test
@@ -2311,6 +2321,7 @@ public class AlleleITCase {
 		symbol.setFormatText(name);
 		symbol.setNameType(symbolNameType);
 		symbol.setSynonymScope(exactSynonymScope);
+		symbol.setSynonymUrl("https://test.org");
 		
 		return symbol;
 	}
@@ -2321,6 +2332,7 @@ public class AlleleITCase {
 		fullName.setFormatText(name);
 		fullName.setNameType(fullNameType);
 		fullName.setSynonymScope(exactSynonymScope);
+		fullName.setSynonymUrl("https://test.org");
 		
 		return fullName;
 	}
@@ -2331,6 +2343,7 @@ public class AlleleITCase {
 		synonym.setFormatText(name);
 		synonym.setNameType(symbolNameType);
 		synonym.setSynonymScope(exactSynonymScope);
+		synonym.setSynonymUrl("https://test.org");
 		
 		return synonym;
 	}
