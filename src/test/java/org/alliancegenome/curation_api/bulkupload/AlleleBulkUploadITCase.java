@@ -1227,6 +1227,1213 @@ public class AlleleBulkUploadITCase {
 			body("results[0]", not(hasKey("alleleMutationTypes")));
 	}
 	
+	@Test
+	@Order(48)
+	public void alleleBulkUploadNoAlleleSymbol() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/48_no_allele_symbol.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(49)
+	public void alleleBulkUploadNoAlleleSymbolDisplayText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/49_no_allele_symbol_display_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(50)
+	public void alleleBulkUploadNoAlleleSymbolFormatText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/50_no_allele_symbol_format_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(51)
+	public void alleleBulkUploadNoAlleleSymbolNameType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/51_no_allele_symbol_name_type.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(52)
+	public void alleleBulkUploadNoAlleleSymbolSynonymScope() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/52_no_allele_symbol_synonym_scope.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0052"));
+	}
+	
+	@Test
+	@Order(53)
+	public void alleleBulkUploadNoAlleleSymbolEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/53_no_allele_symbol_evidence.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0053"));
+	}
+	
+	@Test
+	@Order(54)
+	public void alleleBulkUploadInvalidAlleleSymbolNameType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/54_invalid_allele_symbol_name_type.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(55)
+	public void alleleBulkUploadInvalidAlleleSymbolSynonymScope() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/55_invalid_allele_symbol_synonym_scope.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(56)
+	public void alleleBulkUploadInvalidAlleleSymbolEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/56_invalid_allele_symbol_evidence.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(57)
+	public void alleleBulkUploadUpdateNoAlleleSymbolSynonymScope() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/57_update_no_allele_symbol_synonym_scope.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleSymbol")).
+			body("results[0].alleleSymbol", not(hasKey("synonymScope")));
+	}
+	
+	@Test
+	@Order(58)
+	public void alleleBulkUploadUpdateNoAlleleSymbolEvidence() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/58_update_no_allele_symbol_evidence.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleSymbol")).
+			body("results[0].alleleSymbol", not(hasKey("evidence")));
+	}
+	
+	@Test
+	@Order(59)
+	public void alleleBulkUploadNoAlleleFullName() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/59_no_allele_full_name.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0059"));
+	}
+	
+	@Test
+	@Order(60)
+	public void alleleBulkUploadNoAlleleFullNameDisplayText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/60_no_allele_full_name_display_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(61)
+	public void alleleBulkUploadNoAlleleFullNameFormatText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/61_no_allele_full_name_format_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(62)
+	public void alleleBulkUploadNoAlleleFullNameNameType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/62_no_allele_full_name_name_type.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(63)
+	public void alleleBulkUploadNoAlleleFullNameSynonymScope() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/63_no_allele_full_name_synonym_scope.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0063"));
+	}
+	
+	@Test
+	@Order(64)
+	public void alleleBulkUploadNoAlleleFullNameEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/64_no_allele_full_name_evidence.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0064"));
+	}
+	
+	@Test
+	@Order(65)
+	public void alleleBulkUploadInvalidAlleleFullNameNameType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/65_invalid_allele_full_name_name_type.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(66)
+	public void alleleBulkUploadInvalidAlleleFullNameSynonymScope() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/66_invalid_allele_full_name_synonym_scope.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(67)
+	public void alleleBulkUploadInvalidAlleleFullNameEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/67_invalid_allele_full_name_evidence.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(68)
+	public void alleleBulkUploadUpdateNoAlleleFullNameSynonymScope() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/68_update_no_allele_full_name_synonym_scope.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleFullName")).
+			body("results[0].alleleFullName", not(hasKey("synonymScope")));
+	}
+	
+	@Test
+	@Order(69)
+	public void alleleBulkUploadUpdateNoAlleleFullNameEvidence() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/69_update_no_allele_full_name_evidence.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleFullName")).
+			body("results[0].alleleFullName", not(hasKey("evidence")));
+	}
+	
+	@Test
+	@Order(70)
+	public void alleleBulkUploadNoAlleleSynonym() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/70_no_allele_synonym.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0070"));
+	}
+	
+	@Test
+	@Order(71)
+	public void alleleBulkUploadNoAlleleSynonymDisplayText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/71_no_allele_synonym_display_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(72)
+	public void alleleBulkUploadNoAlleleSynonymFormatText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/72_no_allele_synonym_format_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(73)
+	public void alleleBulkUploadNoAlleleSynonymNameType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/73_no_allele_synonym_name_type.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(74)
+	public void alleleBulkUploadNoAlleleSynonymSynonymScope() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/74_no_allele_synonym_synonym_scope.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0074"));
+	}
+	
+	@Test
+	@Order(75)
+	public void alleleBulkUploadNoAlleleSynonymEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/75_no_allele_synonym_evidence.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0075"));
+	}
+	
+	@Test
+	@Order(76)
+	public void alleleBulkUploadInvalidAlleleSynonymNameType() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/76_invalid_allele_synonym_name_type.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(77)
+	public void alleleBulkUploadInvalidAlleleSynonymSynonymScope() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/77_invalid_allele_synonym_synonym_scope.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(78)
+	public void alleleBulkUploadInvalidAlleleSynonymEvidence() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/78_invalid_allele_synonym_evidence.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(79)
+	public void alleleBulkUploadUpdateNoAlleleSynonymSynonymScope() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/79_update_no_allele_synonym_synonym_scope.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleSynonyms")).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymScope")));
+	}
+	
+	@Test
+	@Order(80)
+	public void alleleBulkUploadUpdateNoAlleleSynonymEvidence() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/80_update_no_allele_synonym_evidence.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleSynonyms")).
+			body("results[0].alleleSynonyms[0]", not(hasKey("evidence")));
+	}
+	
+	@Test
+	@Order(81)
+	public void alleleBulkUploadUpdateNoAlleleSymbolSynonymUrl() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/81_update_no_allele_symbol_synonym_url.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleSymbol")).
+			body("results[0].alleleSymbol", not(hasKey("synonymUrl")));
+	}
+	
+	@Test
+	@Order(82)
+	public void alleleBulkUploadUpdateNoAlleleFullNameSynonymUrl() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/82_update_no_allele_full_name_synonym_url.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleFullName")).
+			body("results[0].alleleFullName", not(hasKey("synonymUrl")));
+	}
+	
+	@Test
+	@Order(83)
+	public void alleleBulkUploadUpdateNoAlleleSynonymSynonymUrl() throws Exception {
+		String originalContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/01_all_fields_allele.json"));
+	
+		RestAssured.given().
+			contentType("application/json").
+			body(originalContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		String updateContent = Files.readString(Path.of("src/test/resources/bulk/02_allele/83_update_no_allele_synonym_synonym_url.json"));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(updateContent).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body("results[0].curie", is("ALLELETEST:Allele0001")).
+			body("results[0]", hasKey("alleleSynonyms")).
+			body("results[0].alleleSynonyms[0]", not(hasKey("synonymUrl")));
+	}
+	
+	@Test
+	@Order(84)
+	public void alleleBulkUploadEmptyAlleleSymbolDisplayText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/84_empty_allele_symbol_display_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(85)
+	public void alleleBulkUploadEmptyAlleleSymbolFormatText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/85_empty_allele_symbol_format_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(86)
+	public void alleleBulkUploadEmptyAlleleFullNameDisplayText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/86_empty_allele_full_name_display_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(87)
+	public void alleleBulkUploadEmptyAlleleFullNameFormatText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/87_empty_allele_full_name_format_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(88)
+	public void alleleBulkUploadEmptyAlleleSynonymDisplayText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/88_empty_allele_synonym_display_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
+	@Test
+	@Order(89)
+	public void alleleBulkUploadEmptyAlleleSynonymFormatText() throws Exception {
+		String content = Files.readString(Path.of("src/test/resources/bulk/02_allele/89_empty_allele_synonym_format_text.json"));
+		
+		// upload file
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post("/api/allele/bulk/alleles").
+			then().
+			statusCode(200);
+	
+		
+		// check entity count and fields correctly read
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post("/api/allele/find?limit=10&page=0").
+			then().
+			statusCode(200).
+			body("totalResults", is(0));
+	}
+	
 	private void loadRequiredEntities() throws Exception {
 		loadSOTerm();
 	}

@@ -39,10 +39,7 @@
       "format_text": "Test allele<sup>1</sup>",
       "synonym_scope_name": "exact",
       "synonym_url": "https://alliancegenome.org/test",
-      "name_type_name": "full_name",
-      "evidence_curies": [
-        "PMID:25920550"
-      ]
+      "name_type_name": "full_name"
     },
     "allele_synonym_dtos": [
       {
