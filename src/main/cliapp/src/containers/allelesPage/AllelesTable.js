@@ -304,18 +304,6 @@ export const AllelesTable = () => {
 		);
 	};
 
-	const freeTextEditor = (props, fieldname) => {
-		return (
-			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={fieldname}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
-			</>
-		);
-	};
-
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
