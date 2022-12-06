@@ -36,7 +36,7 @@ export const AllelesTable = () => {
 		rowIndex: null,
 		mainRowProps: {},
 	});
-	
+
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -58,14 +58,14 @@ export const AllelesTable = () => {
 	});
 
 	const symbolTemplate = (rowData) => {
-		if (rowData?.symbol) {
-			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+		if (rowData?.alleleSymbol) {
+			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />
 		}
 	}
 
 	const nameTemplate = (rowData) => {
-		if (rowData?.name) {
-			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.name }} />
+		if (rowData?.alleleFullName) {
+			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleFullName.displayText }} />
 		}
 	}
 
@@ -155,7 +155,7 @@ export const AllelesTable = () => {
 
 		}
 	};
-	
+
 	const inCollectionSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["name"];
 		const endpoint = "vocabularyterm";
@@ -315,12 +315,12 @@ export const AllelesTable = () => {
 			</>
 		);
 	};
-	
+
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
 			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
-				if (rowData.alleleMutationTypes[i].mutationTypes) {    			
+				if (rowData.alleleMutationTypes[i].mutationTypes) {
 					for(var j = 0; j < rowData.alleleMutationTypes[i].mutationTypes.length; j++) {
 						let mtString = rowData.alleleMutationTypes[i].mutationTypes[j].name + ' (' +
 							rowData.alleleMutationTypes[i].mutationTypes[j].curie + ')';
@@ -348,7 +348,7 @@ export const AllelesTable = () => {
 			}
 		}
 	};
-	
+
 	const mutationTypesEditor = (props) => {
 		if (props?.rowData?.alleleMutationTypes) {
 			return (
@@ -390,8 +390,8 @@ export const AllelesTable = () => {
 			)
 		}
 	};
-	
-	
+
+
 
 	const handleMutationTypesOpen = (event, rowData, isInEdit) => {
 		let _mutationTypesData = {};
@@ -427,22 +427,20 @@ export const AllelesTable = () => {
 			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
 		},
 		{
-			field: "name",
+			field: "alleleFullName.displayText",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
-			editor: (props) => freeTextEditor(props, "name")
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["alleleFullName.displayText", "alleleFullName.formatText"]}
 		},
 		{
-			field: "symbol",
+			field: "alleleSymbol.displayText",
 			header: "Symbol",
 			body: symbolTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]},
-			editor: (props) => freeTextEditor(props, "symbol")
+			filterElement: {type: "input", filterName: "symbolFilter", fields: ["alleleSymbol.displayText", "alleleSymbol.formatText"]}
 		},
 		{
 			field: "taxon.name",
