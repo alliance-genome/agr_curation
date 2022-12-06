@@ -29,6 +29,7 @@ import com.okta.sdk.authc.credentials.TokenClientCredentials;
 import com.okta.sdk.client.Client;
 import com.okta.sdk.client.Clients;
 import com.okta.sdk.resource.group.Group;
+import com.okta.sdk.resource.group.GroupList;
 import com.okta.sdk.resource.user.User;
 
 import io.quarkus.logging.Log;
@@ -151,42 +152,28 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 		}
 		
 		String oktaEmail = (String)jsonWebToken.getClaims().get("sub"); // Subject Id
+		String oktaId = (String)jsonWebToken.getClaims().get("uid"); // User Id
 		LoggedInPerson authenticatedUser = loggedInPersonService.findLoggedInPersonByOktaEmail(oktaEmail);
 		
+		
 		if(authenticatedUser != null) {
+			if(authenticatedUser.getAllianceMember() == null) {
+				User user = getOktaUser(oktaId);
+				authenticatedUser.setAllianceMember(getAllianceMember(user.listGroups()));
+				loggedInPersonDAO.persist(authenticatedUser);
+			}
 			return authenticatedUser;
 		}
 		
 		Log.info("Making OKTA call to get user info: ");
 		
-		Client client = Clients.builder()
-				.setOrgUrl(okta_url.get())
-				.setClientId(client_id.get())
-				.setClientCredentials(new TokenClientCredentials(api_token.get()))
-				.build();
-
-		String oktaId = (String)jsonWebToken.getClaims().get("uid"); // User Id
-		User user = client.getUser(oktaId);
+		User user = getOktaUser(oktaId);
 
 		if(user != null) {
-			AllianceMember member = null;
-			for(Group group: user.listGroups()) {
-				String allianceMember = (String)group.getProfile().get("affiliated_alliance_member");
-				if(allianceMember != null) {
-					SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("uniqueId", allianceMember);
-					if(res.getTotalResults() == 1) {
-						member = res.getResults().get(0);
-						break;
-					} else {
-						log.info("Alliance Look up error: more than one member found");
-					}
-				}
-			}
-			
 			LoggedInPerson person = new LoggedInPerson();
 			person.setApiToken(UUID.randomUUID().toString());
 			person.setOktaId(oktaId);
-			if(member != null) person.setAllianceMember(member);
+			person.setAllianceMember(getAllianceMember(user.listGroups()));
 			person.setOktaEmail(user.getProfile().getEmail());
 			person.setFirstName(user.getProfile().getFirstName());
 			person.setLastName(user.getProfile().getLastName());
@@ -196,6 +183,32 @@ public class AuthenticationFilter implements ContainerRequestFilter {
 
 		}
 		
+		return null;
+	}
+	
+	private User getOktaUser(String oktaId) {
+		Client client = Clients.builder()
+			.setOrgUrl(okta_url.get())
+			.setClientId(client_id.get())
+			.setClientCredentials(new TokenClientCredentials(api_token.get()))
+			.build();
+		
+		return client.getUser(oktaId);
+	}
+	
+	private AllianceMember getAllianceMember(GroupList groupList) {
+		for(Group group: groupList) {
+			String allianceMember = (String)group.getProfile().get("affiliated_alliance_member");
+			if(allianceMember != null) {
+				SearchResponse<AllianceMember> res = allianceMemberDAO.findByField("uniqueId", allianceMember);
+				if(res.getTotalResults() == 1) {
+					AllianceMember member = res.getResults().get(0);
+					return member;
+				} else {
+					log.info("Alliance Look up error: more than one member found");
+				}
+			}
+		}
 		return null;
 	}
 	
