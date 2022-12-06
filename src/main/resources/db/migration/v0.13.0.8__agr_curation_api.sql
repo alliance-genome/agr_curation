@@ -107,10 +107,6 @@ CREATE TABLE nameslotannotation (
 	nametype_id bigint,
 	synonymscope_id bigint
 	);
-
-ALTER TABLE nameslotannotation
-	ADD CONSTRAINT nameslotannotation_id_fk
-		FOREIGN KEY (id) REFERENCES slotannotation (id);
 		
 ALTER TABLE nameslotannotation
 	ADD CONSTRAINT nameslotannotation_nametype_id_fk
@@ -302,6 +298,9 @@ INSERT INTO allelesymbolslotannotation (id, singleallele_curie)
 INSERT INTO nameslotannotation(id)
 	SELECT id FROM allelesymbolslotannotation;
 	
+INSERT INTO slotannotation(id)
+	SELECT id FROM allelesymbolslotannotation;
+	
 UPDATE nameslotannotation
 	SET displaytext = subquery.symbol, formattext = subquery.symbol
 	FROM (
@@ -331,6 +330,9 @@ INSERT INTO allelefullnameslotannotation (id, singleallele_curie)
 INSERT INTO nameslotannotation(id)
 	SELECT id FROM allelefullnameslotannotation;
 	
+INSERT INTO slotannotation(id)
+	SELECT id FROM allelefullnameslotannotation;
+	
 UPDATE nameslotannotation
 	SET displaytext = subquery.name, formattext = subquery.name
 	FROM (
@@ -355,6 +357,9 @@ INSERT INTO genesymbolslotannotation (id, singlegene_curie)
 	SELECT nextval('hibernate_sequence'), curie FROM gene WHERE symbol IS NOT NULL;
 
 INSERT INTO nameslotannotation(id)
+	SELECT id FROM genesymbolslotannotation;
+	
+INSERT INTO slotannotation(id)
 	SELECT id FROM genesymbolslotannotation;
 	
 UPDATE nameslotannotation
@@ -385,7 +390,10 @@ INSERT INTO genefullnameslotannotation (id, singlegene_curie)
 
 INSERT INTO nameslotannotation(id)
 	SELECT id FROM genefullnameslotannotation;
-	
+
+INSERT INTO slotannotation(id)
+	SELECT id FROM genefullnameslotannotation;
+
 UPDATE nameslotannotation
 	SET displaytext = subquery.name, formattext = subquery.name
 	FROM (
@@ -404,6 +412,10 @@ UPDATE nameslotannotation
 ALTER TABLE genefullnameslotannotation
 	ADD CONSTRAINT genefullnameslotannotation_id_fk
 		FOREIGN KEY (id) REFERENCES nameslotannotation (id);
+
+ALTER TABLE nameslotannotation
+	ADD CONSTRAINT nameslotannotation_id_fk
+		FOREIGN KEY (id) REFERENCES slotannotation (id);
 	
 -- Move AGM names to affectedgenomicmodeltable
 ALTER TABLE affectedgenomicmodel
