@@ -6,6 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormAdditionalFieldData } from "../../components/FormAdditionalFieldData";
 import { classNames } from "primereact/utils";
 import { DiseaseAnnotationService } from "../../service/DiseaseAnnotationService";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -378,6 +379,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
+							<FormAdditionalFieldData field={"subject"} fieldData={newAnnotation.subject}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedGenes">Asserted Genes</label>
