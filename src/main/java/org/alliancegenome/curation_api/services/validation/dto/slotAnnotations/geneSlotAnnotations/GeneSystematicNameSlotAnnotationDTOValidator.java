@@ -15,19 +15,19 @@ import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class GeneSystematicNameSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
-    
+	
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	
 	public ObjectResponse<GeneSystematicNameSlotAnnotation> validateGeneSystematicNameSlotAnnotationDTO(NameSlotAnnotationDTO dto) {
-    	ObjectResponse<GeneSystematicNameSlotAnnotation> gsnsaResponse = new ObjectResponse<GeneSystematicNameSlotAnnotation>();
-    	
-    	GeneSystematicNameSlotAnnotation annotation = new GeneSystematicNameSlotAnnotation();
-    	
-    	ObjectResponse<GeneSystematicNameSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
-    	annotation = saResponse.getEntity();
-    	gsnsaResponse.addErrorMessages(saResponse.getErrorMessages());
-    	
-    	if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
+		ObjectResponse<GeneSystematicNameSlotAnnotation> gsnsaResponse = new ObjectResponse<GeneSystematicNameSlotAnnotation>();
+		
+		GeneSystematicNameSlotAnnotation annotation = new GeneSystematicNameSlotAnnotation();
+		
+		ObjectResponse<GeneSystematicNameSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
+		annotation = saResponse.getEntity();
+		gsnsaResponse.addErrorMessages(saResponse.getErrorMessages());
+		
+		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
 			VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, dto.getNameTypeName());
 			if (nameType == null)
 				gsnsaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
@@ -35,9 +35,9 @@ public class GeneSystematicNameSlotAnnotationDTOValidator extends NameSlotAnnota
 		} else {
 			gsnsaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-    	
-    	gsnsaResponse.setEntity(annotation);
-    	
-    	return gsnsaResponse;
-    }
+		
+		gsnsaResponse.setEntity(annotation);
+		
+		return gsnsaResponse;
+	}
 }

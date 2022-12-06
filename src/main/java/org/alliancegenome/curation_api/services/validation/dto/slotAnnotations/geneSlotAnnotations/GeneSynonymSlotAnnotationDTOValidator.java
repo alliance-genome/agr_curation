@@ -15,19 +15,19 @@ import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class GeneSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
-    
+	
 	@Inject VocabularyTermDAO vocabularyTermDAO;
 	
 	public ObjectResponse<GeneSynonymSlotAnnotation> validateGeneSynonymSlotAnnotationDTO(NameSlotAnnotationDTO dto) {
-    	ObjectResponse<GeneSynonymSlotAnnotation> gssaResponse = new ObjectResponse<GeneSynonymSlotAnnotation>();
-    	
-    	GeneSynonymSlotAnnotation annotation = new GeneSynonymSlotAnnotation();
-    	
-    	ObjectResponse<GeneSynonymSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
-    	annotation = saResponse.getEntity();
-    	gssaResponse.addErrorMessages(saResponse.getErrorMessages());
-    	
-    	if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
+		ObjectResponse<GeneSynonymSlotAnnotation> gssaResponse = new ObjectResponse<GeneSynonymSlotAnnotation>();
+		
+		GeneSynonymSlotAnnotation annotation = new GeneSynonymSlotAnnotation();
+		
+		ObjectResponse<GeneSynonymSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
+		annotation = saResponse.getEntity();
+		gssaResponse.addErrorMessages(saResponse.getErrorMessages());
+		
+		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
 			VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY, dto.getNameTypeName());
 			if (nameType == null)
 				gssaResponse.addErrorMessage("name_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNameTypeName() + ")");
@@ -35,9 +35,9 @@ public class GeneSynonymSlotAnnotationDTOValidator extends NameSlotAnnotationDTO
 		} else {
 			gssaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-    	
-    	gssaResponse.setEntity(annotation);
-    	
-    	return gssaResponse;
-    }
+		
+		gssaResponse.setEntity(annotation);
+		
+		return gssaResponse;
+	}
 }

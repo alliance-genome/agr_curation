@@ -267,7 +267,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleSynonyms()))
 			reusedIds = uiEntity.getAlleleSynonyms().stream().map(AlleleSynonymSlotAnnotation::getId).collect(Collectors.toList());
 		
-		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleSynonyms())) {	
+		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleSynonyms())) { 
 			for (AlleleSynonymSlotAnnotation previousSynonym : dbEntity.getAlleleSynonyms()) {
 				if (!reusedIds.contains(previousSynonym.getId())) {
 					previousSynonym.setSingleAllele(null);
