@@ -11,5 +11,5 @@ public class ExperimentalConditionOntologyTermDAO extends BaseSQLDAO<Experimenta
 	protected ExperimentalConditionOntologyTermDAO() {
 		super(ExperimentalConditionOntologyTerm.class);
 	}
-	
+
 }

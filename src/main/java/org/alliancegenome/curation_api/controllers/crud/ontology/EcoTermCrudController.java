@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.EcoTermService;
 @RequestScoped
 public class EcoTermCrudController extends BaseOntologyTermController<EcoTermService, ECOTerm, EcoTermDAO> implements EcoTermCrudInterface {
 
-	@Inject EcoTermService ecoTermService;
+	@Inject
+	EcoTermService ecoTermService;
 
 	@Override
 	@PostConstruct
@@ -29,7 +30,7 @@ public class EcoTermCrudController extends BaseOntologyTermController<EcoTermSer
 		}
 		return status;
 	}
-	
+
 	public void updateAbbreviations() {
 		ecoTermService.updateAbbreviations();
 	}

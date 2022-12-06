@@ -11,6 +11,10 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.GeneDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
@@ -19,6 +23,7 @@ import org.alliancegenome.curation_api.services.base.BaseDTOCrudService;
 import org.alliancegenome.curation_api.services.validation.GeneValidator;
 import org.alliancegenome.curation_api.services.validation.dto.GeneDTOValidator;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.ListUtils;
 
 import lombok.extern.jbosslog.JBossLog;
@@ -27,11 +32,24 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
-	@Inject GeneDAO geneDAO;
-	@Inject GeneValidator geneValidator;
-	@Inject GeneDTOValidator geneDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject PersonService personService;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	GeneValidator geneValidator;
+	@Inject
+	GeneDTOValidator geneDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PersonService personService;
+	@Inject
+	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
+	@Inject
+	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
+	@Inject
+	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
+	@Inject
+	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 
 	@Override
 	@PostConstruct
@@ -42,30 +60,23 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 	@Override
 	@Transactional
 	public ObjectResponse<Gene> update(Gene uiEntity) {
-		Gene dbEntity = geneValidator.validateAnnotation(uiEntity);
-		return new ObjectResponse<Gene>(geneDAO.persist(dbEntity));
+		Gene dbEntity = geneValidator.validateGeneUpdate(uiEntity);
+		return new ObjectResponse<Gene>(dbEntity);
 	}
 
+	@Override
 	@Transactional
-	public Gene getByIdOrCurie(String id) {
-		Gene gene = geneDAO.getByIdOrCurie(id);
-		if (gene != null) {
-			gene.getSynonyms().size();
-			gene.getSecondaryIdentifiers().size();
-		}
-		return gene;
+	public ObjectResponse<Gene> create(Gene uiEntity) {
+		Gene dbEntity = geneValidator.validateGeneCreate(uiEntity);
+		return new ObjectResponse<Gene>(dbEntity);
 	}
 
-	@Transactional
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
-		Gene gene = geneDtoValidator.validateGeneDTO(dto);
-		if (gene == null) return null;
-		
-		return geneDAO.persist(gene);
+		return geneDtoValidator.validateGeneDTO(dto);
 	}
-	
+
 	@Transactional
-	public void removeNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
+	public void removeOrDeprecateNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + geneCuriesAfter.size());
 
 		List<String> distinctAfter = geneCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -86,13 +97,14 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
-	
+
 				if (anyPublicReferencingDAs) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
 					gene.setDateUpdated(OffsetDateTime.now());
 					gene.setObsolete(true);
 					geneDAO.persist(gene);
 				} else {
+					deleteGeneSlotAnnotations(gene);
 					geneDAO.remove(curie);
 				}
 			} else {
@@ -102,11 +114,27 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		}
 		ph.finishProcess();
 	}
-	
+
 	public List<String> getCuriesByTaxonId(String taxonId) {
 		List<String> curies = geneDAO.findAllCuriesByTaxon(taxonId);
 		curies.removeIf(Objects::isNull);
 		return curies;
+	}
+
+	private void deleteGeneSlotAnnotations(Gene gene) {
+		if (gene.getGeneSymbol() != null)
+			geneSymbolDAO.remove(gene.getGeneSymbol().getId());
+
+		if (gene.getGeneFullName() != null)
+			geneFullNameDAO.remove(gene.getGeneFullName().getId());
+
+		if (gene.getGeneSystematicName() != null)
+			geneSystematicNameDAO.remove(gene.getGeneSystematicName().getId());
+
+		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms()))
+			gene.getGeneSynonyms().forEach(gs -> {
+				geneSynonymDAO.remove(gs.getId());
+			});
 	}
 
 }

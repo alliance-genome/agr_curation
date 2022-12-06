@@ -20,5 +20,5 @@ public class GeneDiseaseAnnotationDAO extends BaseSQLDAO<GeneDiseaseAnnotation> 
 		jpqlQuery.setParameter("taxonId", taxonID);
 		return (List<Long>) jpqlQuery.getResultList();
 	}
-	
+
 }

@@ -12,7 +12,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.dao.AlleleDiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException.ObjectUpdateExceptionData;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.entities.AlleleDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFileHistory;
@@ -31,14 +30,17 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
-	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject AlleleDiseaseAnnotationService alleleDiseaseService;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject
+	AlleleDiseaseAnnotationService alleleDiseaseService;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 
 		try {
-			BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
+			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
@@ -48,11 +50,11 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 			if (annotations != null) {
 				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
-				
+
 				bulkLoadFileDAO.merge(bulkLoadFile);
-				
+
 				trackHistory(runLoad(taxonId, annotations), bulkLoadFile);
-				
+
 			}
 
 		} catch (Exception e) {
@@ -69,9 +71,9 @@ public class AlleleDiseaseAnnotationExecutor extends LoadFileExecutor {
 
 		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
 		List<Long> annotationIdsAfter = new ArrayList<>();
-		
+
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Allele Disease Annotation Update " + taxonId, annotations.size());

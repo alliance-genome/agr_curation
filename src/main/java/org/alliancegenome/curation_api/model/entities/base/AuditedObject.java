@@ -3,10 +3,8 @@ package org.alliancegenome.curation_api.model.entities.base;
 import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -32,10 +30,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @MappedSuperclass
-@ToString(exclude = {"createdBy", "updatedBy"})
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE)
+@ToString(exclude = { "createdBy", "updatedBy" })
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 public class AuditedObject extends BaseEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
@@ -52,7 +51,7 @@ public class AuditedObject extends BaseEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private OffsetDateTime dateCreated;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
@@ -62,7 +61,7 @@ public class AuditedObject extends BaseEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
 	@KeywordField(name = "internal_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, valueBridge = @ValueBridgeRef(type = BooleanValueBridge.class))
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private Boolean internal = false;
 
@@ -74,7 +73,7 @@ public class AuditedObject extends BaseEntity {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dbDateCreated_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@CreationTimestamp
 	private OffsetDateTime dbDateCreated;
 

@@ -13,20 +13,20 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class BulkURLLoadService extends BaseEntityCrudService<BulkURLLoad, BulkURLLoadDAO> {
-	
+
 	@Inject
 	BulkURLLoadDAO bulkURLLoadDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(bulkURLLoadDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<BulkURLLoad> restartLoad(Long id) {
 		BulkURLLoad load = bulkURLLoadDAO.find(id);
-		if(load.getBulkloadStatus().isNotRunning()) {
+		if (load.getBulkloadStatus().isNotRunning()) {
 			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 		}
 		return new ObjectResponse<BulkURLLoad>(load);

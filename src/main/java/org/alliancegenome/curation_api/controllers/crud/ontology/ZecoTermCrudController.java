@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
 @RequestScoped
 public class ZecoTermCrudController extends BaseOntologyTermController<ZecoTermService, ZECOTerm, ZecoTermDAO> implements ZecoTermCrudInterface {
 
-	@Inject ZecoTermService zecoTermService;
+	@Inject
+	ZecoTermService zecoTermService;
 
 	@Override
 	@PostConstruct

@@ -30,14 +30,17 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject AGMDiseaseAnnotationService agmDiseaseService;
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	AGMDiseaseAnnotationService agmDiseaseService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 
 		try {
-			BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
+			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
@@ -48,7 +51,7 @@ public class AgmDiseaseAnnotationExecutor extends LoadFileExecutor {
 			if (annotations != null) {
 				bulkLoadFile.setRecordCount(annotations.size() + bulkLoadFile.getRecordCount());
 				bulkLoadFileDAO.merge(bulkLoadFile);
-				
+
 				trackHistory(runLoad(taxonId, annotations), bulkLoadFile);
 
 			}

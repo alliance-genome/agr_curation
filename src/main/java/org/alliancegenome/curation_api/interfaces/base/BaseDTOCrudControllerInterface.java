@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.interfaces.base;
 
-import javax.ws.rs.*;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;

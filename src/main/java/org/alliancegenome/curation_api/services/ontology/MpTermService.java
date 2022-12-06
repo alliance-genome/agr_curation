@@ -11,7 +11,8 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class MpTermService extends BaseOntologyTermService<MPTerm, MpTermDAO> {
 
-	@Inject MpTermDAO mpTermDAO;
+	@Inject
+	MpTermDAO mpTermDAO;
 
 	@Override
 	@PostConstruct

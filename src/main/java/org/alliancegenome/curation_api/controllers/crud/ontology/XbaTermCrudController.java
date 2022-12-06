@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.XbaTermService;
 @RequestScoped
 public class XbaTermCrudController extends BaseOntologyTermController<XbaTermService, XBATerm, XbaTermDAO> implements XbaTermCrudInterface {
 
-	@Inject XbaTermService xbaTermService;
+	@Inject
+	XbaTermService xbaTermService;
 
 	@Override
 	@PostConstruct

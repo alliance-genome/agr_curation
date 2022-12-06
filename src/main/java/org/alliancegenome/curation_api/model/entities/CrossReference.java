@@ -28,28 +28,26 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"pageAreas"}, callSuper = true)
-@Schema(name="Cross Reference", description="POJO that represents the Cross Reference")
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
-@Table(indexes = {
-	@Index(name = "crossreference_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "crossreference_updatedby_index", columnList = "updatedBy_id")
-})
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(exclude = { "pageAreas" }, callSuper = true)
+@Schema(name = "Cross Reference", description = "POJO that represents the Cross Reference")
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = { @Index(name = "crossreference_createdby_index", columnList = "createdBy_id"), @Index(name = "crossreference_updatedby_index", columnList = "updatedBy_id") })
 public class CrossReference extends CurieAuditedObject {
 
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@ElementCollection
-	@JoinTable(indexes = @Index( columnList = "crossreference_curie"))
-	@JsonView({View.FieldsAndLists.class})
+	@JoinTable(indexes = @Index(columnList = "crossreference_curie"))
+	@JsonView({ View.FieldsAndLists.class })
 	private List<String> pageAreas;
-	
+
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String displayName;
-	
+
 	@KeywordField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String prefix;
-	
+
 }

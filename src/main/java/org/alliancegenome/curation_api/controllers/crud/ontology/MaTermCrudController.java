@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.MaTermService;
 @RequestScoped
 public class MaTermCrudController extends BaseOntologyTermController<MaTermService, MATerm, MaTermDAO> implements MaTermCrudInterface {
 
-	@Inject MaTermService maTermService;
+	@Inject
+	MaTermService maTermService;
 
 	@Override
 	@PostConstruct

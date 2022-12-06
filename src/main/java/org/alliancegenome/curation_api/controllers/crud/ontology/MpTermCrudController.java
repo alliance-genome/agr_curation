@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.MpTermService;
 @RequestScoped
 public class MpTermCrudController extends BaseOntologyTermController<MpTermService, MPTerm, MpTermDAO> implements MpTermCrudInterface {
 
-	@Inject MpTermService mpTermService;
+	@Inject
+	MpTermService mpTermService;
 
 	@Override
 	@PostConstruct

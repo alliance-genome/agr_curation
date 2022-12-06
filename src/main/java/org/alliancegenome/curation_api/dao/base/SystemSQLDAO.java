@@ -2,7 +2,10 @@ package org.alliancegenome.curation_api.dao.base;
 
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -11,14 +14,16 @@ import javax.persistence.Entity;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.reflections.Reflections;
 
 @ApplicationScoped
 public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
 
-	@Inject LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject
+	LiteratureReferenceDAO literatureReferenceDAO;
 
 	protected SystemSQLDAO() {
 		super(BaseEntity.class);
@@ -37,15 +42,15 @@ public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
 
 		Map<String, Object> map = new HashMap<>();
 
-		for(Class<?> clazz: allClasses) {
+		for (Class<?> clazz : allClasses) {
 			Map<String, Object> tempMap = new HashMap<String, Object>();
-			if(entityClasses.contains(clazz)) {
+			if (entityClasses.contains(clazz)) {
 				tempMap.put("dbCount", dbCount(clazz));
 			} else {
 				tempMap.put("dbCount", 0);
 			}
-			if(indexedClasses.contains(clazz) || clazz.getSimpleName().equals("Reference")) {
-				if(clazz.getSimpleName().equals("Reference")) {
+			if (indexedClasses.contains(clazz) || clazz.getSimpleName().equals("Reference")) {
+				if (clazz.getSimpleName().equals("Reference")) {
 					SearchResponse<LiteratureReference> res = literatureReferenceDAO.searchAllCount();
 					tempMap.put("esCount", res.getTotalResults());
 				} else {

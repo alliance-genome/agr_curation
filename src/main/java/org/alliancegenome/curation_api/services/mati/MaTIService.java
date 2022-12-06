@@ -1,17 +1,19 @@
 package org.alliancegenome.curation_api.services.mati;
 
-import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
+import java.io.IOException;
+import java.util.Base64;
+
+import javax.enterprise.context.ApplicationScoped;
+
 import org.alliancegenome.curation_api.interfaces.okta.OktaTokenInterface;
 import org.alliancegenome.curation_api.model.mati.Identifier;
 import org.alliancegenome.curation_api.model.mati.IdentifiersRange;
 import org.alliancegenome.curation_api.model.okta.OktaToken;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import si.mazi.rescu.RestProxyFactory;
 
-import javax.enterprise.context.ApplicationScoped;
-import java.io.IOException;
-import java.util.Base64;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import si.mazi.rescu.RestProxyFactory;
 
 @ApplicationScoped
 public class MaTIService {
@@ -38,34 +40,19 @@ public class MaTIService {
 		return oktaToken.getAccess_token();
 	}
 
-	public Identifier mintIdentifier(String subdomain)	throws IOException {
+	public Identifier mintIdentifier(String subdomain) throws IOException {
 		String token = fetchOktaToken();
 		String authorization = "Bearer: " + token;
-		Identifier identifier = RestAssured.given().
-			contentType(ContentType.JSON).
-			header("Accept", "application/json").
-			header("Authorization", authorization).
-			header("subdomain", subdomain).
-			when().
-			put(mati_url + "/api/identifier").
-			then().
-			extract().body().as(Identifier.class);
+		Identifier identifier = RestAssured.given().contentType(ContentType.JSON).header("Accept", "application/json").header("Authorization", authorization).header("subdomain", subdomain).when()
+			.put(mati_url + "/api/identifier").then().extract().body().as(Identifier.class);
 		return identifier;
 	}
 
-	public IdentifiersRange mintIdentifierRange(String subdomain, String howMany)  throws IOException {
+	public IdentifiersRange mintIdentifierRange(String subdomain, String howMany) throws IOException {
 		String token = fetchOktaToken();
 		String authorization = "Bearer: " + token;
-		IdentifiersRange range = RestAssured.given().
-			contentType(ContentType.JSON).
-			header("Accept", "application/json").
-			header("Authorization", authorization).
-			header("subdomain", subdomain).
-			header("value", howMany).
-			when().
-			post(mati_url + "/api/identifier").
-			then().
-			extract().body().as(IdentifiersRange.class);
+		IdentifiersRange range = RestAssured.given().contentType(ContentType.JSON).header("Accept", "application/json").header("Authorization", authorization).header("subdomain", subdomain)
+			.header("value", howMany).when().post(mati_url + "/api/identifier").then().extract().body().as(IdentifiersRange.class);
 		return range;
 	}
 }

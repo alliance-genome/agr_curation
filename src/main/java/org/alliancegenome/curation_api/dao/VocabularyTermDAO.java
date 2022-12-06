@@ -11,11 +11,11 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 
 @ApplicationScoped
 public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
-	
+
 	protected VocabularyTermDAO() {
 		super(VocabularyTerm.class);
 	}
-	
+
 	public VocabularyTerm getTermInVocabulary(String vocabularyName, String termName) {
 
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -26,7 +26,7 @@ public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
 		return resp.getSingleResult();
 
 	}
-	
+
 	public VocabularyTerm getTermInVocabularyTermSet(String vocabularyTermSetName, String termName) {
 
 		Map<String, Object> params = new HashMap<String, Object>();

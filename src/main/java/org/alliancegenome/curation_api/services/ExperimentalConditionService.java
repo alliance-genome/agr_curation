@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.ExperimentalCondition
 @RequestScoped
 public class ExperimentalConditionService extends BaseEntityCrudService<ExperimentalCondition, ExperimentalConditionDAO> {
 
-	@Inject ExperimentalConditionDAO experimentalConditionDAO;
-	@Inject ExperimentalConditionValidator experimentalConditionValidator;
-	
+	@Inject
+	ExperimentalConditionDAO experimentalConditionDAO;
+	@Inject
+	ExperimentalConditionValidator experimentalConditionValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(experimentalConditionDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<ExperimentalCondition> update(ExperimentalCondition uiEntity) {
@@ -36,5 +38,5 @@ public class ExperimentalConditionService extends BaseEntityCrudService<Experime
 		ExperimentalCondition dbEntity = experimentalConditionValidator.validateExperimentalConditionCreate(uiEntity);
 		return new ObjectResponse<>(experimentalConditionDAO.persist(dbEntity));
 	}
-	
+
 }

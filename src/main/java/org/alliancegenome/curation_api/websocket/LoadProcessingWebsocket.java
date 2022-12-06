@@ -21,8 +21,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ServerEndpoint("/processing_events")
 @ApplicationScoped
 public class LoadProcessingWebsocket {
-	
-	@Inject ObjectMapper mapper;
+
+	@Inject
+	ObjectMapper mapper;
 
 	Map<String, Session> sessions = new ConcurrentHashMap<>();
 
@@ -43,7 +44,7 @@ public class LoadProcessingWebsocket {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@OnError
 	public void onError(Session session, Throwable throwable) {
 		sessions.remove(session.getId());
@@ -55,7 +56,7 @@ public class LoadProcessingWebsocket {
 	}
 
 	public void observeProcessingEvent(@Observes ProcessingEvent event) {
-		for (Entry<String, Session> sessionEntry: sessions.entrySet()) {
+		for (Entry<String, Session> sessionEntry : sessions.entrySet()) {
 			try {
 				sessionEntry.getValue().getAsyncRemote().sendText(mapper.writeValueAsString(event));
 			} catch (Exception e) {

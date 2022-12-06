@@ -81,22 +81,22 @@ export const ProfileComponent = () => {
 
 
 	const headerTemplate = (options, props) => {
-        const toggleIcon = options.collapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up';
-        const className = `${options.className} justify-content-start`;
-        const titleClassName = `${options.titleClassName} pl-1`;
+				const toggleIcon = options.collapsed ? 'pi pi-chevron-down' : 'pi pi-chevron-up';
+				const className = `${options.className} justify-content-start`;
+				const titleClassName = `${options.titleClassName} pl-1`;
 
-        return (
-            <div className={className}>
-                <button className={options.togglerClassName} onClick={options.onTogglerClick}>
-                    <span className={toggleIcon}></span>
-                    <Ripple />
-                </button>
-                <span className={titleClassName}>
-                    Expand
-                </span>
-            </div>
-        )
-    };
+				return (
+						<div className={className}>
+								<button className={options.togglerClassName} onClick={options.onTogglerClick}>
+										<span className={toggleIcon}></span>
+										<Ripple />
+								</button>
+								<span className={titleClassName}>
+										Expand
+								</span>
+						</div>
+				)
+		};
 
 	const jsonTemplate = (props) => {
 		return (
@@ -107,13 +107,14 @@ export const ProfileComponent = () => {
 	};
 
 	const userInfos = [
-		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate  },
-		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate  },
-		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate  },
-		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate  },
+		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate	 },
+		{ name: "Alliance Member", value: localUserInfo.allianceMember.fullName + " (" + localUserInfo.allianceMember.abbreviation + ")", template: textTemplate	},
+		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate	},
+		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate	 },
+		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate	 },
 		{ name: "Curation API Token", value: localUserInfo.apiToken, template: textTemplate },
-		{ name: "Okta Access Token Content", value: jose.decodeJwt(oktaToken.accessToken.accessToken), template: jsonTemplate  },
-		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate  },
+		{ name: "Okta Access Token Content", value: jose.decodeJwt(oktaToken.accessToken.accessToken), template: jsonTemplate	 },
+		{ name: "Okta Id Token Content", value: jose.decodeJwt(oktaToken.idToken.idToken), template: jsonTemplate	 },
 		{ name: "User Settings", value: localUserInfo.settings, template: jsonTemplate },
 	];
 

@@ -34,17 +34,25 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
 
-	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject CrossReferenceService crossReferenceService;
-	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject SynonymService synonymService;
-	@Inject AlleleDAO alleleDAO;
-	@Inject AffectedGenomicModelValidator affectedGenomicModelValidator;
-	@Inject AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
-	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject PersonService personService;
-	
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	CrossReferenceService crossReferenceService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AffectedGenomicModelValidator affectedGenomicModelValidator;
+	@Inject
+	AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
+	@Inject
+	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PersonService personService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -79,16 +87,16 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		return new ObjectResponse<>(affectedGenomicModelDAO.persist(dbEntity));
 	}
 
-
 	@Transactional
 	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto) throws ObjectUpdateException {
 		AffectedGenomicModel agm = affectedGenomicModelDtoValidator.validateAffectedGenomicModelDTO(dto);
-		
-		if (agm == null) return null;
-		
+
+		if (agm == null)
+			return null;
+
 		return affectedGenomicModelDAO.persist(agm);
 	}
-	
+
 	@Transactional
 	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
@@ -111,7 +119,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
-				
+
 				if (anyPublicReferencingDAs) {
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
 					agm.setDateUpdated(OffsetDateTime.now());
@@ -127,12 +135,11 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		}
 		ph.finishProcess();
 	}
-	
+
 	public List<String> getCuriesByTaxonId(String taxonId) {
 		List<String> curies = affectedGenomicModelDAO.findAllCuriesByTaxon(taxonId);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
-	
-	
+
 }

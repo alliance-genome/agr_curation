@@ -14,8 +14,10 @@ import org.alliancegenome.curation_api.services.validation.VocabularyValidator;
 @RequestScoped
 public class VocabularyService extends BaseEntityCrudService<Vocabulary, VocabularyDAO> {
 
-	@Inject VocabularyDAO vocabularyDAO;
-	@Inject VocabularyValidator vocabularyValidator;
+	@Inject
+	VocabularyDAO vocabularyDAO;
+	@Inject
+	VocabularyValidator vocabularyValidator;
 
 	@Override
 	@PostConstruct
@@ -29,7 +31,7 @@ public class VocabularyService extends BaseEntityCrudService<Vocabulary, Vocabul
 		Vocabulary dbEntity = vocabularyValidator.validateVocabularyUpdate(uiEntity);
 		return new ObjectResponse<>(vocabularyDAO.persist(dbEntity));
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Vocabulary> create(Vocabulary uiEntity) {

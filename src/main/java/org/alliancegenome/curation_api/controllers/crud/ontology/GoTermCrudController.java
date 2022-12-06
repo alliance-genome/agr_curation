@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.GoTermService;
 @RequestScoped
 public class GoTermCrudController extends BaseOntologyTermController<GoTermService, GOTerm, GoTermDAO> implements GoTermCrudInterface {
 
-	@Inject GoTermService goTermService;
+	@Inject
+	GoTermService goTermService;
 
 	@Override
 	@PostConstruct

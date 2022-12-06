@@ -9,11 +9,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 
-import org.alliancegenome.curation_api.auth.AuthenticatedUser;
 import org.alliancegenome.curation_api.dao.DiseaseAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
@@ -26,11 +24,14 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnotation, DiseaseAnnotationDAO> {
 
-
-	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
-	@Inject NoteService noteService;
-	@Inject LoggedInPersonService loggedInPersonService;
-	@Inject PersonService personService;
+	@Inject
+	DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject
+	NoteService noteService;
+	@Inject
+	LoggedInPersonService loggedInPersonService;
+	@Inject
+	PersonService personService;
 
 	@Override
 	@PostConstruct
@@ -76,8 +77,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			log.error(errorMessage);
 			return false;
 		}
-		
-		Boolean madePublic = true; //TODO: check boolean field once in place
+
+		Boolean madePublic = true; // TODO: check boolean field once in place
 		if (madePublic) {
 			annotation.setObsolete(true);
 			if (authenticatedPerson.getOktaEmail() != null) {
@@ -90,12 +91,12 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 		} else {
 			List<Note> notesToDelete = annotation.getRelatedNotes();
 			diseaseAnnotationDAO.remove(id);
-		
+
 			if (CollectionUtils.isNotEmpty(notesToDelete))
 				annotation.getRelatedNotes().forEach(note -> noteService.delete(note.getId()));
 		}
-		
+
 		return madePublic;
 	}
-	
+
 }

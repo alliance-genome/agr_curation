@@ -12,11 +12,14 @@ import org.alliancegenome.curation_api.interfaces.crud.AGMDiseaseAnnotationCrudI
 import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.AGMDiseaseAnnotationService;
 
 @RequestScoped
-public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> implements AGMDiseaseAnnotationCrudInterface {
+public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AGMDiseaseAnnotationService, AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO>
+	implements AGMDiseaseAnnotationCrudInterface {
 
 	@Inject
 	AGMDiseaseAnnotationService annotationService;

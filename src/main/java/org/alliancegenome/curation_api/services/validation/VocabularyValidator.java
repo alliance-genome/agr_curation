@@ -12,17 +12,17 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
+public class VocabularyValidator extends AuditedObjectValidator<Vocabulary> {
 
 	@Inject
 	VocabularyDAO vocabularyDAO;
-	
+
 	private String errorMessage;
-	
+
 	public Vocabulary validateVocabularyUpdate(Vocabulary uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not update Vocabulary: [" + uiEntity.getId() + "]";
-		
+
 		Long id = uiEntity.getId();
 		if (id == null) {
 			addMessageResponse("No Vocabulary ID provided");
@@ -35,49 +35,49 @@ public class VocabularyValidator extends AuditedObjectValidator<Vocabulary>{
 		}
 
 		dbEntity = (Vocabulary) validateAuditedObjectFields(uiEntity, dbEntity, false);
-		
+
 		return validateVocabulary(uiEntity, dbEntity);
 	}
-	
+
 	public Vocabulary validateVocabularyCreate(Vocabulary uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Could not create Vocabulary: [" + uiEntity.getName() + "]";
-		
+
 		Vocabulary dbEntity = new Vocabulary();
 
 		dbEntity = (Vocabulary) validateAuditedObjectFields(uiEntity, dbEntity, true);
-		
+
 		return validateVocabulary(uiEntity, dbEntity);
 	}
-	
+
 	public Vocabulary validateVocabulary(Vocabulary uiEntity, Vocabulary dbEntity) {
-		
+
 		String name = validateName(uiEntity);
 		dbEntity.setName(name);
-		
+
 		dbEntity.setVocabularyDescription(handleStringField(uiEntity.getVocabularyDescription()));
-		
+
 		if (CollectionUtils.isNotEmpty(uiEntity.getMemberTerms())) {
 			dbEntity.setMemberTerms(uiEntity.getMemberTerms());
 		} else {
 			dbEntity.setMemberTerms(null);
 		}
-		
+
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
-		
+
 		return dbEntity;
 	}
-	
+
 	public String validateName(Vocabulary uiEntity) {
 		String field = "name";
 		if (StringUtils.isBlank(uiEntity.getName())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		return uiEntity.getName();
 	}
 }

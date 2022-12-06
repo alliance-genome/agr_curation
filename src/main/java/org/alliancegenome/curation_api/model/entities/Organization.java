@@ -29,22 +29,22 @@ import lombok.ToString;
 @Inheritance(strategy = InheritanceType.JOINED)
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.4.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Agent.class})
+@AGRCurationSchemaVersion(min = "1.4.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Agent.class })
 public class Organization extends Agent {
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "abbreviation_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	@Column(unique = true)
 	private String abbreviation;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "fullName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	private String fullName;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "shortName_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView(View.FieldsOnly.class)
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	private String shortName;
 }

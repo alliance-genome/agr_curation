@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
 @RequestScoped
 public class EmapaTermCrudController extends BaseOntologyTermController<EmapaTermService, EMAPATerm, EmapaTermDAO> implements EmapaTermCrudInterface {
 
-	@Inject EmapaTermService emapaTermService;
+	@Inject
+	EmapaTermService emapaTermService;
 
 	@Override
 	@PostConstruct

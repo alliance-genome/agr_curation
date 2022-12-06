@@ -13,12 +13,13 @@ import org.alliancegenome.curation_api.services.OrganizationService;
 @RequestScoped
 public class OrganizationCrudController extends BaseEntityCrudController<OrganizationService, Organization, OrganizationDAO> implements OrganizationCrudInterface {
 
-	@Inject OrganizationService organizationService;
-	
+	@Inject
+	OrganizationService organizationService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(organizationService);
 	}
-	
+
 }

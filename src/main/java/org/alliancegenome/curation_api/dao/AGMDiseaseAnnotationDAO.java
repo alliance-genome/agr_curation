@@ -20,5 +20,5 @@ public class AGMDiseaseAnnotationDAO extends BaseSQLDAO<AGMDiseaseAnnotation> {
 		jpqlQuery.setParameter("taxonId", taxonID);
 		return (List<Long>) jpqlQuery.getResultList();
 	}
-	
+
 }
