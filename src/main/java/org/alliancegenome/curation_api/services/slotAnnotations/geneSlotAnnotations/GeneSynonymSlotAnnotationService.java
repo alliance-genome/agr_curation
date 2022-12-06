@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneS
 @RequestScoped
 public class GeneSynonymSlotAnnotationService extends BaseEntityCrudService<GeneSynonymSlotAnnotation, GeneSynonymSlotAnnotationDAO> {
 
-	@Inject GeneSynonymSlotAnnotationDAO geneSynonymDAO;
-	@Inject GeneSynonymSlotAnnotationValidator geneSynonymValidator;
-	
+	@Inject
+	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
+	@Inject
+	GeneSynonymSlotAnnotationValidator geneSynonymValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneSynonymDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<GeneSynonymSlotAnnotation> upsert(GeneSynonymSlotAnnotation uiEntity) {
 		GeneSynonymSlotAnnotation dbEntity = geneSynonymValidator.validateGeneSynonymSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class GeneSynonymSlotAnnotationService extends BaseEntityCrudService<Gene
 			return null;
 		return new ObjectResponse<GeneSynonymSlotAnnotation>(geneSynonymDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<GeneSynonymSlotAnnotation> validate(GeneSynonymSlotAnnotation uiEntity) {
 		GeneSynonymSlotAnnotation synonym = geneSynonymValidator.validateGeneSynonymSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<GeneSynonymSlotAnnotation>(synonym);
 	}
-	
+
 }

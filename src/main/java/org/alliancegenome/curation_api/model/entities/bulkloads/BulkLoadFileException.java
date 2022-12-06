@@ -29,22 +29,23 @@ import lombok.ToString;
 @Audited
 @Entity
 @Data
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"bulkLoadFileHistory", "exception"}, callSuper = true)
+@ToString(exclude = { "bulkLoadFileHistory", "exception" }, callSuper = true)
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
-@AGRCurationSchemaVersion(min="1.2.1", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@AGRCurationSchemaVersion(min = "1.2.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class BulkLoadFileException extends GeneratedAuditedObject {
-	
+
 	// TODO: define in LinkML once class definition matured
-	
+
 	@Type(type = JsonTypes.JSON_BIN)
-	@JsonView({View.BulkLoadFileHistory.class})
+	@JsonView({ View.BulkLoadFileHistory.class })
 	@Column(columnDefinition = JsonTypes.JSON_BIN)
 	private ObjectUpdateExceptionData exception;
-	
+
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BulkLoadFileHistory bulkLoadFileHistory;
-	
+
 }

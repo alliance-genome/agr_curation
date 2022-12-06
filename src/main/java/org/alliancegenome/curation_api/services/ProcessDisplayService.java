@@ -12,9 +12,10 @@ import org.alliancegenome.curation_api.util.ProcessDisplayHandler;
 
 @ApplicationScoped
 public class ProcessDisplayService implements ProcessDisplayHandler {
-	
-	@Inject Event<ProcessingEvent> processingEvent;
-	
+
+	@Inject
+	Event<ProcessingEvent> processingEvent;
+
 	@Override
 	public void startProcess(String message, long startTime, long totalSize) {
 		processingEvent.fire(new StartProcessingEvent(message, startTime, totalSize));

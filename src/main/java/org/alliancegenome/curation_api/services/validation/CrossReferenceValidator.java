@@ -20,7 +20,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 		response.setEntity(crossReference);
 		return response;
 	}
-	
+
 	public CrossReference validateCrossReference(CrossReference uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not create/update CrossReference: [" + uiEntity.getCurie() + "]";
@@ -38,14 +38,14 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 				} else {
 					return null;
 				}
-			} 
+			}
 		} else {
 			dbEntity = new CrossReference();
 			newEntity = true;
 		}
-		
+
 		dbEntity = (CrossReference) validateAuditedObjectFields(uiEntity, dbEntity, newEntity);
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -53,7 +53,7 @@ public class CrossReferenceValidator extends AuditedObjectValidator<CrossReferen
 			}
 			return null;
 		}
-		
+
 		return dbEntity;
 	}
 }

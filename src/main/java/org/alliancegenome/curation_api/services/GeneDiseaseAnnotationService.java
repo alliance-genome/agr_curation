@@ -17,24 +17,28 @@ import org.alliancegenome.curation_api.services.validation.dto.GeneDiseaseAnnota
 @RequestScoped
 public class GeneDiseaseAnnotationService extends BaseDTOCrudService<GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> {
 
-	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject GeneDiseaseAnnotationValidator geneDiseaseValidator;
-	@Inject GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	GeneDiseaseAnnotationValidator geneDiseaseValidator;
+	@Inject
+	GeneDiseaseAnnotationDTOValidator geneDiseaseAnnotationDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneDiseaseAnnotationDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> update(GeneDiseaseAnnotation uiEntity) {
 		GeneDiseaseAnnotation dbEntity = geneDiseaseValidator.validateAnnotationUpdate(uiEntity);
 		return new ObjectResponse<>(geneDiseaseAnnotationDAO.persist(dbEntity));
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation uiEntity) {

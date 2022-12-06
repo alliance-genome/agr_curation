@@ -37,53 +37,54 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"bulkLoad"})
-@AGRCurationSchemaVersion(min="1.3.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(exclude = { "bulkLoad" })
+@AGRCurationSchemaVersion(min = "1.3.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class BulkLoadFile extends GeneratedAuditedObject {
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer", valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@KeywordField(name = "dateLastLoaded_keyword", sortable = Sortable.YES, searchable = Searchable.YES, aggregable = Aggregable.YES, valueBridge = @ValueBridgeRef(type = OffsetDateTimeValueBridge.class))
 	@JsonView(View.FieldsOnly.class)
 	private OffsetDateTime dateLastLoaded;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private JobStatus bulkloadStatus;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@Column(unique = true)
 	private String md5Sum;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String localFilePath;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Long fileSize;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String s3Path;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Integer recordCount;
 
-	@JsonView({View.FieldsOnly.class})
-	@Column(columnDefinition="TEXT")
+	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "TEXT")
 	private String errorMessage;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private String linkMLSchemaVersion;
 
 	@ManyToOne
 	private BulkLoad bulkLoad;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@OneToMany(mappedBy = "bulkLoadFile", fetch = FetchType.EAGER)
 	@OrderBy("loadFinished DESC")
 	private List<BulkLoadFileHistory> history;
 
 	@Transient
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	public String getS3Url() {
 		// TODO craft proper URL based on system
 		// Get system and craft s3URL based on md5Sum
@@ -92,9 +93,9 @@ public class BulkLoadFile extends GeneratedAuditedObject {
 
 	@Transient
 	@JsonIgnore
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	public String generateS3MD5Path() {
-		if(md5Sum != null && md5Sum.length() > 0) {
+		if (md5Sum != null && md5Sum.length() > 0) {
 			return md5Sum.charAt(0) + "/" + md5Sum.charAt(1) + "/" + md5Sum.charAt(2) + "/" + md5Sum.charAt(3) + "/" + md5Sum + "." + bulkLoad.getFileExtension() + ".gz";
 		} else {
 			return null;

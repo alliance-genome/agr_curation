@@ -11,7 +11,8 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class XbedTermService extends BaseOntologyTermService<XBEDTerm, XbedTermDAO> {
 
-	@Inject XbedTermDAO xbedTermDAO;
+	@Inject
+	XbedTermDAO xbedTermDAO;
 
 	@Override
 	@PostConstruct

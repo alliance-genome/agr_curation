@@ -41,24 +41,37 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 
-	@Inject ReferenceDAO referenceDAO;
-	@Inject DoTermDAO doTermDAO;
-	@Inject EcoTermDAO ecoTermDAO;
-	@Inject ReferenceService referenceService;
-	@Inject VocabularyTermDAO vocabularyTermDAO;
-	@Inject GeneDAO geneDAO;
-	@Inject BiologicalEntityDAO biologicalEntityDAO;
-	@Inject NoteDAO noteDAO;
-	@Inject DiseaseAnnotationDAO diseaseAnnotationDAO;
-	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject ConditionRelationDTOValidator conditionRelationDtoValidator;
-	@Inject NoteDTOValidator noteDtoValidator;
-	@Inject OrganizationDAO organizationDAO;
-	
+	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
+	DoTermDAO doTermDAO;
+	@Inject
+	EcoTermDAO ecoTermDAO;
+	@Inject
+	ReferenceService referenceService;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	BiologicalEntityDAO biologicalEntityDAO;
+	@Inject
+	NoteDAO noteDAO;
+	@Inject
+	DiseaseAnnotationDAO diseaseAnnotationDAO;
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	ConditionRelationDTOValidator conditionRelationDtoValidator;
+	@Inject
+	NoteDTOValidator noteDtoValidator;
+	@Inject
+	OrganizationDAO organizationDAO;
+
 	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateAnnotationDTO(E annotation, D dto) {
 		ObjectResponse<E> daResponse = validateAuditedObjectDTO(annotation, dto);
 		annotation = daResponse.getEntity();
-		
+
 		if (StringUtils.isNotBlank(dto.getModEntityId())) {
 			annotation.setModEntityId(dto.getModEntityId());
 		} else {
@@ -69,11 +82,11 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			daResponse.addErrorMessage("do_term_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
 			DOTerm disease = doTermDAO.find(dto.getDoTermCurie());
-			if (disease == null) 
+			if (disease == null)
 				daResponse.addErrorMessage("do_term_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDoTermCurie() + ")");
 			annotation.setObject(disease);
 		}
-		
+
 		if (CollectionUtils.isEmpty(dto.getEvidenceCodeCuries())) {
 			daResponse.addErrorMessage("evidence_code_curies", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -124,7 +137,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 				annotation.setDataProvider(dpResponse.getSingleResult());
 			}
 		}
-		
+
 		Organization secondaryDataProvider = null;
 		if (StringUtils.isNotBlank(dto.getSecondaryDataProviderName())) {
 			SearchResponse<Organization> dpResponse = organizationDAO.findByField("abbreviation", dto.getSecondaryDataProviderName());
@@ -135,8 +148,7 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			}
 		}
 		annotation.setSecondaryDataProvider(secondaryDataProvider);
-		
-		
+
 		if (CollectionUtils.isNotEmpty(dto.getDiseaseQualifierNames())) {
 			List<VocabularyTerm> diseaseQualifiers = new ArrayList<>();
 			for (String qualifier : dto.getDiseaseQualifierNames()) {
@@ -158,12 +170,13 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			} else if (StringUtils.isBlank(dto.getDiseaseGeneticModifierRelationName())) {
 				daResponse.addErrorMessage("disease_genetic_modifier_curie", ValidationConstants.DEPENDENCY_MESSAGE_PREFIX + "disease_genetic_modifier_relation_name");
 			} else {
-				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, dto.getDiseaseGeneticModifierRelationName());
+				VocabularyTerm diseaseGeneticModifierRelation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY,
+					dto.getDiseaseGeneticModifierRelationName());
 				if (diseaseGeneticModifierRelation == null)
 					daResponse.addErrorMessage("disease_genetic_modifier_relation_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierRelationName() + ")");
 				BiologicalEntity diseaseGeneticModifier = biologicalEntityDAO.find(dto.getDiseaseGeneticModifierCurie());
 				if (diseaseGeneticModifier == null)
-					daResponse.addErrorMessage("disease_genetic_modifier_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierCurie()+ ")");
+					daResponse.addErrorMessage("disease_genetic_modifier_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDiseaseGeneticModifierCurie() + ")");
 				annotation.setDiseaseGeneticModifier(diseaseGeneticModifier);
 				annotation.setDiseaseGeneticModifierRelation(diseaseGeneticModifierRelation);
 			}
@@ -171,26 +184,28 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			annotation.setDiseaseGeneticModifier(null);
 			annotation.setDiseaseGeneticModifierRelation(null);
 		}
-			
+
 		VocabularyTerm annotationType = null;
 		if (StringUtils.isNotBlank(dto.getAnnotationTypeName())) {
 			annotationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, dto.getAnnotationTypeName());
 			if (annotationType == null)
 				daResponse.addErrorMessage("annotation_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getAnnotationTypeName() + ")");
-			}
+		}
 		annotation.setAnnotationType(annotationType);
-		
+
 		VocabularyTerm geneticSex = null;
 		if (StringUtils.isNotBlank(dto.getGeneticSexName())) {
 			geneticSex = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, dto.getGeneticSexName());
 			if (geneticSex == null)
 				daResponse.addErrorMessage("genetic_sex_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getGeneticSexName() + ")");
-		}	
+		}
 		annotation.setGeneticSex(geneticSex);
-		
+
 		if (CollectionUtils.isNotEmpty(annotation.getRelatedNotes())) {
-			annotation.getRelatedNotes().forEach(note -> {diseaseAnnotationDAO.deleteAttachedNote(note.getId());});
-		}	
+			annotation.getRelatedNotes().forEach(note -> {
+				diseaseAnnotationDAO.deleteAttachedNote(note.getId());
+			});
+		}
 		if (CollectionUtils.isNotEmpty(dto.getNoteDtos())) {
 			List<Note> notes = new ArrayList<>();
 			for (NoteDTO noteDTO : dto.getNoteDtos()) {
@@ -236,10 +251,10 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 		daResponse.setEntity(annotation);
 		return daResponse;
 	}
-	
-	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateReference (E annotation, D dto) {
+
+	public <E extends DiseaseAnnotation, D extends DiseaseAnnotationDTO> ObjectResponse<E> validateReference(E annotation, D dto) {
 		ObjectResponse<E> daResponse = new ObjectResponse<E>();
-		
+
 		Reference reference = null;
 		if (StringUtils.isBlank(dto.getReferenceCurie())) {
 			daResponse.addErrorMessage("reference_curie", ValidationConstants.REQUIRED_MESSAGE);
@@ -247,9 +262,9 @@ public class DiseaseAnnotationDTOValidator extends BaseDTOValidator {
 			reference = referenceService.retrieveFromDbOrLiteratureService(dto.getReferenceCurie());
 			if (reference == null)
 				daResponse.addErrorMessage("reference_curie", ValidationConstants.INVALID_MESSAGE + " (" + dto.getReferenceCurie() + ")");
-		}	
+		}
 		annotation.setSingleReference(reference);
-		
+
 		daResponse.setEntity(annotation);
 		return daResponse;
 	}

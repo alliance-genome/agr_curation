@@ -27,7 +27,7 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.5.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={NameSlotAnnotation.class})
+@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { NameSlotAnnotation.class })
 @Schema(name = "GeneSynonymSlotAnnotation", description = "POJO representing a gene synonym slot annotation")
 public class GeneSynonymSlotAnnotation extends NameSlotAnnotation {
 

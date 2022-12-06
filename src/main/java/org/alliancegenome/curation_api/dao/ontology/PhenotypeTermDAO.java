@@ -11,5 +11,5 @@ public class PhenotypeTermDAO extends BaseSQLDAO<PhenotypeTerm> {
 	protected PhenotypeTermDAO() {
 		super(PhenotypeTerm.class);
 	}
-	
+
 }

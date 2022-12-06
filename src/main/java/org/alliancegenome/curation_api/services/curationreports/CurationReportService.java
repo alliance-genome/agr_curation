@@ -13,10 +13,10 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class CurationReportService extends BaseEntityCrudService<CurationReport, CurationReportDAO> {
-	
+
 	@Inject
 	CurationReportDAO curationReportDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -26,7 +26,7 @@ public class CurationReportService extends BaseEntityCrudService<CurationReport,
 	@Transactional
 	public ObjectResponse<CurationReport> restartReport(Long id) {
 		CurationReport report = curationReportDAO.find(id);
-		if(report.getCurationReportStatus().isNotRunning()) {
+		if (report.getCurationReportStatus().isNotRunning()) {
 			report.setCurationReportStatus(JobStatus.FORCED_PENDING);
 		}
 		return new ObjectResponse<CurationReport>(report);

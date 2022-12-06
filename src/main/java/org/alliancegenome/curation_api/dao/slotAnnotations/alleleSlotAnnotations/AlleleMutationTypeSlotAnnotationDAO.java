@@ -11,5 +11,5 @@ public class AlleleMutationTypeSlotAnnotationDAO extends BaseSQLDAO<AlleleMutati
 	protected AlleleMutationTypeSlotAnnotationDAO() {
 		super(AlleleMutationTypeSlotAnnotation.class);
 	}
-	
+
 }

@@ -22,10 +22,14 @@ import org.apache.commons.lang3.StringUtils;
 
 public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject SynonymDAO synonymDAO;
-	@Inject CrossReferenceValidator crossReferenceValidator;
-	@Inject CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject
+	SynonymDAO synonymDAO;
+	@Inject
+	CrossReferenceValidator crossReferenceValidator;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	public NCBITaxonTerm validateTaxon(GenomicEntity uiEntity) {
 		String field = "taxon";
@@ -61,7 +65,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 		}
 
 		List<String> previousCuries = new ArrayList<String>();
-		if(CollectionUtils.isNotEmpty(dbEntity.getCrossReferences()))
+		if (CollectionUtils.isNotEmpty(dbEntity.getCrossReferences()))
 			previousCuries = dbEntity.getCrossReferences().stream().map(CrossReference::getCurie).collect(Collectors.toList());
 		List<String> validatedCuries = new ArrayList<String>();
 		if (CollectionUtils.isNotEmpty(validatedXrefs))

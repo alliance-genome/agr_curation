@@ -20,5 +20,5 @@ public class AlleleDiseaseAnnotationDAO extends BaseSQLDAO<AlleleDiseaseAnnotati
 		jpqlQuery.setParameter("taxonId", taxonID);
 		return (List<Long>) jpqlQuery.getResultList();
 	}
-	
+
 }

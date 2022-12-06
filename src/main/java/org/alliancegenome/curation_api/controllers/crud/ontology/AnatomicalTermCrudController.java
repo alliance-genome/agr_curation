@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.AnatomicalTermService;
 @RequestScoped
 public class AnatomicalTermCrudController extends BaseOntologyTermController<AnatomicalTermService, AnatomicalTerm, AnatomicalTermDAO> implements AnatomicalTermCrudInterface {
 
-	@Inject AnatomicalTermService anatomicalTermService;
+	@Inject
+	AnatomicalTermService anatomicalTermService;
 
 	@Override
 	@PostConstruct

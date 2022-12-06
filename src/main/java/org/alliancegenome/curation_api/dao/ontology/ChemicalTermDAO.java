@@ -11,5 +11,5 @@ public class ChemicalTermDAO extends BaseSQLDAO<ChemicalTerm> {
 	protected ChemicalTermDAO() {
 		super(ChemicalTerm.class);
 	}
-	
+
 }

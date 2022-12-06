@@ -10,7 +10,7 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 
 	private Runtime runtime = Runtime.getRuntime();
 	private DecimalFormat df = new DecimalFormat("#");
-	
+
 	@Override
 	public void startProcess(String message, long startTime, long totalSize) {
 		if (totalSize > 0)
@@ -21,26 +21,26 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 
 	@Override
 	public void progressProcess(String message, String data, long startTime, long nowTime, long lastTime, long currentCount, long lastCount, long totalSize) {
-		
+
 		double percent = 0;
 		if (totalSize > 0) {
 			percent = ((double) (currentCount) / totalSize);
 		}
 		long processedAmount = (currentCount - lastCount);
-		
-		
+
 		StringBuffer sb = new StringBuffer(message == null ? "" : message);
 		sb.append(ProcessDisplayHandler.getBigNumber(currentCount));
-		if(totalSize > 0) {
+		if (totalSize > 0) {
 			sb.append(" of [" + ProcessDisplayHandler.getBigNumber(totalSize) + "] " + (int) (percent * 100L) + "%");
 		}
 		long time = (nowTime - lastTime);
 		long diff = (nowTime - startTime);
-		sb.append(", " + (time / 1000) + "s to process " + ProcessDisplayHandler.getBigNumber(processedAmount) + " records at " + ProcessDisplayHandler.getBigNumber((processedAmount * 1000L) / time) + "r/s");
-		if(data != null) {
+		sb.append(", " + (time / 1000) + "s to process " + ProcessDisplayHandler.getBigNumber(processedAmount) + " records at " + ProcessDisplayHandler.getBigNumber((processedAmount * 1000L) / time)
+			+ "r/s");
+		if (data != null) {
 			sb.append(" " + data);
 		}
-		
+
 		checkMemory(message, data);
 
 		if (percent > 0) {
@@ -52,23 +52,23 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 		logInfoMessage(sb.toString());
 
 	}
-	
 
 	@Override
 	public void finishProcess(String message, String data, long currentCount, long totalSize, long duration) {
 		String result = ProcessDisplayHandler.getHumanReadableTimeDisplay(duration);
 		String localMessage = message + "Finished: took: " + result + " to process " + ProcessDisplayHandler.getBigNumber(currentCount);
 		if (duration != 0) {
-			localMessage += " records at a rate of: " + ProcessDisplayHandler.getBigNumber((currentCount * 1000) / duration) + "r/s " + ProcessDisplayHandler.getBigNumber((currentCount * 60000) / duration) + "r/m";
+			localMessage += " records at a rate of: " + ProcessDisplayHandler.getBigNumber((currentCount * 1000) / duration) + "r/s "
+				+ ProcessDisplayHandler.getBigNumber((currentCount * 60000) / duration) + "r/m";
 		} else {
 			localMessage += " records";
 		}
-		
-		if(data != null) {
+
+		if (data != null) {
 			localMessage += " " + data;
 		}
 		logInfoMessage(localMessage);
-		
+
 	}
 
 	private void checkMemory(String message, String data) {
@@ -84,11 +84,11 @@ public class DefaultProcessDisplayHandler implements ProcessDisplayHandler {
 	private double memoryPercent() {
 		return ((double) runtime.totalMemory() - (double) runtime.freeMemory()) / (double) runtime.maxMemory();
 	}
-	
+
 	private void logWarnMessage(String message) {
 		log.warn(message);
 	}
-	
+
 	private void logInfoMessage(String message) {
 		log.info(message);
 	}

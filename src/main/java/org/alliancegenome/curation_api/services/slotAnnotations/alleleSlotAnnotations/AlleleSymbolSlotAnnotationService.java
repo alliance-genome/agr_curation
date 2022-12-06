@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 @RequestScoped
 public class AlleleSymbolSlotAnnotationService extends BaseEntityCrudService<AlleleSymbolSlotAnnotation, AlleleSymbolSlotAnnotationDAO> {
 
-	@Inject AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
-	@Inject AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
-	
+	@Inject
+	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
+	@Inject
+	AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleSymbolDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<AlleleSymbolSlotAnnotation> upsert(AlleleSymbolSlotAnnotation uiEntity) {
 		AlleleSymbolSlotAnnotation dbEntity = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class AlleleSymbolSlotAnnotationService extends BaseEntityCrudService<All
 			return null;
 		return new ObjectResponse<AlleleSymbolSlotAnnotation>(alleleSymbolDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<AlleleSymbolSlotAnnotation> validate(AlleleSymbolSlotAnnotation uiEntity) {
 		AlleleSymbolSlotAnnotation symbol = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<AlleleSymbolSlotAnnotation>(symbol);
 	}
-	
+
 }

@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudService<AlleleMutationTypeSlotAnnotation, AlleleMutationTypeSlotAnnotationDAO> {
 
-	@Inject AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
-	@Inject AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
-	
+	@Inject
+	AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
+	@Inject
+	AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleMutationTypeDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> upsert(AlleleMutationTypeSlotAnnotation uiEntity) {
 		AlleleMutationTypeSlotAnnotation dbEntity = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class AlleleMutationTypeSlotAnnotationService extends BaseEntityCrudServi
 			return null;
 		return new ObjectResponse<AlleleMutationTypeSlotAnnotation>(alleleMutationTypeDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validate(AlleleMutationTypeSlotAnnotation uiEntity) {
 		AlleleMutationTypeSlotAnnotation amt = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<AlleleMutationTypeSlotAnnotation>(amt);
 	}
-	
+
 }

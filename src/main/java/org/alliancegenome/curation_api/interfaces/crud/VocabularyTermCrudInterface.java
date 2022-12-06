@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import java.util.HashMap;
 
 import javax.ws.rs.Consumes;
@@ -36,22 +35,20 @@ public interface VocabularyTermCrudInterface extends BaseIdCrudInterface<Vocabul
 	@Path("/search")
 	@JsonView(View.VocabularyTermView.class)
 	@Tag(name = "Elastic Search Endpoints")
-	public SearchResponse<VocabularyTerm> search(
-			@DefaultValue("0") @QueryParam("page") Integer page,
-			@DefaultValue("10") @QueryParam("limit") Integer limit,
-			@RequestBody HashMap<String, Object> params);
-	
+	public SearchResponse<VocabularyTerm> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit,
+		@RequestBody HashMap<String, Object> params);
+
 	@Override
 	@GET
 	@Path("/{id}")
 	@JsonView(View.VocabularyTermView.class)
 	public ObjectResponse<VocabularyTerm> get(@PathParam("id") Long id);
-	
+
 	@GET
 	@Path("/findBy")
 	@JsonView(View.VocabularyTermView.class)
 	public ObjectResponse<VocabularyTerm> getTermInVocabulary(@QueryParam("vocabularyName") String vocabularyName, @QueryParam("termName") String termName);
-	
+
 	@GET
 	@Path("/findInSet")
 	@JsonView(View.VocabularyTermView.class)

@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 @RequestScoped
 public class AlleleFullNameSlotAnnotationService extends BaseEntityCrudService<AlleleFullNameSlotAnnotation, AlleleFullNameSlotAnnotationDAO> {
 
-	@Inject AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
-	@Inject AlleleFullNameSlotAnnotationValidator alleleFullNameValidator;
-	
+	@Inject
+	AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
+	@Inject
+	AlleleFullNameSlotAnnotationValidator alleleFullNameValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleFullNameDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<AlleleFullNameSlotAnnotation> upsert(AlleleFullNameSlotAnnotation uiEntity) {
 		AlleleFullNameSlotAnnotation dbEntity = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class AlleleFullNameSlotAnnotationService extends BaseEntityCrudService<A
 			return null;
 		return new ObjectResponse<AlleleFullNameSlotAnnotation>(alleleFullNameDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<AlleleFullNameSlotAnnotation> validate(AlleleFullNameSlotAnnotation uiEntity) {
 		AlleleFullNameSlotAnnotation fullName = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<AlleleFullNameSlotAnnotation>(fullName);
 	}
-	
+
 }

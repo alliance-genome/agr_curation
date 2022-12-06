@@ -11,5 +11,5 @@ public class GeneSymbolSlotAnnotationDAO extends BaseSQLDAO<GeneSymbolSlotAnnota
 	protected GeneSymbolSlotAnnotationDAO() {
 		super(GeneSymbolSlotAnnotation.class);
 	}
-	
+
 }

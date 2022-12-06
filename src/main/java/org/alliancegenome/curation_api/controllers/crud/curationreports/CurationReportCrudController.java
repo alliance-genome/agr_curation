@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.curationreports.CurationReportSe
 @RequestScoped
 public class CurationReportCrudController extends BaseEntityCrudController<CurationReportService, CurationReport, CurationReportDAO> implements CurationReportCrudInterface {
 
-	@Inject CurationReportService curationReportService;
+	@Inject
+	CurationReportService curationReportService;
 
 	@Override
 	@PostConstruct

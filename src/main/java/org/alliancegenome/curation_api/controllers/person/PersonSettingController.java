@@ -21,10 +21,14 @@ import org.alliancegenome.curation_api.services.PersonSettingService;
 @RequestScoped
 public class PersonSettingController implements PersonSettingInterface {
 
-	@Inject @AuthenticatedUser LoggedInPerson authenticatedPerson;
-	@Inject PersonSettingService personSettingService;
-	@Inject PersonService personService;
-	
+	@Inject
+	@AuthenticatedUser
+	LoggedInPerson authenticatedPerson;
+	@Inject
+	PersonSettingService personSettingService;
+	@Inject
+	PersonService personService;
+
 	@Override
 	public ObjectResponse<PersonSetting> getUserSetting(String settingsKey) {
 		return new ObjectResponse<>(getSetting(settingsKey));
@@ -37,14 +41,14 @@ public class PersonSettingController implements PersonSettingInterface {
 		personSettingService.delete(setting.getId());
 		return new ObjectResponse<>(setting);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<PersonSetting> saveUserSetting(String settingsKey, Map<String, Object> settingsMap) {
-		
+
 		PersonSetting setting = getSetting(settingsKey);
-		
-		if(setting == null) {
+
+		if (setting == null) {
 			setting = new PersonSetting();
 			ObjectResponse<Person> personResp = personService.get(authenticatedPerson.getId());
 			Person person = personResp.getEntity();
@@ -57,13 +61,13 @@ public class PersonSettingController implements PersonSettingInterface {
 
 		return personSettingService.update(setting);
 	}
-	
+
 	private PersonSetting getSetting(String settingsKey) {
 		Map<String, Object> params = new HashMap<String, Object>();
 		params.put("person.id", authenticatedPerson.getId());
 		params.put("settingsKey", settingsKey);
 		SearchResponse<PersonSetting> resp = personSettingService.findByParams(new Pagination(0, 20), params);
-		if(resp.getResults().size() >= 1) {
+		if (resp.getResults().size() >= 1) {
 			return resp.getResults().get(0);
 		} else {
 			return null;

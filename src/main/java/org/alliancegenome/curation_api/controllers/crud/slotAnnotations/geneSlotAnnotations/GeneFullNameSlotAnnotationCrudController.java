@@ -12,21 +12,23 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotationService;
 
 @RequestScoped
-public class GeneFullNameSlotAnnotationCrudController extends BaseEntityCrudController<GeneFullNameSlotAnnotationService, GeneFullNameSlotAnnotation, GeneFullNameSlotAnnotationDAO> implements GeneFullNameSlotAnnotationCrudInterface {
+public class GeneFullNameSlotAnnotationCrudController extends BaseEntityCrudController<GeneFullNameSlotAnnotationService, GeneFullNameSlotAnnotation, GeneFullNameSlotAnnotationDAO>
+	implements GeneFullNameSlotAnnotationCrudInterface {
 
-	@Inject GeneFullNameSlotAnnotationService geneFullNameService;
-	
+	@Inject
+	GeneFullNameSlotAnnotationService geneFullNameService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(geneFullNameService);
 	}
-	
+
 	@Override
 	public ObjectResponse<GeneFullNameSlotAnnotation> update(GeneFullNameSlotAnnotation entity) {
 		return geneFullNameService.upsert(entity);
 	}
-	
+
 	@Override
 	public ObjectResponse<GeneFullNameSlotAnnotation> create(GeneFullNameSlotAnnotation entity) {
 		return geneFullNameService.upsert(entity);

@@ -21,7 +21,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	ReferenceDAO referenceDAO;
 	@Inject
 	ReferenceSynchronisationHelper refSyncHelper;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -31,14 +31,14 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 	public ObjectResponse<Reference> synchroniseReference(String curie) {
 		return refSyncHelper.synchroniseReference(curie);
 	}
-	
+
 	public void synchroniseReferences() {
 		refSyncHelper.synchroniseReferences();
 	}
 
 	public Reference retrieveFromDbOrLiteratureService(String curieOrXref) {
 		Reference reference = null;
-		
+
 		if (curieOrXref.startsWith("AGRKB:")) {
 			reference = referenceDAO.find(curieOrXref);
 		} else {
@@ -53,16 +53,16 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 			if (nonObsoleteRefs.size() == 1)
 				reference = nonObsoleteRefs.get(0);
 		}
-		
+
 		if (reference != null && !reference.getObsolete())
 			return reference;
-		
+
 		reference = refSyncHelper.retrieveFromLiteratureService(curieOrXref);
-		
+
 		if (reference == null)
 			return null;
-		
+
 		return referenceDAO.persist(reference);
 	}
-	
+
 }

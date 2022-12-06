@@ -16,6 +16,8 @@ public interface ProcessDisplayHandler {
 	}
 
 	public void startProcess(String message, long startTime, long totalSize);
+
 	public void progressProcess(String message, String data, long startTime, long nowTime, long lastTime, long currentCount, long lastCount, long totalSize);
+
 	public void finishProcess(String message, String data, long currentCount, long totalSize, long duration);
 }

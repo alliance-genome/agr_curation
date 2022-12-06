@@ -23,28 +23,30 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class BaseDTOValidator {
 
-	@Inject PersonService personService;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	
-	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO (E entity, D dto) {
-		
+	@Inject
+	PersonService personService;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
+
+	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
+
 		ObjectResponse<E> response = new ObjectResponse<E>();
-		
+
 		Person createdBy = null;
 		if (StringUtils.isNotBlank(dto.getCreatedByCurie()))
 			createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedByCurie());
 		entity.setCreatedBy(createdBy);
-		
+
 		Person updatedBy = null;
 		if (StringUtils.isNotBlank(dto.getUpdatedByCurie()))
 			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedByCurie());
 		entity.setUpdatedBy(updatedBy);
-		
+
 		Boolean internal = false;
 		if (dto.getInternal() != null)
 			internal = dto.getInternal();
 		entity.setInternal(internal);
-		
+
 		Boolean obsolete = false;
 		if (dto.getObsolete() != null)
 			obsolete = dto.getObsolete();
@@ -63,26 +65,26 @@ public class BaseDTOValidator {
 		OffsetDateTime creationDate = null;
 		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());		
+				creationDate = OffsetDateTime.parse(dto.getDateCreated());
 			} catch (DateTimeParseException e) {
 				response.addErrorMessage("date_created", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateCreated() + ")");
 			}
 		}
 		entity.setDateCreated(creationDate);
-	
+
 		response.setEntity(entity);
-		
+
 		return response;
 	}
-	
-	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO (E entity, D dto) {
-		
+
+	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO(E entity, D dto) {
+
 		ObjectResponse<E> beResponse = new ObjectResponse<E>();
-		
+
 		ObjectResponse<E> aoResponse = validateAuditedObjectDTO(entity, dto);
 		beResponse.addErrorMessages(aoResponse.getErrorMessages());
 		entity = aoResponse.getEntity();
-		
+
 		if (StringUtils.isBlank(dto.getTaxonCurie())) {
 			beResponse.addErrorMessage("taxon_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -92,22 +94,22 @@ public class BaseDTOValidator {
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
-			
+
 		beResponse.setEntity(entity);
-		
+
 		return beResponse;
 	}
-	
-	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO (E entity, D dto) {
-		
+
+	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto) {
+
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
-		
+
 		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
-		
+
 		geResponse.setEntity(entity);
-		
+
 		return geResponse;
 	}
 }

@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud.slotAnnotations.alleleSlotAnnotations;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -20,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleFullNameSlotAnnotationCrudInterface extends BaseIdCrudInterface<AlleleFullNameSlotAnnotation> {
-	
+
 	@POST
 	@Path("/validate")
 	@JsonView(View.FieldsAndLists.class)

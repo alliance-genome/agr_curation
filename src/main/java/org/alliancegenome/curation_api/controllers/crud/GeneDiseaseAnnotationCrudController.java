@@ -12,15 +12,20 @@ import org.alliancegenome.curation_api.interfaces.crud.GeneDiseaseAnnotationCrud
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.GeneDiseaseAnnotationService;
 
 @RequestScoped
-public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<GeneDiseaseAnnotationService, GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO> implements GeneDiseaseAnnotationCrudInterface {
+public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<GeneDiseaseAnnotationService, GeneDiseaseAnnotation, GeneDiseaseAnnotationDTO, GeneDiseaseAnnotationDAO>
+	implements GeneDiseaseAnnotationCrudInterface {
 
-	@Inject GeneDiseaseAnnotationService annotationService;
-	
-	@Inject GeneDiseaseAnnotationExecutor geneDiseaseAnnotationExecutor;
+	@Inject
+	GeneDiseaseAnnotationService annotationService;
+
+	@Inject
+	GeneDiseaseAnnotationExecutor geneDiseaseAnnotationExecutor;
 
 	@Override
 	@PostConstruct
@@ -31,7 +36,7 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 	@Override
 	public ObjectResponse<GeneDiseaseAnnotation> get(String uniqueId) {
 		SearchResponse<GeneDiseaseAnnotation> ret = findByField("uniqueId", uniqueId);
-		if(ret != null && ret.getTotalResults() == 1) {
+		if (ret != null && ret.getTotalResults() == 1) {
 			return new ObjectResponse<GeneDiseaseAnnotation>(ret.getResults().get(0));
 		} else {
 			return new ObjectResponse<GeneDiseaseAnnotation>();

@@ -38,36 +38,36 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Allele_Disease_Annotation", description = "Annotation class representing a allele disease annotation")
 @JsonTypeName("AlleleDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={DiseaseAnnotation.class})
+@AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinColumn(foreignKey = @ForeignKey(name="fk_alleledasubject"))
-	@JsonView({View.FieldsOnly.class})
+	@JoinColumn(foreignKey = @ForeignKey(name = "fk_alleledasubject"))
+	@JsonView({ View.FieldsOnly.class })
 	private Allele subject;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Gene inferredGene;
-
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = @Index(columnList="allelediseaseannotation_id"))
-	@JsonView({View.FieldsAndLists.class, View.DiseaseAnnotation.class})
+	@JoinTable(indexes = @Index(columnList = "allelediseaseannotation_id"))
+	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> assertedGenes;
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if(subject == null) return null;
+		if (subject == null)
+			return null;
 		return subject.getCurie();
 	}
 

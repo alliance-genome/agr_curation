@@ -12,13 +12,13 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlot
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.NameSlotAnnotationValidator;
 
-
 @RequestScoped
 public class AlleleSynonymSlotAnnotationValidator extends NameSlotAnnotationValidator<AlleleSynonymSlotAnnotation> {
 
-	@Inject AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
-	@Inject AlleleDAO alleleDAO;
-
+	@Inject
+	AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
+	@Inject
+	AlleleDAO alleleDAO;
 
 	public ObjectResponse<AlleleSynonymSlotAnnotation> validateAlleleSynonymSlotAnnotation(AlleleSynonymSlotAnnotation uiEntity) {
 		AlleleSynonymSlotAnnotation synonym = validateAlleleSynonymSlotAnnotation(uiEntity, false, false);
@@ -46,15 +46,15 @@ public class AlleleSynonymSlotAnnotationValidator extends NameSlotAnnotationVali
 			newEntity = true;
 		}
 		dbEntity = (AlleleSynonymSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
-		
+
 		VocabularyTerm nameType = validateSynonymNameType(uiEntity.getNameType(), dbEntity.getNameType());
 		dbEntity.setNameType(nameType);
-		
+
 		if (validateAllele) {
 			Allele singleAllele = validateSingleAllele(uiEntity.getSingleAllele(), dbEntity.getSingleAllele());
 			dbEntity.setSingleAllele(singleAllele);
 		}
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -66,5 +66,5 @@ public class AlleleSynonymSlotAnnotationValidator extends NameSlotAnnotationVali
 
 		return dbEntity;
 	}
-	
+
 }

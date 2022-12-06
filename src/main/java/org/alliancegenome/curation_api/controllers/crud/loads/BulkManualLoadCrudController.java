@@ -14,14 +14,15 @@ import org.alliancegenome.curation_api.services.loads.BulkManualLoadService;
 @RequestScoped
 public class BulkManualLoadCrudController extends BaseEntityCrudController<BulkManualLoadService, BulkManualLoad, BulkManualLoadDAO> implements BulkManualLoadCrudInterface {
 
-	@Inject BulkManualLoadService bulkManualLoadService;
+	@Inject
+	BulkManualLoadService bulkManualLoadService;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(bulkManualLoadService);
 	}
-	
+
 	@Override
 	public ObjectResponse<BulkManualLoad> restartLoad(Long id) {
 		return bulkManualLoadService.restartLoad(id);
