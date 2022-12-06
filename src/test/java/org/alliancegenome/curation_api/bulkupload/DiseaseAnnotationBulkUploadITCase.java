@@ -32,7 +32,10 @@ import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalCondi
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -4311,8 +4314,10 @@ public class DiseaseAnnotationBulkUploadITCase {
 		loadZecoTerm(requiredNonSlimZecoTerm, null);
 		loadChemicalTerm();
 		loadAnatomyTerm();
-		loadGenes();
-		loadAllele();
+		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
+		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		loadGenes(symbolTerm);
+		loadAllele(symbolTerm);
 		loadAGM(requiredAgm, "NCBITaxon:6239");
 		loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
 		loadReference();
@@ -4497,11 +4502,18 @@ public class DiseaseAnnotationBulkUploadITCase {
 			statusCode(200);
 	}
 	
-	private void loadGenes() throws Exception {
+	private void loadGenes(VocabularyTerm symbolNameTerm) throws Exception {
 		for (String geneCurie : requiredGenes) {
 			Gene gene = new Gene();
 			gene.setCurie(geneCurie);
 			gene.setTaxon(getTaxon("NCBITaxon:6239"));
+			
+			GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
+			symbol.setNameType(symbolNameTerm);
+			symbol.setDisplayText(geneCurie);
+			symbol.setFormatText(geneCurie);
+			
+			gene.setGeneSymbol(symbol);
 
 			RestAssured.given().
 					contentType("application/json").
@@ -4528,13 +4540,18 @@ public class DiseaseAnnotationBulkUploadITCase {
 			statusCode(200);
 	}
 
-	private void loadAllele() throws Exception {
+	private void loadAllele(VocabularyTerm symbolNameTerm) throws Exception {
 		Allele allele = new Allele();
 		allele.setCurie(requiredAllele);
 		allele.setTaxon(getTaxon("NCBITaxon:6239"));
-		allele.setName("DA Test Allele");
-		allele.setSymbol("BuData");
 		allele.setInternal(false);
+		
+		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
+		symbol.setNameType(symbolNameTerm);
+		symbol.setDisplayText(requiredAllele);
+		symbol.setFormatText(requiredAllele);
+		
+		allele.setAlleleSymbol(symbol);
 
 		RestAssured.given().
 			contentType("application/json").
@@ -4610,6 +4627,39 @@ public class DiseaseAnnotationBulkUploadITCase {
 			
 		return response.getEntity();
 	}
+
+	private Vocabulary getVocabulary(String name) {
+		ObjectResponse<Vocabulary> response = 
+			RestAssured.given().
+				when().
+				get("/api/vocabulary/findBy/" + name).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefVocabulary());
+		
+		Vocabulary vocabulary = response.getEntity();
+		
+		return vocabulary;
+	}
+	
+	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
+		ObjectListResponse<VocabularyTerm> response = 
+			RestAssured.given().
+				when().
+				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
+				then().
+				statusCode(200).
+				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
+		
+		List<VocabularyTerm> vocabularyTerms = response.getEntities();
+		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
+			if (vocabularyTerm.getName().equals(name)) {
+				return vocabularyTerm;
+			}
+		}
+		
+		return null;
+	}
 	
 	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
 		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
@@ -4625,5 +4675,9 @@ public class DiseaseAnnotationBulkUploadITCase {
 	
 	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
 		return new TypeRef<ObjectResponse <CrossReference>>() { };
+	}
+	
+	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
+		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
 	}
 }

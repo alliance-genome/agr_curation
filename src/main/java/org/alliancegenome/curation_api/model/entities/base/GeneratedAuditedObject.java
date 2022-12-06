@@ -26,7 +26,7 @@ public class GeneratedAuditedObject extends AuditedObject {
 	@Id @DocumentId
 	@GenericField(aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES)
 	@GeneratedValue(strategy = GenerationType.SEQUENCE)
-	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class, View.AlleleView.class})
+	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
 	@EqualsAndHashCode.Include
 	protected Long id;
 

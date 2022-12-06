@@ -34,24 +34,9 @@ import lombok.ToString;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"synonyms", "crossReferences", "secondaryIdentifiers"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BiologicalEntity.class})
+@ToString(exclude = {"crossReferences", "secondaryIdentifiers"}, callSuper = true)
+@AGRCurationSchemaVersion(min="1.5.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BiologicalEntity.class})
 public class GenomicEntity extends BiologicalEntity {
-
-	//@Analyzer(definition = "caseInsensitiveAnalyzer")
-	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@Column(columnDefinition="TEXT")
-	@JsonView({View.FieldsOnly.class})
-	private String name;
-
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
-	@ManyToMany
-	@JoinTable(indexes = @Index( columnList = "genomicentities_curie, synonyms_id"))
-	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JsonView({View.FieldsAndLists.class})
-	private List<Synonym> synonyms;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
