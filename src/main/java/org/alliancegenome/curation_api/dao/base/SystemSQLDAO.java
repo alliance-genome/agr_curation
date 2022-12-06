@@ -2,7 +2,10 @@ package org.alliancegenome.curation_api.dao.base;
 
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -11,7 +14,8 @@ import javax.persistence.Entity;
 import org.alliancegenome.curation_api.dao.LiteratureReferenceDAO;
 import org.alliancegenome.curation_api.model.document.LiteratureReference;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.reflections.Reflections;
 

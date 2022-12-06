@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.response;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;

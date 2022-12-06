@@ -6,14 +6,18 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.curationreports.*;
+import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
+import org.alliancegenome.curation_api.dao.curationreports.CurationReportGroupDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
-import org.alliancegenome.curation_api.model.entities.curationreports.*;
+import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
+import org.alliancegenome.curation_api.model.entities.curationreports.CurationReportGroup;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import com.cronutils.model.*;
-import com.cronutils.model.definition.*;
+import com.cronutils.model.Cron;
+import com.cronutils.model.CronType;
+import com.cronutils.model.definition.CronDefinition;
+import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.time.ExecutionTime;
 import com.cronutils.parser.CronParser;
 

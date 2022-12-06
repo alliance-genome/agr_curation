@@ -2,7 +2,8 @@ package org.alliancegenome.curation_api.exceptions;
 
 import org.alliancegenome.curation_api.response.ObjectResponse;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter

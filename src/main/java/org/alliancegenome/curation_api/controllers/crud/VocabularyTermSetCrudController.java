@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.VocabularyTermSetDAO;
 import org.alliancegenome.curation_api.interfaces.crud.VocabularyTermSetCrudInterface;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.response.ObjectListResponse;

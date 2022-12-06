@@ -6,7 +6,8 @@ import org.alliancegenome.curation_api.dao.base.BaseEntityDAO;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.response.ObjectListResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
-import org.alliancegenome.curation_api.services.helpers.*;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 
 public abstract class BaseOntologyTermController<S extends BaseOntologyTermService<E, D>, E extends OntologyTerm, D extends BaseEntityDAO<E>> extends BaseEntityCrudController<S, E, BaseEntityDAO<E>> {

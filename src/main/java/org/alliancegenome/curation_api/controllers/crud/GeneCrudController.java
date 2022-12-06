@@ -12,7 +12,8 @@ import org.alliancegenome.curation_api.interfaces.crud.GeneCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 
 @RequestScoped

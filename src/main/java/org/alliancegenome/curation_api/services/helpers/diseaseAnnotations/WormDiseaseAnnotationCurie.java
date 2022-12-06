@@ -2,11 +2,9 @@ package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
 import java.util.List;
 
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 public class WormDiseaseAnnotationCurie extends DiseaseAnnotationCurie {

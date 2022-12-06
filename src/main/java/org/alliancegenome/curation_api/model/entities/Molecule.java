@@ -10,7 +10,8 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Audited
 @Indexed

@@ -6,7 +6,8 @@ import org.alliancegenome.curation_api.dao.base.BaseDocumentDAO;
 import org.alliancegenome.curation_api.document.base.BaseDocument;
 import org.alliancegenome.curation_api.interfaces.base.BaseIdDocumentInterface;
 import org.alliancegenome.curation_api.model.input.Pagination;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseDocumentService;
 
 import lombok.extern.jbosslog.JBossLog;

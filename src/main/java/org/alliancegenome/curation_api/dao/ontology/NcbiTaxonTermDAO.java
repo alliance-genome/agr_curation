@@ -1,7 +1,8 @@
 package org.alliancegenome.curation_api.dao.ontology;
 
 import java.util.HashMap;
-import java.util.regex.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.enterprise.context.ApplicationScoped;
 

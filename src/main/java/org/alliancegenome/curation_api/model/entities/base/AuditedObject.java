@@ -3,10 +3,8 @@ package org.alliancegenome.curation_api.model.entities.base;
 import java.time.OffsetDateTime;
 
 import javax.persistence.Column;
-import javax.persistence.Index;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;

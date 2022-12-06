@@ -1,16 +1,26 @@
 package org.alliancegenome.curation_api.jobs;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.model.entities.curationreports.*;
+import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
+import org.alliancegenome.curation_api.model.entities.curationreports.CurationReportHistory;
 import org.alliancegenome.curation_api.services.curationreports.CurationReportHistoryService;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
 import org.eclipse.birt.core.framework.Platform;
-import org.eclipse.birt.report.engine.api.*;
+import org.eclipse.birt.report.engine.api.EXCELRenderOption;
+import org.eclipse.birt.report.engine.api.EngineConfig;
+import org.eclipse.birt.report.engine.api.EngineConstants;
+import org.eclipse.birt.report.engine.api.HTMLRenderOption;
+import org.eclipse.birt.report.engine.api.IReportEngine;
+import org.eclipse.birt.report.engine.api.IReportEngineFactory;
+import org.eclipse.birt.report.engine.api.IReportRunnable;
+import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
+import org.eclipse.birt.report.engine.api.PDFRenderOption;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import io.quarkus.logging.Log;

@@ -1,6 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
-import java.util.*;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;

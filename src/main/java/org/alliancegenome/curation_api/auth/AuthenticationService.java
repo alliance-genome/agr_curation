@@ -8,7 +8,10 @@ import javax.enterprise.inject.Instance;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
-import com.okta.jwt.*;
+import com.okta.jwt.AccessTokenVerifier;
+import com.okta.jwt.Jwt;
+import com.okta.jwt.JwtVerificationException;
+import com.okta.jwt.JwtVerifiers;
 
 @ApplicationScoped
 public class AuthenticationService {

@@ -2,7 +2,8 @@ package org.alliancegenome.curation_api.jobs;
 
 import javax.inject.Inject;
 
-import org.alliancegenome.curation_api.dao.curationreports.*;
+import org.alliancegenome.curation_api.dao.curationreports.CurationReportDAO;
+import org.alliancegenome.curation_api.dao.curationreports.CurationReportGroupDAO;
 import org.alliancegenome.curation_api.enums.JobStatus;
 import org.alliancegenome.curation_api.model.entities.curationreports.CurationReport;
 import org.alliancegenome.curation_api.util.FileTransferHelper;
