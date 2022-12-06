@@ -12,7 +12,6 @@ import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { InputTextEditor } from '../../components/InputTextEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 
