@@ -108,6 +108,7 @@ export const ProfileComponent = () => {
 
 	const userInfos = [
 		{ name: "Name", value: localUserInfo.firstName + " " + localUserInfo.lastName, template: textTemplate  },
+		{ name: "Alliance Member", value: localUserInfo.allianceMember.fullName + " (" + localUserInfo.allianceMember.abbreviation + ")", template: textTemplate  },
 		{ name: "Okta Email", value: localUserInfo.oktaEmail, template: textTemplate  },
 		{ name: "Okta Access Token", value: oktaToken.accessToken.accessToken, template: textTemplate  },
 		{ name: "Okta Id Token", value: oktaToken.idToken.idToken, template: textTemplate  },
