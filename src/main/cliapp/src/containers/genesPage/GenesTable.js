@@ -14,14 +14,16 @@ export const GenesTable = () => {
 	const toast_topright = useRef(null);
 
 	const nameBodyTemplate = (rowData) => {
-		return (
-			<>
-				<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
-					{rowData.name}
-				</EllipsisTableCell>
-				<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.name} />
-			</>
-		);
+		if (rowData?.geneFullName) {
+			return (
+				<>
+					<EllipsisTableCell otherClasses={`a${rowData.curie.replace(':', '')}`}>
+						{rowData.geneFullName.displayText}
+					</EllipsisTableCell>
+					<Tooltip target={`.a${rowData.curie.replace(':', '')}`} content={rowData.geneFullName.displayText} />
+				</>
+			)
+		}
 	};
 
 	const taxonBodyTemplate = (rowData) => {
@@ -46,19 +48,19 @@ export const GenesTable = () => {
 			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
 		},
 		{
-			field: "name",
+			field: "geneFullName.displayText",
 			header: "Name",
 			sortable: isEnabled,
 			filter: true,
 			body: nameBodyTemplate,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["geneFullName.displayText", "geneFullName.formatText"]},
 		},
 		{
-			field: "symbol",
+			field: "geneSymbol.displayText",
 			header: "Symbol",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]},
+			filterElement: {type: "input", filterName: "symbolFilter", fields: ["geneSymbol.displayText", "geneSymbol.formatText"]},
 		},
 		{
 			field: "taxon.name",

@@ -26,6 +26,10 @@ public class View {
 	public static class AlleleUpdate extends AlleleView { }
 	public static class AlleleCreate extends AlleleView { }
 	
+	public static class GeneView extends FieldsOnly { }
+	public static class GeneUpdate extends GeneView { }
+	public static class GeneCreate extends GeneView { }
+	
 	public static class PersonSettingView { }
 
 }

@@ -42,12 +42,6 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		dbEntity.setTaxon(taxon);
 		
 		dbEntity.setSubtype(uiEntity.getSubtype());
-		
-		if (CollectionUtils.isNotEmpty(uiEntity.getSynonyms())) {
-			dbEntity.setSynonyms(uiEntity.getSynonyms());
-		} else {
-			dbEntity.setSynonyms(null);
-		}
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());

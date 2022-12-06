@@ -103,7 +103,7 @@ public class GeneExecutor extends LoadFileExecutor {
 		});
 		ph.finishProcess();
 		
-		geneService.removeNonUpdatedGenes(taxonIds.toString(), geneCuriesBefore, geneCuriesAfter, dataType);
+		geneService.removeOrDeprecateNonUpdatedGenes(taxonIds.toString(), geneCuriesBefore, geneCuriesAfter, dataType);
 		
 		return new LoadHistoryResponce(history);	
 	}
