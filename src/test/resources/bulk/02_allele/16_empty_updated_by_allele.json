@@ -1,8 +1,6 @@
 [
   {
     "curie": "ALLELETEST:Allele0016",
-    "name": "TestAllele16",
-    "symbol": "ta16",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
@@ -23,6 +21,38 @@
         ],
         "mutation_type_curies": [
           "SO:00001"
+        ]
+      }
+    ],
+    "allele_symbol_dto": {
+      "display_text": "Ta1",
+      "format_text": "Ta<sup>1</sup>",
+      "synonym_scope_name": "exact",
+      "synonym_url": "https://alliancegenome.org/test",
+      "name_type_name": "nomenclature_symbol",
+      "evidence_curies": [
+        "PMID:25920550"
+      ]
+    },
+    "allele_full_name_dto": {
+      "display_text": "Test allele 1",
+      "format_text": "Test allele<sup>1</sup>",
+      "synonym_scope_name": "exact",
+      "synonym_url": "https://alliancegenome.org/test",
+      "name_type_name": "full_name",
+      "evidence_curies": [
+        "PMID:25920550"
+      ]
+    },
+    "allele_synonym_dtos": [
+      {
+        "display_text": "Test allele synonym 1",
+        "format_text": "Test allele synonym <sup>1</sup>",
+        "synonym_scope_name": "exact",
+        "synonym_url": "https://alliancegenome.org/test",
+        "name_type_name": "unspecified",
+        "evidence_curies": [
+          "PMID:25920550"
         ]
       }
     ]

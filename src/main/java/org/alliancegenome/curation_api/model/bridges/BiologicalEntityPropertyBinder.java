@@ -88,12 +88,12 @@ public class BiologicalEntityPropertyBinder implements PropertyBinder {
 			
 				if (bridgedElement instanceof Gene) {
 					Gene gene = (Gene)bridgedElement;
-					symbol = gene.getSymbol();
-					name = gene.getName();
+					symbol = gene.getGeneSymbol() == null ? null : gene.getGeneSymbol().getDisplayText();
+					name = gene.getGeneFullName() == null ? null : gene.getGeneFullName().getDisplayText();
 				} else if (bridgedElement instanceof Allele) {
 					Allele allele = (Allele)bridgedElement;
-					symbol = allele.getSymbol();
-					name = allele.getName();
+					symbol = allele.getAlleleSymbol() == null ? null : allele.getAlleleSymbol().getDisplayText();
+					name = allele.getAlleleFullName() == null ? null : allele.getAlleleFullName().getDisplayText();
 				} else if (bridgedElement instanceof AffectedGenomicModel) {
 					AffectedGenomicModel agm = (AffectedGenomicModel)bridgedElement;
 					name = agm.getName();

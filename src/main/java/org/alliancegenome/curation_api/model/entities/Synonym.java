@@ -28,7 +28,6 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"genomicEntities"})
 @AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 @Table(indexes = {
 	@Index(name = "synonym_createdby_index", columnList = "createdBy_id"),
@@ -40,7 +39,4 @@ public class Synonym extends GeneratedAuditedObject {
 	@JsonView({View.FieldsOnly.class})
 	@Column(length=2000)
 	private String name;
-
-	@ManyToMany(mappedBy="synonyms")
-	private List<GenomicEntity> genomicEntities;
 }
