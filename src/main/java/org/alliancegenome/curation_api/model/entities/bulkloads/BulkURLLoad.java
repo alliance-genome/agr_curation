@@ -17,14 +17,15 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@Schema(name="BulkURLLoad", description="POJO that represents the BulkURLLoad")
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BulkScheduledLoad.class})
+@Schema(name = "BulkURLLoad", description = "POJO that represents the BulkURLLoad")
+@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BulkScheduledLoad.class })
 @JsonTypeName
 public class BulkURLLoad extends BulkScheduledLoad {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String bulkloadUrl;
 
 }

@@ -32,7 +32,7 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@Path("/findBy/{uniqueId}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<GeneDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
-	
+
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
@@ -42,7 +42,7 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<GeneDiseaseAnnotation> create(GeneDiseaseAnnotation entity);
-	
+
 	@POST
 	@Path("/bulk/{taxonID}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
@@ -52,32 +52,32 @@ public interface GeneDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<
 	@Path("/bulk/zfinAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateZfinGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/mgiAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateMgiGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/rgdAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateRgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/fbAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateFbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/wbAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateWbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/humanAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateHumanGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/sgdAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)

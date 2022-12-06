@@ -11,8 +11,9 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 @RequestScoped
 public class BiologicalEntityService extends BaseEntityCrudService<BiologicalEntity, BiologicalEntityDAO> {
 
-	@Inject BiologicalEntityDAO biologicalEntityDAO;
-	
+	@Inject
+	BiologicalEntityDAO biologicalEntityDAO;
+
 	@Override
 	@PostConstruct
 	protected void init() {

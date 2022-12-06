@@ -19,7 +19,7 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	 * @param annotationDTO DiseaseModelAnnotationFmsDTO
 	 * @return curie string
 	 */
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
@@ -28,17 +28,13 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		curie.add(refCurie);
 		curie.add(StringUtils.join(annotationDTO.getEvidenceCodeCuries(), "::"));
 
-		if(CollectionUtils.isNotEmpty(annotationDTO.getConditionRelationDtos())) {
-			curie.add(annotationDTO.getConditionRelationDtos().stream()
-				.map(conditionDTO -> {
-					CurieGeneratorHelper gen = new CurieGeneratorHelper();
-					gen.add(conditionDTO.getConditionRelationTypeName());
-					gen.add(conditionDTO.getConditionDtos().stream()
-							.map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
-					);
-					return gen.getCurie();
-				}).collect(Collectors.joining(DELIMITER))
-			);
+		if (CollectionUtils.isNotEmpty(annotationDTO.getConditionRelationDtos())) {
+			curie.add(annotationDTO.getConditionRelationDtos().stream().map(conditionDTO -> {
+				CurieGeneratorHelper gen = new CurieGeneratorHelper();
+				gen.add(conditionDTO.getConditionRelationTypeName());
+				gen.add(conditionDTO.getConditionDtos().stream().map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER)));
+				return gen.getCurie();
+			}).collect(Collectors.joining(DELIMITER)));
 		}
 		return curie.getCurie();
 	}
@@ -52,17 +48,13 @@ public class ZFINDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 		if (CollectionUtils.isNotEmpty(annotation.getEvidenceCodes()))
 			curie.add(StringUtils.join(annotation.getEvidenceCodes().stream().map(ECOTerm::getCurie).collect(Collectors.toList()), "::"));
 
-		if(CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
-			curie.add(annotation.getConditionRelations().stream()
-				.map(condition -> {
-					CurieGeneratorHelper gen = new CurieGeneratorHelper();
-					gen.add(condition.getConditionRelationType().getName());
-					gen.add(condition.getConditions().stream()
-							.map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER))
-					);
-					return gen.getCurie();
-				}).collect(Collectors.joining(DELIMITER))
-			);
+		if (CollectionUtils.isNotEmpty(annotation.getConditionRelations())) {
+			curie.add(annotation.getConditionRelations().stream().map(condition -> {
+				CurieGeneratorHelper gen = new CurieGeneratorHelper();
+				gen.add(condition.getConditionRelationType().getName());
+				gen.add(condition.getConditions().stream().map(DiseaseAnnotationCurie::getExperimentalConditionCurie).collect(Collectors.joining(DELIMITER)));
+				return gen.getCurie();
+			}).collect(Collectors.joining(DELIMITER)));
 		}
 		return curie.getCurie();
 	}

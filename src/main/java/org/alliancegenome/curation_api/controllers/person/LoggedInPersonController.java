@@ -12,13 +12,16 @@ import org.alliancegenome.curation_api.services.LoggedInPersonService;
 @RequestScoped
 public class LoggedInPersonController implements LoggedInPersonInterface {
 
-	@Inject @AuthenticatedUser LoggedInPerson authenticatedPerson;
-	@Inject LoggedInPersonService loggedInPersonService;
-	
+	@Inject
+	@AuthenticatedUser
+	LoggedInPerson authenticatedPerson;
+	@Inject
+	LoggedInPersonService loggedInPersonService;
+
 	public ObjectResponse<LoggedInPerson> create(LoggedInPerson person) {
 		return loggedInPersonService.create(person);
 	}
-	
+
 	@Override
 	public LoggedInPerson getLoggedInPerson() {
 		return authenticatedPerson;

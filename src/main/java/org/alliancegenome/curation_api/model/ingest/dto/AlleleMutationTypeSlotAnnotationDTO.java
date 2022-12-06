@@ -14,10 +14,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={SlotAnnotationDTO.class})
+@AGRCurationSchemaVersion(min = "1.3.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotationDTO.class })
 public class AlleleMutationTypeSlotAnnotationDTO extends SlotAnnotationDTO {
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("mutation_type_curies")
 	private List<String> mutationTypeCuries;
 

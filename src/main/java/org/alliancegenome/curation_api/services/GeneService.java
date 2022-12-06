@@ -32,15 +32,24 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 
-	@Inject GeneDAO geneDAO;
-	@Inject GeneValidator geneValidator;
-	@Inject GeneDTOValidator geneDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject PersonService personService;
-	@Inject GeneSymbolSlotAnnotationDAO geneSymbolDAO;
-	@Inject GeneFullNameSlotAnnotationDAO geneFullNameDAO;
-	@Inject GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
-	@Inject GeneSynonymSlotAnnotationDAO geneSynonymDAO;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	GeneValidator geneValidator;
+	@Inject
+	GeneDTOValidator geneDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PersonService personService;
+	@Inject
+	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
+	@Inject
+	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
+	@Inject
+	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
+	@Inject
+	GeneSynonymSlotAnnotationDAO geneSynonymDAO;
 
 	@Override
 	@PostConstruct
@@ -62,21 +71,20 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		return new ObjectResponse<Gene>(dbEntity);
 	}
 
-
 	public Gene upsert(GeneDTO dto) throws ObjectUpdateException {
 		return geneDtoValidator.validateGeneDTO(dto);
 	}
-	
+
 	@Transactional
 	public void removeOrDeprecateNonUpdatedGenes(String taxonIds, List<String> geneCuriesBefore, List<String> geneCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + geneCuriesAfter.size());
-		
+
 		List<String> distinctAfter = geneCuriesAfter.stream().distinct().collect(Collectors.toList());
 		log.debug("runLoad: Distinct: " + taxonIds + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(geneCuriesBefore, distinctAfter);
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
-		
+
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " genes", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
@@ -89,7 +97,7 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 					if (daMadePublic)
 						anyPublicReferencingDAs = true;
 				}
-	
+
 				if (anyPublicReferencingDAs) {
 					gene.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " gene bulk upload"));
 					gene.setDateUpdated(OffsetDateTime.now());
@@ -106,25 +114,27 @@ public class GeneService extends BaseDTOCrudService<Gene, GeneDTO, GeneDAO> {
 		}
 		ph.finishProcess();
 	}
-	
+
 	public List<String> getCuriesByTaxonId(String taxonId) {
 		List<String> curies = geneDAO.findAllCuriesByTaxon(taxonId);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
-	
+
 	private void deleteGeneSlotAnnotations(Gene gene) {
 		if (gene.getGeneSymbol() != null)
 			geneSymbolDAO.remove(gene.getGeneSymbol().getId());
-		
+
 		if (gene.getGeneFullName() != null)
 			geneFullNameDAO.remove(gene.getGeneFullName().getId());
-		
+
 		if (gene.getGeneSystematicName() != null)
 			geneSystematicNameDAO.remove(gene.getGeneSystematicName().getId());
-		
+
 		if (CollectionUtils.isNotEmpty(gene.getGeneSynonyms()))
-			gene.getGeneSynonyms().forEach(gs -> {geneSynonymDAO.remove(gs.getId());});
+			gene.getGeneSynonyms().forEach(gs -> {
+				geneSynonymDAO.remove(gs.getId());
+			});
 	}
 
 }

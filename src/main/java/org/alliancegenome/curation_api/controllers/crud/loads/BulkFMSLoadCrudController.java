@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.loads.BulkFMSLoadService;
 @RequestScoped
 public class BulkFMSLoadCrudController extends BaseEntityCrudController<BulkFMSLoadService, BulkFMSLoad, BulkFMSLoadDAO> implements BulkFMSLoadCrudInterface {
 
-	@Inject BulkFMSLoadService bulkFMSLoadService;
+	@Inject
+	BulkFMSLoadService bulkFMSLoadService;
 
 	@Override
 	@PostConstruct

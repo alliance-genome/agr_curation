@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -30,7 +29,7 @@ public interface AffectedGenomicModelCrudInterface extends BaseCurieCrudInterfac
 	@Override
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<AffectedGenomicModel> get(@PathParam("curie") String curie);
-	
+
 	@POST
 	@Path("/bulk/agms")
 	@JsonView(View.FieldsAndLists.class)

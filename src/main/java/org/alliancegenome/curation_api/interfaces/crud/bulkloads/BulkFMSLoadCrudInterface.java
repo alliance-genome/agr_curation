@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud.bulkloads;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,5 +25,5 @@ public interface BulkFMSLoadCrudInterface extends BaseIdCrudInterface<BulkFMSLoa
 	@Path("/restart/{id}")
 	@JsonView(View.FieldsOnly.class)
 	public ObjectResponse<BulkFMSLoad> restartLoad(@PathParam("id") Long id);
-	
+
 }

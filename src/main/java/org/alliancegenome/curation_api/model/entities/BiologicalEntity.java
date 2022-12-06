@@ -26,33 +26,24 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-@JsonTypeInfo(
-		use = JsonTypeInfo.Id.NAME,
-		include = JsonTypeInfo.As.PROPERTY,
-		property = "type")
-@JsonSubTypes({
-		@JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"),
-		@JsonSubTypes.Type(value = Allele.class, name = "Allele"),
-		@JsonSubTypes.Type(value = Gene.class, name = "Gene")
-})
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type")
+@JsonSubTypes({ @JsonSubTypes.Type(value = AffectedGenomicModel.class, name = "AffectedGenomicModel"), @JsonSubTypes.Type(value = Allele.class, name = "Allele"),
+	@JsonSubTypes.Type(value = Gene.class, name = "Gene") })
 @Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.0.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
-@Table(indexes = {
-	@Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"),
-})
+@AGRCurationSchemaVersion(min = "1.0.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = { @Index(name = "biologicalentity_createdby_index", columnList = "createdBy_id"), @Index(name = "biologicalentity_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "biologicalentity_taxon_index", columnList = "taxon_curie"), })
 public class BiologicalEntity extends CurieAuditedObject {
-	
+
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private NCBITaxonTerm taxon;
 
 }
-

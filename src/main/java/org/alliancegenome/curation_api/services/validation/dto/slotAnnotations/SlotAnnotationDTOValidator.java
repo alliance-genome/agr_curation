@@ -18,14 +18,15 @@ import org.apache.commons.collections.CollectionUtils;
 @RequestScoped
 public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 
-	@Inject InformationContentEntityService informationContentEntityService;
-    
-    public <E extends SlotAnnotation, D extends SlotAnnotationDTO> ObjectResponse<E> validateSlotAnnotationDTO(E annotation, D dto) {
-    	ObjectResponse<E> saResponse = validateAuditedObjectDTO(annotation, dto);
-    	annotation = saResponse.getEntity();
-    	
-    	List<InformationContentEntity> evidence = new ArrayList<>();
-    	if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
+	@Inject
+	InformationContentEntityService informationContentEntityService;
+
+	public <E extends SlotAnnotation, D extends SlotAnnotationDTO> ObjectResponse<E> validateSlotAnnotationDTO(E annotation, D dto) {
+		ObjectResponse<E> saResponse = validateAuditedObjectDTO(annotation, dto);
+		annotation = saResponse.getEntity();
+
+		List<InformationContentEntity> evidence = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
 			for (String evidenceCurie : dto.getEvidenceCuries()) {
 				InformationContentEntity evidenceEntity = informationContentEntityService.retrieveFromDbOrLiteratureService(evidenceCurie);
 				if (evidenceEntity == null) {
@@ -36,8 +37,8 @@ public class SlotAnnotationDTOValidator extends BaseDTOValidator {
 			}
 			annotation.setEvidence(evidence);
 		}
-    	
-    	saResponse.setEntity(annotation);
+
+		saResponse.setEntity(annotation);
 		return saResponse;
-    }
+	}
 }

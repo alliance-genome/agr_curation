@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneS
 @RequestScoped
 public class GeneSymbolSlotAnnotationService extends BaseEntityCrudService<GeneSymbolSlotAnnotation, GeneSymbolSlotAnnotationDAO> {
 
-	@Inject GeneSymbolSlotAnnotationDAO geneSymbolDAO;
-	@Inject GeneSymbolSlotAnnotationValidator geneSymbolValidator;
-	
+	@Inject
+	GeneSymbolSlotAnnotationDAO geneSymbolDAO;
+	@Inject
+	GeneSymbolSlotAnnotationValidator geneSymbolValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneSymbolDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<GeneSymbolSlotAnnotation> upsert(GeneSymbolSlotAnnotation uiEntity) {
 		GeneSymbolSlotAnnotation dbEntity = geneSymbolValidator.validateGeneSymbolSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class GeneSymbolSlotAnnotationService extends BaseEntityCrudService<GeneS
 			return null;
 		return new ObjectResponse<GeneSymbolSlotAnnotation>(geneSymbolDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<GeneSymbolSlotAnnotation> validate(GeneSymbolSlotAnnotation uiEntity) {
 		GeneSymbolSlotAnnotation symbol = geneSymbolValidator.validateGeneSymbolSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<GeneSymbolSlotAnnotation>(symbol);
 	}
-	
+
 }

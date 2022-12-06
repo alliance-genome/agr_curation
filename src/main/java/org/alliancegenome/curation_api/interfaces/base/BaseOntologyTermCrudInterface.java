@@ -23,23 +23,20 @@ public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends B
 	@POST
 	@Path("/bulk/owl")
 	@Consumes(MediaType.APPLICATION_XML)
-	public String updateTerms(
-			@DefaultValue("true") 
-			@QueryParam("async") boolean async,
-			@RequestBody String fullText);
-	
+	public String updateTerms(@DefaultValue("true") @QueryParam("async") boolean async, @RequestBody String fullText);
+
 	public void init();
-	
+
 	@GET
 	@Path("/rootNodes")
 	@JsonView(View.FieldsOnly.class)
 	public ObjectListResponse<E> getRootNodes();
-	
+
 	@GET
 	@Path("/{curie}/descendants")
 	@JsonView(View.FieldsOnly.class)
 	public ObjectListResponse<E> getDescendants(@PathParam("curie") String curie);
-	
+
 	@GET
 	@Path("/{curie}/children")
 	@JsonView(View.FieldsOnly.class)
@@ -49,7 +46,7 @@ public interface BaseOntologyTermCrudInterface<E extends OntologyTerm> extends B
 	@Path("/{curie}/parents")
 	@JsonView(View.FieldsOnly.class)
 	public ObjectListResponse<E> getParents(@PathParam("curie") String curie);
-	
+
 	@GET
 	@Path("/{curie}/ancestors")
 	@JsonView(View.FieldsOnly.class)

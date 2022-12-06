@@ -16,24 +16,24 @@ import lombok.Data;
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
 public class SearchResponse<E> extends APIResponse {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private List<E> results = new ArrayList<E>();
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Long totalResults;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Integer returnedRecords;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Map<String, Map<String, Long>> aggregations;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private String debug;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private String esQuery;
-	
+
 	public SearchResponse() {
 	}
 

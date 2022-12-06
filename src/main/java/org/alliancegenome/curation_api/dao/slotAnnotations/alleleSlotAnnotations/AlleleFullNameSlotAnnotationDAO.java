@@ -11,5 +11,5 @@ public class AlleleFullNameSlotAnnotationDAO extends BaseSQLDAO<AlleleFullNameSl
 	protected AlleleFullNameSlotAnnotationDAO() {
 		super(AlleleFullNameSlotAnnotation.class);
 	}
-	
+
 }

@@ -11,9 +11,11 @@ import org.alliancegenome.curation_api.model.entities.curationreports.CurationRe
 import org.alliancegenome.curation_api.services.curationreports.CurationReportHistoryService;
 
 @RequestScoped
-public class CurationReportHistoryCrudController extends BaseEntityCrudController<CurationReportHistoryService, CurationReportHistory, CurationReportHistoryDAO> implements CurationReportHistoryCrudInterface {
+public class CurationReportHistoryCrudController extends BaseEntityCrudController<CurationReportHistoryService, CurationReportHistory, CurationReportHistoryDAO>
+	implements CurationReportHistoryCrudInterface {
 
-	@Inject CurationReportHistoryService curationReportHistoryService;
+	@Inject
+	CurationReportHistoryService curationReportHistoryService;
 
 	@Override
 	@PostConstruct

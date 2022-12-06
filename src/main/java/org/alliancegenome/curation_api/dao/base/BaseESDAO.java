@@ -30,8 +30,10 @@ import lombok.extern.jbosslog.JBossLog;
 @JBossLog
 public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 
-	@Inject protected RestHighLevelClient restHighLevelClient;
-	@Inject protected MeterRegistry registry;
+	@Inject
+	protected RestHighLevelClient restHighLevelClient;
+	@Inject
+	protected MeterRegistry registry;
 
 	protected BaseESDAO(Class<E> myClass, String index) {
 		super(myClass, index);
@@ -46,29 +48,28 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 	}
 
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
-		//log.info("BaseESDAO: searching with: " + params);
+		// log.info("BaseESDAO: searching with: " + params);
 
-		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder(); 
+		SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
 		BoolQueryBuilder bool = QueryBuilders.boolQuery();
 
-		if(params.containsKey("searchFilters")) {
-			HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>)params.get("searchFilters");
-			for(String filterName: searchFilters.keySet()) {
+		if (params.containsKey("searchFilters")) {
+			HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>) params.get("searchFilters");
+			for (String filterName : searchFilters.keySet()) {
 				BoolQueryBuilder innerBool = QueryBuilders.boolQuery();
 				int boost = 0;
-				for(String field: searchFilters.get(filterName).keySet()) {
-					float value = (float)(100/Math.pow(10, boost));
+				for (String field : searchFilters.get(filterName).keySet()) {
+					float value = (float) (100 / Math.pow(10, boost));
 					Operator op = Operator.AND;
-					if(((String)searchFilters.get(filterName).get(field).get("tokenOperator")).toUpperCase().equals("OR")) {
+					if (((String) searchFilters.get(filterName).get(field).get("tokenOperator")).toUpperCase().equals("OR")) {
 						op = Operator.OR;
 					}
 
-					SimpleQueryStringBuilder simple = QueryBuilders.simpleQueryStringQuery(searchFilters.get(filterName).get(field).get("queryString").toString())
-							.field(field, value >=1 ? value : 1)
-							.defaultOperator(op)
-							//.autoGenerateSynonymsPhraseQuery(false)
-							//.fuzzyTranspositions(false)
-							.boost(value >=1 ? value : 1);
+					SimpleQueryStringBuilder simple = QueryBuilders.simpleQueryStringQuery(searchFilters.get(filterName).get(field).get("queryString").toString()).field(field, value >= 1 ? value : 1)
+						.defaultOperator(op)
+						// .autoGenerateSynonymsPhraseQuery(false)
+						// .fuzzyTranspositions(false)
+						.boost(value >= 1 ? value : 1);
 
 					innerBool.should().add(simple);
 					boost++;
@@ -80,18 +81,18 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 
 		SearchSourceBuilder query = searchSourceBuilder.query(bool);
 
-		if(params.containsKey("sortOrders")) {
-			ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>)params.get("sortOrders");
-			if(sortOrders != null) {
+		if (params.containsKey("sortOrders")) {
+			ArrayList<HashMap<String, Object>> sortOrders = (ArrayList<HashMap<String, Object>>) params.get("sortOrders");
+			if (sortOrders != null) {
 
-				for(HashMap<String, Object> map: sortOrders) {
-					String key = (String)map.get("field");
+				for (HashMap<String, Object> map : sortOrders) {
+					String key = (String) map.get("field");
 
-					int value = (int)map.get("order");
-					if(value == 1) {
+					int value = (int) map.get("order");
+					if (value == 1) {
 						query.sort(new FieldSortBuilder(key + ".keyword").order(SortOrder.ASC));
 					}
-					if(value == -1) {
+					if (value == -1) {
 						query.sort(new FieldSortBuilder(key + ".keyword").order(SortOrder.DESC));
 					}
 				}
@@ -104,7 +105,7 @@ public class BaseESDAO<E extends BaseDocument> extends BaseDocumentDAO<E> {
 
 		log.debug(searchSourceBuilder);
 
-		SearchRequest searchRequest = new SearchRequest(esIndex); 
+		SearchRequest searchRequest = new SearchRequest(esIndex);
 		searchRequest.source(searchSourceBuilder);
 
 		// TODO implement aggregations

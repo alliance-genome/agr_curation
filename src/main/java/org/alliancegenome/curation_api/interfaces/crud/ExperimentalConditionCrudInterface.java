@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,5 +25,5 @@ public interface ExperimentalConditionCrudInterface extends BaseIdCrudInterface<
 	@Path("/findBy/{conditionSummary}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<ExperimentalCondition> get(@PathParam("conditionSummary") String conditionSummary);
-	
+
 }

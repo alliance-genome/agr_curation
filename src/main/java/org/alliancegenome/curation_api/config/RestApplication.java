@@ -13,26 +13,9 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 
 @Secured
 @ApplicationPath("/api")
-@OpenAPIDefinition(
-		info = @Info(
-				description = "This is the Alliance Curation Java API",
-				title = "Alliance of Genome Resources Curation API",
-				version = "1.0 Alpha"
-				),
-		security = {
-				@SecurityRequirement(name = "api_token")
-		},
-		components = @Components(
-				securitySchemes = {
-						@SecurityScheme(
-								securitySchemeName="api_token",
-								type = SecuritySchemeType.HTTP,
-								description="Curator API Token",
-								scheme="bearer"
-								)
-				}
-				)
-		)
+@OpenAPIDefinition(info = @Info(description = "This is the Alliance Curation Java API", title = "Alliance of Genome Resources Curation API", version = "1.0 Alpha"), security = {
+	@SecurityRequirement(name = "api_token") }, components = @Components(securitySchemes = {
+		@SecurityScheme(securitySchemeName = "api_token", type = SecuritySchemeType.HTTP, description = "Curator API Token", scheme = "bearer") }))
 public class RestApplication extends Application {
 
 }

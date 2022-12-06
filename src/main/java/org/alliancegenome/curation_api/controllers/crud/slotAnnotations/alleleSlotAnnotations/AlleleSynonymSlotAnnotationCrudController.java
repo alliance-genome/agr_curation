@@ -12,21 +12,23 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotationService;
 
 @RequestScoped
-public class AlleleSynonymSlotAnnotationCrudController extends BaseEntityCrudController<AlleleSynonymSlotAnnotationService, AlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotationDAO> implements AlleleSynonymSlotAnnotationCrudInterface {
+public class AlleleSynonymSlotAnnotationCrudController extends BaseEntityCrudController<AlleleSynonymSlotAnnotationService, AlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotationDAO>
+	implements AlleleSynonymSlotAnnotationCrudInterface {
 
-	@Inject AlleleSynonymSlotAnnotationService alleleSynonymService;
-	
+	@Inject
+	AlleleSynonymSlotAnnotationService alleleSynonymService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(alleleSynonymService);
 	}
-	
+
 	@Override
 	public ObjectResponse<AlleleSynonymSlotAnnotation> update(AlleleSynonymSlotAnnotation entity) {
 		return alleleSynonymService.upsert(entity);
 	}
-	
+
 	@Override
 	public ObjectResponse<AlleleSynonymSlotAnnotation> create(AlleleSynonymSlotAnnotation entity) {
 		return alleleSynonymService.upsert(entity);

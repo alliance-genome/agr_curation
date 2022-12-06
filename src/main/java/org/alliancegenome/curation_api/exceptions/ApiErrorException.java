@@ -16,7 +16,7 @@ public class ApiErrorException extends RuntimeException {
 	}
 
 	public ApiErrorException(ObjectResponse<?> error) {
-		//super(String.join(", ", error.getErrors()));
+		// super(String.join(", ", error.getErrors()));
 		this.objectResponse = error;
 	}
 

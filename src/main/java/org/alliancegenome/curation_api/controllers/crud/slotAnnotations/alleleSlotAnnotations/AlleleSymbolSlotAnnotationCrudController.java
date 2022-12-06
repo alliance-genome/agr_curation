@@ -12,21 +12,23 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationService;
 
 @RequestScoped
-public class AlleleSymbolSlotAnnotationCrudController extends BaseEntityCrudController<AlleleSymbolSlotAnnotationService, AlleleSymbolSlotAnnotation, AlleleSymbolSlotAnnotationDAO> implements AlleleSymbolSlotAnnotationCrudInterface {
+public class AlleleSymbolSlotAnnotationCrudController extends BaseEntityCrudController<AlleleSymbolSlotAnnotationService, AlleleSymbolSlotAnnotation, AlleleSymbolSlotAnnotationDAO>
+	implements AlleleSymbolSlotAnnotationCrudInterface {
 
-	@Inject AlleleSymbolSlotAnnotationService alleleSymbolService;
-	
+	@Inject
+	AlleleSymbolSlotAnnotationService alleleSymbolService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(alleleSymbolService);
 	}
-	
+
 	@Override
 	public ObjectResponse<AlleleSymbolSlotAnnotation> update(AlleleSymbolSlotAnnotation entity) {
 		return alleleSymbolService.upsert(entity);
 	}
-	
+
 	@Override
 	public ObjectResponse<AlleleSymbolSlotAnnotation> create(AlleleSymbolSlotAnnotation entity) {
 		return alleleSymbolService.upsert(entity);

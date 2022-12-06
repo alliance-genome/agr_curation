@@ -19,7 +19,7 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	 * @param annotationDTO DiseaseModelAnnotationFmsDTO
 	 * @return curie string
 	 */
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
@@ -43,8 +43,7 @@ public class RGDDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
-		return super.getCurieID(subject, object, reference, null,null, null);
+		return super.getCurieID(subject, object, reference, null, null, null);
 	}
-
 
 }

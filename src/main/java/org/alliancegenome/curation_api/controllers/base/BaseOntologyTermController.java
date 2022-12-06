@@ -23,7 +23,7 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 		this.termClazz = termClazz;
 		loader = new GenericOntologyLoadHelper<E>(termClazz);
 	}
-	
+
 	protected void setService(S service, Class<E> termClazz, GenericOntologyLoadConfig config) {
 		super.setService(service);
 		this.service = service;
@@ -36,7 +36,7 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 			Map<String, E> termMap = loader.load(fullText);
 			ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 			ph.startProcess(termClazz.getSimpleName() + " Database Persistance", termMap.size());
-			for(String termKey: termMap.keySet()) {
+			for (String termKey : termMap.keySet()) {
 				service.processUpdate(termMap.get(termKey));
 				ph.progressProcess();
 			}
@@ -48,23 +48,22 @@ public abstract class BaseOntologyTermController<S extends BaseOntologyTermServi
 		return "OK";
 	}
 
-	
 	public ObjectListResponse<E> getRootNodes() {
 		return service.getRootNodes();
 	}
-	
+
 	public ObjectListResponse<E> getChildren(String curie) {
 		return service.getChildren(curie);
 	}
-	
+
 	public ObjectListResponse<E> getDescendants(String curie) {
 		return service.getDescendants(curie);
 	}
-	
+
 	public ObjectListResponse<E> getParents(String curie) {
 		return service.getParents(curie);
 	}
-	
+
 	public ObjectListResponse<E> getAncestors(String curie) {
 		return service.getAncestors(curie);
 	}

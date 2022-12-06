@@ -24,15 +24,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
-@Table(indexes = {
-	@Index(name = "synonym_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "synonym_updatedby_index", columnList = "updatedBy_id")
-})
+@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = { @Index(name = "synonym_createdby_index", columnList = "createdBy_id"), @Index(name = "synonym_updatedby_index", columnList = "updatedBy_id") })
 public class Synonym extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
-	@JsonView({View.FieldsOnly.class})
-	@Column(length=2000)
+	@JsonView({ View.FieldsOnly.class })
+	@Column(length = 2000)
 	private String name;
 }

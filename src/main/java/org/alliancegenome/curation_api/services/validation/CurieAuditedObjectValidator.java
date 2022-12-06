@@ -5,7 +5,7 @@ import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
 import org.apache.commons.lang3.StringUtils;
 
 public class CurieAuditedObjectValidator extends AuditedObjectValidator<CurieAuditedObject> {
-	
+
 	public String validateCurie(CurieAuditedObject uiEntity) {
 		String curie = uiEntity.getCurie();
 		if (StringUtils.isBlank(curie)) {
@@ -14,5 +14,5 @@ public class CurieAuditedObjectValidator extends AuditedObjectValidator<CurieAud
 		}
 		return curie;
 	}
-	
+
 }

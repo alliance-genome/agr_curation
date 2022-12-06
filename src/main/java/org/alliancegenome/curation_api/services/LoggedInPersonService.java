@@ -17,27 +17,27 @@ public class LoggedInPersonService extends BaseEntityCrudService<LoggedInPerson,
 
 	@Inject
 	LoggedInPersonDAO loggedInPersonDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(loggedInPersonDAO);
 	}
-	
+
 	public LoggedInPerson findLoggedInPersonByOktaEmail(String email) {
 		SearchResponse<LoggedInPerson> resp = loggedInPersonDAO.findByField("oktaEmail", email);
 		if (resp != null && resp.getTotalResults() == 1) {
 			return resp.getSingleResult();
 		}
-		
+
 		return null;
 	}
-	
+
 	@Transactional
 	public LoggedInPerson regenApiToken() {
 		LoggedInPerson user = loggedInPersonDAO.find(authenticatedPerson.getId());
 		user.setApiToken(UUID.randomUUID().toString());
 		return user;
 	}
-	
+
 }

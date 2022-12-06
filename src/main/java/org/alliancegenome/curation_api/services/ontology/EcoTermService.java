@@ -17,24 +17,26 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
 @RequestScoped
 public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO> {
-	
-	@Inject EcoTermDAO ecoTermDAO;
-	@Inject VocabularyDAO vocabularyDAO;
-	
+
+	@Inject
+	EcoTermDAO ecoTermDAO;
+	@Inject
+	VocabularyDAO vocabularyDAO;
+
 	private final String ecoTermAbbreviationVocabularyName = "AGR disease annotation ECO terms";
 	private final String agrEcoTermSubset = "agr_eco_terms";
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(ecoTermDAO);
 	}
-	
+
 	@Transactional
 	public void updateAbbreviations() {
 
 		SearchResponse<Vocabulary> res = vocabularyDAO.findByField("name", ecoTermAbbreviationVocabularyName);
-		if(res != null && res.getTotalResults() == 1) {
+		if (res != null && res.getTotalResults() == 1) {
 			List<VocabularyTerm> ecoVocabularyTerms = res.getResults().get(0).getMemberTerms();
 			ecoVocabularyTerms.forEach((ecoVocabularyTerm) -> {
 				ECOTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());

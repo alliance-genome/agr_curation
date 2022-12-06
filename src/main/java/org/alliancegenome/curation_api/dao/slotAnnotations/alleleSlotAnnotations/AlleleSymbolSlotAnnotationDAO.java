@@ -11,5 +11,5 @@ public class AlleleSymbolSlotAnnotationDAO extends BaseSQLDAO<AlleleSymbolSlotAn
 	protected AlleleSymbolSlotAnnotationDAO() {
 		super(AlleleSymbolSlotAnnotation.class);
 	}
-	
+
 }

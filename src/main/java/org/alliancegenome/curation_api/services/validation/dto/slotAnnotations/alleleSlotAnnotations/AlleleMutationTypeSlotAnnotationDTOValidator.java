@@ -17,14 +17,15 @@ import org.apache.commons.collections.CollectionUtils;
 
 @RequestScoped
 public class AlleleMutationTypeSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
-	
-	@Inject SoTermDAO soTermDAO;
-	
+
+	@Inject
+	SoTermDAO soTermDAO;
+
 	public ObjectResponse<AlleleMutationTypeSlotAnnotation> validateAlleleMutationTypeSlotAnnotationDTO(AlleleMutationTypeSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleMutationTypeSlotAnnotation> amsaResponse = new ObjectResponse<AlleleMutationTypeSlotAnnotation>();
-		
+
 		AlleleMutationTypeSlotAnnotation annotation = new AlleleMutationTypeSlotAnnotation();
-		
+
 		if (CollectionUtils.isEmpty(dto.getMutationTypeCuries())) {
 			amsaResponse.addErrorMessage("mutation_type_curies", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -39,13 +40,13 @@ public class AlleleMutationTypeSlotAnnotationDTOValidator extends SlotAnnotation
 			}
 			annotation.setMutationTypes(soTerms);
 		}
-		
+
 		ObjectResponse<AlleleMutationTypeSlotAnnotation> saResponse = validateSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		amsaResponse.addErrorMessages(saResponse.getErrorMessages());
-		
+
 		amsaResponse.setEntity(annotation);
-		
+
 		return amsaResponse;
 	}
 }

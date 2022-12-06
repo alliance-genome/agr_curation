@@ -18,12 +18,16 @@ import org.alliancegenome.curation_api.services.validation.dto.AGMDiseaseAnnotat
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> {
 
-	
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
-	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	AGMDiseaseAnnotationValidator agmDiseaseValidator;
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
 
 	@Override
 	@PostConstruct

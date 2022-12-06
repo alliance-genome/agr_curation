@@ -25,5 +25,5 @@ public interface DiseaseAnnotationCrudInterface extends BaseIdCrudInterface<Dise
 	@Path("/findBy/{uniqueId}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<DiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
-	
+
 }

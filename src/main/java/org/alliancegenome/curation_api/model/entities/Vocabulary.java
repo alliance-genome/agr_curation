@@ -34,32 +34,30 @@ import lombok.ToString;
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-@Schema(name="Vocabulary", description="POJO that represents the Vocabulary")
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
-@Table(indexes = {
-	@Index(name = "vocabulary_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "vocabulary_name_index", columnList = "name")
-})
+@Schema(name = "Vocabulary", description = "POJO that represents the Vocabulary")
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
+@Table(indexes = { @Index(name = "vocabulary_createdby_index", columnList = "createdBy_id"), @Index(name = "vocabulary_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "vocabulary_name_index", columnList = "name") })
 public class Vocabulary extends GeneratedAuditedObject {
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@Column(unique = true)
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String name;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "vocabularyDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String vocabularyDescription;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@OneToMany(mappedBy = "vocabulary")
-	@JsonView({View.VocabularyView.class})
+	@JsonView({ View.VocabularyView.class })
 	private List<VocabularyTerm> memberTerms;
 
 }

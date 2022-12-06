@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.curationreports;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -21,15 +20,15 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface CurationReportCrudInterface extends BaseIdCrudInterface<CurationReport> {
-	
+
 	@GET
 	@Path("/{id}")
 	@JsonView(View.ReportHistory.class)
 	public ObjectResponse<CurationReport> get(@PathParam("id") Long id);
-	
+
 	@GET
 	@Path("/restart/{id}")
 	@JsonView(View.FieldsOnly.class)
 	public ObjectResponse<CurationReport> restartReport(@PathParam("id") Long id);
-	
+
 }

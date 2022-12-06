@@ -33,28 +33,29 @@ import lombok.EqualsAndHashCode;
 @Schema(name = "Gene_Disease_Annotation", description = "Annotation class representing a gene disease annotation")
 @JsonTypeName("GeneDiseaseAnnotation")
 @OnDelete(action = OnDeleteAction.CASCADE)
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={DiseaseAnnotation.class})
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JoinColumn(foreignKey = @ForeignKey(name="fk_genedasubject"))
-	@JsonView({View.FieldsOnly.class})
+	@JoinColumn(foreignKey = @ForeignKey(name = "fk_genedasubject"))
+	@JsonView({ View.FieldsOnly.class })
 	private Gene subject;
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private AffectedGenomicModel sgdStrainBackground;
 
 	@Transient
 	@Override
 	@JsonIgnore
 	public String getSubjectCurie() {
-		if(subject == null) return null;
+		if (subject == null)
+			return null;
 		return subject.getCurie();
 	}
 

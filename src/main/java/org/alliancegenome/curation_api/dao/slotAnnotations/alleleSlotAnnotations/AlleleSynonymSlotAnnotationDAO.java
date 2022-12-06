@@ -11,5 +11,5 @@ public class AlleleSynonymSlotAnnotationDAO extends BaseSQLDAO<AlleleSynonymSlot
 	protected AlleleSynonymSlotAnnotationDAO() {
 		super(AlleleSynonymSlotAnnotation.class);
 	}
-	
+
 }

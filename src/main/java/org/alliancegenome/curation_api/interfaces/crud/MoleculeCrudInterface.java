@@ -25,5 +25,5 @@ public interface MoleculeCrudInterface extends BaseCurieCrudInterface<Molecule> 
 	@Path("/bulk/moleculefile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateMolecules(MoleculeMetaDataFmsDTO moleculeData);
-	
+
 }

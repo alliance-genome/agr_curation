@@ -13,13 +13,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data @NoArgsConstructor @AllArgsConstructor
-@Schema(name="ObjectListResponse", description="POJO that represents the Object List Response")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Schema(name = "ObjectListResponse", description = "POJO that represents the Object List Response")
 public class ObjectListResponse<E> extends APIResponse {
 
 	@JsonView(View.FieldsOnly.class)
 	private List<E> entities;
-	
+
 	public ObjectListResponse(Set<E> set) {
 		this(new ArrayList<E>(set));
 	}

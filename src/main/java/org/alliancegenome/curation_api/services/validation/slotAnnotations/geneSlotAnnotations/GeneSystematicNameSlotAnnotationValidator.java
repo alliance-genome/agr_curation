@@ -12,13 +12,13 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.NameSlotAnnotationValidator;
 
-
 @RequestScoped
 public class GeneSystematicNameSlotAnnotationValidator extends NameSlotAnnotationValidator<GeneSystematicNameSlotAnnotation> {
 
-	@Inject GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
-	@Inject GeneDAO geneDAO;
-
+	@Inject
+	GeneSystematicNameSlotAnnotationDAO geneSystematicNameDAO;
+	@Inject
+	GeneDAO geneDAO;
 
 	public ObjectResponse<GeneSystematicNameSlotAnnotation> validateGeneSystematicNameSlotAnnotation(GeneSystematicNameSlotAnnotation uiEntity) {
 		GeneSystematicNameSlotAnnotation systematicName = validateGeneSystematicNameSlotAnnotation(uiEntity, false, false);
@@ -46,15 +46,15 @@ public class GeneSystematicNameSlotAnnotationValidator extends NameSlotAnnotatio
 			newEntity = true;
 		}
 		dbEntity = (GeneSystematicNameSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
-		
+
 		VocabularyTerm nameType = validateSystematicNameType(uiEntity.getNameType(), dbEntity.getNameType());
 		dbEntity.setNameType(nameType);
-		
+
 		if (validateGene) {
 			Gene singleGene = validateSingleGene(uiEntity.getSingleGene(), dbEntity.getSingleGene());
 			dbEntity.setSingleGene(singleGene);
 		}
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -66,5 +66,5 @@ public class GeneSystematicNameSlotAnnotationValidator extends NameSlotAnnotatio
 
 		return dbEntity;
 	}
-	
+
 }

@@ -13,20 +13,22 @@ import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ExperimentalConditionService;
 
 @RequestScoped
-public class ExperimentalConditionController extends BaseEntityCrudController<ExperimentalConditionService, ExperimentalCondition, ExperimentalConditionDAO> implements ExperimentalConditionCrudInterface {
+public class ExperimentalConditionController extends BaseEntityCrudController<ExperimentalConditionService, ExperimentalCondition, ExperimentalConditionDAO>
+	implements ExperimentalConditionCrudInterface {
 
-	@Inject ExperimentalConditionService experimentalConditionService;
-	
+	@Inject
+	ExperimentalConditionService experimentalConditionService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setService(experimentalConditionService);
 	}
-	
+
 	@Override
 	public ObjectResponse<ExperimentalCondition> get(String conditionSummary) {
 		SearchResponse<ExperimentalCondition> ret = findByField("conditionSummary", conditionSummary);
-		if(ret != null && ret.getTotalResults() == 1) {
+		if (ret != null && ret.getTotalResults() == 1) {
 			return new ObjectResponse<ExperimentalCondition>(ret.getResults().get(0));
 		} else {
 			return new ObjectResponse<ExperimentalCondition>();

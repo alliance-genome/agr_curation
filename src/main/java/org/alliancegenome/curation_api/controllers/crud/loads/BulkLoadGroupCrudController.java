@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.loads.BulkLoadGroupService;
 @RequestScoped
 public class BulkLoadGroupCrudController extends BaseEntityCrudController<BulkLoadGroupService, BulkLoadGroup, BulkLoadGroupDAO> implements BulkLoadGroupCrudInterface {
 
-	@Inject BulkLoadGroupService bulkLoadGroupService;
+	@Inject
+	BulkLoadGroupService bulkLoadGroupService;
 
 	@Override
 	@PostConstruct

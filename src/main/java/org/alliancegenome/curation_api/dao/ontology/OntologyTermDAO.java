@@ -11,5 +11,5 @@ public class OntologyTermDAO extends BaseSQLDAO<OntologyTerm> {
 	protected OntologyTermDAO() {
 		super(OntologyTerm.class);
 	}
-	
+
 }

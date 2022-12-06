@@ -15,18 +15,19 @@ import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AlleleSymbolSlotAnnotationDTOValidator extends NameSlotAnnotationDTOValidator {
-	
-	@Inject VocabularyTermDAO vocabularyTermDAO;
-	
+
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+
 	public ObjectResponse<AlleleSymbolSlotAnnotation> validateAlleleSymbolSlotAnnotationDTO(NameSlotAnnotationDTO dto) {
 		ObjectResponse<AlleleSymbolSlotAnnotation> assaResponse = new ObjectResponse<AlleleSymbolSlotAnnotation>();
-		
+
 		AlleleSymbolSlotAnnotation annotation = new AlleleSymbolSlotAnnotation();
-		
+
 		ObjectResponse<AlleleSymbolSlotAnnotation> saResponse = validateNameSlotAnnotationDTO(annotation, dto);
 		annotation = saResponse.getEntity();
 		assaResponse.addErrorMessages(saResponse.getErrorMessages());
-		
+
 		if (StringUtils.isNotEmpty(dto.getNameTypeName())) {
 			VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, dto.getNameTypeName());
 			if (nameType == null)
@@ -35,9 +36,9 @@ public class AlleleSymbolSlotAnnotationDTOValidator extends NameSlotAnnotationDT
 		} else {
 			assaResponse.addErrorMessage("name_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		
+
 		assaResponse.setEntity(annotation);
-		
+
 		return assaResponse;
 	}
 }

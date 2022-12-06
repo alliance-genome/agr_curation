@@ -80,7 +80,7 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 		} else {
 			dbEntity.setReferences(null);
 		}
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -92,8 +92,8 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 
 		return dbEntity;
 	}
-	
-	private Reference validateReference (Reference uiEntity, List<String> previousCuries) {
+
+	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
 		if (singleRefResponse.getEntity() == null) {
 			Map<String, String> errors = singleRefResponse.getErrorMessages();
@@ -102,12 +102,12 @@ public class NoteValidator extends AuditedObjectValidator<Note> {
 			}
 			return null;
 		}
-		
+
 		if (singleRefResponse.getEntity().getObsolete() && !previousCuries.contains(singleRefResponse.getEntity().getCurie())) {
 			addMessageResponse("references", "curie - " + ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
+
 		return singleRefResponse.getEntity();
 	}
 

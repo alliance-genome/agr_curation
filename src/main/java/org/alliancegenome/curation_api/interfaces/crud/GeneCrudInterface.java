@@ -43,38 +43,31 @@ public interface GeneCrudInterface extends BaseCurieCrudInterface<Gene>, BaseDTO
 	@Path("/bulk/genes")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateGenes(List<GeneDTO> geneData);
-		
+
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.GeneView.class)
 	public ObjectResponse<Gene> update(Gene entity);
-	
+
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.GeneView.class)
 	public ObjectResponse<Gene> create(Gene entity);
-	
+
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Database Search Endpoints")
 	@JsonView(View.GeneView.class)
-	public SearchResponse<Gene> find(
-			@DefaultValue("0") @QueryParam("page") Integer page,
-			@DefaultValue("10") @QueryParam("limit") Integer limit,
-			@RequestBody HashMap<String, Object> params);
-	
+	public SearchResponse<Gene> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Endpoints")
-	@JsonView({View.GeneView.class})
-	public SearchResponse<Gene> search(
-			@DefaultValue("0") @QueryParam("page") Integer page,
-			@DefaultValue("10") @QueryParam("limit") Integer limit,
-			@RequestBody HashMap<String, Object> params);
-	
-	
+	@JsonView({ View.GeneView.class })
+	public SearchResponse<Gene> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
 }

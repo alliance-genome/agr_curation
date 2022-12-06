@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.loads.BulkLoadFileHistoryService
 @RequestScoped
 public class BulkLoadFileHistoryCrudController extends BaseEntityCrudController<BulkLoadFileHistoryService, BulkLoadFileHistory, BulkLoadFileHistoryDAO> implements BulkLoadFileHistoryCrudInterface {
 
-	@Inject BulkLoadFileHistoryService bulkLoadFileHistoryService;
+	@Inject
+	BulkLoadFileHistoryService bulkLoadFileHistoryService;
 
 	@Override
 	@PostConstruct

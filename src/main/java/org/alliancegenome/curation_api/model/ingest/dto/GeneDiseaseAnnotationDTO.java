@@ -12,15 +12,15 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={DiseaseAnnotationDTO.class}, submitted=true)
+@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotationDTO.class }, submitted = true)
 public class GeneDiseaseAnnotationDTO extends DiseaseAnnotationDTO {
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("gene_curie")
 	private String geneCurie;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("sgd_strain_background_curie")
 	private String sgdStrainBackgroundCurie;
-	
+
 }

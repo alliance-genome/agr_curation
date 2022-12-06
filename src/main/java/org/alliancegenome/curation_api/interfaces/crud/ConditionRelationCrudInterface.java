@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -24,28 +23,27 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Consumes(MediaType.APPLICATION_JSON)
 public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<ConditionRelation> {
 
-    @Override
-    @POST
-    @Path("/")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
+	@Override
+	@POST
+	@Path("/")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ConditionRelation> create(ConditionRelation entity);
 
-    @Override
-    @PUT
-    @Path("/")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<ConditionRelation> update(ConditionRelation entity);
-    
-    @Override
-    @GET
-    @Path("/{id}")
-    @JsonView(View.FieldsAndLists.class)
+	@Override
+	@PUT
+	@Path("/")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ConditionRelation> update(ConditionRelation entity);
+
+	@Override
+	@GET
+	@Path("/{id}")
+	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<ConditionRelation> get(@PathParam("id") Long id);
 
-    @POST
-    @Path("/validate")
-    @JsonView(View.FieldsAndLists.class)
-    public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
-
+	@POST
+	@Path("/validate")
+	@JsonView(View.FieldsAndLists.class)
+	public ObjectResponse<ConditionRelation> validate(ConditionRelation entity);
 
 }

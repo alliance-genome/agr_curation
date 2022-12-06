@@ -38,14 +38,14 @@ public class VocabularyTermService extends BaseEntityCrudService<VocabularyTerm,
 		response.setEntity(term);
 		return response;
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<VocabularyTerm> create(VocabularyTerm uiEntity) {
 		VocabularyTerm dbEntity = vocabularyTermValidator.validateVocabularyTermCreate(uiEntity);
 		return new ObjectResponse<>(vocabularyTermDAO.persist(dbEntity));
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<VocabularyTerm> update(VocabularyTerm uiEntity) {

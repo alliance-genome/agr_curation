@@ -28,27 +28,26 @@ import lombok.ToString;
 @Audited
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"crossReferences", "secondaryIdentifiers"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.5.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BiologicalEntity.class})
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString(exclude = { "crossReferences", "secondaryIdentifiers" }, callSuper = true)
+@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BiologicalEntity.class })
 public class GenomicEntity extends BiologicalEntity {
 
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = {
-		@Index(columnList = "genomicentity_curie, crossreferences_curie"),
+	@JoinTable(indexes = { @Index(columnList = "genomicentity_curie, crossreferences_curie"),
 		@Index(columnList = "genomicentity_curie", name = "genomicentity_crossreference_genomicentity_curie_index"),
-		@Index(columnList = "crossreferences_curie", name = "genomicentity_crossreference_crossreferences_curie_index")
-	})
+		@Index(columnList = "crossreferences_curie", name = "genomicentity_crossreference_crossreferences_curie_index") })
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class })
 	private List<CrossReference> crossReferences;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@ElementCollection
 	@JoinTable(indexes = @Index(columnList = "genomicentity_curie"))
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class })
 	private List<String> secondaryIdentifiers;
 
 }

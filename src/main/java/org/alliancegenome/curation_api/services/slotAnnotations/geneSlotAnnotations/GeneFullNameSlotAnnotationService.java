@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.geneS
 @RequestScoped
 public class GeneFullNameSlotAnnotationService extends BaseEntityCrudService<GeneFullNameSlotAnnotation, GeneFullNameSlotAnnotationDAO> {
 
-	@Inject GeneFullNameSlotAnnotationDAO geneFullNameDAO;
-	@Inject GeneFullNameSlotAnnotationValidator geneFullNameValidator;
-	
+	@Inject
+	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
+	@Inject
+	GeneFullNameSlotAnnotationValidator geneFullNameValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(geneFullNameDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<GeneFullNameSlotAnnotation> upsert(GeneFullNameSlotAnnotation uiEntity) {
 		GeneFullNameSlotAnnotation dbEntity = geneFullNameValidator.validateGeneFullNameSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class GeneFullNameSlotAnnotationService extends BaseEntityCrudService<Gen
 			return null;
 		return new ObjectResponse<GeneFullNameSlotAnnotation>(geneFullNameDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<GeneFullNameSlotAnnotation> validate(GeneFullNameSlotAnnotation uiEntity) {
 		GeneFullNameSlotAnnotation fullName = geneFullNameValidator.validateGeneFullNameSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<GeneFullNameSlotAnnotation>(fullName);
 	}
-	
+
 }

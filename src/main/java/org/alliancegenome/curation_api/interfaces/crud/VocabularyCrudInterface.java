@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -28,15 +27,15 @@ public interface VocabularyCrudInterface extends BaseIdCrudInterface<Vocabulary>
 	@Path("/{id}")
 	@JsonView(View.VocabularyView.class)
 	ObjectResponse<Vocabulary> get(@PathParam("id") Long id);
-	
+
 	@GET
 	@Path("/{id}/terms")
 	@JsonView(View.VocabularyTermView.class)
 	ObjectListResponse<VocabularyTerm> getTerms(@PathParam("id") Long id);
-	
+
 	@GET
 	@Path("/findBy/{name}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<Vocabulary> findByName(@PathParam("name") String name);
-	
+
 }

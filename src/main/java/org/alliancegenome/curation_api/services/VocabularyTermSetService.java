@@ -14,8 +14,10 @@ import org.alliancegenome.curation_api.services.validation.VocabularyTermSetVali
 @RequestScoped
 public class VocabularyTermSetService extends BaseEntityCrudService<VocabularyTermSet, VocabularyTermSetDAO> {
 
-	@Inject VocabularyTermSetDAO vocabularyTermSetDAO;
-	@Inject VocabularyTermSetValidator vocabularyTermSetValidator;
+	@Inject
+	VocabularyTermSetDAO vocabularyTermSetDAO;
+	@Inject
+	VocabularyTermSetValidator vocabularyTermSetValidator;
 
 	@Override
 	@PostConstruct
@@ -29,7 +31,7 @@ public class VocabularyTermSetService extends BaseEntityCrudService<VocabularyTe
 		VocabularyTermSet dbEntity = vocabularyTermSetValidator.validateVocabularyTermSetCreate(uiEntity);
 		return new ObjectResponse<>(vocabularyTermSetDAO.persist(dbEntity));
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<VocabularyTermSet> update(VocabularyTermSet uiEntity) {

@@ -9,47 +9,48 @@ import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.NameSlotAnnotation;
 import org.apache.commons.lang3.StringUtils;
 
-public class NameSlotAnnotationValidator <E extends NameSlotAnnotation> extends SlotAnnotationValidator<E> {
+public class NameSlotAnnotationValidator<E extends NameSlotAnnotation> extends SlotAnnotationValidator<E> {
 
-	@Inject VocabularyTermDAO vocabularyTermDAO;
-	
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+
 	public E validateNameSlotAnnotationFields(E uiEntity, E dbEntity, Boolean newEntity) {
-		
+
 		dbEntity = validateSlotAnnotationFields(uiEntity, dbEntity, newEntity);
-		
+
 		if (StringUtils.isBlank(uiEntity.getDisplayText())) {
 			response.addErrorMessage("displayText", ValidationConstants.REQUIRED_MESSAGE);
 			dbEntity.setDisplayText(null);
 		} else {
 			dbEntity.setDisplayText(uiEntity.getDisplayText());
 		}
-		
+
 		if (StringUtils.isBlank(uiEntity.getFormatText())) {
 			response.addErrorMessage("formatText", ValidationConstants.REQUIRED_MESSAGE);
 			dbEntity.setFormatText(null);
 		} else {
 			dbEntity.setFormatText(uiEntity.getFormatText());
 		}
-		
+
 		if (StringUtils.isBlank(uiEntity.getSynonymUrl())) {
 			dbEntity.setSynonymUrl(null);
 		} else {
 			dbEntity.setSynonymUrl(uiEntity.getSynonymUrl());
 		}
-		
+
 		VocabularyTerm synonymScope = validateSynonymScope(uiEntity, dbEntity);
 		dbEntity.setSynonymScope(synonymScope);
-		
+
 		return dbEntity;
 	}
-	
+
 	private VocabularyTerm validateSynonymScope(E uiEntity, E dbEntity) {
 		String field = "synonymScope";
 		if (uiEntity.getSynonymScope() == null)
 			return null;
 
 		VocabularyTerm synonymScope = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, uiEntity.getSynonymScope().getName());
-		if(synonymScope == null) {
+		if (synonymScope == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
@@ -61,17 +62,17 @@ public class NameSlotAnnotationValidator <E extends NameSlotAnnotation> extends 
 
 		return synonymScope;
 	}
-	
+
 	private VocabularyTerm validateNameType(VocabularyTerm nameType, VocabularyTerm dbTerm) {
 
 		if (nameType.getObsolete() && (dbTerm == null || !nameType.getName().equals(dbTerm.getName()))) {
 			addMessageResponse("nameType", ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
-		
+
 		return nameType;
 	}
-	
+
 	public VocabularyTerm validateSymbolNameType(VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
 		String field = "nameType";
 		if (uiTerm == null) {
@@ -80,14 +81,14 @@ public class NameSlotAnnotationValidator <E extends NameSlotAnnotation> extends 
 		}
 
 		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, uiTerm.getName());
-		if(nameType == null) {
+		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
 		return validateNameType(nameType, dbTerm);
 	}
-	
+
 	public VocabularyTerm validateFullNameType(VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
 		String field = "nameType";
 		if (uiTerm == null) {
@@ -96,14 +97,14 @@ public class NameSlotAnnotationValidator <E extends NameSlotAnnotation> extends 
 		}
 
 		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, uiTerm.getName());
-		if(nameType == null) {
+		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
 		return validateNameType(nameType, dbTerm);
 	}
-	
+
 	public VocabularyTerm validateSystematicNameType(VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
 		String field = "nameType";
 		if (uiTerm == null) {
@@ -112,14 +113,14 @@ public class NameSlotAnnotationValidator <E extends NameSlotAnnotation> extends 
 		}
 
 		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, uiTerm.getName());
-		if(nameType == null) {
+		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
 		return validateNameType(nameType, dbTerm);
 	}
-	
+
 	public VocabularyTerm validateSynonymNameType(VocabularyTerm uiTerm, VocabularyTerm dbTerm) {
 		String field = "nameType";
 		if (uiTerm == null) {
@@ -128,7 +129,7 @@ public class NameSlotAnnotationValidator <E extends NameSlotAnnotation> extends 
 		}
 
 		VocabularyTerm nameType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY, uiTerm.getName());
-		if(nameType == null) {
+		if (nameType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}

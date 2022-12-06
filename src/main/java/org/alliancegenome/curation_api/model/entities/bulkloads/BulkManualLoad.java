@@ -20,14 +20,15 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={BulkLoad.class})
-@Schema(name="BulkManualLoad", description="POJO that represents the BulkManualLoad")
+@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { BulkLoad.class })
+@Schema(name = "BulkManualLoad", description = "POJO that represents the BulkManualLoad")
 @JsonTypeName
 public class BulkManualLoad extends BulkLoad {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@Enumerated(EnumType.STRING)
 	private BackendBulkDataType dataType;
 }

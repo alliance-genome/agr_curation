@@ -12,29 +12,29 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE)
+@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE)
 public class AuditedObjectDTO extends BaseDTO {
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Boolean internal = false;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Boolean obsolete = false;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("created_by_curie")
 	private String createdByCurie;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("updated_by_curie")
 	private String updatedByCurie;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("date_created")
 	private String dateCreated;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("date_updated")
 	private String dateUpdated;
-	
+
 }

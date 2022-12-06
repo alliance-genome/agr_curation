@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -22,18 +21,18 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface NoteCrudInterface extends BaseIdCrudInterface<Note> {
-	
+
 	@POST
 	@Path("/validate")
 	@JsonView(View.NoteView.class)
 	public ObjectResponse<Note> validate(Note entity);
-	
+
 	@Override
 	@GET
 	@JsonView(View.NoteView.class)
 	@Path("/{id}")
 	public ObjectResponse<Note> get(@PathParam("id") Long id);
-	
+
 	@POST
 	@Path("/")
 	@JsonView(View.NoteView.class)

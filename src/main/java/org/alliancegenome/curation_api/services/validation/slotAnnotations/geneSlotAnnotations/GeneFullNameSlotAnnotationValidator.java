@@ -12,13 +12,13 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.NameSlotAnnotationValidator;
 
-
 @RequestScoped
 public class GeneFullNameSlotAnnotationValidator extends NameSlotAnnotationValidator<GeneFullNameSlotAnnotation> {
 
-	@Inject GeneFullNameSlotAnnotationDAO geneFullNameDAO;
-	@Inject GeneDAO geneDAO;
-
+	@Inject
+	GeneFullNameSlotAnnotationDAO geneFullNameDAO;
+	@Inject
+	GeneDAO geneDAO;
 
 	public ObjectResponse<GeneFullNameSlotAnnotation> validateGeneFullNameSlotAnnotation(GeneFullNameSlotAnnotation uiEntity) {
 		GeneFullNameSlotAnnotation fullName = validateGeneFullNameSlotAnnotation(uiEntity, false, false);
@@ -27,7 +27,7 @@ public class GeneFullNameSlotAnnotationValidator extends NameSlotAnnotationValid
 	}
 
 	public GeneFullNameSlotAnnotation validateGeneFullNameSlotAnnotation(GeneFullNameSlotAnnotation uiEntity, Boolean throwError, Boolean validateGene) {
-		
+
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not create/update GeneFullNameSlotAnnotation: [" + uiEntity.getId() + "]";
 
@@ -46,15 +46,15 @@ public class GeneFullNameSlotAnnotationValidator extends NameSlotAnnotationValid
 			newEntity = true;
 		}
 		dbEntity = (GeneFullNameSlotAnnotation) validateNameSlotAnnotationFields(uiEntity, dbEntity, newEntity);
-		
+
 		VocabularyTerm nameType = validateFullNameType(uiEntity.getNameType(), dbEntity.getNameType());
 		dbEntity.setNameType(nameType);
-		
+
 		if (validateGene) {
 			Gene singleGene = validateSingleGene(uiEntity.getSingleGene(), dbEntity.getSingleGene());
 			dbEntity.setSingleGene(singleGene);
 		}
-		
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);
@@ -66,5 +66,5 @@ public class GeneFullNameSlotAnnotationValidator extends NameSlotAnnotationValid
 
 		return dbEntity;
 	}
-	
+
 }

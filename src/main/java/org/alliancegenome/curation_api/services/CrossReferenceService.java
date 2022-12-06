@@ -16,10 +16,10 @@ import org.alliancegenome.curation_api.model.ingest.dto.fms.CrossReferenceFmsDTO
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
-public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO>{
+public class CrossReferenceService extends BaseEntityCrudService<CrossReference, CrossReferenceDAO> {
 
-	@Inject CrossReferenceDAO crossReferenceDAO;
-
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
 
 	@Override
 	@PostConstruct
@@ -31,7 +31,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	public CrossReference processUpdate(CrossReferenceFmsDTO crossReferenceFmsDTO) {
 
 		CrossReference crossReference = crossReferenceDAO.find(crossReferenceFmsDTO.getId());
-		if(crossReference == null) {
+		if (crossReference == null) {
 			crossReference = new CrossReference();
 			crossReference.setCurie(crossReferenceFmsDTO.getId());
 			crossReferenceDAO.persist(crossReference);
@@ -46,7 +46,7 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 	private void handlePageAreas(CrossReferenceFmsDTO crDTO, CrossReference cr) {
 
 		Set<String> currentPages;
-		if(cr.getPageAreas() == null) {
+		if (cr.getPageAreas() == null) {
 			currentPages = new HashSet<>();
 			cr.setPageAreas(new ArrayList<>());
 		} else {
@@ -54,20 +54,20 @@ public class CrossReferenceService extends BaseEntityCrudService<CrossReference,
 		}
 
 		Set<String> newPages;
-		if(crDTO.getPages() == null) {
+		if (crDTO.getPages() == null) {
 			newPages = new HashSet<>();
 		} else {
 			newPages = crDTO.getPages().stream().collect(Collectors.toSet());
 		}
 
 		newPages.forEach(id -> {
-			if(!currentPages.contains(id)) {
+			if (!currentPages.contains(id)) {
 				cr.getPageAreas().add(id);
 			}
 		});
 
 		currentPages.forEach(id -> {
-			if(!newPages.contains(id)) {
+			if (!newPages.contains(id)) {
 				cr.getPageAreas().remove(id);
 			}
 		});

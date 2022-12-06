@@ -7,7 +7,7 @@ import org.eclipse.microprofile.health.HealthCheckResponse;
 import org.eclipse.microprofile.health.Liveness;
 
 @Liveness
-@ApplicationScoped	
+@ApplicationScoped
 public class SiteHealthCheck implements HealthCheck {
 
 	@Override

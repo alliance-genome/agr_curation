@@ -20,17 +20,17 @@ public class AffectedGenomicModelDAO extends BaseSQLDAO<AffectedGenomicModel> {
 		jpqlQuery.setParameter("taxonId", taxonId);
 		return (List<String>) jpqlQuery.getResultList();
 	}
-	
+
 	public List<Long> findReferencingDiseaseAnnotations(String agmCurie) {
 		Query jpqlQuery = entityManager.createQuery("SELECT da.id FROM DiseaseAnnotation da WHERE da.diseaseGeneticModifier.curie = :agmCurie");
 		jpqlQuery.setParameter("agmCurie", agmCurie);
-		List<Long> results = (List<Long>)jpqlQuery.getResultList();
-		
+		List<Long> results = (List<Long>) jpqlQuery.getResultList();
+
 		jpqlQuery = entityManager.createQuery("SELECT ada.id FROM AGMDiseaseAnnotation ada WHERE ada.subject.curie = :agmCurie");
 		jpqlQuery.setParameter("agmCurie", agmCurie);
 		results.addAll((List<Long>) jpqlQuery.getResultList());
-		
+
 		return results;
 	}
-	
+
 }

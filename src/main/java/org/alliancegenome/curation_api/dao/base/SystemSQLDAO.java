@@ -22,7 +22,8 @@ import org.reflections.Reflections;
 @ApplicationScoped
 public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
 
-	@Inject LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject
+	LiteratureReferenceDAO literatureReferenceDAO;
 
 	protected SystemSQLDAO() {
 		super(BaseEntity.class);
@@ -41,15 +42,15 @@ public class SystemSQLDAO extends BaseSQLDAO<BaseEntity> {
 
 		Map<String, Object> map = new HashMap<>();
 
-		for(Class<?> clazz: allClasses) {
+		for (Class<?> clazz : allClasses) {
 			Map<String, Object> tempMap = new HashMap<String, Object>();
-			if(entityClasses.contains(clazz)) {
+			if (entityClasses.contains(clazz)) {
 				tempMap.put("dbCount", dbCount(clazz));
 			} else {
 				tempMap.put("dbCount", 0);
 			}
-			if(indexedClasses.contains(clazz) || clazz.getSimpleName().equals("Reference")) {
-				if(clazz.getSimpleName().equals("Reference")) {
+			if (indexedClasses.contains(clazz) || clazz.getSimpleName().equals("Reference")) {
+				if (clazz.getSimpleName().equals("Reference")) {
 					SearchResponse<LiteratureReference> res = literatureReferenceDAO.searchAllCount();
 					tempMap.put("esCount", res.getTotalResults());
 				} else {

@@ -15,20 +15,24 @@ import io.vertx.mutiny.core.eventbus.EventBus;
 
 public class ReportProcessor {
 
-	@Inject EventBus bus;
-	
-	@Inject CurationReportGroupDAO curationReportGroupDAO;
-	@Inject CurationReportDAO curationReportDAO;
-	
-	@Inject ReportJobExecutor reportJobExecutor;
+	@Inject
+	EventBus bus;
+
+	@Inject
+	CurationReportGroupDAO curationReportGroupDAO;
+	@Inject
+	CurationReportDAO curationReportDAO;
+
+	@Inject
+	ReportJobExecutor reportJobExecutor;
 
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
 	@ConsumeEvent(value = "RunReport", blocking = true) // Triggered by the Scheduler or Forced start
 	public void curationReport(Message<CurationReport> report) {
 		CurationReport curationReport = curationReportDAO.find(report.body().getId());
-		
-		if(!curationReport.getCurationReportStatus().isStarted()) {
+
+		if (!curationReport.getCurationReportStatus().isStarted()) {
 			Log.warn("curationReport: Job is not started returning: " + curationReport.getCurationReportStatus());
 			return;
 		} else {
@@ -36,11 +40,11 @@ public class ReportProcessor {
 		}
 
 		try {
-			if(curationReport.getBirtReportFilePath() != null) {
+			if (curationReport.getBirtReportFilePath() != null) {
 				reportJobExecutor.process(curationReport);
 			}
 			endReport(curationReport, "", JobStatus.FINISHED);
-			
+
 		} catch (Exception e) {
 			endReport(curationReport, "Failed running: " + curationReport.getName() + " please check the logs for more info. " + curationReport.getErrorMessage(), JobStatus.FAILED);
 			Log.error("Load File: " + curationReport.getName() + " is failed");
@@ -51,7 +55,7 @@ public class ReportProcessor {
 	protected void startReport(CurationReport report) {
 		Log.info("Report: " + report.getName() + " is starting");
 
-		if(!report.getCurationReportStatus().isStarted()) {
+		if (!report.getCurationReportStatus().isStarted()) {
 			Log.warn("startReport: Job is not started returning: " + report.getCurationReportStatus());
 			return;
 		}
@@ -59,7 +63,7 @@ public class ReportProcessor {
 		curationReportDAO.merge(report);
 		Log.info("Load: " + report.getName() + " is running");
 	}
-	
+
 	protected void endReport(CurationReport report, String message, JobStatus status) {
 		CurationReport curationReport = curationReportDAO.find(report.getId());
 		curationReport.setErrorMessage(message);
@@ -67,6 +71,5 @@ public class ReportProcessor {
 		curationReportDAO.merge(curationReport);
 		Log.info("Report: " + curationReport.getName() + " is finished");
 	}
-
 
 }

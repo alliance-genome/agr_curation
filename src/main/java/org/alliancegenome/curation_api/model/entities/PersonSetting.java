@@ -34,19 +34,16 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true, exclude = "person")
 @JsonIgnoreProperties(ignoreUnknown = true)
-@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @TypeDef(name = JsonTypes.JSON_BIN, typeClass = JsonBinaryType.class)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-@Table(indexes = {
-	@Index(name = "personsetting_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "personsetting_updatedby_index", columnList = "updatedBy_id"),
-	@Index(name = "personsetting_person_index",  columnList = "person_id")
-})
+@Table(indexes = { @Index(name = "personsetting_createdby_index", columnList = "createdBy_id"), @Index(name = "personsetting_updatedby_index", columnList = "updatedBy_id"),
+	@Index(name = "personsetting_person_index", columnList = "person_id") })
 public class PersonSetting extends GeneratedAuditedObject {
 
 	@ManyToOne
 	private Person person;
-	
+
 	@JsonView(View.PersonSettingView.class)
 	private String settingsKey;
 
@@ -54,5 +51,5 @@ public class PersonSetting extends GeneratedAuditedObject {
 	@Column(columnDefinition = JsonTypes.JSON_BIN)
 	@JsonView(View.PersonSettingView.class)
 	private Map<String, Object> settingsMap;
-	
+
 }

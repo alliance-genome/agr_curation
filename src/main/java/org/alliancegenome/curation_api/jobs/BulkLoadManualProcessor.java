@@ -24,32 +24,32 @@ public class BulkLoadManualProcessor extends BulkLoadProcessor {
 
 	@ConsumeEvent(value = "BulkManualLoad", blocking = true) // Triggered by the Scheduler or API
 	public void processBulkManualLoadFromAPI(Message<BulkManualLoad> load) {
-		//BulkManualLoad bulkManualLoad = load.body();
-		//bulkManualLoad = bulkManualLoadDAO.find(bulkManualLoad.getId());
-		//startLoad(bulkManualLoad);
-		//endLoad(bulkManualLoad, null, BulkLoadStatus.FINISHED);
+		// BulkManualLoad bulkManualLoad = load.body();
+		// bulkManualLoad = bulkManualLoadDAO.find(bulkManualLoad.getId());
+		// startLoad(bulkManualLoad);
+		// endLoad(bulkManualLoad, null, BulkLoadStatus.FINISHED);
 	}
-	
-	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataType dataType) {  // Triggered by the API
+
+	public void processBulkManualLoadFromDQM(MultipartFormDataInput input, BackendBulkLoadType loadType, BackendBulkDataType dataType) { // Triggered by the API
 		Map<String, List<InputPart>> form = input.getFormDataMap();
-		
-		if(form.containsKey(loadType)) {
+
+		if (form.containsKey(loadType)) {
 			log.warn("Key not found: " + loadType);
 			return;
 		}
-		
+
 		BulkManualLoad bulkManualLoad = null;
-		
+
 		HashMap<String, Object> params = new HashMap<String, Object>();
 		params.put("backendBulkLoadType", loadType);
 		params.put("dataType", dataType);
 		SearchResponse<BulkManualLoad> load = bulkManualLoadDAO.findByParams(null, params);
-		if(load != null && load.getTotalResults() == 1) {
+		if (load != null && load.getTotalResults() == 1) {
 			bulkManualLoad = load.getResults().get(0);
 			bulkManualLoad.setBulkloadStatus(JobStatus.MANUAL_STARTED);
-			
+
 			startLoad(bulkManualLoad);
-			
+
 			String filePath = fileHelper.saveIncomingFile(input, bulkManualLoad.getBackendBulkLoadType().toString() + "_" + bulkManualLoad.getDataType().toString());
 			String localFilePath = fileHelper.compressInputFile(filePath);
 			processFilePath(bulkManualLoad, localFilePath);

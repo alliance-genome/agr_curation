@@ -11,5 +11,5 @@ public class GeneFullNameSlotAnnotationDAO extends BaseSQLDAO<GeneFullNameSlotAn
 	protected GeneFullNameSlotAnnotationDAO() {
 		super(GeneFullNameSlotAnnotation.class);
 	}
-	
+
 }

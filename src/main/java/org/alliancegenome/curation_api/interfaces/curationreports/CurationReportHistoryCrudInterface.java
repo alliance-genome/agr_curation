@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.curationreports;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,5 +25,5 @@ public interface CurationReportHistoryCrudInterface extends BaseIdCrudInterface<
 	@Path("/{id}")
 	@JsonView(View.BulkLoadFileHistory.class)
 	public ObjectResponse<CurationReportHistory> get(@PathParam("id") Long id);
-	
+
 }

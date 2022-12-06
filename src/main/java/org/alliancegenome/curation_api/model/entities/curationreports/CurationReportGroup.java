@@ -20,15 +20,16 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class CurationReportGroup extends GeneratedAuditedObject {
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private String name;
-	
-	@JsonView({View.FieldsAndLists.class})
+
+	@JsonView({ View.FieldsAndLists.class })
 	@OneToMany(mappedBy = "curationReportGroup")
 	private List<CurationReport> curationReports;
 }

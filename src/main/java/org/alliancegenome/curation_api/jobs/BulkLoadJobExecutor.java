@@ -72,7 +72,6 @@ public class BulkLoadJobExecutor {
 	@Inject
 	ObjectMapper mapper;
 
-
 	@Inject
 	XcoTermService xcoTermService;
 	@Inject
@@ -143,21 +142,11 @@ public class BulkLoadJobExecutor {
 	@Inject
 	MoleculeExecutor moleculeExecutor;
 
-
 	public void process(BulkLoadFile bulkLoadFile) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(
-			AGM_DISEASE_ANNOTATION,
-			ALLELE_DISEASE_ANNOTATION,
-			GENE_DISEASE_ANNOTATION,
-			DISEASE_ANNOTATION,
-			AGM,
-			ALLELE,
-			GENE,
-			FULL_INGEST
-		);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, FULL_INGEST);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -234,7 +223,7 @@ public class BulkLoadJobExecutor {
 					processTerms(bulkLoadFile, mpTermService, config);
 					break;
 				case RO:
-					//config.setLoadOnlyIRIPrefix("RO");
+					// config.setLoadOnlyIRIPrefix("RO");
 					processTerms(bulkLoadFile, roTermService, config);
 					break;
 				case MA:
@@ -312,20 +301,19 @@ public class BulkLoadJobExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
-		for (Entry<String, ? extends OntologyTerm> entry: termMap.entrySet()) {
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdate(entry.getValue());
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-		
+
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
 		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		for (Entry<String, ? extends OntologyTerm> entry: termMap.entrySet()) {
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
 			ph1.progressProcess();
 		}
 		ph1.finishProcess();
 	}
-
 
 }

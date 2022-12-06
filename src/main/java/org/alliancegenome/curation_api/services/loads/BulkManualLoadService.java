@@ -13,20 +13,20 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class BulkManualLoadService extends BaseEntityCrudService<BulkManualLoad, BulkManualLoadDAO> {
-	
+
 	@Inject
 	BulkManualLoadDAO bulkManualLoadDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(bulkManualLoadDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<BulkManualLoad> restartLoad(Long id) {
 		BulkManualLoad load = bulkManualLoadDAO.find(id);
-		if(load.getBulkloadStatus().isNotRunning()) {
+		if (load.getBulkloadStatus().isNotRunning()) {
 			load.setBulkloadStatus(JobStatus.FORCED_PENDING);
 		}
 		return new ObjectResponse<BulkManualLoad>(load);

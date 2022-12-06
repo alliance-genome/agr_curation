@@ -11,5 +11,5 @@ public class StageTermDAO extends BaseSQLDAO<StageTerm> {
 	protected StageTermDAO() {
 		super(StageTerm.class);
 	}
-	
+
 }

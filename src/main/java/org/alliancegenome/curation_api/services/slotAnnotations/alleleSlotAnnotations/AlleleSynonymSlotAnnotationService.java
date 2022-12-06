@@ -14,15 +14,17 @@ import org.alliancegenome.curation_api.services.validation.slotAnnotations.allel
 @RequestScoped
 public class AlleleSynonymSlotAnnotationService extends BaseEntityCrudService<AlleleSynonymSlotAnnotation, AlleleSynonymSlotAnnotationDAO> {
 
-	@Inject AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
-	@Inject AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
-	
+	@Inject
+	AlleleSynonymSlotAnnotationDAO alleleSynonymDAO;
+	@Inject
+	AlleleSynonymSlotAnnotationValidator alleleSynonymValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleSynonymDAO);
 	}
-	
+
 	@Transactional
 	public ObjectResponse<AlleleSynonymSlotAnnotation> upsert(AlleleSynonymSlotAnnotation uiEntity) {
 		AlleleSynonymSlotAnnotation dbEntity = alleleSynonymValidator.validateAlleleSynonymSlotAnnotation(uiEntity, true, true);
@@ -30,10 +32,10 @@ public class AlleleSynonymSlotAnnotationService extends BaseEntityCrudService<Al
 			return null;
 		return new ObjectResponse<AlleleSynonymSlotAnnotation>(alleleSynonymDAO.persist(dbEntity));
 	}
-	
+
 	public ObjectResponse<AlleleSynonymSlotAnnotation> validate(AlleleSynonymSlotAnnotation uiEntity) {
 		AlleleSynonymSlotAnnotation synonym = alleleSynonymValidator.validateAlleleSynonymSlotAnnotation(uiEntity, true, false);
 		return new ObjectResponse<AlleleSynonymSlotAnnotation>(synonym);
 	}
-	
+
 }

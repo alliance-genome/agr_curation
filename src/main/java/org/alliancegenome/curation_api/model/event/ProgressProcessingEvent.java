@@ -15,5 +15,5 @@ public class ProgressProcessingEvent extends ProcessingEvent {
 	private long currentCount;
 	private long lastCount;
 	private long totalSize;
-	
+
 }

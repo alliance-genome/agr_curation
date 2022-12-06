@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud.bulkloads;
 
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -26,5 +25,5 @@ public interface BulkLoadFileHistoryCrudInterface extends BaseIdCrudInterface<Bu
 	@Path("/{id}")
 	@JsonView(View.BulkLoadFileHistory.class)
 	public ObjectResponse<BulkLoadFileHistory> get(@PathParam("id") Long id);
-	
+
 }
