@@ -28,11 +28,19 @@ export const AutocompleteMultiEditor = (
 	const itemTemplate = (item) => {
 		if(valueDisplay) return valueDisplay(item, setAutocompleteHoverItem, op, inputValue);
 
+		let nameValue = '';
+		if (item.geneFullName) {
+			nameValue = item.geneFullName.displayText;
+		} else if (item.alleleFullName) {
+			nameValue = item.alleleFullName.displayText;
+		} else if (item.name) {
+			nameValue = item.name;
+		}
 		return (
 			<div>
 				<div onMouseOver={(event) => onSelectionOver(event, item, inputValue, op, setAutocompleteHoverItem)}
-					dangerouslySetInnerHTML={{__html: item.name + ' (' + item.curie + ') '}}/>
-			</div>
+					dangerouslySetInnerHTML={{__html: nameValue + ' (' + item.curie + ') '}}/>
+				</div>
 		);
 	};
 
