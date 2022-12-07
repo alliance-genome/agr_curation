@@ -1,10 +1,8 @@
 package org.alliancegenome.curation_api.model.entities.slotAnnotations;
 
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
