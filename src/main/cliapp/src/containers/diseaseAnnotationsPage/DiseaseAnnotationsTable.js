@@ -1013,23 +1013,71 @@ export const DiseaseAnnotationsTable = () => {
 
 	const subjectBodyTemplate = (rowData) => {
 		if (rowData.subject) {
-			if (rowData.subject.symbol) {
+			if (rowData.subject.geneSymbol) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
 							dangerouslySetInnerHTML={{
-								__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+								__html: rowData.subject.geneSymbol.displayText + ' (' + rowData.subject.curie + ')'
 							}}
 						/>
 						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
 							<div dangerouslySetInnerHTML={{
-								__html: rowData.subject.symbol + ' (' + rowData.subject.curie + ')'
+								__html: rowData.subject.geneSymbol.displayText + ' (' + rowData.subject.curie + ')'
 							}}
 							/>
 						</Tooltip>
 					</>
 				)
-			} else if (rowData.subject.name) {
+			} else if (rowData.subject.alleleSymbol) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.subject.alleleSymbol.displayText + ' (' + rowData.subject.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.subject.alleleSymbol.displayText + ' (' + rowData.subject.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			} else if (rowData.subject.geneFullName) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.subject.geneFullName.displayText + ' (' + rowData.subject.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.subject.geneFullName.displayText + ' (' + rowData.subject.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			} else if (rowData.subject.alleleFullName) {
+				return (
+					<>
+						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
+							dangerouslySetInnerHTML={{
+								__html: rowData.subject.alleleFullName.displayText + ' (' + rowData.subject.curie + ')'
+							}}
+						/>
+						<Tooltip target={`.a${rowData.id}${rowData.subject.curie.replace(':', '')}`}>
+							<div dangerouslySetInnerHTML={{
+								__html: rowData.subject.alleleFullName.displayText + ' (' + rowData.subject.curie + ')'
+							}}
+							/>
+						</Tooltip>
+					</>
+				)
+			}else if (rowData.subject.name) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
