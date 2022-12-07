@@ -1121,10 +1121,11 @@ export const DiseaseAnnotationsTable = () => {
 
 	const geneticModifierBodyTemplate = (rowData) => {
 		if (rowData.diseaseGeneticModifier) {
-			if (rowData.diseaseGeneticModifier.symbol) {
+			if (rowData.diseaseGeneticModifier.geneSymbol || rowData.diseaseGeneticModifier.alleleSymbol) {
+				let symbolValue = rowData.diseaseGeneticModifier.geneSymbol ? rowData.diseaseGeneticModifier.geneSymbol.displayText : rowData.diseaseGeneticModifier.alleleSymbol.displayText;
 				return <div className='overflow-hidden text-overflow-ellipsis'
 					dangerouslySetInnerHTML={{
-						__html: rowData.diseaseGeneticModifier.symbol + ' (' + rowData.diseaseGeneticModifier.curie + ')'
+						__html: symbolValue + ' (' + rowData.diseaseGeneticModifier.curie + ')'
 					}}
 				/>;
 			} else if (rowData.diseaseGeneticModifier.name) {
