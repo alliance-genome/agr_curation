@@ -1,0 +1,9 @@
+CREATE INDEX allelesymbol_singleallele_curie_index ON public.allelesymbolslotannotation USING btree (singleallele_curie);
+CREATE INDEX allelesynonym_singleallele_curie_index ON public.allelesynonymslotannotation USING btree (singleallele_curie);
+CREATE INDEX allelefullname_singleallele_curie_index ON public.allelefullnameslotannotation USING btree (singleallele_curie);
+CREATE INDEX genesymbol_singleallele_curie_index ON public.genesymbolslotannotation USING btree (singlegene_curie);
+CREATE INDEX genesynonym_singleallele_curie_index ON public.genesynonymslotannotation USING btree (singlegene_curie);
+CREATE INDEX genefullname_singleallele_curie_index ON public.genefullnameslotannotation USING btree (singlegene_curie);
+CREATE INDEX genesystematicname_singleallele_curie_index ON public.genesystematicnameslotannotation USING btree (singlegene_curie);
+CREATE INDEX nameslotannotation_nametype_index ON public.nameslotannotation USING btree (nametype_id);
+CREATE INDEX nameslotannotation_synonymscope_index ON public.nameslotannotation USING btree (synonymscope_id);
