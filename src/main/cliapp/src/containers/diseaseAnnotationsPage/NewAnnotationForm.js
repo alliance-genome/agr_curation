@@ -214,7 +214,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const subjectSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "alleleSymbol.displayText", "geneFullName.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText", "geneSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "subjectFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -307,7 +307,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -341,7 +341,7 @@ export const NewAnnotationForm = ({
 	);
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -350,7 +350,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const assertedAlleleSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);

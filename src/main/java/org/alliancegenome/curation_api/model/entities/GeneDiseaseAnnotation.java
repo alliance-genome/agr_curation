@@ -36,7 +36,7 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 public class GeneDiseaseAnnotation extends DiseaseAnnotation {
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)

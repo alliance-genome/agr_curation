@@ -41,7 +41,7 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { DiseaseAnnotation.class })
 public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = { "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@org.hibernate.annotations.OnDelete(action = org.hibernate.annotations.OnDeleteAction.CASCADE)
@@ -49,13 +49,13 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsOnly.class })
 	private Allele subject;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private Gene inferredGene;
 
-	@IndexedEmbedded(includeDepth = 1)
+	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "allelediseaseannotation_id"))
