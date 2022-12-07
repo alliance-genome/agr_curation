@@ -722,8 +722,14 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const getSubjectAutocompleteFields = (props) => {
-		let subjectFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
-		if (props.rowData.type !== "AGMDiseaseAnnotation") subjectFields.push("symbol");
+		let subjectFields = ["curie", "crossReferences.curie", "secondaryIdentifiers"];
+		if (props.rowData.type === "AGMDiseaseAnnotation") {
+			subjectFields.push("name");
+		} else if (props.rowData.type === "AlleleDiseaseAnnotation") {
+			subjectFields.push("alleleFullName.displayText", "alleleSymbol.displayText", "alleleSynonyms.displayText");
+		} else if (props.rowData.type === "GeneDiseaseAnnotation") {
+			subjectFields.push("geneFullName.displayText", "geneSymbol.displayText", "geneSynonyms.displayText");
+		}
 		return subjectFields;
 	};
 	const onSgdStrainBackgroundValueChange = (event, setFieldValue, props) => {
@@ -731,7 +737,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const sgdStrainBackgroundSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["name", "curie", "crossReferences.curie", "secondaryIdentifiers"];
 		const endpoint = "agm";
 		const filterName = "sgdStrainBackgroundFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -776,7 +782,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const geneticModifierSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "geneSynonyms.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifierFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -813,7 +819,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const assertedAlleleSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -892,7 +898,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -930,7 +936,7 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-	   const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+	   const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 	   const endpoint = "gene";
 	   const filterName = "withFilter";
 	   const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -1115,10 +1121,11 @@ export const DiseaseAnnotationsTable = () => {
 
 	const geneticModifierBodyTemplate = (rowData) => {
 		if (rowData.diseaseGeneticModifier) {
-			if (rowData.diseaseGeneticModifier.symbol) {
+			if (rowData.diseaseGeneticModifier.geneSymbol || rowData.diseaseGeneticModifier.alleleSymbol) {
+				let symbolValue = rowData.diseaseGeneticModifier.geneSymbol ? rowData.diseaseGeneticModifier.geneSymbol.displayText : rowData.diseaseGeneticModifier.alleleSymbol.displayText;
 				return <div className='overflow-hidden text-overflow-ellipsis'
 					dangerouslySetInnerHTML={{
-						__html: rowData.diseaseGeneticModifier.symbol + ' (' + rowData.diseaseGeneticModifier.curie + ')'
+						__html: symbolValue + ' (' + rowData.diseaseGeneticModifier.curie + ')'
 					}}
 				/>;
 			} else if (rowData.diseaseGeneticModifier.name) {
@@ -1216,7 +1223,7 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "modentityidFilter", fields: ["modEntityId"]},
 	},
 	{
-		field: "subject.curie",
+		field: "subject.symbol",
 		header: "Subject",
 		sortable: isEnabled,
 		filter: true,
