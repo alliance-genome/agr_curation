@@ -1,3 +1,9 @@
+-- Remove redundant vocabulary and terms
+DELETE FROM vocabularyterm
+	WHERE vocabulary_id = (SELECT id FROM vocabulary WHERE name = 'Allele Name Types');
+	
+DELETE FROM vocabulary WHERE name = 'Allele Name Types';
+
 -- Create required Vocabulary, VocabularyTerm, and VocabularyTermSet entries
 
 INSERT INTO vocabulary (id, name, vocabularydescription)
@@ -5,14 +11,14 @@ INSERT INTO vocabulary (id, name, vocabularydescription)
 		(nextval('hibernate_sequence'), 'Name type', 'Type of name represented by a name annotation'),
 		(nextval('hibernate_sequence'), 'Synonym scope', 'Scope of the synonym respresented by a name annotation');
 
-INSERT INTO vocabularyterm (id, name, vocabulary_id)
-	SELECT nextval('hibernate_sequence'), 'nomenclature_symbol', id FROM vocabulary WHERE name = 'Name type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id)
+	SELECT nextval('hibernate_sequence'), 'nomenclature_symbol', 'A symbol for an object: e.g., pax6<sup>Leca2</sup>.', id FROM vocabulary WHERE name = 'Name type';
 	
-INSERT INTO vocabularyterm (id, name, vocabulary_id)
-	SELECT nextval('hibernate_sequence'), 'full_name', id FROM vocabulary WHERE name = 'Name type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id)
+	SELECT nextval('hibernate_sequence'), 'full_name', 'The full length name of an entity: e.g., broad angular dumpy.', id FROM vocabulary WHERE name = 'Name type';
 	
-INSERT INTO vocabularyterm (id, name, vocabulary_id)
-	SELECT nextval('hibernate_sequence'), 'systematic_name', id FROM vocabulary WHERE name = 'Name type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id)
+	SELECT nextval('hibernate_sequence'), 'systematic_name', 'A systematic name: e.g., CG4889<sup>1</sup>.', id FROM vocabulary WHERE name = 'Name type';
 	
 INSERT INTO vocabularyterm (id, name, vocabulary_id)
 	SELECT nextval('hibernate_sequence'), 'ncbi_protein_name', id FROM vocabulary WHERE name = 'Name type';
@@ -26,8 +32,8 @@ INSERT INTO vocabularyterm (id, name, vocabulary_id)
 INSERT INTO vocabularyterm (id, name, vocabulary_id)
 	SELECT nextval('hibernate_sequence'), 'retired_name', id FROM vocabulary WHERE name = 'Name type';
 	
-INSERT INTO vocabularyterm (id, name, vocabulary_id)
-	SELECT nextval('hibernate_sequence'), 'unspecified', id FROM vocabulary WHERE name = 'Name type';
+INSERT INTO vocabularyterm (id, name, definition, vocabulary_id)
+	SELECT nextval('hibernate_sequence'), 'unspecified', 'Unclassified name', id FROM vocabulary WHERE name = 'Name type';
 	
 INSERT INTO vocabularyterm (id, name, vocabulary_id)
 	SELECT nextval('hibernate_sequence'), 'exact', id FROM vocabulary WHERE name = 'Synonym scope';
@@ -374,6 +380,7 @@ UPDATE nameslotannotation
 UPDATE nameslotannotation
 	SET nametype_id = (
 		SELECT id FROM vocabularyterm WHERE name = 'nomenclature_symbol'
+			AND vocabulary_id = (SELECT id FROM vocabulary WHERE name = 'Name type')
 		)
 	WHERE nametype_id IS NULL;
 
@@ -406,6 +413,7 @@ UPDATE nameslotannotation
 UPDATE nameslotannotation
 	SET nametype_id = (
 		SELECT id FROM vocabularyterm WHERE name = 'full_name'
+			AND vocabulary_id = (SELECT id FROM vocabulary WHERE name = 'Name type')
 		)
 	WHERE nametype_id IS NULL;
 
