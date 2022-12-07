@@ -182,7 +182,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const geneticModifierSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifierFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
