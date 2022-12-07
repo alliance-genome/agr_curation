@@ -73,7 +73,7 @@ export const DiseaseAnnotationsTable = () => {
 
 	const sortMapping = {
 		'object.name': ['object.curie', 'object.namespace'],
-		'subject.geneSymbol.displayText': ['subject.alleleSymbol.displayText', 'subject.geneFullName.displayText', 'subject.alleleFullName.displayText', 'subject.name', 'subject.curie'],
+		'subject.symbol': ['subject.name', 'subject.curie'],
 		'with.geneSymbol.displayText': ['with.geneFullName.displayText', 'with.curie'],
 		'sgdStrainBackground.name': ['sgdStrainBackground.curie'],
 		'diseaseGeneticModifier.symbol': ['diseaseGeneticModifier.name', 'diseaseGeneticModifier.curie']
@@ -726,7 +726,7 @@ export const DiseaseAnnotationsTable = () => {
 		if (props.rowData.type === "AGMDiseaseAnnotation") {
 			subjectFields.push("name");
 		} else if (props.rowData.type === "AlleleDiseaseAnnotation") {
-			subjectFields.push("alleleFullName.displayText", "alleleSymbol.displayText", "alleleSynonymns.displayText");
+			subjectFields.push("alleleFullName.displayText", "alleleSymbol.displayText", "alleleSynonyms.displayText");
 		} else if (props.rowData.type === "GeneDiseaseAnnotation") {
 			subjectFields.push("geneFullName.displayText", "geneSymbol.displayText", "geneSynonyms.displayText");
 		}
@@ -1223,11 +1223,11 @@ export const DiseaseAnnotationsTable = () => {
 		filterElement: {type: "input", filterName: "modentityidFilter", fields: ["modEntityId"]},
 	},
 	{
-		field: "subject.curie",
+		field: "subject.symbol",
 		header: "Subject",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "subjectFilter", fields: ["subject.geneSymbol.displayText", "subject.alleleSymbol.displayText", "subject.geneFullName.displayText", "subject.alleleFullName.displayText", "subject.name", "subject.curie"]},
+		filterElement: {type: "input", filterName: "subjectFilter", fields: ["subject.symbol", "subject.name", "subject.curie"]},
 		editor: (props) => subjectEditorTemplate(props),
 		body: subjectBodyTemplate,
 	},
