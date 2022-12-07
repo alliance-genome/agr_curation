@@ -1,9 +1,11 @@
 package org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations;
 
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -29,6 +31,7 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { NameSlotAnnotation.class })
 @Schema(name = "AlleleSymbolSlotAnnotation", description = "POJO representing an allele symbol slot annotation")
+@Table(indexes = { @Index(name = "allelesymbol_singleallele_curie_index", columnList = "singleallele_curie"), })
 public class AlleleSymbolSlotAnnotation extends NameSlotAnnotation {
 
 	@IndexedEmbedded(includeDepth = 1)
