@@ -11,9 +11,9 @@ import com.fasterxml.jackson.annotation.*;
 import lombok.*;
 
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @MappedSuperclass
-@ToString(callSuper = true)
+@ToString()
 //@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "curie")
 public class CurieAuditedObject extends AuditedObject {
 
@@ -22,6 +22,7 @@ public class CurieAuditedObject extends AuditedObject {
 	@KeywordField(name = "curie_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@JsonView({View.FieldsOnly.class})
 	@EqualsAndHashCode.Include
+	@ToString.Include
 	protected String curie;
 
 }

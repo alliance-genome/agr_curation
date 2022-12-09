@@ -39,21 +39,21 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		note.setFreeText(dto.getFreeText());
 		
 		
-		if (StringUtils.isBlank(dto.getNoteType())) {
-			noteResponse.addErrorMessage("noteType", ValidationConstants.REQUIRED_MESSAGE);
+		if (StringUtils.isBlank(dto.getNoteTypeName())) {
+			noteResponse.addErrorMessage("note_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
-			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(note_type_vocabulary, dto.getNoteType());
+			VocabularyTerm noteType = vocabularyTermDAO.getTermInVocabulary(note_type_vocabulary, dto.getNoteTypeName());
 			if (noteType == null)
-				noteResponse.addErrorMessage("noteType", ValidationConstants.INVALID_MESSAGE);
+				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNoteTypeName() + ")");
 			note.setNoteType(noteType);
 		}
 		
-		if (CollectionUtils.isNotEmpty(dto.getReferences())) {
+		if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
 			List<Reference> noteReferences = new ArrayList<>();
-			for (String publicationId : dto.getReferences()) {
+			for (String publicationId : dto.getEvidenceCuries()) {
 				Reference reference = referenceService.retrieveFromDbOrLiteratureService(publicationId);
 				if (reference == null) {
-					noteResponse.addErrorMessage("references", ValidationConstants.INVALID_MESSAGE);
+					noteResponse.addErrorMessage("evidence_curies", ValidationConstants.INVALID_MESSAGE + " (" + publicationId + ")");
 					break;
 				}
 				noteReferences.add(reference);

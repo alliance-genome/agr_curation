@@ -9,6 +9,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
@@ -37,7 +38,10 @@ import lombok.ToString;
 @Indexed
 @Entity
 @Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"vocabulary"})
+@ToString(exclude = {"vocabulary", "vocabularyTermSets"})
+@Table(indexes = {
+	@Index(name = "vocabularyterm_name_index", columnList = "name")
+})
 @Schema(name="VocabularyTerm", description="POJO that represents the Vocabulary Term")
 @AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
 public class VocabularyTerm extends GeneratedAuditedObject {
@@ -67,13 +71,19 @@ public class VocabularyTerm extends GeneratedAuditedObject {
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.VocabularyTermView.class, View.VocabularyTermUpdate.class})
+	@JsonView({View.VocabularyTermView.class, View.VocabularyTermUpdate.class, View.VocabularyTermSetView.class})
 	private Vocabulary vocabulary;
 	
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@ElementCollection
-	@JsonView(View.FieldsAndLists.class)
+	@JsonView({View.FieldsAndLists.class, View.VocabularyTermView.class})
 	@JoinTable(indexes = @Index( columnList = "vocabularyterm_id"))
 	@Column(columnDefinition="TEXT")
 	private List<String> textSynonyms;
+	
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
+	@ManyToMany(mappedBy = "memberTerms")
+	@JsonView({View.VocabularyTermView.class, View.VocabularyTermUpdate.class})
+	private List<VocabularyTermSet> vocabularyTermSets;
 }

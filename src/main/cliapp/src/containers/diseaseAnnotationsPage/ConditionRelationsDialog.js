@@ -13,12 +13,13 @@ import { ValidationService } from '../../service/ValidationService';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
-import { AutocompleteRowEditor } from '../../components/Autocomplete/AutocompleteRowEditor';
 import { ExConAutocompleteTemplate } from '../../components/Autocomplete/ExConAutocompleteTemplate';
 import { SearchService } from '../../service/SearchService';
+import {autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange} from "../../utils/utils";
+import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
 
 
-export const ConditionRelationsDialog = ({ 
+export const ConditionRelationsDialog = ({
 		originalConditionRelationsData, setOriginalConditionRelationsData,
 		errorMessagesMainRow, setErrorMessagesMainRow
 		}) => {
@@ -51,11 +52,11 @@ export const ConditionRelationsDialog = ({
 		}
 		rowsEdited.current = 0;
 	};
-	
+
 	const onRowEditChange = (e) => {
 		setEditingRows(e.data);
 	}
-	
+
 	const onRowEditCancel = (event) => {
 		let _editingRows = { ...editingRows };
 		delete _editingRows[event.index];
@@ -67,12 +68,12 @@ export const ConditionRelationsDialog = ({
 			_localConditionRelations[event.index].dataKey = dataKey;
 			setLocalConditionRelations(_localConditionRelations);
 		}
-		
+
 		const errorMessagesCopy = errorMessages;
 		errorMessagesCopy[event.index] = {};
 		setErrorMessages(errorMessagesCopy);
 	};
-	
+
 	const onRowEditSave = async(event) => {
 		const result = await validateRelation(localConditionRelations[event.index]);
 		const errorMessagesCopy = [...errorMessages];
@@ -105,7 +106,7 @@ export const ConditionRelationsDialog = ({
 		setLocalConditionRelations(_localConditionRelations);
 
 	};
-	
+
 	const compareChangesInRelations = (data,index) => {
 		if(originalConditionRelations && originalConditionRelations[index]) {
 			if (data.conditionRelationType.name !== originalConditionRelations[index].conditionRelationType.name) {
@@ -129,7 +130,7 @@ export const ConditionRelationsDialog = ({
 			rowsEdited.current++;
 		}
 	};
-	
+
 	const hideDialog = () => {
 		setErrorMessages([]);
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
@@ -141,14 +142,14 @@ export const ConditionRelationsDialog = ({
 		let _localConditionRelations = [];
 		setLocalConditionRelations(_localConditionRelations);
 	};
-	
+
 	const validateRelation = async (relation) => {
 		let _relation = global.structuredClone(relation);
 		delete _relation.dataKey;
 		const result = await validationService.validate('condition-relation', _relation);
 		return result;
 	};
-	
+
 	const cloneRelations = (clonableRelations) => {
 		let _clonableRelations = global.structuredClone(clonableRelations);
 		if(_clonableRelations) {
@@ -172,9 +173,9 @@ export const ConditionRelationsDialog = ({
 		setEditingRows(_editingRows);
 		setLocalConditionRelations(_localConditionRelations);
 	};
-	
+
 	const saveDataHandler = () => {
-		
+
 		setErrorMessages([]);
 		for (const relation of localConditionRelations) {
 			delete relation.dataKey;
@@ -182,7 +183,7 @@ export const ConditionRelationsDialog = ({
 		mainRowProps.rowData.conditionRelations = localConditionRelations;
 		let updatedAnnotations = [...mainRowProps.props.value];
 		updatedAnnotations[rowIndex].conditionRelations = localConditionRelations;
-		
+
 		const errorMessagesCopy = global.structuredClone(errorMessagesMainRow);
 		let messageObject = {
 			severity: "warn",
@@ -191,7 +192,7 @@ export const ConditionRelationsDialog = ({
 		errorMessagesCopy[rowIndex] = {};
 		errorMessagesCopy[rowIndex]["conditionRelations"] = messageObject;
 		setErrorMessagesMainRow({...errorMessagesCopy});
-		
+
 		setOriginalConditionRelationsData((originalConditionRelationsData) => {
 				return {
 					...originalConditionRelationsData,
@@ -200,11 +201,11 @@ export const ConditionRelationsDialog = ({
 			}
 		);
 	};
-	
+
 	const internalTemplate = (rowData) => {
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
 	};
-	
+
 	const onInternalEditorValueChange = (props, event) => {
 		let _localConditionRelations = [...localConditionRelations];
 		_localConditionRelations[props.rowIndex].internal = event.value.name;
@@ -223,11 +224,11 @@ export const ConditionRelationsDialog = ({
 			</>
 		);
 	};
-	
+
 	const conditionRelationTypeTemplate = (rowData) => {
 		return <EllipsisTableCell>{rowData.conditionRelationType?.name}</EllipsisTableCell>;
 	};
-	
+
 	const onConditionRelationTypeEditorValueChange = (props, event) => {
 		let _localConditionRelations = [...localConditionRelations];
 		_localConditionRelations[props.rowIndex].conditionRelationType = event.value;
@@ -262,21 +263,33 @@ export const ConditionRelationsDialog = ({
 			return <ListTableCell template={listTemplate} listData={sortedConditionSummaries} />
 		}
 	};
-	
+
+	const onConditionRelationValueChange = (event, setFieldValue, props) => {
+		multipleAutocompleteOnChange(props, event, "conditions", setFieldValue);
+	};
+
+	const conditionSearch = (event, setFiltered, setInputValue) => {
+		const autocompleteFields = ["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"];
+		const endpoint = "experimental-condition";
+		const filterName = "conditionSummaryFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
+	}
+
 	const conditionsEditorTemplate = (props) => {
 		return (
 			<>
-				<AutocompleteRowEditor
-					autocompleteFields={["conditionSummary","conditionId.curie","conditionClass.curie","conditionTaxon.curie","conditionGeneOntology.curie","conditionChemical.curie","conditionAnatomy.curie"]}
+				<AutocompleteMultiEditor
+					search={conditionSearch}
+					initialValue={props.rowData.conditions}
 					rowProps={props}
-					searchService={searchService}
-					endpoint='experimental-condition'
-					filterName='conditionSummaryFilter'
 					fieldName='conditions'
 					subField='conditionSummary'
-					isMultiple={true}
-					valueDisplay={(item, setAutocompleteSelectedItem, op, query) => 
-						<ExConAutocompleteTemplate item={item} setAutocompleteSelectedItem={setAutocompleteSelectedItem} op={op} query={query}/>}
+					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
+						<ExConAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+					onValueChangeHandler={onConditionRelationValueChange}
 				/>
 				<DialogErrorMessageComponent
 					errorMessages={errorMessages[props.rowIndex]}
@@ -285,7 +298,7 @@ export const ConditionRelationsDialog = ({
 			</>
 		);
 	};
-	
+
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
@@ -298,9 +311,9 @@ export const ConditionRelationsDialog = ({
 			</div>
 		);
 	}
-	
+
 	const handleDeleteConditionRelation = (event, props) => {
-		let _localConditionRelations = global.structuredClone(localConditionRelations); 
+		let _localConditionRelations = global.structuredClone(localConditionRelations);
 		if(props.dataKey){
 			_localConditionRelations.splice(props.dataKey, 1);
 		}else {
@@ -316,7 +329,7 @@ export const ConditionRelationsDialog = ({
 					onClick={(event) => { handleDeleteConditionRelation(event, props) }}/>
 		);
 	}
-	
+
 	let headerGroup = <ColumnGroup>
 						<Row>
 							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
@@ -325,7 +338,7 @@ export const ConditionRelationsDialog = ({
 							<Column header="Internal" />
 						</Row>
 						</ColumnGroup>;
-						
+
 	return (
 		<div>
 			<Toast ref={toast_topright} position="top-right" />

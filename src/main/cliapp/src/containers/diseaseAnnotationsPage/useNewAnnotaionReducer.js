@@ -5,6 +5,8 @@ const initialNewAnnotationState = {
 		subject: {
 			curie: "",
 		},
+		assertedGenes : [],
+		assertedAllele : null,
 		diseaseRelation: {
 			name: "",
 		},
@@ -18,7 +20,14 @@ const initialNewAnnotationState = {
 		evidenceCodes: [],
 		with: [],
 		relatedNotes: [],
-		conditionRelations: []
+		conditionRelations: [],
+		geneticSex: null,
+		diseaseQualifiers: null,
+		sgdStrainBackground: null,
+		annotationType: null,
+		diseaseGeneticModifierRelation: null,
+		diseaseGeneticModifier: null,
+		internal: false
 	},
 	errorMessages: {},
 	relatedNotesErrorMessages: [],
@@ -41,7 +50,8 @@ const newAnnotationReducer = (draft, action) => {
 			if (typeof action.value === "object") {
 				draft.newAnnotation.conditionRelations[0] = action.value;
 			} else {
-				draft.newAnnotation.conditionRelations[0].handle = action.value;
+				if(draft.newAnnotation.conditionRelations && draft.newAnnotation.conditionRelations[0])
+					draft.newAnnotation.conditionRelations[0].handle = action.value;
 			}
 			break;
 		case 'UPDATE_ERROR_MESSAGES':

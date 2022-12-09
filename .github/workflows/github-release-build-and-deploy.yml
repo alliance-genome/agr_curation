@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: AWS credentials configuration
-      uses: aws-actions/configure-aws-credentials@v1
+      uses: aws-actions/configure-aws-credentials@v1-node16
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up Maven Central Repository
         uses: actions/setup-java@v3
         with:
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
     - run: cp src/main/resources/application.properties.defaults src/main/resources/application.properties
     - name: Save curation app version to be deployed in EB env variables through config file
       run: |
@@ -82,7 +82,7 @@ jobs:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v14
+      uses: einaregilsson/beanstalk-deploy@v20
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -109,7 +109,7 @@ jobs:
         path: ${{ github.event.release.tag_name }}.zip
         key: ${{github.workflow}}.${{github.run_id}}.${{github.run_number}}.${{github.run_attempt}}-eb-deployment-zip
     - name: Deploy to EB
-      uses: einaregilsson/beanstalk-deploy@v14
+      uses: einaregilsson/beanstalk-deploy@v20
       with:
         aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

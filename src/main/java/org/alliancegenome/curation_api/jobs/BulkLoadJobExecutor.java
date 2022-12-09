@@ -80,6 +80,8 @@ public class BulkLoadJobExecutor {
 	XbedTermService xbedTermService;
 	@Inject
 	XsmoTermService xsmoTermService;
+	@Inject
+	RoTermService roTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -191,6 +193,10 @@ public class BulkLoadJobExecutor {
 				case MP:
 					config.setLoadOnlyIRIPrefix("MP");
 					processTerms(bulkLoadFile, mpTermService, config);
+					break;
+				case RO:
+					//config.setLoadOnlyIRIPrefix("RO");
+					processTerms(bulkLoadFile, roTermService, config);
 					break;
 				case MA:
 					processTerms(bulkLoadFile, maTermService, config);

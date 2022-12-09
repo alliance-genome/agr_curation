@@ -43,7 +43,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	
 	public AGMDiseaseAnnotation validateAnnotationUpdate(AGMDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
-		String errorTitle = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
+		errorMessage = "Could not update AGM Disease Annotation: [" + uiEntity.getId() + "]";
 
 		Long id = uiEntity.getId();
 		if (id == null) {
@@ -205,7 +205,7 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 			return null;
 		}
 		
-		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY, uiEntity.getDiseaseRelation().getName());
+		VocabularyTerm relation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, uiEntity.getDiseaseRelation().getName());
 
 		if(relation == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
