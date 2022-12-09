@@ -2,6 +2,23 @@
 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.13.0
+ * New Features
+    * Added 'Mutation types' to Allele table (SCRUM-2267 & SCRUM-2268)
+    * Added 'Asserted Genes' and 'Asserted allele' fields to form for new disease annotations (SCRUM-2167)
+    * Added Upload button for UI submission of bulk upload files (SCRUM-2092)
+    * Added initial UI automated tests (SCRUM-1737)
+    * Included invalid entity in bulk upload error message (SCRUM-2314)
+    * Replaced Allele 'In Collection' dropdown menus with text search / Autocomplete editor (SCRUM-2293 & SCRUM-2295)
+    * Synchronised codebase with LinkML v1.4.0 (SCRUM-2266)
+    * Populated new Vocabulary form with default value for 'obsolete' field (SCRUM-2301
+    * Sorted Vocabularies by name in editor dropdown (SCRUM-2302)
+ * Fixes & maintenance
+    * Autocomplete code refactored (SCRUM-2059)
+    * Updated Github actions (SCRUM-2269)
+    * Added check for Autocomplete selection on biological entity fields (SCRUM-2252)
+    * Implemented handling of unexpected API errors upon saving entries in UI (SCRUM-2251)
+
 ## v0.12.0
  * New Features
     * New service to call MaTI (SCRUM-2011)
