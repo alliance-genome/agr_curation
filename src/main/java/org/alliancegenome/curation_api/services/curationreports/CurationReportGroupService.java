@@ -10,10 +10,10 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class CurationReportGroupService extends BaseEntityCrudService<CurationReportGroup, CurationReportGroupDAO> {
-	
+
 	@Inject
 	CurationReportGroupDAO curationReportGroupDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {

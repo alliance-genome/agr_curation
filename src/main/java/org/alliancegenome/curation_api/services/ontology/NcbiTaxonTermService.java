@@ -15,25 +15,26 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class NcbiTaxonTermService extends BaseOntologyTermService<NCBITaxonTerm, NcbiTaxonTermDAO> {
 
-	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject
+	NcbiTaxonTermDAO ncbiTaxonTermDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(ncbiTaxonTermDAO);
 	}
-	
+
 	@Override
 	public ObjectResponse<NCBITaxonTerm> get(String taxonCurie) {
 		NCBITaxonTerm taxon = ncbiTaxonTermDAO.find(taxonCurie);
-		if(taxon == null) {
+		if (taxon == null) {
 			taxon = ncbiTaxonTermDAO.downloadAndSave(taxonCurie);
-			if(taxon == null) {
+			if (taxon == null) {
 				log.warn("Taxon ID could not be found");
 			}
 		}
-		
+
 		return new ObjectResponse<NCBITaxonTerm>(taxon);
 	}
-	
+
 }

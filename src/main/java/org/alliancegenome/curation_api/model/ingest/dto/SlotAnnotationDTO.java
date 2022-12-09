@@ -15,10 +15,10 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@AGRCurationSchemaVersion(min="1.3.3", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObjectDTO.class})
+@AGRCurationSchemaVersion(min = "1.3.3", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObjectDTO.class })
 public class SlotAnnotationDTO extends AuditedObjectDTO {
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("evidence_curies")
 	private List<String> evidenceCuries;
 

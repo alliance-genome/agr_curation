@@ -14,9 +14,11 @@ import org.alliancegenome.curation_api.services.validation.ConditionRelationVali
 @RequestScoped
 public class ConditionRelationService extends BaseEntityCrudService<ConditionRelation, ConditionRelationDAO> {
 
-	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject ConditionRelationValidator conditionRelationValidator;
-	
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	ConditionRelationValidator conditionRelationValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -29,7 +31,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		ConditionRelation dbEntity = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true, true);
 		return new ObjectResponse<>(conditionRelationDAO.persist(dbEntity));
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<ConditionRelation> create(ConditionRelation uiEntity) {
@@ -39,7 +41,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 
 	public ObjectResponse<ConditionRelation> validate(ConditionRelation uiEntity) {
 		ConditionRelation conditionRelation;
-		if (uiEntity.getId() == null ) {
+		if (uiEntity.getId() == null) {
 			conditionRelation = conditionRelationValidator.validateConditionRelationCreate(uiEntity, true, false);
 		} else {
 			conditionRelation = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true, false);

@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.XsmoTermService;
 @RequestScoped
 public class XsmoTermCrudController extends BaseOntologyTermController<XsmoTermService, XSMOTerm, XsmoTermDAO> implements XsmoTermCrudInterface {
 
-	@Inject XsmoTermService xsmoTermService;
+	@Inject
+	XsmoTermService xsmoTermService;
 
 	@Override
 	@PostConstruct

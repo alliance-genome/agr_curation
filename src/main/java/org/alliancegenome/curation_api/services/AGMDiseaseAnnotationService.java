@@ -18,12 +18,16 @@ import org.alliancegenome.curation_api.services.validation.dto.AGMDiseaseAnnotat
 @RequestScoped
 public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAnnotation, AGMDiseaseAnnotationDTO, AGMDiseaseAnnotationDAO> {
 
-	
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject AGMDiseaseAnnotationValidator agmDiseaseValidator;
-	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
-	@Inject AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	AGMDiseaseAnnotationValidator agmDiseaseValidator;
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	AGMDiseaseAnnotationDTOValidator agmDiseaseAnnotationDtoValidator;
 
 	@Override
 	@PostConstruct
@@ -55,7 +59,7 @@ public class AGMDiseaseAnnotationService extends BaseDTOCrudService<AGMDiseaseAn
 	@Override
 	@Transactional
 	public ObjectResponse<AGMDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deleteAnnotationAndNotes(id);
+		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
 		ObjectResponse<AGMDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}

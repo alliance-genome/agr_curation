@@ -7,15 +7,19 @@ import javax.inject.Inject;
 import org.alliancegenome.curation_api.controllers.base.BaseEntityCrudController;
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.interfaces.crud.VocabularyCrudInterface;
-import org.alliancegenome.curation_api.model.entities.*;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
+import org.alliancegenome.curation_api.response.ObjectListResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.VocabularyService;
 
 @RequestScoped
 public class VocabularyCrudController extends BaseEntityCrudController<VocabularyService, Vocabulary, VocabularyDAO> implements VocabularyCrudInterface {
 
-	@Inject VocabularyService vocabularyService;
-	
+	@Inject
+	VocabularyService vocabularyService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -26,10 +30,10 @@ public class VocabularyCrudController extends BaseEntityCrudController<Vocabular
 	public ObjectResponse<Vocabulary> get(Long id) {
 		return vocabularyService.get(id);
 	}
-	
+
 	public ObjectResponse<Vocabulary> findByName(String name) {
 		SearchResponse<Vocabulary> ret = findByField("name", name);
-		if(ret != null && ret.getTotalResults() == 1) {
+		if (ret != null && ret.getTotalResults() == 1) {
 			return new ObjectResponse<>(ret.getResults().get(0));
 		} else {
 			return new ObjectResponse<>();

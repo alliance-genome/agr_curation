@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import java.util.HashMap;
 import java.util.List;
 
@@ -49,45 +48,34 @@ public interface AlleleCrudInterface extends BaseCurieCrudInterface<Allele>, Bas
 	@GET
 	@Path("/reindex")
 	@Tag(name = "Reindex Endpoints")
-	public void reindex(
-		@DefaultValue("50") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects,
-		@DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
-		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo,
-		@DefaultValue("1") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
-		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout,
-		@DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel
-	);
-	
+	public void reindex(@DefaultValue("50") @QueryParam("batchSizeToLoadObjects") Integer batchSizeToLoadObjects, @DefaultValue("0") @QueryParam("idFetchSize") Integer idFetchSize,
+		@DefaultValue("0") @QueryParam("limitIndexedObjectsTo") Integer limitIndexedObjectsTo, @DefaultValue("1") @QueryParam("threadsToLoadObjects") Integer threadsToLoadObjects,
+		@DefaultValue("7200") @QueryParam("transactionTimeout") Integer transactionTimeout, @DefaultValue("1") @QueryParam("typesToIndexInParallel") Integer typesToIndexInParallel);
+
 	@Override
 	@PUT
 	@Path("/")
 	@JsonView(View.AlleleView.class)
 	public ObjectResponse<Allele> update(Allele entity);
-	
+
 	@Override
 	@POST
 	@Path("/")
 	@JsonView(View.AlleleView.class)
 	public ObjectResponse<Allele> create(Allele entity);
-	
+
 	@Override
 	@POST
 	@Path("/find")
 	@Tag(name = "Database Search Endpoints")
 	@JsonView(View.AlleleView.class)
-	public SearchResponse<Allele> find(
-			@DefaultValue("0") @QueryParam("page") Integer page,
-			@DefaultValue("10") @QueryParam("limit") Integer limit,
-			@RequestBody HashMap<String, Object> params);
-	
+	public SearchResponse<Allele> find(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
 	@Override
 	@POST
 	@Path("/search")
 	@Tag(name = "Elastic Search Endpoints")
-	@JsonView({View.AlleleView.class})
-	public SearchResponse<Allele> search(
-			@DefaultValue("0") @QueryParam("page") Integer page,
-			@DefaultValue("10") @QueryParam("limit") Integer limit,
-			@RequestBody HashMap<String, Object> params);
-	
+	@JsonView({ View.AlleleView.class })
+	public SearchResponse<Allele> search(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+
 }

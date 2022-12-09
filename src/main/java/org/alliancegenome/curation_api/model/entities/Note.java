@@ -36,25 +36,25 @@ import lombok.ToString;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
 @AttributeOverride(name = "internal", column = @Column(columnDefinition = "boolean default true", nullable = false))
-@Schema(name="Note", description="POJO that represents the Note")
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@Schema(name = "Note", description = "POJO that represents the Note")
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class Note extends GeneratedAuditedObject {
-		
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "freeText_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
-	@Column(columnDefinition="TEXT")
+	@JsonView({ View.FieldsOnly.class })
+	@Column(columnDefinition = "TEXT")
 	private String freeText;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private VocabularyTerm noteType;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.FieldsAndLists.class, View.NoteView.class})
+	@JsonView({ View.FieldsAndLists.class, View.NoteView.class })
 	private List<Reference> references;
 }

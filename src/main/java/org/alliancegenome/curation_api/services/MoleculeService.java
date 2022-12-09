@@ -48,7 +48,7 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 	protected void init() {
 		setSQLDao(moleculeDAO);
 	}
-	
+
 	@Transactional
 	public Molecule getByIdOrCurie(String id) {
 		Molecule molecule = moleculeDAO.getByIdOrCurie(id);
@@ -57,33 +57,33 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 		}
 		return molecule;
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Molecule> update(Molecule uiEntity) {
 		Molecule dbEntity = moleculeValidator.validateMolecule(uiEntity);
 		return new ObjectResponse<>(moleculeDAO.persist(dbEntity));
 	}
-	
+
 	@Transactional
 	public void processUpdate(MoleculeFmsDTO molecule) throws ObjectUpdateException {
 		log.debug("processUpdate Molecule: ");
-	
+
 		if (StringUtils.isBlank(molecule.getId())) {
 			log.debug(molecule.getName() + " has no ID - skipping");
 			throw new ObjectUpdateException(molecule, molecule.getId() + " has no ID - skipping");
 		}
-		
+
 		if (molecule.getId().startsWith("CHEBI:")) {
 			log.debug("Skipping processing of " + molecule.getId());
 			throw new ObjectUpdateException(molecule, "Skipping processing of " + molecule.getId());
 		}
-		
+
 		if (StringUtils.isBlank(molecule.getName())) {
 			log.debug(molecule.getId() + " has no name - skipping");
 			throw new ObjectUpdateException(molecule, molecule.getId() + " has no name - skipping");
 		}
-		
+
 		if (molecule.getCrossReferences() != null) {
 			for (CrossReferenceFmsDTO xrefDTO : molecule.getCrossReferences()) {
 				if (StringUtils.isBlank(xrefDTO.getId())) {
@@ -92,42 +92,42 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 				}
 			}
 		}
-		
+
 		try {
 			Molecule m = moleculeDAO.find(molecule.getId());
-			
+
 			if (m == null) {
 				m = new Molecule();
 				m.setCurie(molecule.getId());
 			}
-			
+
 			m.setName(molecule.getName());
-			
+
 			String inchi = null;
 			if (StringUtils.isNotBlank(molecule.getInchi()))
 				inchi = molecule.getInchi();
 			m.setInchi(inchi);
-			
+
 			String inchikey = null;
 			if (StringUtils.isNotBlank(molecule.getInchikey()))
 				inchikey = molecule.getInchikey();
 			m.setInchiKey(inchikey);
-			
+
 			String iupac = null;
 			if (StringUtils.isNotBlank(molecule.getIupac()))
 				iupac = molecule.getIupac();
 			m.setIupac(iupac);
-			
+
 			String formula = null;
 			if (StringUtils.isNotBlank(molecule.getFormula()))
 				formula = molecule.getFormula();
 			m.setFormula(formula);
-			
+
 			String smiles = null;
 			if (StringUtils.isNotBlank(molecule.getSmiles()))
 				smiles = molecule.getSmiles();
 			m.setSmiles(smiles);
-			
+
 			if (CollectionUtils.isNotEmpty(molecule.getSynonyms())) {
 				List<Synonym> synonyms = new ArrayList<Synonym>();
 				for (String synonymName : molecule.getSynonyms()) {
@@ -146,51 +146,51 @@ public class MoleculeService extends BaseEntityCrudService<Molecule, MoleculeDAO
 			} else {
 				m.setSynonyms(null);
 			}
-			
+
 			m.setNamespace("molecule");
-				
-			moleculeDAO.persist(m); 
-		
+
+			moleculeDAO.persist(m);
+
 			handleCrossReferences(molecule, m);
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new ObjectUpdateException(molecule, e.getMessage(), e.getStackTrace());
 		}
 	}
-	
+
 	private void handleCrossReferences(MoleculeFmsDTO moleculeFmsDTO, Molecule molecule) {
 		Map<String, CrossReference> currentIds;
-		if(molecule.getCrossReferences() == null) {
+		if (molecule.getCrossReferences() == null) {
 			currentIds = new HashedMap<>();
 			molecule.setCrossReferences(new ArrayList<>());
 		} else {
 			currentIds = molecule.getCrossReferences().stream().collect(Collectors.toMap(CrossReference::getCurie, Function.identity()));
 		}
 		Map<String, CrossReferenceFmsDTO> newIds;
-		if(moleculeFmsDTO.getCrossReferences() == null) {
+		if (moleculeFmsDTO.getCrossReferences() == null) {
 			newIds = new HashedMap<>();
 		} else {
-			newIds = moleculeFmsDTO.getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceFmsDTO::getId, Function.identity(),
-					(cr1, cr2) -> {
-						HashSet<String> pageAreas = new HashSet<>();
-						if(cr1.getPages() != null) pageAreas.addAll(cr1.getPages());
-						if(cr2.getPages() != null) pageAreas.addAll(cr2.getPages());
-						CrossReferenceFmsDTO newCr = new CrossReferenceFmsDTO();
-						newCr.setId(cr2.getId());
-						newCr.setPages(new ArrayList<>(pageAreas));
-						return newCr;
-					}
-			));
+			newIds = moleculeFmsDTO.getCrossReferences().stream().collect(Collectors.toMap(CrossReferenceFmsDTO::getId, Function.identity(), (cr1, cr2) -> {
+				HashSet<String> pageAreas = new HashSet<>();
+				if (cr1.getPages() != null)
+					pageAreas.addAll(cr1.getPages());
+				if (cr2.getPages() != null)
+					pageAreas.addAll(cr2.getPages());
+				CrossReferenceFmsDTO newCr = new CrossReferenceFmsDTO();
+				newCr.setId(cr2.getId());
+				newCr.setPages(new ArrayList<>(pageAreas));
+				return newCr;
+			}));
 		}
-		
+
 		newIds.forEach((k, v) -> {
-			if(!currentIds.containsKey(k)) {
+			if (!currentIds.containsKey(k)) {
 				molecule.getCrossReferences().add(crossReferenceService.processUpdate(v));
 			}
 		});
-		
+
 		currentIds.forEach((k, v) -> {
-			if(!newIds.containsKey(k)) {
+			if (!newIds.containsKey(k)) {
 				molecule.getCrossReferences().remove(v);
 			}
 		});

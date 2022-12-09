@@ -31,31 +31,32 @@ import lombok.EqualsAndHashCode;
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name="VocabularyTermSet", description="POJO that represents the Vocabulary Term Set")
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Schema(name = "VocabularyTermSet", description = "POJO that represents the Vocabulary Term Set")
+@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class VocabularyTermSet extends GeneratedAuditedObject {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "name_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String name;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonView({View.VocabularyTermSetView.class})
+	@JsonView({ View.VocabularyTermSetView.class })
 	private Vocabulary vocabularyTermSetVocabulary;
-	
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JsonView({View.VocabularyTermSetView.class})
+	@JsonView({ View.VocabularyTermSetView.class })
 	private List<VocabularyTerm> memberTerms;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "vocabularyTermSetDescription_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.VocabularyTermSetView.class})
+	@JsonView({ View.VocabularyTermSetView.class })
 	private String vocabularyTermSetDescription;
-	
+
 }

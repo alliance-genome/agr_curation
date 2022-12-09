@@ -16,10 +16,12 @@ import org.alliancegenome.curation_api.services.MoleculeService;
 @RequestScoped
 public class MoleculeCrudController extends BaseEntityCrudController<MoleculeService, Molecule, MoleculeDAO> implements MoleculeCrudInterface {
 
-	@Inject MoleculeService moleculeService;
-	
-	@Inject MoleculeExecutor moleculeExecutor;
-	
+	@Inject
+	MoleculeService moleculeService;
+
+	@Inject
+	MoleculeExecutor moleculeExecutor;
+
 	@Override
 	@PostConstruct
 	protected void init() {

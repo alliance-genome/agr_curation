@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
 @RequestScoped
 public class NcbiTaxonTermCrudController extends BaseOntologyTermController<NcbiTaxonTermService, NCBITaxonTerm, NcbiTaxonTermDAO> implements NcbiTaxonTermCrudInterface {
 
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
 
 	@Override
 	@PostConstruct

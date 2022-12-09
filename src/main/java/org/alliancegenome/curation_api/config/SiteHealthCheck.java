@@ -2,10 +2,12 @@ package org.alliancegenome.curation_api.config;
 
 import javax.enterprise.context.ApplicationScoped;
 
-import org.eclipse.microprofile.health.*;
+import org.eclipse.microprofile.health.HealthCheck;
+import org.eclipse.microprofile.health.HealthCheckResponse;
+import org.eclipse.microprofile.health.Liveness;
 
 @Liveness
-@ApplicationScoped	
+@ApplicationScoped
 public class SiteHealthCheck implements HealthCheck {
 
 	@Override

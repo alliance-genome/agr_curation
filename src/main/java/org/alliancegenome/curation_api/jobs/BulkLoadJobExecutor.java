@@ -1,22 +1,14 @@
 package org.alliancegenome.curation_api.jobs;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.jbosslog.JBossLog;
-import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
-import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
-import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
-import org.alliancegenome.curation_api.jobs.executors.*;
-import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
-import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.services.MoleculeService;
-import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
-import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
-import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
-import org.alliancegenome.curation_api.services.ontology.*;
-import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.AGM_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.ALLELE_DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.DISEASE_ANNOTATION;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_INGEST;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
+import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 import java.io.FileInputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -24,7 +16,54 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
-import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.*;
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+
+import org.alliancegenome.curation_api.dao.loads.BulkLoadFileDAO;
+import org.alliancegenome.curation_api.enums.BackendBulkLoadType;
+import org.alliancegenome.curation_api.enums.OntologyBulkLoadType;
+import org.alliancegenome.curation_api.jobs.executors.AgmDiseaseAnnotationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.AgmExecutor;
+import org.alliancegenome.curation_api.jobs.executors.AlleleDiseaseAnnotationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
+import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
+import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
+import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
+import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
+import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
+import org.alliancegenome.curation_api.services.MoleculeService;
+import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
+import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
+import org.alliancegenome.curation_api.services.ontology.AtpTermService;
+import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
+import org.alliancegenome.curation_api.services.ontology.DaoTermService;
+import org.alliancegenome.curation_api.services.ontology.DoTermService;
+import org.alliancegenome.curation_api.services.ontology.EcoTermService;
+import org.alliancegenome.curation_api.services.ontology.EmapaTermService;
+import org.alliancegenome.curation_api.services.ontology.FbdvTermService;
+import org.alliancegenome.curation_api.services.ontology.GoTermService;
+import org.alliancegenome.curation_api.services.ontology.MaTermService;
+import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
+import org.alliancegenome.curation_api.services.ontology.MpTermService;
+import org.alliancegenome.curation_api.services.ontology.RoTermService;
+import org.alliancegenome.curation_api.services.ontology.SoTermService;
+import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
+import org.alliancegenome.curation_api.services.ontology.WblsTermService;
+import org.alliancegenome.curation_api.services.ontology.XbaTermService;
+import org.alliancegenome.curation_api.services.ontology.XbedTermService;
+import org.alliancegenome.curation_api.services.ontology.XbsTermService;
+import org.alliancegenome.curation_api.services.ontology.XcoTermService;
+import org.alliancegenome.curation_api.services.ontology.XpoTermService;
+import org.alliancegenome.curation_api.services.ontology.XsmoTermService;
+import org.alliancegenome.curation_api.services.ontology.ZecoTermService;
+import org.alliancegenome.curation_api.services.ontology.ZfaTermService;
+import org.alliancegenome.curation_api.services.ontology.ZfsTermService;
+import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 @ApplicationScoped
@@ -32,7 +71,6 @@ public class BulkLoadJobExecutor {
 
 	@Inject
 	ObjectMapper mapper;
-
 
 	@Inject
 	XcoTermService xcoTermService;
@@ -104,21 +142,11 @@ public class BulkLoadJobExecutor {
 	@Inject
 	MoleculeExecutor moleculeExecutor;
 
-
 	public void process(BulkLoadFile bulkLoadFile) throws Exception {
 
 		BackendBulkLoadType loadType = bulkLoadFile.getBulkLoad().getBackendBulkLoadType();
 
-		List<BackendBulkLoadType> ingestTypes = List.of(
-			AGM_DISEASE_ANNOTATION,
-			ALLELE_DISEASE_ANNOTATION,
-			GENE_DISEASE_ANNOTATION,
-			DISEASE_ANNOTATION,
-			AGM,
-			ALLELE,
-			GENE,
-			FULL_INGEST
-		);
+		List<BackendBulkLoadType> ingestTypes = List.of(AGM_DISEASE_ANNOTATION, ALLELE_DISEASE_ANNOTATION, GENE_DISEASE_ANNOTATION, DISEASE_ANNOTATION, AGM, ALLELE, GENE, FULL_INGEST);
 
 		if (ingestTypes.contains(loadType)) {
 
@@ -195,7 +223,7 @@ public class BulkLoadJobExecutor {
 					processTerms(bulkLoadFile, mpTermService, config);
 					break;
 				case RO:
-					//config.setLoadOnlyIRIPrefix("RO");
+					// config.setLoadOnlyIRIPrefix("RO");
 					processTerms(bulkLoadFile, roTermService, config);
 					break;
 				case MA:
@@ -273,20 +301,19 @@ public class BulkLoadJobExecutor {
 		bulkLoadFileDAO.merge(bulkLoadFile);
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
 		ph.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Terms", termMap.size());
-		for (Entry<String, ? extends OntologyTerm> entry: termMap.entrySet()) {
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdate(entry.getValue());
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-		
+
 		ProcessDisplayHelper ph1 = new ProcessDisplayHelper(10000);
 		ph1.startProcess(bulkLoadFile.getBulkLoad().getName() + ": " + ontologyType.getClazz().getSimpleName() + " Closure", termMap.size());
-		for (Entry<String, ? extends OntologyTerm> entry: termMap.entrySet()) {
+		for (Entry<String, ? extends OntologyTerm> entry : termMap.entrySet()) {
 			service.processUpdateRelationships(entry.getValue());
 			ph1.progressProcess();
 		}
 		ph1.finishProcess();
 	}
-
 
 }

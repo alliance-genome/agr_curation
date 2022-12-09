@@ -16,12 +16,15 @@ import org.alliancegenome.curation_api.response.APIResponse;
 import org.alliancegenome.curation_api.services.AffectedGenomicModelService;
 
 @RequestScoped
-public class AffectedGenomicModelCrudController extends BaseDTOCrudController<AffectedGenomicModelService, AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> implements AffectedGenomicModelCrudInterface {
+public class AffectedGenomicModelCrudController extends BaseDTOCrudController<AffectedGenomicModelService, AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO>
+	implements AffectedGenomicModelCrudInterface {
 
-	@Inject AffectedGenomicModelService affectedGenomicModelService;
+	@Inject
+	AffectedGenomicModelService affectedGenomicModelService;
 
-	@Inject AgmExecutor agmExecutor;
-	
+	@Inject
+	AgmExecutor agmExecutor;
+
 	@Override
 	@PostConstruct
 	protected void init() {

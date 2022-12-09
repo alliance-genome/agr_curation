@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.interfaces.crud;
 
-
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -33,18 +32,17 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	@Path("/findBy/{uniqueId}")
 	@JsonView(View.FieldsAndLists.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> get(@PathParam("uniqueId") String uniqueId);
-	
+
 	@PUT
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation entity);
-	
 
 	@POST
 	@Path("/")
 	@JsonView(View.DiseaseAnnotation.class)
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
-	
+
 	@POST
 	@Path("/bulk/{taxonID}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
@@ -54,32 +52,32 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	@Path("/bulk/zfinAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/mgiAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/rgdAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/fbAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/wbAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/humanAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)
 	public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotationData);
-	
+
 	@POST
 	@Path("/bulk/sgdAnnotationFile")
 	@JsonView(View.FieldsAndLists.class)

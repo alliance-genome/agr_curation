@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.entities.bulkloads;
 
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,27 +29,28 @@ import lombok.ToString;
 @Audited
 @Entity
 @Data
-@AllArgsConstructor @NoArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString(exclude = {"bulkLoadFile", "exceptions"}, callSuper = true)
-@AGRCurationSchemaVersion(min="1.2.4", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@ToString(exclude = { "bulkLoadFile", "exceptions" }, callSuper = true)
+@AGRCurationSchemaVersion(min = "1.2.4", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class BulkLoadFileHistory extends GeneratedAuditedObject {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private LocalDateTime loadStarted;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private LocalDateTime loadFinished;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Long totalRecords = 0l;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Long failedRecords = 0l;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Long completedRecords = 0l;
-	
+
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	private BulkLoadFile bulkLoadFile;
@@ -58,7 +58,7 @@ public class BulkLoadFileHistory extends GeneratedAuditedObject {
 	@JsonView(View.BulkLoadFileHistory.class)
 	@OneToMany(mappedBy = "bulkLoadFileHistory")
 	private List<BulkLoadFileException> exceptions = new ArrayList<>();
-	
+
 	public BulkLoadFileHistory(long totalRecords) {
 		this.totalRecords = totalRecords;
 		loadStarted = LocalDateTime.now();
@@ -68,11 +68,12 @@ public class BulkLoadFileHistory extends GeneratedAuditedObject {
 	public void incrementCompleted() {
 		completedRecords++;
 	}
+
 	@Transient
 	public void incrementFailed() {
 		failedRecords++;
 	}
-	
+
 	@Transient
 	public void finishLoad() {
 		loadFinished = LocalDateTime.now();

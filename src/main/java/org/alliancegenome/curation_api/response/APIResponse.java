@@ -15,21 +15,21 @@ import lombok.Data;
 @Data
 public class APIResponse {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String errorMessage;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private Map<String, String> errorMessages;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private String requestDuration;
 
 	public void addErrorMessage(String fieldName, String errorMessage) {
-		if(errorMessages== null)
+		if (errorMessages == null)
 			errorMessages = new HashMap<>(3);
 		errorMessages.put(fieldName, errorMessage);
 	}
-	
+
 	public void addErrorMessages(Map<String, String> newErrorMessages) {
 		if (newErrorMessages != null) {
 			if (errorMessages == null)
@@ -41,14 +41,12 @@ public class APIResponse {
 	public boolean hasErrors() {
 		return StringUtils.isNotEmpty(errorMessage) || MapUtils.isNotEmpty(errorMessages);
 	}
-	
-	public String errorMessagesString () {
+
+	public String errorMessagesString() {
 		if (errorMessages == null)
 			return null;
-		
-		return errorMessages.entrySet().stream().map(
-				m -> m.getKey() + " - " + m.getValue()
-			).collect(Collectors.joining(" | "));
+
+		return errorMessages.entrySet().stream().map(m -> m.getKey() + " - " + m.getValue()).collect(Collectors.joining(" | "));
 	}
 
 }

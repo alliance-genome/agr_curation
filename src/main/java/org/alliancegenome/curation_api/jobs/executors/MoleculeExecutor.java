@@ -24,8 +24,9 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class MoleculeExecutor extends LoadFileExecutor {
 
-	@Inject MoleculeService moleculeService;
-	
+	@Inject
+	MoleculeService moleculeService;
+
 	public void runLoad(BulkLoadFile bulkLoadFile) {
 		try {
 			MoleculeMetaDataFmsDTO moleculeData = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), MoleculeMetaDataFmsDTO.class);
@@ -35,9 +36,9 @@ public class MoleculeExecutor extends LoadFileExecutor {
 				bulkLoadFile.setLinkMLSchemaVersion(version.max());
 			}
 			bulkLoadFileDAO.merge(bulkLoadFile);
-			
+
 			trackHistory(runLoad(moleculeData), bulkLoadFile);
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -45,11 +46,12 @@ public class MoleculeExecutor extends LoadFileExecutor {
 
 	// Gets called from the API directly
 	public APIResponse runLoad(MoleculeMetaDataFmsDTO moleculeData) {
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Molecule DTO Update", moleculeData.getData().size());
 
 		BulkLoadFileHistory history = new BulkLoadFileHistory(moleculeData.getData().size());
-		for(MoleculeFmsDTO molecule: moleculeData.getData()) {
+		for (MoleculeFmsDTO molecule : moleculeData.getData()) {
 			try {
 				moleculeService.processUpdate(molecule);
 				history.incrementCompleted();
@@ -59,7 +61,7 @@ public class MoleculeExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		}
 		ph.finishProcess();
-		
+
 		return new LoadHistoryResponce(history);
 	}
 

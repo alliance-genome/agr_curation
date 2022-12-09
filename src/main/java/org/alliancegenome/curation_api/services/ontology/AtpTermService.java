@@ -11,7 +11,8 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class AtpTermService extends BaseOntologyTermService<ATPTerm, AtpTermDAO> {
 
-	@Inject AtpTermDAO atpTermDAO;
+	@Inject
+	AtpTermDAO atpTermDAO;
 
 	@Override
 	@PostConstruct

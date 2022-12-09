@@ -23,22 +23,25 @@ import org.apache.commons.lang3.StringUtils;
 @RequestScoped
 public class NoteDTOValidator extends BaseDTOValidator {
 
-	@Inject ReferenceDAO referenceDAO;
-	@Inject ReferenceService referenceService;
-	@Inject PersonService personService;
-	@Inject VocabularyTermDAO vocabularyTermDAO;
-	
+	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
+	ReferenceService referenceService;
+	@Inject
+	PersonService personService;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+
 	public ObjectResponse<Note> validateNoteDTO(NoteDTO dto, String note_type_vocabulary) {
 		Note note = new Note();
 		ObjectResponse<Note> noteResponse = validateAuditedObjectDTO(note, dto);
-		
+
 		note = noteResponse.getEntity();
-		
+
 		if (StringUtils.isBlank(dto.getFreeText()))
 			noteResponse.addErrorMessage("freeText", ValidationConstants.REQUIRED_MESSAGE);
 		note.setFreeText(dto.getFreeText());
-		
-		
+
 		if (StringUtils.isBlank(dto.getNoteTypeName())) {
 			noteResponse.addErrorMessage("note_type_name", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -47,7 +50,7 @@ public class NoteDTOValidator extends BaseDTOValidator {
 				noteResponse.addErrorMessage("note_type_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getNoteTypeName() + ")");
 			note.setNoteType(noteType);
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(dto.getEvidenceCuries())) {
 			List<Reference> noteReferences = new ArrayList<>();
 			for (String publicationId : dto.getEvidenceCuries()) {
@@ -62,9 +65,9 @@ public class NoteDTOValidator extends BaseDTOValidator {
 		} else {
 			note.setReferences(null);
 		}
-		
+
 		noteResponse.setEntity(note);
-		
+
 		return noteResponse;
 	}
 

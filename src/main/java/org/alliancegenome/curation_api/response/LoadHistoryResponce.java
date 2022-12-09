@@ -10,9 +10,9 @@ import lombok.Data;
 @Data
 public class LoadHistoryResponce extends APIResponse {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private BulkLoadFileHistory history;
-	
+
 	public LoadHistoryResponce(BulkLoadFileHistory history) {
 		history.finishLoad();
 		this.history = history;

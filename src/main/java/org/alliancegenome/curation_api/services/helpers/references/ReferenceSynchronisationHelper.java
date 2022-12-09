@@ -24,42 +24,45 @@ import org.apache.commons.collections.CollectionUtils;
 @RequestScoped
 public class ReferenceSynchronisationHelper {
 
-	@Inject ReferenceDAO referenceDAO;
-	@Inject LiteratureReferenceDAO literatureReferenceDAO;
-	@Inject CrossReferenceDAO crossReferenceDAO;
-	
+	@Inject
+	ReferenceDAO referenceDAO;
+	@Inject
+	LiteratureReferenceDAO literatureReferenceDAO;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
+
 	public Reference retrieveFromLiteratureService(String curie) {
-		
+
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
-		
+
 		if (litRef != null) {
 			Reference ref = referenceDAO.find(litRef.getCurie());
 			if (ref == null)
 				ref = new Reference();
 			ref = copyLiteratureReferenceFields(litRef, ref);
-		
+
 			return ref;
 		}
 		return null;
 	}
-	
+
 	protected LiteratureReference fetchLiteratureServiceReference(String curie) {
 		HashMap<String, String> searchDetails = new HashMap<>();
 		searchDetails.put("tokenOperator", "AND");
 		searchDetails.put("queryString", curie);
-		
+
 		HashMap<String, Object> searchField = new HashMap<>();
 		if (curie.startsWith("AGR")) {
 			searchField.put("curie", searchDetails);
 		} else {
 			searchField.put("cross_references.curie", searchDetails);
 		}
-			
+
 		HashMap<String, Object> filter = new HashMap<>();
 		filter.put("curieFilter", searchField);
-		
+
 		HashMap<String, Object> params = new HashMap<>();
-		params.put("searchFilters", filter);		
+		params.put("searchFilters", filter);
 
 		Pagination pagination = new Pagination(0, 50);
 		SearchResponse<LiteratureReference> response = literatureReferenceDAO.searchByParams(pagination, params);
@@ -75,12 +78,12 @@ public class ReferenceSynchronisationHelper {
 		} else {
 			return null;
 		}
-		
+
 		return null;
 	}
-		
+
 	public void synchroniseReferences() {
-		
+
 		ProcessDisplayHelper pdh = new ProcessDisplayHelper();
 		int page = 0;
 		int limit = 500;
@@ -90,7 +93,7 @@ public class ReferenceSynchronisationHelper {
 		while (!allSynced) {
 			pagination.setPage(page);
 			SearchResponse<String> response = referenceDAO.findAllIds(pagination);
-			if(page == 0)
+			if (page == 0)
 				pdh.startProcess("Reference Sync", response.getTotalResults());
 			for (String refCurie : response.getResults()) {
 				synchroniseReference(refCurie);
@@ -105,7 +108,7 @@ public class ReferenceSynchronisationHelper {
 		}
 		pdh.finishProcess();
 	}
-	
+
 	protected Reference copyLiteratureReferenceFields(LiteratureReference litRef, Reference ref) {
 		String originalCurie = ref.getCurie();
 		if (!litRef.getCurie().equals(originalCurie)) {
@@ -113,7 +116,7 @@ public class ReferenceSynchronisationHelper {
 			ref.setCurie(litRef.getCurie());
 		}
 		ref.setObsolete(false);
-		
+
 		List<CrossReference> xrefs = new ArrayList<CrossReference>();
 		for (LiteratureCrossReference litXref : litRef.getCross_references()) {
 			CrossReference xref = crossReferenceDAO.find(litXref.getCurie());
@@ -123,35 +126,36 @@ public class ReferenceSynchronisationHelper {
 				xref.setInternal(false);
 				xref.setObsolete(false);
 				xref = crossReferenceDAO.persist(xref);
-			} 
+			}
 			xrefs.add(xref);
 		}
 		if (CollectionUtils.isNotEmpty(xrefs))
 			ref.setCrossReferences(xrefs);
-		
+
 		if (!ref.getCurie().equals(originalCurie) && originalCurie != null) {
 			referenceDAO.updateReferenceForeignKeys(originalCurie, ref.getCurie());
 			referenceDAO.remove(originalCurie);
 		}
-		
+
 		return ref;
 	}
-	
+
 	@Transactional
 	public ObjectResponse<Reference> synchroniseReference(String curie) {
 		Reference ref = referenceDAO.find(curie);
 		ObjectResponse<Reference> response = new ObjectResponse<>();
-		if (ref == null) return response;
-		
+		if (ref == null)
+			return response;
+
 		LiteratureReference litRef = fetchLiteratureServiceReference(curie);
 		if (litRef == null) {
 			ref.setObsolete(true);
 		} else {
 			ref = copyLiteratureReferenceFields(litRef, ref);
 		}
-		
+
 		response.setEntity(referenceDAO.persist(ref));
-		
+
 		return response;
 	}
 }

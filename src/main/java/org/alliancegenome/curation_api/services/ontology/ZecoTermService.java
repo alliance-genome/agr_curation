@@ -11,7 +11,8 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class ZecoTermService extends BaseOntologyTermService<ZECOTerm, ZecoTermDAO> {
 
-	@Inject ZecoTermDAO zecoTermDAO;
+	@Inject
+	ZecoTermDAO zecoTermDAO;
 
 	@Override
 	@PostConstruct

@@ -1,18 +1,32 @@
 package org.alliancegenome.curation_api.util;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.*;
-import java.util.zip.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.jboss.resteasy.plugins.providers.multipart.*;
+import org.jboss.resteasy.plugins.providers.multipart.InputPart;
+import org.jboss.resteasy.plugins.providers.multipart.MultipartFormDataInput;
 
-import com.amazonaws.auth.*;
+import com.amazonaws.auth.AWSStaticCredentialsProvider;
+import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.s3.*;
-import com.amazonaws.services.s3.transfer.*;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.transfer.Download;
+import com.amazonaws.services.s3.transfer.TransferManager;
+import com.amazonaws.services.s3.transfer.TransferManagerBuilder;
+import com.amazonaws.services.s3.transfer.Upload;
 
 import lombok.extern.jbosslog.JBossLog;
 
@@ -22,30 +36,30 @@ public class FileTransferHelper {
 	public String saveIncomingURLFile(String url) {
 
 		File saveFilePath = generateFilePath();
-		
+
 		try {
 			log.info("Downloading File: " + url);
 			log.info("Saving file to local filesystem: " + saveFilePath.getAbsolutePath());
 			FileUtils.copyURLToFile(new URL(url), saveFilePath);
-			
+
 		} catch (Exception e) {
 			log.error(e.getMessage());
 			log.info("Deleting old file: " + saveFilePath);
 			saveFilePath.delete();
 			return null;
 		}
-		
+
 		return saveFilePath.getAbsolutePath();
 
 	}
-	
+
 	public String saveIncomingFile(MultipartFormDataInput input, String formField) {
 		Map<String, List<InputPart>> form = input.getFormDataMap();
 
 		InputPart inputPart = form.get(formField).get(0);
 
 		File saveFilePath = generateFilePath();
-		
+
 		try {
 			InputStream is = inputPart.getBody(InputStream.class, null);
 
@@ -58,11 +72,11 @@ public class FileTransferHelper {
 			saveFilePath.delete();
 			return null;
 		}
-		
+
 		return saveFilePath.getAbsolutePath();
 
 	}
-	
+
 	public String compressInputFile(String fullFilePath) {
 
 		try {
@@ -74,27 +88,26 @@ public class FileTransferHelper {
 			log.info("Input stream not in the GZIP format, GZIP it");
 
 			File outFilePath = generateFilePath();
-			
+
 			File inFilePath = new File(fullFilePath);
-			
-			if( !compressGzipFile(inFilePath, outFilePath) ) {
+
+			if (!compressGzipFile(inFilePath, outFilePath)) {
 				return null;
 			}
-			
+
 			log.info(inFilePath + " gzipped to " + outFilePath);
 			log.info("Deleting input file: " + inFilePath);
 			inFilePath.delete();
 
 			return outFilePath.getAbsolutePath();
 		}
-		
-		
+
 	}
-	
+
 	public File downloadFileFromS3(String AWSAccessKey, String AWSSecretKey, String bucket, String prefix, String path) {
-		
+
 		File localOutFile = generateFilePath();
-		
+
 		try {
 			String fullS3Path = prefix + "/" + path;
 			log.info("Download file From S3: " + "s3://" + bucket + "/" + fullS3Path + " -> " + localOutFile.getAbsolutePath());
@@ -112,7 +125,7 @@ public class FileTransferHelper {
 			return null;
 		}
 	}
-	
+
 	public String uploadFileToS3(String AWSAccessKey, String AWSSecretKey, String bucket, String prefix, String path, File inFile) {
 		try {
 			String fullS3Path = prefix + "/" + path;
@@ -130,11 +143,11 @@ public class FileTransferHelper {
 			return null;
 		}
 	}
-	
+
 	private File generateFilePath() {
 		return new File(generateUniqueFileName());
 	}
-	
+
 	public String generateUniqueFileName() {
 		Date d = new Date();
 		UUID uuid = UUID.randomUUID();
@@ -143,15 +156,14 @@ public class FileTransferHelper {
 	}
 
 	private boolean compressGzipFile(File inFile, File gzipOutFile) {
-		try ( FileInputStream fis = new FileInputStream(inFile);
-			GZIPOutputStream gzipOS = new GZIPOutputStream(new FileOutputStream(gzipOutFile)) ) {
+		try (FileInputStream fis = new FileInputStream(inFile); GZIPOutputStream gzipOS = new GZIPOutputStream(new FileOutputStream(gzipOutFile))) {
 
 			byte[] buffer = new byte[4096];
 			int len;
 			while ((len = fis.read(buffer)) != -1) {
 				gzipOS.write(buffer, 0, len);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			log.info("Deleting old file: " + gzipOutFile);
 			gzipOutFile.delete();
 			e.printStackTrace();
@@ -171,7 +183,7 @@ public class FileTransferHelper {
 			return null;
 		}
 	}
-	
+
 	public String getMD5SumOfFile(String fullFilePath) {
 		try {
 			InputStream is = new FileInputStream(new File(fullFilePath));

@@ -7,5 +7,5 @@ public final class ValidationConstants {
 	public static final String REQUIRED_MESSAGE = "Required field is empty";
 	public static final String DEPENDENCY_MESSAGE_PREFIX = "Invalid without value for ";
 	public static final String NON_UNIQUE_MESSAGE = "Field value is not unique";
-	
+
 }

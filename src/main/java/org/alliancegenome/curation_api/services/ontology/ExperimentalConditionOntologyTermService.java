@@ -11,12 +11,13 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class ExperimentalConditionOntologyTermService extends BaseOntologyTermService<ExperimentalConditionOntologyTerm, ExperimentalConditionOntologyTermDAO> {
 
-	@Inject ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
+	@Inject
+	ExperimentalConditionOntologyTermDAO experimentalConditionOntologyTermDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(experimentalConditionOntologyTermDAO);
 	}
-	
+
 }

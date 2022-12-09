@@ -20,24 +20,24 @@ public class ObjectUpdateException extends Exception {
 	public ObjectUpdateException(Object updateObject, String message) {
 		data = new ObjectUpdateExceptionData(updateObject, message, null);
 	}
-	
+
 	public ObjectUpdateException(Object updateObject, String message, StackTraceElement[] stackTraceElements) {
 		data = new ObjectUpdateExceptionData(updateObject, message, stackTraceElements);
 	}
-	
+
 	@Data
 	@NoArgsConstructor
 	public static class ObjectUpdateExceptionData {
-		
+
 		private static ObjectMapper mapper = new RestDefaultObjectMapper().getMapper();
-		
-		@JsonView({View.FieldsOnly.class})
+
+		@JsonView({ View.FieldsOnly.class })
 		private String jsonObject = null;
-		@JsonView({View.FieldsOnly.class})
+		@JsonView({ View.FieldsOnly.class })
 		private String message = null;
-		@JsonView({View.FieldsOnly.class})
+		@JsonView({ View.FieldsOnly.class })
 		private StackTraceElement[] stackTraceElements = null;
-		
+
 		public ObjectUpdateExceptionData(Object updateObject, String message, StackTraceElement[] stackTraceElements) {
 			try {
 				this.message = message;
@@ -48,6 +48,6 @@ public class ObjectUpdateException extends Exception {
 				this.jsonObject = "{}";
 			}
 		}
-		
+
 	}
 }

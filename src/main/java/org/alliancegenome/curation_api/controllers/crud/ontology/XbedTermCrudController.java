@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.XbedTermService;
 @RequestScoped
 public class XbedTermCrudController extends BaseOntologyTermController<XbedTermService, XBEDTerm, XbedTermDAO> implements XbedTermCrudInterface {
 
-	@Inject XbedTermService xbedTermService;
+	@Inject
+	XbedTermService xbedTermService;
 
 	@Override
 	@PostConstruct

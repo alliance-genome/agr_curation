@@ -10,14 +10,14 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class BulkLoadFileHistoryService extends BaseEntityCrudService<BulkLoadFileHistory, BulkLoadFileHistoryDAO> {
-	
+
 	@Inject
 	BulkLoadFileHistoryDAO bulkLoadFileHistoryDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(bulkLoadFileHistoryDAO);
 	}
-	
+
 }
