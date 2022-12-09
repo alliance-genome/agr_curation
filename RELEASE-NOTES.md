@@ -2,6 +2,27 @@
 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+# AGR curation release notes
+
+https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
+
+## v0.13.0
+ * New Features
+  * Added 'Mutation types' to Allele table (SCRUM-2267 & SCRUM-2268)
+  * Added 'Asserted Genes' and 'Asserted allele' fields to form for new disease annotations (SCRUM-2167)
+  * Added Upload button for UI submission of bulk upload files (SCRUM-2092)
+  * Added initial UI automated tests (SCRUM-1737)
+  * Included invalid entity in bulk upload error message (SCRUM-2314)
+  * Replaced Allele 'In Collection' dropdown menus with text search / Autocomplete editor (SCRUM-2293 & SCRUM-2295)
+  * Synchronised codebase with LinkML v1.4.0 (SCRUM-2266)
+ 	* Populated new Vocabulary form with default value for 'obsolete' field (SCRUM-2301
+	* Sorted Vocabularies by name in editor dropdown (SCRUM-2302)
+ * Fixes & maintenance
+  * Autocomplete code refactored (SCRUM-2059)
+  * Updated Github actions (SCRUM-2269)
+  * Added check for Autocomplete selection on biological entity fields (SCRUM-2252)
+  * Implemented handling of unexpected API errors upon saving entries in UI (SCRUM-2251)
+
 ## v0.12.0
  * New Features
     * New service to call MaTI (SCRUM-2011)
@@ -10,17 +31,17 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * Refactor DTO validation code (SCRUM-2145)
     * Return exact matches only from dropdown filters (SCRUM-2139)
     * Make allele attributes editable (SCRUM-2161)
-    * Add LinkML version submission documentation 
+    * Add LinkML version submission documentation
     * Experiments dropdown to NewAnnotationForm (SCRUM-1917)
     * Enable entering identifiers of experimental condition components in autocomplete (SCRUM-2099)
  * Fixes
-    * Fix for OR on multiselect fields 
+    * Fix for OR on multiselect fields
     * Fix synonym and reference persistence
     * Bug fixes and integration tests for updates with null value ( SCRUM-2174)
     * Fix reference autosuggest (SCRUM-2161)
     * Fix blank screen on ref deletion (SCRUM-2161)
     * Delete existing notes when doing DA bulk upload
-    * Added indexes to allele touching tables 
+    * Added indexes to allele touching tables
 
 ## v0.11.0
 
@@ -129,7 +150,7 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 ## v0.4.0
  * Data loading
     * SCRUM-1205 Anatomy stage ontologies by @markquintontulloch in #3117
-    * SCRUM-1319 Add AuditedObject fields to disease annotations by @markquintontulloch in #314 
+    * SCRUM-1319 Add AuditedObject fields to disease annotations by @markquintontulloch in #314
     * SCRUM-1205 MmusDv load update by @markquintontulloch in #324
     * SCRUM-737 update - SGD strain background filter by @markquintontulloch in #327
     * SCRUM-1298 Validate uniqueId doesn't exist after editing experimentalCondition by @markquintontulloch in #344
@@ -143,7 +164,7 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * fix AGM creation logic by @cmpich in #370
     * SCRUM-1232 - Add Xenopus ontologies by @markquintontulloch in #424
     * SCRUM-1232 Enable multiple ontology loads from single OWL file by @markquintontulloch in #425
-    * SCRUM-1232 Add additional namespace for XBA load by @markquintontulloch in #428 
+    * SCRUM-1232 Add additional namespace for XBA load by @markquintontulloch in #428
  * UI Features
     * UI reskin by @adamgibs in #305, #321, #334
     * Editor Refactor by @adamgibs in #309
@@ -195,11 +216,11 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * SCRUM-1318 handle condition updates, include handle info in unique ID by @cmpich in #385
     * SCRUM-1415 Set UniqueID for new ExperimentalCondition entities by @markquintontulloch in #386
     * Changed exception so they will print in the logs by @oblodgett in #430
-    * SCRUM-1499 Improve error reporting for ConditionRelations and RelatedNotes attached to DAs by @markquintontulloch in #433 
+    * SCRUM-1499 Improve error reporting for ConditionRelations and RelatedNotes attached to DAs by @markquintontulloch in #433
  * Other
-    * Add MIT LICENSE file by @chris-grove in #421 
+    * Add MIT LICENSE file by @chris-grove in #421
     * Removed duplicate code PR into PR by @oblodgett in #426
-    * SCRUM-1432 VocabularyTerm validation and integration tests by @markquintontulloch in #396 
+    * SCRUM-1432 VocabularyTerm validation and integration tests by @markquintontulloch in #396
     * SCRUM-1279 by @markquintontulloch in #307
     * Scrum 1020 by @kthorat-prog in #319
     * SCRUM-1320 Switching of disease annotation enums to VocabularyTerms by @markquintontulloch in #318
@@ -250,7 +271,7 @@ https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
     * Minor fixes by @markquintontulloch in #427
     * Quick fix for annotation returned object by @oblodgett in #415
     * SCRUM-1416 added null check to ListTableCell by @adamgibs in #388
-  
+
 ## v0.3.0
  * Data loading
     * Implemented NCBITaxonTerm class (SCRUM-338)
