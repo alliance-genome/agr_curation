@@ -13,10 +13,7 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -55,6 +52,7 @@ public class Reference extends InformationContentEntity {
 	/**
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
+	@Transient
 	public String getReferenceID() {
 		List<String> referencePrefixEnum = getCrossReferences().stream().map(CrossReference::getPrefix).collect(Collectors.toList());
 

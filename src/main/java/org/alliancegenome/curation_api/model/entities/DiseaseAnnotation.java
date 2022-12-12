@@ -178,6 +178,7 @@ public abstract class DiseaseAnnotation extends Association {
 	@Transient
 	public abstract String getSubjectTaxonCurie();
 
+	@Transient
 	public String getDataProviderString(){
 		StringBuilder builder = new StringBuilder(dataProvider.getAbbreviation());
 		if(secondaryDataProvider != null){
