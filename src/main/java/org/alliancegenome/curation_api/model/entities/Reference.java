@@ -1,10 +1,12 @@
 package org.alliancegenome.curation_api.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
+import org.alliancegenome.curation_api.enums.CrossReferencePrefix;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
@@ -36,30 +38,16 @@ public class Reference extends InformationContentEntity {
 	private List<CrossReference> crossReferences;
 
 
-	public static List<String> speciesPrefix;
-
-	static {
-		speciesPrefix.add("MGI");
-		speciesPrefix.add("ZFIN");
-		speciesPrefix.add("SGD");
-		speciesPrefix.add("FB");
-		speciesPrefix.add("WB");
-		speciesPrefix.add("XB");
-		speciesPrefix.add("OMIM");
-		speciesPrefix.add("GO");
-	}
-
 	/**
 	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
 	 */
 	@Transient
+	@JsonIgnore
 	public String getReferenceID() {
-		List<String> referencePrefixEnum = getCrossReferences().stream().map(CrossReference::getPrefix).collect(Collectors.toList());
-
-		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getCurie().contains("PMID:")).findFirst();
+		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getCurie().startsWith("PMID:")).findFirst();
 		// if no PUBMED ID try MOD ID
 		if (opt.isEmpty()) {
-			opt = getCrossReferences().stream().filter(reference -> speciesPrefix.contains(reference.getPrefix())).findFirst();
+			opt = getCrossReferences().stream().filter(reference -> CrossReferencePrefix.valueOf(reference.getPrefix()) != null).findFirst();
 		}
 		return opt.map(CrossReference::getPrefix).orElse(null);
 	}

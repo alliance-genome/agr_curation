@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BiologicalEntityPropertyBinder;
@@ -179,6 +180,7 @@ public abstract class DiseaseAnnotation extends Association {
 	public abstract String getSubjectTaxonCurie();
 
 	@Transient
+	@JsonIgnore
 	public String getDataProviderString(){
 		StringBuilder builder = new StringBuilder(dataProvider.getAbbreviation());
 		if(secondaryDataProvider != null){
