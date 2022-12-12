@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.dao;
 
+import java.math.BigInteger;
 import java.util.List;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -44,15 +45,18 @@ public class GeneDAO extends BaseSQLDAO<Gene> {
 
 		jpqlQuery = entityManager.createNativeQuery("SELECT diseaseannotation_id FROM diseaseannotation_gene gda WHERE with_curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<Long>) jpqlQuery.getResultList());
+		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
+			results.add(nativeResult.longValue());
 
 		jpqlQuery = entityManager.createNativeQuery("SELECT agmdiseaseannotation_id FROM agmdiseaseannotation_gene gda WHERE assertedgenes_curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<Long>) jpqlQuery.getResultList());
+		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
+			results.add(nativeResult.longValue());
 
 		jpqlQuery = entityManager.createNativeQuery("SELECT allelediseaseannotation_id FROM allelediseaseannotation_gene gda WHERE assertedgenes_curie = :geneCurie");
 		jpqlQuery.setParameter("geneCurie", geneCurie);
-		results.addAll((List<Long>) jpqlQuery.getResultList());
+		for(BigInteger nativeResult : (List<BigInteger>) jpqlQuery.getResultList())
+			results.add(nativeResult.longValue());
 
 		return results;
 	}
