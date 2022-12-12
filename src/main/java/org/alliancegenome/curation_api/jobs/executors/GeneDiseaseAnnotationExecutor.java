@@ -30,14 +30,17 @@ import lombok.extern.jbosslog.JBossLog;
 @ApplicationScoped
 public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 
-	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject GeneDiseaseAnnotationService geneDiseaseAnnotationService;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	GeneDiseaseAnnotationService geneDiseaseAnnotationService;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
 
 	public void runLoad(BulkLoadFile bulkLoadFile) {
-		
+
 		try {
-			BulkManualLoad manual = (BulkManualLoad)bulkLoadFile.getBulkLoad();
+			BulkManualLoad manual = (BulkManualLoad) bulkLoadFile.getBulkLoad();
 			log.info("Running with: " + manual.getDataType().name() + " " + manual.getDataType().getTaxonId());
 
 			IngestDTO ingestDto = mapper.readValue(new GZIPInputStream(new FileInputStream(bulkLoadFile.getLocalFilePath())), IngestDTO.class);
@@ -55,27 +58,28 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	// Gets called from the API directly
 	public APIResponse runLoad(String taxonId, List<GeneDiseaseAnnotationDTO> annotations) {
-		
-		List<String> annotationIdsBefore = new ArrayList<>();
+
+		List<Long> annotationIdsBefore = new ArrayList<>();
 		annotationIdsBefore.addAll(geneDiseaseAnnotationDAO.findAllAnnotationIds(taxonId));
 		annotationIdsBefore.removeIf(Objects::isNull);
-		
+
 		log.debug("runLoad: Before: " + taxonId + " " + annotationIdsBefore.size());
-		List<String> annotationIdsAfter = new ArrayList<>();
+		List<Long> annotationIdsAfter = new ArrayList<>();
 		BulkLoadFileHistory history = new BulkLoadFileHistory(annotations.size());
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
 		ph.startProcess("Gene Disease Annotation Update " + taxonId, annotations.size());
 		annotations.forEach(annotationDTO -> {
-			
+
 			try {
 				GeneDiseaseAnnotation annotation = geneDiseaseAnnotationService.upsert(annotationDTO);
 				history.incrementCompleted();
-				annotationIdsAfter.add(annotation.getUniqueId());
+				annotationIdsAfter.add(annotation.getId());
 			} catch (ObjectUpdateException e) {
 				addException(history, e.getData());
 			} catch (Exception e) {
@@ -85,12 +89,10 @@ public class GeneDiseaseAnnotationExecutor extends LoadFileExecutor {
 			ph.progressProcess();
 		});
 		ph.finishProcess();
-		
+
 		diseaseAnnotationService.removeNonUpdatedAnnotations(taxonId, annotationIdsBefore, annotationIdsAfter);
-		
+
 		return new LoadHistoryResponce(history);
 	}
-	
-	
-	
+
 }

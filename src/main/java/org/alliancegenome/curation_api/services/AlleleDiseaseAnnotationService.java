@@ -17,24 +17,28 @@ import org.alliancegenome.curation_api.services.validation.dto.AlleleDiseaseAnno
 @RequestScoped
 public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDiseaseAnnotation, AlleleDiseaseAnnotationDTO, AlleleDiseaseAnnotationDAO> {
 
-	@Inject AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
-	@Inject AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
-	@Inject AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
-	@Inject DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	AlleleDiseaseAnnotationDAO alleleDiseaseAnnotationDAO;
+	@Inject
+	AlleleDiseaseAnnotationValidator alleleDiseaseValidator;
+	@Inject
+	AlleleDiseaseAnnotationDTOValidator alleleDiseaseAnnotationDtoValidator;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(alleleDiseaseAnnotationDAO);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> update(AlleleDiseaseAnnotation uiEntity) {
 		AlleleDiseaseAnnotation dbEntity = alleleDiseaseValidator.validateAnnotationUpdate(uiEntity);
 		return new ObjectResponse<>(alleleDiseaseAnnotationDAO.persist(dbEntity));
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation uiEntity) {
@@ -45,14 +49,14 @@ public class AlleleDiseaseAnnotationService extends BaseDTOCrudService<AlleleDis
 	@Transactional
 	public AlleleDiseaseAnnotation upsert(AlleleDiseaseAnnotationDTO dto) throws ObjectUpdateException {
 		AlleleDiseaseAnnotation annotation = alleleDiseaseAnnotationDtoValidator.validateAlleleDiseaseAnnotationDTO(dto);
-		
+
 		return alleleDiseaseAnnotationDAO.persist(annotation);
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<AlleleDiseaseAnnotation> delete(Long id) {
-		diseaseAnnotationService.deleteAnnotationAndNotes(id);
+		diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(id, true, "disease annotation");
 		ObjectResponse<AlleleDiseaseAnnotation> ret = new ObjectResponse<>();
 		return ret;
 	}

@@ -27,7 +27,7 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 		response.setEntity(reference);
 		return response;
 	}
-	
+
 	public Reference validateReference(Reference uiEntity, Boolean throwError) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update Reference: [" + uiEntity.getCurie() + "]";
@@ -36,15 +36,15 @@ public class ReferenceValidator extends AuditedObjectValidator<Reference> {
 			addMessageResponse("No reference submitted");
 			throw new ApiErrorException(response);
 		}
-		
+
 		Reference dbEntity = referenceService.retrieveFromDbOrLiteratureService(uiEntity.getCurie());
 		if (dbEntity == null) {
 			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
-		
-		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);		
-		
+
+		dbEntity = (Reference) validateAuditedObjectFields(uiEntity, dbEntity, false);
+
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorTitle);

@@ -1,5 +1,6 @@
 package org.alliancegenome.curation_api.services;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -33,14 +34,25 @@ import lombok.extern.jbosslog.JBossLog;
 @RequestScoped
 public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
 
-	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject CrossReferenceService crossReferenceService;
-	@Inject CrossReferenceDAO crossReferenceDAO;
-	@Inject SynonymService synonymService;
-	@Inject AlleleDAO alleleDAO;
-	@Inject AffectedGenomicModelValidator affectedGenomicModelValidator;
-	@Inject AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
-	@Inject NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	CrossReferenceService crossReferenceService;
+	@Inject
+	CrossReferenceDAO crossReferenceDAO;
+	@Inject
+	AlleleDAO alleleDAO;
+	@Inject
+	AffectedGenomicModelValidator affectedGenomicModelValidator;
+	@Inject
+	AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
+	@Inject
+	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	@Inject
+	DiseaseAnnotationService diseaseAnnotationService;
+	@Inject
+	PersonService personService;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -75,17 +87,18 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		return new ObjectResponse<>(affectedGenomicModelDAO.persist(dbEntity));
 	}
 
-
 	@Transactional
 	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto) throws ObjectUpdateException {
 		AffectedGenomicModel agm = affectedGenomicModelDtoValidator.validateAffectedGenomicModelDTO(dto);
-		
-		if (agm == null) return null;
-		
+
+		if (agm == null)
+			return null;
+
 		return affectedGenomicModelDAO.persist(agm);
 	}
-	
-	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter) {
+
+	@Transactional
+	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
 		log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
 
 		List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
@@ -95,11 +108,26 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
 			if (agm != null) {
-				affectedGenomicModelDAO.deleteAgmAndReferencingDiseaseAnnotations(curie);
+				List<Long> referencingDAIds = affectedGenomicModelDAO.findReferencingDiseaseAnnotations(curie);
+				Boolean anyPublicReferencingDAs = false;
+				for (Long daId : referencingDAIds) {
+					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM");
+					if (daMadePublic)
+						anyPublicReferencingDAs = true;
+				}
+
+				if (anyPublicReferencingDAs) {
+					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
+					agm.setDateUpdated(OffsetDateTime.now());
+					agm.setObsolete(true);
+					affectedGenomicModelDAO.persist(agm);
+				} else {
+					affectedGenomicModelDAO.remove(curie);
+				}
 			} else {
 				log.error("Failed getting AGM: " + curie);
 			}
@@ -107,12 +135,11 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		}
 		ph.finishProcess();
 	}
-	
+
 	public List<String> getCuriesByTaxonId(String taxonId) {
 		List<String> curies = affectedGenomicModelDAO.findAllCuriesByTaxon(taxonId);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}
-	
-	
+
 }

@@ -11,7 +11,7 @@ public class MoleculeDAO extends BaseSQLDAO<Molecule> {
 	protected MoleculeDAO() {
 		super(Molecule.class);
 	}
-	
+
 	public Molecule getByIdOrCurie(String id) {
 		return find(id);
 	}

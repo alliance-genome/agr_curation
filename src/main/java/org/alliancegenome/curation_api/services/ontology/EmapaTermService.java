@@ -11,12 +11,13 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class EmapaTermService extends BaseOntologyTermService<EMAPATerm, EmapaTermDAO> {
 
-	@Inject EmapaTermDAO emapaTermDAO;
+	@Inject
+	EmapaTermDAO emapaTermDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(emapaTermDAO);
 	}
-	
+
 }

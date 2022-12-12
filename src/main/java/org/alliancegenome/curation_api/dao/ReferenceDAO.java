@@ -28,7 +28,7 @@ public class ReferenceDAO extends BaseSQLDAO<Reference> {
 		Query jpqlQuery = entityManager.createNativeQuery("UPDATE " + table + " SET " + column + " = '" + newCurie + "' WHERE " + column + " = '" + originalCurie + "'");
 		jpqlQuery.executeUpdate();
 	}
-	
+
 	@Transactional
 	protected void deleteReferenceForeignKey(String table, String column, String originalCurie) {
 		Query jpqlQuery = entityManager.createNativeQuery("DELETE FROM " + table + " WHERE " + column + " = '" + originalCurie + "'");

@@ -7,8 +7,12 @@ import java.lang.annotation.RetentionPolicy;
 public @interface AGRCurationSchemaVersion {
 
 	String min();
+
 	String max();
+
 	Class<?>[] dependencies() default {};
+
 	boolean submitted() default false;
+
 	boolean partial() default false;
 }

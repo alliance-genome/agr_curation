@@ -11,5 +11,5 @@ public class AnatomicalTermDAO extends BaseSQLDAO<AnatomicalTerm> {
 	protected AnatomicalTermDAO() {
 		super(AnatomicalTerm.class);
 	}
-	
+
 }

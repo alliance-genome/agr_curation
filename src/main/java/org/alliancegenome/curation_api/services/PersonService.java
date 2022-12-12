@@ -7,22 +7,25 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.PersonDAO;
 import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 import org.alliancegenome.curation_api.services.validation.PersonValidator;
 
 @RequestScoped
 public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 
-	@Inject PersonDAO personDAO;
-	@Inject PersonValidator personValidator;
-	
+	@Inject
+	PersonDAO personDAO;
+	@Inject
+	PersonValidator personValidator;
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(personDAO);
 	}
-	
+
 	@Transactional
 	public Person fetchByUniqueIdOrCreate(String uniqueId) {
 		SearchResponse<Person> personResponse = personDAO.findByField("uniqueId", uniqueId);
@@ -33,16 +36,16 @@ public class PersonService extends BaseEntityCrudService<Person, PersonDAO> {
 		person.setUniqueId(uniqueId);
 		return personDAO.persist(person);
 	}
-	
+
 	public Person findPersonByEmail(String email) {
 		SearchResponse<Person> resp = personDAO.findByField("email", email);
 		if (resp != null && resp.getTotalResults() == 1) {
 			return resp.getSingleResult();
 		}
-		
+
 		return null;
 	}
-	
+
 	@Override
 	@Transactional
 	public ObjectResponse<Person> update(Person uiEntity) {

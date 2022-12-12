@@ -37,7 +37,7 @@ public class VocabularyTermCrudController extends BaseEntityCrudController<Vocab
 			throw new ApiErrorException(ret);
 		} catch (Exception p) {
 			String message = ExceptionUtils.getRootCauseMessage(p);
-			message = "Vocabulary Term ["+get(id).getEntity().getName() + "] is still being used. \r\n" + message;
+			message = "Vocabulary Term [" + get(id).getEntity().getName() + "] is still being used. \r\n" + message;
 			ret = new ObjectResponse<>();
 			ret.setErrorMessage(message);
 			throw new ApiErrorException(ret);

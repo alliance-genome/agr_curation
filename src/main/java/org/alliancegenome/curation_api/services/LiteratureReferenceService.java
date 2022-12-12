@@ -10,9 +10,10 @@ import org.alliancegenome.curation_api.services.base.BaseDocumentService;
 
 @RequestScoped
 public class LiteratureReferenceService extends BaseDocumentService<LiteratureReference, LiteratureReferenceDAO> {
-	
-	@Inject LiteratureReferenceDAO literatureReferenceDAO;
-	
+
+	@Inject
+	LiteratureReferenceDAO literatureReferenceDAO;
+
 	@Override
 	@PostConstruct
 	protected void init() {

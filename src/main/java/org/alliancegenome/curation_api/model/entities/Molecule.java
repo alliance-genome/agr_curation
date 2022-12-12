@@ -1,6 +1,5 @@
 package org.alliancegenome.curation_api.model.entities;
 
-
 import javax.persistence.Entity;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
@@ -10,15 +9,17 @@ import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Audited
 @Indexed
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Schema(name="Molecule", description="POJO that represents the Molecule")
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Schema(name = "Molecule", description = "POJO that represents the Molecule")
 
-@AGRCurationSchemaVersion(min="1.2.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={ChemicalTerm.class})
+@AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ChemicalTerm.class })
 public class Molecule extends ChemicalTerm {
 
 }

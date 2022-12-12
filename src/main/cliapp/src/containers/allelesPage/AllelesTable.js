@@ -12,7 +12,6 @@ import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
-import { InputTextEditor } from '../../components/InputTextEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
 
@@ -36,7 +35,7 @@ export const AllelesTable = () => {
 		rowIndex: null,
 		mainRowProps: {},
 	});
-	
+
 	const toast_topleft = useRef(null);
 	const toast_topright = useRef(null);
 
@@ -58,14 +57,14 @@ export const AllelesTable = () => {
 	});
 
 	const symbolTemplate = (rowData) => {
-		if (rowData?.symbol) {
-			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.symbol }} />
+		if (rowData?.alleleSymbol) {
+			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleSymbol.displayText }} />
 		}
 	}
 
 	const nameTemplate = (rowData) => {
-		if (rowData?.name) {
-			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.name }} />
+		if (rowData?.alleleFullName) {
+			return <div className='overflow-hidden text-overflow-ellipsis' dangerouslySetInnerHTML={{ __html: rowData.alleleFullName.displayText }} />
 		}
 	}
 
@@ -155,17 +154,12 @@ export const AllelesTable = () => {
 
 		}
 	};
-	
+
 	const inCollectionSearch = (event, setFiltered, setQuery) => {
 		const autocompleteFields = ["name"];
 		const endpoint = "vocabularyterm";
 		const filterName = "taxonFilter";
 		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			},
 			vocabularyFilter: {
 				"vocabulary.name": {
 					queryString: "Allele collection vocabulary"
@@ -219,16 +213,9 @@ export const AllelesTable = () => {
 		const autocompleteFields = ["curie", "name", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
 		const endpoint = "ncbitaxonterm";
 		const filterName = "taxonFilter";
-		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const taxonEditor = (props) => {
@@ -316,23 +303,11 @@ export const AllelesTable = () => {
 		);
 	};
 
-	const freeTextEditor = (props, fieldname) => {
-		return (
-			<>
-				<InputTextEditor
-					rowProps={props}
-					fieldName={fieldname}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={fieldname} />
-			</>
-		);
-	};
-	
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
 			for(var i = 0; i < rowData.alleleMutationTypes.length; i++){
-				if (rowData.alleleMutationTypes[i].mutationTypes) {    			
+				if (rowData.alleleMutationTypes[i].mutationTypes) {
 					for(var j = 0; j < rowData.alleleMutationTypes[i].mutationTypes.length; j++) {
 						let mtString = rowData.alleleMutationTypes[i].mutationTypes[j].name + ' (' +
 							rowData.alleleMutationTypes[i].mutationTypes[j].curie + ')';
@@ -360,7 +335,7 @@ export const AllelesTable = () => {
 			}
 		}
 	};
-	
+
 	const mutationTypesEditor = (props) => {
 		if (props?.rowData?.alleleMutationTypes) {
 			return (
@@ -402,8 +377,8 @@ export const AllelesTable = () => {
 			)
 		}
 	};
-	
-	
+
+
 
 	const handleMutationTypesOpen = (event, rowData, isInEdit) => {
 		let _mutationTypesData = {};
@@ -439,22 +414,20 @@ export const AllelesTable = () => {
 			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
 		},
 		{
-			field: "name",
+			field: "alleleFullName.displayText",
 			header: "Name",
 			body: nameTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
-			editor: (props) => freeTextEditor(props, "name")
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["alleleFullName.displayText", "alleleFullName.formatText"]}
 		},
 		{
-			field: "symbol",
+			field: "alleleSymbol.displayText",
 			header: "Symbol",
 			body: symbolTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "symbolFilter", fields: ["symbol"]},
-			editor: (props) => freeTextEditor(props, "symbol")
+			filterElement: {type: "input", filterName: "symbolFilter", fields: ["alleleSymbol.displayText", "alleleSymbol.formatText"]}
 		},
 		{
 			field: "taxon.name",

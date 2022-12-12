@@ -12,16 +12,18 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 @RequestScoped
 public class SystemController implements SystemControllerInterface {
 
-	@Inject SystemSQLDAO systemSQLDAO;
-	
+	@Inject
+	SystemSQLDAO systemSQLDAO;
+
 	@Override
-	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer transactionTimeout) {
+	public void reindexEverything(Integer threadsToLoadObjects, Integer typesToIndexInParallel, Integer limitIndexedObjectsTo, Integer batchSizeToLoadObjects, Integer idFetchSize,
+		Integer transactionTimeout) {
 		systemSQLDAO.reindexEverything(threadsToLoadObjects, typesToIndexInParallel, limitIndexedObjectsTo, batchSizeToLoadObjects, idFetchSize, transactionTimeout);
 	}
-	
+
 	@Override
 	public ObjectResponse<Map<String, Object>> getSiteSummary() {
 		return systemSQLDAO.getSiteSummary();
 	}
-	
+
 }

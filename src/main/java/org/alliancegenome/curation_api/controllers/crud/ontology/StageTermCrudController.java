@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.StageTermService;
 @RequestScoped
 public class StageTermCrudController extends BaseOntologyTermController<StageTermService, StageTerm, StageTermDAO> implements StageTermCrudInterface {
 
-	@Inject StageTermService stageTermService;
+	@Inject
+	StageTermService stageTermService;
 
 	@Override
 	@PostConstruct

@@ -6,6 +6,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
+import { FormAdditionalFieldData } from "../../components/FormAdditionalFieldData";
 import { classNames } from "primereact/utils";
 import { DiseaseAnnotationService } from "../../service/DiseaseAnnotationService";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -18,9 +19,9 @@ import { ConditionRelationHandleFormDropdown } from "../../components/ConditionR
 import { ControlledVocabularyFormDropdown } from '../../components/ControlledVocabularyFormSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
 import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/ControlledVocabularyFormMultiSelector';
-import { AutocompleteEditor } from "../../components/Autocomplete/AutocompleteEditor";
+import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
 import { autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -135,8 +136,6 @@ export const NewAnnotationForm = ({
 	const handleClear = () => {
 		//this manually resets the value of the input text in autocomplete fields with multiple values and the experiments dropdown
 		withRef.current.inputRef.current.value = "";
-		//assertedGenesRef.current.inputRef.current.value = "";
-		//assertedAlleleRef.current.inputRef.current.value = "";
 		evidenceCodesRef.current.inputRef.current.value = "";
 		experimentsRef.current.clear();
 		newAnnotationDispatch({ type: "CLEAR" });
@@ -149,8 +148,7 @@ export const NewAnnotationForm = ({
 		handleSubmit(event, false);
 	}
 
-	const onSingleReferenceChange = (event, setFieldValue) => {
-		setFieldValue(event.target.value);
+	const onSingleReferenceChange = (event) => {
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -184,7 +182,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const geneticModifierSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "alleleSymbol.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText", "alleleSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "geneticModifierFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -192,7 +190,7 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
-	const onSubjectChange = (event, setFieldValue) => {
+	const onSubjectChange = (event) => {
 		if (event.target && event.target.value !== '' && event.target.value != null) {
 			setIsEnabled(true);
 		} else {
@@ -208,7 +206,6 @@ export const NewAnnotationForm = ({
 		}else{
 			setAsssertedAlleleEnabled(false);
 		}
-		setFieldValue(event.target.value);
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -217,7 +214,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const subjectSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "alleleSymbol.displayText", "geneFullName.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText", "geneSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "subjectFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -225,12 +222,11 @@ export const NewAnnotationForm = ({
 		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
-	const onDiseaseChange = (event, setFieldValue) => {
+	const onDiseaseChange = (event) => {
 		const curie = event.value.curie;
 		const stringValue = event.value;
 		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};
 
-		setFieldValue(event.target.value);
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -243,15 +239,8 @@ export const NewAnnotationForm = ({
 		const endpoint = "doterm";
 		const filterName = "diseaseFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
-		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const onDropdownFieldChange = (event) => {
@@ -270,8 +259,7 @@ export const NewAnnotationForm = ({
 		});
 	};
 
-	const onArrayFieldChange = (event, setFieldValue) => {
-		setFieldValue(event.target.value);
+	const onArrayFieldChange = (event) => {
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
@@ -307,11 +295,6 @@ export const NewAnnotationForm = ({
 		const filterName = "evidenceFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 		const otherFilters = {
-			obsoleteFilter: {
-				"obsolete": {
-					queryString: false
-				}
-			},
 			subsetFilter: {
 				"subsets": {
 					queryString: "agr_eco_terms"
@@ -324,7 +307,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "withFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -358,7 +341,7 @@ export const NewAnnotationForm = ({
 	);
 
 	const assertedGenesSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
 		const endpoint = "gene";
 		const filterName = "assertedGenesFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -367,7 +350,7 @@ export const NewAnnotationForm = ({
 	}
 
 	const assertedAlleleSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["symbol", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "synonyms.name"];
+		const autocompleteFields = ["alleleSymbol.displayText", "alleleFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText"];
 		const endpoint = "allele";
 		const filterName = "assertedAlleleFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
@@ -384,7 +367,7 @@ export const NewAnnotationForm = ({
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="subject"><font color={'red'}>*</font>Subject</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								initialValue={newAnnotation.subject}
 								search={subjectSearch}
 								fieldName='subject'
@@ -396,10 +379,11 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
+							<FormAdditionalFieldData field={"subject"} fieldData={newAnnotation.subject}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedGenes">Asserted Genes</label>
-							<AutocompleteMultiEditor
+							<AutocompleteFormMultiEditor
 								customRef={assertedGenesRef}
 								search={assertedGenesSearch}
 								name="assertedGenes"
@@ -416,7 +400,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedAllele">Asserted Allele</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								customRef={assertedAlleleRef}
 								search={assertedAlleleSearch}
 								name="assertedAllele"
@@ -461,7 +445,7 @@ export const NewAnnotationForm = ({
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="object"><font color={'red'}>*</font>Disease</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								name="object"
 								search={diseaseSearch}
 								label="Disease"
@@ -474,7 +458,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								search={referenceSearch}
 								name="singleReference"
 								label="Reference"
@@ -489,7 +473,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="evidenceCodes"><font color={'red'}>*</font>Evidence Code</label>
-							<AutocompleteMultiEditor
+							<AutocompleteFormMultiEditor
 								customRef={evidenceCodesRef}
 								search={evidenceSearch}
 								initialValue={newAnnotation.evidenceCodes}
@@ -505,7 +489,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>
-							<AutocompleteMultiEditor
+							<AutocompleteFormMultiEditor
 								customRef={withRef}
 								search={withSearch}
 								name="with"
@@ -588,7 +572,7 @@ export const NewAnnotationForm = ({
 					<Splitter style={{border:'none', height:'10%', padding:'10px', width: '40%'}} gutterSize="0">
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="sgdStrainBackground">SGD Strain Background</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								initialValue={newAnnotation.sgdStrainBackground}
 								search={sgdStrainBackgroundSearch}
 								searchService={searchService}
@@ -636,7 +620,7 @@ export const NewAnnotationForm = ({
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}} size={60}>
 							<label htmlFor="diseaseGeneticModifier">Genetic Modifier</label>
-							<AutocompleteEditor
+							<AutocompleteFormEditor
 								search={geneticModifierSearch}
 								initialValue={newAnnotation.diseaseGeneticModifier}
 								fieldName='diseaseGeneticModifier'

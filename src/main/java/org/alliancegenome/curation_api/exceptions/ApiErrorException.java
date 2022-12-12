@@ -2,7 +2,8 @@ package org.alliancegenome.curation_api.exceptions;
 
 import org.alliancegenome.curation_api.response.ObjectResponse;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Setter
 @Getter
@@ -15,7 +16,7 @@ public class ApiErrorException extends RuntimeException {
 	}
 
 	public ApiErrorException(ObjectResponse<?> error) {
-		//super(String.join(", ", error.getErrors()));
+		// super(String.join(", ", error.getErrors()));
 		this.objectResponse = error;
 	}
 

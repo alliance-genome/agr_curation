@@ -7,12 +7,12 @@ import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 
 @RequestScoped
 public class LoggedInPersonUniqueIdHelper {
-	public String createLoggedInPersonUniqueId (LoggedInPerson loggedInPerson) {
+	public String createLoggedInPersonUniqueId(LoggedInPerson loggedInPerson) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
 		curie.add(loggedInPerson.getFirstName());
 		curie.add(loggedInPerson.getLastName());
 		curie.add(loggedInPerson.getOktaEmail());
-		
+
 		return curie.getCurie();
 	}
 }

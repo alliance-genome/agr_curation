@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ConditionRelationService;
 @RequestScoped
 public class ConditionRelationCrudController extends BaseEntityCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
 
-	@Inject ConditionRelationService conditionRelationService;
+	@Inject
+	ConditionRelationService conditionRelationService;
 
 	@Override
 	@PostConstruct
@@ -26,7 +27,7 @@ public class ConditionRelationCrudController extends BaseEntityCrudController<Co
 		return conditionRelationService.validate(entity);
 	}
 
-	public ObjectResponse<ConditionRelation> update(ConditionRelation entity){
+	public ObjectResponse<ConditionRelation> update(ConditionRelation entity) {
 		return super.update(entity);
 	}
 

@@ -13,7 +13,7 @@ import si.mazi.rescu.RestProxyFactory;
 public class DataFileService {
 
 	private DataFileRESTInterface api = RestProxyFactory.createProxy(DataFileRESTInterface.class, "https://fms.alliancegenome.org/api");
-	
+
 	public List<DataFile> getDataFiles(String dataType, String dataSubType) {
 		return api.getDataTypeSubTypeFiles(dataType, dataSubType, true);
 	}

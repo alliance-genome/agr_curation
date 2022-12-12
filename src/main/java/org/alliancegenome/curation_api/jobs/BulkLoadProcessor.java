@@ -30,58 +30,67 @@ public class BulkLoadProcessor {
 
 	@ConfigProperty(name = "bulk.data.loads.s3Bucket")
 	String s3Bucket = null;
-	
+
 	@ConfigProperty(name = "bulk.data.loads.s3PathPrefix")
 	String s3PathPrefix = null;
-	
+
 	@ConfigProperty(name = "bulk.data.loads.s3AccessKey")
 	String s3AccessKey = null;
-	
+
 	@ConfigProperty(name = "bulk.data.loads.s3SecretKey")
 	String s3SecretKey = null;
 
-	@Inject EventBus bus;
-	@Inject DataFileService fmsDataFileService;
-	
-	@Inject BulkLoadDAO bulkLoadDAO;
-	@Inject BulkManualLoadDAO bulkManualLoadDAO;
-	@Inject BulkLoadFileDAO bulkLoadFileDAO;
-	@Inject BulkFMSLoadDAO bulkFMSLoadDAO;
-	@Inject BulkURLLoadDAO bulkURLLoadDAO;
-	@Inject BulkLoadJobExecutor bulkLoadJobExecutor;
+	@Inject
+	EventBus bus;
+	@Inject
+	DataFileService fmsDataFileService;
+
+	@Inject
+	BulkLoadDAO bulkLoadDAO;
+	@Inject
+	BulkManualLoadDAO bulkManualLoadDAO;
+	@Inject
+	BulkLoadFileDAO bulkLoadFileDAO;
+	@Inject
+	BulkFMSLoadDAO bulkFMSLoadDAO;
+	@Inject
+	BulkURLLoadDAO bulkURLLoadDAO;
+	@Inject
+	BulkLoadJobExecutor bulkLoadJobExecutor;
 
 	protected FileTransferHelper fileHelper = new FileTransferHelper();
 
 	@ConsumeEvent(value = "bulkloadfile", blocking = true) // Triggered by the Scheduler or Forced start
 	public void bulkLoadFile(Message<BulkLoadFile> file) {
 		BulkLoadFile bulkLoadFile = bulkLoadFileDAO.find(file.body().getId());
-		if(!bulkLoadFile.getBulkloadStatus().isStarted()) {
+		if (!bulkLoadFile.getBulkloadStatus().isStarted()) {
 			log.warn("bulkLoadFile: Job is not started returning: " + bulkLoadFile.getBulkloadStatus());
-			//endLoad(bulkLoadFile, "Finished ended due to status: " + bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
+			// endLoad(bulkLoadFile, "Finished ended due to status: " +
+			// bulkLoadFile.getBulkloadStatus(), bulkLoadFile.getBulkloadStatus());
 			return;
 		} else {
 			startLoadFile(bulkLoadFile);
 		}
 
 		try {
-			if(bulkLoadFile.getLocalFilePath() == null || bulkLoadFile.getS3Path() == null) {
+			if (bulkLoadFile.getLocalFilePath() == null || bulkLoadFile.getS3Path() == null) {
 				syncWithS3(bulkLoadFile);
 			}
 			bulkLoadJobExecutor.process(bulkLoadFile);
 			endLoadFile(bulkLoadFile, "", JobStatus.FINISHED);
-			
+
 		} catch (Exception e) {
 			endLoadFile(bulkLoadFile, "Failed loading: " + bulkLoadFile.getBulkLoad().getName() + " please check the logs for more info. " + bulkLoadFile.getErrorMessage(), JobStatus.FAILED);
 			log.error("Load File: " + bulkLoadFile.getBulkLoad().getName() + " is failed");
 			e.printStackTrace();
 		}
-		
+
 	}
 
 	private String processFMS(String dataType, String dataSubType) {
 		List<DataFile> files = fmsDataFileService.getDataFiles(dataType, dataSubType);
 
-		if(files.size() == 1) {
+		if (files.size() == 1) {
 			DataFile df = files.get(0);
 			return df.getS3Url();
 		} else {
@@ -90,32 +99,33 @@ public class BulkLoadProcessor {
 		}
 		return null;
 	}
-	
+
 	public void syncWithS3(BulkLoadFile bulkLoadFile) {
 		log.info("Syncing with S3");
 		log.info("Local: " + bulkLoadFile.getLocalFilePath());
 		log.info("S3: " + bulkLoadFile.getS3Path());
-		
-		if((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path() != null) && bulkLoadFile.getLocalFilePath() == null) {
+
+		if ((bulkLoadFile.getS3Path() != null || bulkLoadFile.generateS3MD5Path() != null) && bulkLoadFile.getLocalFilePath() == null) {
 			File outfile = fileHelper.downloadFileFromS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path());
-			if(outfile != null) {
-				//log.info(outfile + " is of size: " + outfile.length());
+			if (outfile != null) {
+				// log.info(outfile + " is of size: " + outfile.length());
 				bulkLoadFile.setFileSize(outfile.length());
 				bulkLoadFile.setLocalFilePath(outfile.getAbsolutePath());
 			} else {
-				//log.error("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
+				// log.error("Failed to download file from S3 Path: " + s3PathPrefix + "/" +
+				// bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setErrorMessage("Failed to download file from S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path());
 				bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 			}
-			//log.info("Saving File: " + bulkLoadFile);
+			// log.info("Saving File: " + bulkLoadFile);
 			bulkLoadFileDAO.merge(bulkLoadFile);
-		} else if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() != null) {
-			if(s3AccessKey != null && s3AccessKey.length() > 0) {
+		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() != null) {
+			if (s3AccessKey != null && s3AccessKey.length() > 0) {
 				String s3Path = fileHelper.uploadFileToS3(s3AccessKey, s3SecretKey, s3Bucket, s3PathPrefix, bulkLoadFile.generateS3MD5Path(), new File(bulkLoadFile.getLocalFilePath()));
 				bulkLoadFile.setS3Path(s3Path);
 			}
 			bulkLoadFileDAO.merge(bulkLoadFile);
-		} else if(bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
+		} else if (bulkLoadFile.getS3Path() == null && bulkLoadFile.getLocalFilePath() == null) {
 			bulkLoadFile.setErrorMessage("Failed to download or upload file with S3 Path: " + s3PathPrefix + "/" + bulkLoadFile.generateS3MD5Path() + " Local and remote file missing");
 			bulkLoadFile.setBulkloadStatus(JobStatus.FAILED);
 		}
@@ -133,29 +143,29 @@ public class BulkLoadProcessor {
 		SearchResponse<BulkLoadFile> bulkLoadFiles = bulkLoadFileDAO.findByField("md5Sum", md5Sum);
 		BulkLoadFile bulkLoadFile;
 
-		if(bulkLoadFiles == null || bulkLoadFiles.getTotalResults() == 0) {
+		if (bulkLoadFiles == null || bulkLoadFiles.getTotalResults() == 0) {
 			log.info("Bulk File does not exist creating it");
 			bulkLoadFile = new BulkLoadFile();
 			bulkLoadFile.setBulkLoad(load);
 			bulkLoadFile.setMd5Sum(md5Sum);
 			bulkLoadFile.setFileSize(inputFile.length());
-			if(load.getBulkloadStatus() == JobStatus.FORCED_RUNNING) {
+			if (load.getBulkloadStatus() == JobStatus.FORCED_RUNNING) {
 				bulkLoadFile.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			}
-			if(load.getBulkloadStatus() == JobStatus.SCHEDULED_RUNNING) {
+			if (load.getBulkloadStatus() == JobStatus.SCHEDULED_RUNNING) {
 				bulkLoadFile.setBulkloadStatus(JobStatus.SCHEDULED_PENDING);
 			}
-			if(load.getBulkloadStatus() == JobStatus.MANUAL_RUNNING) {
+			if (load.getBulkloadStatus() == JobStatus.MANUAL_RUNNING) {
 				bulkLoadFile.setBulkloadStatus(JobStatus.MANUAL_PENDING);
 			}
-			
+
 			log.info(load.getBulkloadStatus());
-			
+
 			bulkLoadFile.setLocalFilePath(localFilePath);
 			bulkLoadFileDAO.persist(bulkLoadFile);
-		} else if(load.getBulkloadStatus().isForced()) {
+		} else if (load.getBulkloadStatus().isForced()) {
 			bulkLoadFile = bulkLoadFiles.getResults().get(0);
-			if(bulkLoadFile.getBulkloadStatus().isNotRunning()) {
+			if (bulkLoadFile.getBulkloadStatus().isNotRunning()) {
 				bulkLoadFile.setLocalFilePath(localFilePath);
 				bulkLoadFile.setBulkloadStatus(JobStatus.FORCED_PENDING);
 			} else {
@@ -171,7 +181,7 @@ public class BulkLoadProcessor {
 			bulkLoadFile.setLocalFilePath(null);
 		}
 
-		if(!load.getLoadFiles().contains(bulkLoadFile)) {
+		if (!load.getLoadFiles().contains(bulkLoadFile)) {
 			load.getLoadFiles().add(bulkLoadFile);
 		}
 		bulkLoadFileDAO.merge(bulkLoadFile);
@@ -182,7 +192,7 @@ public class BulkLoadProcessor {
 		log.info("Load: " + load.getName() + " is starting");
 
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
-		if(!bulkLoad.getBulkloadStatus().isStarted()) {
+		if (!bulkLoad.getBulkloadStatus().isStarted()) {
 			log.warn("startLoad: Job is not started returning: " + bulkLoad.getBulkloadStatus());
 			return;
 		}
@@ -190,7 +200,7 @@ public class BulkLoadProcessor {
 		bulkLoadDAO.merge(bulkLoad);
 		log.info("Load: " + bulkLoad.getName() + " is running");
 	}
-	
+
 	protected void endLoad(BulkLoad load, String message, JobStatus status) {
 		BulkLoad bulkLoad = bulkLoadDAO.find(load.getId());
 		bulkLoad.setErrorMessage(message);
@@ -206,7 +216,7 @@ public class BulkLoadProcessor {
 	}
 
 	protected void endLoadFile(BulkLoadFile bulkLoadFile, String message, JobStatus status) {
-		if(bulkLoadFile.getLocalFilePath() != null) {
+		if (bulkLoadFile.getLocalFilePath() != null) {
 			new File(bulkLoadFile.getLocalFilePath()).delete();
 			bulkLoadFile.setLocalFilePath(null);
 		}

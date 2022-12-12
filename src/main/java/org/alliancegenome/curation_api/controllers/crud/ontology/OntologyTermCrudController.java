@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.OntologyTermService;
 @RequestScoped
 public class OntologyTermCrudController extends BaseOntologyTermController<OntologyTermService, OntologyTerm, OntologyTermDAO> implements OntologyTermCrudInterface {
 
-	@Inject OntologyTermService ontologyTermService;
+	@Inject
+	OntologyTermService ontologyTermService;
 
 	@Override
 	@PostConstruct

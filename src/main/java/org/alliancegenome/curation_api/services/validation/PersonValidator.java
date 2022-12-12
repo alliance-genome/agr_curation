@@ -12,15 +12,15 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class PersonValidator extends AuditedObjectValidator<Person>{
+public class PersonValidator extends AuditedObjectValidator<Person> {
 
 	@Inject
 	PersonDAO personDAO;
-	
+
 	public Person validatePerson(Person uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		String errorTitle = "Could not update Person: [" + uiEntity.getId() + "]";
-		
+
 		Long id = uiEntity.getId();
 		if (id == null) {
 			addMessageResponse("No Person ID provided");
@@ -31,46 +31,45 @@ public class PersonValidator extends AuditedObjectValidator<Person>{
 			addMessageResponse("Could not find Person with ID: [" + id + "]");
 			throw new ApiErrorException(response);
 		}
-		
+
 		dbEntity = (Person) validateAuditedObjectFields(uiEntity, dbEntity, false);
-		
+
 		String uniqueId = validateUniqueId(uiEntity);
 		dbEntity.setUniqueId(uniqueId);
-		
+
 		dbEntity.setFirstName(handleStringField(uiEntity.getFirstName()));
 		dbEntity.setMiddleName(handleStringField(uiEntity.getMiddleName()));
 		dbEntity.setLastName(handleStringField(uiEntity.getLastName()));
 		dbEntity.setOrcid(handleStringField(uiEntity.getOrcid()));
 		dbEntity.setModEntityId(handleStringField(uiEntity.getModEntityId()));
-		
+
 		if (CollectionUtils.isNotEmpty(uiEntity.getEmails())) {
-			dbEntity.setEmails(uiEntity.getEmails());	
+			dbEntity.setEmails(uiEntity.getEmails());
 		} else {
 			dbEntity.setEmails(null);
 		}
-		
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getOldEmails())) {
 			dbEntity.setOldEmails(uiEntity.getOldEmails());
 		} else {
 			dbEntity.setOldEmails(null);
 		}
-		
+
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorTitle);
 			throw new ApiErrorException(response);
 		}
-		
+
 		return dbEntity;
 	}
-	
+
 	public String validateUniqueId(Person uiEntity) {
 		String field = "uniqueId";
 		if (StringUtils.isBlank(uiEntity.getUniqueId())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
 			return null;
 		}
-		
+
 		return uiEntity.getUniqueId();
 	}
 
