@@ -11,6 +11,7 @@ import { ControlledVocabularyDropdown } from '../../components/ControlledVocabul
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
+import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/VocabTermAutocompleteTemplate';
@@ -30,6 +31,14 @@ export const AllelesTable = () => {
 
 	const [mutationTypesData, setMutationTypesData] = useState({
 		mutationTypes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [secondaryIdsData, setSecondaryIdsData] = useState({
+		secondaryId: "",
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -405,6 +414,95 @@ export const AllelesTable = () => {
 		}));
 	};
 
+	const secondaryIdsTemplate = (rowData) => {
+		if (rowData?.alleleSecondaryIds) {
+			const listTemplate = (item) => {
+				return (
+					<span style={{ textDecoration: 'underline' }}>
+						{item && item}
+					</span>
+				);
+			};
+			return (
+				<>
+					<Button className="p-button-text"
+							onClick={(event) => { handleSecondaryIdsOpen(event, rowData, false) }} >
+						<ListTableCell template={listTemplate} listData={rowData.alleleSecondaryIds.map(a => a.secondaryId).sort()}/>
+					</Button>
+				</>
+			);
+		}
+	};
+
+	const secondaryIdsEditor = (props) => {
+		if (props?.rowData?.alleleSecondaryIds) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleSecondaryIdsOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`Secondary IDs(${props.rowData.alleleSecondaryIds.length}) `}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+						</span>
+					</Button>
+				</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleSecondaryIdsOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Secondary ID
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
+								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
+							</span>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+
+
+	const handleSecondaryIdsOpen = (event, rowData, isInEdit) => {
+		let _secondaryIdsData = {};
+		_secondaryIdsData["originalSecondaryIds"] = rowData.alleleSecondaryIds;
+		_secondaryIdsData["dialog"] = true;
+		_secondaryIdsData["isInEdit"] = isInEdit;
+		setSecondaryIdsData(() => ({
+			..._secondaryIdsData
+		}));
+	};
+
+	const handleSecondaryIdsOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _secondaryIdsData = {};
+		_secondaryIdsData["originalSecondaryIds"] = rowProps.rowData.alleleSecondaryIds;
+		_secondaryIdsData["dialog"] = true;
+		_secondaryIdsData["isInEdit"] = isInEdit;
+		_secondaryIdsData["rowIndex"] = index;
+		_secondaryIdsData["mainRowProps"] = rowProps;
+		setSecondaryIdsData(() => ({
+			..._secondaryIdsData
+		}));
+	};
+
 	const columns = [
 		{
 			field: "curie",
@@ -428,6 +526,15 @@ export const AllelesTable = () => {
 			sortable: isEnabled,
 			filter: true,
 			filterElement: {type: "input", filterName: "symbolFilter", fields: ["alleleSymbol.displayText", "alleleSymbol.formatText"]}
+		},
+		{
+			field: "alleleSecondaryIds.secondaryId",
+			header: "Secondary IDs",
+			body: secondaryIdsTemplate,
+			editor: (props) => secondaryIdsEditor(props),
+			sortable: isEnabled,
+			filter: true,
+			filterElement: {type: "input", filterName: "secondaryIdsFilter", fields: ["alleleSecondaryIds.secondaryId", "alleleSecondaryIds.evidence.curie"]}
 		},
 		{
 			field: "taxon.name",
@@ -552,6 +659,12 @@ export const AllelesTable = () => {
 			<MutationTypesDialog
 				originalMutationTypesData={mutationTypesData}
 				setOriginalMutationTypesData={setMutationTypesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<SecondaryIdsDialog
+				originalSecondaryIdsData={secondaryIdsData}
+				setOriginalSecondaryIdsData={setSecondaryIdsData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>

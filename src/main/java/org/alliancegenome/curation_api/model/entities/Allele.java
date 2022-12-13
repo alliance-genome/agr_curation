@@ -77,31 +77,36 @@ public class Allele extends GenomicEntity {
 	@OneToMany(mappedBy = "subject", cascade = CascadeType.ALL)
 	private List<AlleleDiseaseAnnotation> alleleDiseaseAnnotations;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "mutationTypes.curie", "mutationTypes.name", "evidence.curie",
+			"mutationTypes.curie_keyword", "mutationTypes.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleMutationTypeSlotAnnotation> alleleMutationTypes;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToOne(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsOnly.class })
 	private AlleleFullNameSlotAnnotation alleleFullName;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "displayText", "formatText", "nameType.name", "synonymScope.name", "evidence.curie",
+			"displayText_keyword", "formatText_keyword", "nameType.name_keyword", "synonymScope.name_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
 	private List<AlleleSynonymSlotAnnotation> alleleSynonyms;
 
-	@IndexedEmbedded(includeDepth = 2)
+	@IndexedEmbedded(includePaths = { "secondaryId", "evidence.curie",
+			"secondaryId_keyword", "evidence.curie_keyword"})
 	@OneToMany(mappedBy = "singleAllele", cascade = CascadeType.ALL)
 	@JsonManagedReference
 	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class })
