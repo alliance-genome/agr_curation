@@ -1,6 +1,6 @@
 [
   {
-    "curie": "ALLELETEST:Allele0074",
+    "curie": "ALLELETEST:Allele0001",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
     "obsolete": true,
@@ -48,16 +48,9 @@
       {
         "display_text": "Test allele synonym 1",
         "format_text": "Test allele synonym <sup>1</sup>",
+        "synonym_scope_name": "exact",
         "synonym_url": "https://alliancegenome.org/test",
         "name_type_name": "unspecified",
-        "evidence_curies": [
-          "PMID:25920550"
-        ]
-      }
-    ],
-    "allele_secondary_id_dtos": [
-      {
-        "secondary_id": "TEST:Secondary",
         "evidence_curies": [
           "PMID:25920550"
         ]
