@@ -46,8 +46,6 @@ import lombok.ToString;
 @Table(indexes = { @Index(name = "allelesecondaryid_singleallele_curie_index", columnList = "singleallele_curie"), })
 public class AlleleSecondaryIdSlotAnnotation extends SlotAnnotation {
 
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonBackReference
 	private Allele singleAllele;
