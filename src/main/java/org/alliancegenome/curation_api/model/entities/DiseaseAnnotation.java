@@ -109,7 +109,8 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<ConditionRelation> conditionRelations;
 
-	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "diseaseannotation_id"))

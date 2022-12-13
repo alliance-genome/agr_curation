@@ -54,13 +54,15 @@ public class AlleleDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsOnly.class })
 	private Allele subject;
 
-	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
 	private Gene inferredGene;
 
-	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "allelediseaseannotation_id"))
