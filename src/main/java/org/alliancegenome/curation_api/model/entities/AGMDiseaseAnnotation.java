@@ -56,8 +56,8 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsOnly.class })
 	private Gene inferredGene;
 
-	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText",
-			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword" })
+	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "alleleSecondaryIds.displayText",
+			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword", "alleleSecondaryIds.displayText_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
@@ -71,8 +71,8 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<Gene> assertedGenes;
 
-	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText",
-			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword" })
+	@IndexedEmbedded(includePaths = { "curie", "alleleSymbol.displayText", "alleleFullName.displayText", "alleleSynonyms.displayText", "alleleSecondaryIds.displayText",
+			"curie_keyword", "alleleSymbol.displayText_keyword", "alleleFullName.displayText_keyword", "alleleSynonyms.displayText_keyword", "alleleSecondaryIds.displayText_keyword" })
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonView({ View.FieldsOnly.class })
