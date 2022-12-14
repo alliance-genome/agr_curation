@@ -685,7 +685,7 @@ public class BaseITCase {
 	public void loadAffectedGenomicModel(String curie, String name, String taxonCurie) throws Exception {
 		AffectedGenomicModel agm = new AffectedGenomicModel();
 		agm.setCurie(curie);
-		agm.setTaxon(getNCBITaxonTerm(curie));
+		agm.setTaxon(getNCBITaxonTerm(taxonCurie));
 		agm.setName(name);
 
 		RestAssured.given().

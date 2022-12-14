@@ -4809,8 +4809,8 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		diseaseQualifiers = new ArrayList<VocabularyTerm>();
 		relatedNotes = new ArrayList<Note>();
 		
-		testReference = createReference("AGRKB:000000005", false);
-		testReference2 = createReference("AGRKB:000000006", false);
+		testReference = createReference("AGRKB:100000005", false);
+		testReference2 = createReference("AGRKB:100000006", false);
 		testDoTerm = createDoTerm("DOID:da0001", false);
 		testDoTerm2 = createDoTerm("DOID:da0002", false);
 		testObsoleteDoTerm = createDoTerm("DOID:da0003", true);
