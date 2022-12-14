@@ -689,6 +689,12 @@ public class AlleleITCase extends BaseITCase {
 			when().
 			put("/api/allele").
 			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
 			statusCode(200).
 			body("entity", not(hasKey("inheritanceMode"))).
 			body("entity", not(hasKey("inCollection"))).
@@ -723,6 +729,12 @@ public class AlleleITCase extends BaseITCase {
 			body(allele).
 			when().
 			put("/api/allele").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
 			then().
 			statusCode(200).
 			body("entity", hasKey("alleleMutationTypes")).

@@ -412,6 +412,17 @@ public class BaseITCase {
 		return zfaTerm;
 	}
 
+	public AffectedGenomicModel getAffectedGenomicModel(String curie) {
+		ObjectResponse<AffectedGenomicModel> res = RestAssured.given().
+				when().
+				get("/api/agm/" + curie).
+				then().
+				statusCode(200).
+				extract().body().as(getObjectResponseTypeRefAffectedGenomicModel());
+
+		return res.getEntity();
+	}
+
 	public AGMDiseaseAnnotation getAgmDiseaseAnnotation(String uniqueId) {
 		ObjectResponse<AGMDiseaseAnnotation> res = RestAssured.given().
 				when().
@@ -507,6 +518,10 @@ public class BaseITCase {
 	
 	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
 		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
+	}
+	
+	private TypeRef<ObjectResponse<AffectedGenomicModel>> getObjectResponseTypeRefAffectedGenomicModel() {
+		return new TypeRef<ObjectResponse <AffectedGenomicModel>>() { };
 	}
 
 	private TypeRef<ObjectResponse<AGMDiseaseAnnotation>> getObjectResponseTypeRefAGMDiseaseAnnotation() {
