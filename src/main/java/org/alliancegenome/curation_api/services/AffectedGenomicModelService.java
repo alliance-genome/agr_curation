@@ -17,6 +17,7 @@ import org.alliancegenome.curation_api.dao.CrossReferenceDAO;
 import org.alliancegenome.curation_api.dao.ontology.NcbiTaxonTermDAO;
 import org.alliancegenome.curation_api.exceptions.ObjectUpdateException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.AffectedGenomicModelDTO;
@@ -35,19 +36,13 @@ import lombok.extern.jbosslog.JBossLog;
 public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGenomicModel, AffectedGenomicModelDTO, AffectedGenomicModelDAO> {
 
 	@Inject
-	AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject
-	CrossReferenceService crossReferenceService;
-	@Inject
-	CrossReferenceDAO crossReferenceDAO;
+	AffectedGenomicModelDAO agmDAO;
 	@Inject
 	AlleleDAO alleleDAO;
 	@Inject
-	AffectedGenomicModelValidator affectedGenomicModelValidator;
+	AffectedGenomicModelValidator agmValidator;
 	@Inject
-	AffectedGenomicModelDTOValidator affectedGenomicModelDtoValidator;
-	@Inject
-	NcbiTaxonTermDAO ncbiTaxonTermDAO;
+	AffectedGenomicModelDTOValidator agmDtoValidator;
 	@Inject
 	DiseaseAnnotationService diseaseAnnotationService;
 	@Inject
@@ -56,45 +51,31 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	@Override
 	@PostConstruct
 	protected void init() {
-		setSQLDao(affectedGenomicModelDAO);
+		setSQLDao(agmDAO);
 	}
-
-	@Transactional
-	@Override
-	public ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel entity) {
-		NCBITaxonTerm term = ncbiTaxonTermDAO.find(entity.getTaxon().getCurie());
-		entity.setTaxon(term);
-		if (CollectionUtils.isNotEmpty(entity.getCrossReferences())) {
-			List<CrossReference> refs = new ArrayList<>();
-			entity.getCrossReferences().forEach(crossReference -> {
-				CrossReference reference = new CrossReference();
-				reference.setCurie(crossReference.getCurie());
-				crossReferenceDAO.persist(reference);
-				refs.add(reference);
-			});
-			entity.setCrossReferences(refs);
-		}
-		AffectedGenomicModel object = dao.persist(entity);
-		ObjectResponse<AffectedGenomicModel> ret = new ObjectResponse<>(object);
-		return ret;
-	}
-
+	
 	@Override
 	@Transactional
 	public ObjectResponse<AffectedGenomicModel> update(AffectedGenomicModel uiEntity) {
-		log.info(authenticatedPerson);
-		AffectedGenomicModel dbEntity = affectedGenomicModelValidator.validateAnnotation(uiEntity);
-		return new ObjectResponse<>(affectedGenomicModelDAO.persist(dbEntity));
+		AffectedGenomicModel dbEntity = agmDAO.persist(agmValidator.validateAffectedGenomicModelUpdate(uiEntity));
+		return new ObjectResponse<AffectedGenomicModel>(dbEntity);
+	}
+	
+	@Override
+	@Transactional
+	public ObjectResponse<AffectedGenomicModel> create(AffectedGenomicModel uiEntity) {
+		AffectedGenomicModel dbEntity = agmDAO.persist(agmValidator.validateAffectedGenomicModelCreate(uiEntity));
+		return new ObjectResponse<AffectedGenomicModel>(dbEntity);
 	}
 
 	@Transactional
 	public AffectedGenomicModel upsert(AffectedGenomicModelDTO dto) throws ObjectUpdateException {
-		AffectedGenomicModel agm = affectedGenomicModelDtoValidator.validateAffectedGenomicModelDTO(dto);
+		AffectedGenomicModel agm = agmDtoValidator.validateAffectedGenomicModelDTO(dto);
 
 		if (agm == null)
 			return null;
 
-		return affectedGenomicModelDAO.persist(agm);
+		return agmDAO.persist(agm);
 	}
 
 	@Transactional
@@ -110,9 +91,9 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
 		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
-			AffectedGenomicModel agm = affectedGenomicModelDAO.find(curie);
+			AffectedGenomicModel agm = agmDAO.find(curie);
 			if (agm != null) {
-				List<Long> referencingDAIds = affectedGenomicModelDAO.findReferencingDiseaseAnnotations(curie);
+				List<Long> referencingDAIds = agmDAO.findReferencingDiseaseAnnotations(curie);
 				Boolean anyPublicReferencingDAs = false;
 				for (Long daId : referencingDAIds) {
 					Boolean daMadePublic = diseaseAnnotationService.deprecateOrDeleteAnnotationAndNotes(daId, false, "AGM");
@@ -124,9 +105,9 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 					agm.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataType + " AGM bulk upload"));
 					agm.setDateUpdated(OffsetDateTime.now());
 					agm.setObsolete(true);
-					affectedGenomicModelDAO.persist(agm);
+					agmDAO.persist(agm);
 				} else {
-					affectedGenomicModelDAO.remove(curie);
+					agmDAO.remove(curie);
 				}
 			} else {
 				log.error("Failed getting AGM: " + curie);
@@ -137,7 +118,7 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	public List<String> getCuriesByTaxonId(String taxonId) {
-		List<String> curies = affectedGenomicModelDAO.findAllCuriesByTaxon(taxonId);
+		List<String> curies = agmDAO.findAllCuriesByTaxon(taxonId);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

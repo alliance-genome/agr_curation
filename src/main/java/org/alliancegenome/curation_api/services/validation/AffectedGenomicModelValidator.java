@@ -5,6 +5,7 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
+import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
@@ -19,9 +20,12 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	
+	private String errorMessage;
 
-	public AffectedGenomicModel validateAnnotation(AffectedGenomicModel uiEntity) {
+	public AffectedGenomicModel validateAffectedGenomicModelUpdate(AffectedGenomicModel uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not update AGM: [" + uiEntity.getCurie() + "]";
 
 		String curie = validateCurie(uiEntity);
 		if (curie == null) {
@@ -30,15 +34,31 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 		AffectedGenomicModel dbEntity = affectedGenomicModelDAO.find(curie);
 		if (dbEntity == null) {
-			addMessageResponse("Could not find AGM with curie: [" + curie + "]");
+			addMessageResponse("curie", ValidationConstants.INVALID_MESSAGE);
 			throw new ApiErrorException(response);
 		}
-
-		String errorTitle = "Could not update AGM [" + curie + "]";
-
+		
 		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		
+		return validateAffectedGenomicModel(uiEntity, dbEntity);
+	}
+	
+	public AffectedGenomicModel validateAffectedGenomicModelCreate(AffectedGenomicModel uiEntity) {
+		response = new ObjectResponse<>(uiEntity);
+		errorMessage = "Could not create AGM [" + uiEntity.getCurie() + "]";
 
-		String name = StringUtils.isNotBlank(uiEntity.getName()) ? uiEntity.getName() : null;
+		AffectedGenomicModel dbEntity = new AffectedGenomicModel();
+		String curie = validateCurie(uiEntity);
+		dbEntity.setCurie(curie);
+		
+		dbEntity = (AffectedGenomicModel) validateAuditedObjectFields(uiEntity, dbEntity, true);
+		
+		return validateAffectedGenomicModel(uiEntity, dbEntity);
+	}
+	
+	private AffectedGenomicModel validateAffectedGenomicModel(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
+
+		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
@@ -54,7 +74,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		dbEntity.setCrossReferences(crossReferences);
 
 		if (response.hasErrors()) {
-			response.setErrorMessage(errorTitle);
+			response.setErrorMessage(errorMessage);
 			throw new ApiErrorException(response);
 		}
 
