@@ -1,11 +1,14 @@
 package org.alliancegenome.curation_api.services.validation;
 
+import java.util.List;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
@@ -41,19 +44,14 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		NCBITaxonTerm taxon = validateTaxon(uiEntity);
 		dbEntity.setTaxon(taxon);
 
-		dbEntity.setSubtype(uiEntity.getSubtype());
-
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
 		} else {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
-			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-		} else {
-			dbEntity.setCrossReferences(null);
-		}
+		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
+		dbEntity.setCrossReferences(crossReferences);
 
 		if (response.hasErrors()) {
 			response.setErrorMessage(errorTitle);

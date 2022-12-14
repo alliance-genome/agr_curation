@@ -54,10 +54,7 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			for (CrossReference newXref : uiEntity.getCrossReferences()) {
 				ObjectResponse<CrossReference> xrefResponse = crossReferenceValidator.validateCrossReference(newXref);
 				if (xrefResponse.getEntity() == null) {
-					Map<String, String> errors = xrefResponse.getErrorMessages();
-					for (String xrefField : errors.keySet()) {
-						addMessageResponse(field, xrefField + " - " + errors.get(xrefField));
-					}
+					addMessageResponse(field, xrefResponse.errorMessagesString());
 					return null;
 				}
 				validatedXrefs.add(xrefResponse.getEntity());

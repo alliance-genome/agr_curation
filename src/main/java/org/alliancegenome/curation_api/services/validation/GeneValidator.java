@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.G
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotationDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
+import org.alliancegenome.curation_api.model.entities.CrossReference;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -100,11 +101,8 @@ public class GeneValidator extends GenomicEntityValidator {
 			dbEntity.setSecondaryIdentifiers(null);
 		}
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getCrossReferences())) {
-			dbEntity.setCrossReferences(uiEntity.getCrossReferences());
-		} else {
-			dbEntity.setCrossReferences(null);
-		}
+		List<CrossReference> crossReferences = validateCrossReferences(uiEntity, dbEntity);
+		dbEntity.setCrossReferences(crossReferences);
 
 		SOTerm geneType = validateGeneType(uiEntity, dbEntity);
 		dbEntity.setGeneType(geneType);
