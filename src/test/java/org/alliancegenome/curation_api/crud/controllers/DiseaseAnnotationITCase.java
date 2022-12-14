@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
@@ -24,24 +24,15 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.GeneDiseaseAnnotation;
-import org.alliancegenome.curation_api.model.entities.LoggedInPerson;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Organization;
 import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
 import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.response.SearchResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -51,14 +42,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(10)
-public class DiseaseAnnotationITCase {
+public class DiseaseAnnotationITCase extends BaseITCase {
 
 	private final String GENE_DISEASE_ANNOTATION = "GeneDisease:0001";
 	private final String GENE_DISEASE_ANNOTATION2 = "GeneDisease:0002";
@@ -114,63 +104,6 @@ public class DiseaseAnnotationITCase {
 	private Organization obsoleteDataProvider;
 	private Vocabulary nameTypeVocabulary;
 	private VocabularyTerm symbolNameType;
-	
-	private void createRequiredObjects() {
-		testEcoTerms = new ArrayList<ECOTerm>();
-		testEcoTerms2 = new ArrayList<ECOTerm>();
-		testObsoleteEcoTerms = new ArrayList<ECOTerm>();
-		testWithGenes = new ArrayList<Gene>();
-		diseaseQualifiers = new ArrayList<VocabularyTerm>();
-		relatedNotes = new ArrayList<Note>();
-		
-		testReference = createReference("AGRKB:000000005");
-		testReference2 = createReference("AGRKB:000000006");
-		testDoTerm = createDiseaseTerm("DOID:da0001", false);
-		testDoTerm2 = createDiseaseTerm("DOID:da0002", false);
-		testObsoleteDoTerm = createDiseaseTerm("DOID:da0003", true);
-		testEcoTerms.add(createEcoTerm("ECO:da0001", "Test evidence code", false));
-		testEcoTerms2.add(createEcoTerm("ECO:da0002", "Test evidence code2", false));
-		testObsoleteEcoTerms.add(createEcoTerm("ECO:da0003", "Test obsolete evidence code", true));
-		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
-		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		testGene = createGene("GENE:da0001", "NCBITaxon:9606", false, symbolNameType);
-		testGene2 = createGene("GENE:da0002", "NCBITaxon:9606", false, symbolNameType);
-		testObsoleteGene = createGene("HGNC:da0003", "NCBITaxon:9606", true, symbolNameType);
-		testWithGenes.add(createGene("HGNC:1", "NCBITaxon:9606", false, symbolNameType));
-		testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606", false, symbolNameType);
-		testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606", false, symbolNameType);
-		testObsoleteAllele = createAllele("ALLELE:da0003", "NCBITaxon:9606", true, symbolNameType);
-		testAgm = createModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
-		testAgm2 = createModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
-		testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
-		experimentalCondition = createExperimentalCondition("ZECO:da001", "Statement");
-		diseaseRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
-		noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-		geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
-		conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
-		diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
-		diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
-		annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
-		geneDiseaseRelation2 = getVocabularyTerm(diseaseRelationVocabulary, "is_marker_for");
-		alleleAndGeneDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in");
-		agmDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_model_of");
-		diseaseQualifiers.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity", false));
-		geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite", false);
-		diseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by", false);
-		annotationType = createVocabularyTerm(annotationTypeVocabulary,"computational", false);
-		testPerson = createPerson("TEST:Person0001");
-		testDate = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
-		noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
-		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
-		relatedNotes.add(createNote(noteType, "Test text", false, null));
-		relatedNotes.add(createNote(noteType, "Test text 2", false, null));
-		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
-		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
-		conditionRelation = createConditionRelation(conditionRelationType, experimentalCondition);
-		dataProvider = getOrganization("TEST");
-		secondaryDataProvider = getOrganization("TEST2");
-		obsoleteDataProvider = createObsoleteDataProvider();
-	}
 
 	@Test
 	@Order(1)
@@ -311,7 +244,7 @@ public class DiseaseAnnotationITCase {
 		List<ConditionRelation> conditionRelations= new ArrayList<>();
 		conditionRelations.add(conditionRelation);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(geneDiseaseRelation2);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -380,7 +313,7 @@ public class DiseaseAnnotationITCase {
 	@Order(5)
 	public void editAlleleDiseaseAnnotation() {
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -443,7 +376,7 @@ public class DiseaseAnnotationITCase {
 	@Order(6)
 	public void editAgmDiseaseAnnotation() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -510,7 +443,7 @@ public class DiseaseAnnotationITCase {
 	@Order(7)
 	public void editWithObsoleteEcoTerm() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -545,7 +478,7 @@ public class DiseaseAnnotationITCase {
 	@Order(8)
 	public void editWithObsoleteDoTerm() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testObsoleteDoTerm);
@@ -580,7 +513,7 @@ public class DiseaseAnnotationITCase {
 	@Order(9)
 	public void editWithMissingSubject() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -615,7 +548,7 @@ public class DiseaseAnnotationITCase {
 	@Order(10)
 	public void editWithMissingObject() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(null);
@@ -650,7 +583,7 @@ public class DiseaseAnnotationITCase {
 	@Order(11)
 	public void editWithMissingDiseaseRelation() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(null);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -686,7 +619,7 @@ public class DiseaseAnnotationITCase {
 	@Order(12)
 	public void editWithMissingDataProvider() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -723,9 +656,9 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -764,7 +697,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedDoTerm.setCurie("NPDO:0001");
 		nonPersistedDoTerm.setObsolete(false);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(nonPersistedDoTerm);
@@ -799,7 +732,7 @@ public class DiseaseAnnotationITCase {
 	@Order(15)
 	public void editWithInvalidDiseaseRelation() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -841,7 +774,7 @@ public class DiseaseAnnotationITCase {
 		List<ECOTerm> ecoTerms = new ArrayList<>();
 		ecoTerms.add(nonPersistedEcoTerm);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -878,9 +811,9 @@ public class DiseaseAnnotationITCase {
 		
 		BiologicalEntity nonPersistedBiologicalEntity = new BiologicalEntity();
 		nonPersistedBiologicalEntity.setCurie("NPBE:0001");
-		nonPersistedBiologicalEntity.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedBiologicalEntity.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -918,7 +851,7 @@ public class DiseaseAnnotationITCase {
 		List<Gene> withGenes = new ArrayList<>();
 		withGenes.add(testGene2);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -955,9 +888,9 @@ public class DiseaseAnnotationITCase {
 		
 		AffectedGenomicModel nonPersistedModel = new AffectedGenomicModel();
 		nonPersistedModel.setCurie("NPModel:0001");
-		nonPersistedModel.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedModel.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -992,7 +925,7 @@ public class DiseaseAnnotationITCase {
 	// @Test
 	@Order(20)
 	public void editWithMissingCreatedBy() {
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1027,7 +960,7 @@ public class DiseaseAnnotationITCase {
 	@Order(21)
 	public void editAttachedNote() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1073,7 +1006,7 @@ public class DiseaseAnnotationITCase {
 	@Order(22)
 	public void editWithObsoleteNoteType() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1114,7 +1047,7 @@ public class DiseaseAnnotationITCase {
 	@Order(23)
 	public void editWithObsoleteConditionRelationType() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1157,7 +1090,7 @@ public class DiseaseAnnotationITCase {
 		
 		Reference invalidReference = new Reference();
 		invalidReference.setCurie("Invalid");
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1197,7 +1130,7 @@ public class DiseaseAnnotationITCase {
 		Long deletedNoteId = relatedNotes.get(0).getId();
 		relatedNotes.remove(0);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1271,7 +1204,7 @@ public class DiseaseAnnotationITCase {
 		note.setInternal(false);
 		relatedNotes.add(note);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1318,7 +1251,7 @@ public class DiseaseAnnotationITCase {
 		List<ConditionRelation> conditionRelations= new ArrayList<>();
 		conditionRelations.add(conditionRelation);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1355,8 +1288,8 @@ public class DiseaseAnnotationITCase {
 	@Order(28)
 	public void deleteConditionRelation() {
 		
-		ExperimentalCondition newEc = createExperimentalCondition("ZECO:da002", "Another_statement");
-		ConditionRelation newCr = createConditionRelation(conditionRelationType, newEc);
+		ExperimentalCondition newEc = createExperimentalCondition("Another_statement", "ZECO:da002", "Test");
+		ConditionRelation newCr = createConditionRelation(null, null, conditionRelationType, List.of(newEc));
 		newCr.setHandle("first_cr");
 		newCr.setSingleReference(testReference);
 		conditionRelation.setHandle("second_cr");
@@ -1366,7 +1299,7 @@ public class DiseaseAnnotationITCase {
 		conditionRelations.add(conditionRelation);
 		
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1440,9 +1373,9 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1481,9 +1414,9 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1522,9 +1455,9 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1565,9 +1498,9 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1608,9 +1541,9 @@ public class DiseaseAnnotationITCase {
 		
 		Allele nonPersistedAllele = new Allele();
 		nonPersistedAllele.setCurie("NPAllele:0001");
-		nonPersistedAllele.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedAllele.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1651,9 +1584,9 @@ public class DiseaseAnnotationITCase {
 		
 		Allele nonPersistedAllele = new Allele();
 		nonPersistedAllele.setCurie("NPAllele:0001");
-		nonPersistedAllele.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedAllele.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1692,7 +1625,7 @@ public class DiseaseAnnotationITCase {
 	@Order(35)
 	public void editAlleleDiseaseAnnotationWithObsoleteInferredGene() {
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1729,7 +1662,7 @@ public class DiseaseAnnotationITCase {
 	@Order(36)
 	public void editAlleleDiseaseAnnotationWithObsoleteAssertedGene() {
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1766,7 +1699,7 @@ public class DiseaseAnnotationITCase {
 	@Order(37)
 	public void editAgmDiseaseAnnotationWithObsoleteInferredGene() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1805,7 +1738,7 @@ public class DiseaseAnnotationITCase {
 	@Order(38)
 	public void editAgmDiseaseAnnotationWithObsoleteAssertedGene() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1844,7 +1777,7 @@ public class DiseaseAnnotationITCase {
 	@Order(39)
 	public void editAgmDiseaseAnnotationWithObsoleteInferredAllele() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1883,7 +1816,7 @@ public class DiseaseAnnotationITCase {
 	@Order(40)
 	public void editAgmDiseaseAnnotationWithObsoleteAssertedAllele() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1922,7 +1855,7 @@ public class DiseaseAnnotationITCase {
 	@Order(41)
 	public void editWithObsoleteSubject() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1962,7 +1895,7 @@ public class DiseaseAnnotationITCase {
 	@Order(42)
 	public void editWithInvalidGeneticSex() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -1997,7 +1930,7 @@ public class DiseaseAnnotationITCase {
 	@Order(43)
 	public void editWithInvalidAnnotationType() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -2032,7 +1965,7 @@ public class DiseaseAnnotationITCase {
 	@Order(44)
 	public void editWithInvalidDiseaseGeneticModifierRelation() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -2070,7 +2003,7 @@ public class DiseaseAnnotationITCase {
 		List<Gene> withGenes = new ArrayList<Gene>();
 		withGenes.add(testObsoleteGene);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -2320,7 +2253,7 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
@@ -2479,7 +2412,7 @@ public class DiseaseAnnotationITCase {
 		
 		BiologicalEntity nonPersistedBiologicalEntity = new BiologicalEntity();
 		nonPersistedBiologicalEntity.setCurie("NPBE:0001");
-		nonPersistedBiologicalEntity.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedBiologicalEntity.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
@@ -2558,7 +2491,7 @@ public class DiseaseAnnotationITCase {
 		
 		AffectedGenomicModel nonPersistedModel = new AffectedGenomicModel();
 		nonPersistedModel.setCurie("NPModel:0001");
-		nonPersistedModel.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedModel.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		GeneDiseaseAnnotation newDiseaseAnnotation = new GeneDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(GENE_DISEASE_ANNOTATION2);
@@ -2762,7 +2695,7 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		AlleleDiseaseAnnotation newDiseaseAnnotation = new AlleleDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION2);
@@ -2804,7 +2737,7 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		AlleleDiseaseAnnotation newDiseaseAnnotation = new AlleleDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(ALLELE_DISEASE_ANNOTATION2);
@@ -2846,7 +2779,7 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		AGMDiseaseAnnotation newDiseaseAnnotation = new AGMDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(AGM_DISEASE_ANNOTATION2);
@@ -2890,7 +2823,7 @@ public class DiseaseAnnotationITCase {
 		
 		Gene nonPersistedGene = new Gene();
 		nonPersistedGene.setCurie("NPGene:0001");
-		nonPersistedGene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedGene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		AGMDiseaseAnnotation newDiseaseAnnotation = new AGMDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(AGM_DISEASE_ANNOTATION2);
@@ -2934,7 +2867,7 @@ public class DiseaseAnnotationITCase {
 		
 		Allele nonPersistedAllele = new Allele();
 		nonPersistedAllele.setCurie("NPAllele:0001");
-		nonPersistedAllele.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedAllele.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		AGMDiseaseAnnotation newDiseaseAnnotation = new AGMDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(AGM_DISEASE_ANNOTATION2);
@@ -2978,7 +2911,7 @@ public class DiseaseAnnotationITCase {
 		
 		Allele nonPersistedAllele = new Allele();
 		nonPersistedAllele.setCurie("NPAllele:0001");
-		nonPersistedAllele.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		nonPersistedAllele.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		
 		AGMDiseaseAnnotation newDiseaseAnnotation = new AGMDiseaseAnnotation();
 		newDiseaseAnnotation.setModEntityId(AGM_DISEASE_ANNOTATION2);
@@ -3547,7 +3480,7 @@ public class DiseaseAnnotationITCase {
 	@Order(83)
 	public void editWithModifierWithoutRelation() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3582,7 +3515,7 @@ public class DiseaseAnnotationITCase {
 	@Order(84)
 	public void editWithModifierRelationWithoutModifier() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3617,7 +3550,7 @@ public class DiseaseAnnotationITCase {
 	@Order(85)
 	public void editWithMissingSingleReference() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3688,7 +3621,7 @@ public class DiseaseAnnotationITCase {
 	@Order(87)
 	public void editWithMissingEvidenceCodes() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3763,7 +3696,7 @@ public class DiseaseAnnotationITCase {
 		Note mismatchRefNote = createNote(noteType, "Test text", false, testReference);
 		mismatchedRefNotes.add(mismatchRefNote);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3838,7 +3771,7 @@ public class DiseaseAnnotationITCase {
 		Note mismatchRefNote = createNote(noteType, "Test text", false, testReference2);
 		mismatchedRefNotes.add(mismatchRefNote);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3913,7 +3846,7 @@ public class DiseaseAnnotationITCase {
 	@Order(93)
 	public void editWithNullGeneticSex() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -3958,7 +3891,7 @@ public class DiseaseAnnotationITCase {
 	@Order(94)
 	public void editWithNullWith() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4004,7 +3937,7 @@ public class DiseaseAnnotationITCase {
 	@Order(95)
 	public void editWithNullRelatedNotes() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4049,7 +3982,7 @@ public class DiseaseAnnotationITCase {
 	@Order(96)
 	public void editWithNullSgdStrainBackground() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4097,7 +4030,7 @@ public class DiseaseAnnotationITCase {
 		List<ConditionRelation> conditionRelations= new ArrayList<>();
 		conditionRelations.add(conditionRelation);
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4143,7 +4076,7 @@ public class DiseaseAnnotationITCase {
 	@Order(98)
 	public void editWithNullAnnotationType() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4188,7 +4121,7 @@ public class DiseaseAnnotationITCase {
 	@Order(99)
 	public void editWithNullDiseaseQualifiers() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4233,7 +4166,7 @@ public class DiseaseAnnotationITCase {
 	@Order(100)
 	public void editWithNullDiseaseGeneticModifierAndRelation() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4268,7 +4201,7 @@ public class DiseaseAnnotationITCase {
 	@Order(101)
 	public void editAlleleAnnotationWithNullInferredGene() {
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4313,7 +4246,7 @@ public class DiseaseAnnotationITCase {
 	@Order(102)
 	public void editAlleleAnnotationWithNullAssertedGene() {
 		
-		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation();
+		AlleleDiseaseAnnotation editedDiseaseAnnotation = getAlleleDiseaseAnnotation(ALLELE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4358,7 +4291,7 @@ public class DiseaseAnnotationITCase {
 	@Order(103)
 	public void editAGMAnnotationWithNullInferredGene() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4403,7 +4336,7 @@ public class DiseaseAnnotationITCase {
 	@Order(104)
 	public void editAGMAnnotationWithNullAssertedGenes() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4448,7 +4381,7 @@ public class DiseaseAnnotationITCase {
 	@Order(105)
 	public void editAGMAnnotationWithNullInferredAllele() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4493,7 +4426,7 @@ public class DiseaseAnnotationITCase {
 	@Order(106)
 	public void editAGMAnnotationWithNullAssertedAllele() {
 		
-		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation();
+		AGMDiseaseAnnotation editedDiseaseAnnotation = getAgmDiseaseAnnotation(AGM_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(agmDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4618,7 +4551,7 @@ public class DiseaseAnnotationITCase {
 	@Order(109)
 	public void editWithNullSecondaryDataProvider() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4656,7 +4589,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedOrganization.setUniqueId("Invalid");
 		nonPersistedOrganization.setAbbreviation("IDP");
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4695,7 +4628,7 @@ public class DiseaseAnnotationITCase {
 		nonPersistedOrganization.setUniqueId("Invalid");
 		nonPersistedOrganization.setAbbreviation("IDP");
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4802,7 +4735,7 @@ public class DiseaseAnnotationITCase {
 	@Order(114)
 	public void editWithObsoleteDataProvider() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4837,7 +4770,7 @@ public class DiseaseAnnotationITCase {
 	@Order(115)
 	public void editWithObsoleteSecondaryDataProvider() {
 		
-		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation();
+		GeneDiseaseAnnotation editedDiseaseAnnotation = getGeneDiseaseAnnotation(GENE_DISEASE_ANNOTATION);
 		editedDiseaseAnnotation.setDiseaseRelation(alleleAndGeneDiseaseRelation);
 		editedDiseaseAnnotation.setNegated(true);
 		editedDiseaseAnnotation.setObject(testDoTerm2);
@@ -4868,414 +4801,60 @@ public class DiseaseAnnotationITCase {
 				body("errorMessages.secondaryDataProvider", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
-	private Organization getOrganization(String abbreviation) {
+	private void createRequiredObjects() {
+		testEcoTerms = new ArrayList<ECOTerm>();
+		testEcoTerms2 = new ArrayList<ECOTerm>();
+		testObsoleteEcoTerms = new ArrayList<ECOTerm>();
+		testWithGenes = new ArrayList<Gene>();
+		diseaseQualifiers = new ArrayList<VocabularyTerm>();
+		relatedNotes = new ArrayList<Note>();
 		
-		SearchResponse<Organization> response =
-				RestAssured.given().
-					contentType("application/json").
-					body("{\"abbreviation\": \"" + abbreviation + "\" }").
-					when().
-					post("/api/organization/find").
-					then().
-					statusCode(200).
-					extract().body().as(getSearchResponseTypeRefOrganization());
-		
-		return response.getSingleResult();
-	}
-	
-	private GeneDiseaseAnnotation getGeneDiseaseAnnotation() {
-		ObjectResponse<GeneDiseaseAnnotation> res = RestAssured.given().
-				when().
-				get("/api/gene-disease-annotation/findBy/" + GENE_DISEASE_ANNOTATION).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRef());
-
-		return res.getEntity();
-	}
-
-	private AlleleDiseaseAnnotation getAlleleDiseaseAnnotation() {
-		ObjectResponse<AlleleDiseaseAnnotation> res = RestAssured.given().
-				when().
-				get("/api/allele-disease-annotation/findBy/" + ALLELE_DISEASE_ANNOTATION).
-				then().
-				statusCode(200).
-				extract().body().as(new TypeRef<>() {
-		});
-
-		return res.getEntity();
-	}
-
-	private AGMDiseaseAnnotation getAgmDiseaseAnnotation() {
-		ObjectResponse<AGMDiseaseAnnotation> res = RestAssured.given().
-				when().
-				get("/api/agm-disease-annotation/findBy/" + AGM_DISEASE_ANNOTATION).
-				then().
-				statusCode(200).
-				extract().body().as(new TypeRef<>() {
-		});
-
-		return res.getEntity();
-	}
-	
-	private BiologicalEntity createBiologicalEntity(String curie, String taxon) {
-		BiologicalEntity bioEntity = new BiologicalEntity();
-		bioEntity.setCurie(curie);
-		bioEntity.setTaxon(getTaxonFromCurie(taxon));
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(bioEntity).
-				when().
-				post("/api/biologicalentity").
-				then().
-				statusCode(200);
-		
-		return bioEntity;
-	}
-
-
-	private DOTerm createDiseaseTerm(String curie, Boolean obsolete) {
-		DOTerm doTerm = new DOTerm();
-		doTerm.setCurie(curie);
-		doTerm.setObsolete(obsolete);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(doTerm).
-				when().
-				post("/api/doterm").
-				then().
-				statusCode(200);
-		return doTerm;
-	}
-
-
-	private ECOTerm createEcoTerm(String curie, String name, Boolean obsolete) {
-		ECOTerm ecoTerm = new ECOTerm();
-		ecoTerm.setCurie(curie);
-		ecoTerm.setName(name);
-		ecoTerm.setObsolete(obsolete);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(ecoTerm).
-				when().
-				post("/api/ecoterm").
-				then().
-				statusCode(200);
-		return ecoTerm;
-	}
-
-
-	private Gene createGene(String curie, String taxon, Boolean obsolete, VocabularyTerm symbolNameTerm) {
-		Gene gene = new Gene();
-		gene.setCurie(curie);
-		gene.setTaxon(getTaxonFromCurie(taxon));
-		gene.setObsolete(obsolete);
-		
-		GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(curie);
-		symbol.setFormatText(curie);
-		
-		gene.setGeneSymbol(symbol);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(gene).
-				when().
-				post("/api/gene").
-				then().
-				statusCode(200);
-		return gene;
-	}
-
-	private Allele createAllele(String curie, String taxon, Boolean obsolete, VocabularyTerm symbolNameTerm) {
-		Allele allele = new Allele();
-		allele.setCurie(curie);
-		allele.setTaxon(getTaxonFromCurie(taxon));
-		allele.setObsolete(obsolete);
-		allele.setInternal(false);
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(curie);
-		symbol.setFormatText(curie);
-		
-		allele.setAlleleSymbol(symbol);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				post("/api/allele").
-				then().
-				statusCode(200);
-		return allele;
-	}
-	
-	private Person createPerson(String uniqueId) {
-		LoggedInPerson person = new LoggedInPerson();
-		person.setUniqueId(uniqueId);
-		
-		ObjectResponse<LoggedInPerson> response = RestAssured.given().
-				contentType("application/json").
-				body(person).
-				when().
-				post("/api/loggedinperson").
-				then().
-				statusCode(200).extract().
-				body().as(getObjectResponseTypeRefLoggedInPerson());
-		
-		person = response.getEntity();
-		return (Person) person;
-	}
-	
-	private Organization createObsoleteDataProvider() {
-		Organization organization = new Organization();
-		organization.setAbbreviation("ODP");
-		organization.setUniqueId("ObsoleteDataProvider");
-		organization.setObsolete(true);
-		
-		ObjectResponse<Organization> response = RestAssured.given().
-				contentType("application/json").
-				body(organization).
-				when().
-				post("/api/organization").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefOrganization());
-		
-		return response.getEntity();
-	}
-
-	private AffectedGenomicModel createModel(String curie, String taxon, String name) {
-		AffectedGenomicModel model = new AffectedGenomicModel();
-		model.setCurie(curie);
-		model.setTaxon(getTaxonFromCurie(taxon));
-		model.setName(name);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(model).
-				when().
-				post("/api/agm").
-				then().
-				statusCode(200);
-		return model;
-	}
-	
-	private Reference createReference(String curie) {
-		Reference reference = new Reference();
-		reference.setCurie(curie);
-		
-		ObjectResponse<Reference> response = RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			post("/api/reference").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefReference());
-			
-		return response.getEntity();
-	}
-
-	private Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		Vocabulary vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-
-	private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name, Boolean obsolete) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setVocabulary(vocabulary);
-		vocabularyTerm.setObsolete(obsolete);
-		vocabularyTerm.setInternal(false);
-		
-		ObjectResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-		
-		vocabularyTerm = response.getEntity();
-		
-		return vocabularyTerm;
-	}
-	
-	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
-		ObjectListResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
-		
-		List<VocabularyTerm> vocabularyTerms = response.getEntities();
-		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
-			if (vocabularyTerm.getName().equals(name)) {
-				return vocabularyTerm;
-			}
-		}
-		
-		return null;
-	}
-	
-	private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
-		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
-			when().
-			get("/api/ncbitaxonterm/" + taxonCurie).
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefTaxon());
-		
-		return response.getEntity();
-	}
-
-	private Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal, Reference reference) {
-		Note note = new Note();
-		note.setNoteType(vocabularyTerm);
-		note.setFreeText(text);
-		note.setInternal(internal);
-		if (reference != null) {
-			List<Reference> references = new ArrayList<Reference>();
-			references.add(reference);
-			note.setReferences(references);
-		}
-
-		ObjectResponse<Note> response = RestAssured.given().
-			contentType("application/json").
-			body(note).
-			when().
-			post("/api/note").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefNote());
-		
-		return response.getEntity();
-	}
-	
-	private ExperimentalCondition createExperimentalCondition(String conditionClass, String statement) {
-		ExperimentalCondition condition = new ExperimentalCondition();
-		condition.setConditionClass(createZecoTerm(conditionClass));
-		condition.setUniqueId(statement);
-		ObjectResponse<ExperimentalCondition> response = RestAssured.given().
-			contentType("application/json").
-			body(condition).
-			when().
-			post("/api/experimental-condition").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefExperimentalCondition());
-		
-		return response.getEntity();
-	}
-	
-	private ZECOTerm createZecoTerm(String curie) {
-		ZECOTerm zecoTerm = new ZECOTerm();
-		zecoTerm.setCurie(curie);
-		zecoTerm.setName("Test");
-		zecoTerm.setObsolete(false);
-		List<String> subsets = new ArrayList<String>();
-		subsets.add(OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		zecoTerm.setSubsets(subsets);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(zecoTerm).
-				when().
-				post("/api/zecoterm").
-				then().
-				statusCode(200);
-		return zecoTerm;
-	}
-	
-	private ConditionRelation createConditionRelation(VocabularyTerm conditionRelationType, ExperimentalCondition condition) {
-		ConditionRelation conditionRelation = new ConditionRelation();
-		conditionRelation.setConditionRelationType(conditionRelationType);
-		List<ExperimentalCondition> conditions = new ArrayList<>();
-		conditions.add(condition);
-		conditionRelation.addExperimentCondition(condition);
-		conditionRelation.setConditions(conditions);
-		conditionRelation.setSingleReference(testReference);
-		
-		ObjectResponse<ConditionRelation> response = RestAssured.given().
-			contentType("application/json").
-			body(conditionRelation).
-			when().
-			post("/api/condition-relation").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefConditionRelation());
-	
-		return response.getEntity();
-	}
-	
-	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
-	}
-
-	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
-		return new TypeRef<ObjectResponse <LoggedInPerson>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<Note>> getObjectResponseTypeRefNote() {
-		return new TypeRef<ObjectResponse <Note>>() { };
-	}
-	
-	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRefExperimentalCondition() {
-		return new TypeRef<ObjectResponse <ExperimentalCondition>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<ConditionRelation>> getObjectResponseTypeRefConditionRelation() {
-		return new TypeRef<ObjectResponse <ConditionRelation>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
-		return new TypeRef<ObjectResponse <Reference>>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<GeneDiseaseAnnotation>> getObjectResponseTypeRef() {
-		return new TypeRef<ObjectResponse <GeneDiseaseAnnotation>>() {
-		};
-	}
-
-	private TypeRef<ObjectResponse<Organization>> getObjectResponseTypeRefOrganization() {
-		return new TypeRef<ObjectResponse <Organization>>() {
-		};
-	}
-
-	private TypeRef<SearchResponse<Organization>> getSearchResponseTypeRefOrganization() {
-		return new TypeRef<SearchResponse <Organization>>() {
-		};
+		testReference = createReference("AGRKB:000000005", false);
+		testReference2 = createReference("AGRKB:000000006", false);
+		testDoTerm = createDoTerm("DOID:da0001", false);
+		testDoTerm2 = createDoTerm("DOID:da0002", false);
+		testObsoleteDoTerm = createDoTerm("DOID:da0003", true);
+		testEcoTerms.add(createEcoTerm("ECO:da0001", "Test evidence code", false));
+		testEcoTerms2.add(createEcoTerm("ECO:da0002", "Test evidence code2", false));
+		testObsoleteEcoTerms.add(createEcoTerm("ECO:da0003", "Test obsolete evidence code", true));
+		nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
+		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
+		testGene = createGene("GENE:da0001", "NCBITaxon:9606", false, symbolNameType);
+		testGene2 = createGene("GENE:da0002", "NCBITaxon:9606", false, symbolNameType);
+		testObsoleteGene = createGene("HGNC:da0003", "NCBITaxon:9606", true, symbolNameType);
+		testWithGenes.add(createGene("HGNC:1", "NCBITaxon:9606", false, symbolNameType));
+		testAllele = createAllele("ALLELE:da0001", "NCBITaxon:9606", false, symbolNameType);
+		testAllele2 = createAllele("ALLELE:da0002", "NCBITaxon:9606", false, symbolNameType);
+		testObsoleteAllele = createAllele("ALLELE:da0003", "NCBITaxon:9606", true, symbolNameType);
+		testAgm = createAffectedGenomicModel("MODEL:da0001", "NCBITaxon:9606", "TestAGM");
+		testAgm2 = createAffectedGenomicModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2");
+		testBiologicalEntity = createBiologicalEntity("BE:da0001", "NCBITaxon:9606");
+		experimentalCondition = createExperimentalCondition("Statement", "ZECO:da001", "Test");
+		diseaseRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
+		noteTypeVocabulary = getVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
+		geneticSexVocabulary = getVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
+		conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+		diseaseGeneticModifierRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
+		diseaseQualifierVocabulary = getVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
+		annotationTypeVocabulary = getVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
+		geneDiseaseRelation2 = getVocabularyTerm(diseaseRelationVocabulary, "is_marker_for");
+		alleleAndGeneDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_implicated_in");
+		agmDiseaseRelation = getVocabularyTerm(diseaseRelationVocabulary, "is_model_of");
+		diseaseQualifiers.add(createVocabularyTerm(diseaseQualifierVocabulary, "severity", false));
+		geneticSex = createVocabularyTerm(geneticSexVocabulary,"hermaphrodite", false);
+		diseaseGeneticModifierRelation = createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, "ameliorated_by", false);
+		annotationType = createVocabularyTerm(annotationTypeVocabulary,"computational", false);
+		testPerson = createPerson("TEST:Person0001");
+		testDate = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
+		noteType = createVocabularyTerm(noteTypeVocabulary, "disease_note", false);
+		obsoleteNoteType = createVocabularyTerm(noteTypeVocabulary, "obsolete_type", true);
+		relatedNotes.add(createNote(noteType, "Test text", false, null));
+		relatedNotes.add(createNote(noteType, "Test text 2", false, null));
+		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
+		obsoleteConditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "obsolete_relation_type", true);
+		conditionRelation = createConditionRelation(null, null, conditionRelationType, List.of(experimentalCondition));
+		dataProvider = getOrganization("TEST");
+		secondaryDataProvider = getOrganization("TEST2");
+		obsoleteDataProvider = createOrganization("ObsoleteDataProvider", "ODP", true);
 	}
 }

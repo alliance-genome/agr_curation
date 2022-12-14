@@ -9,16 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.List;
 
-import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.Vocabulary;
-import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -30,7 +23,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -40,7 +32,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("01 - Gene bulk upload")
 @Order(1)
-public class GeneBulkUploadITCase {
+public class GeneBulkUploadITCase extends BaseITCase {
 	
 	@BeforeEach
 	public void init() {
@@ -2182,41 +2174,6 @@ public class GeneBulkUploadITCase {
 	}
 	
 	private void loadRequiredEntities() throws Exception {
-		loadReference();
-	}
-	
-
-	
-	private void loadReference() throws Exception {
-			
-		CrossReference xref = new CrossReference();
-		xref.setCurie(requiredReferenceXref);
-		
-		ObjectResponse<CrossReference> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(xref).
-				when().
-				put("/api/cross-reference").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefCrossReference());
-		
-		Reference reference = new Reference();
-		reference.setCurie(requiredReference);
-		reference.setCrossReferences(List.of(response.getEntity()));
-		reference.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			put("/api/reference").
-			then().
-			statusCode(200);
-	}
-	
-	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
-		return new TypeRef<ObjectResponse <CrossReference>>() { };
+		loadReference(requiredReference, requiredReferenceXref);
 	}
 }

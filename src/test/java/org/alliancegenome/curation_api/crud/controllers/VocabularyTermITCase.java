@@ -5,10 +5,10 @@ import static org.hamcrest.Matchers.is;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -18,14 +18,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(12)
-public class VocabularyTermITCase {
+public class VocabularyTermITCase extends BaseITCase {
 	
 	private Vocabulary testVocabulary;	
 	private Vocabulary testVocabulary2;
@@ -73,7 +72,7 @@ public class VocabularyTermITCase {
 	@Order(2)
 	public void editVocabularyTerm() {
 		
-		VocabularyTerm editedTerm = getVocabularyTerm("Test vocabulary term", testVocabulary.getName());
+		VocabularyTerm editedTerm = getVocabularyTerm(testVocabulary, "Test vocabulary term");
 		
 		List<String> synonyms = new ArrayList<String>();
 		synonyms.add("VocabularyTerm synonym");
@@ -112,7 +111,7 @@ public class VocabularyTermITCase {
 	@Order(3)
 	public void editWithObsoleteVocabulary() {
 		
-		VocabularyTerm editedTerm = getVocabularyTerm("Edited test vocabulary term", testVocabulary2.getName());
+		VocabularyTerm editedTerm = getVocabularyTerm(testVocabulary2, "Edited test vocabulary term");
 		
 		editedTerm.setVocabulary(testObsoleteVocabulary);
 		
@@ -131,7 +130,7 @@ public class VocabularyTermITCase {
 	@Order(4)
 	public void editWithMissingVocabulary() {
 		
-		VocabularyTerm editedTerm = getVocabularyTerm("Edited test vocabulary term", testVocabulary2.getName());
+		VocabularyTerm editedTerm = getVocabularyTerm(testVocabulary2, "Edited test vocabulary term");
 
 		editedTerm.setVocabulary(null);
 		
@@ -150,7 +149,7 @@ public class VocabularyTermITCase {
 	@Order(5)
 	public void editWithInvalidVocabulary() {
 		
-		VocabularyTerm editedTerm = getVocabularyTerm("Edited test vocabulary term", testVocabulary2.getName());
+		VocabularyTerm editedTerm = getVocabularyTerm(testVocabulary2, "Edited test vocabulary term");
 		
 		Vocabulary nonPersistedVocabulary = new Vocabulary();
 		nonPersistedVocabulary.setName("Non-persisted vocabulary");
@@ -170,7 +169,7 @@ public class VocabularyTermITCase {
 	@Order(6)
 	public void editWithMissingName() {
 		
-		VocabularyTerm editedTerm = getVocabularyTerm("Edited test vocabulary term", testVocabulary2.getName());
+		VocabularyTerm editedTerm = getVocabularyTerm(testVocabulary2, "Edited test vocabulary term");
 
 		editedTerm.setName(null);
 		
@@ -181,48 +180,5 @@ public class VocabularyTermITCase {
 				put("/api/vocabularyterm").
 				then().
 				statusCode(400);
-	}
-	
-	private Vocabulary createVocabulary(String name, Boolean obsolete) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setObsolete(obsolete);
-
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm getVocabularyTerm(String termName, String vocabularyName) {
-		
-		ObjectResponse<VocabularyTerm> response =
-				RestAssured.given().
-					when().
-					get("/api/vocabularyterm/findBy?termName=" + termName + "&vocabularyName=" + vocabularyName).
-					then().
-					statusCode(200).
-					extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-		
-		VocabularyTerm vocabularyTerm = response.getEntity();
-		
-		return vocabularyTerm;
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
 	}
 }

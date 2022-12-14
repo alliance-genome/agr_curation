@@ -1,13 +1,14 @@
 package org.alliancegenome.curation_api.crud.controllers;
 
-import io.quarkus.test.common.QuarkusTestResource;
-import io.quarkus.test.junit.QuarkusIntegrationTest;
-import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -16,22 +17,23 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZFATerm;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.ExperimentalConditionSummary;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.MethodOrderer;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestMethodOrder;
 
-import static org.hamcrest.Matchers.aMapWithSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.not;
-
-import java.util.ArrayList;
-import java.util.List;
+import io.quarkus.test.common.QuarkusTestResource;
+import io.quarkus.test.junit.QuarkusIntegrationTest;
+import io.restassured.RestAssured;
+import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(11)
-public class ExperimentalConditionITCase {
+public class ExperimentalConditionITCase extends BaseITCase {
 	
 	private ZECOTerm testZecoTerm;
 	private ZECOTerm testZecoTerm2;
@@ -48,25 +50,20 @@ public class ExperimentalConditionITCase {
 	private ZECOTerm testNonSlimZecoTerm;
 	private String testConditionSummary;
 	
-	private TypeRef<ObjectResponse<ExperimentalCondition>> getObjectResponseTypeRef() {
-		return new TypeRef<>() {
-		};
-	}
-	
 	private void createRequiredObjects() {
-		testZecoTerm = createZecoTerm("ZECO:ec0001", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testZecoTerm2 = createZecoTerm("ZECO:ec0002", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testZecoTerm3 = createZecoTerm("ZECO:ec0003", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testObsoleteZecoTerm = createZecoTerm("ZECO:ec0005", true, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testNonSlimZecoTerm = createZecoTerm("ZECO:ec0006", false, null);
-		testGoTerm = createGoTerm("GO:ec0001", false);
-		testObsoleteGoTerm = createGoTerm("GO:ec0002", true);
-		testChebiTerm = createChebiTerm("CHEBI:ec0001", false);
-		testObsoleteChebiTerm = createChebiTerm("CHEBI:ec0002", true);
+		testZecoTerm = createZecoTerm("ZECO:ec0001", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		testZecoTerm2 = createZecoTerm("ZECO:ec0002", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		testZecoTerm3 = createZecoTerm("ZECO:ec0003", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		testObsoleteZecoTerm = createZecoTerm("ZECO:ec0005", "Test ZecoTerm", true, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		testNonSlimZecoTerm = createZecoTerm("ZECO:ec0006", "Test ZecoTerm", false, null);
+		testGoTerm = createGoTerm("GO:ec0001", "Test GOTerm", false);
+		testObsoleteGoTerm = createGoTerm("GO:ec0002", "Test GOTerm", true);
+		testChebiTerm = createChebiTerm("CHEBI:ec0001", "Test CHEBITerm", false);
+		testObsoleteChebiTerm = createChebiTerm("CHEBI:ec0002", "Test CHEBITerm", true);
 		testZfaTerm = createZfaTerm("ZFA:ec0001", false);
 		testObsoleteZfaTerm = createZfaTerm("ZFA:ec0002", true);
-		testNcbiTaxonTerm = getTaxonFromCurie("NCBITaxon:9606");
-		testObsoleteNcbiTaxonTerm = getTaxonFromCurie("NCBITaxon:1000");
+		testNcbiTaxonTerm = getNCBITaxonTerm("NCBITaxon:9606");
+		testObsoleteNcbiTaxonTerm = getNCBITaxonTerm("NCBITaxon:1000");
 	}
 
 	@Test
@@ -1092,99 +1089,6 @@ public class ExperimentalConditionITCase {
 				body("entity", not(hasKey("conditionChemical")));
 		
 		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-
-	private ExperimentalCondition getExperimentalCondition(String conditionSummary) {
-		ObjectResponse<ExperimentalCondition> res = RestAssured.given().
-				when().
-				get("/api/experimental-condition/findBy/" + conditionSummary).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRef());
-		
-		return res.getEntity();
-	}
-
-	private ZECOTerm createZecoTerm(String curie, Boolean obsolete, String subset) {
-		ZECOTerm zecoTerm = new ZECOTerm();
-		zecoTerm.setCurie(curie);
-		zecoTerm.setName("Test ZecoTerm");
-		List<String> subsets = new ArrayList<String>();
-		if (subset != null) {
-			subsets.add(subset);
-			zecoTerm.setSubsets(subsets);
-		}
-		zecoTerm.setObsolete(obsolete);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(zecoTerm).
-				when().
-				post("/api/zecoterm").
-				then().
-				statusCode(200);
-		
-		return zecoTerm;
-	}
-
-
-	private GOTerm createGoTerm(String curie, Boolean obsolete) {
-		GOTerm goTerm = new GOTerm();
-		goTerm.setCurie(curie);
-		goTerm.setObsolete(obsolete);
-		goTerm.setName("Test GOTerm");
-
-		RestAssured.given().
-				contentType("application/json").
-				body(goTerm).
-				when().
-				post("/api/goterm").
-				then().
-				statusCode(200);
-		return goTerm;
-	}
-
-	private CHEBITerm createChebiTerm(String curie, Boolean obsolete) {
-		CHEBITerm chebiTerm = new CHEBITerm();
-		chebiTerm.setCurie(curie);
-		chebiTerm.setObsolete(obsolete);
-		chebiTerm.setName("Test CHEBITerm");
-
-		RestAssured.given().
-				contentType("application/json").
-				body(chebiTerm).
-				when().
-				post("/api/chebiterm").
-				then().
-				statusCode(200);
-		return chebiTerm;
-	}
-	
-	private ZFATerm createZfaTerm(String curie, Boolean obsolete) {
-		ZFATerm zfaTerm = new ZFATerm();
-		zfaTerm.setCurie(curie);
-		zfaTerm.setObsolete(obsolete);
-		zfaTerm.setName("Test ZFATerm");
-
-		RestAssured.given().
-				contentType("application/json").
-				body(zfaTerm).
-				when().
-				post("/api/zfaterm").
-				then().
-				statusCode(200);
-		return zfaTerm;
-	}
-
-	private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
-		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
-			when().
-			get("/api/ncbitaxonterm/" + taxonCurie).
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefTaxon());
-		
-		return response.getEntity();
 	}
 
 	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {

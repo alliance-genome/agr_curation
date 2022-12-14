@@ -6,6 +6,7 @@ import static org.hamcrest.Matchers.is;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.Note;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -22,14 +23,13 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 @QuarkusIntegrationTest
 @QuarkusTestResource(TestContainerResource.Initializer.class)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(3)
-public class NoteITCase {
+public class NoteITCase extends BaseITCase {
 	
 	private Vocabulary testVocabulary;
 	private VocabularyTerm testVocabularyTerm;
@@ -42,9 +42,9 @@ public class NoteITCase {
 	
 	private void createRequiredObjects() {
 		testVocabulary = createVocabulary("Note test vocabulary", false);
-		testVocabularyTerm = createVocabularyTerm("Note test vocabulary term", testVocabulary, false);
-		testVocabularyTerm2 = createVocabularyTerm("Note test vocabulary term 2", testVocabulary, false);
-		testObsoleteVocabularyTerm = createVocabularyTerm("Obsolete Note test vocabularyTerm", testVocabulary, true);
+		testVocabularyTerm = createVocabularyTerm(testVocabulary, "Note test vocabulary term", false);
+		testVocabularyTerm2 = createVocabularyTerm(testVocabulary, "Note test vocabulary term 2", false);
+		testObsoleteVocabularyTerm = createVocabularyTerm( testVocabulary, "Obsolete Note test vocabularyTerm", true);
 		Reference testReference = createReference("AGRKB:000000007", false);
 		testReferences.add(testReference);
 		Reference testReference2 = createReference("AGRKB:000000008", false);
@@ -466,94 +466,4 @@ public class NoteITCase {
 		// returns invalid rather than obsolete as tries to retrieve from LiteratureService if obsolete entry found, which returns null
 	}
 
-
-	
-	private Vocabulary createVocabulary(String name, Boolean obsolete) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setObsolete(obsolete);
-
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm createVocabularyTerm(String name, Vocabulary vocabulary, Boolean obsolete) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setObsolete(obsolete);
-		vocabularyTerm.setVocabulary(vocabulary);
-
-		ObjectResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-		
-		vocabularyTerm = response.getEntity();
-		
-		return vocabularyTerm;
-	}
-	
-	private Note getNote(Long noteId) {
-		
-		ObjectResponse<Note> response =
-				RestAssured.given().
-					when().
-					get("/api/note/" + noteId).
-					then().
-					statusCode(200).
-					extract().body().as(getObjectResponseTypeRefNote());
-		
-		Note note = response.getEntity();
-		
-		return note;
-	}
-	
-	private Reference createReference(String curie, Boolean obsolete) {
-		Reference reference = new Reference();
-		reference.setCurie(curie);
-		reference.setObsolete(obsolete);
-		
-		ObjectResponse<Reference> response = RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			post("/api/reference").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefReference());
-			
-		return response.getEntity();
-	}
-
-	private TypeRef<ObjectResponse<Note>> getObjectResponseTypeRefNote() {
-		return new TypeRef<ObjectResponse <Note>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Reference>> getObjectResponseTypeRefReference() {
-		return new TypeRef<ObjectResponse <Reference>>() { };
-	}
 }

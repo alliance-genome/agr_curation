@@ -9,13 +9,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.List;
 
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Reference;
-import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -27,7 +23,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -38,7 +33,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("02 - Allele bulk upload")
 @Order(2)
-public class AlleleBulkUploadITCase {
+public class AlleleBulkUploadITCase extends BaseITCase {
 	
 	private String requiredReference = "AGRKB:000000001";
 	private String requiredSoTerm = "SO:00001";
@@ -2717,21 +2712,6 @@ public class AlleleBulkUploadITCase {
 	}
 	
 	private void loadRequiredEntities() throws Exception {
-		loadSOTerm();
-	}
-	
-	private void loadSOTerm() throws Exception {
-		SOTerm soTerm = new SOTerm();
-		soTerm.setCurie(requiredSoTerm);
-		soTerm.setName("Test SOTerm");
-		soTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(soTerm).
-			when().
-			put("/api/soterm").
-			then().
-			statusCode(200);
+		loadSOTerm(requiredSoTerm, "Test SOTerm");
 	}
 }

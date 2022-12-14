@@ -13,30 +13,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
-import org.alliancegenome.curation_api.model.entities.Allele;
-import org.alliancegenome.curation_api.model.entities.CrossReference;
-import org.alliancegenome.curation_api.model.entities.Gene;
-import org.alliancegenome.curation_api.model.entities.Organization;
-import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.entities.VocabularyTermSet;
-import org.alliancegenome.curation_api.model.entities.ontology.AnatomicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ChemicalTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
-import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
@@ -48,7 +30,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.config.HttpClientConfig;
 import io.restassured.config.RestAssuredConfig;
 
@@ -59,7 +40,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("04 - Disease annotation bulk upload")
 @Order(4)
-public class DiseaseAnnotationBulkUploadITCase {
+public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	
 	private ArrayList<String> requiredGenes = new ArrayList<String>(Arrays.asList( "DATEST:Gene0001", "DATEST:Gene0002", "HGNC:0001"));
 	private String requiredDoTerm = "DATEST:Disease0001";
@@ -4306,378 +4287,44 @@ public class DiseaseAnnotationBulkUploadITCase {
 	}
 	
 	private void loadRequiredEntities() throws Exception {
-		loadDOTerm();
-		loadECOTerm();
-		loadGOTerm();
-		loadExpCondTerm();
-		loadZecoTerm(requiredZecoTerm, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		loadZecoTerm(requiredNonSlimZecoTerm, null);
-		loadChemicalTerm();
-		loadAnatomyTerm();
+		loadDOTerm(requiredDoTerm, "Test DOTerm");
+		loadECOTerm(requiredEcoTerm, "Test ECOTerm");
+		loadGOTerm(requiredGoTerm, "Test GOTerm");
+		loadExperimentalConditionTerm(requiredExpCondTerm, "Test ExperimentalConditionOntologyTerm");
+		loadZecoTerm(requiredZecoTerm, "Test ExperimentalConditionOntologyTerm", OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		loadZecoTerm(requiredNonSlimZecoTerm, "Test ExperimentalConditionOntologyTerm", null);
+		loadChemicalTerm(requiredChemicalTerm, "Test ChemicalTerm");
+		loadAnatomyTerm(requiredAnatomicalTerm, "Test AnatomicalTerm");
 		Vocabulary nameTypeVocabulary = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		VocabularyTerm symbolTerm = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
-		loadGenes(symbolTerm);
-		loadAllele(symbolTerm);
-		loadAGM(requiredAgm, "NCBITaxon:6239");
-		loadAGM(requiredSgdBackgroundStrain, "NCBITaxon:559292");
-		loadReference();
+		loadGenes(requiredGenes, "NCBITaxon:6239", symbolTerm);
+		loadAllele(requiredAllele, requiredAllele, "NCBITaxon:6239", symbolTerm);
+		loadAffectedGenomicModel(requiredAgm, "Test AGM", "NCBITaxon:6239");
+		loadAffectedGenomicModel(requiredSgdBackgroundStrain, "Test AGM", "NCBITaxon:559292");
+		loadReference(requiredReference, requiredReferenceXref);
 		loadOrganization("TEST");
 		loadOrganization("TEST2");
 		loadOrganization("OBSOLETE");
 		
-		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
-		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
-		Vocabulary geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY);
-		Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY);
-		Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY);
-		Vocabulary annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY);
-		Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
-		createVocabularyTerm(noteTypeVocabulary, requiredNoteType);
-		VocabularyTerm alleleAndGeneDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAlleleAndGeneDiseaseRelation);
-		VocabularyTerm agmDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAgmDiseaseRelation);
-		VocabularyTerm geneDiseaseVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, "is_marker_for");
-		createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier);
-		createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex);
-		createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation);
-		createVocabularyTerm(annotationTypeVocabulary, requiredAnnotationType);
-		createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType);
+		Vocabulary noteTypeVocabulary = createVocabulary(VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY, false);
+		Vocabulary diseaseRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY, false);
+		Vocabulary geneticSexVocabulary = createVocabulary(VocabularyConstants.GENETIC_SEX_VOCABULARY, false);
+		Vocabulary diseaseGeneticModifierRelationVocabulary = createVocabulary(VocabularyConstants.DISEASE_GENETIC_MODIFIER_RELATION_VOCABULARY, false);
+		Vocabulary diseaseQualifierVocabulary = createVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, false);
+		Vocabulary annotationTypeVocabulary = createVocabulary(VocabularyConstants.ANNOTATION_TYPE_VOCABULARY, false);
+		Vocabulary conditionRelationTypeVocabulary = createVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, false);
+		createVocabularyTerm(noteTypeVocabulary, requiredNoteType, false);
+		VocabularyTerm alleleAndGeneDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAlleleAndGeneDiseaseRelation, false);
+		VocabularyTerm agmDiseaseRelationVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, requiredAgmDiseaseRelation, false);
+		VocabularyTerm geneDiseaseVocabularyTerm = createVocabularyTerm(diseaseRelationVocabulary, "is_marker_for", false);
+		createVocabularyTerm(diseaseQualifierVocabulary, requiredDiseaseQualifier, false);
+		createVocabularyTerm(geneticSexVocabulary, requiredGeneticSex, false);
+		createVocabularyTerm(diseaseGeneticModifierRelationVocabulary, requiredDiseaseGeneticModifierRelation, false);
+		createVocabularyTerm(annotationTypeVocabulary, requiredAnnotationType, false);
+		createVocabularyTerm(conditionRelationTypeVocabulary, requiredConditionRelationType, false);
 		createVocabularyTermSet(VocabularyConstants.AGM_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(agmDiseaseRelationVocabularyTerm));
 		createVocabularyTermSet(VocabularyConstants.ALLELE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(alleleAndGeneDiseaseRelationVocabularyTerm));
 		createVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, diseaseRelationVocabulary, List.of(geneDiseaseVocabularyTerm, alleleAndGeneDiseaseRelationVocabularyTerm));
 	}
-	
-	private void loadOrganization(String abbreviation) throws Exception {
-		Organization organization = new Organization();
-		organization.setUniqueId(abbreviation);
-		organization.setAbbreviation(abbreviation);
-		organization.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(organization).
-			when().
-			put("/api/organization").
-			then().
-			statusCode(200);
-	}
-	
-	private void loadDOTerm() throws Exception {
-		DOTerm doTerm = new DOTerm();
-		doTerm.setCurie(requiredDoTerm);
-		doTerm.setName("Test DOTerm");
-		doTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(doTerm).
-			when().
-			put("/api/doterm").
-			then().
-			statusCode(200);
-	}
-	
-	private void loadReference() throws Exception {
-			
-		CrossReference xref = new CrossReference();
-		xref.setCurie(requiredReferenceXref);
-		
-		ObjectResponse<CrossReference> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(xref).
-				when().
-				put("/api/cross-reference").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefCrossReference());
-		
-		Reference reference = new Reference();
-		reference.setCurie(requiredReference);
-		reference.setCrossReferences(List.of(response.getEntity()));
-		reference.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(reference).
-			when().
-			put("/api/reference").
-			then().
-			statusCode(200);
-	}
 
-
-	private void loadECOTerm() throws Exception {
-		ECOTerm ecoTerm = new ECOTerm();
-		ecoTerm.setCurie(requiredEcoTerm);
-		ecoTerm.setName("Test ECOTerm");
-		ecoTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(ecoTerm).
-			when().
-			put("/api/ecoterm").
-			then().
-			statusCode(200);
-	}
-
-
-	private void loadGOTerm() throws Exception {
-		GOTerm goTerm = new GOTerm();
-		goTerm.setCurie(requiredGoTerm);
-		goTerm.setName("Test GOTerm");
-		goTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(goTerm).
-			when().
-			put("/api/goterm").
-			then().
-			statusCode(200);
-	}
-
-	private void loadAnatomyTerm() throws Exception {
-		AnatomicalTerm anatomicalTerm = new AnatomicalTerm();
-		anatomicalTerm.setCurie(requiredAnatomicalTerm);
-		anatomicalTerm.setName("Test AnatomicalTerm");
-		anatomicalTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(anatomicalTerm).
-			when().
-			put("/api/anatomicalterm").
-			then().
-			statusCode(200);
-	}
-
-	private void loadChemicalTerm() throws Exception {
-		ChemicalTerm chemicalTerm = new ChemicalTerm();
-		chemicalTerm.setCurie(requiredChemicalTerm);
-		chemicalTerm.setName("Test ChemicalTerm");
-		chemicalTerm.setObsolete(false);
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(chemicalTerm).
-			when().
-			put("/api/chemicalterm").
-			then().
-			statusCode(200);
-	}
-	
-	private void loadZecoTerm(String name, String subset) throws Exception {
-		ZECOTerm zecoTerm = new ZECOTerm();
-		zecoTerm.setCurie(name);
-		zecoTerm.setName("Test ExperimentalConditionOntologyTerm");
-		zecoTerm.setObsolete(false);
-		List<String> subsets = new ArrayList<String>();
-		if (subset != null) {
-			subsets.add(subset);
-			zecoTerm.setSubsets(subsets);
-		}
-			
-		RestAssured.given().
-			contentType("application/json").
-			body(zecoTerm).
-			when().
-			post("/api/zecoterm").
-			then().
-			statusCode(200);
-	}
-	
-	private void loadExpCondTerm() throws Exception {
-		ExperimentalConditionOntologyTerm ecTerm = new ExperimentalConditionOntologyTerm();
-		ecTerm.setCurie(requiredExpCondTerm);
-		ecTerm.setName("Test ExperimentalConditionOntologyTerm");
-		ecTerm.setObsolete(false);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(ecTerm).
-			when().
-			post("/api/experimentalconditionontologyterm").
-			then().
-			statusCode(200);
-	}
-	
-	private void loadGenes(VocabularyTerm symbolNameTerm) throws Exception {
-		for (String geneCurie : requiredGenes) {
-			Gene gene = new Gene();
-			gene.setCurie(geneCurie);
-			gene.setTaxon(getTaxon("NCBITaxon:6239"));
-			
-			GeneSymbolSlotAnnotation symbol = new GeneSymbolSlotAnnotation();
-			symbol.setNameType(symbolNameTerm);
-			symbol.setDisplayText(geneCurie);
-			symbol.setFormatText(geneCurie);
-			
-			gene.setGeneSymbol(symbol);
-
-			RestAssured.given().
-					contentType("application/json").
-					body(gene).
-					when().
-					post("/api/gene").
-					then().
-					statusCode(200);
-		}
-	}
-
-	private void loadAGM(String agmCurie, String taxon) throws Exception {
-		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setCurie(agmCurie);
-		agm.setTaxon(getTaxon(taxon));
-		agm.setName("Test AGM");
-
-		RestAssured.given().
-			contentType("application/json").
-			body(agm).
-			when().
-			post("/api/agm").
-			then().
-			statusCode(200);
-	}
-
-	private void loadAllele(VocabularyTerm symbolNameTerm) throws Exception {
-		Allele allele = new Allele();
-		allele.setCurie(requiredAllele);
-		allele.setTaxon(getTaxon("NCBITaxon:6239"));
-		allele.setInternal(false);
-		
-		AlleleSymbolSlotAnnotation symbol = new AlleleSymbolSlotAnnotation();
-		symbol.setNameType(symbolNameTerm);
-		symbol.setDisplayText(requiredAllele);
-		symbol.setFormatText(requiredAllele);
-		
-		allele.setAlleleSymbol(symbol);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			post("/api/allele").
-			then().
-			statusCode(200);
-	}
-	
-	private Vocabulary createVocabulary(String name) {
-		Vocabulary vocabulary = new Vocabulary();
-		vocabulary.setName(name);
-		vocabulary.setInternal(false);
-		
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabulary).
-				when().
-				post("/api/vocabulary").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm createVocabularyTerm(Vocabulary vocabulary, String name) {
-		VocabularyTerm vocabularyTerm = new VocabularyTerm();
-		vocabularyTerm.setName(name);
-		vocabularyTerm.setVocabulary(vocabulary);
-		vocabularyTerm.setInternal(false);
-		
-		ObjectResponse<VocabularyTerm> response =
-			RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTerm).
-				when().
-				post("/api/vocabularyterm").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabularyTerm());
-		
-		return response.getEntity();
-	}
-	
-	private void createVocabularyTermSet(String name, Vocabulary vocabulary, List<VocabularyTerm> terms) {
-		VocabularyTermSet vocabularyTermSet = new VocabularyTermSet();
-		vocabularyTermSet.setName(name);
-		vocabularyTermSet.setVocabularyTermSetVocabulary(vocabulary);
-		vocabularyTermSet.setInternal(false);
-		vocabularyTermSet.setMemberTerms(terms);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(vocabularyTermSet).
-				when().
-				post("/api/vocabularytermset").
-				then().
-				statusCode(200);
-	}
-	
-	private NCBITaxonTerm getTaxon(String taxonCurie) {
-		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
-			when().
-			get("/api/ncbitaxonterm/" + taxonCurie).
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefTaxon());
-			
-		return response.getEntity();
-	}
-
-	private Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		Vocabulary vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
-		ObjectListResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
-		
-		List<VocabularyTerm> vocabularyTerms = response.getEntities();
-		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
-			if (vocabularyTerm.getName().equals(name)) {
-				return vocabularyTerm;
-			}
-		}
-		
-		return null;
-	}
-	
-	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<VocabularyTerm>> getObjectResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectResponse <VocabularyTerm>>() { };
-	}
-	
-	private TypeRef<ObjectResponse<CrossReference>> getObjectResponseTypeRefCrossReference() {
-		return new TypeRef<ObjectResponse <CrossReference>>() { };
-	}
-	
-	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
-	}
 }

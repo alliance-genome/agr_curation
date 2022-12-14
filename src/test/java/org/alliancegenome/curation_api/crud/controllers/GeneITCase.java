@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.not;
 
 import java.util.List;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.Gene;
@@ -19,8 +20,6 @@ import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAn
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSystematicNameSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
-import org.alliancegenome.curation_api.response.ObjectListResponse;
-import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -30,7 +29,6 @@ import org.junit.jupiter.api.TestMethodOrder;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusIntegrationTest;
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 
 
 @QuarkusIntegrationTest
@@ -38,7 +36,7 @@ import io.restassured.common.mapper.TypeRef;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Order(7)
-public class GeneITCase {
+public class GeneITCase extends BaseITCase {
 
 	private final String GENE_TAXON = "NCBITaxon:10090";
 	private final String GENE_TYPE = "SO:0001";
@@ -112,10 +110,10 @@ public class GeneITCase {
 	@Test
 	@Order(2)
 	public void editGene() {
-		SOTerm newSoTerm = createSoTerm("SO:0001000", "Test SO term 2");
+		SOTerm newSoTerm = createSoTerm("SO:0001000");
 		
-		Gene gene = getGene();
-		gene.setTaxon(getTaxonFromCurie("NCBITaxon:9606"));
+		Gene gene = getGene("GENE:0001");
+		gene.setTaxon(getNCBITaxonTerm("NCBITaxon:9606"));
 		gene.setGeneType(newSoTerm);
 		gene.setInternal(true);
 		
@@ -487,7 +485,7 @@ public class GeneITCase {
 	@Order(15)
 	public void editGeneWithMissingGeneSymbol() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		gene.setGeneSymbol(null);
 		
 		RestAssured.given().
@@ -505,7 +503,7 @@ public class GeneITCase {
 	@Order(16)
 	public void editGeneWithMissingGeneSymbolDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setDisplayText(null);
@@ -526,7 +524,7 @@ public class GeneITCase {
 	@Order(17)
 	public void editGeneWithEmptyGeneSymbolDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setDisplayText("");
@@ -547,7 +545,7 @@ public class GeneITCase {
 	@Order(18)
 	public void editGeneWithMissingGeneSymbolFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setFormatText(null);
@@ -568,7 +566,7 @@ public class GeneITCase {
 	@Order(19)
 	public void editGeneWithEmptyGeneSymbolFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setFormatText("");
@@ -589,7 +587,7 @@ public class GeneITCase {
 	@Order(20)
 	public void editGeneWithMissingGeneSymbolNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setNameType(null);
@@ -610,7 +608,7 @@ public class GeneITCase {
 	@Order(21)
 	public void editGeneWithInvalidGeneSymbolNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setNameType(fullNameType);
@@ -631,7 +629,7 @@ public class GeneITCase {
 	@Order(22)
 	public void editGeneWithInvalidGeneSymbolSynonymScope() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSymbolSlotAnnotation symbol = gene.getGeneSymbol();
 		symbol.setSynonymScope(symbolNameType);
@@ -651,7 +649,7 @@ public class GeneITCase {
 	@Test
 	@Order(23)
 	public void editGeneWithNullGeneSymbolSynonymScope() {
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		gene.setGeneSymbol(geneSymbol);
 
 		RestAssured.given().
@@ -867,7 +865,7 @@ public class GeneITCase {
 	@Order(31)
 	public void editGeneWithMissingGeneFullNameDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setDisplayText(null);
@@ -888,7 +886,7 @@ public class GeneITCase {
 	@Order(32)
 	public void editGeneWithEmptyGeneFullNameDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setDisplayText("");
@@ -909,7 +907,7 @@ public class GeneITCase {
 	@Order(33)
 	public void editGeneWithMissingGeneFullNameFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setFormatText(null);
@@ -930,7 +928,7 @@ public class GeneITCase {
 	@Order(34)
 	public void editGeneWithEmptyGeneFullNameFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setFormatText("");
@@ -951,7 +949,7 @@ public class GeneITCase {
 	@Order(35)
 	public void editGeneWithMissingGeneFullNameNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setNameType(null);
@@ -972,7 +970,7 @@ public class GeneITCase {
 	@Order(36)
 	public void editGeneWithInvalidGeneFullNameNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setNameType(symbolNameType);
@@ -993,7 +991,7 @@ public class GeneITCase {
 	@Order(37)
 	public void editGeneWithInvalidGeneFullNameSynonymScope() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneFullNameSlotAnnotation fullName = gene.getGeneFullName();
 		fullName.setSynonymScope(fullNameType);
@@ -1013,7 +1011,7 @@ public class GeneITCase {
 	@Test
 	@Order(38)
 	public void editGeneWithNullGeneFullNameSynonymScope() {
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1228,7 +1226,7 @@ public class GeneITCase {
 	@Order(46)
 	public void editGeneWithMissingAlleleSynonymDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setDisplayText(null);
@@ -1249,7 +1247,7 @@ public class GeneITCase {
 	@Order(47)
 	public void editGeneWithEmptyAlleleSynonymDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setDisplayText("");
@@ -1270,7 +1268,7 @@ public class GeneITCase {
 	@Order(48)
 	public void editGeneWithMissingAlleleSynonymFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setFormatText(null);
@@ -1291,7 +1289,7 @@ public class GeneITCase {
 	@Order(49)
 	public void editGeneWithEmptyAlleleSynonymFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setFormatText("");
@@ -1312,7 +1310,7 @@ public class GeneITCase {
 	@Order(50)
 	public void editGeneWithMissingAlleleSynonymNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setNameType(null);
@@ -1333,7 +1331,7 @@ public class GeneITCase {
 	@Order(51)
 	public void editGeneWithInvalidAlleleSynonymNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setNameType(exactSynonymScope);
@@ -1354,7 +1352,7 @@ public class GeneITCase {
 	@Order(52)
 	public void editGeneWithInvalidAlleleSynonymSynonymScope() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSynonymSlotAnnotation synonym = gene.getGeneSynonyms().get(0);
 		synonym.setSynonymScope(symbolNameType);
@@ -1374,7 +1372,7 @@ public class GeneITCase {
 	@Test
 	@Order(53)
 	public void editGeneWithNullAlleleSynonymSynonymScope() {
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1589,7 +1587,7 @@ public class GeneITCase {
 	@Order(61)
 	public void editGeneWithMissingGeneSystematicNameDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setDisplayText(null);
@@ -1610,7 +1608,7 @@ public class GeneITCase {
 	@Order(62)
 	public void editGeneWithEmptyGeneSystematicNameDisplayText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setDisplayText("");
@@ -1631,7 +1629,7 @@ public class GeneITCase {
 	@Order(63)
 	public void editGeneWithMissingGeneSystematicNameFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setFormatText(null);
@@ -1652,7 +1650,7 @@ public class GeneITCase {
 	@Order(64)
 	public void editGeneWithEmptyGeneSystematicNameFormatText() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setFormatText("");
@@ -1673,7 +1671,7 @@ public class GeneITCase {
 	@Order(65)
 	public void editGeneWithMissingGeneSystematicNameNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setNameType(null);
@@ -1694,7 +1692,7 @@ public class GeneITCase {
 	@Order(66)
 	public void editGeneWithInvalidGeneSystematicNameNameType() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setNameType(symbolNameType);
@@ -1715,7 +1713,7 @@ public class GeneITCase {
 	@Order(67)
 	public void editGeneWithInvalidGeneSystematicNameSynonymScope() {
 		
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 		
 		GeneSystematicNameSlotAnnotation systematicName = gene.getGeneSystematicName();
 		systematicName.setSynonymScope(systematicNameType);
@@ -1735,7 +1733,7 @@ public class GeneITCase {
 	@Test
 	@Order(68)
 	public void editGeneWithNullGeneSystematicNameSynonymScope() {
-		Gene gene = getGene();
+		Gene gene = getGene("GENE:0001");
 
 		RestAssured.given().
 			contentType("application/json").
@@ -1773,7 +1771,7 @@ public class GeneITCase {
 	
 	private void loadRequiredEntities() {
 
-		soTerm = createSoTerm(GENE_TYPE, "Test SO term");
+		soTerm = createSoTerm(GENE_TYPE);
 		nameType = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScope = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		symbolNameType = getVocabularyTerm(nameType, "nomenclature_symbol");
@@ -1781,23 +1779,12 @@ public class GeneITCase {
 		fullNameType = getVocabularyTerm(nameType, "full_name");
 		exactSynonymScope = getVocabularyTerm(synonymScope, "exact");
 		broadSynonymScope = getVocabularyTerm(synonymScope, "broad");
-		taxon = getTaxonFromCurie(GENE_TAXON);
+		taxon = getNCBITaxonTerm(GENE_TAXON);
 		geneSymbol = createGeneSymbolSlotAnnotation("GT1");
 		geneFullName = createGeneFullNameSlotAnnotation("Gene test 1");
 		geneSynonym = createGeneSynonymSlotAnnotation("Gene test synonym 1");
 		geneSystematicName = createGeneSystematicNameSlotAnnotation("GT.1");
 		
-	}
-
-	private Gene getGene() {
-		ObjectResponse<Gene> res = RestAssured.given().
-				when().
-				get("/api/gene/GENE:0001").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefGene());
-
-		return res.getEntity();
 	}
 	
 	private GeneSymbolSlotAnnotation createGeneSymbolSlotAnnotation(String name) {
@@ -1842,82 +1829,6 @@ public class GeneITCase {
 		systematicName.setSynonymUrl("https://test.org");
 		
 		return systematicName;
-	}
-	
-	private SOTerm createSoTerm(String curie, String name) {
-		SOTerm soTerm = new SOTerm();
-		soTerm.setCurie(curie);
-		soTerm.setName(name);
-		soTerm.setObsolete(false);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(soTerm).
-				when().
-				post("/api/soterm").
-				then().
-				statusCode(200);
-		return soTerm;
-	}
-	
-	private NCBITaxonTerm getTaxonFromCurie(String taxonCurie) {
-		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
-			when().
-			get("/api/ncbitaxonterm/" + taxonCurie).
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefNCBITaxonTerm());
-		
-		return response.getEntity();
-	}
-
-	private Vocabulary getVocabulary(String name) {
-		ObjectResponse<Vocabulary> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/findBy/" + name).
-				then().
-				statusCode(200).
-				extract().body().as(getObjectResponseTypeRefVocabulary());
-		
-		Vocabulary vocabulary = response.getEntity();
-		
-		return vocabulary;
-	}
-	
-	private VocabularyTerm getVocabularyTerm(Vocabulary vocabulary, String name) {
-		ObjectListResponse<VocabularyTerm> response = 
-			RestAssured.given().
-				when().
-				get("/api/vocabulary/" + vocabulary.getId() + "/terms").
-				then().
-				statusCode(200).
-				extract().body().as(getObjectListResponseTypeRefVocabularyTerm());
-		
-		List<VocabularyTerm> vocabularyTerms = response.getEntities();
-		for (VocabularyTerm vocabularyTerm : vocabularyTerms) {
-			if (vocabularyTerm.getName().equals(name)) {
-				return vocabularyTerm;
-			}
-		}
-		
-		return null;
-	}
-
-	private TypeRef<ObjectResponse<Gene>> getObjectResponseTypeRefGene() {
-		return new TypeRef<ObjectResponse <Gene>>() { };
-	}
-
-	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefNCBITaxonTerm() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
-	}
-	
-	private TypeRef<ObjectListResponse<VocabularyTerm>> getObjectListResponseTypeRefVocabularyTerm() {
-		return new TypeRef<ObjectListResponse <VocabularyTerm>>() { };
-	}
-
-	private TypeRef<ObjectResponse<Vocabulary>> getObjectResponseTypeRefVocabulary() {
-		return new TypeRef<ObjectResponse <Vocabulary>>() { };
 	}
 
 }
