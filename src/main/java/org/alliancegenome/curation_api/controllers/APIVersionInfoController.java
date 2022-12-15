@@ -17,21 +17,21 @@ import org.reflections.Reflections;
 
 @RequestScoped
 public class APIVersionInfoController implements APIVersionInterface {
-	
-	@Inject APIVersionInfoService apiVersionInfoService;
+
+	@Inject
+	APIVersionInfoService apiVersionInfoService;
 
 	@ConfigProperty(name = "quarkus.application.version")
 	String version;
-	
+
 	@ConfigProperty(name = "quarkus.application.name")
 	String name;
-	
+
 	@ConfigProperty(name = "quarkus.hibernate-search-orm.elasticsearch.hosts")
 	String es_host;
-	
+
 	@ConfigProperty(name = "NET")
 	String env;
-	
 
 	@Override
 	public APIVersionInfo get() {
@@ -40,7 +40,7 @@ public class APIVersionInfoController implements APIVersionInterface {
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(AGRCurationSchemaVersion.class).asClass(reflections.getConfiguration().getClassLoaders()));
 		TreeMap<String, String> linkMLClassVersions = new TreeMap<String, String>();
 		TreeMap<String, String> submittedClassVersions = new TreeMap<String, String>();
-		for(Class<?> clazz: annotatedClasses) {
+		for (Class<?> clazz : annotatedClasses) {
 			AGRCurationSchemaVersion version = clazz.getAnnotation(AGRCurationSchemaVersion.class);
 			String minVersion = apiVersionInfoService.getVersionRange(version).get(0);
 			String maxVersion = apiVersionInfoService.getVersionRange(version).get(1);
@@ -61,6 +61,5 @@ public class APIVersionInfoController implements APIVersionInterface {
 		info.setEnv(env);
 		return info;
 	}
-	
-	
+
 }

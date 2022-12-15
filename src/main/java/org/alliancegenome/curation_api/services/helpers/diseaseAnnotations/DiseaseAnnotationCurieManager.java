@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.services.helpers.diseaseAnnotations;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class DiseaseAnnotationCurieManager {
 

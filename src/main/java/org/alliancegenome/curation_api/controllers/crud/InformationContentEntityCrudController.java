@@ -11,10 +11,12 @@ import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.services.InformationContentEntityService;
 
 @RequestScoped
-public class InformationContentEntityCrudController extends BaseEntityCrudController<InformationContentEntityService, InformationContentEntity, InformationContentEntityDAO> implements InformationContentEntityCrudInterface {
+public class InformationContentEntityCrudController extends BaseEntityCrudController<InformationContentEntityService, InformationContentEntity, InformationContentEntityDAO>
+	implements InformationContentEntityCrudInterface {
 
-	@Inject InformationContentEntityService informationContentEntityService;
-	
+	@Inject
+	InformationContentEntityService informationContentEntityService;
+
 	@Override
 	@PostConstruct
 	protected void init() {

@@ -24,22 +24,22 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.3.2", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={Person.class})
+@AGRCurationSchemaVersion(min = "1.3.2", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { Person.class })
 public class LoggedInPerson extends Person {
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "oktaId_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	@Column(unique = true)
 	private String oktaId;
-	
+
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
 	@KeywordField(name = "oktaEmail_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
-	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	@Column(unique = true)
 	private String oktaEmail;
 
-	@JsonView({View.FieldsOnly.class, View.PersonSettingView.class})
+	@JsonView({ View.FieldsOnly.class, View.PersonSettingView.class })
 	private String apiToken;
-	
+
 }

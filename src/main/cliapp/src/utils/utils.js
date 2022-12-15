@@ -211,8 +211,15 @@ export function onSelectionOver(event, item, query, op, setAutocompleteHoverItem
 }
 
 
-export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters={}) {
-	searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters})
+export function autocompleteSearch(searchService, endpoint, filterName, filter, setSuggestions, otherFilters={}, applyObsoleteFilter=true) {
+	const obsoleteFilter = applyObsoleteFilter && endpoint !== 'literature-reference' ? {
+			obsoleteFilter: {
+				"obsolete": {
+					queryString: false
+				}
+			}
+		} : {};
+	searchService.search(endpoint, 15, 0, [], {[filterName]: filter, ...otherFilters, ...obsoleteFilter})
 		.then((data) => {
 			if (data.results?.length > 0) {
 				 setSuggestions(data.results);

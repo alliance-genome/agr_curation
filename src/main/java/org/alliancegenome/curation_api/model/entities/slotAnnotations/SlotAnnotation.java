@@ -30,27 +30,23 @@ import lombok.ToString;
 
 @Audited
 @Entity
-@Data @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Inheritance(strategy = InheritanceType.JOINED)
 @Schema(name = "SlotAnnotation", description = "POJO that represents a SlotAnnotation")
-@Table(indexes = {
-	@Index(name = "slotannotation_createdby_index", columnList = "createdBy_id"),
-	@Index(name = "slotannotation_updatedby_index", columnList = "updatedBy_id"),
-})
+@Table(indexes = { @Index(name = "slotannotation_createdby_index", columnList = "createdBy_id"), @Index(name = "slotannotation_updatedby_index", columnList = "updatedBy_id"), })
 @ToString(callSuper = true)
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={AuditedObject.class})
+@AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 public class SlotAnnotation extends GeneratedAuditedObject {
-	
+
 	@IndexedEmbedded(includeDepth = 2)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
-	@JoinTable(indexes = {
-		@Index(name = "slotannotation_informationcontententity_slotannotation_id_index", columnList = "slotannotation_id"),
+	@JoinTable(indexes = { @Index(name = "slotannotation_informationcontententity_slotannotation_id_index", columnList = "slotannotation_id"),
 		@Index(name = "slotannotation_informationcontententity_evidence_curie", columnList = "evidence_curie"),
-		
-	})
-	@JsonView({View.FieldsAndLists.class, View.AlleleView.class})
-	private List<InformationContentEntity> evidence;
-	
-}
 
+	})
+	@JsonView({ View.FieldsAndLists.class, View.AlleleView.class, View.GeneView.class })
+	private List<InformationContentEntity> evidence;
+
+}

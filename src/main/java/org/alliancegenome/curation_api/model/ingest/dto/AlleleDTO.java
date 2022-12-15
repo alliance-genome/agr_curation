@@ -12,30 +12,40 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min="1.4.0", max=LinkMLSchemaConstants.LATEST_RELEASE, dependencies={GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class}, submitted=true)
+@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class,
+	NameSlotAnnotationDTO.class }, submitted = true)
 public class AlleleDTO extends GenomicEntityDTO {
 
-	@JsonView({View.FieldsOnly.class})
-	private String symbol;
-	
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("reference_curies")
 	private List<String> referenceCuries;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("inheritance_mode_name")
 	private String inheritanceModeName;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("in_collection_name")
 	private String inCollectionName;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("is_extinct")
 	private Boolean isExtinct;
 
-	@JsonView({View.FieldsAndLists.class})
+	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("allele_mutation_type_dtos")
 	private List<AlleleMutationTypeSlotAnnotationDTO> alleleMutationTypeDtos;
-	
+
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("allele_symbol_dto")
+	private NameSlotAnnotationDTO alleleSymbolDto;
+
+	@JsonView({ View.FieldsOnly.class })
+	@JsonProperty("allele_full_name_dto")
+	private NameSlotAnnotationDTO alleleFullNameDto;
+
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("allele_synonym_dtos")
+	private List<NameSlotAnnotationDTO> alleleSynonymDtos;
+
 }

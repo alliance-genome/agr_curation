@@ -13,10 +13,10 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class BulkFMSLoadService extends BaseEntityCrudService<BulkFMSLoad, BulkFMSLoadDAO> {
-	
+
 	@Inject
 	BulkFMSLoadDAO bulkFMSLoadDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {

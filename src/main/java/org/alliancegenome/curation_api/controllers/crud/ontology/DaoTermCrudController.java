@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.DaoTermService;
 @RequestScoped
 public class DaoTermCrudController extends BaseOntologyTermController<DaoTermService, DAOTerm, DaoTermDAO> implements DaoTermCrudInterface {
 
-	@Inject DaoTermService daoTermService;
+	@Inject
+	DaoTermService daoTermService;
 
 	@Override
 	@PostConstruct

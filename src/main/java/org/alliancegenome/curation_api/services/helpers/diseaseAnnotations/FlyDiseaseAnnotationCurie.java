@@ -6,10 +6,7 @@ import java.util.stream.Collectors;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.DiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.AGMDiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.AlleleDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.DiseaseAnnotationDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.GeneDiseaseAnnotationDTO;
 import org.alliancegenome.curation_api.services.helpers.CurieGeneratorHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -22,7 +19,7 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 	 * @param annotationDTO DiseaseModelAnnotationFmsDTO
 	 * @return curie string
 	 */
-	
+
 	@Override
 	public String getCurieID(DiseaseAnnotationDTO annotationDTO, String subjectCurie, String refCurie) {
 		CurieGeneratorHelper curie = new CurieGeneratorHelper();
@@ -48,7 +45,7 @@ public class FlyDiseaseAnnotationCurie extends DiseaseAnnotationCurie {
 
 	@Override
 	public String getCurieID(String subject, String object, String reference, List<String> evidenceCodes, List<ConditionRelation> relations, String associationType) {
-		return super.getCurieID(subject, object, reference, null,null, associationType);
+		return super.getCurieID(subject, object, reference, null, null, associationType);
 	}
 
 }

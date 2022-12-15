@@ -1,15 +1,32 @@
 package org.alliancegenome.curation_api.dao.base;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import lombok.extern.jbosslog.JBossLog;
+import static org.reflections.scanners.Scanners.TypesAnnotated;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Path;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.base.BaseEntity;
-import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
+import org.alliancegenome.curation_api.services.ProcessDisplayService;
 import org.alliancegenome.curation_api.util.ProcessDisplayHelper;
 import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
@@ -26,16 +43,7 @@ import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
 import org.hibernate.search.mapper.pojo.massindexing.MassIndexingMonitor;
 import org.reflections.Reflections;
 
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.*;
-import javax.transaction.Transactional;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static org.reflections.scanners.Scanners.TypesAnnotated;
+import lombok.extern.jbosslog.JBossLog;
 
 @JBossLog
 public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
@@ -45,7 +53,7 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 	@Inject
 	protected SearchSession searchSession;
 	@Inject
-	protected MeterRegistry registry;
+	protected ProcessDisplayService processDisplayService;
 
 	protected BaseSQLDAO(Class<E> myClass) {
 		super(myClass);
@@ -91,7 +99,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		}
 	}
 
-
 	public SearchResponse<String> findAllIds(Pagination pagination) {
 		CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> findQuery = cb.createQuery(myClass);
@@ -105,7 +112,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
 			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0) first = 0;
+			if (first < 0)
+				first = 0;
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}
@@ -137,7 +145,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		TypedQuery<E> allQuery = entityManager.createQuery(all);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
 			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0) first = 0;
+			if (first < 0)
+				first = 0;
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}
@@ -225,32 +234,33 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		reindex(myClass, batchSizeToLoadObjects, idFetchSize, limitIndexedObjectsTo, threadsToLoadObjects, transactionTimeout, typesToIndexInParallel);
 	}
 
-	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+	public void reindexEverything(Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
+		Integer typesToIndexInParallel) {
 		Reflections reflections = new Reflections("org.alliancegenome.curation_api");
 		Set<Class<?>> annotatedClasses = reflections.get(TypesAnnotated.with(Indexed.class).asClass(reflections.getConfiguration().getClassLoaders()));
 
-		ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-		ph.startProcess("MassIndex");
-		MassIndexer indexer =
-			searchSession
-				.massIndexer(annotatedClasses)
-				.batchSizeToLoadObjects(batchSizeToLoadObjects)
-				.idFetchSize(idFetchSize)
-				.dropAndCreateSchemaOnStart(true)
-				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(typesToIndexInParallel)
-				.threadsToLoadObjects(threadsToLoadObjects)
-				.monitor(new MassIndexingMonitor() {
-					public void documentsAdded(long increment) { }
-					public void entitiesLoaded(long increment) { }
-					public void addToTotalCount(long increment) { }
-					public void documentsBuilt(long increment) {
-						ph.progressProcess();
-					}
-					public void indexingCompleted() {
-						ph.finishProcess();
-					}
-				});
+		ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
+		ph.addDisplayHandler(processDisplayService);
+		ph.startProcess("Mass Index Everything");
+		MassIndexer indexer = searchSession.massIndexer(annotatedClasses).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true)
+			.mergeSegmentsOnFinish(true).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
+				public void documentsAdded(long increment) {
+				}
+
+				public void entitiesLoaded(long increment) {
+				}
+
+				public void addToTotalCount(long increment) {
+				}
+
+				public void documentsBuilt(long increment) {
+					ph.progressProcess();
+				}
+
+				public void indexingCompleted() {
+					ph.finishProcess();
+				}
+			});
 
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
@@ -265,61 +275,45 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 	}
 
-	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout, Integer typesToIndexInParallel) {
+	public void reindex(Class<?> objectClass, Integer batchSizeToLoadObjects, Integer idFetchSize, Integer limitIndexedObjectsTo, Integer threadsToLoadObjects, Integer transactionTimeout,
+		Integer typesToIndexInParallel) {
 
-		log.debug("Starting Index for: " + objectClass);
-		MassIndexer indexer =
-			searchSession
-				.massIndexer(objectClass)
-				.batchSizeToLoadObjects(batchSizeToLoadObjects)
-				.idFetchSize(idFetchSize)
-				.dropAndCreateSchemaOnStart(true)
-				.mergeSegmentsOnFinish(true)
-				.typesToIndexInParallel(typesToIndexInParallel)
-				.threadsToLoadObjects(threadsToLoadObjects)
-				.monitor(new MassIndexingMonitor() {
+		log.debug("Starting Indexing for: " + objectClass);
+		MassIndexer indexer = searchSession.massIndexer(objectClass).batchSizeToLoadObjects(batchSizeToLoadObjects).idFetchSize(idFetchSize).dropAndCreateSchemaOnStart(true)
+			.mergeSegmentsOnFinish(true).typesToIndexInParallel(typesToIndexInParallel).threadsToLoadObjects(threadsToLoadObjects).monitor(new MassIndexingMonitor() {
 
-					ProcessDisplayHelper ph = new ProcessDisplayHelper(10000);
-					Counter counter;
+				ProcessDisplayHelper ph = new ProcessDisplayHelper(2000);
 
-					@Override
-					public void documentsAdded(long increment) {
-						//log.info("documentsAdded: " + increment);
-					}
+				public void documentsAdded(long increment) {
+				}
 
-					@Override
-					public void documentsBuilt(long increment) {
-						ph.progressProcess();
-						counter.increment();
-					}
+				public void entitiesLoaded(long increment) {
+				}
 
-					@Override
-					public void entitiesLoaded(long increment) {
-						//log.info("entitiesLoaded: " + increment);
-					}
+				@Override
+				public void addToTotalCount(long increment) {
+					ph.addDisplayHandler(processDisplayService);
+					ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
+				}
 
-					@Override
-					public void addToTotalCount(long increment) {
-						ph.startProcess("Mass Indexer for: " + objectClass.getSimpleName(), increment);
-						counter = registry.counter("reindex." + objectClass.getSimpleName());
-						//registry.timer("").
-					}
+				@Override
+				public void documentsBuilt(long increment) {
+					ph.progressProcess();
+				}
 
-					@Override
-					public void indexingCompleted() {
-						ph.finishProcess();
-						registry.remove(counter);
-					}
+				@Override
+				public void indexingCompleted() {
+					ph.finishProcess();
+				}
 
-				});
-		//indexer.dropAndCreateSchemaOnStart(true);
+			});
+		// indexer.dropAndCreateSchemaOnStart(true);
 		indexer.transactionTimeout(transactionTimeout);
 		if (limitIndexedObjectsTo > 0) {
 			indexer.limitIndexedObjectsTo(limitIndexedObjectsTo);
 		}
 		indexer.start();
 	}
-
 
 	public SearchResponse<E> searchAll(Pagination pagination) {
 		return searchByParams(pagination, null);
@@ -331,79 +325,63 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		return searchByParams(pagination, params);
 	}
 
-
 	public SearchResponse<E> searchByParams(Pagination pagination, Map<String, Object> params) {
 		log.debug("Search: " + pagination + " Params: " + params);
 
-		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step =
-			searchSession.search(myClass).where(p -> {
-				return p.bool(b -> {
-					if (params.containsKey("searchFilters")) {
-						HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>) params.get("searchFilters");
-						for (String filterName : searchFilters.keySet()) {
-							b.must(m -> {
-								return m.bool(s -> {
-									s.must(f ->
-										f.bool(q -> {
-											int boost = 0;
-											for (String field : searchFilters.get(filterName).keySet()) {
-												if (field.equals("nonNullFields") || field.equals("nullFields"))
-													continue;
-												float value = (float) (100 / Math.pow(10, boost));
-												String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
-												BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
+		SearchQueryOptionsStep<?, E, SearchLoadingOptionsStep, ?, ?> step = searchSession.search(myClass).where(p -> {
+			return p.bool(b -> {
+				if (params.containsKey("searchFilters")) {
+					HashMap<String, HashMap<String, HashMap<String, Object>>> searchFilters = (HashMap<String, HashMap<String, HashMap<String, Object>>>) params.get("searchFilters");
+					for (String filterName : searchFilters.keySet()) {
+						b.must(m -> {
+							return m.bool(s -> {
+								s.must(f -> f.bool(q -> {
+									int boost = 0;
+									for (String field : searchFilters.get(filterName).keySet()) {
+										if (field.equals("nonNullFields") || field.equals("nullFields"))
+											continue;
+										float value = (float) (100 / Math.pow(10, boost));
+										String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
+										BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
 
-												String queryField = field;
-												Boolean useKeywordFields = (Boolean) searchFilters.get(filterName).get(field).get("useKeywordFields");
-												if (useKeywordFields != null && useKeywordFields) {
-													queryField = field + "_keyword";
-												}
+										String queryField = field;
+										Boolean useKeywordFields = (Boolean) searchFilters.get(filterName).get(field).get("useKeywordFields");
+										if (useKeywordFields != null && useKeywordFields) {
+											queryField = field + "_keyword";
+										}
 
-												String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
-												if(queryType != null && queryType.equals("matchQuery")) {
-													q.should(
-														p.match()
-															.field(queryField)
-															.matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-															.boost(value >= 1 ? value : 1)
-													);
-												} else { // assume simple query
-													q.should(
-														p.simpleQueryString()
-															.fields(queryField)
-															.matching(searchFilters.get(filterName).get(field).get("queryString").toString())
-															.defaultOperator(booleanOperator)
-															.boost(value >= 1 ? value : 1)
-													);
-												}
-												boost++;
-											}
-										})
-									);
-									if (searchFilters.get(filterName).containsKey("nonNullFields")) {
-										s.must(f ->
-											f.bool(q -> {
-												List<String> fields = (List<String>) searchFilters.get(filterName).get("nonNullFields");
-												fields.forEach(field -> q.must(p.exists().field(field)));
-											}));
+										String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
+										if (queryType != null && queryType.equals("matchQuery")) {
+											q.should(p.match().field(queryField).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value : 1));
+										} else { // assume simple query
+											q.should(p.simpleQueryString().fields(queryField).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+												.defaultOperator(booleanOperator).boost(value >= 1 ? value : 1));
+										}
+										boost++;
 									}
-									if (searchFilters.get(filterName).containsKey("nullFields")) {
-										s.must(f ->
-											f.bool(q -> {
-												List<String> fields = (List<String>) searchFilters.get(filterName).get("nullFields");
-												fields.forEach(field -> q.mustNot(p.exists().field(field)));
-											}));
-									}
-								});
+								}));
+								if (searchFilters.get(filterName).containsKey("nonNullFields")) {
+									s.must(f -> f.bool(q -> {
+										List<String> fields = (List<String>) searchFilters.get(filterName).get("nonNullFields");
+										fields.forEach(field -> q.must(p.exists().field(field)));
+									}));
+								}
+								if (searchFilters.get(filterName).containsKey("nullFields")) {
+									s.must(f -> f.bool(q -> {
+										List<String> fields = (List<String>) searchFilters.get(filterName).get("nullFields");
+										fields.forEach(field -> q.mustNot(p.exists().field(field)));
+									}));
+								}
 							});
-						}
+						});
 					}
-					if (params.containsKey("nonNullFieldsTable")) {
-						List<String> fields = (List<String>) params.get("nonNullFieldsTable");
-						fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
-					}
-				});
+				}
+				if (params.containsKey("nonNullFieldsTable")) {
+					List<String> fields = (List<String>) params.get("nonNullFieldsTable");
+					fields.forEach(field -> b.must(m -> m.bool(s -> s.should(p.exists().field(field)))));
+				}
 			});
+		});
 
 		if (params.containsKey("sortOrders")) {
 			step = step.sort(f -> {
@@ -484,18 +462,17 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		} else {
 			log.debug("Search By Params: " + params + " for class: " + myClass);
 		}
-		
+
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<E> query = builder.createQuery(myClass);
 		CriteriaQuery<Long> countQuery = builder.createQuery(Long.class);
 		Root<E> root = query.from(myClass);
 		Root<E> countRoot = countQuery.from(myClass);
 
-		//System.out.println("Root: " + root);
+		// System.out.println("Root: " + root);
 		List<Predicate> restrictions = new ArrayList<>();
 		List<Predicate> countRestrictions = new ArrayList<>();
-		
-		
+
 		for (String key : params.keySet()) {
 			Path<Object> column = null;
 			Path<Object> countColumn = null;
@@ -506,65 +483,45 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 					log.debug("Looking up: " + s);
 					if (column != null) {
 						log.debug("Looking up via column: " + s);
-						
+
 						Path<Object> pathColumn = column.get(s);
-						if(pathColumn.getJavaType().equals(List.class)) {
-							column = ((Join)column).join(s);
+						if (pathColumn.getJavaType().equals(List.class)) {
+							column = ((Join) column).join(s);
 						} else {
 							column = pathColumn;
 						}
 						Path<Object> pathCountColumn = countColumn.get(s);
-						if(pathCountColumn.getJavaType().equals(List.class)) {
-							countColumn = ((Join)countColumn).join(s);
+						if (pathCountColumn.getJavaType().equals(List.class)) {
+							countColumn = ((Join) countColumn).join(s);
 						} else {
 							countColumn = pathCountColumn;
 						}
 					} else {
 						log.debug("Looking up via root: " + s);
 						column = root.get(s);
-						if(column.getJavaType().equals(List.class)) {
+						if (column.getJavaType().equals(List.class)) {
 							column = root.join(s);
 						}
 						countColumn = countRoot.get(s);
-						if(countColumn.getJavaType().equals(List.class)) {
+						if (countColumn.getJavaType().equals(List.class)) {
 							countColumn = countRoot.join(s);
 						}
 					}
 
-					log.debug(
-						"Column Alias: " + column.getAlias() +
-						" Column Java Type: " + column.getJavaType() +
-						" Column Model: " + column.getModel() +
-						" Column Type Alias: " + column.type().getAlias() +
-						" Column Parent Path Alias: " + column.getParentPath().getAlias()
-					);
-					log.debug(
-						"Count Column Alias: " + countColumn.getAlias() +
-						" Count Column Java Type: " + countColumn.getJavaType() +
-						" Count Column Model: " + countColumn.getModel() +
-						" Count Column Type Alias: " + countColumn.type().getAlias() +
-						" Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias()
-					);
+					log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: "
+						+ column.type().getAlias() + " Column Parent Path Alias: " + column.getParentPath().getAlias());
+					log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
+						+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 				}
 			} else {
 				column = root.get(key);
 				countColumn = countRoot.get(key);
 			}
 
-			log.debug(
-				"Column Alias: " + column.getAlias() +
-				" Column Java Type: " + column.getJavaType() +
-				" Column Model: " + column.getModel() +
-				" Column Type Alias: " + column.type().getAlias() +
-				" Column Parent Path Alias: " + column.getParentPath().getAlias()
-			);
-			log.debug(
-				"Count Column Alias: " + countColumn.getAlias() +
-				" Count Column Java Type: " + countColumn.getJavaType() +
-				" Count Column Model: " + countColumn.getModel() +
-				" Count Column Type Alias: " + countColumn.type().getAlias() +
-				" Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias()
-			);
+			log.debug("Column Alias: " + column.getAlias() + " Column Java Type: " + column.getJavaType() + " Column Model: " + column.getModel() + " Column Type Alias: " + column.type().getAlias()
+				+ " Column Parent Path Alias: " + column.getParentPath().getAlias());
+			log.debug("Count Column Alias: " + countColumn.getAlias() + " Count Column Java Type: " + countColumn.getJavaType() + " Count Column Model: " + countColumn.getModel()
+				+ " Count Column Type Alias: " + countColumn.type().getAlias() + " Count Column Parent Path Alias: " + countColumn.getParentPath().getAlias());
 
 			Object value = params.get(key);
 			if (value != null) {
@@ -606,7 +563,6 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 
 		query.where(builder.and(restrictions.toArray(new Predicate[0])));
 
-
 		countQuery.select(builder.count(countRoot));
 		countQuery.where(builder.and(countRestrictions.toArray(new Predicate[0])));
 		Long totalResults = entityManager.createQuery(countQuery).getSingleResult();
@@ -614,7 +570,8 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 		TypedQuery<E> allQuery = entityManager.createQuery(query);
 		if (pagination != null && pagination.getLimit() != null && pagination.getPage() != null) {
 			int first = pagination.getPage() * pagination.getLimit();
-			if (first < 0) first = 0;
+			if (first < 0)
+				first = 0;
 			allQuery.setFirstResult(first);
 			allQuery.setMaxResults(pagination.getLimit());
 		}

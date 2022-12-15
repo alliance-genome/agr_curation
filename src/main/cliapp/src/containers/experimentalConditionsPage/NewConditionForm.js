@@ -74,11 +74,6 @@ export const NewConditionForm = ({
 		const filterName = "conditionClassEditorFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
 		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			},
 			"subsetFilter": {
 				"subsets": {
 					queryString: 'ZECO_0000267'
@@ -93,76 +88,41 @@ export const NewConditionForm = ({
 		const endpoint = "experimentalconditionontologyterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const conditionGeneOntologySearch = (event, setFiltered, setQuery) => {
 		const endpoint = "goterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
-
+		
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const conditionChemicalSearch = (event, setFiltered, setQuery) => {
 		const endpoint = "chemicalterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query)
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const conditionAnatomySearch = (event, setFiltered, setQuery) => {
 		const endpoint = "anatomicalterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const conditionTaxonSearch = (event, setFiltered, setQuery) => {
 		const endpoint = "ncbitaxonterm";
 		const filterName = "singleOntologyFilter";
 		const filter = buildAutocompleteFilter(event, curieAutocompleteFields);
-		const otherFilters = {
-			"obsoleteFilter": {
-				"obsolete": {
-					queryString: false
-				}
-			}
-		}
 		setQuery(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
 	}
 
 	const onInternalChange = (event) => {

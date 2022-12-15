@@ -13,7 +13,8 @@ import org.alliancegenome.curation_api.services.ontology.RoTermService;
 @RequestScoped
 public class RoTermCrudController extends BaseOntologyTermController<RoTermService, ROTerm, RoTermDAO> implements RoTermCrudInterface {
 
-	@Inject RoTermService roTermService;
+	@Inject
+	RoTermService roTermService;
 
 	@Override
 	@PostConstruct

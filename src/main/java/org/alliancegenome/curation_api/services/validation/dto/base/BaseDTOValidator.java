@@ -2,56 +2,51 @@ package org.alliancegenome.curation_api.services.validation.dto.base;
 
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
-import org.alliancegenome.curation_api.dao.SynonymDAO;
 import org.alliancegenome.curation_api.model.entities.BiologicalEntity;
 import org.alliancegenome.curation_api.model.entities.GenomicEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
-import org.alliancegenome.curation_api.model.entities.Synonym;
 import org.alliancegenome.curation_api.model.entities.base.AuditedObject;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.ingest.dto.BiologicalEntityDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.GenomicEntityDTO;
-import org.alliancegenome.curation_api.model.ingest.dto.SynonymDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.base.AuditedObjectDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.PersonService;
 import org.alliancegenome.curation_api.services.ontology.NcbiTaxonTermService;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class BaseDTOValidator {
 
-	@Inject PersonService personService;
-	@Inject NcbiTaxonTermService ncbiTaxonTermService;
-	@Inject SynonymDAO synonymDAO;
-	
-	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO (E entity, D dto) {
-		
+	@Inject
+	PersonService personService;
+	@Inject
+	NcbiTaxonTermService ncbiTaxonTermService;
+
+	public <E extends AuditedObject, D extends AuditedObjectDTO> ObjectResponse<E> validateAuditedObjectDTO(E entity, D dto) {
+
 		ObjectResponse<E> response = new ObjectResponse<E>();
-		
+
 		Person createdBy = null;
 		if (StringUtils.isNotBlank(dto.getCreatedByCurie()))
 			createdBy = personService.fetchByUniqueIdOrCreate(dto.getCreatedByCurie());
 		entity.setCreatedBy(createdBy);
-		
+
 		Person updatedBy = null;
 		if (StringUtils.isNotBlank(dto.getUpdatedByCurie()))
 			updatedBy = personService.fetchByUniqueIdOrCreate(dto.getUpdatedByCurie());
 		entity.setUpdatedBy(updatedBy);
-		
+
 		Boolean internal = false;
 		if (dto.getInternal() != null)
 			internal = dto.getInternal();
 		entity.setInternal(internal);
-		
+
 		Boolean obsolete = false;
 		if (dto.getObsolete() != null)
 			obsolete = dto.getObsolete();
@@ -70,26 +65,26 @@ public class BaseDTOValidator {
 		OffsetDateTime creationDate = null;
 		if (StringUtils.isNotBlank(dto.getDateCreated())) {
 			try {
-				creationDate = OffsetDateTime.parse(dto.getDateCreated());		
+				creationDate = OffsetDateTime.parse(dto.getDateCreated());
 			} catch (DateTimeParseException e) {
 				response.addErrorMessage("date_created", ValidationConstants.INVALID_MESSAGE + " (" + dto.getDateCreated() + ")");
 			}
 		}
 		entity.setDateCreated(creationDate);
-	
+
 		response.setEntity(entity);
-		
+
 		return response;
 	}
-	
-	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO (E entity, D dto) {
-		
+
+	public <E extends BiologicalEntity, D extends BiologicalEntityDTO> ObjectResponse<E> validateBiologicalEntityDTO(E entity, D dto) {
+
 		ObjectResponse<E> beResponse = new ObjectResponse<E>();
-		
+
 		ObjectResponse<E> aoResponse = validateAuditedObjectDTO(entity, dto);
 		beResponse.addErrorMessages(aoResponse.getErrorMessages());
 		entity = aoResponse.getEntity();
-		
+
 		if (StringUtils.isBlank(dto.getTaxonCurie())) {
 			beResponse.addErrorMessage("taxon_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -99,58 +94,22 @@ public class BaseDTOValidator {
 			}
 			entity.setTaxon(taxonResponse.getEntity());
 		}
-			
+
 		beResponse.setEntity(entity);
-		
+
 		return beResponse;
 	}
-	
-	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO (E entity, D dto) {
-		
+
+	public <E extends GenomicEntity, D extends GenomicEntityDTO> ObjectResponse<E> validateGenomicEntityDTO(E entity, D dto) {
+
 		ObjectResponse<E> geResponse = new ObjectResponse<E>();
-		
+
 		ObjectResponse<E> beResponse = validateBiologicalEntityDTO(entity, dto);
 		geResponse.addErrorMessages(beResponse.getErrorMessages());
 		entity = beResponse.getEntity();
-		
-		if (StringUtils.isNotBlank(dto.getName())) {
-			entity.setName(dto.getName());
-		} else {
-			entity.setName(null);
-		}
-	
-		if (CollectionUtils.isNotEmpty(dto.getSynonymDtos())) {
-			List<Synonym> synonyms = new ArrayList<>();
-			for (SynonymDTO synonymDto : dto.getSynonymDtos()) {
-				ObjectResponse<Synonym> synResponse = validateSynonymDTO(synonymDto);
-				if (synResponse.hasErrors()) {
-					geResponse.addErrorMessage("synonym_dtos", synResponse.errorMessagesString());
-				} else {
-					synonyms.add(synResponse.getEntity());
-				}
-			}
-		} else {
-			entity.setSynonyms(null);
-		}
-		
+
 		geResponse.setEntity(entity);
-		
+
 		return geResponse;
-	}
-	
-	public ObjectResponse<Synonym> validateSynonymDTO(SynonymDTO dto) {
-		Synonym synonym = new Synonym();
-		ObjectResponse<Synonym> synonymResponse = validateAuditedObjectDTO(synonym, dto);
-		synonym = synonymResponse.getEntity();
-		
-		if (StringUtils.isBlank(dto.getName())) {
-			synonymResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
-		} else {
-			synonym.setName(dto.getName());
-		}
-		
-		synonymResponse.setEntity(synonymDAO.persist(synonym));
-		
-		return synonymResponse;
 	}
 }

@@ -14,7 +14,8 @@ import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
 @RequestScoped
 public class MmusdvTermCrudController extends BaseOntologyTermController<MmusdvTermService, MMUSDVTerm, MmusdvTermDAO> implements MmusdvTermCrudInterface {
 
-	@Inject MmusdvTermService mmusdvTermService;
+	@Inject
+	MmusdvTermService mmusdvTermService;
 
 	@Override
 	@PostConstruct

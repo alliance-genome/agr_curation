@@ -9,31 +9,34 @@ import javax.transaction.Transactional;
 
 import org.alliancegenome.curation_api.dao.VocabularyDAO;
 import org.alliancegenome.curation_api.dao.ontology.EcoTermDAO;
-import org.alliancegenome.curation_api.model.entities.*;
+import org.alliancegenome.curation_api.model.entities.Vocabulary;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 
 @RequestScoped
 public class EcoTermService extends BaseOntologyTermService<ECOTerm, EcoTermDAO> {
-	
-	@Inject EcoTermDAO ecoTermDAO;
-	@Inject VocabularyDAO vocabularyDAO;
-	
+
+	@Inject
+	EcoTermDAO ecoTermDAO;
+	@Inject
+	VocabularyDAO vocabularyDAO;
+
 	private final String ecoTermAbbreviationVocabularyName = "AGR disease annotation ECO terms";
 	private final String agrEcoTermSubset = "agr_eco_terms";
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(ecoTermDAO);
 	}
-	
+
 	@Transactional
 	public void updateAbbreviations() {
 
 		SearchResponse<Vocabulary> res = vocabularyDAO.findByField("name", ecoTermAbbreviationVocabularyName);
-		if(res != null && res.getTotalResults() == 1) {
+		if (res != null && res.getTotalResults() == 1) {
 			List<VocabularyTerm> ecoVocabularyTerms = res.getResults().get(0).getMemberTerms();
 			ecoVocabularyTerms.forEach((ecoVocabularyTerm) -> {
 				ECOTerm ecoTerm = ecoTermDAO.find(ecoVocabularyTerm.getName());

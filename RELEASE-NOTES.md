@@ -2,6 +2,20 @@
 
 https://agr-jira.atlassian.net/wiki/spaces/ATEAM/overview
 
+## v0.14.0
+ * New features
+    * Added confirmation popup to data loads widget upload file UI functionality
+    * Exclude obsolete results from AutoComplete suggestions (except reference field) (SCRUM-2327)
+    * Enabled deprecation (instead of deletion) of public disease annotations (1st iteration, SCRUM-2296 & SCRUM-2298)
+    * Added alliance member affiliation (#808)
+    * Display human-readable subject name underneath subject field (#816)
+ * Data changes
+    * Synchronised codebase with LinkML v1.5.0 (NameSlotAnnotations) (SCRUM-2311, SCRUM-2345)
+ * Bug fixes
+    * Fixed disabled filter after validation fail in Allele table (SCRUM-2326)
+ * Maintenance
+    * Upgrade quarkus to 2.14.2 (SCRUM-2330)
+
 ## v0.13.0
  * New Features
     * Added 'Mutation types' to Allele table (SCRUM-2267 & SCRUM-2268)

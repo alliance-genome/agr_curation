@@ -12,16 +12,19 @@ import org.alliancegenome.curation_api.interfaces.crud.GeneCrudInterface;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.ingest.dto.GeneDTO;
-import org.alliancegenome.curation_api.response.*;
+import org.alliancegenome.curation_api.response.APIResponse;
+import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.GeneService;
 
 @RequestScoped
 public class GeneCrudController extends BaseDTOCrudController<GeneService, Gene, GeneDTO, GeneDAO> implements GeneCrudInterface {
 
-	@Inject GeneService geneService;
-	
-	@Inject GeneExecutor geneExecutor;
-	
+	@Inject
+	GeneService geneService;
+
+	@Inject
+	GeneExecutor geneExecutor;
+
 	@Override
 	@PostConstruct
 	protected void init() {
@@ -32,7 +35,7 @@ public class GeneCrudController extends BaseDTOCrudController<GeneService, Gene,
 	public ObjectResponse<Gene> get(String id) {
 		return geneService.get(id);
 	}
-	
+
 	@Override
 	public APIResponse updateGenes(List<GeneDTO> geneData) {
 		return geneExecutor.runLoad(geneData);

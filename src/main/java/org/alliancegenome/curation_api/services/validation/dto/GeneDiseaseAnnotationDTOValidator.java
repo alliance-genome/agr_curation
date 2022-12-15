@@ -24,27 +24,33 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
-public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator{
+public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
 
-	@Inject GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
-	@Inject AffectedGenomicModelDAO affectedGenomicModelDAO;
-	@Inject GeneDAO geneDAO;
-	@Inject NoteDAO noteDAO;
-	@Inject ConditionRelationDAO conditionRelationDAO;
-	@Inject VocabularyTermDAO vocabularyTermDAO;
-	
+	@Inject
+	GeneDiseaseAnnotationDAO geneDiseaseAnnotationDAO;
+	@Inject
+	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	NoteDAO noteDAO;
+	@Inject
+	ConditionRelationDAO conditionRelationDAO;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+
 	public GeneDiseaseAnnotation validateGeneDiseaseAnnotationDTO(GeneDiseaseAnnotationDTO dto) throws ObjectValidationException {
-		
+
 		GeneDiseaseAnnotation annotation = new GeneDiseaseAnnotation();
 		Gene gene;
-		
+
 		ObjectResponse<GeneDiseaseAnnotation> gdaResponse = new ObjectResponse<GeneDiseaseAnnotation>();
-		
+
 		ObjectResponse<GeneDiseaseAnnotation> refResponse = validateReference(annotation, dto);
 		gdaResponse.addErrorMessages(refResponse.getErrorMessages());
 		Reference validatedReference = refResponse.getEntity().getSingleReference();
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
-		
+
 		if (StringUtils.isBlank(dto.getGeneCurie())) {
 			gdaResponse.addErrorMessage("gene_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -56,7 +62,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				if (StringUtils.isBlank(annotationId)) {
 					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(gene.getTaxon().getCurie()).getCurieID(dto, dto.getGeneCurie(), refCurie);
 				}
-		
+
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
 				if (annotationList == null || annotationList.getResults().size() == 0) {
 					annotation.setUniqueId(annotationId);
@@ -67,7 +73,7 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			}
 		}
 		annotation.setSingleReference(validatedReference);
-		
+
 		AffectedGenomicModel sgdStrainBackground = null;
 		if (StringUtils.isNotBlank(dto.getSgdStrainBackgroundCurie())) {
 			sgdStrainBackground = affectedGenomicModelDAO.find(dto.getSgdStrainBackgroundCurie());
@@ -76,11 +82,11 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 			}
 		}
 		annotation.setSgdStrainBackground(sgdStrainBackground);
-		
+
 		ObjectResponse<GeneDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		gdaResponse.addErrorMessages(daResponse.getErrorMessages());
-		
+
 		if (StringUtils.isNotEmpty(dto.getDiseaseRelationName())) {
 			VocabularyTerm diseaseRelation = vocabularyTermDAO.getTermInVocabularyTermSet(VocabularyConstants.GENE_DISEASE_RELATION_VOCABULARY_TERM_SET, dto.getDiseaseRelationName());
 			if (diseaseRelation == null)
@@ -89,10 +95,10 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 		} else {
 			gdaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		
+
 		if (gdaResponse.hasErrors())
 			throw new ObjectValidationException(dto, gdaResponse.errorMessagesString());
-		
+
 		return annotation;
 	}
 }

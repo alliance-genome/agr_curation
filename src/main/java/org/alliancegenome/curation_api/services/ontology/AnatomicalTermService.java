@@ -11,12 +11,13 @@ import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 @RequestScoped
 public class AnatomicalTermService extends BaseOntologyTermService<AnatomicalTerm, AnatomicalTermDAO> {
 
-	@Inject AnatomicalTermDAO anatomicalTermDAO;
+	@Inject
+	AnatomicalTermDAO anatomicalTermDAO;
 
 	@Override
 	@PostConstruct
 	protected void init() {
 		setSQLDao(anatomicalTermDAO);
 	}
-	
+
 }

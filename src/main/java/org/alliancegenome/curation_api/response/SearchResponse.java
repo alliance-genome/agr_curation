@@ -1,6 +1,8 @@
 package org.alliancegenome.curation_api.response;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.alliancegenome.curation_api.view.View;
 import org.apache.commons.collections.CollectionUtils;
@@ -14,24 +16,24 @@ import lombok.Data;
 @Schema(name = "SearchResponse", description = "POJO that represents the SearchResponse")
 public class SearchResponse<E> extends APIResponse {
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private List<E> results = new ArrayList<E>();
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Long totalResults;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Integer returnedRecords;
 
-	@JsonView({View.FieldsOnly.class})
+	@JsonView({ View.FieldsOnly.class })
 	private Map<String, Map<String, Long>> aggregations;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private String debug;
-	
-	@JsonView({View.FieldsOnly.class})
+
+	@JsonView({ View.FieldsOnly.class })
 	private String esQuery;
-	
+
 	public SearchResponse() {
 	}
 

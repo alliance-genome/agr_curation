@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 public class APIVersionInfo {
-	
+
 	@JsonView(View.FieldsOnly.class)
 	private String name;
 	@JsonView(View.FieldsOnly.class)
@@ -23,5 +23,5 @@ public class APIVersionInfo {
 	private String esHost;
 	@JsonView(View.FieldsOnly.class)
 	private String env;
-	
+
 }

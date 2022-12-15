@@ -30,25 +30,30 @@ import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValidator {
-	
-	@Inject AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
-	@Inject VocabularyTermDAO vocabularyTermDAO;
-	@Inject AffectedGenomicModelDAO agmDAO;
-	@Inject GeneDAO geneDAO;
-	@Inject AlleleDAO alleleDAO;
+
+	@Inject
+	AGMDiseaseAnnotationDAO agmDiseaseAnnotationDAO;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+	@Inject
+	AffectedGenomicModelDAO agmDAO;
+	@Inject
+	GeneDAO geneDAO;
+	@Inject
+	AlleleDAO alleleDAO;
 
 	public AGMDiseaseAnnotation validateAGMDiseaseAnnotationDTO(AGMDiseaseAnnotationDTO dto) throws ObjectUpdateException, ObjectValidationException {
-		
+
 		AGMDiseaseAnnotation annotation = new AGMDiseaseAnnotation();
 		AffectedGenomicModel agm;
-		
+
 		ObjectResponse<AGMDiseaseAnnotation> adaResponse = new ObjectResponse<AGMDiseaseAnnotation>();
-		
+
 		ObjectResponse<AGMDiseaseAnnotation> refResponse = validateReference(annotation, dto);
 		adaResponse.addErrorMessages(refResponse.getErrorMessages());
 		Reference validatedReference = refResponse.getEntity().getSingleReference();
 		String refCurie = validatedReference == null ? null : validatedReference.getCurie();
-		
+
 		if (StringUtils.isBlank(dto.getAgmCurie())) {
 			adaResponse.addErrorMessage("agm_curie", ValidationConstants.REQUIRED_MESSAGE);
 		} else {
@@ -60,7 +65,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				if (StringUtils.isBlank(annotationId)) {
 					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(agm.getTaxon().getCurie()).getCurieID(dto, dto.getAgmCurie(), refCurie);
 				}
-		
+
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
 				if (annotationList == null || annotationList.getResults().size() == 0) {
 					annotation.setUniqueId(annotationId);
@@ -71,7 +76,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			}
 		}
 		annotation.setSingleReference(validatedReference);
-		
+
 		ObjectResponse<AGMDiseaseAnnotation> daResponse = validateAnnotationDTO(annotation, dto);
 		annotation = daResponse.getEntity();
 		adaResponse.addErrorMessages(daResponse.getErrorMessages());
@@ -84,7 +89,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		} else {
 			adaResponse.addErrorMessage("disease_relation_name", ValidationConstants.REQUIRED_MESSAGE);
 		}
-		
+
 		if (StringUtils.isNotBlank(dto.getInferredGeneCurie())) {
 			Gene inferredGene = geneDAO.find(dto.getInferredGeneCurie());
 			if (inferredGene == null)
@@ -93,7 +98,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		} else {
 			annotation.setInferredGene(null);
 		}
-		
+
 		if (CollectionUtils.isNotEmpty(dto.getAssertedGeneCuries())) {
 			List<Gene> assertedGenes = new ArrayList<>();
 			for (String assertedGeneCurie : dto.getAssertedGeneCuries()) {
@@ -108,7 +113,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		} else {
 			annotation.setAssertedGenes(null);
 		}
-		
+
 		if (StringUtils.isNotBlank(dto.getInferredAlleleCurie())) {
 			Allele inferredAllele = alleleDAO.find(dto.getInferredAlleleCurie());
 			if (inferredAllele == null)
@@ -117,7 +122,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		} else {
 			annotation.setInferredAllele(null);
 		}
-		
+
 		if (StringUtils.isNotBlank(dto.getAssertedAlleleCurie())) {
 			Allele assertedAllele = alleleDAO.find(dto.getAssertedAlleleCurie());
 			if (assertedAllele == null)
@@ -126,10 +131,10 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 		} else {
 			annotation.setAssertedAllele(null);
 		}
-		
+
 		if (adaResponse.hasErrors())
 			throw new ObjectValidationException(dto, adaResponse.errorMessagesString());
-		
+
 		return annotation;
 	}
 }

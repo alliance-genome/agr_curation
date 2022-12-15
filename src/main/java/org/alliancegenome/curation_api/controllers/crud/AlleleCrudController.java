@@ -18,9 +18,11 @@ import org.alliancegenome.curation_api.services.AlleleService;
 @RequestScoped
 public class AlleleCrudController extends BaseDTOCrudController<AlleleService, Allele, AlleleDTO, AlleleDAO> implements AlleleCrudInterface {
 
-	@Inject AlleleService alleleService;
-	
-	@Inject AlleleExecutor alleleExecutor;
+	@Inject
+	AlleleService alleleService;
+
+	@Inject
+	AlleleExecutor alleleExecutor;
 
 	@Override
 	@PostConstruct

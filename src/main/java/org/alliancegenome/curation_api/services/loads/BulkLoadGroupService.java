@@ -10,10 +10,10 @@ import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
 
 @RequestScoped
 public class BulkLoadGroupService extends BaseEntityCrudService<BulkLoadGroup, BulkLoadGroupDAO> {
-	
+
 	@Inject
 	BulkLoadGroupDAO bulkLoadGroupDAO;
-	
+
 	@Override
 	@PostConstruct
 	protected void init() {

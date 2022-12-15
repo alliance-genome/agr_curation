@@ -4,6 +4,8 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { FileUpload } from 'primereact/fileupload';
 import { Toast } from "primereact/toast";
+import { Dialog } from 'primereact/dialog';
+import { ProgressBar } from 'primereact/progressbar';
 
 import { useOktaAuth } from '@okta/okta-react';
 import { SearchService } from '../../service/SearchService';
@@ -35,6 +37,7 @@ export const DataLoadsComponent = () => {
 	const { apiVersion } = useContext(SiteContext);
 
 	const [groups, setGroups] = useState({});
+	const [runningLoads, setRunningLoads] = useState({});
 	const [history, setHistory] = useState({id: 0});
 	const [bulkLoadGroupDialog, setBulkLoadGroupDialog] = useState(false);
 	const [historyDialog, setHistoryDialog] = useState(false);
@@ -46,6 +49,9 @@ export const DataLoadsComponent = () => {
 	const errorMessage = useRef(null);
 	const searchService = new SearchService();
 	const dataSubmissionService = new DataSubmissionService();
+	const [uploadLoadType, setUploadLoadType] = useState(null);
+	const [uploadSubType, setUploadSubType] = useState(null);
+	const [uploadConfirmDialog, setUploadConfirmDialog] = useState(false);
 
 	const [newBulkLoad, bulkLoadDispatch] = useReducer(bulkLoadReducer, {});
 
@@ -53,7 +59,6 @@ export const DataLoadsComponent = () => {
 
 	let dataLoadService = null;
 	const toast = useRef(null);
-
 
 	const handleNewBulkLoadGroupOpen = (event) => {
 		setBulkLoadGroupDialog(true);
@@ -88,17 +93,50 @@ export const DataLoadsComponent = () => {
 				}
 				setGroups(data.results);
 			}
+
+			var loc = window.location, new_uri;
+			if (loc.protocol === "https:") {
+				new_uri = "wss:";
+			} else {
+				new_uri = "ws:";
+			}
+			if(process.env.NODE_ENV === 'production') {
+				new_uri += "//" + loc.host;
+			} else {
+				new_uri += "//localhost:8080";
+			}
+
+			new_uri += loc.pathname + "processing_events";
+			//console.log(new_uri);
+			let ws = new WebSocket(new_uri);
+
+			ws.onopen = () => console.log('ws opened');
+			ws.onclose = () => console.log('ws closed');
+
+			ws.onmessage = (e, runningLoads) => {
+				let processingMessage = JSON.parse(e.data);
+				setRunningLoads((prevState) => {
+					//console.log(prevState);
+					const newState = {...prevState};
+					newState[processingMessage.message] = processingMessage;
+					//console.log(newState);
+					return newState;
+				});
+			}
+
 		},
 		keepPreviousData: true,
 		refetchOnWindowFocus: false
 	});
+
+
 
 	const getService = () => {
 		if(!dataLoadService) {
 			dataLoadService = new DataLoadService(authState);
 		}
 		return dataLoadService;
-	}
+	};
 
 	const urlTemplate = (rowData) => {
 		return <a href={rowData.s3Url}>Download</a>;
@@ -153,15 +191,30 @@ export const DataLoadsComponent = () => {
 		return <Button icon="pi pi-search-plus" className="p-button-rounded p-button-info mr-2" onClick={() => showHistory(rowData)} />
 	};
 
-	const uploadLoadFile = (event, rowData) => {
-		let type = rowData.backendBulkLoadType + "_" + rowData.dataType;
+	const showUploadConfirmDialog = (rowData) => {
+		setUploadLoadType(rowData.backendBulkLoadType);
+		setUploadSubType(rowData.dataType);
+		setUploadConfirmDialog(true);
+		//setUploadFile(event.files[0]);
+	}
+
+	const hideUploadConfirmDialog = () => {
+		setUploadLoadType(null);
+		setUploadSubType(null);
+		setUploadConfirmDialog(false);
+	}
+
+	const uploadLoadFile = (event) => {
+		let type = uploadLoadType + "_" + uploadSubType;
 		let formData = new FormData();
-		if(event.files.length >= 1) {
+		if(event.files.length > 0) {
 			formData.append(type, event.files[0]);
 		}
 		dataSubmissionService.sendFile(formData);
 		toast.current.show({severity: 'info', summary: 'Success', detail: 'File Uploaded'});
-		event.options.clear();
+		setUploadLoadType(null);
+		setUploadSubType(null);
+		setUploadConfirmDialog(false);
 	}
 
 	const loadFileActionBodyTemplate = (rowData) => {
@@ -189,8 +242,7 @@ export const DataLoadsComponent = () => {
 				ret.push(<Button key="run" icon="pi pi-play" className="p-button-rounded p-button-success mr-2" onClick={() => runLoad(rowData)} />);
 			}
 		}else{
-			ret.push(<FileUpload key="upload" mode="basic" auto chooseOptions={{icon:'pi pi-upload', label: 'Upload', className:"p-button-rounded p-button-info mr-2"}}
-								 accept="*" customUpload uploadHandler={e => uploadLoadFile(e, rowData)} maxFileSize={1000000000000000} />);
+			ret.push(<Button key = "fileUpload" icon='pi pi-upload' label='Upload' className="p-button-rounded p-button-info mr-2" onClick={() => showUploadConfirmDialog(rowData)} />)
 		}
 
 		if (!rowData.loadFiles || rowData.loadFiles.length === 0) {
@@ -413,6 +465,54 @@ export const DataLoadsComponent = () => {
 		return [majorVersion, minorVersion, patchVersion];
 	}
 
+	const uploadConfirmDialogFooter = () => {
+		return (
+			<React.Fragment>
+				<Button label="Cancel" icon="pi pi-times" className="p-button-text" onClick={hideUploadConfirmDialog} />
+				<FileUpload key="uploadConfirm" mode="basic" auto chooseOptions={{icon:'pi pi-check', label: 'Confirm', className:"p-button-text"}}
+						accept="*" customUpload uploadHandler={e => uploadLoadFile(e)} maxFileSize={1000000000000000} />
+			</React.Fragment>
+		);
+	}
+
+	const ProgressIndicator = ({ load }) => {
+        if(load.currentCount && load.totalSize) {
+        	return <ProgressBar value={(parseInt((load.currentCount / load.totalSize) * 10000) / 100)} />
+        } else if(load.currentCount && load.lastCount && load.lastTime && load.nowTime) {
+        	let rate = Math.ceil(((load.currentCount - load.lastCount) / (load.nowTime - load.lastTime)) * 1000);
+			return (
+	            <ProgressBar
+	            	value={rate}
+	            	displayValueTemplate={(value) => {
+	            		return <>{value}r/s -- {load.currentCount}</>
+	            	}}
+	            />
+	        );
+        } else {
+        	return <ProgressBar value={0} />
+        }
+    }
+
+	const processingLoadsComponents = () => {
+
+		let ret = [];
+		//console.log(runningLoads);
+		for(let key in runningLoads) {
+			//console.log(key);
+			if(runningLoads[key]) {
+				ret.push(
+					<div className="col-2" key={key}>
+						<div className="card">
+							<h3>{ key }</h3>
+							<ProgressIndicator load={runningLoads[key]} />
+						</div>
+					</div>
+				);
+			}
+		}
+		return ret;
+	}
+
 	return (
 		<>
 			<Toast ref={toast}></Toast>
@@ -450,6 +550,12 @@ export const DataLoadsComponent = () => {
 					dataLoadService={getService()}
 					history={history}
 				/>
+				<Dialog visible={uploadConfirmDialog} style={{ width: '450px' }} header="Confirm Upload" modal footer={uploadConfirmDialogFooter} onHide={hideUploadConfirmDialog}>
+					<div className="upload-confirmation-content">
+						<i className="pi pi-exclamation-triangle mr-3" style={{ fontSize: '2rem'}} />
+						{<span>Please confirm that you are submitting a file with LoadType “{uploadLoadType}” and SubType “{uploadSubType}”.</span>}
+					</div>
+				</Dialog>
 			</div>
 			<div className="card">
 				<h3>Schema Version Table</h3>
@@ -457,6 +563,10 @@ export const DataLoadsComponent = () => {
 					<Column header="Class Name" field="className" />
 					<Column header="Curation Schema (LinkML) Version" field="schemaVersion"></Column>
 				</DataTable>
+			</div>
+			<div className="card">
+				<h3>Data Processing Info Table</h3>
+				<div className="grid">{ processingLoadsComponents() }</div>
 			</div>
 		</>
 	);
