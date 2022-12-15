@@ -61,7 +61,7 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		String name = handleStringField(uiEntity.getName());
 		dbEntity.setName(name);
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {

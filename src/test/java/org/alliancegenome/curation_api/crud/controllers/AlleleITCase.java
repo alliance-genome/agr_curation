@@ -51,22 +51,31 @@ public class AlleleITCase extends BaseITCase {
 	private Vocabulary synonymScopeVocabulary;
 	private VocabularyTerm dominantInheritanceMode;
 	private VocabularyTerm recessiveInheritanceMode;
+	private VocabularyTerm obsoleteInheritanceMode;
 	private VocabularyTerm mmpInCollection;
 	private VocabularyTerm wgsInCollection;
+	private VocabularyTerm obsoleteCollection;
 	private VocabularyTerm symbolNameType;
 	private VocabularyTerm fullNameType;
+	private VocabularyTerm obsoleteNameType;
+	private VocabularyTerm obsoleteSymbolNameType;
+	private VocabularyTerm obsoleteFullNameType;
 	private VocabularyTerm systematicNameType;
 	private VocabularyTerm exactSynonymScope;
 	private VocabularyTerm broadSynonymScope;
+	private VocabularyTerm obsoleteSynonymScope;
 	private Reference reference;
 	private Reference reference2;
+	private Reference obsoleteReference;
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private NCBITaxonTerm obsoleteTaxon;
 	private Person person;
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
 	private SOTerm soTerm;
 	private SOTerm soTerm2;
+	private SOTerm obsoleteSoTerm;
 	private AlleleMutationTypeSlotAnnotation alleleMutationType;
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 	private AlleleFullNameSlotAnnotation alleleFullName;
@@ -81,22 +90,32 @@ public class AlleleITCase extends BaseITCase {
 		synonymScopeVocabulary = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		dominantInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "dominant");
 		recessiveInheritanceMode = getVocabularyTerm(inheritanceModeVocabulary, "recessive");
+		obsoleteInheritanceMode = createVocabularyTerm(inheritanceModeVocabulary, "obsolete_mode", true);
 		mmpInCollection = getVocabularyTerm(inCollectionVocabulary, "Million_mutations_project");
 		wgsInCollection = getVocabularyTerm(inCollectionVocabulary, "WGS_Hobert");
+		obsoleteCollection = createVocabularyTerm(inCollectionVocabulary, "obsolete_collection", true);
 		symbolNameType = getVocabularyTerm(nameTypeVocabulary, "nomenclature_symbol");
 		fullNameType = getVocabularyTerm(nameTypeVocabulary, "full_name");
 		systematicNameType = getVocabularyTerm(nameTypeVocabulary, "systematic_name");
+		obsoleteNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_name");
+		obsoleteSymbolNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_symbol_name");
+		obsoleteFullNameType = getVocabularyTerm(nameTypeVocabulary, "obsolete_full_name");
 		exactSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "exact");
 		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
+		broadSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "broad");
+		obsoleteSynonymScope = getVocabularyTerm(synonymScopeVocabulary, "obsolete");
 		reference = createReference("AGRKB:000000003", false);
 		reference2 = createReference("AGRKB:000000005", false);
+		obsoleteReference = createReference("AGRKB:000010000", true);
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
+		obsoleteTaxon = getNCBITaxonTerm("NCBITaxon:0000");
 		person = createPerson("TEST:AllelePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
-		soTerm = createSoTerm("SO:00002");
-		soTerm2 = createSoTerm("SO:00003");
+		soTerm = createSoTerm("SO:00002", false);
+		soTerm2 = createSoTerm("SO:00003", false);
+		obsoleteSoTerm = createSoTerm("SO:00000", true);
 		alleleMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), List.of(soTerm));
 		alleleSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), "Test symbol", symbolNameType, exactSynonymScope, "https://test.org");
 		alleleFullName = createAlleleFullNameSlotAnnotation(List.of(reference), "Test name", fullNameType, exactSynonymScope, "https://test.org");
@@ -432,11 +451,22 @@ public class AlleleITCase extends BaseITCase {
 	public void editAlleleWithMissingRequiredFieldsLevel2() {
 		Allele allele = getAllele(ALLELE);
 		
-		AlleleMutationTypeSlotAnnotation invalidMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), null);
-		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(reference), null);
+		AlleleMutationTypeSlotAnnotation invalidMutationType = allele.getAlleleMutationTypes().get(0);
+		invalidMutationType.setMutationTypes(null);
+		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
+		invalidSymbol.setDisplayText(null);
+		invalidSymbol.setFormatText(null);
+		invalidSymbol.setNameType(null);
+		AlleleFullNameSlotAnnotation invalidFullName = allele.getAlleleFullName();
+		invalidFullName.setDisplayText(null);
+		invalidFullName.setFormatText(null);
+		invalidFullName.setNameType(null);
+		AlleleSynonymSlotAnnotation invalidSynonym = allele.getAlleleSynonyms().get(0);
+		invalidSynonym.setDisplayText(null);
+		invalidSynonym.setFormatText(null);
+		invalidSynonym.setNameType(null);
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		invalidSecondaryId.setSecondaryId(null);
 		
 		allele.setAlleleMutationTypes(List.of(invalidMutationType));
 		allele.setAlleleSymbol(invalidSymbol);
@@ -516,10 +546,17 @@ public class AlleleITCase extends BaseITCase {
 	public void editAlleleWithEmptyRequiredFieldsLevel2() {
 		Allele allele = getAllele(ALLELE);
 		
-		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), "", symbolNameType, exactSynonymScope, "https://test.org");
-		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(List.of(reference), "", fullNameType, exactSynonymScope, "https://test.org");
-		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(List.of(reference), "", systematicNameType, exactSynonymScope, "https://test.org");
-		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(reference), "");
+		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
+		invalidSymbol.setDisplayText("");
+		invalidSymbol.setFormatText("");
+		AlleleFullNameSlotAnnotation invalidFullName = allele.getAlleleFullName();
+		invalidFullName.setDisplayText("");
+		invalidFullName.setFormatText("");
+		AlleleSynonymSlotAnnotation invalidSynonym = allele.getAlleleSynonyms().get(0);
+		invalidSynonym.setDisplayText("");
+		invalidSynonym.setFormatText("");
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		invalidSecondaryId.setSecondaryId(null);
 		
 		allele.setAlleleSymbol(invalidSymbol);
 		allele.setAlleleFullName(invalidFullName);
@@ -625,11 +662,23 @@ public class AlleleITCase extends BaseITCase {
 		allele.setIsExtinct(false);
 		allele.setDateCreated(datetime);
 		
-		AlleleMutationTypeSlotAnnotation invalidMutationType = createAlleleMutationTypeSlotAnnotation(List.of(nonPersistedReference), List.of(nonPersistedSoTerm));
-		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(List.of(nonPersistedReference), "Test symbol", fullNameType, dominantInheritanceMode, "https://test.org");
-		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, dominantInheritanceMode, "https://test.org");
-		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(List.of(nonPersistedReference), "Test synonym", mmpInCollection, dominantInheritanceMode, "https://test.org");
-		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(nonPersistedReference), "TEST:Secondary");
+		AlleleMutationTypeSlotAnnotation invalidMutationType = allele.getAlleleMutationTypes().get(0);
+		invalidMutationType.setEvidence(List.of(nonPersistedReference));
+		invalidMutationType.setMutationTypes(List.of(nonPersistedSoTerm));
+		AlleleSymbolSlotAnnotation invalidSymbol = allele.getAlleleSymbol();
+		invalidSymbol.setEvidence(List.of(nonPersistedReference));
+		invalidSymbol.setNameType(fullNameType);
+		invalidSymbol.setSynonymScope(dominantInheritanceMode);
+		AlleleFullNameSlotAnnotation invalidFullName = allele.getAlleleFullName();
+		invalidFullName.setEvidence(List.of(nonPersistedReference));
+		invalidFullName.setNameType(symbolNameType);
+		invalidFullName.setSynonymScope(dominantInheritanceMode);
+		AlleleSynonymSlotAnnotation invalidSynonym = allele.getAlleleSynonyms().get(0);
+		invalidSynonym.setEvidence(List.of(nonPersistedReference));
+		invalidSynonym.setNameType(mmpInCollection);
+		invalidSynonym.setSynonymScope(dominantInheritanceMode);
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		invalidSecondaryId.setEvidence(List.of(nonPersistedReference));
 		
 		allele.setAlleleMutationTypes(List.of(invalidMutationType));
 		allele.setAlleleSymbol(invalidSymbol);
@@ -669,6 +718,125 @@ public class AlleleITCase extends BaseITCase {
 
 	@Test
 	@Order(14)
+	public void createAlleleWithObsoleteFields() {
+		Allele allele = new Allele();
+		allele.setCurie("Allele:0012");
+		allele.setTaxon(obsoleteTaxon);
+		allele.setInheritanceMode(obsoleteInheritanceMode);
+		allele.setInCollection(obsoleteCollection);
+		allele.setReferences(List.of(obsoleteReference));
+		allele.setIsExtinct(false);
+		allele.setDateCreated(datetime);
+		
+		AlleleMutationTypeSlotAnnotation obsoleteMutationType = createAlleleMutationTypeSlotAnnotation(List.of(obsoleteReference), List.of(obsoleteSoTerm));
+		AlleleSymbolSlotAnnotation obsoleteSymbol = createAlleleSymbolSlotAnnotation(List.of(obsoleteReference), "Test symbol", obsoleteSymbolNameType, obsoleteSynonymScope, "https://test.org");
+		AlleleFullNameSlotAnnotation obsoleteFullName = createAlleleFullNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteFullNameType, obsoleteSynonymScope, "https://test.org");
+		AlleleSynonymSlotAnnotation obsoleteSynonym = createAlleleSynonymSlotAnnotation(List.of(obsoleteReference), "Test synonym", obsoleteNameType, obsoleteSynonymScope, "https://test.org");
+		AlleleSecondaryIdSlotAnnotation obsoleteSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(obsoleteReference), "TEST:Secondary");
+		
+		allele.setAlleleMutationTypes(List.of(obsoleteMutationType));
+		allele.setAlleleSymbol(obsoleteSymbol);
+		allele.setAlleleFullName(obsoleteFullName);
+		allele.setAlleleSynonyms(List.of(obsoleteSynonym));
+		allele.setAlleleSecondaryIds(List.of(obsoleteSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(9))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.inheritanceMode", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE));
+	}
+
+	@Test
+	@Order(15)
+	public void editAlleleWithObsoleteFields() {
+		Allele allele = getAllele(ALLELE);
+		allele.setTaxon(obsoleteTaxon);
+		allele.setInheritanceMode(obsoleteInheritanceMode);
+		allele.setInCollection(obsoleteCollection);
+		allele.setReferences(List.of(obsoleteReference));
+		allele.setIsExtinct(false);
+		allele.setDateCreated(datetime);
+		
+		AlleleMutationTypeSlotAnnotation obsoleteMutationType = allele.getAlleleMutationTypes().get(0);
+		obsoleteMutationType.setEvidence(List.of(obsoleteReference));
+		obsoleteMutationType.setMutationTypes(List.of(obsoleteSoTerm));
+		AlleleSymbolSlotAnnotation obsoleteSymbol = allele.getAlleleSymbol();
+		obsoleteSymbol.setEvidence(List.of(obsoleteReference));
+		obsoleteSymbol.setNameType(obsoleteSymbolNameType);
+		obsoleteSymbol.setSynonymScope(obsoleteSynonymScope);
+		AlleleFullNameSlotAnnotation obsoleteFullName = allele.getAlleleFullName();
+		obsoleteFullName.setEvidence(List.of(obsoleteReference));
+		obsoleteFullName.setNameType(obsoleteFullNameType);
+		obsoleteFullName.setSynonymScope(obsoleteSynonymScope);
+		AlleleSynonymSlotAnnotation obsoleteSynonym = allele.getAlleleSynonyms().get(0);
+		obsoleteSynonym.setEvidence(List.of(obsoleteReference));
+		obsoleteSynonym.setNameType(obsoleteNameType);
+		obsoleteSynonym.setSynonymScope(obsoleteSynonymScope);
+		AlleleSecondaryIdSlotAnnotation obsoleteSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		obsoleteSecondaryId.setEvidence(List.of(obsoleteReference));
+		
+		allele.setAlleleMutationTypes(List.of(obsoleteMutationType));
+		allele.setAlleleSymbol(obsoleteSymbol);
+		allele.setAlleleFullName(obsoleteFullName);
+		allele.setAlleleSynonyms(List.of(obsoleteSynonym));
+		allele.setAlleleSecondaryIds(List.of(obsoleteSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(9))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.inheritanceMode", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.inCollection", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.alleleMutationTypes", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"mutationTypes - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.alleleSecondaryIds", is("evidence - " + ValidationConstants.OBSOLETE_MESSAGE));
+	}
+
+	@Test
+	@Order(16)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
 		Allele allele = getAllele(ALLELE);
@@ -732,7 +900,7 @@ public class AlleleITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(15)
+	@Order(17)
 	public void editAlleleWithNullNonRequiredFieldsLevel1() {
 		Allele allele = getAllele(ALLELE);
 
@@ -771,7 +939,7 @@ public class AlleleITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(16)
+	@Order(18)
 	public void deleteAllele() {
 
 		RestAssured.given().

@@ -92,7 +92,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 	private Gene validateGene(Gene uiEntity, Gene dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {

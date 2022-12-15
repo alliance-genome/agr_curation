@@ -44,7 +44,7 @@ public class NameSlotAnnotationDTOValidator extends SlotAnnotationDTOValidator {
 		if (StringUtils.isNotBlank(dto.getSynonymScopeName())) {
 			VocabularyTerm synonymScope = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY, dto.getSynonymScopeName());
 			if (synonymScope == null)
-				nsaResponse.addErrorMessage("disease_qualifier_names", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSynonymScopeName() + ")");
+				nsaResponse.addErrorMessage("synonym_scope", ValidationConstants.INVALID_MESSAGE + " (" + dto.getSynonymScopeName() + ")");
 			annotation.setSynonymScope(synonymScope);
 		} else {
 			annotation.setSynonymScope(null);

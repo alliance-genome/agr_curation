@@ -46,6 +46,36 @@ import io.restassured.common.mapper.TypeRef;
 
 public class BaseITCase {
 
+	public VocabularyTerm addObsoleteVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary) {
+		VocabularyTermSet set = getVocabularyTermSet(setName);
+		VocabularyTerm term = createVocabularyTerm(vocabulary, termName, false);
+		
+		List<VocabularyTerm> setTerms = set.getMemberTerms();
+		setTerms.add(term);
+		set.setMemberTerms(setTerms);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(set).
+			when().
+			put("/api/vocabularytermset").
+			then().
+			statusCode(200);
+		
+		term.setObsolete(true);
+		
+		ObjectResponse<VocabularyTerm> response = RestAssured.given().
+			contentType("application/json").
+			body(term).
+			when().
+			put("/api/vocabularyterm").
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefVocabularyTerm());
+		
+		return response.getEntity();
+	}
+	
 	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String name) {
 		AffectedGenomicModel model = new AffectedGenomicModel();
 		model.setCurie(curie);
@@ -225,6 +255,22 @@ public class BaseITCase {
 		return goTerm;
 	}
 	
+	public NCBITaxonTerm createNCBITaxonTerm(String curie, Boolean obsolete) {
+		NCBITaxonTerm term = new NCBITaxonTerm();
+		term.setCurie(curie);
+		term.setObsolete(obsolete);
+		
+		ObjectResponse<NCBITaxonTerm> response = RestAssured.given().
+				contentType("application/json").
+				body(term).
+				when().
+				post("/api/ncbitaxonterm").
+				then().
+				statusCode(200).extract().
+				body().as(getObjectResponseTypeRefNCBITaxonTerm());
+		
+		return response.getEntity();
+	}
 
 	public Note createNote(VocabularyTerm vocabularyTerm, String text, Boolean internal, Reference reference) {
 		Note note = new Note();
@@ -301,9 +347,10 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 	
-	public SOTerm createSoTerm(String curie) {
+	public SOTerm createSoTerm(String curie, Boolean obsolete) {
 		SOTerm term = new SOTerm();
 		term.setCurie(curie);
+		term.setObsolete(obsolete);
 		
 		ObjectResponse<SOTerm> response = RestAssured.given().
 				contentType("application/json").

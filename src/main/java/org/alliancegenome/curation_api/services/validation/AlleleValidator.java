@@ -103,7 +103,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 
 		List<String> previousReferenceCuries = new ArrayList<String>();
@@ -206,7 +206,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			return null;
 		}
 
-		if (singleRefResponse.getEntity().getObsolete() && !previousCuries.contains(singleRefResponse.getEntity().getCurie())) {
+		if (singleRefResponse.getEntity().getObsolete() && (CollectionUtils.isEmpty(previousCuries) || !previousCuries.contains(singleRefResponse.getEntity().getCurie()))) {
 			addMessageResponse("references", "curie - " + ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}

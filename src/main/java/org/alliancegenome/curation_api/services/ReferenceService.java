@@ -54,7 +54,7 @@ public class ReferenceService extends BaseEntityCrudService<Reference, Reference
 				reference = nonObsoleteRefs.get(0);
 		}
 
-		if (reference != null && !reference.getObsolete())
+		if (reference != null && (!reference.getObsolete() || curieOrXref.startsWith("AGRKB:")))
 			return reference;
 
 		reference = refSyncHelper.retrieveFromLiteratureService(curieOrXref);

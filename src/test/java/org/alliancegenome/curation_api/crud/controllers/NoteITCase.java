@@ -291,9 +291,8 @@ public class NoteITCase extends BaseITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
-		// returns invalid rather than obsolete as tries to retrieve from LiteratureService if obsolete entry found, which returns null
-	}
+				body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
+		}
 
 	@Test
 	@Order(10)
@@ -462,8 +461,7 @@ public class NoteITCase extends BaseITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
-		// returns invalid rather than obsolete as tries to retrieve from LiteratureService if obsolete entry found, which returns null
+				body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
 	}
 
 }

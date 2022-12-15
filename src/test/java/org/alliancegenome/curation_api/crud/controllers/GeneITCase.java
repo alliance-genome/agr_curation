@@ -12,7 +12,6 @@ import java.util.List;
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.constants.VocabularyConstants;
-import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Gene;
 import org.alliancegenome.curation_api.model.entities.InformationContentEntity;
 import org.alliancegenome.curation_api.model.entities.Person;
@@ -21,9 +20,6 @@ import org.alliancegenome.curation_api.model.entities.Vocabulary;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
-import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.geneSlotAnnotations.GeneSynonymSlotAnnotation;
@@ -52,17 +48,25 @@ public class GeneITCase extends BaseITCase {
 	private Vocabulary synonymScope;
 	private VocabularyTerm exactSynonymScope;
 	private VocabularyTerm broadSynonymScope;
+	private VocabularyTerm obsoleteSynonymScope;
 	private VocabularyTerm symbolNameType;
 	private VocabularyTerm systematicNameType;
 	private VocabularyTerm fullNameType;
+	private VocabularyTerm obsoleteNameType;
+	private VocabularyTerm obsoleteSymbolNameType;
+	private VocabularyTerm obsoleteFullNameType;
+	private VocabularyTerm obsoleteSystematicNameType;
 	private SOTerm soTerm;
 	private SOTerm soTerm2;
+	private SOTerm obsoleteSoTerm;
 	private NCBITaxonTerm taxon;
 	private NCBITaxonTerm taxon2;
+	private NCBITaxonTerm obsoleteTaxon;
 	private OffsetDateTime datetime;
 	private OffsetDateTime datetime2;
 	private Reference reference;
 	private Reference reference2;
+	private Reference obsoleteReference;
 	private Person person;
 	private GeneSymbolSlotAnnotation geneSymbol;
 	private GeneFullNameSlotAnnotation geneFullName;
@@ -71,19 +75,27 @@ public class GeneITCase extends BaseITCase {
 	
 	private void loadRequiredEntities() {
 
-		soTerm = createSoTerm("SO:0001");
-		soTerm2 = createSoTerm("SO:0002");
+		soTerm = createSoTerm("SO:0001", false);
+		soTerm2 = createSoTerm("SO:0002", false);
+		obsoleteSoTerm = createSoTerm("SO:0000", true);
 		nameType = getVocabulary(VocabularyConstants.NAME_TYPE_VOCABULARY);
 		synonymScope = getVocabulary(VocabularyConstants.SYNONYM_SCOPE_VOCABULARY);
 		symbolNameType = getVocabularyTerm(nameType, "nomenclature_symbol");
 		systematicNameType = getVocabularyTerm(nameType, "systematic_name");
 		fullNameType = getVocabularyTerm(nameType, "full_name");
+		obsoleteNameType = createVocabularyTerm(nameType, "obsolete_name", true);
+		obsoleteFullNameType = addObsoleteVocabularyTermToSet(VocabularyConstants.FULL_NAME_TYPE_TERM_SET, "obsolete_full_name", nameType);
+		obsoleteSymbolNameType = addObsoleteVocabularyTermToSet(VocabularyConstants.SYMBOL_NAME_TYPE_TERM_SET, "obsolete_symbol_name", nameType);
+		obsoleteSystematicNameType = addObsoleteVocabularyTermToSet(VocabularyConstants.SYSTEMATIC_NAME_TYPE_TERM_SET, "obsolete_systematic_name", nameType);
 		exactSynonymScope = getVocabularyTerm(synonymScope, "exact");
 		broadSynonymScope = getVocabularyTerm(synonymScope, "broad");
+		obsoleteSynonymScope = createVocabularyTerm(synonymScope, "obsolete", true);
 		taxon = getNCBITaxonTerm("NCBITaxon:10090");
 		taxon2 = getNCBITaxonTerm("NCBITaxon:9606");
+		obsoleteTaxon = createNCBITaxonTerm("NCBITaxon:0000", true);
 		reference = createReference("AGRKB:000010003", false);
 		reference2 = createReference("AGRKB:000010005", false);
+		obsoleteReference = createReference("AGRKB:000010007", true);
 		person = createPerson("TEST:GenePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
@@ -401,10 +413,22 @@ public class GeneITCase extends BaseITCase {
 
 		Gene gene = getGene(GENE);
 		
-		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
+		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
+		invalidSymbol.setDisplayText(null);
+		invalidSymbol.setFormatText(null);
+		invalidSymbol.setNameType(null);
+		GeneFullNameSlotAnnotation invalidFullName = gene.getGeneFullName();
+		invalidFullName.setDisplayText(null);
+		invalidFullName.setFormatText(null);
+		invalidFullName.setNameType(null);
+		GeneSynonymSlotAnnotation invalidSynonym = gene.getGeneSynonyms().get(0);
+		invalidSynonym.setDisplayText(null);
+		invalidSynonym.setFormatText(null);
+		invalidSynonym.setNameType(null);
+		GeneSystematicNameSlotAnnotation invalidSystematicName = gene.getGeneSystematicName();
+		invalidSystematicName.setDisplayText(null);
+		invalidSystematicName.setFormatText(null);
+		invalidSystematicName.setNameType(null);
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
@@ -485,10 +509,18 @@ public class GeneITCase extends BaseITCase {
 
 		Gene gene = getGene(GENE);
 		
-		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(reference), "", symbolNameType, exactSynonymScope, "https://test.org");
-		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(reference), "", fullNameType, exactSynonymScope, "https://test.org");
-		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(List.of(reference), "", symbolNameType, exactSynonymScope, "https://test.org");
-		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), "", systematicNameType, exactSynonymScope, "https://test.org");
+		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
+		invalidSymbol.setDisplayText("");
+		invalidSymbol.setFormatText("");
+		GeneFullNameSlotAnnotation invalidFullName = gene.getGeneFullName();
+		invalidFullName.setDisplayText("");
+		invalidFullName.setFormatText("");
+		GeneSynonymSlotAnnotation invalidSynonym = gene.getGeneSynonyms().get(0);
+		invalidSynonym.setDisplayText("");
+		invalidSynonym.setFormatText("");
+		GeneSystematicNameSlotAnnotation invalidSystematicName = gene.getGeneSystematicName();
+		invalidSystematicName.setDisplayText("");
+		invalidSystematicName.setFormatText("");
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
@@ -585,10 +617,22 @@ public class GeneITCase extends BaseITCase {
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
 		
-		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(nonPersistedReference), "Test symbol", fullNameType, fullNameType, "https://test.org");
-		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, fullNameType, "https://test.org");
-		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(List.of(nonPersistedReference), "Test synonym", exactSynonymScope, fullNameType, "https://test.org");
-		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(List.of(nonPersistedReference), "Test name", symbolNameType, fullNameType, "https://test.org");
+		GeneSymbolSlotAnnotation invalidSymbol = gene.getGeneSymbol();
+		invalidSymbol.setEvidence(List.of(nonPersistedReference));
+		invalidSymbol.setNameType(fullNameType);
+		invalidSymbol.setSynonymScope(fullNameType);
+		GeneFullNameSlotAnnotation invalidFullName = gene.getGeneFullName();
+		invalidFullName.setEvidence(List.of(nonPersistedReference));
+		invalidFullName.setNameType(symbolNameType);
+		invalidFullName.setSynonymScope(fullNameType);
+		GeneSynonymSlotAnnotation invalidSynonym = gene.getGeneSynonyms().get(0);
+		invalidSynonym.setEvidence(List.of(nonPersistedReference));
+		invalidSynonym.setNameType(broadSynonymScope);
+		invalidSynonym.setSynonymScope(fullNameType);
+		GeneSystematicNameSlotAnnotation invalidSystematicName = gene.getGeneSystematicName();
+		invalidSystematicName.setEvidence(List.of(nonPersistedReference));
+		invalidSystematicName.setNameType(symbolNameType);
+		invalidSystematicName.setSynonymScope(fullNameType);
 
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
@@ -625,6 +669,110 @@ public class GeneITCase extends BaseITCase {
 	
 	@Test
 	@Order(14)
+	public void createGeneWithObsoleteFields() {
+		Gene gene = new Gene();
+		gene.setCurie("GENE:0014");
+		gene.setDateCreated(datetime);
+		gene.setTaxon(obsoleteTaxon);
+		gene.setGeneType(obsoleteSoTerm);
+		
+		GeneSymbolSlotAnnotation obsoleteSymbol = createGeneSymbolSlotAnnotation(List.of(obsoleteReference), "Test symbol", obsoleteSymbolNameType, obsoleteSynonymScope, "https://test.org");
+		GeneFullNameSlotAnnotation obsoleteFullName = createGeneFullNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteFullNameType, obsoleteSynonymScope, "https://test.org");
+		GeneSynonymSlotAnnotation obsoleteSynonym = createGeneSynonymSlotAnnotation(List.of(obsoleteReference), "Test synonym", obsoleteNameType, obsoleteSynonymScope, "https://test.org");
+		GeneSystematicNameSlotAnnotation obsoleteSystematicName = createGeneSystematicNameSlotAnnotation(List.of(obsoleteReference), "Test name", obsoleteSystematicNameType, obsoleteSynonymScope, "https://test.org");
+
+		gene.setGeneSymbol(obsoleteSymbol);
+		gene.setGeneFullName(obsoleteFullName);
+		gene.setGeneSynonyms(List.of(obsoleteSynonym));
+		gene.setGeneSystematicName(obsoleteSystematicName);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			post("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.geneType", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE))));
+	}
+	
+	@Test
+	@Order(15)
+	public void editGeneWithObsoleteFields() {
+		Gene gene = getGene(GENE);
+		gene.setTaxon(obsoleteTaxon);
+		gene.setGeneType(obsoleteSoTerm);
+		
+		GeneSymbolSlotAnnotation obsoleteSymbol = gene.getGeneSymbol();
+		obsoleteSymbol.setEvidence(List.of(obsoleteReference));
+		obsoleteSymbol.setNameType(obsoleteSymbolNameType);
+		obsoleteSymbol.setSynonymScope(obsoleteSynonymScope);
+		GeneFullNameSlotAnnotation obsoleteFullName = gene.getGeneFullName();
+		obsoleteFullName.setEvidence(List.of(obsoleteReference));
+		obsoleteFullName.setNameType(obsoleteFullNameType);
+		obsoleteFullName.setSynonymScope(obsoleteSynonymScope);
+		GeneSynonymSlotAnnotation obsoleteSynonym = gene.getGeneSynonyms().get(0);
+		obsoleteSynonym.setEvidence(List.of(obsoleteReference));
+		obsoleteSynonym.setNameType(obsoleteNameType);
+		obsoleteSynonym.setSynonymScope(obsoleteSynonymScope);
+		GeneSystematicNameSlotAnnotation obsoleteSystematicName = gene.getGeneSystematicName();
+		obsoleteSystematicName.setEvidence(List.of(obsoleteReference));
+		obsoleteSystematicName.setNameType(obsoleteSystematicNameType);
+		obsoleteSystematicName.setSynonymScope(obsoleteSynonymScope);
+		
+		gene.setGeneSymbol(obsoleteSymbol);
+		gene.setGeneFullName(obsoleteFullName);
+		gene.setGeneSynonyms(List.of(obsoleteSynonym));
+		gene.setGeneSystematicName(obsoleteSystematicName);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(gene).
+			when().
+			put("/api/gene").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.taxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.geneType", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.geneSymbol", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneFullName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneSynonyms", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE)))).
+			body("errorMessages.geneSystematicName", is(String.join(" | ", List.of(
+					"evidence - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"nameType - " + ValidationConstants.OBSOLETE_MESSAGE,
+					"synonymScope - " + ValidationConstants.OBSOLETE_MESSAGE))));
+	}
+	
+	@Test
+	@Order(16)
 	public void editGeneWithNullNonRequiredFieldsLevel2() {
 		// Level 2 done before 1 to avoid having to restore nulled fields
 		Gene gene = getGene(GENE);
@@ -686,7 +834,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(15)
+	@Order(17)
 	public void editGeneWithNullNonRequiredFieldsLevel1() {
 		Gene gene = getGene(GENE);
 		
@@ -715,7 +863,7 @@ public class GeneITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(16)
+	@Order(18)
 	public void deleteGene() {
 
 		RestAssured.given().

@@ -333,10 +333,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			ObjectResponse<ConditionRelation> crResponse = conditionRelationValidator.validateConditionRelation(conditionRelation);
 			conditionRelation = crResponse.getEntity();
 			if (conditionRelation == null) {
-				Map<String, String> errors = crResponse.getErrorMessages();
-				for (String field : errors.keySet()) {
-					addMessageResponse("conditionRelations", field + " - " + errors.get(field));
-				}
+				addMessageResponse("conditionRelations", crResponse.errorMessagesString());
 				return null;
 			}
 
