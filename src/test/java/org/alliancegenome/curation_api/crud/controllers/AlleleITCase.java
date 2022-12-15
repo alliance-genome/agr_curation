@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Arrays;
 import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
@@ -125,51 +124,51 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSecondaryIds(List.of(alleleSecondaryId));
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				post("/api/allele").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(200);
 		
 		RestAssured.given().
-				when().
-				get("/api/allele/" + ALLELE).
-				then().
-				statusCode(200).
-				body("entity.curie", is(ALLELE)).
-				body("entity.taxon.curie", is(taxon.getCurie())).
-				body("entity.internal", is(false)).
-				body("entity.obsolete", is(false)).
-				body("entity.inheritanceMode.name", is(dominantInheritanceMode.getName())).
-				body("entity.inCollection.name", is(mmpInCollection.getName())).
-				body("entity.isExtinct", is(false)).
-				body("entity.references[0].curie", is(reference.getCurie())).
-				body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
-				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
-				body("entity.alleleSymbol.displayText", is(alleleSymbol.getDisplayText())).
-				body("entity.alleleSymbol.formatText", is(alleleSymbol.getFormatText())).
-				body("entity.alleleSymbol.nameType.name", is(alleleSymbol.getNameType().getName())).
-				body("entity.alleleSymbol.synonymScope.name", is(alleleSymbol.getSynonymScope().getName())).
-				body("entity.alleleSymbol.synonymUrl", is(alleleSymbol.getSynonymUrl())).
-				body("entity.alleleSymbol.evidence[0].curie", is(alleleSymbol.getEvidence().get(0).getCurie())).
-				body("entity.alleleFullName.displayText", is(alleleFullName.getDisplayText())).
-				body("entity.alleleFullName.formatText", is(alleleFullName.getFormatText())).
-				body("entity.alleleFullName.nameType.name", is(alleleFullName.getNameType().getName())).
-				body("entity.alleleFullName.synonymScope.name", is(alleleFullName.getSynonymScope().getName())).
-				body("entity.alleleFullName.synonymUrl", is(alleleFullName.getSynonymUrl())).
-				body("entity.alleleFullName.evidence[0].curie", is(alleleFullName.getEvidence().get(0).getCurie())).
-				body("entity.alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
-				body("entity.alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
-				body("entity.alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
-				body("entity.alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
-				body("entity.alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
-				body("entity.alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
-				body("entity.alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
-				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie()));	
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity.curie", is(ALLELE)).
+			body("entity.taxon.curie", is(taxon.getCurie())).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.inheritanceMode.name", is(dominantInheritanceMode.getName())).
+			body("entity.inCollection.name", is(mmpInCollection.getName())).
+			body("entity.isExtinct", is(false)).
+			body("entity.references[0].curie", is(reference.getCurie())).
+			body("entity.dateCreated", is(datetime.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.alleleMutationTypes[0].evidence[0].curie", is(reference.getCurie())).
+			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(soTerm.getCurie())).
+			body("entity.alleleSymbol.displayText", is(alleleSymbol.getDisplayText())).
+			body("entity.alleleSymbol.formatText", is(alleleSymbol.getFormatText())).
+			body("entity.alleleSymbol.nameType.name", is(alleleSymbol.getNameType().getName())).
+			body("entity.alleleSymbol.synonymScope.name", is(alleleSymbol.getSynonymScope().getName())).
+			body("entity.alleleSymbol.synonymUrl", is(alleleSymbol.getSynonymUrl())).
+			body("entity.alleleSymbol.evidence[0].curie", is(alleleSymbol.getEvidence().get(0).getCurie())).
+			body("entity.alleleFullName.displayText", is(alleleFullName.getDisplayText())).
+			body("entity.alleleFullName.formatText", is(alleleFullName.getFormatText())).
+			body("entity.alleleFullName.nameType.name", is(alleleFullName.getNameType().getName())).
+			body("entity.alleleFullName.synonymScope.name", is(alleleFullName.getSynonymScope().getName())).
+			body("entity.alleleFullName.synonymUrl", is(alleleFullName.getSynonymUrl())).
+			body("entity.alleleFullName.evidence[0].curie", is(alleleFullName.getEvidence().get(0).getCurie())).
+			body("entity.alleleSynonyms[0].displayText", is(alleleSynonym.getDisplayText())).
+			body("entity.alleleSynonyms[0].formatText", is(alleleSynonym.getFormatText())).
+			body("entity.alleleSynonyms[0].nameType.name", is(alleleSynonym.getNameType().getName())).
+			body("entity.alleleSynonyms[0].synonymScope.name", is(alleleSynonym.getSynonymScope().getName())).
+			body("entity.alleleSynonyms[0].synonymUrl", is(alleleSynonym.getSynonymUrl())).
+			body("entity.alleleSynonyms[0].evidence[0].curie", is(alleleSynonym.getEvidence().get(0).getCurie())).
+			body("entity.alleleSecondaryIds[0].secondaryId", is(alleleSecondaryId.getSecondaryId())).
+			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(alleleSecondaryId.getEvidence().get(0).getCurie()));	
 	}
 
 	@Test
@@ -224,52 +223,52 @@ public class AlleleITCase extends BaseITCase {
 		allele.setAlleleSecondaryIds(List.of(editedSecondaryId));
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(allele).
-				when().
-				put("/api/allele").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
 
 		RestAssured.given().
-				when().
-				get("/api/allele/" + ALLELE).
-				then().
-				statusCode(200).
-				body("entity.curie", is(ALLELE)).
-				body("entity.inheritanceMode.name", is(recessiveInheritanceMode.getName())).
-				body("entity.inCollection.name", is(wgsInCollection.getName())).
-				body("entity.references[0].curie", is(reference2.getCurie())).
-				body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-				body("entity.createdBy.uniqueId", is(person.getUniqueId())).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.taxon.curie", is(taxon2.getCurie())).
-				body("entity.internal", is(true)).
-				body("entity.obsolete", is(true)).
-				body("entity.isExtinct", is(true)).
-				body("entity.createdBy.uniqueId", is(person.getUniqueId())).
-				body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
-				body("entity.alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
-				body("entity.alleleSymbol.displayText", is(editedSymbol.getDisplayText())).
-				body("entity.alleleSymbol.formatText", is(editedSymbol.getFormatText())).
-				body("entity.alleleSymbol.nameType.name", is(editedSymbol.getNameType().getName())).
-				body("entity.alleleSymbol.synonymScope.name", is(editedSymbol.getSynonymScope().getName())).
-				body("entity.alleleSymbol.synonymUrl", is(editedSymbol.getSynonymUrl())).
-				body("entity.alleleSymbol.evidence[0].curie", is(editedSymbol.getEvidence().get(0).getCurie())).
-				body("entity.alleleFullName.displayText", is(editedFullName.getDisplayText())).
-				body("entity.alleleFullName.formatText", is(editedFullName.getFormatText())).
-				body("entity.alleleFullName.nameType.name", is(editedFullName.getNameType().getName())).
-				body("entity.alleleFullName.synonymScope.name", is(editedFullName.getSynonymScope().getName())).
-				body("entity.alleleFullName.synonymUrl", is(editedFullName.getSynonymUrl())).
-				body("entity.alleleFullName.evidence[0].curie", is(editedFullName.getEvidence().get(0).getCurie())).
-				body("entity.alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
-				body("entity.alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
-				body("entity.alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
-				body("entity.alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
-				body("entity.alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
-				body("entity.alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
-				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
-				body("entity.alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie()));
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity.curie", is(ALLELE)).
+			body("entity.inheritanceMode.name", is(recessiveInheritanceMode.getName())).
+			body("entity.inCollection.name", is(wgsInCollection.getName())).
+			body("entity.references[0].curie", is(reference2.getCurie())).
+			body("entity.dateCreated", is(datetime2.atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.taxon.curie", is(taxon2.getCurie())).
+			body("entity.internal", is(true)).
+			body("entity.obsolete", is(true)).
+			body("entity.isExtinct", is(true)).
+			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(editedMutationType.getMutationTypes().get(0).getCurie())).
+			body("entity.alleleMutationTypes[0].evidence[0].curie", is(editedMutationType.getEvidence().get(0).getCurie())).
+			body("entity.alleleSymbol.displayText", is(editedSymbol.getDisplayText())).
+			body("entity.alleleSymbol.formatText", is(editedSymbol.getFormatText())).
+			body("entity.alleleSymbol.nameType.name", is(editedSymbol.getNameType().getName())).
+			body("entity.alleleSymbol.synonymScope.name", is(editedSymbol.getSynonymScope().getName())).
+			body("entity.alleleSymbol.synonymUrl", is(editedSymbol.getSynonymUrl())).
+			body("entity.alleleSymbol.evidence[0].curie", is(editedSymbol.getEvidence().get(0).getCurie())).
+			body("entity.alleleFullName.displayText", is(editedFullName.getDisplayText())).
+			body("entity.alleleFullName.formatText", is(editedFullName.getFormatText())).
+			body("entity.alleleFullName.nameType.name", is(editedFullName.getNameType().getName())).
+			body("entity.alleleFullName.synonymScope.name", is(editedFullName.getSynonymScope().getName())).
+			body("entity.alleleFullName.synonymUrl", is(editedFullName.getSynonymUrl())).
+			body("entity.alleleFullName.evidence[0].curie", is(editedFullName.getEvidence().get(0).getCurie())).
+			body("entity.alleleSynonyms[0].displayText", is(editedSynonym.getDisplayText())).
+			body("entity.alleleSynonyms[0].formatText", is(editedSynonym.getFormatText())).
+			body("entity.alleleSynonyms[0].nameType.name", is(editedSynonym.getNameType().getName())).
+			body("entity.alleleSynonyms[0].synonymScope.name", is(editedSynonym.getSynonymScope().getName())).
+			body("entity.alleleSynonyms[0].synonymUrl", is(editedSynonym.getSynonymUrl())).
+			body("entity.alleleSynonyms[0].evidence[0].curie", is(editedSynonym.getEvidence().get(0).getCurie())).
+			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(editedSecondaryId.getEvidence().get(0).getCurie()));
 	}
 	
 	@Test
@@ -384,7 +383,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(8)
 	public void createAlleleWithMissingRequiredFieldsLevel2() {
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0007");
+		allele.setCurie("Allele:0008");
 		allele.setTaxon(taxon);
 		allele.setInheritanceMode(dominantInheritanceMode);
 		allele.setInCollection(mmpInCollection);
@@ -473,7 +472,7 @@ public class AlleleITCase extends BaseITCase {
 	@Order(10)
 	public void createAlleleWithEmptyRequiredFieldsLevel2() {
 		Allele allele = new Allele();
-		allele.setCurie("Allele:0009");
+		allele.setCurie("Allele:0010");
 		allele.setTaxon(taxon);
 		allele.setInheritanceMode(dominantInheritanceMode);
 		allele.setInCollection(mmpInCollection);
@@ -670,53 +669,30 @@ public class AlleleITCase extends BaseITCase {
 
 	@Test
 	@Order(14)
-	public void editAlleleWithNullNonRequiredFieldsLevel1() {
-		Allele allele = getAllele(ALLELE);
-
-		allele.setInheritanceMode(null);
-		allele.setInCollection(null);
-		allele.setReferences(null);
-		allele.setIsExtinct(null);
-		allele.setDateCreated(null);
-		allele.setAlleleMutationTypes(null);
-		allele.setAlleleFullName(null);
-		allele.setAlleleSynonyms(null);
-		allele.setAlleleSecondaryIds(null);
-
-		RestAssured.given().
-			contentType("application/json").
-			body(allele).
-			when().
-			put("/api/allele").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			get("/api/allele/" + ALLELE).
-			then().
-			statusCode(200).
-			body("entity", not(hasKey("inheritanceMode"))).
-			body("entity", not(hasKey("inCollection"))).
-			body("entity", not(hasKey("references"))).
-			body("entity", not(hasKey("isExtinct"))).
-			body("entity", not(hasKey("dateCreated"))).
-			body("entity", not(hasKey("alleleMutationTypes"))).
-			body("entity", not(hasKey("alleleFullName"))).
-			body("entity", not(hasKey("alleleSynonyms"))).
-			body("entity", not(hasKey("alleleSecondaryIds")));
-	}
-
-	@Test
-	@Order(15)
 	public void editAlleleWithNullNonRequiredFieldsLevel2() {
+		// Level 2 done before 1 to avoid having to restore nulled fields
 		Allele allele = getAllele(ALLELE);
 
-		AlleleMutationTypeSlotAnnotation editedMutationType = createAlleleMutationTypeSlotAnnotation(null, List.of(soTerm));
-		AlleleSymbolSlotAnnotation editedSymbol = createAlleleSymbolSlotAnnotation(null, "Test symbol", symbolNameType, null, null);
-		AlleleFullNameSlotAnnotation editedFullName = createAlleleFullNameSlotAnnotation(null, "Test name", fullNameType, null, null);
-		AlleleSynonymSlotAnnotation editedSynonym = createAlleleSynonymSlotAnnotation(null, "Test synonym", systematicNameType, null, null);
-		AlleleSecondaryIdSlotAnnotation editedSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "TEST:Secondary");
+		AlleleMutationTypeSlotAnnotation editedMutationType = allele.getAlleleMutationTypes().get(0);
+		editedMutationType.setEvidence(null);
+		
+		AlleleSymbolSlotAnnotation editedSymbol = allele.getAlleleSymbol();
+		editedSymbol.setEvidence(null);
+		editedSymbol.setSynonymScope(null);
+		editedSymbol.setSynonymUrl(null);
+		
+		AlleleFullNameSlotAnnotation editedFullName = allele.getAlleleFullName();
+		editedFullName.setEvidence(null);
+		editedFullName.setSynonymScope(null);
+		editedFullName.setSynonymUrl(null);
+		
+		AlleleSynonymSlotAnnotation editedSynonym = allele.getAlleleSynonyms().get(0);
+		editedSynonym.setEvidence(null);
+		editedSynonym.setSynonymScope(null);
+		editedSynonym.setSynonymUrl(null);
+		
+		AlleleSecondaryIdSlotAnnotation editedSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		editedSecondaryId.setEvidence(null);
 		
 		allele.setAlleleMutationTypes(List.of(editedMutationType));
 		allele.setAlleleSymbol(editedSymbol);
@@ -753,6 +729,45 @@ public class AlleleITCase extends BaseITCase {
 			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
 			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
 			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence")));
+	}
+
+	@Test
+	@Order(15)
+	public void editAlleleWithNullNonRequiredFieldsLevel1() {
+		Allele allele = getAllele(ALLELE);
+
+		allele.setInheritanceMode(null);
+		allele.setInCollection(null);
+		allele.setReferences(null);
+		allele.setIsExtinct(null);
+		allele.setDateCreated(null);
+		allele.setAlleleMutationTypes(null);
+		allele.setAlleleFullName(null);
+		allele.setAlleleSynonyms(null);
+		allele.setAlleleSecondaryIds(null);
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(200);
+		
+		RestAssured.given().
+			when().
+			get("/api/allele/" + ALLELE).
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("inheritanceMode"))).
+			body("entity", not(hasKey("inCollection"))).
+			body("entity", not(hasKey("references"))).
+			body("entity", not(hasKey("isExtinct"))).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("alleleMutationTypes"))).
+			body("entity", not(hasKey("alleleFullName"))).
+			body("entity", not(hasKey("alleleSynonyms"))).
+			body("entity", not(hasKey("alleleSecondaryIds")));
 	}
 
 	@Test

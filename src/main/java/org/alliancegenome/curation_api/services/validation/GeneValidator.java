@@ -175,10 +175,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		ObjectResponse<GeneSymbolSlotAnnotation> symbolResponse = geneSymbolValidator.validateGeneSymbolSlotAnnotation(uiEntity.getGeneSymbol());
 		if (symbolResponse.getEntity() == null) {
-			Map<String, String> errors = symbolResponse.getErrorMessages();
-			for (String symbolField : errors.keySet()) {
-				addMessageResponse(field, symbolField + " - " + errors.get(symbolField));
-			}
+			addMessageResponse(field, symbolResponse.errorMessagesString());
 			return null;
 		}
 
@@ -193,10 +190,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		ObjectResponse<GeneFullNameSlotAnnotation> nameResponse = geneFullNameValidator.validateGeneFullNameSlotAnnotation(uiEntity.getGeneFullName());
 		if (nameResponse.getEntity() == null) {
-			Map<String, String> errors = nameResponse.getErrorMessages();
-			for (String nameField : errors.keySet()) {
-				addMessageResponse(field, nameField + " - " + errors.get(nameField));
-			}
+			addMessageResponse(field, nameResponse.errorMessagesString());
 			return null;
 		}
 
@@ -211,10 +205,7 @@ public class GeneValidator extends GenomicEntityValidator {
 
 		ObjectResponse<GeneSystematicNameSlotAnnotation> nameResponse = geneSystematicNameValidator.validateGeneSystematicNameSlotAnnotation(uiEntity.getGeneSystematicName());
 		if (nameResponse.getEntity() == null) {
-			Map<String, String> errors = nameResponse.getErrorMessages();
-			for (String nameField : errors.keySet()) {
-				addMessageResponse(field, nameField + " - " + errors.get(nameField));
-			}
+			addMessageResponse(field, nameResponse.errorMessagesString());
 			return null;
 		}
 
@@ -229,10 +220,7 @@ public class GeneValidator extends GenomicEntityValidator {
 			for (GeneSynonymSlotAnnotation syn : uiEntity.getGeneSynonyms()) {
 				ObjectResponse<GeneSynonymSlotAnnotation> synResponse = geneSynonymValidator.validateGeneSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
-					Map<String, String> errors = synResponse.getErrorMessages();
-					for (String synField : errors.keySet()) {
-						addMessageResponse(field, synField + " - " + errors.get(synField));
-					}
+					addMessageResponse(field, synResponse.errorMessagesString());
 					return null;
 				}
 				syn = synResponse.getEntity();
