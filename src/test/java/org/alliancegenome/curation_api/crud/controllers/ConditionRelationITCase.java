@@ -50,7 +50,7 @@ public class ConditionRelationITCase extends BaseITCase {
 		testReference = createReference("AGRKB:000000004", false);
 		conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
 		conditionRelationType = getVocabularyTerm(conditionRelationTypeVocabulary, "relation_type");
-		experimentalCondition = createExperimentalCondition("Statement01", "ZECO:da00001", "Test");
+		experimentalCondition = createExperimentalCondition("StatementCR1", "ZECO:cr00001", "Test");
 		conditionRelationNoHandle = createConditionRelation(null, null, conditionRelationType, List.of(experimentalCondition));
 		conditionRelationHandle1 = createConditionRelation("fructose", testReference, conditionRelationType, List.of(experimentalCondition));
 		conditionRelationHandle2 = createConditionRelation("vasilin", testReference, conditionRelationType, List.of(experimentalCondition));

@@ -9,6 +9,7 @@ import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Person;
 import org.alliancegenome.curation_api.model.entities.ontology.CHEBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
@@ -35,1063 +36,387 @@ import io.restassured.common.mapper.TypeRef;
 @Order(11)
 public class ExperimentalConditionITCase extends BaseITCase {
 	
-	private ZECOTerm testZecoTerm;
-	private ZECOTerm testZecoTerm2;
-	private ZECOTerm testZecoTerm3;
-	private GOTerm testGoTerm;
-	private CHEBITerm testChebiTerm;
-	private ZFATerm testZfaTerm;
-	private NCBITaxonTerm testNcbiTaxonTerm;
-	private ZECOTerm testObsoleteZecoTerm;
-	private GOTerm testObsoleteGoTerm;
-	private CHEBITerm testObsoleteChebiTerm;
-	private ZFATerm testObsoleteZfaTerm;
-	private NCBITaxonTerm testObsoleteNcbiTaxonTerm;
-	private ZECOTerm testNonSlimZecoTerm;
-	private String testConditionSummary;
+	private ZECOTerm zecoTerm;
+	private ZECOTerm zecoTerm2;
+	private ZECOTerm zecoTerm3;
+	private GOTerm goTerm;
+	private GOTerm goTerm2;
+	private CHEBITerm chebiTerm;
+	private CHEBITerm chebiTerm2;
+	private ZFATerm zfaTerm;
+	private ZFATerm zfaTerm2;
+	private NCBITaxonTerm ncbiTaxonTerm;
+	private NCBITaxonTerm ncbiTaxonTerm2;
+	private ZECOTerm obsoleteZecoTerm;
+	private GOTerm obsoleteGoTerm;
+	private CHEBITerm obsoleteChebiTerm;
+	private ZFATerm obsoleteZfaTerm;
+	private NCBITaxonTerm obsoleteNcbiTaxonTerm;
+	private ZECOTerm nonSlimZecoTerm;
+	private String conditionSummary;
+	private Person person;
 	
 	private void createRequiredObjects() {
-		testZecoTerm = createZecoTerm("ZECO:ec0001", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testZecoTerm2 = createZecoTerm("ZECO:ec0002", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testZecoTerm3 = createZecoTerm("ZECO:ec0003", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testObsoleteZecoTerm = createZecoTerm("ZECO:ec0005", "Test ZecoTerm", true, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
-		testNonSlimZecoTerm = createZecoTerm("ZECO:ec0006", "Test ZecoTerm", false, null);
-		testGoTerm = createGoTerm("GO:ec0001", "Test GOTerm", false);
-		testObsoleteGoTerm = createGoTerm("GO:ec0002", "Test GOTerm", true);
-		testChebiTerm = createChebiTerm("CHEBI:ec0001", "Test CHEBITerm", false);
-		testObsoleteChebiTerm = createChebiTerm("CHEBI:ec0002", "Test CHEBITerm", true);
-		testZfaTerm = createZfaTerm("ZFA:ec0001", false);
-		testObsoleteZfaTerm = createZfaTerm("ZFA:ec0002", true);
-		testNcbiTaxonTerm = getNCBITaxonTerm("NCBITaxon:9606");
-		testObsoleteNcbiTaxonTerm = getNCBITaxonTerm("NCBITaxon:1000");
+		zecoTerm = createZecoTerm("ZECO:ec0001", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		zecoTerm2 = createZecoTerm("ZECO:ec0002", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		zecoTerm3 = createZecoTerm("ZECO:ec0003", "Test ZecoTerm", false, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		obsoleteZecoTerm = createZecoTerm("ZECO:ec0005", "Test ZecoTerm", true, OntologyConstants.ZECO_AGR_SLIM_SUBSET);
+		nonSlimZecoTerm = createZecoTerm("ZECO:ec0006", "Test ZecoTerm", false, null);
+		goTerm = createGoTerm("GO:ec0001", "Test GOTerm", false);
+		goTerm2 = createGoTerm("GO:ec0002", "Test GOTerm", false);
+		obsoleteGoTerm = createGoTerm("GO:ec0003", "Test GOTerm", true);
+		chebiTerm = createChebiTerm("CHEBI:ec0001", "Test CHEBITerm", false);
+		chebiTerm2 = createChebiTerm("CHEBI:ec0002", "Test CHEBITerm", false);
+		obsoleteChebiTerm = createChebiTerm("CHEBI:ec0004", "Test CHEBITerm", true);
+		zfaTerm = createZfaTerm("ZFA:ec0001", false);
+		zfaTerm2 = createZfaTerm("ZFA:ec0002", false);
+		obsoleteZfaTerm = createZfaTerm("ZFA:ec0003", true);
+		ncbiTaxonTerm = getNCBITaxonTerm("NCBITaxon:9606");
+		ncbiTaxonTerm2 = getNCBITaxonTerm("NCBITaxon:6239");
+		obsoleteNcbiTaxonTerm = getNCBITaxonTerm("NCBITaxon:1000");
+		person = createPerson("TEST:ECPerson0001");
 	}
 
 	@Test
 	@Order(1)
-	public void createExperimentalCondition() {
+	public void createValidExperimentalCondition() {
 		createRequiredObjects();
 		
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		experimentalCondition.setConditionClass(testZecoTerm);
+		experimentalCondition.setConditionClass(zecoTerm);
+		experimentalCondition.setConditionId(zecoTerm2);
+		experimentalCondition.setConditionQuantity("Test quantity");
+		experimentalCondition.setConditionAnatomy(zfaTerm);
+		experimentalCondition.setConditionGeneOntology(goTerm);
+		experimentalCondition.setConditionTaxon(ncbiTaxonTerm);
+		experimentalCondition.setConditionChemical(chebiTerm);
+		experimentalCondition.setConditionFreeText("Test text");
 		
-
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(experimentalCondition);
+		conditionSummary = ExperimentalConditionSummary.getConditionSummary(experimentalCondition);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(200);
+		
 		RestAssured.given().
-				when().
-				get("/api/experimental-condition/findBy/" + testConditionSummary).
-				then().
-				statusCode(200).
-				body("entity.conditionClass.curie", is("ZECO:ec0001")).
-				body("entity.internal", is(false)).
-				body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
-				body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org"));
+			when().
+			get("/api/experimental-condition/findBy/" + conditionSummary).
+			then().
+			statusCode(200).
+			body("entity.conditionClass.curie", is(zecoTerm.getCurie())).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.createdBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.conditionId.curie", is(zecoTerm2.getCurie())).
+			body("entity.conditionQuantity", is("Test quantity")).
+			body("entity.conditionAnatomy.curie", is(zfaTerm.getCurie())).
+			body("entity.conditionGeneOntology.curie", is(goTerm.getCurie())).
+			body("entity.conditionTaxon.curie", is(ncbiTaxonTerm.getCurie())).
+			body("entity.conditionChemical.curie", is(chebiTerm.getCurie())).
+			body("entity.conditionFreeText", is("Test text"));
 	}
 
 	@Test
 	@Order(2)
 	public void editExperimentalcondition() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		ExperimentalCondition experimentalCondition = getExperimentalCondition(conditionSummary);
 		
-		editedExperimentalCondition.setConditionClass(testZecoTerm2);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-		editedExperimentalCondition.setConditionFreeText("Free text");
-		editedExperimentalCondition.setInternal(true);
+		experimentalCondition.setCreatedBy(person);
+		experimentalCondition.setConditionClass(zecoTerm2);
+		experimentalCondition.setConditionId(zecoTerm);
+		experimentalCondition.setConditionQuantity("Edited quantity");
+		experimentalCondition.setConditionAnatomy(zfaTerm2);
+		experimentalCondition.setConditionGeneOntology(goTerm2);
+		experimentalCondition.setConditionTaxon(ncbiTaxonTerm2);
+		experimentalCondition.setConditionChemical(chebiTerm2);
+		experimentalCondition.setConditionFreeText("Edited text");
+		experimentalCondition.setInternal(true);
+		experimentalCondition.setObsolete(true);
+		experimentalCondition.setCreatedBy(person);
 		
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
+		conditionSummary = ExperimentalConditionSummary.getConditionSummary(experimentalCondition);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200);
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(200);
 		RestAssured.given().
-				when().
-				get("/api/experimental-condition/findBy/" + testConditionSummary).
-				then().
-				statusCode(200).
-				body("entity.conditionClass.curie", is("ZECO:ec0002")).
-				body("entity.conditionId.curie", is("ZECO:ec0003")).
-				body("entity.conditionQuantity", is("Amount")).
-				body("entity.conditionGeneOntology.curie", is("GO:ec0001")).
-				body("entity.conditionTaxon.curie", is("NCBITaxon:9606")).
-				body("entity.conditionChemical.curie", is("CHEBI:ec0001")).
-				body("entity.conditionFreeText", is("Free text")).
-				body("entity.conditionSummary", is("Test ZecoTerm:Test ZecoTerm:Test ZFATerm:Test GOTerm:Test CHEBITerm:Homo sapiens:Amount:Free text")).
-				body("entity.internal", is(true));
-		
+			when().
+			get("/api/experimental-condition/findBy/" + conditionSummary).
+			then().
+			statusCode(200).
+			body("entity.conditionClass.curie", is(zecoTerm2.getCurie())).
+			body("entity.internal", is(true)).
+			body("entity.obsolete", is(true)).
+			body("entity.createdBy.uniqueId", is(person.getUniqueId())).
+			body("entity.updatedBy.uniqueId", is("Local|Dev User|test@alliancegenome.org")).
+			body("entity.conditionId.curie", is(zecoTerm.getCurie())).
+			body("entity.conditionQuantity", is("Edited quantity")).
+			body("entity.conditionAnatomy.curie", is(zfaTerm2.getCurie())).
+			body("entity.conditionGeneOntology.curie", is(goTerm2.getCurie())).
+			body("entity.conditionTaxon.curie", is(ncbiTaxonTerm2.getCurie())).
+			body("entity.conditionChemical.curie", is(chebiTerm2.getCurie())).
+			body("entity.conditionFreeText", is("Edited text"));
 	}
 
 	@Test
 	@Order(3)
-	public void editWithObsoleteConditionClass() {
+	public void createExperimentalConditionWithMissingRequiredFields() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testObsoleteZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(4)
-	public void editWithObsoleteConditionId() {
+	public void editExperimentalConditionWithMissingRequiredFields() {
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testObsoleteZecoTerm);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+		ExperimentalCondition experimentalCondition = getExperimentalCondition(conditionSummary);
+		experimentalCondition.setConditionClass(null);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
 	}
 	
 	@Test
 	@Order(5)
-	public void editWithObsoleteConditionAnatomy() {
+	public void createExperimentalConditionWithInvalidFields() {
+		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
+		nonPersistedZecoTerm.setCurie("ZECO:Invalid");
+		GOTerm nonPersistedGoTerm = new GOTerm();
+		nonPersistedGoTerm.setCurie("GO:Invalid");
+		CHEBITerm nonPersistedChebiTerm = new CHEBITerm();
+		nonPersistedChebiTerm.setCurie("CHEBI:Invalid");
+		ZFATerm nonPersistedZfaTerm = new ZFATerm();
+		nonPersistedZfaTerm.setCurie("ZFA:Invalid");
+		NCBITaxonTerm nonPersistedNcbiTaxonTerm = new NCBITaxonTerm();
+		nonPersistedNcbiTaxonTerm.setCurie("NCBITaxon:Invalid");
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testObsoleteZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+		experimentalCondition.setConditionClass(nonSlimZecoTerm);
+		experimentalCondition.setConditionId(nonPersistedZecoTerm);
+		experimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
+		experimentalCondition.setConditionGeneOntology(nonPersistedGoTerm);
+		experimentalCondition.setConditionTaxon(nonPersistedNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(nonPersistedChebiTerm);
 		
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionTaxon", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
 	@Order(6)
-	public void editWithObsoleteConditionGeneOntology() {
+	public void editExperimentalConditionWithInvalidFields() {
+		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
+		nonPersistedZecoTerm.setCurie("ZECO:Invalid");
+		GOTerm nonPersistedGoTerm = new GOTerm();
+		nonPersistedGoTerm.setCurie("GO:Invalid");
+		CHEBITerm nonPersistedChebiTerm = new CHEBITerm();
+		nonPersistedChebiTerm.setCurie("CHEBI:Invalid");
+		ZFATerm nonPersistedZfaTerm = new ZFATerm();
+		nonPersistedZfaTerm.setCurie("ZFA:Invalid");
+		NCBITaxonTerm nonPersistedNcbiTaxonTerm = new NCBITaxonTerm();
+		nonPersistedNcbiTaxonTerm.setCurie("NCBITaxon:Invalid");
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		ExperimentalCondition experimentalCondition = getExperimentalCondition(conditionSummary);
 		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testObsoleteGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+		experimentalCondition.setConditionClass(nonSlimZecoTerm);
+		experimentalCondition.setConditionId(nonPersistedZecoTerm);
+		experimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
+		experimentalCondition.setConditionGeneOntology(nonPersistedGoTerm);
+		experimentalCondition.setConditionTaxon(nonPersistedNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(nonPersistedChebiTerm);
+		
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionTaxon", is(ValidationConstants.INVALID_MESSAGE)).
+			body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
 	}
 	
 	@Test
 	@Order(7)
-	public void editWithObsoleteConditionTaxon() {
+	public void createExperimentalConditionWithObsoleteFields() {
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		experimentalCondition.setConditionClass(obsoleteZecoTerm);
+		experimentalCondition.setConditionId(obsoleteZecoTerm);
+		experimentalCondition.setConditionAnatomy(obsoleteZfaTerm);
+		experimentalCondition.setConditionGeneOntology(obsoleteGoTerm);
+		experimentalCondition.setConditionTaxon(obsoleteNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(obsoleteChebiTerm);
 		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testObsoleteNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
 	@Order(8)
-	public void editWithObsoleteConditionChemical() {
+	public void editExperimentalConditionWithObsoleteFields() {
+		ExperimentalCondition experimentalCondition = getExperimentalCondition(conditionSummary);
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		experimentalCondition.setConditionClass(obsoleteZecoTerm);
+		experimentalCondition.setConditionId(obsoleteZecoTerm);
+		experimentalCondition.setConditionAnatomy(obsoleteZfaTerm);
+		experimentalCondition.setConditionGeneOntology(obsoleteGoTerm);
+		experimentalCondition.setConditionTaxon(obsoleteNcbiTaxonTerm);
+		experimentalCondition.setConditionChemical(obsoleteChebiTerm);
 		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testObsoleteChebiTerm);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(6))).
+			body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE)).
+			body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 	
 	@Test
 	@Order(9)
-	public void editWithInvalidConditionClass() {
+	public void editExperimentalConditionWithNullNonRequiredFields() {
+		ExperimentalCondition experimentalCondition = getExperimentalCondition(conditionSummary);
 		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
+		experimentalCondition.setConditionId(null);
+		experimentalCondition.setConditionAnatomy(null);
+		experimentalCondition.setConditionGeneOntology(null);
+		experimentalCondition.setConditionTaxon(null);
+		experimentalCondition.setConditionChemical(null);
+		experimentalCondition.setConditionQuantity(null);
+		experimentalCondition.setConditionFreeText(null);
 		
-		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
-		nonPersistedZecoTerm.setCurie("NPZECO:0001");
-		nonPersistedZecoTerm.setObsolete(false);
-		
-		editedExperimentalCondition.setConditionClass(nonPersistedZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+		conditionSummary = ExperimentalConditionSummary.getConditionSummary(experimentalCondition);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			put("/api/experimental-condition").
+			then().
+			statusCode(200).
+			body("entity", not(hasKey("conditionId"))).
+			body("entity", not(hasKey("conditionAnatomy"))).
+			body("entity", not(hasKey("conditionGeneOntology"))).
+			body("entity", not(hasKey("conditionTaxon"))).
+			body("entity", not(hasKey("conditionChemical"))).
+			body("entity", not(hasKey("conditionQuantity"))).
+			body("entity", not(hasKey("conditionFreeText")));
 	}
 	
 	@Test
 	@Order(10)
-	public void editWithInvalidConditionId() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
-		nonPersistedZecoTerm.setCurie("NPZECO:0001");
-		nonPersistedZecoTerm.setObsolete(false);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(nonPersistedZecoTerm);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
+	public void createDuplicateExperimentalCondition() {
+		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+		experimentalCondition.setConditionClass(zecoTerm2);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE));
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
 	
 	@Test
 	@Order(11)
-	public void editWithInvalidConditionAnatomy() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		ZFATerm nonPersistedZfaTerm = new ZFATerm();
-		nonPersistedZfaTerm.setCurie("NPZFA:0001");
-		nonPersistedZfaTerm.setObsolete(false);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(12)
-	public void editWithInvalidConditionGeneOntology() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		GOTerm nonPersistedGoTerm = new GOTerm();
-		nonPersistedGoTerm.setCurie("NPGO:0001");
-		nonPersistedGoTerm.setObsolete(false);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(nonPersistedGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(13)
-	public void editWithInvalidConditionChemical() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		CHEBITerm nonPersistedChebiTerm = new CHEBITerm();
-		nonPersistedChebiTerm.setCurie("NPCHEBI:0001");
-		nonPersistedChebiTerm.setObsolete(false);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm2);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(nonPersistedChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(14)
-	public void editWithMissingConditionClass() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(null);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
-	
-	@Test
-	@Order(15)
-	public void editWithNonSlimConditionClass() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testNonSlimZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(16)
-	public void createWithObsoleteConditionClass() {
-		
+	public void editDuplicateExperimentalCondition() {
 		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testObsoleteZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount3");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.OBSOLETE_MESSAGE));
-	}
-	
-	@Test
-	@Order(17)
-	public void createWithObsoleteConditionId() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testObsoleteZecoTerm);
-		experimentalCondition.setConditionQuantity("Amount4");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionId", is(ValidationConstants.OBSOLETE_MESSAGE));
-	}
-	
-	@Test
-	@Order(18)
-	public void createWithObsoleteConditionAnatomy() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount5");
-		experimentalCondition.setConditionAnatomy(testObsoleteZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionAnatomy", is(ValidationConstants.OBSOLETE_MESSAGE));
-	}
-	
-	@Test
-	@Order(19)
-	public void createWithObsoleteConditionGeneOntology() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount6");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testObsoleteGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionGeneOntology", is(ValidationConstants.OBSOLETE_MESSAGE));
-	}
-	
-	@Test
-	@Order(20)
-	public void createWithObsoleteConditionTaxon() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount7");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testObsoleteNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionTaxon", is(ValidationConstants.OBSOLETE_MESSAGE));
-	}
-	
-	@Test
-	@Order(21)
-	public void createWithObsoleteConditionChemical() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount8");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testObsoleteChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionChemical", is(ValidationConstants.OBSOLETE_MESSAGE));
-	}
-	
-	@Test
-	@Order(22)
-	public void createWithInvalidConditionClass() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
-		nonPersistedZecoTerm.setCurie("NPZECO:0001");
-		nonPersistedZecoTerm.setObsolete(false);
-		
-		experimentalCondition.setConditionClass(nonPersistedZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount9");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(23)
-	public void createWithInvalidConditionId() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		ZECOTerm nonPersistedZecoTerm = new ZECOTerm();
-		nonPersistedZecoTerm.setCurie("NPZECO:0001");
-		nonPersistedZecoTerm.setObsolete(false);
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(nonPersistedZecoTerm);
-		experimentalCondition.setConditionQuantity("Amount10");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionId", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(24)
-	public void createWithInvalidConditionAnatomy() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		ZFATerm nonPersistedZfaTerm = new ZFATerm();
-		nonPersistedZfaTerm.setCurie("NPZFA:0001");
-		nonPersistedZfaTerm.setObsolete(false);
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount11");
-		experimentalCondition.setConditionAnatomy(nonPersistedZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionAnatomy", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(25)
-	public void createWithInvalidConditionGeneOntology() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		GOTerm nonPersistedGoTerm = new GOTerm();
-		nonPersistedGoTerm.setCurie("NPGO:0001");
-		nonPersistedGoTerm.setObsolete(false);
-		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount12");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(nonPersistedGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionGeneOntology", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(26)
-	public void createWithInvalidConditionChemical() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		CHEBITerm nonPersistedChebiTerm = new CHEBITerm();
-		nonPersistedChebiTerm.setCurie("NPCHEBI:0001");
-		nonPersistedChebiTerm.setObsolete(false);
-		
-		experimentalCondition.setConditionClass(testZecoTerm2);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount13");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(nonPersistedChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionChemical", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(27)
-	public void createWithMissingConditionClass() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount14");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.REQUIRED_MESSAGE));
-	}
+		experimentalCondition.setConditionClass(zecoTerm2);
+		experimentalCondition.setConditionId(nonSlimZecoTerm);
 
-	@Test
-	@Order(28)
-	public void createWithNonSlimConditionClass() {
-		
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
-		
-		experimentalCondition.setConditionClass(testNonSlimZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount16");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
+		String newConditionSummary = ExperimentalConditionSummary.getConditionSummary(experimentalCondition);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.conditionClass", is(ValidationConstants.INVALID_MESSAGE));
-	}
-	
-	@Test
-	@Order(29)
-	public void createDuplicateExperimentalCondition() {
-		ExperimentalCondition experimentalCondition = new ExperimentalCondition();
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(200);
 		
-		experimentalCondition.setConditionClass(testZecoTerm);
-		experimentalCondition.setConditionId(testZecoTerm3);
-		experimentalCondition.setConditionQuantity("Amount17");
-		experimentalCondition.setConditionAnatomy(testZfaTerm);
-		experimentalCondition.setConditionGeneOntology(testGoTerm);
-		experimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalCondition.setConditionChemical(testChebiTerm);
+		ExperimentalCondition experimentalCondition2 = getExperimentalCondition(newConditionSummary);
+		experimentalCondition2.setConditionId(null);
 		
 		RestAssured.given().
-				contentType("application/json").
-				body(experimentalCondition).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(200);
-		
-		ExperimentalCondition experimentalConditionDuplicate = new ExperimentalCondition();
-		
-		experimentalConditionDuplicate.setConditionClass(testZecoTerm);
-		experimentalConditionDuplicate.setConditionId(testZecoTerm3);
-		experimentalConditionDuplicate.setConditionQuantity("Amount17");
-		experimentalConditionDuplicate.setConditionAnatomy(testZfaTerm);
-		experimentalConditionDuplicate.setConditionGeneOntology(testGoTerm);
-		experimentalConditionDuplicate.setConditionTaxon(testNcbiTaxonTerm);
-		experimentalConditionDuplicate.setConditionChemical(testChebiTerm);
-		
-		RestAssured.given().
-				contentType("application/json").
-				body(experimentalConditionDuplicate).
-				when().
-				post("/api/experimental-condition").
-				then().
-				statusCode(400).
-				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
-	}
-	
-	@Test
-	@Order(30)
-	public void editWithNullConditionId() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", hasKey("conditionId"));
-				
-		editedExperimentalCondition.setConditionId(null);
-				
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", not(hasKey("conditionId")));
-		
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-	
-	@Test
-	@Order(31)
-	public void editWithNullConditionQuantity() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", hasKey("conditionQuantity"));
-				
-		editedExperimentalCondition.setConditionQuantity(null);
-				
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", not(hasKey("conditionQuantity")));
-
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-	
-	@Test
-	@Order(32)
-	public void editWithNullConditionGeneOntology() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", hasKey("conditionGeneOntology"));
-				
-		editedExperimentalCondition.setConditionGeneOntology(null);
-				
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", not(hasKey("conditionGeneOntology")));
-
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-	
-	@Test
-	@Order(33)
-	public void editWithNullConditionAnatomy() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", hasKey("conditionAnatomy"));
-				
-		editedExperimentalCondition.setConditionAnatomy(null);
-				
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", not(hasKey("conditionAnatomy")));
-
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-	
-	@Test
-	@Order(34)
-	public void editWithNullConditionTaxon() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", hasKey("conditionTaxon"));
-				
-		editedExperimentalCondition.setConditionTaxon(null);
-				
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", not(hasKey("conditionTaxon")));
-
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-	
-	@Test
-	@Order(35)
-	public void editWithNullConditionChemical() {
-		
-		ExperimentalCondition editedExperimentalCondition = getExperimentalCondition(testConditionSummary);
-		
-		editedExperimentalCondition.setConditionClass(testZecoTerm);
-		editedExperimentalCondition.setConditionId(testZecoTerm3);
-		editedExperimentalCondition.setConditionQuantity("Amount");
-		editedExperimentalCondition.setConditionAnatomy(testZfaTerm);
-		editedExperimentalCondition.setConditionGeneOntology(testGoTerm);
-		editedExperimentalCondition.setConditionTaxon(testNcbiTaxonTerm);
-		editedExperimentalCondition.setConditionChemical(testChebiTerm);
-
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", hasKey("conditionChemical"));
-				
-		editedExperimentalCondition.setConditionChemical(null);
-				
-		RestAssured.given().
-				contentType("application/json").
-				body(editedExperimentalCondition).
-				when().
-				put("/api/experimental-condition").
-				then().
-				statusCode(200).
-				body("entity", not(hasKey("conditionChemical")));
-		
-		testConditionSummary = ExperimentalConditionSummary.getConditionSummary(editedExperimentalCondition);
-	}
-
-	private TypeRef<ObjectResponse<NCBITaxonTerm>> getObjectResponseTypeRefTaxon() {
-		return new TypeRef<ObjectResponse <NCBITaxonTerm>>() { };
+			contentType("application/json").
+			body(experimentalCondition).
+			when().
+			post("/api/experimental-condition").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.uniqueId", is(ValidationConstants.NON_UNIQUE_MESSAGE));
 	}
 }
