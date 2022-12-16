@@ -76,11 +76,12 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 	
-	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String name) {
+	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String name, Boolean obsolete) {
 		AffectedGenomicModel model = new AffectedGenomicModel();
 		model.setCurie(curie);
 		model.setTaxon(getNCBITaxonTerm(taxonCurie));
 		model.setName(name);
+		model.setObsolete(obsolete);
 
 		RestAssured.given().
 				contentType("application/json").
@@ -283,16 +284,7 @@ public class BaseITCase {
 			note.setReferences(references);
 		}
 
-		ObjectResponse<Note> response = RestAssured.given().
-			contentType("application/json").
-			body(note).
-			when().
-			post("/api/note").
-			then().
-			statusCode(200).
-			extract().body().as(getObjectResponseTypeRefNote());
-		
-		return response.getEntity();
+		return note;
 	}
 	
 	public Organization createOrganization(String uniqueId, String abbreviation, Boolean obsolete) {

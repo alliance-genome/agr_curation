@@ -264,11 +264,6 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithMissingRequiredFieldsLevel1() {
 
 		Gene gene = new Gene();
-		gene.setDateCreated(datetime);
-		gene.setGeneType(soTerm);
-		gene.setGeneFullName(geneFullName);
-		gene.setGeneSynonyms(List.of(geneSynonym));
-		gene.setGeneSystematicName(geneSystematicName);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -325,13 +320,8 @@ public class GeneITCase extends BaseITCase {
 
 		Gene gene = new Gene();
 		gene.setCurie("");
-		gene.setDateCreated(datetime);
 		gene.setTaxon(taxon);
-		gene.setGeneType(soTerm);
 		gene.setGeneSymbol(geneSymbol);
-		gene.setGeneFullName(geneFullName);
-		gene.setGeneSynonyms(List.of(geneSynonym));
-		gene.setGeneSystematicName(geneSystematicName);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -367,14 +357,12 @@ public class GeneITCase extends BaseITCase {
 
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0008");
-		gene.setDateCreated(datetime);
 		gene.setTaxon(taxon);
-		gene.setGeneType(soTerm);
 		
-		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
+		GeneSymbolSlotAnnotation invalidSymbol = new GeneSymbolSlotAnnotation();
+		GeneFullNameSlotAnnotation invalidFullName = new GeneFullNameSlotAnnotation();
+		GeneSynonymSlotAnnotation invalidSynonym = new GeneSynonymSlotAnnotation();
+		GeneSystematicNameSlotAnnotation invalidSystematicName = new GeneSystematicNameSlotAnnotation();
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
@@ -467,14 +455,12 @@ public class GeneITCase extends BaseITCase {
 
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0010");
-		gene.setDateCreated(datetime);
 		gene.setTaxon(taxon);
-		gene.setGeneType(soTerm);
 		
-		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(List.of(reference), "", symbolNameType, exactSynonymScope, "https://test.org");
-		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(List.of(reference), "", fullNameType, exactSynonymScope, "https://test.org");
-		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(List.of(reference), "", symbolNameType, exactSynonymScope, "https://test.org");
-		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(List.of(reference), "", systematicNameType, exactSynonymScope, "https://test.org");
+		GeneSymbolSlotAnnotation invalidSymbol = createGeneSymbolSlotAnnotation(null, "", symbolNameType, null, null);
+		GeneFullNameSlotAnnotation invalidFullName = createGeneFullNameSlotAnnotation(null, "", fullNameType, null, null);
+		GeneSynonymSlotAnnotation invalidSynonym = createGeneSynonymSlotAnnotation(null, "", symbolNameType, null, null);
+		GeneSystematicNameSlotAnnotation invalidSystematicName = createGeneSystematicNameSlotAnnotation(null, "", systematicNameType, null, null);
 		
 		gene.setGeneSymbol(invalidSymbol);
 		gene.setGeneFullName(invalidFullName);
@@ -561,7 +547,6 @@ public class GeneITCase extends BaseITCase {
 		
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0012");
-		gene.setDateCreated(datetime);
 		gene.setTaxon(nonPersistedTaxon);
 		gene.setGeneType(nonPersistedSoTerm);
 		
@@ -672,7 +657,6 @@ public class GeneITCase extends BaseITCase {
 	public void createGeneWithObsoleteFields() {
 		Gene gene = new Gene();
 		gene.setCurie("GENE:0014");
-		gene.setDateCreated(datetime);
 		gene.setTaxon(obsoleteTaxon);
 		gene.setGeneType(obsoleteSoTerm);
 		

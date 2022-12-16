@@ -119,8 +119,6 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	@Order(3)
 	public void createAGMWithMissingRequiredFields() {
 		AffectedGenomicModel agm = new AffectedGenomicModel();
-		agm.setName("Test AGM");
-		agm.setDateCreated(datetime);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -173,9 +171,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 	public void createAGMWithEmptyRequiredFields() {
 		AffectedGenomicModel agm = new AffectedGenomicModel();
 		agm.setCurie("");
-		agm.setName("Test AGM");
 		agm.setTaxon(taxon);
-		agm.setDateCreated(datetime);
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -213,9 +209,7 @@ public class AffectedGenomicModelITCase extends BaseITCase {
 		
 		AffectedGenomicModel agm = new AffectedGenomicModel();
 		agm.setCurie("AGM:0008");
-		agm.setName("Test AGM");
 		agm.setTaxon(nonPersistedTaxon);
-		agm.setDateCreated(datetime);
 		
 		RestAssured.given().
 			contentType("application/json").

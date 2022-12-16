@@ -64,7 +64,6 @@ public class AGMDiseaseAnnotationValidator extends DiseaseAnnotationValidator {
 	public AGMDiseaseAnnotation validateAnnotationCreate(AGMDiseaseAnnotation uiEntity) {
 		response = new ObjectResponse<>(uiEntity);
 		errorMessage = "Cound not create AGM Disease Annotation";
-		;
 
 		AGMDiseaseAnnotation dbEntity = new AGMDiseaseAnnotation();
 

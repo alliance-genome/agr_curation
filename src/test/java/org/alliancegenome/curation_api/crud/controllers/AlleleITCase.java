@@ -294,15 +294,6 @@ public class AlleleITCase extends BaseITCase {
 	@Order(3)
 	public void createAlleleWithMissingRequiredFieldsLevel1() {
 		Allele allele = new Allele();
-		allele.setInheritanceMode(dominantInheritanceMode);
-		allele.setInCollection(mmpInCollection);
-		allele.setReferences(List.of(reference));
-		allele.setIsExtinct(false);
-		allele.setDateCreated(datetime);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
-		allele.setAlleleFullName(alleleFullName);
-		allele.setAlleleSynonyms(List.of(alleleSynonym));
-		allele.setAlleleSecondaryIds(List.of(alleleSecondaryId));
 		
 		RestAssured.given().
 			contentType("application/json").
@@ -355,7 +346,7 @@ public class AlleleITCase extends BaseITCase {
 	
 	@Test
 	@Order(6)
-	public void createAlleleWithEmptyRequiredFieldsLevel1() {
+	public void createAlleleWithEmptyRequiredFields() {
 		Allele allele = new Allele();
 		allele.setCurie("");
 		allele.setTaxon(taxon);
@@ -404,17 +395,12 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0008");
 		allele.setTaxon(taxon);
-		allele.setInheritanceMode(dominantInheritanceMode);
-		allele.setInCollection(mmpInCollection);
-		allele.setReferences(List.of(reference));
-		allele.setIsExtinct(false);
-		allele.setDateCreated(datetime);
 		
-		AlleleMutationTypeSlotAnnotation invalidMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), null);
-		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(List.of(reference), null, null, exactSynonymScope, "https://test.org");
-		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(reference), null);
+		AlleleMutationTypeSlotAnnotation invalidMutationType = new AlleleMutationTypeSlotAnnotation();
+		AlleleSymbolSlotAnnotation invalidSymbol = new AlleleSymbolSlotAnnotation();
+		AlleleFullNameSlotAnnotation invalidFullName = new AlleleFullNameSlotAnnotation();
+		AlleleSynonymSlotAnnotation invalidSynonym = new AlleleSynonymSlotAnnotation();
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = new AlleleSecondaryIdSlotAnnotation();
 		
 		allele.setAlleleMutationTypes(List.of(invalidMutationType));
 		allele.setAlleleSymbol(invalidSymbol);
@@ -504,17 +490,11 @@ public class AlleleITCase extends BaseITCase {
 		Allele allele = new Allele();
 		allele.setCurie("Allele:0010");
 		allele.setTaxon(taxon);
-		allele.setInheritanceMode(dominantInheritanceMode);
-		allele.setInCollection(mmpInCollection);
-		allele.setReferences(List.of(reference));
-		allele.setIsExtinct(false);
-		allele.setDateCreated(datetime);
-		allele.setAlleleMutationTypes(List.of(alleleMutationType));
 		
-		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), "", symbolNameType, exactSynonymScope, "https://test.org");
-		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(List.of(reference), "", fullNameType, exactSynonymScope, "https://test.org");
-		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(List.of(reference), "", systematicNameType, exactSynonymScope, "https://test.org");
-		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(List.of(reference), "");
+		AlleleSymbolSlotAnnotation invalidSymbol = createAlleleSymbolSlotAnnotation(null, "", symbolNameType, null, null);
+		AlleleFullNameSlotAnnotation invalidFullName = createAlleleFullNameSlotAnnotation(null, "", fullNameType, null, null);
+		AlleleSynonymSlotAnnotation invalidSynonym = createAlleleSynonymSlotAnnotation(null, "", systematicNameType, null, null);
+		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = createAlleleSecondaryIdSlotAnnotation(null, "");
 		
 		allele.setAlleleSymbol(invalidSymbol);
 		allele.setAlleleFullName(invalidFullName);
@@ -556,7 +536,7 @@ public class AlleleITCase extends BaseITCase {
 		invalidSynonym.setDisplayText("");
 		invalidSynonym.setFormatText("");
 		AlleleSecondaryIdSlotAnnotation invalidSecondaryId = allele.getAlleleSecondaryIds().get(0);
-		invalidSecondaryId.setSecondaryId(null);
+		invalidSecondaryId.setSecondaryId("");
 		
 		allele.setAlleleSymbol(invalidSymbol);
 		allele.setAlleleFullName(invalidFullName);
@@ -725,8 +705,6 @@ public class AlleleITCase extends BaseITCase {
 		allele.setInheritanceMode(obsoleteInheritanceMode);
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
-		allele.setIsExtinct(false);
-		allele.setDateCreated(datetime);
 		
 		AlleleMutationTypeSlotAnnotation obsoleteMutationType = createAlleleMutationTypeSlotAnnotation(List.of(obsoleteReference), List.of(obsoleteSoTerm));
 		AlleleSymbolSlotAnnotation obsoleteSymbol = createAlleleSymbolSlotAnnotation(List.of(obsoleteReference), "Test symbol", obsoleteSymbolNameType, obsoleteSynonymScope, "https://test.org");
@@ -778,8 +756,6 @@ public class AlleleITCase extends BaseITCase {
 		allele.setInheritanceMode(obsoleteInheritanceMode);
 		allele.setInCollection(obsoleteCollection);
 		allele.setReferences(List.of(obsoleteReference));
-		allele.setIsExtinct(false);
-		allele.setDateCreated(datetime);
 		
 		AlleleMutationTypeSlotAnnotation obsoleteMutationType = allele.getAlleleMutationTypes().get(0);
 		obsoleteMutationType.setEvidence(List.of(obsoleteReference));

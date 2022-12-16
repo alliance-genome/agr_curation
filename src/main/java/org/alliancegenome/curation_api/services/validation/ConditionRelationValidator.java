@@ -98,10 +98,10 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		VocabularyTerm conditionRelationType = validateConditionRelationType(uiEntity, dbEntity);
 		dbEntity.setConditionRelationType(conditionRelationType);
 
-		List<ExperimentalCondition> conditions = validateConditions(uiEntity);
+		List<ExperimentalCondition> conditions = validateConditions(uiEntity, dbEntity);
 		dbEntity.setConditions(conditions);
 
-		Reference singleReference = validateSingleReference(uiEntity);
+		Reference singleReference = validateSingleReference(uiEntity, dbEntity);
 		dbEntity.setSingleReference(singleReference);
 
 		String uniqueId = DiseaseAnnotationCurie.getConditionRelationUnique(dbEntity);
@@ -179,20 +179,19 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		return relation.getHandle() + relation.getSingleReference().getCurie();
 	}
 
-	private Reference validateSingleReference(ConditionRelation uiEntity) {
+	private Reference validateSingleReference(ConditionRelation uiEntity, ConditionRelation dbEntity) {
 		String field = "singleReference";
-		if (uiEntity.getSingleReference() == null || StringUtils.isBlank(uiEntity.getSingleReference().getCurie())) {
-			if (!StringUtils.isBlank(uiEntity.getHandle()))
-				addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+		if (uiEntity.getSingleReference() == null)
+			return null;
+		
+		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
+		if (singleRefResponse.getEntity() == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
-		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
-		if (singleRefResponse.getEntity() == null) {
-			Map<String, String> errors = singleRefResponse.getErrorMessages();
-			for (String refField : errors.keySet()) {
-				addMessageResponse(field, refField + " - " + errors.get(refField));
-			}
+		if (singleRefResponse.getEntity().getObsolete() && (dbEntity.getSingleReference() == null || !singleRefResponse.getEntity().getCurie().equals(dbEntity.getSingleReference().getCurie()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
 
@@ -206,13 +205,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			return null;
 		}
 
-		VocabularyTerm conditionRelationType = null;
-		// first check if an id is provided. If not then check for term Name
-		if (uiEntity.getConditionRelationType().getId() != null) {
-			conditionRelationType = vocabularyTermDAO.find(uiEntity.getConditionRelationType().getId());
-		} else if (uiEntity.getConditionRelationType().getName() != null) {
-			conditionRelationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType().getName());
-		}
+		VocabularyTerm conditionRelationType = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY, uiEntity.getConditionRelationType().getName());
 		if (conditionRelationType == null) {
 			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
@@ -226,7 +219,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		return conditionRelationType;
 	}
 
-	public List<ExperimentalCondition> validateConditions(ConditionRelation uiEntity) {
+	public List<ExperimentalCondition> validateConditions(ConditionRelation uiEntity, ConditionRelation dbEntity) {
 		String field = "conditions";
 		if (CollectionUtils.isEmpty(uiEntity.getConditions())) {
 			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);

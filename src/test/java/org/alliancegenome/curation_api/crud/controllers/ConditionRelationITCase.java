@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Reference;
@@ -47,9 +48,9 @@ public class ConditionRelationITCase extends BaseITCase {
 	private void createRequiredObjects() {
 
 		testReference = createReference("AGRKB:000000004", false);
-		conditionRelationTypeVocabulary = createVocabulary("Condition relation type vocabulary", false);
-		conditionRelationType = createVocabularyTerm(conditionRelationTypeVocabulary, "relation_type", false);
-		experimentalCondition = createExperimentalCondition("Statement1", "ZECO:da00001", "Test");
+		conditionRelationTypeVocabulary = getVocabulary(VocabularyConstants.CONDITION_RELATION_TYPE_VOCABULARY);
+		conditionRelationType = getVocabularyTerm(conditionRelationTypeVocabulary, "relation_type");
+		experimentalCondition = createExperimentalCondition("Statement01", "ZECO:da00001", "Test");
 		conditionRelationNoHandle = createConditionRelation(null, null, conditionRelationType, List.of(experimentalCondition));
 		conditionRelationHandle1 = createConditionRelation("fructose", testReference, conditionRelationType, List.of(experimentalCondition));
 		conditionRelationHandle2 = createConditionRelation("vasilin", testReference, conditionRelationType, List.of(experimentalCondition));

@@ -268,7 +268,7 @@ public class NoteITCase extends BaseITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.references", is(ValidationConstants.INVALID_MESSAGE));
 	}
 
 	@Test
@@ -291,7 +291,7 @@ public class NoteITCase extends BaseITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.references", is(ValidationConstants.OBSOLETE_MESSAGE));
 		}
 
 	@Test
@@ -438,7 +438,7 @@ public class NoteITCase extends BaseITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.INVALID_MESSAGE));
+				body("errorMessages.references", is(ValidationConstants.INVALID_MESSAGE));
 	}
 
 	@Test
@@ -461,7 +461,7 @@ public class NoteITCase extends BaseITCase {
 				then().
 				statusCode(400).
 				body("errorMessages", is(aMapWithSize(1))).
-				body("errorMessages.references", is("curie - " + ValidationConstants.OBSOLETE_MESSAGE));
+				body("errorMessages.references", is(ValidationConstants.OBSOLETE_MESSAGE));
 	}
 
 }
