@@ -7,12 +7,11 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
-import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.alliancegenome.curation_api.enums.CrossReferencePrefix;
-import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
+import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -20,6 +19,7 @@ import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
