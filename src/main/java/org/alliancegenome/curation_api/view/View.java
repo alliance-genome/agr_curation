@@ -26,9 +26,6 @@ public class View {
 	public static class NoteView extends FieldsAndLists {
 	}
 
-	public static class BulkLoadFileHistory extends FieldsOnly {
-	}
-
 	public static class ReportHistory extends FieldsOnly {
 	}
 
