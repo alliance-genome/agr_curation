@@ -1,6 +1,7 @@
 package org.alliancegenome.curation_api.model.entities;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.Entity;
 import javax.persistence.Index;
@@ -9,6 +10,9 @@ import javax.persistence.ManyToMany;
 
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.alliancegenome.curation_api.enums.CrossReferencePrefix;
+import org.alliancegenome.curation_api.model.entities.base.CurieAuditedObject;
 import org.alliancegenome.curation_api.view.View;
 import org.eclipse.microprofile.openapi.annotations.media.Schema;
 import org.hibernate.envers.Audited;
@@ -39,4 +43,17 @@ public class Reference extends InformationContentEntity {
 	@EqualsAndHashCode.Include
 	private List<CrossReference> crossReferences;
 
+	/**
+	 * Retrieve PMID if available in the crossReference collection otherwise MOD ID
+	 */
+	@Transient
+	@JsonIgnore
+	public String getReferenceID() {
+		Optional<CrossReference> opt = getCrossReferences().stream().filter(reference -> reference.getCurie().startsWith("PMID:")).findFirst();
+		// if no PUBMED ID try MOD ID
+		if (opt.isEmpty()) {
+			opt = getCrossReferences().stream().filter(reference -> CrossReferencePrefix.valueOf(reference.getPrefix()) != null).findFirst();
+		}
+		return opt.map(CrossReference::getPrefix).orElse(null);
+	}
 }
