@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.alliancegenome.curation_api.constants.LinkMLSchemaConstants;
 import org.alliancegenome.curation_api.interfaces.AGRCurationSchemaVersion;
 import org.alliancegenome.curation_api.model.bridges.BiologicalEntityPropertyBinder;
@@ -108,7 +109,8 @@ public abstract class DiseaseAnnotation extends Association {
 	@JsonView({ View.FieldsAndLists.class, View.DiseaseAnnotation.class })
 	private List<ConditionRelation> conditionRelations;
 
-	@IndexedEmbedded(includePaths = { "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText" })
+	@IndexedEmbedded(includePaths = { "curie", "geneSymbol.displayText", "geneFullName.displayText", "geneSystematicName.displayText", "geneSynonyms.displayText",
+			"curie_keyword", "geneSymbol.displayText_keyword", "geneFullName.displayText_keyword", "geneSystematicName.displayText_keyword", "geneSynonyms.displayText_keyword"})
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToMany
 	@JoinTable(indexes = @Index(columnList = "diseaseannotation_id"))
@@ -178,4 +180,14 @@ public abstract class DiseaseAnnotation extends Association {
 	@Transient
 	public abstract String getSubjectTaxonCurie();
 
+	@Transient
+	@JsonIgnore
+	public String getDataProviderString(){
+		StringBuilder builder = new StringBuilder(dataProvider.getAbbreviation());
+		if(secondaryDataProvider != null){
+			builder.append(" via ");
+			builder.append(secondaryDataProvider.getAbbreviation());
+		}
+		return builder.toString();
+	}
 }

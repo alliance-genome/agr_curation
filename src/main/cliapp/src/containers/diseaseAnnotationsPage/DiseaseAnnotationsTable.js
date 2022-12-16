@@ -157,11 +157,11 @@ export const DiseaseAnnotationsTable = () => {
 
 	const assertedGenesBodyTemplate = (rowData) => {
 		if (rowData && rowData.assertedGenes && rowData.assertedGenes.length > 0) {
-			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.geneSymbol.displayText > b.geneSymbol.displayText) ? 1 : (a.curie === b.curie) ? 1 : -1);
+			const sortedAssertedGenes = rowData.assertedGenes.sort((a, b) => (a.geneSymbol?.displayText > b.geneSymbol?.displayText) ? 1 : (a.curie === b.curie) ? 1 : -1);
 			const listTemplate = (item) => {
 				return (
 					<EllipsisTableCell>
-						{item.geneSymbol.displayText + ' (' + item.curie + ')'}
+						{item.geneSymbol?.displayText + ' (' + item.curie + ')'}
 					</EllipsisTableCell>
 				);
 			};
