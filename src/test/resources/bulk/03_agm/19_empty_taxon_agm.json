@@ -4,7 +4,7 @@
     "name": "TestAgm19",
     "taxon_curie": "",
     "internal": true,
-    "obsolete": true,
+    "obsolete": false,
     "created_by_curie": "AGMTEST:Person0001",
     "updated_by_curie": "AGMTEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",

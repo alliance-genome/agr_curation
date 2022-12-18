@@ -130,7 +130,7 @@ public class BaseITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post(findEndpoint).
 			then().
 			statusCode(200).
@@ -143,7 +143,7 @@ public class BaseITCase {
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
-			body("{}").
+			body("{\"obsolete\":false}").
 			post(findEndpoint).
 			then().
 			statusCode(200).

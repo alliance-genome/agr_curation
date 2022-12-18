@@ -139,8 +139,10 @@ public class ConditionRelationITCase extends BaseITCase {
 	public void updateConditionRelationSameHandleRef() {
 		ConditionRelation cr = getConditionRelation(conditionRelationHandle2.getId());
 		
-		// change handle to empty
 		cr.setHandle("fructose");
+		ExperimentalCondition newCondition = createExperimentalCondition("StatementCR1", "ZECO:cr00002", "Test");
+		cr.setConditions(List.of(newCondition));
+		
 		ObjectResponse<ConditionRelation> response = RestAssured.given().
 			contentType("application/json").
 			body(cr).

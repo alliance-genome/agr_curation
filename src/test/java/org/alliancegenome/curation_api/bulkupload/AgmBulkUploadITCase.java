@@ -61,7 +61,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("results[0].name", is("TestAgm1")).
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
-			body("results[0].obsolete", is(true)).
+			body("results[0].obsolete", is(false)).
 			body("results[0].createdBy.uniqueId", is("AGMTEST:Person0001")).
 			body("results[0].updatedBy.uniqueId", is("AGMTEST:Person0002")).
 			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).

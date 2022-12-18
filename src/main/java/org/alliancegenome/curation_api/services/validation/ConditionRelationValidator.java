@@ -29,9 +29,6 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import lombok.extern.jbosslog.JBossLog;
-
-@JBossLog
 @RequestScoped
 public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
 
@@ -122,7 +119,6 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorMessage);
-				log.info("ERROR: " + response.errorMessagesString());
 				throw new ApiErrorException(response);
 			} else {
 				return null;
@@ -155,7 +151,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			singleRefFiltermap.put("singleReferenceFilter", getFilterMap("singleReference.curie", getQueryStringMap(uiEntity.getSingleReference().getCurie())));
 			singleRefFiltermap.put("handleFilter", getFilterMap("handle", getQueryStringMap(uiEntity.getHandle())));
 
-			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(1, 20), Map.of("searchFilters", singleRefFiltermap));
+			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(0, 20), Map.of("searchFilters", singleRefFiltermap));
 			if (response.getTotalResults() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 				return null;

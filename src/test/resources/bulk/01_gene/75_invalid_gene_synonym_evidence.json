@@ -3,7 +3,7 @@
     "curie": "GENETEST:Gene0075",
     "taxon_curie": "NCBITaxon:6239",
     "internal": true,
-    "obsolete": true,
+    "obsolete": false,
     "created_by_curie": "GENETEST:Person0001",
     "updated_by_curie": "GENETEST:Person0002",
     "date_created": "2022-03-09T22:10:12+00:00",

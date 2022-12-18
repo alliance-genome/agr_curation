@@ -69,7 +69,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("results[0].curie", is("ALLELETEST:Allele0001")).
 			body("results[0].taxon.curie", is("NCBITaxon:6239")).
 			body("results[0].internal", is(true)).
-			body("results[0].obsolete", is(true)).
+			body("results[0].obsolete", is(false)).
 			body("results[0].inheritanceMode.name", is("dominant")).
 			body("results[0].inCollection.name", is("Million_mutations_project")).
 			body("results[0].isExtinct", is(false)).
