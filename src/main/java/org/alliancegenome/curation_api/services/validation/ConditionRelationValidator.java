@@ -29,6 +29,9 @@ import org.alliancegenome.curation_api.services.helpers.diseaseAnnotations.Disea
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.extern.jbosslog.JBossLog;
+
+@JBossLog
 @RequestScoped
 public class ConditionRelationValidator extends AuditedObjectValidator<ConditionRelation> {
 
@@ -119,6 +122,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		if (response.hasErrors()) {
 			if (throwError) {
 				response.setErrorMessage(errorMessage);
+				log.info("ERROR: " + response.errorMessagesString());
 				throw new ApiErrorException(response);
 			} else {
 				return null;

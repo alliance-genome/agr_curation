@@ -1,9 +1,17 @@
 package org.alliancegenome.curation_api.base;
 
 import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
@@ -45,6 +53,8 @@ import io.restassured.RestAssured;
 import io.restassured.common.mapper.TypeRef;
 
 public class BaseITCase {
+	
+	private static Pattern keyPattern = Pattern.compile("^(.+)\\.([^\\.]+)$");
 
 	public VocabularyTerm addObsoleteVocabularyTermToSet(String setName, String termName, Vocabulary vocabulary) {
 		VocabularyTermSet set = getVocabularyTermSet(setName);
@@ -74,6 +84,72 @@ public class BaseITCase {
 			extract().body().as(getObjectResponseTypeRefVocabularyTerm());
 		
 		return response.getEntity();
+	}
+	
+	public void checkFailedBulkLoad(String endpoint, String filePath) throws Exception {
+		String content = Files.readString(Path.of(filePath));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post(endpoint).
+			then().
+			statusCode(200).
+			body("history.totalRecords", is(1)).
+			body("history.failedRecords", is(1)).
+			body("history.completedRecords", is(0));
+	}
+	
+	public void checkSuccessfulBulkLoad(String endpoint, String filePath) throws Exception {
+		String content = Files.readString(Path.of(filePath));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(content).
+			when().
+			post(endpoint).
+			then().
+			statusCode(200).
+			body("history.totalRecords", is(1)).
+			body("history.failedRecords", is(0)).
+			body("history.completedRecords", is(1));
+	}
+	
+	public void checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField (String postEndpoint,
+			String findEndpoint, String originalFilePath, String updateFilePath, String field) throws Exception {
+		String resultsKey = "results[0]";
+		Matcher m = keyPattern.matcher(field);
+		if (m.matches()) {
+			resultsKey = resultsKey + "." + m.group(1);
+			field = m.group(2);
+		}
+		
+		checkSuccessfulBulkLoad(postEndpoint, originalFilePath);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(findEndpoint).
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body(resultsKey, hasKey(field));
+		
+		checkSuccessfulBulkLoad(postEndpoint, updateFilePath);
+		
+		RestAssured.given().
+			when().
+			header("Content-Type", "application/json").
+			body("{}").
+			post(findEndpoint).
+			then().
+			statusCode(200).
+			body("totalResults", is(1)).
+			body("results", hasSize(1)).
+			body(resultsKey, not(hasKey(field)));
 	}
 	
 	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String name, Boolean obsolete) {

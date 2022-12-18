@@ -1,15 +1,12 @@
 package org.alliancegenome.curation_api.bulkupload;
 
-import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
+import org.alliancegenome.curation_api.base.BaseITCase;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -32,7 +29,7 @@ import io.restassured.config.RestAssuredConfig;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DisplayName("03 - AGM bulk upload")
 @Order(3)
-public class AgmBulkUploadITCase {
+public class AgmBulkUploadITCase extends BaseITCase {
 	
 	@BeforeEach
 	public void init() {
@@ -41,28 +38,21 @@ public class AgmBulkUploadITCase {
 					.setParam("http.socket.timeout", 60000)
 					.setParam("http.connection.timeout", 60000));
 	}
+	
+	private final String agmBulkPostEndpoint = "/api/agm/bulk/agms";
+	private final String agmFindEndpoint = "/api/agm/find?limit=10&page=0";
+	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 
 	@Test
 	@Order(1)
 	public void agmBulkUploadCheckFields() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "01_all_fields_agm.json");
 		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
 		RestAssured.given().
 			when().
 			header("Content-Type", "application/json").
 			body("{}").
-			post("/api/agm/find?limit=10&page=0").
+			post(agmFindEndpoint).
 			then().
 			statusCode(200).
 			body("totalResults", is(1)).
@@ -80,705 +70,62 @@ public class AgmBulkUploadITCase {
 	
 	@Test
 	@Order(2)
-	public void agmBulkUploadNoCurie() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/02_no_curie_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
+	public void agmBulkUploadMissingRequiredFields() throws Exception {
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "02_no_curie_agm.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "04_no_taxon_agm.json");
 	}
 	
 	@Test
 	@Order(3)
-	public void agmBulkUploadNoName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/03_no_name_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0003"));
+	public void agmBulkUploadMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "03_no_name_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "05_no_internal_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "06_no_created_by_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "07_no_updated_by_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "08_no_date_created_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "09_no_date_updated_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "13_no_obsolete_agm.json");
 	}
 	
 	@Test
 	@Order(4)
-	public void agmBulkUploadNoTaxon() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/04_no_taxon_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)). 
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0003")); // Entry not loaded but existing not deleted
-																			 // as different taxon ID
+	public void agmBulkUploadEmptyRequiredFields() throws Exception {
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "18_empty_curie_agm.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "19_empty_taxon_agm.json");
 	}
 	
 	@Test
 	@Order(5)
-	public void agmBulkUploadNoInternal() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/05_no_internal_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results[0].curie", is("AGMTEST:Agm0005")).
-			body("results[0].internal", is(false));
+	public void agmBulkUploadEmptyNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "20_empty_name_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "15_empty_created_by_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "17_empty_updated_by_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "16_empty_date_created_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "14_empty_date_updated_agm.json");
 	}
-	
+		
 	@Test
 	@Order(6)
-	public void agmBulkUploadNoCreatedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/06_no_created_by_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0006"));
+	public void agmBulkUploadInvalidFields() throws Exception {
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "10_invalid_taxon_agm.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "11_invalid_date_created_agm.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "12_invalid_date_updated_agm.json");
 	}
-	
+
 	@Test
 	@Order(7)
-	public void agmBulkUploadNoUpdatedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/07_no_updated_by_agm.json"));
+	public void agmBulkUploadUpdateMissingNonRequiredFields() throws Exception {
+		String originalFilePath = agmTestFilePath + "01_all_fields_agm.json";
 		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0007"));
-	}
-	
-	@Test
-	@Order(8)
-	public void agmBulkUploadNoDateCreated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/08_no_date_created_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0008"));
-	}
-	
-	@Test
-	@Order(9)
-	public void agmBulkUploadNoDateUpdated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/09_no_date_updated_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0009"));
-	}
-	
-	@Test
-	@Order(10)
-	public void agmBulkUploadInvalidTaxon() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/10_invalid_taxon_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)). 
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0009")); // Entry not loaded but existing not deleted
-																			 // as different taxon ID
-	}
-	
-	@Test
-	@Order(11)
-	public void agmBulkUploadInvalidDateCreated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/11_invalid_date_created_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(12)
-	public void agmBulkUploadInvalidDateUpdated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/12_invalid_date_updated_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-			
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(13)
-	public void agmBulkUploadNoObsolete() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/13_no_obsolete_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results[0].curie", is("AGMTEST:Agm0013")).
-			body("results[0].obsolete", is(false));
-	}
-	
-	@Test
-	@Order(14)
-	public void agmBulkUploadEmptyDateUpdated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/14_empty_date_updated_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0014"));
-	}
-	
-	@Test
-	@Order(15)
-	public void agmBulkUploadEmptyCreatedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/15_empty_created_by_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0015"));
-	}
-	
-	@Test
-	@Order(16)
-	public void agmBulkUploadEmptyDateCreated() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/16_empty_date_created_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0016"));
-	}
-	
-	@Test
-	@Order(17)
-	public void agmBulkUploadEmptyUpdatedBy() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/17_empty_updated_by_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0017"));
-	}
-	
-	@Test
-	@Order(18)
-	public void agmBulkUploadEmptyCurie() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/18_empty_curie_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(19)
-	public void agmBulkUploadEmptyTaxon() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/19_empty_taxon_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(0));
-	}
-	
-	@Test
-	@Order(20)
-	public void agmBulkUploadEmptyName() throws Exception {
-		String content = Files.readString(Path.of("src/test/resources/bulk/03_agm/20_empty_name_agm.json"));
-		
-		// upload file
-		RestAssured.given().
-			contentType("application/json").
-			body(content).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-	
-		
-		// check entity count and fields correctly read
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0020"));
-	}
-	
-	@Test
-	@Order(21)
-	public void agmBulkUploadUpdateNoName() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/21_update_no_name_agm.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0001")).
-			body("results[0]", not(hasKey("name")));
-	}
-	
-	@Test
-	@Order(22)
-	public void agmBulkUploadUpdateNoCreatedBy() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/22_update_no_created_by_agm.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0001")).
-			body("results[0]", not(hasKey("createdBy")));
-	}
-	
-	@Test
-	@Order(23)
-	public void agmBulkUploadUpdateNoUpdatedBy() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/23_update_no_updated_by_agm.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0001")).
-			body("results[0]", not(hasKey("updatedBy")));
-	}
-	
-	@Test
-	@Order(24)
-	public void agmBulkUploadUpdateNoDateCreated() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/24_update_no_date_created_agm.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0001")).
-			body("results[0]", not(hasKey("dateCreated")));
-	}
-	
-	@Test
-	@Order(25)
-	public void agmBulkUploadUpdateNoDateUpdated() throws Exception {
-		String originalContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/01_all_fields_agm.json"));
-	
-		RestAssured.given().
-			contentType("application/json").
-			body(originalContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		String updateContent = Files.readString(Path.of("src/test/resources/bulk/03_agm/25_update_no_date_updated_agm.json"));
-		
-		RestAssured.given().
-			contentType("application/json").
-			body(updateContent).
-			when().
-			post("/api/agm/bulk/agms").
-			then().
-			statusCode(200);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post("/api/agm/find?limit=10&page=0").
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0001")).
-			body("results[0]", not(hasKey("dateUpdated")));
+		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
+				originalFilePath, agmTestFilePath + "21_update_no_name_agm.json", "name");
+		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
+				originalFilePath, agmTestFilePath + "22_update_no_created_by_agm.json", "createdBy");
+		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
+				originalFilePath, agmTestFilePath + "23_update_no_updated_by_agm.json", "updatedBy");
+		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
+				originalFilePath, agmTestFilePath + "24_update_no_date_created_agm.json", "dateCreated");
+		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
+				originalFilePath, agmTestFilePath + "25_update_no_date_updated_agm.json", "dateUpdated");
 	}
 }
