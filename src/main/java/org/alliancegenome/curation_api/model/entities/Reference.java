@@ -54,6 +54,6 @@ public class Reference extends InformationContentEntity {
 		if (opt.isEmpty()) {
 			opt = getCrossReferences().stream().filter(reference -> CrossReferencePrefix.valueOf(reference.getPrefix()) != null).findFirst();
 		}
-		return opt.map(CrossReference::getPrefix).orElse(null);
+		return opt.map(CrossReference::getCurie).orElse(null);
 	}
 }
