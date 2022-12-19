@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.bulkupload;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -32,7 +34,9 @@ import io.restassured.config.RestAssuredConfig;
 public class AlleleBulkUploadITCase extends BaseITCase {
 	
 	private String requiredReference = "AGRKB:000000001";
+	private String requiredReference2 = "AGRKB:000000021";
 	private String requiredSoTerm = "SO:00001";
+	private String requiredSoTerm2 = "SO:00002";
 	
 	@BeforeEach
 	public void init() {
@@ -43,11 +47,12 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	private final String alleleBulkPostEndpoint = "/api/allele/bulk/alleles";
-	private final String alleleFindEndpoint = "/api/allele/find?limit=10&page=0";
+	private final String alleleGetEndpoint = "/api/allele/";
 	private final String alleleTestFilePath = "src/test/resources/bulk/02_allele/";
 
 	private void loadRequiredEntities() throws Exception {
 		loadSOTerm(requiredSoTerm, "Test SOTerm");
+		loadSOTerm(requiredSoTerm2, "Test SOTerm2");
 	}
 	
 	@Test
@@ -55,202 +60,342 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	public void alleleBulkUploadCheckFields() throws Exception {
 		loadRequiredEntities();
 		
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "001_all_fields_allele.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 	
 		RestAssured.given().
 			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post(alleleFindEndpoint).
+			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("ALLELETEST:Allele0001")).
-			body("results[0].taxon.curie", is("NCBITaxon:6239")).
-			body("results[0].internal", is(true)).
-			body("results[0].obsolete", is(false)).
-			body("results[0].inheritanceMode.name", is("dominant")).
-			body("results[0].inCollection.name", is("Million_mutations_project")).
-			body("results[0].isExtinct", is(false)).
-			body("results[0].references", hasSize(1)).
-			body("results[0].references[0].curie", is(requiredReference)).
-			body("results[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
-			body("results[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
-			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[0].alleleSymbol.displayText", is("Ta1")).
-			body("results[0].alleleSymbol.formatText", is("Ta<sup>1</sup>")).
-			body("results[0].alleleSymbol.synonymScope.name", is("exact")).
-			body("results[0].alleleSymbol.synonymUrl", is("https://alliancegenome.org/test")).
-			body("results[0].alleleSymbol.nameType.name", is("nomenclature_symbol")).
-			body("results[0].alleleSymbol.evidence[0].curie", is(requiredReference)).
-			body("results[0].alleleFullName.displayText", is("Test allele 1")).
-			body("results[0].alleleFullName.formatText", is("Test allele<sup>1</sup>")).
-			body("results[0].alleleFullName.synonymScope.name", is("exact")).
-			body("results[0].alleleFullName.synonymUrl", is("https://alliancegenome.org/test")).
-			body("results[0].alleleFullName.nameType.name", is("full_name")).
-			body("results[0].alleleFullName.evidence[0].curie", is(requiredReference)).
-			body("results[0].alleleSynonyms", hasSize(1)).
-			body("results[0].alleleSynonyms[0].displayText", is("Test allele synonym 1")).
-			body("results[0].alleleSynonyms[0].formatText", is("Test allele synonym <sup>1</sup>")).
-			body("results[0].alleleSynonyms[0].synonymScope.name", is("exact")).
-			body("results[0].alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
-			body("results[0].alleleSynonyms[0].nameType.name", is("unspecified")).
-			body("results[0].alleleSynonyms[0].evidence[0].curie", is(requiredReference)).
-			body("results[0].alleleMutationTypes", hasSize(1)).
-			body("results[0].alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
-			body("results[0].alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm)).
-			body("results[0].alleleSecondaryIds", hasSize(1)).
-			body("results[0].alleleSecondaryIds[0].evidence[0].curie", is(requiredReference)).
-			body("results[0].alleleSecondaryIds[0].secondaryId", is("TEST:Secondary"));
+			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.internal", is(true)).
+			body("entity.obsolete", is(true)).
+			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.inheritanceMode.name", is("dominant")).
+			body("entity.inCollection.name", is("Million_mutations_project")).
+			body("entity.isExtinct", is(false)).
+			body("entity.references", hasSize(1)).
+			body("entity.references[0].curie", is(requiredReference)).
+			body("entity.alleleSymbol.displayText", is("Ta1")).
+			body("entity.alleleSymbol.formatText", is("Ta<sup>1</sup>")).
+			body("entity.alleleSymbol.synonymScope.name", is("exact")).
+			body("entity.alleleSymbol.synonymUrl", is("https://alliancegenome.org/test")).
+			body("entity.alleleSymbol.nameType.name", is("nomenclature_symbol")).
+			body("entity.alleleSymbol.evidence[0].curie", is(requiredReference)).
+			body("entity.alleleSymbol.internal", is(true)).
+			body("entity.alleleSymbol.obsolete", is(true)).
+			body("entity.alleleSymbol.createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleSymbol.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFullName.displayText", is("Test allele 1")).
+			body("entity.alleleFullName.formatText", is("Test allele<sup>1</sup>")).
+			body("entity.alleleFullName.synonymScope.name", is("exact")).
+			body("entity.alleleFullName.synonymUrl", is("https://alliancegenome.org/test")).
+			body("entity.alleleFullName.nameType.name", is("full_name")).
+			body("entity.alleleFullName.evidence[0].curie", is(requiredReference)).
+			body("entity.alleleFullName.internal", is(true)).
+			body("entity.alleleFullName.obsolete", is(true)).
+			body("entity.alleleFullName.createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleFullName.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleFullName.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSynonyms", hasSize(1)).
+			body("entity.alleleSynonyms[0].displayText", is("Test allele synonym 1")).
+			body("entity.alleleSynonyms[0].formatText", is("Test allele synonym <sup>1</sup>")).
+			body("entity.alleleSynonyms[0].synonymScope.name", is("exact")).
+			body("entity.alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test")).
+			body("entity.alleleSynonyms[0].nameType.name", is("unspecified")).
+			body("entity.alleleSynonyms[0].evidence[0].curie", is(requiredReference)).
+			body("entity.alleleSynonyms[0].internal", is(true)).
+			body("entity.alleleSynonyms[0].obsolete", is(true)).
+			body("entity.alleleSynonyms[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleSynonyms[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleMutationTypes", hasSize(1)).
+			body("entity.alleleMutationTypes[0].evidence[0].curie", is(requiredReference)).
+			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm)).
+			body("entity.alleleMutationTypes[0].internal", is(true)).
+			body("entity.alleleMutationTypes[0].obsolete", is(true)).
+			body("entity.alleleMutationTypes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSecondaryIds", hasSize(1)).
+			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(requiredReference)).
+			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary")).
+			body("entity.alleleSecondaryIds[0].internal", is(true)).
+			body("entity.alleleSecondaryIds[0].obsolete", is(true)).
+			body("entity.alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
 	
 	@Test
 	@Order(2)
-	public void alleleBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "002_no_curie_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "005_no_taxon_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "044_no_allele_mutation_type_mutation_types.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "048_no_allele_symbol.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "049_no_allele_symbol_display_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "050_no_allele_symbol_format_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "051_no_allele_symbol_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "060_no_allele_full_name_display_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "061_no_allele_full_name_format_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "062_no_allele_full_name_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "071_no_allele_synonym_display_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "072_no_allele_synonym_format_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "073_no_allele_synonym_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "092_no_allele_secondary_id_secondary_id.json");
+	public void alleleBulkUploadUpdateCheckFields() throws Exception {
+		loadRequiredEntities();
+		
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UD_01_update_all_except_default_fields.json");
+	
+		RestAssured.given().
+			when().
+			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
+			then().
+			statusCode(200).
+			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.taxon.curie", is("NCBITaxon:9606")).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.inheritanceMode.name", is("recessive")).
+			body("entity.inCollection.name", is("WGS_Yanai")).
+			body("entity.isExtinct", is(true)).
+			body("entity.references", hasSize(1)).
+			body("entity.references[0].curie", is(requiredReference2)).
+			body("entity.alleleSymbol.displayText", is("Ta1a")).
+			body("entity.alleleSymbol.formatText", is("Ta<sup>1a</sup>")).
+			body("entity.alleleSymbol.synonymScope.name", is("broad")).
+			body("entity.alleleSymbol.synonymUrl", is("https://alliancegenome.org/test2")).
+			body("entity.alleleSymbol.nameType.name", is("systematic_name")).
+			body("entity.alleleSymbol.evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleSymbol.internal", is(false)).
+			body("entity.alleleSymbol.obsolete", is(false)).
+			body("entity.alleleSymbol.createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleSymbol.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleSymbol.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSymbol.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFullName.displayText", is("Test allele 1a")).
+			body("entity.alleleFullName.formatText", is("Test allele<sup>1a</sup>")).
+			body("entity.alleleFullName.synonymScope.name", is("broad")).
+			body("entity.alleleFullName.synonymUrl", is("https://alliancegenome.org/test2")).
+			body("entity.alleleFullName.nameType.name", is("full_name")).
+			body("entity.alleleFullName.evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleFullName.internal", is(false)).
+			body("entity.alleleFullName.obsolete", is(false)).
+			body("entity.alleleFullName.createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleFullName.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleFullName.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleFullName.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSynonyms", hasSize(1)).
+			body("entity.alleleSynonyms[0].displayText", is("Test allele synonym 1a")).
+			body("entity.alleleSynonyms[0].formatText", is("Test allele synonym <sup>1a</sup>")).
+			body("entity.alleleSynonyms[0].synonymScope.name", is("broad")).
+			body("entity.alleleSynonyms[0].synonymUrl", is("https://alliancegenome.org/test2")).
+			body("entity.alleleSynonyms[0].nameType.name", is("nomenclature_symbol")).
+			body("entity.alleleSynonyms[0].evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleSynonyms[0].internal", is(false)).
+			body("entity.alleleSynonyms[0].obsolete", is(false)).
+			body("entity.alleleSynonyms[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleSynonyms[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleSynonyms[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSynonyms[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleMutationTypes", hasSize(1)).
+			body("entity.alleleMutationTypes[0].evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleMutationTypes[0].mutationTypes[0].curie", is(requiredSoTerm2)).
+			body("entity.alleleMutationTypes[0].internal", is(false)).
+			body("entity.alleleMutationTypes[0].obsolete", is(false)).
+			body("entity.alleleMutationTypes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSecondaryIds", hasSize(1)).
+			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
+			body("entity.alleleSecondaryIds[0].internal", is(false)).
+			body("entity.alleleSecondaryIds[0].obsolete", is(false)).
+			body("entity.alleleSecondaryIds[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleSecondaryIds[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleSecondaryIds[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleSecondaryIds[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
 	
 	@Test
 	@Order(3)
-	public void alleleBulkUploadMissingNonRequiredFields() throws Exception {
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "006_no_internal_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "007_no_created_by_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "008_no_updated_by_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "009_no_date_created_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "010_no_date_updated_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "014_no_obsolete_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "023_no_inheritance_mode_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "024_no_in_collection_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "026_no_is_extinct_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "027_no_references_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "042_no_allele_mutation_type_evidence.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "052_no_allele_symbol_synonym_scope.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "053_no_allele_symbol_evidence.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "059_no_allele_full_name.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "063_no_allele_full_name_synonym_scope.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "064_no_allele_full_name_evidence.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "070_no_allele_synonym.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "074_no_allele_synonym_synonym_scope.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "075_no_allele_synonym_evidence.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "090_no_allele_secondary_id.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "094_no_allele_secondary_id_evidence.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "099_no_allele_symbol_synonym_url.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "100_no_allele_full_name_synonym_url.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "101_no_allele_synonym_synonym_url.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "102_no_allele_mutation_type.json");
+	public void alleleBulkUploadMissingRequiredFields() throws Exception {
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_01_no_curie.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_02_no_taxon.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_03_no_allele_mutation_type_mutation_types.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_04_no_allele_symbol.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_05_no_allele_symbol_display_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_06_no_allele_full_name_display_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_07_no_allele_synonym_display_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_08_no_allele_symbol_format_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_09_no_allele_full_name_format_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_10_no_allele_synonym_format_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_11_no_allele_symbol_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_12_no_allele_full_name_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_13_no_allele_synonym_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_14_no_allele_secondary_id_secondary_id.json");
 	}
 	
 	@Test
 	@Order(4)
 	public void alleleBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "021_empty_curie_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "022_empty_taxon_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "084_empty_allele_symbol_display_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "085_empty_allele_symbol_format_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "086_empty_allele_full_name_display_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "087_empty_allele_full_name_format_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "088_empty_allele_synonym_display_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "089_empty_allele_synonym_format_text.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "093_empty_allele_secondary_id_secondary_id.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_01_empty_curie.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_02_empty_taxon.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_03_empty_allele_mutation_type_mutation_types.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_04_empty_allele_symbol_display_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_05_empty_allele_full_name_display_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_06_empty_allele_synonym_display_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_07_empty_allele_symbol_format_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_08_empty_allele_full_name_format_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_09_empty_allele_synonym_format_text.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_10_empty_allele_symbol_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_11_empty_allele_full_name_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_12_empty_allele_synonym_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_13_empty_allele_secondary_id_secondary_id.json");
 	}
 	
 	@Test
 	@Order(5)
-	public void alleleBulkUploadEmptyNonRequiredFields() throws Exception {
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "016_empty_updated_by_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "018_empty_created_by_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "019_empty_date_updated_allele.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "020_empty_date_created_allele.json");
-	}
-	
-	@Test
-	@Order(6)
 	public void alleleBulkUploadInvalidFields() throws Exception {
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "011_invalid_taxon_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "012_invalid_date_created_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "013_invalid_date_updated_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "028_invalid_inheritance_mode_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "029_invalid_in_collection_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "031_invalid_reference_allele.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "045_invalid_allele_mutation_type_mutation_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "046_invalid_allele_mutation_type_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "054_invalid_allele_symbol_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "055_invalid_allele_symbol_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "056_invalid_allele_symbol_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "065_invalid_allele_full_name_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "066_invalid_allele_full_name_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "067_invalid_allele_full_name_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "076_invalid_allele_synonym_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "077_invalid_allele_synonym_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "078_invalid_allele_synonym_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "096_invalid_allele_secondary_id_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_01_invalid_date_created.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_02_invalid_date_updated.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_03_invalid_taxon.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_04_invalid_inheritance_mode.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_05_invalid_in_collection.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_06_invalid_reference.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_07_invalid_allele_mutation_type_mutation_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_08_invalid_allele_mutation_type_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_09_invalid_allele_symbol_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_10_invalid_allele_full_name_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_11_invalid_allele_synonym_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_12_invalid_allele_symbol_synonym_scope.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_13_invalid_allele_full_name_synonym_scope.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_14_invalid_allele_synonym_synonym_scope.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_15_invalid_allele_symbol_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_16_invalid_allele_full_name_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_17_invalid_allele_synonym_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_18_invalid_allele_secondary_id_evidence.json");
 	}
 
 	@Test
 	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFields() throws Exception {
-		String originalFilePath = alleleTestFilePath + "001_all_fields_allele.json";
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
 		
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "033_update_no_created_by_allele.json", "createdBy");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "034_update_no_updated_by_allele.json", "updatedBy");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "035_update_no_date_created_allele.json", "dateCreated");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "036_update_no_date_updated_allele.json", "dateUpdated");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "037_update_no_inheritance_mode_allele.json", "inheritanceMode");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "038_update_no_in_collection_allele.json", "inCollection");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "040_update_no_is_extinct_allele.json", "isExtinct");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "041_update_no_references_allele.json", "references");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "043_update_no_allele_mutation_type_evidence.json", "alleleMutationTypes[0].evidence");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "047_update_no_allele_mutation_types.json", "alleleMutationTypes");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "057_update_no_allele_symbol_synonym_scope.json", "alleleSymbol.synonymScope");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "058_update_no_allele_symbol_evidence.json", "alleleSymbol.evidence");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "068_update_no_allele_full_name_synonym_scope.json", "alleleFullName.synonymScope");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "069_update_no_allele_full_name_evidence.json", "alleleFullName.evidence");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "079_update_no_allele_synonym_synonym_scope.json", "alleleSynonyms[0].synonymScope");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "080_update_no_allele_synonym_evidence.json", "alleleSynonyms[0].evidence");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "081_update_no_allele_symbol_synonym_url.json", "alleleSymbol.synonymUrl");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "082_update_no_allele_full_name_synonym_url.json", "alleleFullName.synonymUrl");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "083_update_no_allele_synonym_synonym_url.json", "alleleSynonyms[0].synonymUrl");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "091_update_no_allele_secondary_id.json", "alleleSecondaryIds");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "095_update_no_allele_secondary_id_evidence.json", "alleleSecondaryIds[0].evidence");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "097_update_no_allele_full_name.json", "alleleFullName");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(alleleBulkPostEndpoint, alleleFindEndpoint,
-				originalFilePath, alleleTestFilePath + "098_update_no_allele_synonym.json", "alleleSynonyms");
+		RestAssured.given().
+			when().
+			get(alleleGetEndpoint + "ALLELETEST:Allele0001").
+			then().
+			statusCode(200).
+			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity", not(hasKey("createdBy"))).
+			body("entity", not(hasKey("updatedBy"))).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("inheritanceMode"))).
+			body("entity", not(hasKey("inCollection"))).
+			body("entity", not(hasKey("references"))).
+			body("entity", not(hasKey("alleleMutationTypes"))).
+			body("entity", not(hasKey("alleleFullName"))).
+			body("entity", not(hasKey("alleleSynonyms"))).
+			body("entity", not(hasKey("alleleSecondaryIds")));
+	}
+
+	@Test
+	@Order(8)
+	public void alleleBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
+		
+		RestAssured.given().
+			when().
+			get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
+			statusCode(200).
+			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("createdBy"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
+			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
+			body("entity.alleleSymbol", not(hasKey("evidence"))).
+			body("entity.alleleSymbol", not(hasKey("createdBy"))).
+			body("entity.alleleSymbol", not(hasKey("updatedBy"))).
+			body("entity.alleleSymbol", not(hasKey("dateCreated"))).
+			body("entity.alleleSymbol", not(hasKey("dateUpdated"))).
+			body("entity.alleleFullName", not(hasKey("synonymScope"))).
+			body("entity.alleleFullName", not(hasKey("synonymUrl"))).
+			body("entity.alleleFullName", not(hasKey("evidence"))).
+			body("entity.alleleFullName", not(hasKey("createdBy"))).
+			body("entity.alleleFullName", not(hasKey("updatedBy"))).
+			body("entity.alleleFullName", not(hasKey("dateCreated"))).
+			body("entity.alleleFullName", not(hasKey("dateUpdated"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("createdBy"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("createdBy"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated")));
+	}
+	
+	@Test
+	@Order(9)
+	public void alleleBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_update_01_empty_non_required_fields.json");
+		
+		RestAssured.given().
+		when().
+		get(alleleGetEndpoint + "ALLELETEST:Allele0001").then().
+		statusCode(200).
+			body("entity.curie", is("ALLELETEST:Allele0001")).
+			body("entity", not(hasKey("createdBy"))).
+			body("entity", not(hasKey("updatedBy"))).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("dateUpdated"))).
+			body("entity", not(hasKey("inheritanceMode"))).
+			body("entity", not(hasKey("inCollection"))).
+			body("entity", not(hasKey("references"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("evidence"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("createdBy"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleMutationTypes[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleSymbol", not(hasKey("synonymScope"))).
+			body("entity.alleleSymbol", not(hasKey("synonymUrl"))).
+			body("entity.alleleSymbol", not(hasKey("evidence"))).
+			body("entity.alleleSymbol", not(hasKey("createdBy"))).
+			body("entity.alleleSymbol", not(hasKey("updatedBy"))).
+			body("entity.alleleSymbol", not(hasKey("dateCreated"))).
+			body("entity.alleleSymbol", not(hasKey("dateUpdated"))).
+			body("entity.alleleFullName", not(hasKey("synonymScope"))).
+			body("entity.alleleFullName", not(hasKey("synonymUrl"))).
+			body("entity.alleleFullName", not(hasKey("evidence"))).
+			body("entity.alleleFullName", not(hasKey("createdBy"))).
+			body("entity.alleleFullName", not(hasKey("updatedBy"))).
+			body("entity.alleleFullName", not(hasKey("dateCreated"))).
+			body("entity.alleleFullName", not(hasKey("dateUpdated"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("synonymScope"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("synonymUrl"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("evidence"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("createdBy"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleSynonyms[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("evidence"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("createdBy"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated")));
 	}
 }

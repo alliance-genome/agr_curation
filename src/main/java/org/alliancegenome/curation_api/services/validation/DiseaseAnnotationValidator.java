@@ -434,11 +434,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		List<Gene> genes = validateWith(uiEntity, dbEntity);
 		dbEntity.setWith(genes);
 
-		if (uiEntity.getNegated() != null) {
-			dbEntity.setNegated(uiEntity.getNegated());
-		} else {
-			dbEntity.setNegated(false);
-		}
+		Boolean negated = uiEntity.getNegated() == null ? false : uiEntity.getNegated();
+		dbEntity.setNegated(negated);
 
 		VocabularyTerm annotationType = validateAnnotationType(uiEntity, dbEntity);
 		dbEntity.setAnnotationType(annotationType);

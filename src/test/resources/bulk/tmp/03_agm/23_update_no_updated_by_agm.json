@@ -1,0 +1,12 @@
+[
+  {
+    "curie": "AGMTEST:Agm0001",
+    "name": "TestAgm7",
+    "taxon_curie": "NCBITaxon:6239",
+    "internal": true,
+    "obsolete": false,
+    "created_by_curie": "AGMTEST:Person0001",
+    "date_created": "2022-03-09T22:10:12+00:00",
+    "date_updated": "2022-03-09T22:10:12+00:00"
+  }
+]
