@@ -24,5 +24,7 @@ public final class VocabularyConstants {
 
 	public static final String SYNONYM_SCOPE_VOCABULARY = "Synonym scope";
 	public static final String NAME_TYPE_VOCABULARY = "Name type";
+	
+	public static final String AGM_SUBTYPE_VOCABULARY = "Affected genomic model subtypes";
 
 }

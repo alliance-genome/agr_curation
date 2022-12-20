@@ -123,10 +123,10 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 		loadGenes(List.of(gene, gene2, withGene, withGene2), "NCBITaxon:6239", symbolTerm);
 		loadAllele(allele, "TestAllele", "NCBITaxon:6239", symbolTerm);
 		loadAllele(allele2, "TestAllele2", "NCBITaxon:6239", symbolTerm);
-		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239");
-		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239");
-		loadAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292");
-		loadAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292");
+		loadAffectedGenomicModel(agm, "Test AGM", "NCBITaxon:6239", "fish");
+		loadAffectedGenomicModel(agm2, "Test AGM2", "NCBITaxon:6239", "genotype");
+		loadAffectedGenomicModel(sgdBackgroundStrain, "Test SGD AGM", "NCBITaxon:559292", "strain");
+		loadAffectedGenomicModel(sgdBackgroundStrain2, "Test SGD AGM2", "NCBITaxon:559292", "strain");
 		loadReference(reference, referenceXref);
 		loadOrganization(dataProvider);
 		loadOrganization(dataProvider2);
