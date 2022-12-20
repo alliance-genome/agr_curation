@@ -66,10 +66,10 @@ public class GeneDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValid
 				SearchResponse<GeneDiseaseAnnotation> annotationList = geneDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
 				if (annotationList == null || annotationList.getResults().size() == 0) {
 					annotation.setUniqueId(annotationId);
-					annotation.setSubject(gene);
 				} else {
 					annotation = annotationList.getResults().get(0);
 				}
+				annotation.setSubject(gene);
 			}
 		}
 		annotation.setSingleReference(validatedReference);

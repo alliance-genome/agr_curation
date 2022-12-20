@@ -73,7 +73,7 @@
           "PMID:25920550"
         ],
         "internal": true,
-        "obsolete": false,
+        "obsolete": true,
         "created_by_curie": "ALLELETEST:Person0001",
         "updated_by_curie": "ALLELETEST:Person0002",
         "date_created": "2022-03-09T22:10:12+00:00",

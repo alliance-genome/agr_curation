@@ -116,42 +116,6 @@ public class BaseITCase {
 			body("history.completedRecords", is(1));
 	}
 	
-	public void checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField (String postEndpoint,
-			String findEndpoint, String originalFilePath, String updateFilePath, String field) throws Exception {
-		String resultsKey = "results[0]";
-		Matcher m = keyPattern.matcher(field);
-		if (m.matches()) {
-			resultsKey = resultsKey + "." + m.group(1);
-			field = m.group(2);
-		}
-		
-		checkSuccessfulBulkLoad(postEndpoint, originalFilePath);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{\"obsolete\":false}").
-			post(findEndpoint).
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body(resultsKey, hasKey(field));
-		
-		checkSuccessfulBulkLoad(postEndpoint, updateFilePath);
-		
-		RestAssured.given().
-			when().
-			header("Content-Type", "application/json").
-			body("{\"obsolete\":false}").
-			post(findEndpoint).
-			then().
-			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body(resultsKey, not(hasKey(field)));
-	}
-	
 	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String name, Boolean obsolete) {
 		AffectedGenomicModel model = new AffectedGenomicModel();
 		model.setCurie(curie);
@@ -750,6 +714,17 @@ public class BaseITCase {
 	
 	private TypeRef<SearchResponse<VocabularyTermSet>> getSearchResponseTypeRefVocabularyTermSet() {
 		return new TypeRef<SearchResponse <VocabularyTermSet>>() { };
+	}
+	
+	public SOTerm getSoTerm(String curie) {
+		ObjectResponse<SOTerm> response = RestAssured.given().
+			when().
+			get("/api/soterm/" + curie).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefSOTerm());
+			
+		return response.getEntity();
 	}
 
 	public Vocabulary getVocabulary(String name) {

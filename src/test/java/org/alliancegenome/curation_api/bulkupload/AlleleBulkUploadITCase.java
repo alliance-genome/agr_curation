@@ -280,7 +280,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(7)
+	@Order(6)
 	public void alleleBulkUploadUpdateMissingNonRequiredFields() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_01_update_no_non_required_fields_level_1.json");
@@ -305,7 +305,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 
 	@Test
-	@Order(8)
+	@Order(7)
 	public void alleleBulkUploadUpdateMissingNonRequiredFieldsLevel2() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UM_02_update_no_non_required_fields_level_2.json");
@@ -349,10 +349,10 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	}
 	
 	@Test
-	@Order(9)
+	@Order(8)
 	public void alleleBulkUploadUpdateEmptyNonRequiredFieldsLevel() throws Exception {
 		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "AF_01_all_fields.json");
-		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_update_01_empty_non_required_fields.json");
+		checkSuccessfulBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "UE_01_update_empty_non_required_fields.json");
 		
 		RestAssured.given().
 		when().

@@ -1,7 +1,9 @@
 package org.alliancegenome.curation_api.bulkupload;
 
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
@@ -40,92 +42,108 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	}
 	
 	private final String agmBulkPostEndpoint = "/api/agm/bulk/agms";
-	private final String agmFindEndpoint = "/api/agm/find?limit=10&page=0";
+	private final String agmGetEndpoint = "/api/agm/";
 	private final String agmTestFilePath = "src/test/resources/bulk/03_agm/";
 
 	@Test
 	@Order(1)
 	public void agmBulkUploadCheckFields() throws Exception {
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "01_all_fields_agm.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
 		
 		RestAssured.given().
 			when().
-			header("Content-Type", "application/json").
-			body("{}").
-			post(agmFindEndpoint).
+			get(agmGetEndpoint + "AGMTEST:Agm0001").
 			then().
 			statusCode(200).
-			body("totalResults", is(1)).
-			body("results", hasSize(1)).
-			body("results[0].curie", is("AGMTEST:Agm0001")).
-			body("results[0].name", is("TestAgm1")).
-			body("results[0].taxon.curie", is("NCBITaxon:6239")).
-			body("results[0].internal", is(true)).
-			body("results[0].obsolete", is(false)).
-			body("results[0].createdBy.uniqueId", is("AGMTEST:Person0001")).
-			body("results[0].updatedBy.uniqueId", is("AGMTEST:Person0002")).
-			body("results[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("results[0].dateUpdated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
+			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity.name", is("TestAgm1")).
+			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.internal", is(true)).
+			body("entity.obsolete", is(true)).
+			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
+			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0002")).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
 	
 	@Test
 	@Order(2)
-	public void agmBulkUploadMissingRequiredFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "02_no_curie_agm.json");
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "04_no_taxon_agm.json");
+	public void agmBulkUploadUpdateCheckFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UD_01_update_all_except_default_fields.json");
+		
+		RestAssured.given().
+			when().
+			get(agmGetEndpoint + "AGMTEST:Agm0001").
+			then().
+			statusCode(200).
+			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity.name", is("TestAgm1a")).
+			body("entity.taxon.curie", is("NCBITaxon:9606")).
+			body("entity.internal", is(false)).
+			body("entity.obsolete", is(false)).
+			body("entity.createdBy.uniqueId", is("AGMTEST:Person0002")).
+			body("entity.updatedBy.uniqueId", is("AGMTEST:Person0001")).
+			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString()));
 	}
 	
 	@Test
 	@Order(3)
-	public void agmBulkUploadMissingNonRequiredFields() throws Exception {
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "03_no_name_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "05_no_internal_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "06_no_created_by_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "07_no_updated_by_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "08_no_date_created_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "09_no_date_updated_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "13_no_obsolete_agm.json");
+	public void agmBulkUploadMissingRequiredFields() throws Exception {
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_01_no_curie.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_02_no_taxon.json");
 	}
 	
 	@Test
 	@Order(4)
 	public void agmBulkUploadEmptyRequiredFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "18_empty_curie_agm.json");
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "19_empty_taxon_agm.json");
-	}
-	
-	@Test
-	@Order(5)
-	public void agmBulkUploadEmptyNonRequiredFields() throws Exception {
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "20_empty_name_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "15_empty_created_by_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "17_empty_updated_by_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "16_empty_date_created_agm.json");
-		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "14_empty_date_updated_agm.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_01_empty_curie.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_02_empty_taxon.json");
 	}
 		
 	@Test
-	@Order(6)
+	@Order(5)
 	public void agmBulkUploadInvalidFields() throws Exception {
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "10_invalid_taxon_agm.json");
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "11_invalid_date_created_agm.json");
-		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "12_invalid_date_updated_agm.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_01_invalid_date_created.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_02_invalid_date_updated.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_03_invalid_taxon.json");
+	}
+
+	@Test
+	@Order(6)
+	public void agmBulkUploadUpdateMissingNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UM_01_update_no_non_required_fields.json");
+		
+		RestAssured.given().
+			when().
+			get(agmGetEndpoint + "AGMTEST:Agm0001").
+			then().
+			statusCode(200).
+			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity", not(hasKey("name"))).
+			body("entity", not(hasKey("createdBy"))).
+			body("entity", not(hasKey("updatedBy"))).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("dateUpdated")));
 	}
 
 	@Test
 	@Order(7)
-	public void agmBulkUploadUpdateMissingNonRequiredFields() throws Exception {
-		String originalFilePath = agmTestFilePath + "01_all_fields_agm.json";
+	public void agmBulkUploadUpdateEmptyNonRequiredFields() throws Exception {
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "AF_01_all_fields.json");
+		checkSuccessfulBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "UE_01_update_empty_non_required_fields.json");
 		
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
-				originalFilePath, agmTestFilePath + "21_update_no_name_agm.json", "name");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
-				originalFilePath, agmTestFilePath + "22_update_no_created_by_agm.json", "createdBy");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
-				originalFilePath, agmTestFilePath + "23_update_no_updated_by_agm.json", "updatedBy");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
-				originalFilePath, agmTestFilePath + "24_update_no_date_created_agm.json", "dateCreated");
-		checkSuccessfulBulkLoadUpdateWithMissingNonRequiredField(agmBulkPostEndpoint, agmFindEndpoint,
-				originalFilePath, agmTestFilePath + "25_update_no_date_updated_agm.json", "dateUpdated");
+		RestAssured.given().
+			when().
+			get(agmGetEndpoint + "AGMTEST:Agm0001").
+			then().
+			statusCode(200).
+			body("entity.curie", is("AGMTEST:Agm0001")).
+			body("entity", not(hasKey("name"))).
+			body("entity", not(hasKey("createdBy"))).
+			body("entity", not(hasKey("updatedBy"))).
+			body("entity", not(hasKey("dateCreated"))).
+			body("entity", not(hasKey("dateUpdated")));
 	}
 }

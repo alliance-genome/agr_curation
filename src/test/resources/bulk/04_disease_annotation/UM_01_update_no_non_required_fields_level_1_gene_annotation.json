@@ -1,0 +1,13 @@
+[
+  {
+    "mod_entity_id": "DATEST:Annot0001",
+    "gene_curie": "DATEST:Gene0001",
+    "do_term_curie": "DATEST:Disease0001",
+    "data_provider_name": "TEST",
+    "disease_relation_name": "is_implicated_in",
+    "evidence_code_curies": [
+      "DATEST:Evidence0001"
+    ],
+    "reference_curie": "PMID:25920554"
+  }
+]

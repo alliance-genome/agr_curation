@@ -63,10 +63,10 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 				SearchResponse<AlleleDiseaseAnnotation> annotationList = alleleDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
 				if (annotationList == null || annotationList.getResults().size() == 0) {
 					annotation.setUniqueId(annotationId);
-					annotation.setSubject(allele);
 				} else {
 					annotation = annotationList.getResults().get(0);
 				}
+				annotation.setSubject(allele);
 			}
 		}
 		annotation.setSingleReference(validatedReference);
@@ -110,7 +110,7 @@ public class AlleleDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOVal
 
 		if (adaResponse.hasErrors())
 			throw new ObjectValidationException(dto, adaResponse.errorMessagesString());
-
+		
 		return annotation;
 	}
 

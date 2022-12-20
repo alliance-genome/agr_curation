@@ -113,8 +113,8 @@ public class AlleleITCase extends BaseITCase {
 		person = createPerson("TEST:AllelePerson0001");
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
-		soTerm = createSoTerm("SO:00002", false);
-		soTerm2 = createSoTerm("SO:00003", false);
+		soTerm = getSoTerm("SO:00001");
+		soTerm2 = getSoTerm("SO:00002");
 		obsoleteSoTerm = createSoTerm("SO:00000", true);
 		alleleMutationType = createAlleleMutationTypeSlotAnnotation(List.of(reference), List.of(soTerm));
 		alleleSymbol = createAlleleSymbolSlotAnnotation(List.of(reference), "Test symbol", symbolNameType, exactSynonymScope, "https://test.org");
