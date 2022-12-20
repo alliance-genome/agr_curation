@@ -61,6 +61,6 @@ public class AffectedGenomicModel extends GenomicEntity {
 	private List<AGMDiseaseAnnotation> agmDiseaseAnnotations;
 
 	public enum Subtype {
-		strain, genotype;
+		strain, genotype, fish;
 	}
 }
