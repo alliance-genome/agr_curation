@@ -2,9 +2,7 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -21,7 +19,6 @@ import org.alliancegenome.curation_api.model.entities.ConditionRelation;
 import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
-import org.alliancegenome.curation_api.model.input.Pagination;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
@@ -147,11 +144,11 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		// if handle / pub combination has changed check that the new key is not already
 		// taken in the database
 		if (!StringUtils.isBlank(dbEntity.getHandle()) && !getUniqueKey(uiEntity).equals(getUniqueKey(dbEntity))) {
-			HashMap<String, HashMap<String, Object>> singleRefFiltermap = new LinkedHashMap<>();
-			singleRefFiltermap.put("singleReferenceFilter", getFilterMap("singleReference.curie", getQueryStringMap(uiEntity.getSingleReference().getCurie())));
-			singleRefFiltermap.put("handleFilter", getFilterMap("handle", getQueryStringMap(uiEntity.getHandle())));
-
-			SearchResponse<ConditionRelation> response = conditionRelationDAO.searchByParams(new Pagination(0, 20), Map.of("searchFilters", singleRefFiltermap));
+			HashMap<String, Object> params = new HashMap<>();
+			params.put("handle", uiEntity.getHandle());
+			params.put("singleReference.curie", uiEntity.getSingleReference().getCurie());
+			
+			SearchResponse<ConditionRelation> response = conditionRelationDAO.findByParams(null, params);
 			if (response.getTotalResults() > 0) {
 				addMessageResponse("handle", "Handle / Pub combination already exists");
 				return null;
@@ -159,20 +156,6 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 		}
 
 		return uiEntity.getHandle();
-	}
-
-	private HashMap<String, Object> getQueryStringMap(String value) {
-		LinkedHashMap<String, Object> singleRef = new LinkedHashMap<>();
-		// use exact matches
-		singleRef.put("useKeywordFields", true);
-		singleRef.put("queryString", value);
-		return singleRef;
-	}
-
-	private HashMap<String, Object> getFilterMap(String parameterName, HashMap<String, Object> value) {
-		HashMap<String, Object> parameterMap = new HashMap<>();
-		parameterMap.put(parameterName, value);
-		return parameterMap;
 	}
 
 	private String getUniqueKey(ConditionRelation relation) {
