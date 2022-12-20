@@ -6,20 +6,24 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
 import org.alliancegenome.curation_api.constants.ValidationConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AffectedGenomicModelDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.exceptions.ApiErrorException;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.CrossReference;
+import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 @RequestScoped
 public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 	@Inject
 	AffectedGenomicModelDAO affectedGenomicModelDAO;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
 	
 	private String errorMessage;
 
@@ -63,6 +67,9 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 
 		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
+		
+		VocabularyTerm subtype = validateSubtype(uiEntity, dbEntity);
+		dbEntity.setSubtype(subtype);
 
 		if (CollectionUtils.isNotEmpty(uiEntity.getSecondaryIdentifiers())) {
 			dbEntity.setSecondaryIdentifiers(uiEntity.getSecondaryIdentifiers());
@@ -79,6 +86,27 @@ public class AffectedGenomicModelValidator extends GenomicEntityValidator {
 		}
 
 		return dbEntity;
+	}
+	
+	public VocabularyTerm validateSubtype(AffectedGenomicModel uiEntity, AffectedGenomicModel dbEntity) {
+		String field = "subtype";
+		if (uiEntity.getSubtype() == null) {
+			addMessageResponse(field, ValidationConstants.REQUIRED_MESSAGE);
+			return null;
+		}
+
+		VocabularyTerm subtype = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY, uiEntity.getSubtype().getName());
+		if (subtype == null) {
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+			return null;
+		}
+
+		if (subtype.getObsolete() && (dbEntity.getSubtype() == null || !subtype.getName().equals(dbEntity.getSubtype().getName()))) {
+			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+			return null;
+		}
+
+		return subtype;
 	}
 
 }

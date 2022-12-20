@@ -1,6 +1,7 @@
 [
   {
     "curie": "AGMTEST:Agm0001",
-    "taxon_curie": "NCBITaxon:6239"
+    "taxon_curie": "NCBITaxon:6239",
+    "subtype_name": "fish"
   }
 ]

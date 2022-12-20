@@ -1,6 +1,7 @@
 [
   {
     "curie": "AGMTEST:Agm0001",
+    "subtype_name": "genotype",
     "name": "TestAgm1a",
     "taxon_curie": "NCBITaxon:9606",
     "created_by_curie": "AGMTEST:Person0002",

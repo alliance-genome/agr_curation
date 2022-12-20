@@ -14,6 +14,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
+import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.model.entities.AGMDiseaseAnnotation;
 import org.alliancegenome.curation_api.model.entities.AffectedGenomicModel;
 import org.alliancegenome.curation_api.model.entities.Allele;
@@ -116,10 +117,14 @@ public class BaseITCase {
 			body("history.completedRecords", is(1));
 	}
 	
-	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String name, Boolean obsolete) {
+	public AffectedGenomicModel createAffectedGenomicModel(String curie, String taxonCurie, String subtypeName, String name, Boolean obsolete) {
+		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
+		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
+		
 		AffectedGenomicModel model = new AffectedGenomicModel();
 		model.setCurie(curie);
 		model.setTaxon(getNCBITaxonTerm(taxonCurie));
+		model.setSubtype(subtype);
 		model.setName(name);
 		model.setObsolete(obsolete);
 
@@ -787,12 +792,16 @@ public class BaseITCase {
 		return response.getEntity();
 	}
 
-	public void loadAffectedGenomicModel(String curie, String name, String taxonCurie) throws Exception {
+	public void loadAffectedGenomicModel(String curie, String name, String taxonCurie, String subtypeName) throws Exception {
+		Vocabulary subtypeVocabulary = getVocabulary(VocabularyConstants.AGM_SUBTYPE_VOCABULARY);
+		VocabularyTerm subtype = getVocabularyTerm(subtypeVocabulary, subtypeName);
+		
 		AffectedGenomicModel agm = new AffectedGenomicModel();
 		agm.setCurie(curie);
 		agm.setTaxon(getNCBITaxonTerm(taxonCurie));
 		agm.setName(name);
-
+		agm.setSubtype(subtype);
+		
 		RestAssured.given().
 			contentType("application/json").
 			body(agm).

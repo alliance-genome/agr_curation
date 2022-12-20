@@ -58,6 +58,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.curie", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1")).
 			body("entity.taxon.curie", is("NCBITaxon:6239")).
+			body("entity.subtype.name", is("fish")).
 			body("entity.internal", is(true)).
 			body("entity.obsolete", is(true)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0001")).
@@ -79,6 +80,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 			body("entity.curie", is("AGMTEST:Agm0001")).
 			body("entity.name", is("TestAgm1a")).
 			body("entity.taxon.curie", is("NCBITaxon:9606")).
+			body("entity.subtype.name", is("genotype")).
 			body("entity.internal", is(false)).
 			body("entity.obsolete", is(false)).
 			body("entity.createdBy.uniqueId", is("AGMTEST:Person0002")).
@@ -92,6 +94,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	public void agmBulkUploadMissingRequiredFields() throws Exception {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_01_no_curie.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_02_no_taxon.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "MR_03_no_subtype.json");
 	}
 	
 	@Test
@@ -99,6 +102,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 	public void agmBulkUploadEmptyRequiredFields() throws Exception {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_01_empty_curie.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_02_empty_taxon.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "ER_03_empty_subtype.json");
 	}
 		
 	@Test
@@ -107,6 +111,7 @@ public class AgmBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_01_invalid_date_created.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_02_invalid_date_updated.json");
 		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_03_invalid_taxon.json");
+		checkFailedBulkLoad(agmBulkPostEndpoint, agmTestFilePath + "IV_04_invalid_subtype.json");
 	}
 
 	@Test

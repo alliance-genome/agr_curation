@@ -148,10 +148,10 @@ public class DiseaseAnnotationITCase extends BaseITCase {
 		obsoleteAllele = createAllele("ALLELE:da0003", "NCBITaxon:9606", true, symbolNameType);
 		datetime = OffsetDateTime.parse("2022-03-09T22:10:12+00:00");
 		datetime2 = OffsetDateTime.parse("2022-04-10T22:10:11+00:00");
-		agm = createAffectedGenomicModel("SGD:da0001", "NCBITaxon:559292", "TestAGM", false);
-		agm2 = createAffectedGenomicModel("SGD:da0002", "NCBITaxon:559292", "TestAGM2", false);
-		obsoleteAgm = createAffectedGenomicModel("SGD:da0003", "NCBITaxon:559292", "TestAGM3", true);
-		nonSgdAgm = createAffectedGenomicModel("WB:da0004", "NCBITaxon:6239", "TestAGM4", false);
+		agm = createAffectedGenomicModel("SGD:da0001", "NCBITaxon:559292", "strain", "TestAGM", false);
+		agm2 = createAffectedGenomicModel("SGD:da0002", "NCBITaxon:559292", "strain", "TestAGM2", false);
+		obsoleteAgm = createAffectedGenomicModel("SGD:da0003", "NCBITaxon:559292", "strain", "TestAGM3", true);
+		nonSgdAgm = createAffectedGenomicModel("WB:da0004", "NCBITaxon:6239", "genotype", "TestAGM4", false);
 		experimentalCondition = createExperimentalCondition("Statement", "ZECO:da001", "Test");
 		experimentalCondition2 = createExperimentalCondition("Statement2", "ZECO:da002", "Test2");
 		diseaseRelationVocabulary = getVocabulary(VocabularyConstants.DISEASE_RELATION_VOCABULARY);
