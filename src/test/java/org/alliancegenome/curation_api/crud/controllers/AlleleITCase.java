@@ -23,6 +23,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.resources.TestContainerResource;
@@ -71,6 +72,7 @@ public class AlleleITCase {
 	private AlleleSymbolSlotAnnotation alleleSymbol;
 	private AlleleFullNameSlotAnnotation alleleFullName;
 	private AlleleSynonymSlotAnnotation alleleSynonym;
+	private AlleleSecondaryIdSlotAnnotation alleleSecondaryId;
 	
 	private void createRequiredObjects() {
 		inheritanceModeVocabulary = getVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY);
@@ -96,6 +98,7 @@ public class AlleleITCase {
 		alleleSymbol = createAlleleSymbolSlotAnnotation("Test symbol");
 		alleleFullName = createAlleleFullNameSlotAnnotation("Test name");
 		alleleSynonym = createAlleleSynonymSlotAnnotation("Test synonym");
+		alleleSecondaryId = createAlleleSecondaryIdSlotAnnotation("TEST:Secondary");
 	}
 	
 	@Test
@@ -117,6 +120,7 @@ public class AlleleITCase {
 		allele.setAlleleSymbol(alleleSymbol);
 		allele.setAlleleFullName(alleleFullName);
 		allele.setAlleleSynonyms(List.of(alleleSynonym));
+		allele.setAlleleSecondaryIds(List.of(alleleSecondaryId));
 		
 		RestAssured.given().
 				contentType("application/json").
@@ -158,7 +162,8 @@ public class AlleleITCase {
 				body("entity.alleleSynonyms[0].formatText", is("Test synonym")).
 				body("entity.alleleSynonyms[0].nameType.name", is(symbolNameType.getName())).
 				body("entity.alleleSynonyms[0].synonymScope.name", is(exactSynonymScope.getName())).
-				body("entity.alleleSynonyms[0].synonymUrl", is("https://test.org"));
+				body("entity.alleleSynonyms[0].synonymUrl", is("https://test.org")).
+				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary"));
 	}
 
 	@Test
@@ -197,6 +202,10 @@ public class AlleleITCase {
 		newSynonym.setSynonymUrl("https://test2.org");
 		allele.setAlleleSynonyms(List.of(newSynonym));
 		
+		AlleleSecondaryIdSlotAnnotation newSecondaryId = allele.getAlleleSecondaryIds().get(0);
+		newSecondaryId.setSecondaryId("TEST:Secondary2");
+		allele.setAlleleSecondaryIds(List.of(newSecondaryId));
+		
 		RestAssured.given().
 				contentType("application/json").
 				body(allele).
@@ -230,7 +239,8 @@ public class AlleleITCase {
 				body("entity.alleleSynonyms[0].formatText", is("EditedFormat")).
 				body("entity.alleleSynonyms[0].nameType.name", is(fullNameType.getName())).
 				body("entity.alleleSynonyms[0].synonymScope.name", is(broadSynonymScope.getName())).
-				body("entity.alleleSynonyms[0].synonymUrl", is("https://test2.org"));
+				body("entity.alleleSynonyms[0].synonymUrl", is("https://test2.org")).
+				body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2"));
 	}
 	
 	@Test
@@ -2192,6 +2202,113 @@ public class AlleleITCase {
 
 	@Test
 	@Order(73)
+	public void createAlleleWithMissingAlleleSecondaryIdSecondaryId() {
+		Allele allele = new Allele();
+		
+		AlleleSecondaryIdSlotAnnotation invalidAlleleSecondaryId = new AlleleSecondaryIdSlotAnnotation();
+		invalidAlleleSecondaryId.setEvidence(List.of(reference));
+
+		allele.setCurie("Allele:0073");
+		allele.setTaxon(taxon);
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleSymbol(alleleSymbol);
+		allele.setAlleleSecondaryIds(List.of(invalidAlleleSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@Order(74)
+	public void createAlleleWithEmptyAlleleSecondaryIdSecondaryId() {
+		Allele allele = new Allele();
+		
+		AlleleSecondaryIdSlotAnnotation invalidAlleleSecondaryId = new AlleleSecondaryIdSlotAnnotation();
+		invalidAlleleSecondaryId.setEvidence(List.of(reference));
+		invalidAlleleSecondaryId.setSecondaryId("");
+		
+		allele.setCurie("Allele:0073");
+		allele.setTaxon(taxon);
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleSymbol(alleleSymbol);
+		allele.setAlleleSecondaryIds(List.of(invalidAlleleSecondaryId));
+
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			post("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@Order(75)
+	public void editAlleleWithNullAlleleSecondaryIdSecondaryId() {
+		
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleSymbol(alleleSymbol);
+		
+		AlleleSecondaryIdSlotAnnotation secondaryId = allele.getAlleleSecondaryIds().get(0);
+		secondaryId.setSecondaryId(null);
+		allele.setAlleleSecondaryIds(List.of(secondaryId));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@Order(76)
+	public void editAlleleWithMissingAlleleSecondaryIdSecondaryId() {
+		
+		Allele allele = getAllele();
+		allele.setTaxon(taxon);
+		allele.setInheritanceMode(inheritanceMode);
+		allele.setInCollection(inCollection);
+		allele.setReferences(references);
+		allele.setAlleleSymbol(alleleSymbol);
+		
+		AlleleSecondaryIdSlotAnnotation secondaryId = allele.getAlleleSecondaryIds().get(0);
+		secondaryId.setSecondaryId("");
+		allele.setAlleleSecondaryIds(List.of(secondaryId));
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(allele).
+			when().
+			put("/api/allele").
+			then().
+			statusCode(400).
+			body("errorMessages", is(aMapWithSize(1))).
+			body("errorMessages.alleleSecondaryIds", is("secondaryId - " + ValidationConstants.REQUIRED_MESSAGE));
+	}
+
+	@Test
+	@Order(77)
 	public void deleteAllele() {
 
 		RestAssured.given().
@@ -2346,6 +2463,13 @@ public class AlleleITCase {
 		synonym.setSynonymUrl("https://test.org");
 		
 		return synonym;
+	}
+
+	private AlleleSecondaryIdSlotAnnotation createAlleleSecondaryIdSlotAnnotation(String id) {
+		AlleleSecondaryIdSlotAnnotation secondaryId = new AlleleSecondaryIdSlotAnnotation();
+		secondaryId.setSecondaryId(id);
+		
+		return secondaryId;
 	}
 	
 	private TypeRef<ObjectResponse<Allele>> getObjectResponseTypeRefAllele() {

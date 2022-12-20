@@ -54,6 +54,14 @@
           "PMID:25920550"
         ]
       }
+    ],
+    "allele_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary",
+        "evidence_curies": [
+          "PMID:25920550"
+        ]
+      }
     ]
   }
 ]

@@ -41,8 +41,6 @@ import lombok.ToString;
 @Table(indexes = { @Index(name = "allelemutationtype_singleallele_curie_index", columnList = "singleallele_curie"), })
 public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 
-	@IndexedEmbedded(includeDepth = 1)
-	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
 	@JsonBackReference
 	private Allele singleAllele;

@@ -52,6 +52,14 @@
         "synonym_url": "https://alliancegenome.org/test",
         "name_type_name": "unspecified"
       }
+    ],
+    "allele_secondary_id_dtos": [
+      {
+        "secondary_id": "TEST:Secondary",
+        "evidence_curies": [
+          "PMID:25920550"
+        ]
+      }
     ]
   }
 ]
