@@ -69,10 +69,10 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationId);
 				if (annotationList == null || annotationList.getResults().size() == 0) {
 					annotation.setUniqueId(annotationId);
-					annotation.setSubject(agm);
 				} else {
 					annotation = annotationList.getResults().get(0);
 				}
+				annotation.setSubject(agm);
 			}
 		}
 		annotation.setSingleReference(validatedReference);
@@ -134,7 +134,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 
 		if (adaResponse.hasErrors())
 			throw new ObjectValidationException(dto, adaResponse.errorMessagesString());
-
+		
 		return annotation;
 	}
 }

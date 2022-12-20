@@ -89,6 +89,28 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		return diseaseTerm;
 	}
 
+	public List<VocabularyTerm> validateDiseaseQualifiers(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
+		String field = "diseaseQualifiers";
+		if (CollectionUtils.isEmpty(uiEntity.getDiseaseQualifiers())) {
+			return null;
+		}
+		List<VocabularyTerm> validDiseaseQualifiers = new ArrayList<>();
+		for (VocabularyTerm dq : uiEntity.getDiseaseQualifiers()) {
+			VocabularyTerm qualifier = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.DISEASE_QUALIFIER_VOCABULARY, dq.getName());
+			if (qualifier == null) {
+				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
+				return null;
+			} else if (qualifier.getObsolete() && (CollectionUtils.isEmpty(dbEntity.getDiseaseQualifiers()) || !dbEntity.getDiseaseQualifiers().contains(qualifier))) {
+				addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
+				return null;
+			}
+
+			validDiseaseQualifiers.add(qualifier);
+
+		}
+		return validDiseaseQualifiers;
+	}
+
 	public List<ECOTerm> validateEvidenceCodes(DiseaseAnnotation uiEntity, DiseaseAnnotation dbEntity) {
 		String field = "evidenceCodes";
 		if (CollectionUtils.isEmpty(uiEntity.getEvidenceCodes())) {
@@ -267,10 +289,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			for (Note note : uiEntity.getRelatedNotes()) {
 				ObjectResponse<Note> noteResponse = noteValidator.validateNote(note, VocabularyConstants.DISEASE_ANNOTATION_NOTE_TYPES_VOCABULARY);
 				if (noteResponse.getEntity() == null) {
-					Map<String, String> errors = noteResponse.getErrorMessages();
-					for (String noteField : errors.keySet()) {
-						addMessageResponse(field, noteField + " - " + errors.get(noteField));
-					}
+					addMessageResponse(field, noteResponse.errorMessagesString());
 					return null;
 				}
 				note = noteResponse.getEntity();
@@ -333,10 +352,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 			ObjectResponse<ConditionRelation> crResponse = conditionRelationValidator.validateConditionRelation(conditionRelation);
 			conditionRelation = crResponse.getEntity();
 			if (conditionRelation == null) {
-				Map<String, String> errors = crResponse.getErrorMessages();
-				for (String field : errors.keySet()) {
-					addMessageResponse("conditionRelations", field + " - " + errors.get(field));
-				}
+				addMessageResponse("conditionRelations", crResponse.errorMessagesString());
 				return null;
 			}
 
@@ -362,10 +378,7 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity.getSingleReference());
 		if (singleRefResponse.getEntity() == null) {
-			Map<String, String> errors = singleRefResponse.getErrorMessages();
-			for (String refField : errors.keySet()) {
-				addMessageResponse(field, refField + " - " + errors.get(refField));
-			}
+			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 			return null;
 		}
 
@@ -421,11 +434,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		List<Gene> genes = validateWith(uiEntity, dbEntity);
 		dbEntity.setWith(genes);
 
-		if (uiEntity.getNegated() != null) {
-			dbEntity.setNegated(uiEntity.getNegated());
-		} else {
-			dbEntity.setNegated(false);
-		}
+		Boolean negated = uiEntity.getNegated() == null ? false : uiEntity.getNegated();
+		dbEntity.setNegated(negated);
 
 		VocabularyTerm annotationType = validateAnnotationType(uiEntity, dbEntity);
 		dbEntity.setAnnotationType(annotationType);
@@ -447,11 +457,8 @@ public class DiseaseAnnotationValidator extends AuditedObjectValidator<DiseaseAn
 		List<ConditionRelation> conditionRelations = validateConditionRelations(uiEntity, dbEntity);
 		dbEntity.setConditionRelations(conditionRelations);
 
-		if (CollectionUtils.isNotEmpty(uiEntity.getDiseaseQualifiers())) {
-			dbEntity.setDiseaseQualifiers(uiEntity.getDiseaseQualifiers());
-		} else {
-			dbEntity.setDiseaseQualifiers(null);
-		}
+		List<VocabularyTerm> diseaseQualifiers = validateDiseaseQualifiers(uiEntity, dbEntity);
+		dbEntity.setDiseaseQualifiers(diseaseQualifiers);
 
 		List<Note> relatedNotes = validateRelatedNotes(uiEntity, dbEntity);
 		dbEntity.setRelatedNotes(relatedNotes);

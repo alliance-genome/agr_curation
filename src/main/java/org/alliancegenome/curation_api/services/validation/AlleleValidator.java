@@ -103,7 +103,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 	public Allele validateAllele(Allele uiEntity, Allele dbEntity) {
 
-		NCBITaxonTerm taxon = validateTaxon(uiEntity);
+		NCBITaxonTerm taxon = validateTaxon(uiEntity, dbEntity);
 		dbEntity.setTaxon(taxon);
 
 		List<String> previousReferenceCuries = new ArrayList<String>();
@@ -202,14 +202,11 @@ public class AlleleValidator extends GenomicEntityValidator {
 	private Reference validateReference(Reference uiEntity, List<String> previousCuries) {
 		ObjectResponse<Reference> singleRefResponse = referenceValidator.validateReference(uiEntity);
 		if (singleRefResponse.getEntity() == null) {
-			Map<String, String> errors = singleRefResponse.getErrorMessages();
-			for (String refField : errors.keySet()) {
-				addMessageResponse("references", refField + " - " + errors.get(refField));
-			}
+			addMessageResponse("references", singleRefResponse.errorMessagesString());
 			return null;
 		}
 
-		if (singleRefResponse.getEntity().getObsolete() && !previousCuries.contains(singleRefResponse.getEntity().getCurie())) {
+		if (singleRefResponse.getEntity().getObsolete() && (CollectionUtils.isEmpty(previousCuries) || !previousCuries.contains(singleRefResponse.getEntity().getCurie()))) {
 			addMessageResponse("references", "curie - " + ValidationConstants.OBSOLETE_MESSAGE);
 			return null;
 		}
@@ -328,10 +325,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			for (AlleleMutationTypeSlotAnnotation mt : uiEntity.getAlleleMutationTypes()) {
 				ObjectResponse<AlleleMutationTypeSlotAnnotation> mtResponse = alleleMutationTypeValidator.validateAlleleMutationTypeSlotAnnotation(mt);
 				if (mtResponse.getEntity() == null) {
-					Map<String, String> errors = mtResponse.getErrorMessages();
-					for (String mtField : errors.keySet()) {
-						addMessageResponse(field, mtField + " - " + errors.get(mtField));
-					}
+					addMessageResponse(field, mtResponse.errorMessagesString());
 					return null;
 				}
 				mt = mtResponse.getEntity();
@@ -355,10 +349,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 		ObjectResponse<AlleleSymbolSlotAnnotation> symbolResponse = alleleSymbolValidator.validateAlleleSymbolSlotAnnotation(uiEntity.getAlleleSymbol());
 		if (symbolResponse.getEntity() == null) {
-			Map<String, String> errors = symbolResponse.getErrorMessages();
-			for (String symbolField : errors.keySet()) {
-				addMessageResponse(field, symbolField + " - " + errors.get(symbolField));
-			}
+			addMessageResponse(field, symbolResponse.errorMessagesString());
 			return null;
 		}
 
@@ -373,10 +364,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 		ObjectResponse<AlleleFullNameSlotAnnotation> nameResponse = alleleFullNameValidator.validateAlleleFullNameSlotAnnotation(uiEntity.getAlleleFullName());
 		if (nameResponse.getEntity() == null) {
-			Map<String, String> errors = nameResponse.getErrorMessages();
-			for (String nameField : errors.keySet()) {
-				addMessageResponse(field, nameField + " - " + errors.get(nameField));
-			}
+			addMessageResponse(field, nameResponse.errorMessagesString());
 			return null;
 		}
 
@@ -391,10 +379,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			for (AlleleSynonymSlotAnnotation syn : uiEntity.getAlleleSynonyms()) {
 				ObjectResponse<AlleleSynonymSlotAnnotation> synResponse = alleleSynonymValidator.validateAlleleSynonymSlotAnnotation(syn);
 				if (synResponse.getEntity() == null) {
-					Map<String, String> errors = synResponse.getErrorMessages();
-					for (String synField : errors.keySet()) {
-						addMessageResponse(field, synField + " - " + errors.get(synField));
-					}
+					addMessageResponse(field, synResponse.errorMessagesString());
 					return null;
 				}
 				syn = synResponse.getEntity();
@@ -416,10 +401,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 			for (AlleleSecondaryIdSlotAnnotation sid : uiEntity.getAlleleSecondaryIds()) {
 				ObjectResponse<AlleleSecondaryIdSlotAnnotation> sidResponse = alleleSecondaryIdValidator.validateAlleleSecondaryIdSlotAnnotation(sid);
 				if (sidResponse.getEntity() == null) {
-					Map<String, String> errors = sidResponse.getErrorMessages();
-					for (String sidField : errors.keySet()) {
-						addMessageResponse(field, sidField + " - " + errors.get(sidField));
-					}
+					addMessageResponse(field, sidResponse.errorMessagesString());
 					return null;
 				}
 				sid = sidResponse.getEntity();

@@ -46,7 +46,7 @@ public class APIResponse {
 		if (errorMessages == null)
 			return null;
 
-		return errorMessages.entrySet().stream().map(m -> m.getKey() + " - " + m.getValue()).collect(Collectors.joining(" | "));
+		return errorMessages.entrySet().stream().map(m -> m.getKey() + " - " + m.getValue()).sorted().collect(Collectors.joining(" | "));
 	}
 
 }
