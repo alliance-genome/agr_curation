@@ -16,7 +16,6 @@ import { SearchService } from '../../service/SearchService';
 import { ValidationService } from '../../service/ValidationService';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from "../../utils/utils";
-import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
 
 export const SecondaryIdsDialog = ({
