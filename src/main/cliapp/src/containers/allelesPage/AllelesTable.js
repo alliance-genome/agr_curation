@@ -19,6 +19,7 @@ import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/Voc
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
+import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
 
@@ -356,10 +357,7 @@ export const AllelesTable = () => {
 							{`Mutation Types(${props.rowData.alleleMutationTypes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-						</span>
+						<EditMessageTooltip/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -376,9 +374,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-							</span>
+							<EditMessageTooltip/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -445,10 +441,7 @@ export const AllelesTable = () => {
 							{`Secondary IDs(${props.rowData.alleleSecondaryIds.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-						</span>
+						<EditMessageTooltip/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
@@ -464,10 +457,7 @@ export const AllelesTable = () => {
 								Add Secondary ID
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-							</span>
+							<EditMessageTooltip/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
