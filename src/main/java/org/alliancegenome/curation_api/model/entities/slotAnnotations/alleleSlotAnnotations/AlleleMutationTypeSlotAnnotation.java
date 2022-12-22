@@ -38,7 +38,9 @@ import lombok.ToString;
 @ToString(callSuper = true)
 @AGRCurationSchemaVersion(min = "1.4.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { SlotAnnotation.class })
 @Schema(name = "AlleleMutationtTypeSlotAnnotation", description = "POJO representing an allele mutation type slot annotation")
-@Table(indexes = { @Index(name = "allelemutationtype_singleallele_curie_index", columnList = "singleallele_curie"), })
+@Table(indexes = { @Index(name = "allelemutationtype_singleallele_curie_index", columnList = "singleallele_curie"),
+		@Index(name = "allelemutationtype_inheritancemode_id_index", columnList = "inheritancemode_id"),
+		@Index(name = "allelemutationtype_phenotypeterm_curie_index", columnList = "phenotypeterm_curie") })
 public class AlleleMutationTypeSlotAnnotation extends SlotAnnotation {
 
 	@ManyToOne
