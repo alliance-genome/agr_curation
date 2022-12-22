@@ -7,10 +7,6 @@ CREATE TABLE alleleinheritancemodeslotannotation (
 	);
 
 ALTER TABLE alleleinheritancemodeslotannotation
-	ADD CONSTRAINT alleleinheritancemodeslotannotation_id_fk
-		FOREIGN KEY (id) REFERENCES slotannotation (id);
-		
-ALTER TABLE alleleinheritancemodeslotannotation
 	ADD CONSTRAINT alleleinheritancemodeslotannotation_inheritancemode_id_fk
 		FOREIGN KEY (inheritancemode_id) REFERENCES vocabularyterm (id);
 		
@@ -39,6 +35,9 @@ CREATE INDEX alleleinheritancemode_phenotypeterm_curie_index ON public.alleleinh
 INSERT INTO alleleinheritancemodeslotannotation (id, singleallele_curie, inheritancemode_id)
 	SELECT nextval('hibernate_sequence'), curie, inheritancemode_id FROM allele WHERE inheritancemode_id IS NOT NULL;
 	
+INSERT INTO slotannotation (id)
+	SELECT id FROM alleleinheritancemodeslotannotation;
+	
 DROP INDEX allele_inheritancemode_index;
 	
 ALTER TABLE allele
@@ -46,3 +45,7 @@ ALTER TABLE allele
 	
 ALTER TABLE allele_aud
 	DROP COLUMN inheritancemode_id;
+	
+ALTER TABLE alleleinheritancemodeslotannotation
+	ADD CONSTRAINT alleleinheritancemodeslotannotation_id_fk
+		FOREIGN KEY (id) REFERENCES slotannotation (id);
