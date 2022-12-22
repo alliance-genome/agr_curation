@@ -149,10 +149,10 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			}
 		}
 		
-		if (CollectionUtils.isNotEmpty(allele.getAlleleMutationTypes())) {
-			allele.getAlleleMutationTypes().forEach(amt -> {
-				amt.setSingleAllele(null);
-				alleleMutationTypeDAO.remove(amt.getId());
+		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
+			allele.getAlleleInheritanceModes().forEach(aim -> {
+				aim.setSingleAllele(null);
+				alleleInheritanceModeDAO.remove(aim.getId());
 			});
 		}
 

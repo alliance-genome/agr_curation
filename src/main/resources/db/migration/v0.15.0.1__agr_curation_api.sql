@@ -1,7 +1,7 @@
 CREATE TABLE alleleinheritancemodeslotannotation (
 	id bigint CONSTRAINT alleleinheritancemodeslotannotation_pkey PRIMARY KEY,
 	singleallele_curie varchar(255),
-	mutationtype_id bigint,
+	inheritancemode_id bigint,
 	phenotypeterm_curie varchar(255),
 	phenotypestatement text
 	);
@@ -12,16 +12,16 @@ ALTER TABLE alleleinheritancemodeslotannotation
 		
 ALTER TABLE alleleinheritancemodeslotannotation
 	ADD CONSTRAINT alleleinheritancemodeslotannotation_inheritancemode_id_fk
-		FOREIGN KEY (id) REFERENCES vocabularyterm (id);
+		FOREIGN KEY (inheritancemode_id) REFERENCES vocabularyterm (id);
 		
 ALTER TABLE alleleinheritancemodeslotannotation
 	ADD CONSTRAINT alleleinheritancemodeslotannotation_phenotypeterm_curie_fk
-		FOREIGN KEY (id) REFERENCES phenotypeterm (curie);	
+		FOREIGN KEY (phenotypeterm_curie) REFERENCES phenotypeterm (curie);	
 
 CREATE TABLE alleleinheritancemodeslotannotation_aud (
 	id bigint,
 	singleallele_curie varchar(255),
-	mutationtype_id bigint,
+	inheritancemode_id bigint,
 	phenotypeterm_curie varchar(255),
 	phenotypestatement text,
 	rev integer NOT NULL,
