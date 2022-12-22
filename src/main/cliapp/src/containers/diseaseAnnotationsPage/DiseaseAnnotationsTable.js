@@ -1072,7 +1072,7 @@ export const DiseaseAnnotationsTable = () => {
 						</Tooltip>
 					</>
 				)
-			}else if (rowData.subject.name) {
+			} else if (rowData.subject.name) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
