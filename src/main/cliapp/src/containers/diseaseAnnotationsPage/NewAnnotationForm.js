@@ -223,14 +223,14 @@ export const NewAnnotationForm = ({
 	}
 
 	const onDiseaseChange = (event) => {
-		const curie = event.value.curie;
+		/*const curie = event.value.curie;
 		const stringValue = event.value;
-		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};
+		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};*/
 
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
-			value
+			value: event.target.value
 		});
 	}
 
@@ -397,6 +397,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedGenes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedGenes"}/>
+							<FormAdditionalFieldData field={"assertedGenes"} fieldData={newAnnotation.assertedGenes}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedAllele">Asserted Allele</label>
@@ -414,6 +415,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedAllele})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedAllele"}/>
+							<FormAdditionalFieldData field={"assertedAllele"} fieldData={newAnnotation.assertedAllele}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
@@ -455,6 +457,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
+							<FormAdditionalFieldData field={"object"} fieldData={newAnnotation.object}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
@@ -470,6 +473,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
+							<FormAdditionalFieldData field={"singleReference"} fieldData={newAnnotation.singleReference}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="evidenceCodes"><font color={'red'}>*</font>Evidence Code</label>
@@ -486,6 +490,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
+							<FormAdditionalFieldData field={"evidenceCodes"} fieldData={newAnnotation.evidenceCodes}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>
@@ -502,6 +507,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
+							<FormAdditionalFieldData field={"with"} fieldData={newAnnotation.with}/>
 						</SplitterPanel>
 					</Splitter>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
@@ -585,6 +591,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.sgdStrainBackground})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"sgdStrainBackground"}/>
+							<FormAdditionalFieldData field={"sgdStrainBackground"} fieldData={newAnnotation.sgdStrainBackground}/>
 						</SplitterPanel>
 					</Splitter>
 
