@@ -126,7 +126,7 @@ export const NewAnnotationForm = ({
 							//needs to be set after api call otherwise the newly appended DA would be removed when there are no filters
 							setNewDiseaseAnnotation(data.data.entity);
 						});
-					}, 250);
+					}, 1000);
 				}
 			},
 			onError: (error) => {
