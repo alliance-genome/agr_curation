@@ -936,11 +936,11 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-		 const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
-		 const endpoint = "gene";
-		 const filterName = "withFilter";
-		 const filter = buildAutocompleteFilter(event, autocompleteFields);
-		 const otherFilters = {
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const endpoint = "gene";
+		const filterName = "withFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
 			taxonFilter: {
 				"taxon.curie": {
 					queryString: "NCBITaxon:9606"
