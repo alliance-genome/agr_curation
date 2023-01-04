@@ -15,7 +15,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Path("/alleleinheritancemodeslotannotation")
-@Tag(name = "CRUD - Allele Mutation Type Slot Annotations")
+@Tag(name = "CRUD - Allele Inheritance Mode Slot Annotations")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface AlleleInheritanceModeSlotAnnotationCrudInterface extends BaseIdCrudInterface<AlleleInheritanceModeSlotAnnotation> {

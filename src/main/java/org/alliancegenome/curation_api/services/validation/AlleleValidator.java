@@ -150,7 +150,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
 		
-		List <AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
+		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
 
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
@@ -179,7 +179,7 @@ public class AlleleValidator extends GenomicEntityValidator {
 				alleleInheritanceModeDAO.persist(im);
 			}
 		}
-		dbEntity.setAlleleMutationTypes(mutationTypes);
+		dbEntity.setAlleleInheritanceModes(inheritanceModes);
 
 		if (symbol != null) {
 			symbol.setSingleAllele(dbEntity);
