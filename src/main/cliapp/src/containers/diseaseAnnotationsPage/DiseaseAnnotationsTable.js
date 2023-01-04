@@ -948,8 +948,8 @@ export const DiseaseAnnotationsTable = () => {
 			},
 		}
 
-		 setInputValue(event.query);
-		 autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	}
 	const withEditorTemplate = (props) => {
 		return (
