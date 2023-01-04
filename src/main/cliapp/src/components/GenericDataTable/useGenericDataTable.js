@@ -93,8 +93,7 @@ export const useGenericDataTable = ({
 
 	useEffect(() => {
 		if (
-			!tableState.filters
-			|| Object.keys(tableState.filters).length > 0
+			(tableState.filters && Object.keys(tableState.filters).length > 0)
 			|| (tableState.multiSortMeta && tableState.multiSortMeta.length > 0)
 			|| tableState.page > 0
 			|| !newEntity
@@ -102,7 +101,7 @@ export const useGenericDataTable = ({
 
 		//adds new entity to the top of the table when there are no filters or sorting
 		setEntities((previousEntities) => {
-			const newEntities = previousEntities;
+			const newEntities = global.structuredClone(previousEntities);
 			newEntities.unshift(newEntity);
 			return newEntities;
 		})
