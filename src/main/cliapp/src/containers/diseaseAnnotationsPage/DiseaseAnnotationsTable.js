@@ -1157,7 +1157,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-						search={referenceSearch}
+					search={referenceSearch}
 					initialValue={() => getRefString(props.rowData.singleReference)}
 					rowProps={props}
 					fieldName='singleReference'
