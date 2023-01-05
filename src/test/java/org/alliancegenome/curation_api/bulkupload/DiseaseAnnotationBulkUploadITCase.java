@@ -718,7 +718,7 @@ public class DiseaseAnnotationBulkUploadITCase extends BaseITCase {
 	@Order(12)
 	public void diseaseAnnotationReferenceMismatches() throws Exception {
 		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MM_01_mismatched_note_reference.json");
-		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MM_02_mismatched_condition_relation_reference.json");	
+		checkFailedBulkLoad(geneDaBulkPostEndpoint, daTestFilePath + "MM_02_mismatched_condition_relation_reference.json");
 	}
 	
 	@Test
