@@ -38,14 +38,14 @@ export const AffectedGenomicModelTable = () => {
 				);
 		}
 	};
-	
+
 	const columns = [
 		{
 			field: "curie",
 			header: "Curie",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]}, 
+			filterElement: {type: "input", filterName: "curieFilter", fields: ["curie"]},
 		},
 		{
 			field: "name",
@@ -53,21 +53,21 @@ export const AffectedGenomicModelTable = () => {
 			body: nameTemplate,
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]}, 
+			filterElement: {type: "input", filterName: "nameFilter", fields: ["name"]},
 		},
 		{
-			field: "subtype",
+			field: "subtype.name",
 			header: "Sub Type",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "subtypeFilter", fields: ["subtype"]}, 
+			filterElement: {type: "input", filterName: "subtypeFilter", fields: ["subtype.name"]}, 
 		},
 		{
 			field: "parental_population",
 			header: "Parental Population",
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "input", filterName: "parental_populationFilter", fields: ["parental_population"]}, 
+			filterElement: {type: "input", filterName: "parental_populationFilter", fields: ["parental_population"]},
 		},
 		{
 			field: "taxon.name",
@@ -75,7 +75,7 @@ export const AffectedGenomicModelTable = () => {
 			sortable: isEnabled,
 			body: taxonBodyTemplate,
 			filter: true,
-			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]}, 
+			filterElement: {type: "input", filterName: "taxonFilter", fields: ["taxon.curie","taxon.name"]},
 		}
  ];
 
@@ -83,10 +83,10 @@ export const AffectedGenomicModelTable = () => {
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
 				<Toast ref={toast_topright} position="top-right" />
-				<GenericDataTable 
-					endpoint="agm" 
-					tableName="Affected Genomic Models" 
-					columns={columns}	 
+				<GenericDataTable
+					endpoint="agm"
+					tableName="Affected Genomic Models"
+					columns={columns}
 					isEditable={false}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}
