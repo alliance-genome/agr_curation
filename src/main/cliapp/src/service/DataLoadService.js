@@ -57,6 +57,13 @@ export class DataLoadService extends BaseAuthService {
 			return this.api.get(`/bulkloadfilehistory/${id}`);
 		}
 
+		getHistoryExceptions(historyId, rows, page) {
+			var searchObject ={
+				"bulkLoadFileHistory.id" : historyId
+			}
+			return this.api.post(`/bulkloadfileexception/find?limit=${rows}&page=${page}`, searchObject);
+		}
+
 		deleteLoadFile(id) {
 			return this.api.delete(`/bulkloadfile/${id}`);
 		}
