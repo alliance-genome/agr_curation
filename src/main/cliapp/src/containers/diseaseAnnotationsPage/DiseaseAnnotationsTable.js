@@ -1418,7 +1418,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider.abbreviation", "secondaryDataProvider.fullName", "scondaryDataProvider.shortName"]},
+		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider.abbreviation", "secondaryDataProvider.fullName", "secondaryDataProvider.shortName"]},
 	},
 	{
 		field: "updatedBy.uniqueId",
