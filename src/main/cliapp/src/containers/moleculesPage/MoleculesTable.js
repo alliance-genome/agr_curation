@@ -3,6 +3,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const MoleculesTable = () => {
 
@@ -95,6 +96,13 @@ export const MoleculesTable = () => {
 
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("Molecule", defaultColumnNames);
+
 
 	return (
 			<div className="card">
@@ -104,6 +112,8 @@ export const MoleculesTable = () => {
 					endpoint="molecule" 
 					tableName="Molecule" 
 					columns={columns}	 
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={false}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}

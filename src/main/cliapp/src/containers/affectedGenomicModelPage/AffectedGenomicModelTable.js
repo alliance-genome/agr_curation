@@ -4,6 +4,7 @@ import { EllipsisTableCell } from "../../components/EllipsisTableCell";
 
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
+import { getDefaultTableState } from '../../service/TableStateService';
 
 
 export const AffectedGenomicModelTable = () => {
@@ -79,6 +80,13 @@ export const AffectedGenomicModelTable = () => {
 		}
  ];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("AffectedGenomicModels", defaultColumnNames);
+
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
@@ -87,6 +95,8 @@ export const AffectedGenomicModelTable = () => {
 					endpoint="agm"
 					tableName="Affected Genomic Models"
 					columns={columns}
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={false}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}

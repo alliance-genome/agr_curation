@@ -27,7 +27,8 @@ import {getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutoco
 import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getModTableState } from '../../service/TableStateService';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -1458,6 +1459,13 @@ export const DiseaseAnnotationsTable = () => {
 	}
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getModTableState("DiseaseAnnotations");
+
 	const headerButtons = () => {
 		return (
 			<>
@@ -1475,6 +1483,8 @@ export const DiseaseAnnotationsTable = () => {
 					endpoint="disease-annotation"
 					tableName="Disease Annotations"
 					columns={columns}
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					aggregationFields={aggregationFields}
 					isEditable={true}
 					sortMapping={sortMapping}
@@ -1489,6 +1499,7 @@ export const DiseaseAnnotationsTable = () => {
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
 					deprecateIfPublic={true}
+					modReset={true}
 				/>
 			</div>
 			<NewAnnotationForm
