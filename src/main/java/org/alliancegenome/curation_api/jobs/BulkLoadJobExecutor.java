@@ -46,6 +46,7 @@ import org.alliancegenome.curation_api.services.ontology.GoTermService;
 import org.alliancegenome.curation_api.services.ontology.MaTermService;
 import org.alliancegenome.curation_api.services.ontology.MmusdvTermService;
 import org.alliancegenome.curation_api.services.ontology.MpTermService;
+import org.alliancegenome.curation_api.services.ontology.ObiTermService;
 import org.alliancegenome.curation_api.services.ontology.RoTermService;
 import org.alliancegenome.curation_api.services.ontology.SoTermService;
 import org.alliancegenome.curation_api.services.ontology.WbbtTermService;
@@ -120,6 +121,8 @@ public class BulkLoadJobExecutor {
 	XsmoTermService xsmoTermService;
 	@Inject
 	RoTermService roTermService;
+	@Inject
+	ObiTermService obiTermService;
 
 	@Inject
 	MoleculeService moleculeService;
@@ -271,6 +274,10 @@ public class BulkLoadJobExecutor {
 					break;
 				case XSMO:
 					processTerms(bulkLoadFile, xsmoTermService, config);
+					break;
+				case OBI:
+					config.setLoadOnlyIRIPrefix("OBI");
+					processTerms(bulkLoadFile, obiTermService, config);
 					break;
 				default:
 					log.info("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");

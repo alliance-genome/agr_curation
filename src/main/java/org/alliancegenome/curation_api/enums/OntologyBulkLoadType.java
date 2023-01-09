@@ -11,6 +11,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MATerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MMUSDVTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.OBITerm;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ROTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
@@ -29,7 +30,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.ZFSTerm;
 public enum OntologyBulkLoadType {
 	ECO(ECOTerm.class), ZFA(ZFATerm.class), DO(DOTerm.class), MA(MATerm.class), CHEBI(CHEBITerm.class), XCO(XCOTerm.class), MP(MPTerm.class), DAO(DAOTerm.class), ZECO(ZECOTerm.class),
 	WBBT(WBBTTerm.class), EMAPA(EMAPATerm.class), GO(GOTerm.class), SO(SOTerm.class), RO(ROTerm.class), WBLS(WBLSTerm.class), FBDV(FBDVTerm.class), MMUSDV(MMUSDVTerm.class), ZFS(ZFSTerm.class),
-	XBA_XBS(null), XBA(XBATerm.class), XBS(XBSTerm.class), XPO(XPOTerm.class), ATP(ATPTerm.class), XBED(XBEDTerm.class), XSMO(XSMOTerm.class);
+	XBA_XBS(null), XBA(XBATerm.class), XBS(XBSTerm.class), XPO(XPOTerm.class), ATP(ATPTerm.class), XBED(XBEDTerm.class), XSMO(XSMOTerm.class), OBI(OBITerm.class);
 
 	private Class<? extends OntologyTerm> clazz;
 
