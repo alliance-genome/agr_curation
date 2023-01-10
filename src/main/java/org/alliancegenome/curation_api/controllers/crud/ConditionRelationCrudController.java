@@ -57,13 +57,18 @@ public class ConditionRelationCrudController extends BaseEntityCrudController<Co
 			throw new ApiErrorException("Cannot find reference for given reference ID: " + referenceID);
 		}
 		SearchResponse<ConditionRelation> conditionRelationSearchResponse = find(page, limit, params);
-		Optional<ConditionRelation> optional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(STANDARD)).findFirst();
+		Optional<ConditionRelation> standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(STANDARD)).findFirst();
+		Optional<ConditionRelation> genericOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(GENERIC_CONTROL)).findFirst();
 		// add standard experiments (standard, generic_control) if not present as per ZFIN requirement
-		if (optional.isEmpty()) {
+		if (standardOptional.isEmpty()) {
 			conditionRelationSearchResponse.getResults().add(conditionRelationService.getStandardExperiment(STANDARD, reference));
+			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 1);
+			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 1);
+		}
+		if (genericOptional.isEmpty()) {
 			conditionRelationSearchResponse.getResults().add(conditionRelationService.getStandardExperiment(GENERIC_CONTROL, reference));
-			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 2);
-			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 2);
+			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 1);
+			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 1);
 		}
 		return conditionRelationSearchResponse;
 	}
