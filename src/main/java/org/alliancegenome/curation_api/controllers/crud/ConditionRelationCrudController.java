@@ -19,8 +19,6 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Optional;
 
-import static org.alliancegenome.curation_api.constants.ExperimentConditionConstants.GENERIC_CONTROL;
-import static org.alliancegenome.curation_api.constants.ExperimentConditionConstants.STANDARD;
 
 @RequestScoped
 public class ConditionRelationCrudController extends BaseEntityCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
@@ -57,16 +55,16 @@ public class ConditionRelationCrudController extends BaseEntityCrudController<Co
 			throw new ApiErrorException("Cannot find reference for given reference ID: " + referenceID);
 		}
 		SearchResponse<ConditionRelation> conditionRelationSearchResponse = find(page, limit, params);
-		Optional<ConditionRelation> standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(STANDARD)).findFirst();
-		Optional<ConditionRelation> genericOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(GENERIC_CONTROL)).findFirst();
+		Optional<ConditionRelation> standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_STANDARD)).findFirst();
+		Optional<ConditionRelation> genericOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL)).findFirst();
 		// add standard experiments (standard, generic_control) if not present as per ZFIN requirement
 		if (standardOptional.isEmpty()) {
-			conditionRelationSearchResponse.getResults().add(conditionRelationService.getStandardExperiment(STANDARD, reference));
+			conditionRelationSearchResponse.getResults().add(conditionRelationService.getStandardExperiment(ConditionRelation.Constant.HANDLE_STANDARD, reference));
 			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 1);
 			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 1);
 		}
 		if (genericOptional.isEmpty()) {
-			conditionRelationSearchResponse.getResults().add(conditionRelationService.getStandardExperiment(GENERIC_CONTROL, reference));
+			conditionRelationSearchResponse.getResults().add(conditionRelationService.getStandardExperiment(ConditionRelation.Constant.HANDLE_GENERIC_CONTROL, reference));
 			conditionRelationSearchResponse.setTotalResults(conditionRelationSearchResponse.getTotalResults() + 1);
 			conditionRelationSearchResponse.setReturnedRecords(conditionRelationSearchResponse.getReturnedRecords() + 1);
 		}
