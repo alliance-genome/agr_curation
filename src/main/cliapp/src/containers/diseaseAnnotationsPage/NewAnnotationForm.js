@@ -21,11 +21,14 @@ import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/Co
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
 import { autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
-import {SubjectAdditionalFieldData} from "../../components/SubjectAdditionalFieldData";
-import {AssertedAlleleAdditionalFieldData} from "../../components/AssertedAlleleAdditionalFieldData";
-import {DiseaseAdditionalFieldData} from "../../components/DiseaseAdditionalFieldData";
-import {SingleReferenceAdditionalFieldData} from "../../components/SingleReferenceAdditionalFieldData";
-import {SGDStrainBackgroundAdditionalFieldData} from "../../components/SGDStrainBackgroundAdditionalFieldData";
+import { SubjectAdditionalFieldData } from "../../components/SubjectAdditionalFieldData";
+import { AssertedAlleleAdditionalFieldData } from "../../components/AssertedAlleleAdditionalFieldData";
+import { DiseaseAdditionalFieldData } from "../../components/DiseaseAdditionalFieldData";
+import { SingleReferenceAdditionalFieldData } from "../../components/SingleReferenceAdditionalFieldData";
+import { SGDStrainBackgroundAdditionalFieldData } from "../../components/SGDStrainBackgroundAdditionalFieldData";
+import { AssertedGenesAdditionalFieldData } from "../../components/AssertedGenesAdditionalFieldData";
+import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodesAdditionalFieldData";
+import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -407,6 +410,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedGenes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedGenes"}/>
+							<AssertedGenesAdditionalFieldData fieldData={newAnnotation.assertedGenes}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedAllele">Asserted Allele</label>
@@ -499,6 +503,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
+							<EvidenceCodesAdditionalFieldData fieldData={newAnnotation.evidenceCodes}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>
@@ -515,6 +520,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
+							<WithAdditionalFieldData fieldData={newAnnotation.with}/>
 						</SplitterPanel>
 					</Splitter>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
