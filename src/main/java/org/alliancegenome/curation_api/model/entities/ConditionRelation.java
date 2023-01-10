@@ -37,6 +37,9 @@ import lombok.EqualsAndHashCode;
 @AGRCurationSchemaVersion(min = "1.2.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { ExperimentalCondition.class })
 public class ConditionRelation extends UniqueIdAuditedObject {
 
+	public static final String STANDARD = "Standard";
+	public static final String GENERIC_CONTROL = "Generic-control";
+
 	@IndexedEmbedded(includeDepth = 1)
 	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne

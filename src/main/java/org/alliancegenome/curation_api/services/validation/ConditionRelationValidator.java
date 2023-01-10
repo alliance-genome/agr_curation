@@ -72,7 +72,7 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 			throw new ApiErrorException(response);
 		}
 
-		dbEntity = (ConditionRelation) validateAuditedObjectFields(uiEntity, dbEntity, false);
+		dbEntity = validateAuditedObjectFields(uiEntity, dbEntity, false);
 
 		return validateConditionRelation(uiEntity, dbEntity, throwError, checkUniqueness);
 	}
