@@ -1,15 +1,21 @@
 package org.alliancegenome.curation_api.services;
 
+import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
+import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
+import org.alliancegenome.curation_api.dao.ontology.ZecoTermDAO;
+import org.alliancegenome.curation_api.model.entities.ConditionRelation;
+import org.alliancegenome.curation_api.model.entities.ExperimentalCondition;
+import org.alliancegenome.curation_api.model.entities.Reference;
+import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
+import org.alliancegenome.curation_api.services.validation.ConditionRelationValidator;
+import org.elasticsearch.common.collect.List;
+
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-
-import org.alliancegenome.curation_api.dao.ConditionRelationDAO;
-import org.alliancegenome.curation_api.model.entities.ConditionRelation;
-import org.alliancegenome.curation_api.response.ObjectResponse;
-import org.alliancegenome.curation_api.services.base.BaseEntityCrudService;
-import org.alliancegenome.curation_api.services.validation.ConditionRelationValidator;
+import java.util.HashMap;
 
 @RequestScoped
 public class ConditionRelationService extends BaseEntityCrudService<ConditionRelation, ConditionRelationDAO> {
@@ -18,6 +24,10 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 	ConditionRelationDAO conditionRelationDAO;
 	@Inject
 	ConditionRelationValidator conditionRelationValidator;
+	@Inject
+	VocabularyTermDAO vocabularyTermDAO;
+	@Inject
+	ZecoTermDAO zecoTermDAO;
 
 	@Override
 	@PostConstruct
@@ -47,5 +57,18 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 			conditionRelation = conditionRelationValidator.validateConditionRelationUpdate(uiEntity, true, false);
 		}
 		return new ObjectResponse<>(conditionRelation);
+	}
+
+	public ConditionRelation getStandardExperiment(String experimentName, Reference reference) {
+		ConditionRelation conditionRelation = new ConditionRelation();
+		conditionRelation.setHandle(experimentName);
+		conditionRelation.setSingleReference(reference);
+		conditionRelation.setConditionRelationType(vocabularyTermDAO.getTermInVocabulary("Condition relation types", "has_condition"));
+		ExperimentalCondition condition = new ExperimentalCondition();
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("curie", "ZECO:0000103");
+		condition.setConditionClass(zecoTermDAO.findByParams(null, params).getSingleResult());
+		conditionRelation.setConditions(List.of(condition));
+		return conditionRelation;
 	}
 }
