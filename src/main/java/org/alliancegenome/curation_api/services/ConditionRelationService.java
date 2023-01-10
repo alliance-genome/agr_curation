@@ -17,8 +17,6 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import java.util.HashMap;
 
-import static org.alliancegenome.curation_api.model.entities.ConditionRelation.STANDARD;
-
 @RequestScoped
 public class ConditionRelationService extends BaseEntityCrudService<ConditionRelation, ConditionRelationDAO> {
 

@@ -19,8 +19,8 @@ import javax.inject.Inject;
 import java.util.HashMap;
 import java.util.Optional;
 
-import static org.alliancegenome.curation_api.model.entities.ConditionRelation.GENERIC_CONTROL;
-import static org.alliancegenome.curation_api.model.entities.ConditionRelation.STANDARD;
+import static org.alliancegenome.curation_api.constants.ExperimentConditionConstants.GENERIC_CONTROL;
+import static org.alliancegenome.curation_api.constants.ExperimentConditionConstants.STANDARD;
 
 @RequestScoped
 public class ConditionRelationCrudController extends BaseEntityCrudController<ConditionRelationService, ConditionRelation, ConditionRelationDAO> implements ConditionRelationCrudInterface {
