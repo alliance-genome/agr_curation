@@ -18,7 +18,7 @@ public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
 
 	public VocabularyTerm getTermInVocabulary(String vocabularyName, String termName) {
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
 		params.put("vocabulary.name", vocabularyName);
 
@@ -29,7 +29,7 @@ public class VocabularyTermDAO extends BaseSQLDAO<VocabularyTerm> {
 
 	public VocabularyTerm getTermInVocabularyTermSet(String vocabularyTermSetName, String termName) {
 
-		Map<String, Object> params = new HashMap<String, Object>();
+		Map<String, Object> params = new HashMap<>();
 		params.put("name", termName);
 		params.put("vocabularyTermSets.name", vocabularyTermSetName);
 
