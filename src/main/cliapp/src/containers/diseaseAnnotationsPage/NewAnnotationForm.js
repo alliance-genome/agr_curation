@@ -6,7 +6,6 @@ import { Dropdown } from "primereact/dropdown";
 import { Toast } from "primereact/toast";
 import { useMutation, useQueryClient } from "react-query";
 import { FormErrorMessageComponent } from "../../components/FormErrorMessageComponent";
-import { FormAdditionalFieldData } from "../../components/FormAdditionalFieldData";
 import { classNames } from "primereact/utils";
 import { DiseaseAnnotationService } from "../../service/DiseaseAnnotationService";
 import { Splitter, SplitterPanel } from "primereact/splitter";
@@ -22,6 +21,14 @@ import { ControlledVocabularyFormMultiSelectDropdown } from '../../components/Co
 import { AutocompleteFormEditor } from "../../components/Autocomplete/AutocompleteFormEditor";
 import { autocompleteSearch, buildAutocompleteFilter } from "../../utils/utils";
 import { AutocompleteFormMultiEditor } from "../../components/Autocomplete/AutocompleteFormMultiEditor";
+import { SubjectAdditionalFieldData } from "../../components/SubjectAdditionalFieldData";
+import { AssertedAlleleAdditionalFieldData } from "../../components/AssertedAlleleAdditionalFieldData";
+import { DiseaseAdditionalFieldData } from "../../components/DiseaseAdditionalFieldData";
+import { SingleReferenceAdditionalFieldData } from "../../components/SingleReferenceAdditionalFieldData";
+import { SGDStrainBackgroundAdditionalFieldData } from "../../components/SGDStrainBackgroundAdditionalFieldData";
+import { AssertedGenesAdditionalFieldData } from "../../components/AssertedGenesAdditionalFieldData";
+import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodesAdditionalFieldData";
+import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -120,7 +127,7 @@ export const NewAnnotationForm = ({
 					if (closeAfterSubmit) {
 						newAnnotationDispatch({type: "RESET"});
 					}
-					//Invalidating the query immediately after success leads to api results that don't always include the new annotation 
+					//Invalidating the query immediately after success leads to api results that don't always include the new annotation
 					setTimeout(() => {
 						queryClient.invalidateQueries("DiseaseAnnotations").then(() => {
 							//needs to be set after api call otherwise the newly appended DA would be removed when there are no filters
@@ -229,14 +236,14 @@ export const NewAnnotationForm = ({
 	}
 
 	const onDiseaseChange = (event) => {
-		const curie = event.value.curie;
+		/*const curie = event.value.curie;
 		const stringValue = event.value;
-		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};
+		const value = typeof event.value === "string" ? {curie: stringValue} : {curie};*/
 
 		newAnnotationDispatch({
 			type: "EDIT",
 			field: event.target.name,
-			value
+			value: event.value
 		});
 	}
 
@@ -385,7 +392,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.subject})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"subject"}/>
-							<FormAdditionalFieldData field={"subject"} fieldData={newAnnotation.subject}/>
+							<SubjectAdditionalFieldData fieldData={newAnnotation.subject}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedGenes">Asserted Genes</label>
@@ -403,6 +410,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedGenes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedGenes"}/>
+							<AssertedGenesAdditionalFieldData fieldData={newAnnotation.assertedGenes}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="assertedAllele">Asserted Allele</label>
@@ -420,6 +428,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.assertedAllele})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"assertedAllele"}/>
+							<AssertedAlleleAdditionalFieldData fieldData={newAnnotation.assertedAllele}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="diseaseRelation"><font color={'red'}>*</font>Disease Relation</label>
@@ -461,6 +470,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.object})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"object"}/>
+							<DiseaseAdditionalFieldData fieldData={newAnnotation.object}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="singleReference"><font color={'red'}>*</font>Reference</label>
@@ -476,6 +486,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.singleReference})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"singleReference"}/>
+							<SingleReferenceAdditionalFieldData fieldData={newAnnotation.singleReference}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="evidenceCodes"><font color={'red'}>*</font>Evidence Code</label>
@@ -492,6 +503,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.evidenceCodes})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"evidenceCodes"}/>
+							<EvidenceCodesAdditionalFieldData fieldData={newAnnotation.evidenceCodes}/>
 						</SplitterPanel>
 						<SplitterPanel style={{paddingRight: '10px'}}>
 							<label htmlFor="with">With</label>
@@ -508,6 +520,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.with})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"with"}/>
+							<WithAdditionalFieldData fieldData={newAnnotation.with}/>
 						</SplitterPanel>
 					</Splitter>
 					<Splitter style={{border:'none', height:'10%', padding:'10px'}} gutterSize="0">
@@ -591,6 +604,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.sgdStrainBackground})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"sgdStrainBackground"}/>
+							<SGDStrainBackgroundAdditionalFieldData fieldData={newAnnotation.sgdStrainBackground}/>
 						</SplitterPanel>
 					</Splitter>
 
