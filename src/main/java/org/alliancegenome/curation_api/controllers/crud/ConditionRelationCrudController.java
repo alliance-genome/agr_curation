@@ -48,11 +48,15 @@ public class ConditionRelationCrudController extends BaseEntityCrudController<Co
 		String key = "singleReference.curie";
 		String referenceID = (String) params.get(key);
 		if (StringUtils.isEmpty(referenceID)) {
-			throw new ApiErrorException("Cannot find any reference ID under map key: " + key);
+			ObjectResponse<ConditionRelation> response = new ObjectResponse<>();
+			response.addErrorMessage(key, "Cannot find any reference ID under map key: " + key);
+			throw new ApiErrorException(response);
 		}
 		Reference reference = referenceService.get(referenceID).getEntity();
 		if (ObjectUtils.isEmpty(reference)) {
-			throw new ApiErrorException("Cannot find reference for given reference ID: " + referenceID);
+			ObjectResponse<ConditionRelation> response = new ObjectResponse<>();
+			response.addErrorMessage(key, "Cannot find reference for given reference ID: " + referenceID);
+			throw new ApiErrorException(response);
 		}
 		SearchResponse<ConditionRelation> conditionRelationSearchResponse = find(page, limit, params);
 		Optional<ConditionRelation> standardOptional = conditionRelationSearchResponse.getResults().stream().filter(conditionRelation -> conditionRelation.getHandle().equals(ConditionRelation.Constant.HANDLE_STANDARD)).findFirst();
