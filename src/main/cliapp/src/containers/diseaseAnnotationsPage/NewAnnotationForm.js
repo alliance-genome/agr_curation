@@ -228,7 +228,8 @@ export const NewAnnotationForm = ({
 	}
 
 	const subjectSearch = (event, setFiltered, setQuery) => {
-		const autocompleteFields = ["geneSymbol.displayText", "alleleSymbol.displayText", "geneFullName.displayText", "alleleFullName.displayText", "name", "curie", "crossReferences.curie", "secondaryIdentifiers", "alleleSynonyms.displayText", "geneSynonyms.displayText"];
+		//The order of the below fields are as per the Autocomplete search result
+		const autocompleteFields = ["curie", "crossReferences.curie", "name", "geneFullName.displayText", "alleleFullName.displayText", "geneSymbol.displayText", "alleleSymbol.displayText", "secondaryIdentifiers", "alleleSynonyms.displayText", "geneSynonyms.displayText"];
 		const endpoint = "biologicalentity";
 		const filterName = "subjectFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
