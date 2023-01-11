@@ -29,6 +29,7 @@ import { SGDStrainBackgroundAdditionalFieldData } from "../../components/SGDStra
 import { AssertedGenesAdditionalFieldData } from "../../components/AssertedGenesAdditionalFieldData";
 import { EvidenceCodesAdditionalFieldData } from "../../components/EvidenceCodesAdditionalFieldData";
 import { WithAdditionalFieldData } from "../../components/WithAdditionalFieldData";
+import { GeneticModifierAdditionalFieldData } from "../../components/GeneticModifierAdditionalFieldData";
 
 export const NewAnnotationForm = ({
 									newAnnotationState,
@@ -651,6 +652,7 @@ export const NewAnnotationForm = ({
 								classNames={classNames({'p-invalid': submitted && errorMessages.diseaseGeneticModifier})}
 							/>
 							<FormErrorMessageComponent errorMessages={errorMessages} errorField={"diseaseGeneticModifier"}/>
+							<GeneticModifierAdditionalFieldData fieldData={newAnnotation.diseaseGeneticModifier}/>
 						</SplitterPanel>
 					</Splitter>
 
