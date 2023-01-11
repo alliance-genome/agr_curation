@@ -36,10 +36,6 @@ public class ConditionRelationCrudController extends BaseEntityCrudController<Co
 		return conditionRelationService.validate(entity);
 	}
 
-	public ObjectResponse<ConditionRelation> update(ConditionRelation entity) {
-		return super.update(entity);
-	}
-
 	@Override
 	public SearchResponse<ConditionRelation> findExperiments(HashMap<String, Object> params) {
 		return conditionRelationService.getConditionRelationSearchResponse(params);
