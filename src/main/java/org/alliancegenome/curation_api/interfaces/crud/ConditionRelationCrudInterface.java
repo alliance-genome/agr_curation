@@ -45,6 +45,6 @@ public interface ConditionRelationCrudInterface extends BaseIdCrudInterface<Cond
 	@POST
 	@Path("/find-experiments")
 	@JsonView(View.FieldsAndLists.class)
-	SearchResponse<ConditionRelation> findExperiments(@DefaultValue("0") @QueryParam("page") Integer page, @DefaultValue("10") @QueryParam("limit") Integer limit, @RequestBody HashMap<String, Object> params);
+	SearchResponse<ConditionRelation> findExperiments(@RequestBody HashMap<String, Object> params);
 
 }
