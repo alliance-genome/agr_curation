@@ -239,7 +239,7 @@ export const NewAnnotationForm = ({
 			"name",
 			"curie",
 			"crossReferences.curie",
-			//"secondaryIdentifiers",
+			"secondaryIdentifiers",
 		];
 		const endpoint = "biologicalentity";
 		const filterName = "subjectFilter";
