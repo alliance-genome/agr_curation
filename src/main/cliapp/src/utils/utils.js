@@ -235,7 +235,7 @@ export function buildAutocompleteFilter(event, autocompleteFields) {
 		filter[field] = {
 			queryString: event.query,
 			tokenOperator: "AND",
-			queryType: "matchQuery"
+			useKeywordFields: true
 		}
 	})
 

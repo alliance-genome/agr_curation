@@ -34,6 +34,7 @@ import org.hibernate.exception.ConstraintViolationException;
 import org.hibernate.search.engine.search.aggregation.AggregationKey;
 import org.hibernate.search.engine.search.common.BooleanOperator;
 import org.hibernate.search.engine.search.common.ValueConvert;
+import org.hibernate.search.engine.search.predicate.dsl.BooleanPredicateClausesStep;
 import org.hibernate.search.engine.search.query.SearchQuery;
 import org.hibernate.search.engine.search.query.SearchResult;
 import org.hibernate.search.engine.search.query.dsl.SearchQueryOptionsStep;
@@ -350,18 +351,25 @@ public class BaseSQLDAO<E extends BaseEntity> extends BaseEntityDAO<E> {
 										String op = (String) searchFilters.get(filterName).get(field).get("tokenOperator");
 										BooleanOperator booleanOperator = op == null ? BooleanOperator.AND : BooleanOperator.valueOf(op);
 
-										String queryField = field;
 										Boolean useKeywordFields = (Boolean) searchFilters.get(filterName).get(field).get("useKeywordFields");
-										if (useKeywordFields != null && useKeywordFields) {
-											queryField = field + "_keyword";
-										}
 
 										String queryType = (String) searchFilters.get(filterName).get(field).get("queryType");
 										if (queryType != null && queryType.equals("matchQuery")) {
-											q.should(p.match().field(queryField).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value : 1));
+											BooleanPredicateClausesStep<?> clause = p.bool();
+											if (useKeywordFields != null && useKeywordFields) {
+												clause.should(p.match().field(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value * 10 : 1));
+											}
+											clause.should(p.match().field(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString()).boost(value >= 1 ? value : 1));
+											q.should(clause);
 										} else { // assume simple query
-											q.should(p.simpleQueryString().fields(queryField).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+											BooleanPredicateClausesStep<?> clause = p.bool();
+											if (useKeywordFields != null && useKeywordFields) {
+												clause.should(p.simpleQueryString().fields(field + "_keyword").matching(searchFilters.get(filterName).get(field).get("queryString").toString())
+													.defaultOperator(booleanOperator).boost(value >= 1 ? value * 10 : 1));
+											}
+											clause.should(p.simpleQueryString().fields(field).matching(searchFilters.get(filterName).get(field).get("queryString").toString())
 												.defaultOperator(booleanOperator).boost(value >= 1 ? value : 1));
+											q.should(clause);
 										}
 										boost++;
 									}
