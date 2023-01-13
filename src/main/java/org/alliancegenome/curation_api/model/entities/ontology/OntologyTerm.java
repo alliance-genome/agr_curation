@@ -71,6 +71,7 @@ public class OntologyTerm extends CurieAuditedObject {
 	private String definition;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "definitionUrls_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
 	@Column(columnDefinition = "TEXT")
@@ -78,12 +79,14 @@ public class OntologyTerm extends CurieAuditedObject {
 	private List<String> definitionUrls;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "subsets_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
 	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
 	private List<String> subsets;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")
+	@KeywordField(name = "secondaryIdentifiers_keyword", aggregable = Aggregable.YES, sortable = Sortable.YES, searchable = Searchable.YES, normalizer = "sortNormalizer")
 	@ElementCollection
 	@JsonView(View.FieldsAndLists.class)
 	@JoinTable(indexes = @Index(columnList = "ontologyterm_curie"))
