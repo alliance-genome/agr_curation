@@ -22,6 +22,7 @@ import { Button } from 'primereact/button';
 import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const AllelesTable = () => {
 
@@ -698,6 +699,13 @@ export const AllelesTable = () => {
 		}
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("Alleles", defaultColumnNames);
+
 	return (
 		<>
 			<div className="card">
@@ -708,6 +716,8 @@ export const AllelesTable = () => {
 					endpoint="allele"
 					tableName="Alleles"
 					columns={columns}
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
 					isEnabled={isEnabled}

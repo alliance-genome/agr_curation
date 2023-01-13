@@ -16,6 +16,7 @@ import { GenericDataTable } from '../../components/GenericDataTable/GenericDataT
 import {AutocompleteEditor} from "../../components/Autocomplete/AutocompleteEditor";
 import {autocompleteSearch, buildAutocompleteFilter, defaultAutocompleteOnChange, multipleAutocompleteOnChange} from "../../utils/utils";
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 
 export const VocabularyTermSetTable = () => {
@@ -219,6 +220,13 @@ export const VocabularyTermSetTable = () => {
 		}
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("VocabularyTermSets", defaultColumnNames);
+
 	const headerButtons = () => {
 		return (
 			<>
@@ -236,6 +244,8 @@ export const VocabularyTermSetTable = () => {
 				endpoint="vocabularytermset"
 				tableName="Vocabulary Term Sets"
 				columns={columns}
+				defaultColumnNames={defaultColumnNames}
+				initialTableState={initialTableState}
 				aggregationFields={aggregationFields}
 				isEditable={true}
 				idFields={["vocabularyTermSetVocabulary, memberTerms"]}
