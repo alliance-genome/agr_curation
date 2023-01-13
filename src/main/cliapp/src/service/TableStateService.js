@@ -13,9 +13,11 @@ const modTableSettings = {
 				"Date Created", "Internal", "Obsolete", "Negated"
 			],
 			filters:{
-				"dataProvider.abbreviation": { queryString: "RGD", tokenOperator: "AND" },
-				"dataProvider.fullName": { queryString: "RGD", tokenOperator: "AND" },
-				"dataProvider.shortName": { queryString: "RGD", tokenOperator: "AND" }
+				dataProviderFilter: {
+					"dataProvider.abbreviation": { queryString: "RGD", tokenOperator: "AND" },
+					"dataProvider.fullName": { queryString: "RGD", tokenOperator: "AND" },
+					"dataProvider.shortName": { queryString: "RGD", tokenOperator: "AND" }
+				}
 			}, 
 			isFirst: false,
 			tableKeyName: "DiseaseAnnotations",
@@ -46,7 +48,7 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	WormBaseStaff:	{
+	WBStaff:	{
 		DiseaseAnnotations: {
 			page: 0,
 			rows: 50,
@@ -76,7 +78,7 @@ const modTableSettings = {
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
 	},
-	FlyBaseStaff:	{
+	FBStaff:	{
 		DiseaseAnnotations: {
 			page: 0,
 			first: 0,
