@@ -37,6 +37,8 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	private String requiredReference2 = "AGRKB:000000021";
 	private String requiredSoTerm = "SO:00001";
 	private String requiredSoTerm2 = "SO:00002";
+	private String requiredMpTerm = "MP:00001";
+	private String requiredMpTerm2 = "MP:00002";
 	
 	@BeforeEach
 	public void init() {
@@ -53,6 +55,8 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 	private void loadRequiredEntities() throws Exception {
 		loadSOTerm(requiredSoTerm, "Test SOTerm");
 		loadSOTerm(requiredSoTerm2, "Test SOTerm2");
+		loadMPTerm(requiredMpTerm, "Test MPTerm");
+		loadMPTerm(requiredMpTerm2, "Test MPTerm2");
 	}
 	
 	@Test
@@ -75,7 +79,6 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.inheritanceMode.name", is("dominant")).
 			body("entity.inCollection.name", is("Million_mutations_project")).
 			body("entity.isExtinct", is(false)).
 			body("entity.references", hasSize(1)).
@@ -126,6 +129,17 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
 			body("entity.alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleInheritanceModes", hasSize(1)).
+			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(requiredReference)).
+			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is("dominant")).
+			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(requiredMpTerm)).
+			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement")).
+			body("entity.alleleInheritanceModes[0].internal", is(true)).
+			body("entity.alleleInheritanceModes[0].obsolete", is(true)).
+			body("entity.alleleInheritanceModes[0].createdBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleInheritanceModes[0].updatedBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleInheritanceModes[0].dateCreated", is(OffsetDateTime.parse("2022-03-09T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleInheritanceModes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-10T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleSecondaryIds", hasSize(1)).
 			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(requiredReference)).
 			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary")).
@@ -157,7 +171,6 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
-			body("entity.inheritanceMode.name", is("recessive")).
 			body("entity.inCollection.name", is("WGS_Yanai")).
 			body("entity.isExtinct", is(true)).
 			body("entity.references", hasSize(1)).
@@ -208,6 +221,17 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleMutationTypes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
 			body("entity.alleleMutationTypes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleMutationTypes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleInheritanceModes", hasSize(1)).
+			body("entity.alleleInheritanceModes[0].evidence[0].curie", is(requiredReference2)).
+			body("entity.alleleInheritanceModes[0].inheritanceMode.name", is("recessive")).
+			body("entity.alleleInheritanceModes[0].phenotypeTerm.curie", is(requiredMpTerm2)).
+			body("entity.alleleInheritanceModes[0].phenotypeStatement", is("Phenotype statement 2")).
+			body("entity.alleleInheritanceModes[0].internal", is(false)).
+			body("entity.alleleInheritanceModes[0].obsolete", is(false)).
+			body("entity.alleleInheritanceModes[0].createdBy.uniqueId", is("ALLELETEST:Person0002")).
+			body("entity.alleleInheritanceModes[0].updatedBy.uniqueId", is("ALLELETEST:Person0001")).
+			body("entity.alleleInheritanceModes[0].dateCreated", is(OffsetDateTime.parse("2022-03-19T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
+			body("entity.alleleInheritanceModes[0].dateUpdated", is(OffsetDateTime.parse("2022-03-20T22:10:12Z").atZoneSameInstant(ZoneId.systemDefault()).toOffsetDateTime().toString())).
 			body("entity.alleleSecondaryIds", hasSize(1)).
 			body("entity.alleleSecondaryIds[0].evidence[0].curie", is(requiredReference2)).
 			body("entity.alleleSecondaryIds[0].secondaryId", is("TEST:Secondary2")).
@@ -236,6 +260,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_12_no_allele_full_name_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_13_no_allele_synonym_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_14_no_allele_secondary_id_secondary_id.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "MR_15_no_allele_inheritance_mode_inheritance_mode.json");
 	}
 	
 	@Test
@@ -254,6 +279,7 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_11_empty_allele_full_name_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_12_empty_allele_synonym_name_type.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_13_empty_allele_secondary_id_secondary_id.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "ER_14_empty_allele_inheritance_mode_inheritance_mode.json");
 	}
 	
 	@Test
@@ -262,21 +288,23 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_01_invalid_date_created.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_02_invalid_date_updated.json");
 		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_03_invalid_taxon.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_04_invalid_inheritance_mode.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_05_invalid_in_collection.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_06_invalid_reference.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_07_invalid_allele_mutation_type_mutation_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_08_invalid_allele_mutation_type_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_09_invalid_allele_symbol_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_10_invalid_allele_full_name_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_11_invalid_allele_synonym_name_type.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_12_invalid_allele_symbol_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_13_invalid_allele_full_name_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_14_invalid_allele_synonym_synonym_scope.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_15_invalid_allele_symbol_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_16_invalid_allele_full_name_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_17_invalid_allele_synonym_evidence.json");
-		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_18_invalid_allele_secondary_id_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_04_invalid_in_collection.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_05_invalid_reference.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_06_invalid_allele_mutation_type_mutation_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_07_invalid_allele_mutation_type_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_08_invalid_allele_symbol_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_09_invalid_allele_full_name_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_10_invalid_allele_synonym_name_type.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_11_invalid_allele_symbol_synonym_scope.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_12_invalid_allele_full_name_synonym_scope.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_13_invalid_allele_synonym_synonym_scope.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_14_invalid_allele_symbol_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_15_invalid_allele_full_name_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_16_invalid_allele_synonym_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_17_invalid_allele_secondary_id_evidence.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_18_invalid_allele_inheritance_mode_inheritance_mode.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_19_invalid_allele_inheritance_mode_phenotype_term.json");
+		checkFailedBulkLoad(alleleBulkPostEndpoint, alleleTestFilePath + "IV_20_invalid_allele_inheritance_mode_evidence.json");
 	}
 
 	@Test
@@ -295,13 +323,13 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity", not(hasKey("updatedBy"))).
 			body("entity", not(hasKey("dateCreated"))).
 			body("entity", not(hasKey("dateUpdated"))).
-			body("entity", not(hasKey("inheritanceMode"))).
 			body("entity", not(hasKey("inCollection"))).
 			body("entity", not(hasKey("references"))).
 			body("entity", not(hasKey("alleleMutationTypes"))).
 			body("entity", not(hasKey("alleleFullName"))).
 			body("entity", not(hasKey("alleleSynonyms"))).
-			body("entity", not(hasKey("alleleSecondaryIds")));
+			body("entity", not(hasKey("alleleSecondaryIds"))).
+			body("entity", not(hasKey("alleleInheritanceModes")));
 	}
 
 	@Test
@@ -345,7 +373,14 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleSecondaryIds[0]", not(hasKey("createdBy"))).
 			body("entity.alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
 			body("entity.alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated")));
+			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("createdBy"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated")));
 	}
 	
 	@Test
@@ -396,6 +431,13 @@ public class AlleleBulkUploadITCase extends BaseITCase {
 			body("entity.alleleSecondaryIds[0]", not(hasKey("createdBy"))).
 			body("entity.alleleSecondaryIds[0]", not(hasKey("updatedBy"))).
 			body("entity.alleleSecondaryIds[0]", not(hasKey("dateCreated"))).
-			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated")));
+			body("entity.alleleSecondaryIds[0]", not(hasKey("dateUpdated"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("evidence"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeTerm"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("phenotypeStatement"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("createdBy"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("updatedBy"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("dateCreated"))).
+			body("entity.alleleInheritanceModes[0]", not(hasKey("dateUpdated")));
 	}
 }

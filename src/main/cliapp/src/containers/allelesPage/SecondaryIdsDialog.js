@@ -6,17 +6,13 @@ import { Button } from 'primereact/button';
 import { Toast } from 'primereact/toast';
 import { ColumnGroup } from 'primereact/columngroup';
 import { Row } from 'primereact/row';
-import { ListTableCell } from '../../components/ListTableCell';
 import { DialogErrorMessageComponent } from '../../components/DialogErrorMessageComponent';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { InputTextEditor } from '../../components/InputTextEditor';
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { SearchService } from '../../service/SearchService';
 import { ValidationService } from '../../service/ValidationService';
-import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from "../../utils/utils";
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
 
 export const SecondaryIdsDialog = ({
 													originalSecondaryIdsData,
@@ -30,7 +26,6 @@ export const SecondaryIdsDialog = ({
 	const [errorMessages, setErrorMessages] = useState([]);
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
 	const validationService = new ValidationService();
-	const searchService = new SearchService();
 	const tableRef = useRef(null);
 	const rowsEdited = useRef(0);
 	const toast_topright = useRef(null);
@@ -232,55 +227,6 @@ export const SecondaryIdsDialog = ({
 		);
 	};
 
-	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.evidence) {
-			const refStrings = getRefStrings(rowData.evidence);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item}
-					</EllipsisTableCell>
-				);
-			};
-			return <ListTableCell template={listTemplate} listData={refStrings} />
-		}
-	};
-
-	const evidenceEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={evidenceSearch}
-					initialValue={props.rowData.evidence}
-					rowProps={props}
-					fieldName='evidence'
-					subField='curie'
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-					onValueChangeHandler={onEvidenceValueChange}
-				/>
-				<DialogErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"evidence"}
-				/>
-			</>
-		);
-	};
-
-	const onEvidenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "evidence", setFieldValue);
-	};
-
-	const evidenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["curie", "cross_references.curie"];
-		const endpoint = "literature-reference";
-		const filterName = "evidenceFilter";
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
-
 	const footerTemplate = () => {
 		if (!isInEdit) {
 			return null;
@@ -345,7 +291,7 @@ export const SecondaryIdsDialog = ({
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={secondaryIdEditorTemplate} field="secondaryId" header="Secondary ID" headerClassName='surface-0' body={secondaryIdTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={evidenceEditorTemplate} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={evidenceTemplate}/>
+					<Column editor={(props) => evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 				</DataTable>
 			</Dialog>
 		</div>

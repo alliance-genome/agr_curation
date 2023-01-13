@@ -9,7 +9,6 @@
     "date_created": "2022-03-09T22:10:12+00:00",
     "date_updated": "2022-03-10T22:10:12+00:00",
     "is_extinct": false,
-    "inheritance_mode_name": "dominant",
     "in_collection_name": "Million_mutations_project",
     "reference_curies": [
       "PMID:25920550"
@@ -19,6 +18,11 @@
         "mutation_type_curies": [
           "SO:00001"
         ]
+      }
+    ],
+    "allele_inheritance_mode_dtos": [
+      {
+        "inheritance_mode_name": "dominant"
       }
     ],
     "allele_symbol_dto": {
