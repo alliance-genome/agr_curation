@@ -14,9 +14,9 @@ import { useControlledVocabularyService } from '../../service/useControlledVocab
 import { SearchService } from '../../service/SearchService';
 import { ValidationService } from '../../service/ValidationService';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
-import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange, getRefStrings } from "../../utils/utils";
+import { autocompleteSearch, buildAutocompleteFilter, multipleAutocompleteOnChange } from "../../utils/utils";
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
-import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import { evidenceTemplate, evidenceEditorTemplate } from '../../components/EvidenceComponent';
 
 export const MutationTypesDialog = ({
 													originalMutationTypesData,
@@ -203,11 +203,6 @@ export const MutationTypesDialog = ({
 		return <EllipsisTableCell>{JSON.stringify(rowData.internal)}</EllipsisTableCell>;
 	};
 
-	const onInternalEditorValueChange = (props, event) => {
-		let _localMutationTypes = [...localMutationTypes];
-		_localMutationTypes[props.rowIndex].internal = event.value.name;
-	}
-
 	const internalEditor = (props) => {
 		return (
 			<>
@@ -221,6 +216,11 @@ export const MutationTypesDialog = ({
 			</>
 		);
 	};
+	
+	const onInternalEditorValueChange = (props, event) => {
+		let _localMutationTypes = [...localMutationTypes];
+		_localMutationTypes[props.rowIndex].internal = event.value.name;
+	}
 
 	const mutationTypeTemplate = (rowData) => {
 		if (rowData && rowData.mutationTypes) {
@@ -246,7 +246,7 @@ export const MutationTypesDialog = ({
 					fieldName='mutationTypes'
 					subField='curie'
 					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
+							<SubjectAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
 					onValueChangeHandler={onMutationTypeValueChange}
 				/>
 				<DialogErrorMessageComponent
@@ -265,55 +265,6 @@ export const MutationTypesDialog = ({
 		const autocompleteFields = ["name", "curie"];
 		const endpoint = "soterm";
 		const filterName = "mutationTypeFilter";
-		const filter = buildAutocompleteFilter(event, autocompleteFields);
-
-		setInputValue(event.query);
-		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered);
-	}
-
-	const evidenceTemplate = (rowData) => {
-		if (rowData && rowData.evidence) {
-			const refStrings = getRefStrings(rowData.evidence);
-			const listTemplate = (item) => {
-				return (
-					<EllipsisTableCell>
-						{item}
-					</EllipsisTableCell>
-				);
-			};
-			return <ListTableCell template={listTemplate} listData={refStrings} />
-		}
-	};
-
-	const evidenceEditorTemplate = (props) => {
-		return (
-			<>
-				<AutocompleteMultiEditor
-					search={evidenceSearch}
-					initialValue={props.rowData.evidence}
-					rowProps={props}
-					fieldName='evidence'
-					subField='curie'
-					valueDisplay={(item, setAutocompleteHoverItem, op, query) =>
-						<LiteratureAutocompleteTemplate item={item} setAutocompleteHoverItem={setAutocompleteHoverItem} op={op} query={query}/>}
-					onValueChangeHandler={onEvidenceValueChange}
-				/>
-				<DialogErrorMessageComponent
-					errorMessages={errorMessages[props.rowIndex]}
-					errorField={"evidence"}
-				/>
-			</>
-		);
-	};
-
-	const onEvidenceValueChange = (event, setFieldValue, props) => {
-		multipleAutocompleteOnChange(props, event, "evidence", setFieldValue);
-	};
-
-	const evidenceSearch = (event, setFiltered, setInputValue) => {
-		const autocompleteFields = ["curie", "cross_references.curie"];
-		const endpoint = "literature-reference";
-		const filterName = "evidenceFilter";
 		const filter = buildAutocompleteFilter(event, autocompleteFields);
 
 		setInputValue(event.query);
@@ -363,12 +314,12 @@ export const MutationTypesDialog = ({
 	}
 
 	let headerGroup = 	<ColumnGroup>
-						<Row>
-							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-							<Column header="Mutation Types" />
-							<Column header="Internal" />
-							<Column header="Evidence" />
-						</Row>
+							<Row>
+								<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
+								<Column header="Mutation Types" />
+								<Column header="Internal" />
+								<Column header="Evidence" />
+							</Row>
 						</ColumnGroup>;
 
 	return (
@@ -377,13 +328,13 @@ export const MutationTypesDialog = ({
 			<Dialog visible={dialog} className='w-6' modal onHide={hideDialog} closable={!isInEdit} onShow={showDialogHandler} footer={footerTemplate} resizable>
 				<h3>Mutation Types</h3>
 				<DataTable value={localMutationTypes} dataKey="dataKey" showGridlines editMode='row' headerColumnGroup={headerGroup}
-								editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
+						editingRows={editingRows} onRowEditChange={onRowEditChange} ref={tableRef} onRowEditCancel={onRowEditCancel} onRowEditSave={(props) => onRowEditSave(props)}>
 					<Column rowEditor={isInEdit} style={{maxWidth: '7rem', display: isInEdit ? 'visible' : 'none'}} headerStyle={{width: '7rem', position: 'sticky'}}
-								bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
+							bodyStyle={{textAlign: 'center'}} frozen headerClassName='surface-0' />
 					<Column editor={(props) => deleteAction(props)} body={(props) => deleteAction(props)} style={{ maxWidth: '4rem' , display: isInEdit ? 'visible' : 'none'}} frozen headerClassName='surface-0' bodyStyle={{textAlign: 'center'}}/>
 					<Column editor={mutationTypeEditorTemplate} field="mutationType.curie" header="Mutation Type" headerClassName='surface-0' body={mutationTypeTemplate}/>
 					<Column editor={internalEditor} field="internal" header="Internal" body={internalTemplate} headerClassName='surface-0'/>
-					<Column editor={evidenceEditorTemplate} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={evidenceTemplate}/>
+					<Column editor={(props) =>evidenceEditorTemplate(props, errorMessages)} field="evidence.curie" header="Evidence" headerClassName='surface-0' body={(rowData) => evidenceTemplate(rowData)}/>
 				</DataTable>
 			</Dialog>
 		</div>

@@ -2,7 +2,6 @@ package org.alliancegenome.curation_api.services.validation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
@@ -13,6 +12,7 @@ import org.alliancegenome.curation_api.constants.VocabularyConstants;
 import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
@@ -24,12 +24,14 @@ import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationValidator;
+import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationValidator;
 import org.alliancegenome.curation_api.services.validation.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationValidator;
@@ -44,6 +46,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	@Inject
 	AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
 	@Inject
+	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
+	@Inject
 	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
 	@Inject
 	AlleleFullNameSlotAnnotationDAO alleleFullNameDAO;
@@ -53,6 +57,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 	AlleleSecondaryIdSlotAnnotationDAO alleleSecondaryIdDAO;
 	@Inject
 	AlleleMutationTypeSlotAnnotationValidator alleleMutationTypeValidator;
+	@Inject
+	AlleleInheritanceModeSlotAnnotationValidator alleleInheritanceModeValidator;
 	@Inject
 	AlleleSymbolSlotAnnotationValidator alleleSymbolValidator;
 	@Inject
@@ -122,9 +128,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 			dbEntity.setReferences(null);
 		}
 
-		VocabularyTerm inheritanceMode = validateInheritanceMode(uiEntity, dbEntity);
-		dbEntity.setInheritanceMode(inheritanceMode);
-
 		VocabularyTerm inCollection = validateInCollection(uiEntity, dbEntity);
 		dbEntity.setInCollection(inCollection);
 
@@ -146,6 +149,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 		removeUnusedSlotAnnotations(uiEntity, dbEntity);
 
 		List<AlleleMutationTypeSlotAnnotation> mutationTypes = validateAlleleMutationTypes(uiEntity, dbEntity);
+		
+		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = validateAlleleInheritanceModes(uiEntity, dbEntity);
 
 		AlleleSymbolSlotAnnotation symbol = validateAlleleSymbol(uiEntity, dbEntity);
 		AlleleFullNameSlotAnnotation fullName = validateAlleleFullName(uiEntity, dbEntity);
@@ -167,6 +172,14 @@ public class AlleleValidator extends GenomicEntityValidator {
 			}
 		}
 		dbEntity.setAlleleMutationTypes(mutationTypes);
+
+		if (inheritanceModes != null) {
+			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes) {
+				im.setSingleAllele(dbEntity);
+				alleleInheritanceModeDAO.persist(im);
+			}
+		}
+		dbEntity.setAlleleInheritanceModes(inheritanceModes);
 
 		if (symbol != null) {
 			symbol.setSingleAllele(dbEntity);
@@ -214,25 +227,6 @@ public class AlleleValidator extends GenomicEntityValidator {
 		return singleRefResponse.getEntity();
 	}
 
-	private VocabularyTerm validateInheritanceMode(Allele uiEntity, Allele dbEntity) {
-		String field = "inheritanceMode";
-
-		if (uiEntity.getInheritanceMode() == null)
-			return null;
-
-		VocabularyTerm inheritanceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, uiEntity.getInheritanceMode().getName());
-		if (inheritanceMode == null) {
-			addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
-			return null;
-		}
-
-		if (inheritanceMode.getObsolete() && (dbEntity.getInheritanceMode() == null || !inheritanceMode.getName().equals(dbEntity.getInheritanceMode().getName()))) {
-			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
-			return null;
-		}
-		return inheritanceMode;
-	}
-
 	private VocabularyTerm validateInCollection(Allele uiEntity, Allele dbEntity) {
 		String field = "inCollection";
 
@@ -262,6 +256,21 @@ public class AlleleValidator extends GenomicEntityValidator {
 				if (!reusedIds.contains(previousMutationType.getId())) {
 					previousMutationType.setSingleAllele(null);
 					alleleMutationTypeDAO.remove(previousMutationType.getId());
+				}
+			}
+		}
+	}
+
+	private void removeUnusedAlleleInheritanceModes(Allele uiEntity, Allele dbEntity) {
+		List<Long> reusedIds = new ArrayList<Long>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleInheritanceModes()))
+			reusedIds = uiEntity.getAlleleInheritanceModes().stream().map(AlleleInheritanceModeSlotAnnotation::getId).collect(Collectors.toList());
+
+		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleInheritanceModes())) {
+			for (AlleleInheritanceModeSlotAnnotation previousInheritanceMode : dbEntity.getAlleleInheritanceModes()) {
+				if (!reusedIds.contains(previousInheritanceMode.getId())) {
+					previousInheritanceMode.setSingleAllele(null);
+					alleleInheritanceModeDAO.remove(previousInheritanceMode.getId());
 				}
 			}
 		}
@@ -337,6 +346,28 @@ public class AlleleValidator extends GenomicEntityValidator {
 			return null;
 
 		return validatedMutationTypes;
+	}
+
+	private List<AlleleInheritanceModeSlotAnnotation> validateAlleleInheritanceModes(Allele uiEntity, Allele dbEntity) {
+		String field = "alleleInheritanceModes";
+
+		List<AlleleInheritanceModeSlotAnnotation> validatedInheritanceModes = new ArrayList<AlleleInheritanceModeSlotAnnotation>();
+		if (CollectionUtils.isNotEmpty(uiEntity.getAlleleInheritanceModes())) {
+			for (AlleleInheritanceModeSlotAnnotation im : uiEntity.getAlleleInheritanceModes()) {
+				ObjectResponse<AlleleInheritanceModeSlotAnnotation> imResponse = alleleInheritanceModeValidator.validateAlleleInheritanceModeSlotAnnotation(im);
+				if (imResponse.getEntity() == null) {
+					addMessageResponse(field, imResponse.errorMessagesString());
+					return null;
+				}
+				im = imResponse.getEntity();
+				validatedInheritanceModes.add(im);
+			}
+		}
+
+		if (CollectionUtils.isEmpty(validatedInheritanceModes))
+			return null;
+
+		return validatedInheritanceModes;
 	}
 
 	private AlleleSymbolSlotAnnotation validateAlleleSymbol(Allele uiEntity, Allele dbEntity) {
@@ -430,5 +461,8 @@ public class AlleleValidator extends GenomicEntityValidator {
 
 		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleSecondaryIds()))
 			removeUnusedAlleleSecondaryIds(uiEntity, dbEntity);
+		
+		if (CollectionUtils.isNotEmpty(dbEntity.getAlleleInheritanceModes()))
+			removeUnusedAlleleInheritanceModes(uiEntity, dbEntity);
 	}
 }

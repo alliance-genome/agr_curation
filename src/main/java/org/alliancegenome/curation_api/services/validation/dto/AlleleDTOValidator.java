@@ -13,6 +13,7 @@ import org.alliancegenome.curation_api.dao.AlleleDAO;
 import org.alliancegenome.curation_api.dao.ReferenceDAO;
 import org.alliancegenome.curation_api.dao.VocabularyTermDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDAO;
+import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDAO;
 import org.alliancegenome.curation_api.dao.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDAO;
@@ -22,11 +23,13 @@ import org.alliancegenome.curation_api.model.entities.Allele;
 import org.alliancegenome.curation_api.model.entities.Reference;
 import org.alliancegenome.curation_api.model.entities.VocabularyTerm;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotation;
+import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotation;
 import org.alliancegenome.curation_api.model.entities.slotAnnotations.alleleSlotAnnotations.AlleleSynonymSlotAnnotation;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleDTO;
+import org.alliancegenome.curation_api.model.ingest.dto.AlleleInheritanceModeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleMutationTypeSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.AlleleSecondaryIdSlotAnnotationDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.NameSlotAnnotationDTO;
@@ -34,6 +37,7 @@ import org.alliancegenome.curation_api.response.ObjectResponse;
 import org.alliancegenome.curation_api.services.ReferenceService;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleFullNameSlotAnnotationDTOValidator;
+import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleInheritanceModeSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleMutationTypeSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSecondaryIdSlotAnnotationDTOValidator;
 import org.alliancegenome.curation_api.services.validation.dto.slotAnnotations.alleleSlotAnnotations.AlleleSymbolSlotAnnotationDTOValidator;
@@ -48,6 +52,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	AlleleDAO alleleDAO;
 	@Inject
 	AlleleMutationTypeSlotAnnotationDAO alleleMutationTypeDAO;
+	@Inject
+	AlleleInheritanceModeSlotAnnotationDAO alleleInheritanceModeDAO;
 	@Inject
 	AlleleSymbolSlotAnnotationDAO alleleSymbolDAO;
 	@Inject
@@ -64,6 +70,8 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 	ReferenceService referenceService;
 	@Inject
 	AlleleMutationTypeSlotAnnotationDTOValidator alleleMutationTypeDtoValidator;
+	@Inject
+	AlleleInheritanceModeSlotAnnotationDTOValidator alleleInheritanceModeDtoValidator;
 	@Inject
 	AlleleSymbolSlotAnnotationDTOValidator alleleSymbolDtoValidator;
 	@Inject
@@ -94,15 +102,6 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 		alleleResponse.addErrorMessages(geResponse.getErrorMessages());
 
 		allele = geResponse.getEntity();
-
-		VocabularyTerm inheritenceMode = null;
-		if (StringUtils.isNotBlank(dto.getInheritanceModeName())) {
-			inheritenceMode = vocabularyTermDAO.getTermInVocabulary(VocabularyConstants.ALLELE_INHERITANCE_MODE_VOCABULARY, dto.getInheritanceModeName());
-			if (inheritenceMode == null) {
-				alleleResponse.addErrorMessage("inheritance_mode_name", ValidationConstants.INVALID_MESSAGE + " (" + dto.getInheritanceModeName() + ")");
-			}
-		}
-		allele.setInheritanceMode(inheritenceMode);
 
 		VocabularyTerm inCollection = null;
 		if (StringUtils.isNotBlank(dto.getInCollectionName())) {
@@ -146,6 +145,26 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 				} else {
 					AlleleMutationTypeSlotAnnotation mutationType = mutationTypeResponse.getEntity();
 					mutationTypes.add(mutationType);
+				}
+			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(allele.getAlleleInheritanceModes())) {
+			allele.getAlleleInheritanceModes().forEach(aim -> {
+				aim.setSingleAllele(null);
+				alleleInheritanceModeDAO.remove(aim.getId());
+			});
+		}
+
+		List<AlleleInheritanceModeSlotAnnotation> inheritanceModes = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(dto.getAlleleInheritanceModeDtos())) {
+			for (AlleleInheritanceModeSlotAnnotationDTO inheritanceModeDTO : dto.getAlleleInheritanceModeDtos()) {
+				ObjectResponse<AlleleInheritanceModeSlotAnnotation> inheritanceModeResponse = alleleInheritanceModeDtoValidator.validateAlleleInheritanceModeSlotAnnotationDTO(inheritanceModeDTO);
+				if (inheritanceModeResponse.hasErrors()) {
+					alleleResponse.addErrorMessage("allele_inheritance_mode_dtos", inheritanceModeResponse.errorMessagesString());
+				} else {
+					AlleleInheritanceModeSlotAnnotation inheritanceMode = inheritanceModeResponse.getEntity();
+					inheritanceModes.add(inheritanceMode);
 				}
 			}
 		}
@@ -236,6 +255,13 @@ public class AlleleDTOValidator extends BaseDTOValidator {
 			for (AlleleMutationTypeSlotAnnotation mt : mutationTypes) {
 				mt.setSingleAllele(allele);
 				alleleMutationTypeDAO.persist(mt);
+			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(inheritanceModes)) {
+			for (AlleleInheritanceModeSlotAnnotation im : inheritanceModes) {
+				im.setSingleAllele(allele);
+				alleleInheritanceModeDAO.persist(im);
 			}
 		}
 
