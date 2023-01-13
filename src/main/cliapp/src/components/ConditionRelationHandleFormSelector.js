@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { Dropdown } from "primereact/dropdown"
-import { SearchService } from '../service/SearchService';
+import { ExperimentsSearchService } from '../service/ExperimentsSearchService';
 
 export function ConditionRelationHandleFormDropdown({ editorChange, referenceCurie, value, name, showClear, placeholderText, isEnabled, customRef }) {
 	const [selectedValue, setSelectedValue] = useState(value);
-	const searchService = new SearchService();
+	const experimentsSearchService = new ExperimentsSearchService();
 	const [handles, setHandles] = useState(null);
 
 	const onShow = () => {
-			searchService.find(
+			experimentsSearchService.findExperiments(
 				"condition-relation",
 				15,
 				0,
