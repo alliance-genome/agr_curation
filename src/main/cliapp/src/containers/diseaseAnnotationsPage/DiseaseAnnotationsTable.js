@@ -925,11 +925,11 @@ export const DiseaseAnnotationsTable = () => {
 	};
 
 	const withSearch = (event, setFiltered, setInputValue) => {
-	   const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
-	   const endpoint = "gene";
-	   const filterName = "withFilter";
-	   const filter = buildAutocompleteFilter(event, autocompleteFields);
-	   const otherFilters = {
+		const autocompleteFields = ["geneSymbol.displayText", "geneFullName.displayText", "curie", "crossReferences.curie", "secondaryIdentifiers", "geneSynonyms.displayText"];
+		const endpoint = "gene";
+		const filterName = "withFilter";
+		const filter = buildAutocompleteFilter(event, autocompleteFields);
+		const otherFilters = {
 			taxonFilter: {
 				"taxon.curie": {
 					queryString: "NCBITaxon:9606"
@@ -937,8 +937,8 @@ export const DiseaseAnnotationsTable = () => {
 			},
 		}
 
-	   setInputValue(event.query);
-	   autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
+		setInputValue(event.query);
+		autocompleteSearch(searchService, endpoint, filterName, filter, setFiltered, otherFilters);
 	}
 	const withEditorTemplate = (props) => {
 		return (
@@ -1146,7 +1146,7 @@ export const DiseaseAnnotationsTable = () => {
 		return (
 			<>
 				<AutocompleteEditor
-				    search={referenceSearch}
+					search={referenceSearch}
 					initialValue={() => getRefString(props.rowData.singleReference)}
 					rowProps={props}
 					fieldName='singleReference'
@@ -1407,7 +1407,7 @@ export const DiseaseAnnotationsTable = () => {
 		header: "Secondary Data Provider",
 		sortable: isEnabled,
 		filter: true,
-		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider.abbreviation", "secondaryDataProvider.fullName", "scondaryDataProvider.shortName"]},
+		filterElement: {type: "input", filterName: "secondaryDataProviderFilter", fields: ["secondaryDataProvider.abbreviation", "secondaryDataProvider.fullName", "secondaryDataProvider.shortName"]},
 	},
 	{
 		field: "updatedBy.uniqueId",

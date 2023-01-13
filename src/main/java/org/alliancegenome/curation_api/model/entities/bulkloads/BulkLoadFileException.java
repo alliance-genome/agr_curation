@@ -40,7 +40,7 @@ public class BulkLoadFileException extends GeneratedAuditedObject {
 	// TODO: define in LinkML once class definition matured
 
 	@Type(type = JsonTypes.JSON_BIN)
-	@JsonView({ View.BulkLoadFileHistory.class })
+	@JsonView({ View.FieldsOnly.class })
 	@Column(columnDefinition = JsonTypes.JSON_BIN)
 	private ObjectUpdateExceptionData exception;
 

@@ -84,7 +84,8 @@ public class DiseaseAnnotationService extends BaseEntityCrudService<DiseaseAnnot
 			if (authenticatedPerson.getOktaEmail() != null) {
 				annotation.setUpdatedBy(loggedInPersonService.findLoggedInPersonByOktaEmail(authenticatedPerson.getOktaEmail()));
 			} else {
-				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(annotation.getDataProvider().getAbbreviation() + " " + loadType + " bulk upload"));
+				String dataProviderAbbreviation = annotation.getDataProvider() != null ? annotation.getDataProvider().getAbbreviation() + " " : "";		
+				annotation.setUpdatedBy(personService.fetchByUniqueIdOrCreate(dataProviderAbbreviation + loadType + " bulk upload"));
 			}
 			annotation.setDateUpdated(OffsetDateTime.now());
 			diseaseAnnotationDAO.persist(annotation);

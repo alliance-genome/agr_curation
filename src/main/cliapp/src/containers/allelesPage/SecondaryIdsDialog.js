@@ -269,14 +269,15 @@ export const SecondaryIdsDialog = ({
 		);
 	}
 
-	let headerGroup = 	<ColumnGroup>
-						<Row>
-							<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
-							<Column header="Secondary ID" />
-							<Column header="Internal" />
-							<Column header="Evidence" />
-						</Row>
-						</ColumnGroup>;
+	let headerGroup = 
+			<ColumnGroup>
+				<Row>
+					<Column header="Actions" colSpan={2} style={{display: isInEdit ? 'visible' : 'none'}}/>
+					<Column header="Secondary ID" />
+					<Column header="Internal" />
+					<Column header="Evidence" />
+				</Row>
+			</ColumnGroup>;
 
 	return (
 		<div>

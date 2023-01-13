@@ -255,6 +255,7 @@ export const SiteLayout = (props) => {
 												{ label: 'Xenbase Experimantal Data Ontology (XBED)', icon: 'pi pi-fw pi-home', to: '/ontology/xbed' },
 												{ label: 'Xenopus Small Molecule Ontology (XSMO)', icon: 'pi pi-fw pi-home', to: '/ontology/xsmo' },
 												{ label: 'Alliance Tags for Papers Ontology (ATP)', icon: 'pi pi-fw pi-home', to: '/ontology/atp' },
+												{ label: 'Ontology for Biomedical Investigations (OBI)', icon: 'pi pi-fw pi-home', to: '/ontology/obi' },
 												{ label: 'NCBI Organismal Classification (NCBITaxon)', icon: 'pi pi-fw pi-home', to: '/ontology/ncbitaxon' }
 										]
 								},
