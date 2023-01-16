@@ -70,10 +70,10 @@ const modTableSettings = {
 			],
 			selectedColumnNames: [
 					"MOD Annotation ID", "Subject", "Asserted Genes", "Disease Relation",
-					"Negated", "Data Provider", "Disease", "Reference",
-					"Evidence Code", "Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
-					"Genetic Modifier", "Updated By", "Date Updated", "Created By",
-					"Date Created", "Internal", "Obsolete", "Related Notes"
+					"Negated", "Disease", "Reference", "Evidence Code", "Related Notes",
+					"Experimental Conditions", "Genetic Sex", "Genetic Modifier Relation",
+					"Genetic Modifier","Data Provider", "Updated By", "Date Updated", "Created By",
+					"Date Created", "Internal", "Obsolete", 
 			],
 			tableSettingsKeyName: "DiseaseAnnotationsTableSettings"
 		}
