@@ -3,7 +3,7 @@ import { Card } from 'primereact/card';
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { Button } from 'primereact/button';
 
-export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, onclickEvent, isEnabled}){
+export function DataTableHeaderFooterTemplate({title, multiselectComponent, buttons, tableStateConfirm, isEnabled, modReset, modResetConfirm}){
 
 		return (
 						<Card>
@@ -11,10 +11,13 @@ export function DataTableHeaderFooterTemplate({title, multiselectComponent, butt
 										<SplitterPanel size={50} style={{textAlign: 'left'}}>
 												<h2>{title}</h2>
 										</SplitterPanel>
-										<SplitterPanel size={50} style={{textAlign: 'right'}}>
-												{multiselectComponent}&nbsp;&nbsp;&nbsp;&nbsp;
-												{buttons}&nbsp;&nbsp;
-												<Button disabled={!isEnabled} onClick={onclickEvent}>Reset Table</Button>
+										<SplitterPanel size={60} style={{textAlign: 'right'}}>
+											{multiselectComponent}&nbsp;
+											{buttons}&nbsp;
+											<Button disabled={!isEnabled} onClick={tableStateConfirm}>Reset Table</Button>&nbsp;
+											{modReset && 
+												<Button disabled={!isEnabled} onClick={modResetConfirm}>Reset to MOD Default</Button>
+											}
 										</SplitterPanel>
 								</Splitter>
 						</Card>

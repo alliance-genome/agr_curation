@@ -5,12 +5,15 @@ import { SearchService } from '../../service/SearchService';
 import { trimWhitespace, returnSorted, reorderArray, setDefaultColumnOrder, genericConfirmDialog, validateBioEntityFields } from '../../utils/utils';
 import { useSetDefaultColumnOrder } from '../../utils/useSetDefaultColumnOrder';
 import { useGetUserSettings } from "../../service/useGetUserSettings";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 
 export const useGenericDataTable = ({
 	endpoint,
 	tableName,
 	columns,
+	defaultColumnNames,
+	initialTableState,
 	aggregationFields,
 	curieFields,
 	idFields,
@@ -21,27 +24,11 @@ export const useGenericDataTable = ({
 	toasts,
 	initialColumnWidth,
 	errorObject,
-	defaultVisibleColumns,
 	newEntity,
 	deletionEnabled,
 	deletionMethod,
 }) => {
 
-	const defaultColumnNames = columns.map((col) => {
-		return col.header;
-	});
-
-	let initialTableState = {
-		page: 0,
-		first: 0,
-		rows: 50,
-		multiSortMeta: [],
-		selectedColumnNames: defaultVisibleColumns ? defaultVisibleColumns : defaultColumnNames,
-		filters: {},
-		isFirst: false,
-		tableKeyName: tableName.replace(/\s+/g, ''), //remove whitespace from tableName
-		tableSettingsKeyName: tableName.replace(/\s+/g,'') + "TableSettings"
-	}
 
 	const { settings: tableState, mutate: setTableState } = useGetUserSettings(initialTableState.tableSettingsKeyName, initialTableState);
 
@@ -325,9 +312,28 @@ export const useGenericDataTable = ({
 		setEditingRows(event.data);
 	};
 
-	const resetTableState = () => {
+	const resetToModDefault = () => {
 		let _tableState = {
 			...initialTableState,
+			isFirst: false,
+		};
+
+		setDefaultColumnOrder(columns, dataTable, initialTableState.selectedColumnNames, deletionEnabled);
+		setTableState(_tableState);
+		const _columnWidths = {...columnWidths};
+
+		Object.keys(_columnWidths).map((key) => {
+			return _columnWidths[key] = initialColumnWidth;
+		});
+
+		setColumnWidths(_columnWidths);
+		dataTable.current.el.children[1].scrollLeft = 0;
+	}
+
+	const resetTableState = () => {
+		let defaultTableState = getDefaultTableState(tableState.tableKeyName, defaultColumnNames);
+		let _tableState = {
+			...defaultTableState,
 			isFirst: false,
 		};
 
@@ -348,6 +354,14 @@ export const useGenericDataTable = ({
 			header: `${tableName} Table State Reset`,
 			message: `Are you sure? This will reset the local state of the ${tableName} table.`,
 			accept: resetTableState
+		});
+	}
+
+	const modResetConfirm = () => {
+		genericConfirmDialog({
+			header: `${tableName} Table MOD Default Reset`,
+			message: `Are you sure? This will reset the local state of the ${tableName} table to the MOD default settings.`,
+			accept: resetToModDefault
 		});
 	}
 
@@ -374,6 +388,7 @@ export const useGenericDataTable = ({
 		defaultColumnNames,
 		tableState,
 		tableStateConfirm,
+		modResetConfirm,
 		onFilter,
 		setColumnList,
 		columnWidths,

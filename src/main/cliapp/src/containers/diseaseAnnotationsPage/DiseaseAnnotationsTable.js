@@ -6,6 +6,7 @@ import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEd
 import { SubjectAutocompleteTemplate } from '../../components/Autocomplete/SubjectAutocompleteTemplate';
 import { EvidenceAutocompleteTemplate } from '../../components/Autocomplete/EvidenceAutocompleteTemplate';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
+import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { ListTableCell } from '../../components/ListTableCell';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
@@ -26,7 +27,8 @@ import {getRefString, autocompleteSearch, buildAutocompleteFilter, defaultAutoco
 import {useNewAnnotationReducer} from "./useNewAnnotaionReducer";
 import {NewAnnotationForm} from "./NewAnnotationForm";
 import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObjectComponent';
-import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getModTableState } from '../../service/TableStateService';
 
 export const DiseaseAnnotationsTable = () => {
 
@@ -358,10 +360,7 @@ export const DiseaseAnnotationsTable = () => {
 							{`Notes(${props.rowData.relatedNotes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-						</span>
+						<EditMessageTooltip/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
@@ -377,10 +376,7 @@ export const DiseaseAnnotationsTable = () => {
 								Add Note
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-							</span>
+							<EditMessageTooltip/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"relatedNotes"} style={{ 'fontSize': '1em' }}/>
@@ -419,10 +415,7 @@ export const DiseaseAnnotationsTable = () => {
 							{handle && handle}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-						</span>
+						<EditMessageTooltip/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"conditionRelations"} style={{ 'fontSize': '1em' }}/>
@@ -438,10 +431,7 @@ export const DiseaseAnnotationsTable = () => {
 								Add Condition
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-							</span>
+							<EditMessageTooltip/>
 						</Button>
 					</div>
 				</>
@@ -1083,7 +1073,7 @@ export const DiseaseAnnotationsTable = () => {
 						</Tooltip>
 					</>
 				)
-			}else if (rowData.subject.name) {
+			} else if (rowData.subject.name) {
 				return (
 					<>
 						<div className={`overflow-hidden text-overflow-ellipsis a${rowData.id}${rowData.subject.curie.replace(':', '')}`}
@@ -1469,6 +1459,13 @@ export const DiseaseAnnotationsTable = () => {
 	}
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getModTableState("DiseaseAnnotations");
+
 	const headerButtons = () => {
 		return (
 			<>
@@ -1486,6 +1483,8 @@ export const DiseaseAnnotationsTable = () => {
 					endpoint="disease-annotation"
 					tableName="Disease Annotations"
 					columns={columns}
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					aggregationFields={aggregationFields}
 					isEditable={true}
 					sortMapping={sortMapping}
@@ -1500,6 +1499,7 @@ export const DiseaseAnnotationsTable = () => {
 					deletionEnabled={true}
 					deletionMethod={diseaseAnnotationService.deleteDiseaseAnnotation}
 					deprecateIfPublic={true}
+					modReset={true}
 				/>
 			</div>
 			<NewAnnotationForm

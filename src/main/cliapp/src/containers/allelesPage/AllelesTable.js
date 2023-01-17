@@ -7,10 +7,10 @@ import { internalTemplate, obsoleteTemplate } from '../../components/AuditedObje
 import { TrueFalseDropdown } from '../../components/TrueFalseDropDownSelector';
 import { ErrorMessageComponent } from '../../components/ErrorMessageComponent';
 import { useControlledVocabularyService } from '../../service/useControlledVocabularyService';
-import { ControlledVocabularyDropdown } from '../../components/ControlledVocabularySelector';
 import { AlleleService } from '../../service/AlleleService';
 import { SearchService } from '../../service/SearchService';
 import { MutationTypesDialog } from './MutationTypesDialog';
+import { InheritanceModesDialog } from './InheritanceModesDialog';
 import { SecondaryIdsDialog } from './SecondaryIdsDialog';
 import { AutocompleteEditor } from '../../components/Autocomplete/AutocompleteEditor';
 import { LiteratureAutocompleteTemplate } from '../../components/Autocomplete/LiteratureAutocompleteTemplate';
@@ -19,8 +19,10 @@ import { VocabTermAutocompleteTemplate } from '../../components/Autocomplete/Voc
 import { Tooltip } from 'primereact/tooltip';
 import { Toast } from 'primereact/toast';
 import { Button } from 'primereact/button';
+import { EditMessageTooltip } from '../../components/EditMessageTooltip';
 import { defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefStrings, multipleAutocompleteOnChange } from '../../utils/utils';
 import { AutocompleteMultiEditor } from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const AllelesTable = () => {
 
@@ -31,6 +33,14 @@ export const AllelesTable = () => {
 
 	const [mutationTypesData, setMutationTypesData] = useState({
 		mutationTypes: [],
+		isInEdit: false,
+		dialog: false,
+		rowIndex: null,
+		mainRowProps: {},
+	});
+
+	const [inheritanceModesData, setInheritanceModesData] = useState({
+		inheritanceModes: {},
 		isInEdit: false,
 		dialog: false,
 		rowIndex: null,
@@ -49,14 +59,8 @@ export const AllelesTable = () => {
 	const toast_topright = useRef(null);
 
 	const booleanTerms = useControlledVocabularyService('generic_boolean_terms');
-	const inheritanceModeTerms = useControlledVocabularyService('Allele inheritance mode vocabulary');
-
 	const searchService = new SearchService();
 	let alleleService = new AlleleService();
-
-	const aggregationFields = [
-		'inheritanceMode.name'
-	];
 
 	const mutation = useMutation(updatedAllele => {
 		if (!alleleService) {
@@ -89,26 +93,6 @@ export const AllelesTable = () => {
 			);
 		}
 	}
-
-	const onInheritanceModeEditorValueChange = (props, event) => {
-		let updatedAlleles = [...props.props.value];
-		updatedAlleles[props.rowIndex].inheritanceMode = event.value;
-	};
-
-	const inheritanceModeEditor = (props) => {
-		return (
-			<>
-				<ControlledVocabularyDropdown
-					field="inheritanceMode"
-					options={inheritanceModeTerms}
-					editorChange={onInheritanceModeEditorValueChange}
-					props={props}
-					showClear={true}
-				/>
-				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"inheritanceMode"} />
-			</>
-		);
-	};
 
 	const onInCollectionValueChange = (event, setFieldValue, props) => {
 		defaultAutocompleteOnChange(props, event, "inCollection", setFieldValue, "name");
@@ -312,6 +296,97 @@ export const AllelesTable = () => {
 		);
 	};
 
+	const inheritanceModesTemplate = (rowData) => {
+		if (rowData?.alleleInheritanceModes) {
+			const inheritanceModeSet = new Set();
+			for(var i = 0; i < rowData.alleleInheritanceModes.length; i++){
+				if (rowData.alleleInheritanceModes[i].inheritanceMode) {
+					inheritanceModeSet.add(rowData.alleleInheritanceModes[i].inheritanceMode.name);
+				}
+			}
+			if (inheritanceModeSet.size > 0) {
+				const sortedInheritanceModes = Array.from(inheritanceModeSet).sort();
+				const listTemplate = (item) => {
+					return (
+						<span style={{ textDecoration: 'underline' }}>
+							{item && item}
+						</span>
+					);
+				};
+				return (
+					<>
+						<Button className="p-button-text"
+							onClick={(event) => { handleInheritanceModesOpen(event, rowData, false) }} >
+							<ListTableCell template={listTemplate} listData={sortedInheritanceModes}/>
+						</Button>
+					</>
+				);
+			}
+		}
+	};
+
+	const inheritanceModesEditor = (props) => {
+		if (props?.rowData?.alleleInheritanceModes) {
+			return (
+				<>
+				<div>
+					<Button className="p-button-text"
+						onClick={(event) => { handleInheritanceModesOpenInEdit(event, props, true) }} >
+						<span style={{ textDecoration: 'underline' }}>
+							{`Inheritance Modes(${props.rowData.alleleInheritanceModes.length}) `}
+							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+						</span>&nbsp;&nbsp;&nbsp;&nbsp;
+						<EditMessageTooltip/>
+					</Button>
+				</div>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleInheritanceModes"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		} else {
+			return (
+				<>
+					<div>
+						<Button className="p-button-text"
+							onClick={(event) => { handleInheritanceModesOpenInEdit(event, props, true) }} >
+							<span style={{ textDecoration: 'underline' }}>
+								Add Inheritance Mode
+								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
+							</span>&nbsp;&nbsp;&nbsp;&nbsp;
+							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
+							<EditMessageTooltip/>
+						</Button>
+					</div>
+					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleInheritanceModes"} style={{ 'fontSize': '1em' }}/>
+				</>
+			)
+		}
+	};
+
+	const handleInheritanceModesOpen = (event, rowData, isInEdit) => {
+		let _inheritanceModesData = {};
+		_inheritanceModesData["originalInheritanceModes"] = rowData.alleleInheritanceModes;
+		_inheritanceModesData["dialog"] = true;
+		_inheritanceModesData["isInEdit"] = isInEdit;
+		setInheritanceModesData(() => ({
+			..._inheritanceModesData
+		}));
+	};
+
+	const handleInheritanceModesOpenInEdit = (event, rowProps, isInEdit) => {
+		const { rows } = rowProps.props;
+		const { rowIndex } = rowProps;
+		const index = rowIndex % rows;
+		let _inheritanceModesData = {};
+		_inheritanceModesData["originalInheritanceModes"] = rowProps.rowData.alleleInheritanceModes;
+		_inheritanceModesData["dialog"] = true;
+		_inheritanceModesData["isInEdit"] = isInEdit;
+		_inheritanceModesData["rowIndex"] = index;
+		_inheritanceModesData["mainRowProps"] = rowProps;
+		setInheritanceModesData(() => ({
+			..._inheritanceModesData
+		}));
+	};
+
 	const mutationTypesTemplate = (rowData) => {
 		if (rowData?.alleleMutationTypes) {
 			const mutationTypeSet = new Set();
@@ -356,13 +431,10 @@ export const AllelesTable = () => {
 							{`Mutation Types(${props.rowData.alleleMutationTypes.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-						</span>
+						<EditMessageTooltip/>
 					</Button>
 				</div>
-					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
+				<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
 				</>
 			)
 		} else {
@@ -376,9 +448,7 @@ export const AllelesTable = () => {
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
 							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-							</span>
+							<EditMessageTooltip/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleMutationTypes"} style={{ 'fontSize': '1em' }}/>
@@ -386,8 +456,6 @@ export const AllelesTable = () => {
 			)
 		}
 	};
-
-
 
 	const handleMutationTypesOpen = (event, rowData, isInEdit) => {
 		let _mutationTypesData = {};
@@ -445,10 +513,7 @@ export const AllelesTable = () => {
 							{`Secondary IDs(${props.rowData.alleleSecondaryIds.length}) `}
 							<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 						</span>&nbsp;&nbsp;&nbsp;&nbsp;
-						<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-						<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-							<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-						</span>
+						<EditMessageTooltip/>
 					</Button>
 				</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
@@ -464,10 +529,7 @@ export const AllelesTable = () => {
 								Add Secondary ID
 								<i className="pi pi-user-edit" style={{ 'fontSize': '1em' }}></i>
 							</span>&nbsp;&nbsp;&nbsp;&nbsp;
-							<Tooltip target=".exclamation-icon" style={{ width: '250px', maxWidth: '250px',	 }}/>
-							<span className="exclamation-icon" data-pr-tooltip="Edits made to this field will only be saved to the database once the entire annotation is saved.">
-								<i className="pi pi-exclamation-circle" style={{ 'fontSize': '1em' }}></i>
-							</span>
+							<EditMessageTooltip/>
 						</Button>
 					</div>
 					<ErrorMessageComponent errorMessages={errorMessagesRef.current[props.rowIndex]} errorField={"alleleSecondaryIds"} style={{ 'fontSize': '1em' }}/>
@@ -564,12 +626,13 @@ export const AllelesTable = () => {
 			editor: (props) => referencesEditor(props)
 		},
 		{
-			field: "inheritanceMode.name",
-			header: "Inheritance Mode",
+			field: "alleleInheritanceModes.inheritanceMode.name",
+			header: "Inheritance Modes",
+			body: inheritanceModesTemplate,
+			editor: (props) => inheritanceModesEditor(props),
 			sortable: isEnabled,
 			filter: true,
-			filterElement: {type: "multiselect", filterName: "inheritanceModeFilter", fields: ["inheritanceMode.name"], useKeywordFields: true},
-			editor: (props) => inheritanceModeEditor(props)
+			filterElement: {type: "input", filterName: "inheritanceModesFilter", fields: ["alleleInheritanceModes.inheritanceMode.name", "alleleInheritanceModes.phenotypeTerm.curie", "alleleInheritanceModes.phenotypeTerm.name", "alleleInheritanceModes.phenotypeStatement", "alleleInheritanceModes.evidence.curie"]}
 		},
 		{
 			field: "inCollection.name",
@@ -636,6 +699,13 @@ export const AllelesTable = () => {
 		}
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("Alleles", defaultColumnNames);
+
 	return (
 		<>
 			<div className="card">
@@ -646,7 +716,8 @@ export const AllelesTable = () => {
 					endpoint="allele"
 					tableName="Alleles"
 					columns={columns}
-					aggregationFields={aggregationFields}
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={true}
 					mutation={mutation}
 					isEnabled={isEnabled}
@@ -659,6 +730,12 @@ export const AllelesTable = () => {
 			<MutationTypesDialog
 				originalMutationTypesData={mutationTypesData}
 				setOriginalMutationTypesData={setMutationTypesData}
+				errorMessagesMainRow={errorMessages}
+				setErrorMessagesMainRow={setErrorMessages}
+			/>
+			<InheritanceModesDialog
+				originalInheritanceModesData={inheritanceModesData}
+				setOriginalInheritanceModesData={setInheritanceModesData}
 				errorMessagesMainRow={errorMessages}
 				setErrorMessagesMainRow={setErrorMessages}
 			/>

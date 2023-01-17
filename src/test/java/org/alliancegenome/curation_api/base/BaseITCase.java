@@ -1,16 +1,12 @@
 package org.alliancegenome.curation_api.base;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.alliancegenome.curation_api.constants.OntologyConstants;
@@ -40,6 +36,7 @@ import org.alliancegenome.curation_api.model.entities.ontology.DOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ECOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ExperimentalConditionOntologyTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.GOTerm;
+import org.alliancegenome.curation_api.model.entities.ontology.MPTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.NCBITaxonTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.SOTerm;
 import org.alliancegenome.curation_api.model.entities.ontology.ZECOTerm;
@@ -299,6 +296,22 @@ public class BaseITCase {
 				then().
 				statusCode(200);
 		return goTerm;
+	}
+	
+	public MPTerm createMpTerm(String curie, Boolean obsolete) {
+		MPTerm mpTerm = new MPTerm();
+		mpTerm.setCurie(curie);
+		mpTerm.setObsolete(obsolete);
+		mpTerm.setName("Test MPTerm");
+
+		RestAssured.given().
+				contentType("application/json").
+				body(mpTerm).
+				when().
+				post("/api/mpterm").
+				then().
+				statusCode(200);
+		return mpTerm;
 	}
 	
 	public NCBITaxonTerm createNCBITaxonTerm(String curie, Boolean obsolete) {
@@ -585,6 +598,17 @@ public class BaseITCase {
 		return res.getEntity();
 	}
 	
+	public MPTerm getMpTerm(String curie) {
+		ObjectResponse<MPTerm> response = RestAssured.given().
+			when().
+			get("/api/mpterm/" + curie).
+			then().
+			statusCode(200).
+			extract().body().as(getObjectResponseTypeRefMPTerm());
+			
+		return response.getEntity();
+	}
+	
 	public Note getNote(Long id) {
 		
 		ObjectResponse<Note> response =
@@ -647,6 +671,11 @@ public class BaseITCase {
 
 	private TypeRef<ObjectResponse<LoggedInPerson>> getObjectResponseTypeRefLoggedInPerson() {
 		return new TypeRef<ObjectResponse <LoggedInPerson>>() {
+		};
+	}
+
+	private TypeRef<ObjectResponse<MPTerm>> getObjectResponseTypeRefMPTerm() {
+		return new TypeRef<ObjectResponse <MPTerm>>() {
 		};
 	}
 
@@ -946,6 +975,21 @@ public class BaseITCase {
 			body(goTerm).
 			when().
 			put("/api/goterm").
+			then().
+			statusCode(200);
+	}
+	
+	public void loadMPTerm(String curie, String name) throws Exception {
+		MPTerm mpTerm = new MPTerm();
+		mpTerm.setCurie(curie);
+		mpTerm.setName(name);
+		mpTerm.setObsolete(false);
+		
+		RestAssured.given().
+			contentType("application/json").
+			body(mpTerm).
+			when().
+			put("/api/mpterm").
 			then().
 			statusCode(200);
 	}

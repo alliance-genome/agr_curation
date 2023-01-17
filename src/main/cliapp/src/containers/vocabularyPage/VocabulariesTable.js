@@ -4,6 +4,7 @@ import { BooleanTemplate } from '../../components/BooleanTemplate';
 import { GenericDataTable } from '../../components/GenericDataTable/GenericDataTable';
 import { EllipsisTableCell } from '../../components/EllipsisTableCell';
 import { Tooltip } from 'primereact/tooltip';
+import { getDefaultTableState } from '../../service/TableStateService';
 
 export const VocabulariesTable = () => {
 
@@ -53,6 +54,13 @@ export const VocabulariesTable = () => {
 		}
 	]
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("Vocabularies", defaultColumnNames);
+
 	return (
 			<div className="card">
 				<Toast ref={toast_topleft} position="top-left" />
@@ -61,6 +69,8 @@ export const VocabulariesTable = () => {
 					endpoint="vocabulary" 
 					tableName="Vocabularies" 
 					columns={columns}	 
+					defaultColumnNames={defaultColumnNames}
+					initialTableState={initialTableState}
 					isEditable={false}
 					isEnabled={isEnabled}
 					setIsEnabled={setIsEnabled}

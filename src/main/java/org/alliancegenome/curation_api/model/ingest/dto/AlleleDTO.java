@@ -12,17 +12,13 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 
 @Data
-@AGRCurationSchemaVersion(min = "1.5.0", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class,
-	NameSlotAnnotationDTO.class, AlleleSecondaryIdSlotAnnotationDTO.class }, submitted = true)
+@AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { GenomicEntityDTO.class, AlleleMutationTypeSlotAnnotationDTO.class,
+	NameSlotAnnotationDTO.class, AlleleSecondaryIdSlotAnnotationDTO.class, AlleleInheritanceModeSlotAnnotationDTO.class }, submitted = true)
 public class AlleleDTO extends GenomicEntityDTO {
 
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("reference_curies")
 	private List<String> referenceCuries;
-
-	@JsonView({ View.FieldsOnly.class })
-	@JsonProperty("inheritance_mode_name")
-	private String inheritanceModeName;
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("in_collection_name")
@@ -35,6 +31,10 @@ public class AlleleDTO extends GenomicEntityDTO {
 	@JsonView({ View.FieldsAndLists.class })
 	@JsonProperty("allele_mutation_type_dtos")
 	private List<AlleleMutationTypeSlotAnnotationDTO> alleleMutationTypeDtos;
+
+	@JsonView({ View.FieldsAndLists.class })
+	@JsonProperty("allele_inheritance_mode_dtos")
+	private List<AlleleInheritanceModeSlotAnnotationDTO> alleleInheritanceModeDtos;
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("allele_symbol_dto")

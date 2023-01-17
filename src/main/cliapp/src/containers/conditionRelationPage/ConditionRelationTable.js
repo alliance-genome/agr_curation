@@ -20,6 +20,7 @@ import {InputTextEditor} from "../../components/InputTextEditor";
 import {GenericDataTable} from '../../components/GenericDataTable/GenericDataTable';
 import {defaultAutocompleteOnChange, autocompleteSearch, buildAutocompleteFilter, getRefString, multipleAutocompleteOnChange} from '../../utils/utils';
 import {AutocompleteMultiEditor} from "../../components/Autocomplete/AutocompleteMultiEditor";
+import { getDefaultTableState } from '../../service/TableStateService';
 
 
 export const ConditionRelationTable = () => {
@@ -240,6 +241,13 @@ export const ConditionRelationTable = () => {
 
 	];
 
+	const defaultColumnNames = columns.map((col) => {
+		return col.header;
+	});
+
+
+	const initialTableState = getDefaultTableState("Experiments", defaultColumnNames);
+
 	const headerButtons = () => {
 		return (
 			<>
@@ -257,6 +265,8 @@ export const ConditionRelationTable = () => {
 				endpoint="condition-relation"
 				tableName="Experiments"
 				columns={columns}
+				defaultColumnNames={defaultColumnNames}
+				initialTableState={initialTableState}
 				aggregationFields={aggregationFields}
 				isEditable={true}
 				curieFields={["singleReference"]}
