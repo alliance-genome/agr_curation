@@ -6,11 +6,11 @@ const modTableSettings = {
 			rows: 50,
 			multiSortMeta:[],		
 			selectedColumnNames: [
-				"Subject", "Disease Relation", "Reference", "Disease", "Evidence Code",
+				"Subject", "Disease Relation", "Negated", "Disease", "Reference", "Evidence Code",
 				"Related Notes", "Experimental Conditions", "Disease Qualifiers", "Inferred Gene",
 				"Asserted Genes", "Inferred Allele", "Asserted Allele", "Data Provider",
 				"Secondary Data Provider", "Updated By", "Date Updated", "Created By",
-				"Date Created", "Internal", "Obsolete", "Negated"
+				"Date Created", "Internal", "Obsolete", 
 			],
 			filters:{
 				dataProviderFilter: {
@@ -88,7 +88,7 @@ const modTableSettings = {
 					"Obsolete", "Reference", "Subject", "Negated",
 					"Disease Relation", "Disease", "Evidence Code", "Inferred Gene",
 					"Genetic Modifier Relation", "Genetic Modifier", "Related Notes", "Data Provider",
-					"Updated By", "Date Updated", "Date Created", "Created By",
+					"Updated By", "Date Updated", "Created By", "Date Created" 
 			],
 			filters: {
 				obsoleteFilter: {
