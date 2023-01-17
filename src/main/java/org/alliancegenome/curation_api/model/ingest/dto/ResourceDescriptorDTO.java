@@ -34,7 +34,7 @@ public class ResourceDescriptorDTO {
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("gid_pattern")
-	private String gitPattern;
+	private String gidPattern;
 
 	@JsonView({ View.FieldsOnly.class })
 	@JsonProperty("default_url")

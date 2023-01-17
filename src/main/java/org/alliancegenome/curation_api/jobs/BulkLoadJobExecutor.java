@@ -9,7 +9,6 @@ import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.FULL_ING
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE;
 import static org.alliancegenome.curation_api.enums.BackendBulkLoadType.GENE_DISEASE_ANNOTATION;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -30,14 +29,13 @@ import org.alliancegenome.curation_api.jobs.executors.AlleleExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneDiseaseAnnotationExecutor;
 import org.alliancegenome.curation_api.jobs.executors.GeneExecutor;
 import org.alliancegenome.curation_api.jobs.executors.MoleculeExecutor;
+import org.alliancegenome.curation_api.jobs.executors.ResourceDescriptorExecutor;
 import org.alliancegenome.curation_api.model.entities.bulkloads.BulkLoadFile;
 import org.alliancegenome.curation_api.model.entities.ontology.OntologyTerm;
-import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
 import org.alliancegenome.curation_api.services.MoleculeService;
 import org.alliancegenome.curation_api.services.base.BaseOntologyTermService;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadConfig;
 import org.alliancegenome.curation_api.services.helpers.GenericOntologyLoadHelper;
-import org.alliancegenome.curation_api.services.helpers.ResourceDescriptorLoadHelper;
 import org.alliancegenome.curation_api.services.ontology.AtpTermService;
 import org.alliancegenome.curation_api.services.ontology.CHEBITermService;
 import org.alliancegenome.curation_api.services.ontology.DaoTermService;
@@ -147,6 +145,8 @@ public class BulkLoadJobExecutor {
 	AgmExecutor agmExecutor;
 	@Inject
 	MoleculeExecutor moleculeExecutor;
+	@Inject
+	ResourceDescriptorExecutor resourceDescriptorExecutor;
 
 	public void process(BulkLoadFile bulkLoadFile) throws Exception {
 
@@ -287,7 +287,7 @@ public class BulkLoadJobExecutor {
 					throw new Exception("Ontology Load: " + bulkLoadFile.getBulkLoad().getName() + " for OT: " + ontologyType + " not implemented");
 			}
 		} else if (bulkLoadFile.getBulkLoad().getBackendBulkLoadType() == BackendBulkLoadType.RESOURCE_DESCRIPTOR) { 
-			loadResourceDescriptorFile(bulkLoadFile);
+			resourceDescriptorExecutor.runLoad(bulkLoadFile);
 		} else {
 			log.info("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
 			throw new Exception("Load: " + bulkLoadFile.getBulkLoad().getName() + " not implemented");
@@ -326,11 +326,6 @@ public class BulkLoadJobExecutor {
 			ph1.progressProcess();
 		}
 		ph1.finishProcess();
-	}
-	
-	private void loadResourceDescriptorFile(BulkLoadFile bulkLoadFile) throws Exception {
-		ResourceDescriptorLoadHelper loader = new ResourceDescriptorLoadHelper();
-		List<ResourceDescriptorDTO> rdDtos = loader.load(new File(bulkLoadFile.getLocalFilePath()));
 	}
 
 }
