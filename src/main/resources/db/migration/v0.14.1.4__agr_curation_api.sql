@@ -38,10 +38,6 @@ ALTER TABLE resourcedescriptor_aud
 	ADD CONSTRAINT resourcedescriptor_aud_rev_fk
 		FOREIGN KEY (rev) REFERENCES revinfo (rev);
 		
-ALTER TABLE resourcedescriptor_aud
-	ADD CONSTRAINT resourcedescriptor_aud_id_fk
-		FOREIGN KEY (id) REFERENCES resourcedescriptor (id);
-		
 CREATE TABLE resourcedescriptor_synonym (
 	resourcedescriptor_id bigint NOT NULL,
 	synonym varchar(255)
@@ -89,7 +85,3 @@ ALTER TABLE resourcedescriptorpage
 ALTER TABLE resourcedescriptorpage_aud
 	ADD CONSTRAINT resourcedescriptorpage_aud_rev_fk
 		FOREIGN KEY (rev) REFERENCES revinfo (rev);
-		
-ALTER TABLE resourcedescriptorpage_aud
-	ADD CONSTRAINT resourcedescriptorpage_aud_id_fk
-		FOREIGN KEY (id) REFERENCES resourcedescriptorpage (id);

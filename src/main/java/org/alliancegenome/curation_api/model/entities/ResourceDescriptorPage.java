@@ -17,11 +17,14 @@ import org.hibernate.envers.Audited;
 import org.hibernate.search.engine.backend.types.Aggregable;
 import org.hibernate.search.engine.backend.types.Searchable;
 import org.hibernate.search.engine.backend.types.Sortable;
+import org.hibernate.search.mapper.pojo.automaticindexing.ReindexOnUpdate;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.FullTextField;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.Indexed;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexedEmbedded;
+import org.hibernate.search.mapper.pojo.mapping.definition.annotation.IndexingDependency;
 import org.hibernate.search.mapper.pojo.mapping.definition.annotation.KeywordField;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
 
 import lombok.Data;
@@ -29,18 +32,21 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Audited
+@Indexed
 @Entity
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@Inheritance(strategy = InheritanceType.JOINED)
-@ToString(exclude = { "resourceDescriptor" }, callSuper = true)
+@ToString(exclude = { "resourceDescriptor" })
 @AGRCurationSchemaVersion(min = "1.5.1", max = LinkMLSchemaConstants.LATEST_RELEASE, dependencies = { AuditedObject.class })
 @Table(indexes = { @Index(name = "resourcedescriptorpage_resourcedescriptor_id_index", columnList = "resourcedescriptor_id"), })
 @Schema(name = "ResourceDescriptorPage", description = "Annotation class representing a resource descriptor page")
 public class ResourceDescriptorPage extends GeneratedAuditedObject {
 
+	@IndexedEmbedded(includeDepth = 1)
+	@IndexingDependency(reindexOnUpdate = ReindexOnUpdate.SHALLOW)
 	@ManyToOne
-	@JsonBackReference
+	//@JsonBackReference
+	@JsonView({ View.ResourceDescriptorPageView.class })
 	private ResourceDescriptor resourceDescriptor;
 
 	@FullTextField(analyzer = "autocompleteAnalyzer", searchAnalyzer = "autocompleteSearchAnalyzer")

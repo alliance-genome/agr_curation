@@ -268,6 +268,13 @@ export const SiteLayout = (props) => {
 										]
 								},
 								{
+										label: 'Resource Descriptors', icon: 'pi pi-fw pi-sitemap',
+										items: [
+												{ label: 'Resource Descriptors', icon: 'pi pi-fw pi-home', to: '/resourcedescriptors' },
+												{ label: 'Resource Descriptor Pages', icon: 'pi pi-fw pi-home', to: '/resourcedescriptorpages' }
+										]
+								},
+								{
 										label: 'Other Links', icon: 'pi pi-fw pi-sitemap',
 										items: [
 												{ label: 'FMS Data Files', icon: 'pi pi-fw pi-home', to: '/fmspage' },
