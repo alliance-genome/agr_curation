@@ -1,8 +1,10 @@
 package org.alliancegenome.curation_api.jobs.executors;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -35,7 +37,7 @@ public class ResourceDescriptorExecutor extends LoadFileExecutor {
 		File rdFile = new File(bulkLoadFile.getLocalFilePath());
 		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 		CollectionType listType = mapper.getTypeFactory().constructCollectionType(ArrayList.class, ResourceDescriptorDTO.class);
-		List<ResourceDescriptorDTO> dtos = mapper.readValue(rdFile, listType);
+		List<ResourceDescriptorDTO> dtos = mapper.readValue(new GZIPInputStream(new FileInputStream(rdFile)), listType);
 		
 		List<String> rdNamesBefore = resourceDescriptorService.getAllNames();
 		List<String> rdNamesAfter = new ArrayList<>();

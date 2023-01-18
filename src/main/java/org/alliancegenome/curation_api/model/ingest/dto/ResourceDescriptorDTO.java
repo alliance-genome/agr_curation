@@ -40,8 +40,8 @@ public class ResourceDescriptorDTO {
 	@JsonProperty("default_url")
 	private String defaultUrl;
 
-	@JsonView({ View.FieldsOnly.class })
-	private String aliases;
+	@JsonView({ View.FieldsAndLists.class })
+	private List<String> aliases;
 	
 	@JsonView({ View.FieldsAndLists.class })
 	private List<ResourceDescriptorPageDTO> pages;

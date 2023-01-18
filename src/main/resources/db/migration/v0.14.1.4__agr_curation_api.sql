@@ -3,7 +3,8 @@ CREATE TABLE resourcedescriptor (
 	prefix varchar(255) UNIQUE NOT NULL,
 	name varchar(255),
 	idpattern varchar(255),
-	idexample timestamp without time zone,
+	idexample varchar(255),
+	defaulturltemplate varchar(255),
 	dateupdated timestamp without time zone,
 	dbdatecreated timestamp without time zone,
 	dbdateupdated timestamp without time zone,
@@ -21,6 +22,7 @@ CREATE TABLE resourcedescriptor_aud (
 	name varchar(255),
 	idpattern varchar(255),
 	idexample varchar(255),
+	defaulturltemplate varchar(255),
 	PRIMARY KEY (id, rev)
 );
 	
@@ -50,7 +52,7 @@ CREATE TABLE resourcedescriptor_synonym_aud (
 	rev integer NOT Null,
 	revtype smallint,
 	synonym varchar(255),
-	PRIMARY KEY (id, rev)
+	PRIMARY KEY (resourcedescriptor_id, synonym, rev)
 );
 	
 ALTER TABLE resourcedescriptor_synonym
@@ -59,11 +61,11 @@ ALTER TABLE resourcedescriptor_synonym
 		
 ALTER TABLE resourcedescriptor_synonym_aud
 	ADD CONSTRAINT resourcedescriptor_synonym_aud_rev_fk
-		FOREIGN_KEY (rev) REFERENCES revinfo (rev);	
+		FOREIGN KEY (rev) REFERENCES revinfo (rev);	
 
 CREATE TABLE resourcedescriptorpage (
 	id bigint CONSTRAINT resourcedescriptorpage_pkey PRIMARY KEY,
-	name varchar(255) UNIQUE NOT NULL,
+	name varchar(255),
 	urltemplate varchar(255),
 	pagedescription varchar(255),
 	resourcedescriptor_id bigint
@@ -76,14 +78,15 @@ CREATE TABLE resourcedescriptorpage_aud (
 	name varchar(255),
 	urltemplate varchar(255),
 	pagedescriptrion varchar(255),
-	resourcedescriptor_id bigint
+	resourcedescriptor_id bigint,
+	PRIMARY KEY (id, rev)
 );
 
 ALTER TABLE resourcedescriptorpage
 	ADD CONSTRAINT resourcedescriptorpage_resourcedescriptor_id_fk
 		FOREIGN KEY (resourcedescriptor_id) REFERENCES resourcedescriptor (id);
 
-ALTER TABLE resourcedescriptoroage_aud
+ALTER TABLE resourcedescriptorpage_aud
 	ADD CONSTRAINT resourcedescriptorpage_aud_rev_fk
 		FOREIGN KEY (rev) REFERENCES revinfo (rev);
 		

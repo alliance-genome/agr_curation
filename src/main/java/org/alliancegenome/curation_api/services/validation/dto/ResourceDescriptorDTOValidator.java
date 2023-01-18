@@ -16,6 +16,7 @@ import org.alliancegenome.curation_api.model.entities.ResourceDescriptorPage;
 import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorDTO;
 import org.alliancegenome.curation_api.model.ingest.dto.ResourceDescriptorPageDTO;
 import org.alliancegenome.curation_api.response.ObjectResponse;
+import org.alliancegenome.curation_api.response.SearchResponse;
 import org.alliancegenome.curation_api.services.validation.dto.base.BaseDTOValidator;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,18 +32,32 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 	ResourceDescriptorPageDTOValidator resourceDescriptorPageDtoValidator;
 
 	public ResourceDescriptor validateResourceDescriptorDTO(ResourceDescriptorDTO dto) throws ObjectValidationException {
-		ResourceDescriptor rd = new ResourceDescriptor();
 		ObjectResponse<ResourceDescriptor> rdResponse = new ObjectResponse<ResourceDescriptor>();
+		
+		ResourceDescriptor rd = null;
+		if (StringUtils.isBlank(dto.getDbPrefix())) {
+			rdResponse.addErrorMessage("db_prefix", ValidationConstants.REQUIRED_MESSAGE);
+		} else {
+			SearchResponse<ResourceDescriptor> rdSearchResponse = resourceDescriptorDAO.findByField("prefix", dto.getDbPrefix());
+			if (rdSearchResponse == null || rdSearchResponse.getSingleResult() == null) {
+				rd = new ResourceDescriptor();
+				rd.setPrefix(dto.getDbPrefix());
+			} else {
+				rd = rdSearchResponse.getSingleResult();
+			}
+		}
+		
 
 		if (StringUtils.isBlank(dto.getName()))
 			rdResponse.addErrorMessage("name", ValidationConstants.REQUIRED_MESSAGE);
 		rd.setName(dto.getName());
 
-		if (StringUtils.isBlank(dto.getDbPrefix()))
-			rdResponse.addErrorMessage("db_prefix", ValidationConstants.REQUIRED_MESSAGE);
-		rd.setPrefix(dto.getDbPrefix());
 		
-		rd.setSynonyms(parseAliases(dto.getAliases()));
+		if (CollectionUtils.isNotEmpty(dto.getAliases())) {
+			rd.setSynonyms(dto.getAliases());
+		} else {
+			rd.setSynonyms(null);
+		}
 		
 		String idPattern = null;
 		if (StringUtils.isNotBlank(dto.getGidPattern()))
@@ -50,8 +65,11 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		rd.setIdPattern(idPattern);
 		
 		String idExample = null;
-		if (StringUtils.isNotBlank(dto.getExampleGid()))
+		if (StringUtils.isNotBlank(dto.getExampleGid())) {
 			idExample = dto.getExampleGid();
+		} else if (StringUtils.isNotBlank(dto.getExampleId())) {
+			idExample = dto.getExampleId();
+		}
 		rd.setIdExample(idExample);
 		
 		String defaultUrlTemplate = null;
