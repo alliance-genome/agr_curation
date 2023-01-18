@@ -87,7 +87,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 			response.addErrorMessage(key, "Cannot find any reference ID under map key: " + key);
 			throw new ApiErrorException(response);
 		}
-		Reference reference = referenceService.get(referenceID).getEntity();
+		Reference reference = referenceService.retrieveFromDbOrLiteratureService(referenceID);
 		if (ObjectUtils.isEmpty(reference)) {
 			ObjectResponse<ConditionRelation> response = new ObjectResponse<>();
 			response.addErrorMessage(key, "Cannot find reference for given reference ID: " + referenceID);
