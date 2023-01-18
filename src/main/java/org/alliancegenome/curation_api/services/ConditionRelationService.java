@@ -72,6 +72,7 @@ public class ConditionRelationService extends BaseEntityCrudService<ConditionRel
 		conditionRelation.setSingleReference(reference);
 		conditionRelation.setConditionRelationType(vocabularyTermDAO.getTermInVocabulary("Condition relation types", "has_condition"));
 		ExperimentalCondition condition = new ExperimentalCondition();
+		condition.setUniqueId("ZECO:0000103");
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("curie", "ZECO:0000103");
 		condition.setConditionClass(zecoTermDAO.findByParams(null, params).getSingleResult());
