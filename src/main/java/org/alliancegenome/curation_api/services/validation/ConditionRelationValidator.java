@@ -216,6 +216,9 @@ public class ConditionRelationValidator extends AuditedObjectValidator<Condition
 				addMessageResponse(field, ValidationConstants.INVALID_MESSAGE);
 				return null;
 			}
+			if(condition.getId() == null){
+				condition = conditionResponse.getSingleResult();
+			}
 			conditions.add(condition);
 		}
 
