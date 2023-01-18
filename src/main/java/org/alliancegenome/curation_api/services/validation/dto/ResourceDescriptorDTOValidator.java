@@ -3,6 +3,7 @@ package org.alliancegenome.curation_api.services.validation.dto;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -78,9 +79,12 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 		rd.setDefaultUrlTemplate(defaultUrlTemplate);
 		
 		List<ResourceDescriptorPage> rdPages = new ArrayList<>();
+		List<Long> previousPageIds = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(rd.getResourcePages()))
+			previousPageIds = rd.getResourcePages().stream().map(ResourceDescriptorPage::getId).collect(Collectors.toList());
 		if (CollectionUtils.isNotEmpty(dto.getPages())) {
 			for (ResourceDescriptorPageDTO rdPageDTO : dto.getPages()) {
-				ObjectResponse<ResourceDescriptorPage> rdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(rdPageDTO);
+				ObjectResponse<ResourceDescriptorPage> rdPageResponse = resourceDescriptorPageDtoValidator.validateResourceDescriptorPageDTO(rdPageDTO, dto.getDbPrefix());
 				if (rdPageResponse.hasErrors()) {
 					rdResponse.addErrorMessage("pages", rdPageResponse.errorMessagesString());
 					break;
@@ -99,23 +103,23 @@ public class ResourceDescriptorDTOValidator extends BaseDTOValidator {
 
 		rd = resourceDescriptorDAO.persist(rd);
 
-		// Attach rd and persist ResourceDescriptorPage objects
-
+		// Attach rd and persist ResourceDescriptorPage objects)
+		List<Long> newPageIds = new ArrayList<>();
 		if (CollectionUtils.isNotEmpty(rdPages)) {
 			for (ResourceDescriptorPage rdPage : rdPages) {
 				rdPage.setResourceDescriptor(rd);
-				resourceDescriptorPageDAO.persist(rdPage);
+				rdPage = resourceDescriptorPageDAO.persist(rdPage);
+				newPageIds.add(rdPage.getId());
+			}
+		}
+		// Remove unused ResourceDescriptorPage objects
+		if (CollectionUtils.isNotEmpty(previousPageIds)) {
+			for (Long previousPageId : previousPageIds) {
+				if (!newPageIds.contains(previousPageId))
+					resourceDescriptorPageDAO.remove(previousPageId);
 			}
 		}
 		
 		return rd;
-	}
-
-	private List<String> parseAliases(String aliasString) {
-		if (StringUtils.isBlank(aliasString))
-			return null;
-		
-		ArrayList<String> synonyms = new ArrayList<>(Arrays.asList(aliasString.split(",[ ]*")));
-		return synonyms;
 	}
 }
