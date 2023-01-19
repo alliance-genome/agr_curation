@@ -6,10 +6,15 @@ export class BaseAuthService {
 
 	constructor() {
 		let oktaTokenStorage = localStorage.getItem('okta-token-storage');
+		let accessToken;
 
-		if(!oktaTokenStorage) oktaTokenStorage = JSON.stringify({}); 
+		try{
+			 accessToken = JSON.parse(oktaTokenStorage).accessToken;
+		} catch(e){
+			console.warn(e);
+			accessToken = undefined;
 
-		const { accessToken } = JSON.parse(oktaTokenStorage);
+		}
 
 		if (accessToken) {
 			this.api = axios.create({
