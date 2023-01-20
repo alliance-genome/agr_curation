@@ -63,7 +63,7 @@ public class AGMDiseaseAnnotationDTOValidator extends DiseaseAnnotationDTOValida
 			} else {
 				String annotationId = dto.getModEntityId();
 				if (StringUtils.isBlank(annotationId)) {
-					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(agm.getTaxon().getCurie()).getCurieID(dto, dto.getAgmCurie(), refCurie);
+					annotationId = DiseaseAnnotationCurieManager.getDiseaseAnnotationCurie(agm.getTaxon().getGenusSpecies()).getCurieID(dto, dto.getAgmCurie(), refCurie);
 				}
 
 				SearchResponse<AGMDiseaseAnnotation> annotationList = agmDiseaseAnnotationDAO.findByField("uniqueId", annotationId);

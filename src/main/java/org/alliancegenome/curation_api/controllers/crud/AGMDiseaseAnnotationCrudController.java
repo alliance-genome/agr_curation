@@ -50,37 +50,37 @@ public class AGMDiseaseAnnotationCrudController extends BaseDTOCrudController<AG
 
 	@Override
 	public APIResponse updateZfinAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Danio rerio", annotations);
 	}
 
 	@Override
 	public APIResponse updateMgiAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:10090", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Mus musculus", annotations);
 	}
 
 	@Override
 	public APIResponse updateRgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:10116", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Rattus norvegicus", annotations);
 	}
 
 	@Override
 	public APIResponse updateFbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:7227", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Drosophila melanogaster", annotations);
 	}
 
 	@Override
 	public APIResponse updateWbAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:6239", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Caenorhabditis elegans", annotations);
 	}
 
 	@Override
 	public APIResponse updateHumanAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:9606", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Homo sapiens", annotations);
 	}
 
 	@Override
 	public APIResponse updateSgdAgmDiseaseAnnotations(List<AGMDiseaseAnnotationDTO> annotations) {
-		return agmDiseaseAnnotationExecutor.runLoad("NCBITaxon:559292", annotations);
+		return agmDiseaseAnnotationExecutor.runLoad("Saccharomyces cerevisiae", annotations);
 	}
 
 }

@@ -44,9 +44,9 @@ public interface AlleleDiseaseAnnotationCrudInterface extends BaseIdCrudInterfac
 	public ObjectResponse<AlleleDiseaseAnnotation> create(AlleleDiseaseAnnotation entity);
 
 	@POST
-	@Path("/bulk/{taxonID}/annotationFile")
+	@Path("/bulk/{speciesName}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAlleleDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AlleleDiseaseAnnotationDTO> annotationData);
+	public APIResponse updateAlleleDiseaseAnnotations(@PathParam("speciesName") String speciesName, List<AlleleDiseaseAnnotationDTO> annotationData);
 
 	@POST
 	@Path("/bulk/zfinAnnotationFile")

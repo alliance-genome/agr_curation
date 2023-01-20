@@ -44,6 +44,13 @@ public class GenomicEntityValidator extends CurieAuditedObjectValidator {
 			return null;
 		}
 		
+		if (!ValidationConstants.CANONICAL_TAXONS.contains(taxon.getCurie())) {
+			if (!ValidationConstants.SUPPORTED_SPECIES.contains(taxon.getGenusSpecies())) {
+				addMessageResponse(field, ValidationConstants.UNSUPPORTED_MESSAGE);
+				return null;
+			}
+		}
+		
 		if (taxon.getObsolete() && (dbEntity.getTaxon() == null || !taxon.getCurie().equals(dbEntity.getTaxon().getCurie()))) {
 			addMessageResponse(field, ValidationConstants.OBSOLETE_MESSAGE);
 			return null;

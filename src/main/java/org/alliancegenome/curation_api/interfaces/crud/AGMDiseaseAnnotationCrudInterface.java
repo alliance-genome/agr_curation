@@ -44,9 +44,9 @@ public interface AGMDiseaseAnnotationCrudInterface extends BaseIdCrudInterface<A
 	public ObjectResponse<AGMDiseaseAnnotation> create(AGMDiseaseAnnotation entity);
 
 	@POST
-	@Path("/bulk/{taxonID}/annotationFile")
+	@Path("/bulk/{speciesName}/annotationFile")
 	@JsonView(View.FieldsAndLists.class)
-	public APIResponse updateAgmDiseaseAnnotations(@PathParam("taxonID") String taxonID, List<AGMDiseaseAnnotationDTO> annotationData);
+	public APIResponse updateAgmDiseaseAnnotations(@PathParam("speciesName") String speciesName, List<AGMDiseaseAnnotationDTO> annotationData);
 
 	@POST
 	@Path("/bulk/zfinAnnotationFile")

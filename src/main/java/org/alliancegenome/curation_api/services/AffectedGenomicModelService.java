@@ -79,17 +79,17 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 	}
 
 	@Transactional
-	public void removeNonUpdatedAgms(String taxonIds, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
-		log.debug("runLoad: After: " + taxonIds + " " + agmCuriesAfter.size());
+	public void removeOrDeprecateNonUpdatedAgms(String speciesNames, List<String> agmCuriesBefore, List<String> agmCuriesAfter, String dataType) {
+		log.debug("runLoad: After: " + speciesNames + " " + agmCuriesAfter.size());
 
 		List<String> distinctAfter = agmCuriesAfter.stream().distinct().collect(Collectors.toList());
-		log.debug("runLoad: Distinct: " + taxonIds + " " + distinctAfter.size());
+		log.debug("runLoad: Distinct: " + speciesNames + " " + distinctAfter.size());
 
 		List<String> curiesToRemove = ListUtils.subtract(agmCuriesBefore, distinctAfter);
-		log.debug("runLoad: Remove: " + taxonIds + " " + curiesToRemove.size());
+		log.debug("runLoad: Remove: " + speciesNames + " " + curiesToRemove.size());
 
 		ProcessDisplayHelper ph = new ProcessDisplayHelper(1000);
-		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + taxonIds + " AGMs", curiesToRemove.size());
+		ph.startProcess("Deletion/deprecation of disease annotations linked to unloaded " + speciesNames + " AGMs", curiesToRemove.size());
 		for (String curie : curiesToRemove) {
 			AffectedGenomicModel agm = agmDAO.find(curie);
 			if (agm != null) {
@@ -117,8 +117,8 @@ public class AffectedGenomicModelService extends BaseDTOCrudService<AffectedGeno
 		ph.finishProcess();
 	}
 
-	public List<String> getCuriesByTaxonId(String taxonId) {
-		List<String> curies = agmDAO.findAllCuriesByTaxon(taxonId);
+	public List<String> getCuriesBySpeciesName(String speciesName) {
+		List<String> curies = agmDAO.findAllCuriesBySpeciesName(speciesName);
 		curies.removeIf(Objects::isNull);
 		return curies;
 	}

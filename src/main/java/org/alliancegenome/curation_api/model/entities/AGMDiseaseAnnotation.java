@@ -97,4 +97,15 @@ public class AGMDiseaseAnnotation extends DiseaseAnnotation {
 			return null;
 		return subject.getTaxon().getCurie();
 	}
+
+	@Transient
+	@Override
+	@JsonIgnore
+	public String getSubjectSpeciesName() {
+		if (subject == null)
+			return null;
+		if (subject.getTaxon() == null)
+			return null;
+		return subject.getTaxon().getGenusSpecies();
+	}
 }

@@ -50,37 +50,37 @@ public class GeneDiseaseAnnotationCrudController extends BaseDTOCrudController<G
 
 	@Override
 	public APIResponse updateZfinGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Danio rerio", annotations);
 	}
 
 	@Override
 	public APIResponse updateMgiGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:10090", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Mus musculus", annotations);
 	}
 
 	@Override
 	public APIResponse updateRgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:10116", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Rattus norvegicus", annotations);
 	}
 
 	@Override
 	public APIResponse updateFbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:7227", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Drosophila melanogaster", annotations);
 	}
 
 	@Override
 	public APIResponse updateWbGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:6239", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Caenorhabditis elegans", annotations);
 	}
 
 	@Override
 	public APIResponse updateHumanGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:9606", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Homo sapiens", annotations);
 	}
 
 	@Override
 	public APIResponse updateSgdGeneDiseaseAnnotations(List<GeneDiseaseAnnotationDTO> annotations) {
-		return geneDiseaseAnnotationExecutor.runLoad("NCBITaxon:559292", annotations);
+		return geneDiseaseAnnotationExecutor.runLoad("Saccharomyces cerevisiae", annotations);
 	}
 
 }

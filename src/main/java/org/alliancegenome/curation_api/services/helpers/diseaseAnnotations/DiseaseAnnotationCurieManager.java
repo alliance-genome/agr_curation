@@ -5,29 +5,29 @@ import java.util.Map;
 
 public abstract class DiseaseAnnotationCurieManager {
 
-	static Map<String, DiseaseAnnotationCurie> curieTaxonMap = new HashMap<>();
+	static Map<String, DiseaseAnnotationCurie> curieSpeciesNameMap = new HashMap<>();
 
 	static {
-		curieTaxonMap.put("NCBITaxon:7955", new ZFINDiseaseAnnotationCurie());
-		curieTaxonMap.put("NCBITaxon:9606", new RGDDiseaseAnnotationCurie());
-		curieTaxonMap.put("NCBITaxon:10116", new RGDDiseaseAnnotationCurie());
-		curieTaxonMap.put("NCBITaxon:10090", new MGIDiseaseAnnotationCurie());
-		curieTaxonMap.put("NCBITaxon:6239", new WormDiseaseAnnotationCurie());
-		curieTaxonMap.put("NCBITaxon:7227", new FlyDiseaseAnnotationCurie());
-		curieTaxonMap.put("NCBITaxon:559292", new SGDDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Danio rerio", new ZFINDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Homo sapiens", new RGDDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Rattus norvegicus", new RGDDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Mus musculus", new MGIDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Caenorhabditis elegans", new WormDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Drosophila melanogaster", new FlyDiseaseAnnotationCurie());
+		curieSpeciesNameMap.put("Saccharomyces cerevisiae", new SGDDiseaseAnnotationCurie());
 	}
 
-	public static DiseaseAnnotationCurie getDiseaseAnnotationCurie(String taxonID) {
-		DiseaseAnnotationCurie curie = curieTaxonMap.get(taxonID);
+	public static DiseaseAnnotationCurie getDiseaseAnnotationCurie(String speciesName) {
+		DiseaseAnnotationCurie curie = curieSpeciesNameMap.get(speciesName);
 		if (curie == null)
-			throw new RuntimeException("No Disease Annotation Curie definition found for " + taxonID);
+			throw new RuntimeException("No Disease Annotation Curie definition found for " + speciesName);
 		return curie;
 	}
 
-	public static DiseaseAnnotationCurie getDiseaseAnnotationUniqueId(String taxonID) {
-		DiseaseAnnotationCurie curie = curieTaxonMap.get(taxonID);
+	public static DiseaseAnnotationCurie getDiseaseAnnotationUniqueId(String speciesName) {
+		DiseaseAnnotationCurie curie = curieSpeciesNameMap.get(speciesName);
 		if (curie == null)
-			throw new RuntimeException("No Disease Annotation Curie definition found for " + taxonID);
+			throw new RuntimeException("No Disease Annotation Curie definition found for " + speciesName);
 		return curie;
 	}
 

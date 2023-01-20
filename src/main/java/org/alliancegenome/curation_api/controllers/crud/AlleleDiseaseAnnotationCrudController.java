@@ -43,43 +43,43 @@ public class AlleleDiseaseAnnotationCrudController extends BaseDTOCrudController
 	}
 
 	@Override
-	public APIResponse updateAlleleDiseaseAnnotations(String taxonID, List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad(taxonID, annotations);
+	public APIResponse updateAlleleDiseaseAnnotations(String speciesName, List<AlleleDiseaseAnnotationDTO> annotations) {
+		return alleleDiseaseAnnotationExecutor.runLoad(speciesName, annotations);
 	}
 
 	@Override
 	public APIResponse updateZfinAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:7955", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Danio rerio", annotations);
 	}
 
 	@Override
 	public APIResponse updateMgiAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:10090", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Mus musculus", annotations);
 	}
 
 	@Override
 	public APIResponse updateRgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:10116", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Rattus norvegicus", annotations);
 	}
 
 	@Override
 	public APIResponse updateFbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:7227", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Drosophila melanogaster", annotations);
 	}
 
 	@Override
 	public APIResponse updateWbAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:6239", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Caenorhabditis elegans", annotations);
 	}
 
 	@Override
 	public APIResponse updateHumanAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:9606", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Homo sapiens", annotations);
 	}
 
 	@Override
 	public APIResponse updateSgdAlleleDiseaseAnnotations(List<AlleleDiseaseAnnotationDTO> annotations) {
-		return alleleDiseaseAnnotationExecutor.runLoad("NCBITaxon:559292", annotations);
+		return alleleDiseaseAnnotationExecutor.runLoad("Saccharomyces cerevisiae", annotations);
 	}
 
 }
