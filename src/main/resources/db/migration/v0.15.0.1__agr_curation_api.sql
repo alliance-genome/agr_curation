@@ -208,6 +208,36 @@ DELETE FROM affectedgenomicmodel WHERE curie IN (
 		)
 	);
 	
+DELETE FROM genomicentity_crossreference WHERE genomicentity_curie IN (
+	SELECT curie FROM biologicalentity
+		WHERE taxon_curie NOT IN (
+			SELECT n.curie FROM ncbitaxonterm n
+				INNER JOIN ontologyterm o ON n.curie = o.curie
+				WHERE o.name LIKE 'Danio rerio%'
+					OR o.name LIKE 'Caenorhabditis elegans%'
+					OR o.name LIKE 'Homo sapiens%'
+					OR o.name LIKE 'Saccharomyces cerevisiae%'
+					OR o.name LIKE 'Drosophila melanogaster%'
+					OR o.name LIKE 'Rattus norvegicus%'
+					OR o.name LIKE 'Mus musculus%'
+		)
+	);
+	
+DELETE FROM genomicentity_secondaryidentifiers WHERE genomicentity_curie IN (
+	SELECT curie FROM biologicalentity
+		WHERE taxon_curie NOT IN (
+			SELECT n.curie FROM ncbitaxonterm n
+				INNER JOIN ontologyterm o ON n.curie = o.curie
+				WHERE o.name LIKE 'Danio rerio%'
+					OR o.name LIKE 'Caenorhabditis elegans%'
+					OR o.name LIKE 'Homo sapiens%'
+					OR o.name LIKE 'Saccharomyces cerevisiae%'
+					OR o.name LIKE 'Drosophila melanogaster%'
+					OR o.name LIKE 'Rattus norvegicus%'
+					OR o.name LIKE 'Mus musculus%'
+		)
+	);
+	
 DELETE FROM genomicentity WHERE curie IN (
 	SELECT curie FROM biologicalentity
 		WHERE taxon_curie NOT IN (
