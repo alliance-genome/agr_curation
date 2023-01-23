@@ -134,6 +134,14 @@ public class JobScheduler {
 			}
 		}
 	}
+	
+	@Scheduled(cron = "0 0 0 ? * SUN")
+	public void runMassIndexerEverything() {
+		// Not sure what is going to happen when this time's out but should run anyway
+		// Defaults taken from the API endpoint
+		// DAO used doesn't matter they all have this method
+		bulkLoadDAO.reindexEverything(1000, 10000, 0, 4, 7200, 1);
+	}
 
 	@Scheduled(every = "1s")
 	public void runFileJobs() {
