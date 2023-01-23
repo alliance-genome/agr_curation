@@ -18,4 +18,22 @@ public enum BackendBulkDataType {
 	public String getSpeciesName() {
 		return this.speciesName;
 	}
+	
+	public static String getSpeciesNameFromDataType(String dataTypeName) {
+		BackendBulkDataType dataType = getDataType(dataTypeName);
+		if (dataType == null)
+			return null;
+		return dataType.speciesName;
+	}
+	
+	private static BackendBulkDataType getDataType(String dataTypeName) {
+		BackendBulkDataType result = null;
+	    for (BackendBulkDataType dataType : values()) {
+	        if (dataType.name().equalsIgnoreCase(dataTypeName)) {
+	            result = dataType;
+	            break;
+	        }
+	    }
+	    return result;
+	}
 }
